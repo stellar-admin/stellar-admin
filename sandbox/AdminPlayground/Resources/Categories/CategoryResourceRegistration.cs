@@ -34,7 +34,7 @@ internal static class CategoryResourceRegistration
                     details =>
                     {
                         details.Toggle = DataGridRowDetailToggle.End;
-                        details.ExpandMode = TableRowDetailExpandMode.Single;
+                        details.ExpandMode = DataGridRowDetailExpandMode.Single;
                     }
                 );
             });

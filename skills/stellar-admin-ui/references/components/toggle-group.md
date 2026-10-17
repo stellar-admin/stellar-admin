@@ -21,7 +21,7 @@ Renders a group of toggle items that lets the user select one item or several.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `type` | `ToggleGroupType` | `Single` | `Single`, `Multiple` |
+| `multiple` | `bool` | `false` | `true`, `false` |
 | `variant` | `ToggleVariant` | `Default` | `Default`, `Outline` |
 | `size` | `ToggleSize` | `Default` | `Default`, `Small`, `Large` |
 | `orientation` | `ToggleGroupOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
@@ -60,7 +60,7 @@ Renders a group of toggle items that lets the user select one item or several.
 *From `Pages/ToggleGroup/_Intro.cshtml`*
 
 ```razor
-<sa-toggle-group name="results-view" type="ToggleGroupType.Single">
+<sa-toggle-group name="results-view">
     <sa-toggle-group-item value="list" selected="true" aria-label="List view">
         <sa-icon name="list"/>
     </sa-toggle-group-item>
@@ -76,7 +76,7 @@ Renders a group of toggle items that lets the user select one item or several.
 *From `Pages/ToggleGroup/_ModelBinding.cshtml`*
 
 ```razor
-<sa-toggle-group asp-for="ResultsView" type="ToggleGroupType.Single" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
+<sa-toggle-group asp-for="ResultsView" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
     <sa-toggle-group-item value="list" aria-label="List view">
         <sa-icon name="list"/>
     </sa-toggle-group-item>
@@ -88,7 +88,7 @@ Renders a group of toggle items that lets the user select one item or several.
     </sa-toggle-group-item>
 </sa-toggle-group>
 
-<sa-toggle-group asp-for="Amenities" type="ToggleGroupType.Multiple" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
+<sa-toggle-group asp-for="Amenities" multiple="true" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
     <sa-toggle-group-item value="wifi" aria-label="Free Wi-Fi">
         <sa-icon name="wifi"/>
     </sa-toggle-group-item>
@@ -100,7 +100,7 @@ Renders a group of toggle items that lets the user select one item or several.
     </sa-toggle-group-item>
 </sa-toggle-group>
 
-<sa-toggle-group asp-for="Sort" type="ToggleGroupType.Single" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
+<sa-toggle-group asp-for="Sort" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
     <sa-toggle-group-item value="Recommended">
         <sa-icon name="sparkles"/>
         Recommended
@@ -115,7 +115,7 @@ Renders a group of toggle items that lets the user select one item or several.
     </sa-toggle-group-item>
 </sa-toggle-group>
 
-<sa-toggle-group asp-for="TripStyles" type="ToggleGroupType.Multiple" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
+<sa-toggle-group asp-for="TripStyles" multiple="true" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
     <sa-toggle-group-item value="Beach">
         <sa-icon name="sailboat"/>
         Beach

@@ -13,7 +13,7 @@
             </div>
             <div class="flex flex-col gap-3">
                 <h2 class="bg-gray-100 text-base font-bold">Single-select group (string)</h2>
-                <sa-toggle-group asp-for="Model.ResultsView" type="ToggleGroupType.Single" variant="ToggleVariant.Outline">
+                <sa-toggle-group asp-for="Model.ResultsView" variant="ToggleVariant.Outline">
                     <sa-toggle-group-item value="list" aria-label="List view">
                         <sa-icon name="list"/>
                     </sa-toggle-group-item>
@@ -27,7 +27,7 @@
             </div>
             <div class="flex flex-col gap-3">
                 <h2 class="bg-gray-100 text-base font-bold">Multi-select group (string[])</h2>
-                <sa-toggle-group asp-for="Model.Amenities" type="ToggleGroupType.Multiple" variant="ToggleVariant.Outline">
+                <sa-toggle-group asp-for="Model.Amenities" multiple="true" variant="ToggleVariant.Outline">
                     <sa-toggle-group-item value="wifi" aria-label="Free Wi-Fi">
                         <sa-icon name="wifi"/>
                     </sa-toggle-group-item>
@@ -41,7 +41,7 @@
             </div>
             <div class="flex flex-col gap-3">
                 <h2 class="bg-gray-100 text-base font-bold">Single-select group (enum)</h2>
-                <sa-toggle-group asp-for="Model.Sort" type="ToggleGroupType.Single" variant="ToggleVariant.Outline">
+                <sa-toggle-group asp-for="Model.Sort" variant="ToggleVariant.Outline">
                     <sa-toggle-group-item value="Recommended">
                         <sa-icon name="sparkles"/>
                         Recommended
@@ -58,7 +58,7 @@
             </div>
             <div class="flex flex-col gap-3">
                 <h2 class="bg-gray-100 text-base font-bold">Multi-select group (enum[])</h2>
-                <sa-toggle-group asp-for="Model.TripStyles" type="ToggleGroupType.Multiple" variant="ToggleVariant.Outline">
+                <sa-toggle-group asp-for="Model.TripStyles" multiple="true" variant="ToggleVariant.Outline">
                     <sa-toggle-group-item value="Beach">
                         <sa-icon name="sailboat"/>
                         Beach

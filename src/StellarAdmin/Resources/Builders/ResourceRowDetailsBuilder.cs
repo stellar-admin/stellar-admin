@@ -56,9 +56,9 @@ public sealed class ResourceRowDetailsBuilder<TResource>
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies how many rows can be expanded. The default
-    ///     is <see cref="TableRowDetailExpandMode.Multiple" />.
+    ///     is <see cref="DataGridRowDetailExpandMode.Multiple" />.
     /// </value>
-    public TableRowDetailExpandMode ExpandMode
+    public DataGridRowDetailExpandMode ExpandMode
     {
         set => Configure(options => options.ExpandMode = value);
     }

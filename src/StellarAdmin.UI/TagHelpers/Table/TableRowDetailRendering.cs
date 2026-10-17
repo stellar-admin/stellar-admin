@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 /// </summary>
 internal sealed record TableRowDetailSettings(
     bool RowClick,
-    TableRowDetailExpandMode ExpandMode,
+    string ExpandMode,
     TableRowDetailEmphasis Emphasis,
     TableRowDetailDivider Divider,
     TableRowDetailInset Inset,
@@ -27,7 +27,7 @@ internal static class TableRowDetailRendering
     )
     {
         yield return new("data-row-details", "");
-        yield return new("data-expand-mode", settings.ExpandMode.GetDataAttributeText());
+        yield return new("data-expand-mode", settings.ExpandMode);
         yield return new("data-emphasis", settings.Emphasis.GetDataAttributeText());
         yield return new("data-divider", settings.Divider.GetDataAttributeText());
         yield return new("data-inset", settings.Inset.GetDataAttributeText());

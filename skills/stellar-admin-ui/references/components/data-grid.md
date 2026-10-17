@@ -91,7 +91,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
 |-----------|------|---------|--------|
 | `toggle` | `DataGridRowDetailToggle` | `Start` | `Start`, `End`, `None` |
 | `row-click` | `bool` | `false` | `true`, `false` |
-| `expand-mode` | `TableRowDetailExpandMode` | `Multiple` | `Multiple`, `Single` |
+| `expand-mode` | `DataGridRowDetailExpandMode` | `Multiple` | `Multiple`, `Single` |
 | `emphasis` | `TableRowDetailEmphasis` | `Band` | `None`, `Band`, `Rail` |
 | `divider` | `TableRowDetailDivider` | `Inset` | `None`, `Inset`, `FullWidth` |
 | `inset` | `TableRowDetailInset` | `Aligned` | `Bleed`, `Aligned` |

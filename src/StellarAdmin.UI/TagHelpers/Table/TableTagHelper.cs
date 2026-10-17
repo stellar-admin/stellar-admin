@@ -160,7 +160,7 @@ public sealed class TableTagHelper : StellarAdminTagHelperBase
         var rowDetails = effectiveRowDetails
             ? new TableRowDetailSettings(
                 RowClick ?? false,
-                RowDetailExpandMode ?? TableRowDetailExpandMode.Multiple,
+                (RowDetailExpandMode ?? TableRowDetailExpandMode.Multiple).GetDataAttributeText(),
                 RowDetailEmphasis ?? TableRowDetailEmphasis.Band,
                 RowDetailDivider ?? TableRowDetailDivider.Inset,
                 RowDetailInset ?? TableRowDetailInset.Aligned,

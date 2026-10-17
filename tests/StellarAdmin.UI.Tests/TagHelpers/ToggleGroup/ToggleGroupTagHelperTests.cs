@@ -7,6 +7,41 @@ namespace StellarAdmin.UI.Tests.TagHelpers.ToggleGroup;
 public partial class ToggleGroupTagHelperTests
 {
     [Test]
+    [Arguments(null, "radio")]
+    [Arguments(false, "radio")]
+    [Arguments(true, "checkbox")]
+    public async Task ProcessAsync_WithMultiple_RendersMatchingInputType(
+        bool? multiple,
+        string expectedType
+    )
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new ToggleGroupTagHelper(context.Generator)
+        {
+            ViewContext = context.ViewContext,
+            Name = "cabin",
+            Multiple = multiple,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            sut,
+            parent =>
+                RenderItemsAsync(
+                    parent,
+                    new ToggleGroupItemTagHelper { Value = "economy" },
+                    new ToggleGroupItemTagHelper { Value = "business" }
+                )
+        );
+
+        // Assert
+        await Assert
+            .That(html.QuerySelectorAll($"input[type={expectedType}][name=cabin]").Length)
+            .IsEqualTo(2);
+    }
+
+    [Test]
     public async Task ProcessAsync_MultipleCollectionBinding_ChecksBoundValuesAndRendersMarker()
     {
         // Arrange
@@ -14,7 +49,7 @@ public partial class ToggleGroupTagHelperTests
         var sut = new ToggleGroupTagHelper(context.Generator)
         {
             ViewContext = context.ViewContext,
-            Type = ToggleGroupType.Multiple,
+            Multiple = true,
             For = new ModelExpression(
                 "Days",
                 context.Metadata.GetModelExplorerForType(typeof(int[]), new[] { 2, 3 })
@@ -78,7 +113,7 @@ public partial class ToggleGroupTagHelperTests
         var sut = new ToggleGroupTagHelper(context.Generator)
         {
             ViewContext = context.ViewContext,
-            Type = ToggleGroupType.Multiple,
+            Multiple = true,
             For = new ModelExpression(
                 "Days",
                 context.Metadata.GetModelExplorerForType(typeof(int[]), new[] { 1 })
@@ -140,7 +175,7 @@ public partial class ToggleGroupTagHelperTests
         var sut = new ToggleGroupTagHelper(context.Generator)
         {
             ViewContext = context.ViewContext,
-            Type = ToggleGroupType.Multiple,
+            Multiple = true,
             For = new ModelExpression(
                 "Days",
                 context.Metadata.GetModelExplorerForType(typeof(int[]), new[] { 2 })

@@ -133,7 +133,7 @@ index.EnableRowDetails(panels =>
 ```
 
 - Put the partials in `Areas/StellarAdmin/Views/{slug}/` or `Areas/StellarAdmin/Views/Shared/`, with an area `_ViewImports.cshtml` ([customization](customization.md#view-imports)).
-- The callback overloads configure presentation: `details => { details.Emphasis = TableRowDetailEmphasis.Rail; details.ExpandMode = TableRowDetailExpandMode.Single; details.RowClick = true; }`. Other settings: `Animate`, `Divider` (`TableRowDetailDivider`), `Inset`, `Toggle`. The enums are in `StellarAdmin.UI`.
+- The callback overloads configure presentation: `details => { details.Emphasis = TableRowDetailEmphasis.Rail; details.ExpandMode = DataGridRowDetailExpandMode.Single; details.RowClick = true; }`. Other settings: `Animate`, `Divider` (`TableRowDetailDivider`), `Inset`, `Toggle`. The enums are in `StellarAdmin.UI`.
 - Row details are for per-row information. Content for the whole page, such as a summary above the grid, belongs in an index override ([customization](customization.md#add-content-to-a-generated-page)).
 
 ## Custom data sources

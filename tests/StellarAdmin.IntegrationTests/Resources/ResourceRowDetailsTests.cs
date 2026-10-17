@@ -51,7 +51,7 @@ public class ResourceRowDetailsTests
                         details =>
                         {
                             details.RowClick = true;
-                            details.ExpandMode = TableRowDetailExpandMode.Single;
+                            details.ExpandMode = DataGridRowDetailExpandMode.Single;
                             details.Emphasis = TableRowDetailEmphasis.Rail;
                             details.Divider = TableRowDetailDivider.FullWidth;
                             details.Inset = TableRowDetailInset.Bleed;

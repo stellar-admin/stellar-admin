@@ -68,7 +68,7 @@ public sealed class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
 
         var effectiveVariant = Variant ?? toggleGroupContext?.Variant ?? ToggleVariant.Default;
         var effectiveSize = Size ?? toggleGroupContext?.Size ?? ToggleSize.Default;
-        var type = toggleGroupContext?.Type ?? ToggleGroupType.Single;
+        var multiple = toggleGroupContext?.Multiple ?? false;
 
         // Capture the author's content (icon/text) before we repurpose the host element.
         var childContent = await output.GetChildContentAsync();
@@ -88,10 +88,7 @@ public sealed class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
         {
             TagMode = TagMode.StartTagOnly,
         };
-        inputOutput.Attributes.SetAttribute(
-            "type",
-            type == ToggleGroupType.Single ? "radio" : "checkbox"
-        );
+        inputOutput.Attributes.SetAttribute("type", multiple ? "checkbox" : "radio");
         inputOutput.Attributes.SetAttribute("data-slot", "toggle-group-item-input");
 
         if (!string.IsNullOrEmpty(toggleGroupContext?.FieldName))

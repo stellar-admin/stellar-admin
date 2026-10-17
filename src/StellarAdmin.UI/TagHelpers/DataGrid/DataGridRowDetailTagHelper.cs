@@ -51,10 +51,10 @@ public sealed class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies how many rows can be expanded. The default
-    ///     is <see cref="TableRowDetailExpandMode.Multiple" />.
+    ///     is <see cref="DataGridRowDetailExpandMode.Multiple" />.
     /// </value>
     [HtmlAttributeName("expand-mode")]
-    public TableRowDetailExpandMode? ExpandMode { get; set; }
+    public DataGridRowDetailExpandMode? ExpandMode { get; set; }
 
     /// <summary>
     ///     Gets or sets how an expanded row and its details stand out from the rows around them.
@@ -153,7 +153,7 @@ public sealed class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
             Toggle = Toggle ?? DataGridRowDetailToggle.Start,
             Settings = new TableRowDetailSettings(
                 RowClick ?? false,
-                ExpandMode ?? TableRowDetailExpandMode.Multiple,
+                (ExpandMode ?? DataGridRowDetailExpandMode.Multiple).GetDataAttributeText(),
                 Emphasis ?? TableRowDetailEmphasis.Band,
                 Divider ?? TableRowDetailDivider.Inset,
                 Inset ?? TableRowDetailInset.Aligned,

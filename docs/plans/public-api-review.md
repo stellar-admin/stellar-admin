@@ -22,7 +22,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D4 | One scheme for link versions of components? | `sa-<component>-link` everywhere, with `sa-link-button`. | `sa-<component>-link` everywhere, including `sa-button-link` and `sa-dropdown-menu-item-link`. Done (2026-10-17) |
 | D5 | What does an attribute like `columns` mean with no breakpoint suffix? | The smallest width, everywhere. | The smallest width, and `columns-base` goes. Done (2026-10-17) |
 | D6 | `PositionArea`: rename, or split into `side` and `align`? | Rename it and document `Top` vs `TopCenter`. | Split into `side` and `align` with enums for each component, and drop the corners. Done (2026-10-17) |
-| D7 | How to say "single or multiple"? | `multiple` as a `bool?`, like `<select multiple>`. | |
+| D7 | How to say "single or multiple"? | `multiple` as a `bool?`, like `<select multiple>`. | `multiple` on ToggleGroup. The table and data grid keep an expand-mode enum each. Done (2026-10-17) |
 | D8 | Tabs `selected` and a group `value` on ToggleGroup? | Rename the Tabs attribute to `value`. Add `value` to ToggleGroup. | |
 | D9 | How should EF `UseItems` take its types? | A set selector, so the types are inferred: `UseItems((AppDbContext db) => db.Customers, c => c.Id, c => c.Name)`. | |
 | D10 | Make custom editors work like custom displays? | Yes. Make `FieldEditor` abstract, make the handler optional and put `TemplateName` on the editor. | |
@@ -160,6 +160,13 @@ Done:
 ### D7. Single or multiple
 
 Today: `sa-toggle-group` `type` with `ToggleGroupType`, `sa-questionnaire-item` `multiple` as a `bool`, and `sa-table` `row-detail-expand-mode` with `TableRowDetailExpandMode`.
+
+Done:
+- `sa-toggle-group` takes `multiple` (`bool?`, default false) instead of `type`. `ToggleGroupType` is removed. The admin panel's toggle group editor sets `multiple` for collections.
+- `sa-questionnaire-item` already had `multiple` as a `bool?`.
+- The table keeps `TableRowDetailExpandMode`, because its default is many rows. `sa-data-grid-row-detail` `expand-mode`, `ResourceRowDetailsOptions.ExpandMode` and `ResourceRowDetailsBuilder.ExpandMode` use a new `DataGridRowDetailExpandMode`.
+- The data grid row detail still borrows `TableRowDetailEmphasis`, `TableRowDetailDivider` and `TableRowDetailInset` from the table. That is a follow-up for Jerrie.
+- A new test covers radios and checkboxes. The build is clean apart from older warnings, the skills have no drift, and all 1449 tests pass (2026-10-17).
 
 ### D8. Tabs and ToggleGroup values
 
@@ -696,6 +703,7 @@ Changes the website still needs:
 - [ ] D3: document `ISidebarItemsProvider` from the "Items from code" section of the admin panel skill's `references/sidebar.md`.
 - [ ] D5: `columns` on `sa-grid`, `sa-details`, `sa-radio-group` and `sa-checkbox-group` now sets the smallest width, and `columns-base` is gone. Change `columns="N"` to `columns-md="N"` and `columns-base` to `columns` in `grid.mdx`, `details.mdx`, `form-section.mdx`, the choice group pages and their API tables.
 - [ ] D6: `position="PositionArea.X"` is replaced by `side` and `align` on `sa-popover`, `sa-tooltip`, `sa-dropdown-menu-content` and `sa-dropdown-menu-sub-content`, with per-component enums such as `PopoverSide` and `PopoverAlign`. `XSpanRight` or `XSpanBottom` → `Start`, `XSpanLeft` or `XSpanTop` → `End`, `X` → `Center`, `XCenter` → `CenterWithin`. The corner values are gone. Affects `popover.mdx`, `tooltip.mdx`, `dropdown-menu.mdx`, the sidebar pages and their API tables.
+- [ ] D7: `sa-toggle-group` `type="ToggleGroupType.Multiple"` → `multiple="true"`, and `type="ToggleGroupType.Single"` is dropped. `sa-data-grid-row-detail` `expand-mode` and the admin panel row details `ExpandMode` take `DataGridRowDetailExpandMode`. Affects `toggle-group.mdx`, `data-grid.mdx`, the admin panel index page docs and their API tables.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

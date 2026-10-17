@@ -9,9 +9,8 @@ namespace StellarAdmin.UI;
 ///     Renders a group of toggle items that lets the user select one item or several.
 /// </summary>
 /// <remarks>
-///     Place <c>&lt;sa-toggle-group-item&gt;</c> elements inside the group. Bind a single value
-///     with <see cref="ToggleGroupType.Single" />, or a collection with
-///     <see cref="ToggleGroupType.Multiple" />. The group works without JavaScript.
+///     Place <c>&lt;sa-toggle-group-item&gt;</c> elements inside the group. Bind a single value,
+///     or set <c>multiple</c> and bind a collection. The group works without JavaScript.
 /// </remarks>
 [HtmlTargetElement("sa-toggle-group")]
 public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassNames>
@@ -27,14 +26,14 @@ public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupCl
         : base(htmlGenerator) { }
 
     /// <summary>
-    ///     Gets or sets how many items can be selected.
+    ///     Gets or sets a value that indicates whether more than one item can be selected.
     /// </summary>
     /// <value>
-    ///     One of the enumeration values that specifies how many items can be selected. The
-    ///     default is <see cref="ToggleGroupType.Single" />.
+    ///     <see langword="true" /> if any number of items can be selected; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
     /// </value>
-    [HtmlAttributeName("type")]
-    public ToggleGroupType? Type { get; set; }
+    [HtmlAttributeName("multiple")]
+    public bool? Multiple { get; set; }
 
     /// <summary>
     ///     Gets or sets the visual style of the items.
@@ -85,7 +84,6 @@ public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupCl
     {
         // The group is the single authority for the items' configuration: it resolves every
         // effective value here and publishes them as a context the children consume.
-        var effectiveType = Type ?? ToggleGroupType.Single;
         var effectiveVariant = Variant ?? ToggleVariant.Default;
         var effectiveSize = Size ?? ToggleSize.Default;
         var effectiveSpacing = (Spacing ?? ToggleGroupSpacing.Default).GetSpacingUnits();
@@ -95,7 +93,7 @@ public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupCl
         // (radios -> one scalar, checkboxes -> a collection).
         var fieldName =
             For == null ? Name : ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name);
-        var multiple = effectiveType == ToggleGroupType.Multiple;
+        var multiple = Multiple ?? false;
         var valueType =
             For == null ? null
             : multiple ? ChoiceGroupValue.ElementType(For.ModelExplorer.ModelType)
@@ -113,7 +111,7 @@ public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupCl
         var groupContext = new ToggleGroupContext
         {
             ClassNames = ClassNames,
-            Type = effectiveType,
+            Multiple = multiple,
             Variant = effectiveVariant,
             Size = effectiveSize,
             Spacing = effectiveSpacing,

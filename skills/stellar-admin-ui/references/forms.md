@@ -142,7 +142,7 @@ if (!ModelState.IsValid) return Page();
 | Dropdown | `<sa-select asp-for="..." asp-items="...">` (supports inline `<option>` / `<optgroup>`) |
 | Multi-line | `<sa-textarea asp-for="...">` |
 | On/off toggle | `<sa-switch asp-for="...">` |
-| Pressed-state button | `<sa-toggle asp-for="...">`, `<sa-toggle-group type="ToggleGroupType.Single">` |
+| Pressed-state button | `<sa-toggle asp-for="...">`, `<sa-toggle-group>` |
 | Numeric range | `<sa-slider asp-for="..." min="0" max="100">` |
 | One-time code | `<sa-input-otp asp-for="..." groups="3,3">` |
 | Input with an addon | `<sa-input-group>` with `<sa-input-group-input>` + `<sa-input-group-addon>` |

@@ -137,7 +137,7 @@ public partial class DataGridTagHelperTests
         var rowDetail = new DataGridRowDetailTagHelper
         {
             RowClick = true,
-            ExpandMode = TableRowDetailExpandMode.Single,
+            ExpandMode = DataGridRowDetailExpandMode.Single,
             Emphasis = TableRowDetailEmphasis.Rail,
             Divider = TableRowDetailDivider.None,
             Inset = TableRowDetailInset.Bleed,

@@ -9,7 +9,7 @@ internal sealed class ToggleGroupContext
 {
     public ToggleGroupClassNames? ClassNames { get; init; }
 
-    public required ToggleGroupType Type { get; init; }
+    public required bool Multiple { get; init; }
 
     public required ToggleVariant Variant { get; init; }
 
