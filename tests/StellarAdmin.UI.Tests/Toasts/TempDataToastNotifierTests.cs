@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.UI.Toasts;
 
 namespace StellarAdmin.UI.Tests.Toasts;
 

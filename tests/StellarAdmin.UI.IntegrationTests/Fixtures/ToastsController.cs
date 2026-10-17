@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using StellarAdmin.UI.Toasts;
 
 namespace StellarAdmin.UI.IntegrationTests.Fixtures;
 

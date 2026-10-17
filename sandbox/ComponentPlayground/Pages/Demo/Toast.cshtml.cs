@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using StellarAdmin.UI;
+using StellarAdmin.UI.Toasts;
 
 namespace ComponentPlayground.Pages.Demo;
 

@@ -1,4 +1,4 @@
-namespace StellarAdmin.UI;
+namespace StellarAdmin.UI.Toasts;
 
 /// <summary>
 ///     Shortcuts for adding toasts of each type.

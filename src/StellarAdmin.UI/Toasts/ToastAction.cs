@@ -1,4 +1,4 @@
-namespace StellarAdmin.UI;
+namespace StellarAdmin.UI.Toasts;
 
 /// <summary>
 ///     An action button shown on a toast.

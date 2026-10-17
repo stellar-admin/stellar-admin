@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace StellarAdmin.UI;
+namespace StellarAdmin.UI.Toasts;
 
 internal sealed class TempDataToastNotifier(
     ITempDataDictionaryFactory tempDataFactory,

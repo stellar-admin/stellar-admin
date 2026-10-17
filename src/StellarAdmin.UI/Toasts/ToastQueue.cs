@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace StellarAdmin.UI;
+namespace StellarAdmin.UI.Toasts;
 
 // Stores queued toasts in TempData as one JSON string, because TempData only holds simple types.
 // The same camelCase JSON is sent in the SA-Toasts header and read by the client. The default

@@ -1,4 +1,4 @@
-namespace StellarAdmin.UI;
+namespace StellarAdmin.UI.Toasts;
 
 /// <summary>
 ///     Queues toasts to show on the next page or in the current AJAX response.

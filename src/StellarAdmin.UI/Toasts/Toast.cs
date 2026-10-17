@@ -1,4 +1,4 @@
-namespace StellarAdmin.UI;
+namespace StellarAdmin.UI.Toasts;
 
 /// <summary>
 ///     A notification shown briefly in the toaster.

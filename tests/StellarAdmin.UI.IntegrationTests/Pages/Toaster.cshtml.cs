@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using StellarAdmin.UI.Toasts;
 
 namespace StellarAdmin.UI.IntegrationTests.Pages;
 

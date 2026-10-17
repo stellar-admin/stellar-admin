@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace StellarAdmin.UI;
+namespace StellarAdmin.UI.Toasts;
 
 // Decides where queued toasts go. This runs before the result executes, so the response has not
 // started and MVC has not yet saved TempData:

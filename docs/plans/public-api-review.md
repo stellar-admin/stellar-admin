@@ -48,7 +48,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J13 | Rename `InputGroupAddOn*` to `InputGroupAddon*` | Done (2026-10-17) |
 | J14 | Give components their own enums where they borrow another's, and fix the Sidebar enum members | Done (2026-10-17) |
 | J15 | Use logical `Start`/`End` names | Done (2026-10-17) |
-| J16 | Move the toast API to `StellarAdmin.UI.Toasts` | |
+| J16 | Move the toast API to `StellarAdmin.UI.Toasts` | Done (2026-10-17) |
 | J17 | Use `min`/`max` on Progress | |
 | J18 | Use `active` instead of `is-active`, and `Disabled` instead of `IsDisabled` | |
 | J19 | Use one naming scheme for DataGrid sort and paging | |
@@ -282,6 +282,12 @@ Done (2026-10-17):
 ### J16. Toast namespace
 
 `Toast`, `ToastAction`, `ToastType`, `IToastNotifier` and the extensions are used from controllers, not views.
+
+Done (2026-10-17):
+
+- All 8 files under `Toasts/`, including the internal notifier, queue and result filter, are now in `StellarAdmin.UI.Toasts`.
+- Callers add `using StellarAdmin.UI.Toasts;`. The toaster skill reference says so.
+- Verified with the full test run (1385 passed) and a skills drift check.
 
 ### J17. Progress bounds
 
