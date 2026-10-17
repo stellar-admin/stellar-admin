@@ -14,6 +14,16 @@ For TUnit, follow the [official console-project setup](https://tunit.dev/docs/ge
 
 `global.json` selects Microsoft.Testing.Platform for the .NET 10 `dotnet test` runner, following the [official runner configuration](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test#mtp-mode-of-dotnet-test). TUnit supplies the test-project metadata used for solution discovery. New TUnit projects added to `StellarAdmin.slnx` are automatically included by both workflows. `--minimum-expected-tests 1` rejects a discovered test application that runs no tests; do not suppress that exit code. Unit and integration test projects use the same runner and discovery command; no legacy test executables or individual test-project workflow steps remain.
 
+## Public API changes
+
+The three packaged projects use PublicApiAnalyzers. Each lists its public API in `PublicAPI.Shipped.txt` (what a released package contains) and `PublicAPI.Unshipped.txt` (changes since then). Adding, removing or changing a public member fails the build with RS0016 or RS0017 until the list is updated. Update it from the repository root, with the project whose API changed:
+
+```bash
+AllowMissingPrunePackageData=true dotnet format analyzers src/StellarAdmin/StellarAdmin.csproj --diagnostics RS0016 RS0017 --severity error
+```
+
+Review the diff of `PublicAPI.Unshipped.txt` like code: it is the public API change. When a package is released, move the Unshipped entries to Shipped. The packaged projects also report CS1591 for a public member without an XML comment.
+
 ## File encoding
 
 Preserve each existing file’s encoding, UTF-8 BOM, and line endings when editing it. Do not strip or add a BOM as a side effect of reading and rewriting text; this can conflict with the encoding already selected in the user’s editor.

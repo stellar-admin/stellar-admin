@@ -1,0 +1,1634 @@
+#nullable enable
+abstract StellarAdmin.Resources.Displays.FieldDisplay.TemplateName.get -> string!
+abstract StellarAdmin.Resources.Displays.FieldDisplayHandler<TDisplay>.PrepareAsync(StellarAdmin.Resources.Displays.FieldDisplayContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+abstract StellarAdmin.Resources.Editors.FieldEditor.TemplateName.get -> string!
+abstract StellarAdmin.Resources.Editors.FieldEditorHandler<TEditor>.PrepareAsync(StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+abstract StellarAdmin.Resources.Editors.ItemMedia.<Clone>$() -> StellarAdmin.Resources.Editors.ItemMedia!
+abstract StellarAdmin.Resources.Editors.LookupItems.FindAsync(System.IServiceProvider! services, StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!
+abstract StellarAdmin.Resources.Editors.LookupItems.HasDescription.get -> bool
+abstract StellarAdmin.Resources.Editors.LookupItems.MediaType.get -> System.Type?
+abstract StellarAdmin.Resources.Editors.LookupItems.SearchAsync(System.IServiceProvider! services, StellarAdmin.Resources.Editors.LookupQuery! query, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.Editors.LookupResults!>!
+abstract StellarAdmin.Resources.Options.ResourceCreateOptions.ModelType.get -> System.Type!
+abstract StellarAdmin.Resources.Options.ResourceEditOptions.ModelType.get -> System.Type!
+abstract StellarAdmin.Resources.Options.ResourceViewOptions.ModelType.get -> System.Type!
+abstract StellarAdmin.Resources.ResourceRowDetailLoader.LoadAsync(System.IServiceProvider! services, string! key, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+const StellarAdmin.Areas.StellarAdmin.TempDataKeys.DeleteErrors = "StellarAdminDeleteErrors" -> string!
+const StellarAdmin.Areas.StellarAdmin.TempDataKeys.ErrorMessage = "StellarAdminErrorMessage" -> string!
+const StellarAdmin.Areas.StellarAdmin.ViewDataKeys.FieldDisplay = "StellarAdminFieldDisplay" -> string!
+const StellarAdmin.Areas.StellarAdmin.ViewDataKeys.FieldDisplayData = "StellarAdminFieldDisplayData" -> string!
+const StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.BindingPrefix = "Entity" -> string!
+const StellarAdmin.StellarAdminLayouts.Default = "/Areas/StellarAdmin/Views/Shared/_Layout.cshtml" -> string!
+override sealed StellarAdmin.Resources.Editors.ItemMedia.Avatar.Equals(StellarAdmin.Resources.Editors.ItemMedia? other) -> bool
+override sealed StellarAdmin.Resources.Editors.ItemMedia.Code.Equals(StellarAdmin.Resources.Editors.ItemMedia? other) -> bool
+override sealed StellarAdmin.Resources.Editors.ItemMedia.Icon.Equals(StellarAdmin.Resources.Editors.ItemMedia? other) -> bool
+override sealed StellarAdmin.Resources.Editors.ItemMedia.Image.Equals(StellarAdmin.Resources.Editors.ItemMedia? other) -> bool
+override StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Equals(object? obj) -> bool
+override StellarAdmin.Areas.StellarAdmin.FormFieldProperties.GetHashCode() -> int
+override StellarAdmin.Areas.StellarAdmin.FormFieldProperties.ToString() -> string!
+override StellarAdmin.Resources.Displays.BadgeDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.BooleanDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.DateDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.EmailDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.EnumDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.ImageDisplay.RendersEmptyValue.get -> bool
+override StellarAdmin.Resources.Displays.ImageDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.LinkDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.NumberDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.PhoneDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.TextDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.CheckboxEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.CheckboxGroupEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.ChoiceEditor.ClassNames.get -> StellarAdmin.Resources.Editors.ChoiceEditorClassNames!
+override StellarAdmin.Resources.Editors.ChoiceEditorHandler.PrepareAsync(StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+override StellarAdmin.Resources.Editors.ChoiceGroup.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.ChoiceGroup.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.ChoiceGroup.ToString() -> string!
+override StellarAdmin.Resources.Editors.ChoiceItem.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.ChoiceItem.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.ChoiceItem.ToString() -> string!
+override StellarAdmin.Resources.Editors.DateInputEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.DateTimeInputEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.ImageEditor.ClassNames.get -> StellarAdmin.Resources.Editors.ImageEditorClassNames!
+override StellarAdmin.Resources.Editors.ImageEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.ImageEditorHandler.PrepareAsync(StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+override StellarAdmin.Resources.Editors.ItemMedia.Avatar.<Clone>$() -> StellarAdmin.Resources.Editors.ItemMedia.Avatar!
+override StellarAdmin.Resources.Editors.ItemMedia.Avatar.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.ItemMedia.Avatar.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.ItemMedia.Avatar.ToString() -> string!
+override StellarAdmin.Resources.Editors.ItemMedia.Code.<Clone>$() -> StellarAdmin.Resources.Editors.ItemMedia.Code!
+override StellarAdmin.Resources.Editors.ItemMedia.Code.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.ItemMedia.Code.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.ItemMedia.Code.ToString() -> string!
+override StellarAdmin.Resources.Editors.ItemMedia.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.ItemMedia.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.ItemMedia.Icon.<Clone>$() -> StellarAdmin.Resources.Editors.ItemMedia.Icon!
+override StellarAdmin.Resources.Editors.ItemMedia.Icon.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.ItemMedia.Icon.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.ItemMedia.Icon.ToString() -> string!
+override StellarAdmin.Resources.Editors.ItemMedia.Image.<Clone>$() -> StellarAdmin.Resources.Editors.ItemMedia.Image!
+override StellarAdmin.Resources.Editors.ItemMedia.Image.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.ItemMedia.Image.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.ItemMedia.Image.ToString() -> string!
+override StellarAdmin.Resources.Editors.ItemMedia.ToString() -> string!
+override StellarAdmin.Resources.Editors.LookupPage<TEntity>.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.LookupPage<TEntity>.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.LookupPage<TEntity>.ToString() -> string!
+override StellarAdmin.Resources.Editors.LookupQuery.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.LookupQuery.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.LookupQuery.ToString() -> string!
+override StellarAdmin.Resources.Editors.LookupResults.Equals(object? obj) -> bool
+override StellarAdmin.Resources.Editors.LookupResults.GetHashCode() -> int
+override StellarAdmin.Resources.Editors.LookupResults.ToString() -> string!
+override StellarAdmin.Resources.Editors.LookupSheetEditor.ClassNames.get -> StellarAdmin.Resources.Editors.LookupSheetEditorClassNames!
+override StellarAdmin.Resources.Editors.LookupSheetEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.LookupSheetEditorHandler.PrepareAsync(StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+override StellarAdmin.Resources.Editors.MultiLookupSheetEditor.ClassNames.get -> StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames!
+override StellarAdmin.Resources.Editors.MultiLookupSheetEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.MultiLookupSheetEditorHandler.PrepareAsync(StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+override StellarAdmin.Resources.Editors.OneTimeCodeEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.RadioGroupEditor.ClassNames.get -> StellarAdmin.Resources.Editors.RadioGroupEditorClassNames!
+override StellarAdmin.Resources.Editors.RadioGroupEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.SegmentedControlEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.SelectEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.SliderEditor.ClassNames.get -> StellarAdmin.Resources.Editors.SliderEditorClassNames!
+override StellarAdmin.Resources.Editors.SliderEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.TextareaEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.TextInputEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.TimeInputEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.ToggleEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.ToggleGroupEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Options.ResourceCreateOptions<TModel>.ModelType.get -> System.Type!
+override StellarAdmin.Resources.Options.ResourceEditOptions<TModel>.ModelType.get -> System.Type!
+override StellarAdmin.Resources.Options.ResourceViewOptions<TModel>.ModelType.get -> System.Type!
+override StellarAdmin.Resources.ResourceListRequest.Equals(object? obj) -> bool
+override StellarAdmin.Resources.ResourceListRequest.GetHashCode() -> int
+override StellarAdmin.Resources.ResourceListRequest.ToString() -> string!
+override StellarAdmin.Resources.ResourceListResult<TResource>.Equals(object? obj) -> bool
+override StellarAdmin.Resources.ResourceListResult<TResource>.GetHashCode() -> int
+override StellarAdmin.Resources.ResourceListResult<TResource>.ToString() -> string!
+override StellarAdmin.Resources.ResourcePaging.Equals(object? obj) -> bool
+override StellarAdmin.Resources.ResourcePaging.GetHashCode() -> int
+override StellarAdmin.Resources.ResourcePaging.ToString() -> string!
+override StellarAdmin.Resources.ResourceSort.Equals(object? obj) -> bool
+override StellarAdmin.Resources.ResourceSort.GetHashCode() -> int
+override StellarAdmin.Resources.ResourceSort.ToString() -> string!
+override StellarAdmin.Resources.ResourceValidationError.Equals(object? obj) -> bool
+override StellarAdmin.Resources.ResourceValidationError.GetHashCode() -> int
+override StellarAdmin.Resources.ResourceValidationError.ToString() -> string!
+static StellarAdmin.Areas.StellarAdmin.FormFieldProperties.operator !=(StellarAdmin.Areas.StellarAdmin.FormFieldProperties? left, StellarAdmin.Areas.StellarAdmin.FormFieldProperties? right) -> bool
+static StellarAdmin.Areas.StellarAdmin.FormFieldProperties.operator ==(StellarAdmin.Areas.StellarAdmin.FormFieldProperties? left, StellarAdmin.Areas.StellarAdmin.FormFieldProperties? right) -> bool
+static StellarAdmin.Areas.StellarAdmin.GridEditorHtmlHelperExtensions.GridEditorAsync(this Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper! html, StellarAdmin.Resources.Options.FormFieldOptions! field, object! model) -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Html.IHtmlContent!>!
+static StellarAdmin.Resources.Editors.ChoiceGroup.operator !=(StellarAdmin.Resources.Editors.ChoiceGroup? left, StellarAdmin.Resources.Editors.ChoiceGroup? right) -> bool
+static StellarAdmin.Resources.Editors.ChoiceGroup.operator ==(StellarAdmin.Resources.Editors.ChoiceGroup? left, StellarAdmin.Resources.Editors.ChoiceGroup? right) -> bool
+static StellarAdmin.Resources.Editors.ChoiceItem.operator !=(StellarAdmin.Resources.Editors.ChoiceItem? left, StellarAdmin.Resources.Editors.ChoiceItem? right) -> bool
+static StellarAdmin.Resources.Editors.ChoiceItem.operator ==(StellarAdmin.Resources.Editors.ChoiceItem? left, StellarAdmin.Resources.Editors.ChoiceItem? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.Avatar.operator !=(StellarAdmin.Resources.Editors.ItemMedia.Avatar? left, StellarAdmin.Resources.Editors.ItemMedia.Avatar? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.Avatar.operator ==(StellarAdmin.Resources.Editors.ItemMedia.Avatar? left, StellarAdmin.Resources.Editors.ItemMedia.Avatar? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.Code.operator !=(StellarAdmin.Resources.Editors.ItemMedia.Code? left, StellarAdmin.Resources.Editors.ItemMedia.Code? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.Code.operator ==(StellarAdmin.Resources.Editors.ItemMedia.Code? left, StellarAdmin.Resources.Editors.ItemMedia.Code? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.Icon.operator !=(StellarAdmin.Resources.Editors.ItemMedia.Icon? left, StellarAdmin.Resources.Editors.ItemMedia.Icon? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.Icon.operator ==(StellarAdmin.Resources.Editors.ItemMedia.Icon? left, StellarAdmin.Resources.Editors.ItemMedia.Icon? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.Image.operator !=(StellarAdmin.Resources.Editors.ItemMedia.Image? left, StellarAdmin.Resources.Editors.ItemMedia.Image? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.Image.operator ==(StellarAdmin.Resources.Editors.ItemMedia.Image? left, StellarAdmin.Resources.Editors.ItemMedia.Image? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.operator !=(StellarAdmin.Resources.Editors.ItemMedia? left, StellarAdmin.Resources.Editors.ItemMedia? right) -> bool
+static StellarAdmin.Resources.Editors.ItemMedia.operator ==(StellarAdmin.Resources.Editors.ItemMedia? left, StellarAdmin.Resources.Editors.ItemMedia? right) -> bool
+static StellarAdmin.Resources.Editors.LookupPage<TEntity>.operator !=(StellarAdmin.Resources.Editors.LookupPage<TEntity>? left, StellarAdmin.Resources.Editors.LookupPage<TEntity>? right) -> bool
+static StellarAdmin.Resources.Editors.LookupPage<TEntity>.operator ==(StellarAdmin.Resources.Editors.LookupPage<TEntity>? left, StellarAdmin.Resources.Editors.LookupPage<TEntity>? right) -> bool
+static StellarAdmin.Resources.Editors.LookupQuery.operator !=(StellarAdmin.Resources.Editors.LookupQuery? left, StellarAdmin.Resources.Editors.LookupQuery? right) -> bool
+static StellarAdmin.Resources.Editors.LookupQuery.operator ==(StellarAdmin.Resources.Editors.LookupQuery? left, StellarAdmin.Resources.Editors.LookupQuery? right) -> bool
+static StellarAdmin.Resources.Editors.LookupResults.operator !=(StellarAdmin.Resources.Editors.LookupResults? left, StellarAdmin.Resources.Editors.LookupResults? right) -> bool
+static StellarAdmin.Resources.Editors.LookupResults.operator ==(StellarAdmin.Resources.Editors.LookupResults? left, StellarAdmin.Resources.Editors.LookupResults? right) -> bool
+static StellarAdmin.Resources.ResourceListRequest.operator !=(StellarAdmin.Resources.ResourceListRequest? left, StellarAdmin.Resources.ResourceListRequest? right) -> bool
+static StellarAdmin.Resources.ResourceListRequest.operator ==(StellarAdmin.Resources.ResourceListRequest? left, StellarAdmin.Resources.ResourceListRequest? right) -> bool
+static StellarAdmin.Resources.ResourceListResult<TResource>.operator !=(StellarAdmin.Resources.ResourceListResult<TResource>? left, StellarAdmin.Resources.ResourceListResult<TResource>? right) -> bool
+static StellarAdmin.Resources.ResourceListResult<TResource>.operator ==(StellarAdmin.Resources.ResourceListResult<TResource>? left, StellarAdmin.Resources.ResourceListResult<TResource>? right) -> bool
+static StellarAdmin.Resources.ResourceOperationResult.NotFound() -> StellarAdmin.Resources.ResourceOperationResult!
+static StellarAdmin.Resources.ResourceOperationResult.Success() -> StellarAdmin.Resources.ResourceOperationResult!
+static StellarAdmin.Resources.ResourceOperationResult.Success(string! key) -> StellarAdmin.Resources.ResourceOperationResult!
+static StellarAdmin.Resources.ResourceOperationResult.ValidationFailed(string? fieldName, string! message) -> StellarAdmin.Resources.ResourceOperationResult!
+static StellarAdmin.Resources.ResourceOperationResult.ValidationFailed(System.Collections.Generic.IEnumerable<StellarAdmin.Resources.ResourceValidationError!>! errors) -> StellarAdmin.Resources.ResourceOperationResult!
+static StellarAdmin.Resources.ResourcePaging.operator !=(StellarAdmin.Resources.ResourcePaging? left, StellarAdmin.Resources.ResourcePaging? right) -> bool
+static StellarAdmin.Resources.ResourcePaging.operator ==(StellarAdmin.Resources.ResourcePaging? left, StellarAdmin.Resources.ResourcePaging? right) -> bool
+static StellarAdmin.Resources.ResourceSort.operator !=(StellarAdmin.Resources.ResourceSort? left, StellarAdmin.Resources.ResourceSort? right) -> bool
+static StellarAdmin.Resources.ResourceSort.operator ==(StellarAdmin.Resources.ResourceSort? left, StellarAdmin.Resources.ResourceSort? right) -> bool
+static StellarAdmin.Resources.ResourceValidationError.operator !=(StellarAdmin.Resources.ResourceValidationError? left, StellarAdmin.Resources.ResourceValidationError? right) -> bool
+static StellarAdmin.Resources.ResourceValidationError.operator ==(StellarAdmin.Resources.ResourceValidationError? left, StellarAdmin.Resources.ResourceValidationError? right) -> bool
+static StellarAdmin.Sidebar.BrandingLogo.Icon(string! name) -> StellarAdmin.Sidebar.IconBrandingLogo!
+static StellarAdmin.Sidebar.BrandingLogo.Image(string! path) -> StellarAdmin.Sidebar.ImageBrandingLogo!
+static StellarAdmin.Sidebar.BrandingLogo.Image(string! path, string! darkPath) -> StellarAdmin.Sidebar.ImageBrandingLogo!
+static StellarAdmin.Sidebar.BrandingLogo.Wordmark(string! path) -> StellarAdmin.Sidebar.WordmarkBrandingLogo!
+static StellarAdmin.Sidebar.BrandingLogo.Wordmark(string! path, string! darkPath) -> StellarAdmin.Sidebar.WordmarkBrandingLogo!
+static StellarAdmin.Sidebar.SidebarLinkTarget.Action(string! action, string! controller) -> StellarAdmin.Sidebar.SidebarLinkTarget!
+static StellarAdmin.Sidebar.SidebarLinkTarget.Action(string! action, string! controller, string! area) -> StellarAdmin.Sidebar.SidebarLinkTarget!
+static StellarAdmin.Sidebar.SidebarLinkTarget.Page(string! page) -> StellarAdmin.Sidebar.SidebarLinkTarget!
+static StellarAdmin.Sidebar.SidebarLinkTarget.Page(string! page, string! area) -> StellarAdmin.Sidebar.SidebarLinkTarget!
+static StellarAdmin.Sidebar.SidebarLinkTarget.Url(string! url) -> StellarAdmin.Sidebar.SidebarLinkTarget!
+static StellarAdmin.Sidebar.UserMenuItem.Action(string! text, string! action, string! controller) -> StellarAdmin.Sidebar.ActionUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Action(string! text, string! action, string! controller, string! area) -> StellarAdmin.Sidebar.ActionUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Action(string! text, string! action, string! controller, string! area, System.Action<StellarAdmin.Sidebar.UserMenuItemBuilder!>! configure) -> StellarAdmin.Sidebar.ActionUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Action(string! text, string! action, string! controller, System.Action<StellarAdmin.Sidebar.UserMenuItemBuilder!>! configure) -> StellarAdmin.Sidebar.ActionUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Page(string! text, string! page) -> StellarAdmin.Sidebar.PageUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Page(string! text, string! page, string! area) -> StellarAdmin.Sidebar.PageUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Page(string! text, string! page, string! area, System.Action<StellarAdmin.Sidebar.UserMenuItemBuilder!>! configure) -> StellarAdmin.Sidebar.PageUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Page(string! text, string! page, System.Action<StellarAdmin.Sidebar.UserMenuItemBuilder!>! configure) -> StellarAdmin.Sidebar.PageUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Separator() -> StellarAdmin.Sidebar.SeparatorUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Url(string! text, string! url) -> StellarAdmin.Sidebar.UrlUserMenuItem!
+static StellarAdmin.Sidebar.UserMenuItem.Url(string! text, string! url, System.Action<StellarAdmin.Sidebar.UserMenuItemBuilder!>! configure) -> StellarAdmin.Sidebar.UrlUserMenuItem!
+static StellarAdmin.StellarAdminBuilderExtensions.AddResource<TResource>(this StellarAdmin.StellarAdminBuilder! builder) -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
+static StellarAdmin.StellarAdminBuilderExtensions.AddResource<TResource>(this StellarAdmin.StellarAdminBuilder! builder, string! slug) -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
+static StellarAdmin.StellarAdminBuilderExtensions.AddResource<TResource>(this StellarAdmin.StellarAdminBuilder! builder, string! slug, System.Action<StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!>! configure) -> StellarAdmin.StellarAdminBuilder!
+static StellarAdmin.StellarAdminBuilderExtensions.AddResource<TResource>(this StellarAdmin.StellarAdminBuilder! builder, System.Action<StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!>! configure) -> StellarAdmin.StellarAdminBuilder!
+static StellarAdmin.StellarAdminBuilderExtensions.ConfigureResourceLabels(this StellarAdmin.StellarAdminBuilder! builder, System.Action<StellarAdmin.Resources.Builders.ResourceLabelsBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+static StellarAdmin.StellarAdminEndpointRouteBuilderExtensions.MapStellarAdmin(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! endpoints) -> Microsoft.AspNetCore.Builder.ControllerActionEndpointConventionBuilder!
+static StellarAdmin.StellarAdminEndpointRouteBuilderExtensions.MapStellarAdmin(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! endpoints, Microsoft.AspNetCore.Http.PathString stellarAdminPath) -> Microsoft.AspNetCore.Builder.ControllerActionEndpointConventionBuilder!
+static StellarAdmin.StellarAdminServiceCollectionExtensions.AddStellarAdmin(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> StellarAdmin.StellarAdminBuilder!
+static StellarAdmin.StellarAdminServiceCollectionExtensions.AddStellarAdmin(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<StellarAdmin.StellarAdminBuilder!>! configure) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+StellarAdmin.Areas.StellarAdmin.FieldDisplayView<TDisplay>
+StellarAdmin.Areas.StellarAdmin.FieldDisplayView<TDisplay>.Display.get -> TDisplay!
+StellarAdmin.Areas.StellarAdmin.FieldDisplayView<TDisplay>.DisplayData.get -> object?
+StellarAdmin.Areas.StellarAdmin.FieldDisplayView<TDisplay>.FieldDisplayView() -> void
+StellarAdmin.Areas.StellarAdmin.FieldDisplayView<TDisplay>.FormatValue(string? format = null) -> string!
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.CellErrorId.get -> string?
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.Description.get -> string?
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.Editor.get -> TEditor!
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.EditorData.get -> object?
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.Field.get -> StellarAdmin.Areas.StellarAdmin.FormFieldProperties?
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.FieldEditorView() -> void
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.IsReadOnly.get -> bool
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.Title.get -> string?
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.<Clone>$() -> StellarAdmin.Areas.StellarAdmin.FormFieldProperties!
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Description.get -> string?
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Description.init -> void
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Editor.get -> StellarAdmin.Resources.Editors.FieldEditor?
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Editor.init -> void
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.EditorData.get -> object?
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.EditorData.init -> void
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Equals(StellarAdmin.Areas.StellarAdmin.FormFieldProperties? other) -> bool
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.FieldName.get -> string?
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.FieldName.init -> void
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.FormFieldProperties() -> void
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsReadOnly.get -> bool
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsReadOnly.init -> void
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Title.get -> string?
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Title.init -> void
+StellarAdmin.Areas.StellarAdmin.FormFieldsBaseView<TModel>
+StellarAdmin.Areas.StellarAdmin.FormFieldsBaseView<TModel>.Fields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormFieldOptions!>!
+StellarAdmin.Areas.StellarAdmin.FormFieldsBaseView<TModel>.FormFieldsBaseView() -> void
+StellarAdmin.Areas.StellarAdmin.FormFieldsBaseView<TModel>.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
+StellarAdmin.Areas.StellarAdmin.GridEditorHtmlHelperExtensions
+StellarAdmin.Areas.StellarAdmin.TempDataKeys
+StellarAdmin.Areas.StellarAdmin.ViewComponents.SidebarViewComponent
+StellarAdmin.Areas.StellarAdmin.ViewComponents.SidebarViewComponent.InvokeAsync() -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IViewComponentResult!>!
+StellarAdmin.Areas.StellarAdmin.ViewComponents.SidebarViewComponent.SidebarViewComponent(System.Collections.Generic.IEnumerable<StellarAdmin.Sidebar.ISidebarItemsProvider!>! sidebarItemsProviders) -> void
+StellarAdmin.Areas.StellarAdmin.ViewDataKeys
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.CanCreate.get -> bool
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.CanEdit.get -> bool
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.CanView.get -> bool
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Columns.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.DataGridColumnOptions!>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.CreateLabel.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Delete.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.DeleteLabel.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.EditLabel.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.GetKey(object! resource) -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.InlineRows.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Items.get -> System.Collections.IEnumerable!
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Paging.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPagingViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Query.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery!
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.RowDetails.get -> StellarAdmin.Resources.Options.ResourceRowDetailsOptions?
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.RowsOnly.get -> bool
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Scopes.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexScopeViewModel!>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Search.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSearchViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Sort.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSortViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Title.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.ViewLabel.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel.CancelLabel.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel.ConfirmLabel.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel.EntityId.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel.Message.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel.Origin.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel.Title.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.Delete.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.DisplayData.get -> System.Collections.Generic.IReadOnlyDictionary<StellarAdmin.Resources.Options.FormDisplayFieldOptions!, object?>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.EditorData.get -> System.Collections.Generic.IReadOnlyDictionary<string!, object?>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.EditorTemplates.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string!>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.Entity.get -> object!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.Fields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormFieldOptions!>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.SectionLayout.get -> StellarAdmin.UI.FormSectionLayout?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.SubmitLabel.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.Subtitle.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.Title.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel.CancelLabel.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel.ConfirmLabel.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel.Message.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel.Title.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.CancelLabel.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.CancelLabel.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.Create.get -> StellarAdmin.Resources.Options.ResourceInlineCreateOptions?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.Create.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.CreateFields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormFieldOptions?>?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.CreateFields.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.Edit.get -> StellarAdmin.Resources.Options.ResourceInlineEditOptions?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.Edit.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.EditFields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormFieldOptions?>?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.EditFields.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.EditingKey.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.EditingKey.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.EditModel.get -> object?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.EditModel.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.KeyField.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.KeyField.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.NewItem.get -> object?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.NewItem.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.SaveLabel.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.SaveLabel.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.CanCreate.get -> bool
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.CanCreate.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.CanEdit.get -> bool
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.CanEdit.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.CanView.get -> bool
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.CanView.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Columns.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.DataGridColumnOptions!>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Columns.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.CreateLabel.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.CreateLabel.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Delete.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Delete.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.DeleteLabel.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.DeleteLabel.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.EditLabel.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.EditLabel.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.InlineRows.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.InlineRows.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Items.get -> System.Collections.Generic.IReadOnlyList<TResource>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Items.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.KeySelector.get -> System.Func<TResource, string!>?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.KeySelector.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Paging.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPagingViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Paging.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Query.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Query.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.RowDetails.get -> StellarAdmin.Resources.Options.ResourceRowDetailsOptions?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.RowDetails.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.RowsOnly.get -> bool
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.RowsOnly.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Scopes.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexScopeViewModel!>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Scopes.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Search.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSearchViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Search.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Sort.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSortViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Sort.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Title.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.Title.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.ViewLabel.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.ViewLabel.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPagingViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPagingViewModel.Page.get -> int
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPagingViewModel.PageSize.get -> int
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPagingViewModel.PageSizes.get -> System.Collections.Generic.IReadOnlyList<int>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPagingViewModel.TotalCount.get -> long
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPagingViewModel.TotalPages.get -> long
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.Page.get -> int?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.Page.set -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.PageSize.get -> int?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.PageSize.set -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.ResourceIndexQuery() -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.Scope.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.Scope.set -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.Search.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.Search.set -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.SortBy.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.SortBy.set -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.SortDirection.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexQuery.SortDirection.set -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexScopeViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexScopeViewModel.IsActive.get -> bool
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexScopeViewModel.QueryValue.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexScopeViewModel.Slug.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexScopeViewModel.Title.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSearchViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSearchViewModel.Placeholder.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSearchViewModel.Term.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSortViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSortViewModel.By.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexSortViewModel.Direction.get -> StellarAdmin.UI.DataGridSortDirection
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Delete.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.DisplayData.get -> System.Collections.Generic.IReadOnlyDictionary<StellarAdmin.Resources.Options.FormDisplayFieldOptions!, object?>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.EditLabel.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Entity.get -> object!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.EntityId.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Fields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormDisplayFieldOptions!>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.SectionLayout.get -> StellarAdmin.UI.FormSectionLayout?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Title.get -> string!
+StellarAdmin.FormPageTagHelper
+StellarAdmin.FormPageTagHelper.FormPageTagHelper(Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine! viewEngine) -> void
+StellarAdmin.FormPageTagHelper.Model.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel!
+StellarAdmin.FormPageTagHelper.Model.set -> void
+StellarAdmin.IndexPageTagHelper
+StellarAdmin.IndexPageTagHelper.IndexPageTagHelper(Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine! viewEngine) -> void
+StellarAdmin.IndexPageTagHelper.Model.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel!
+StellarAdmin.IndexPageTagHelper.Model.set -> void
+StellarAdmin.Resources.Builders.ColumnSpanBuilder
+StellarAdmin.Resources.Builders.ColumnSpanBuilder.Base(int span) -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
+StellarAdmin.Resources.Builders.ColumnSpanBuilder.BaseFull() -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
+StellarAdmin.Resources.Builders.ColumnSpanBuilder.Large(int span) -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
+StellarAdmin.Resources.Builders.ColumnSpanBuilder.LargeFull() -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
+StellarAdmin.Resources.Builders.ColumnSpanBuilder.Medium(int span) -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
+StellarAdmin.Resources.Builders.ColumnSpanBuilder.MediumFull() -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
+StellarAdmin.Resources.Builders.ColumnSpanBuilder.Small(int span) -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
+StellarAdmin.Resources.Builders.ColumnSpanBuilder.SmallFull() -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
+StellarAdmin.Resources.Builders.ColumnStartBuilder
+StellarAdmin.Resources.Builders.ColumnStartBuilder.Base(int start) -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
+StellarAdmin.Resources.Builders.ColumnStartBuilder.Large(int start) -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
+StellarAdmin.Resources.Builders.ColumnStartBuilder.LargeAuto() -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
+StellarAdmin.Resources.Builders.ColumnStartBuilder.Medium(int start) -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
+StellarAdmin.Resources.Builders.ColumnStartBuilder.MediumAuto() -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
+StellarAdmin.Resources.Builders.ColumnStartBuilder.Small(int start) -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
+StellarAdmin.Resources.Builders.ColumnStartBuilder.SmallAuto() -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
+StellarAdmin.Resources.Builders.GridColumnsBuilder
+StellarAdmin.Resources.Builders.GridColumnsBuilder.Base(int count) -> StellarAdmin.Resources.Builders.GridColumnsBuilder!
+StellarAdmin.Resources.Builders.GridColumnsBuilder.Large(int count) -> StellarAdmin.Resources.Builders.GridColumnsBuilder!
+StellarAdmin.Resources.Builders.GridColumnsBuilder.Medium(int count) -> StellarAdmin.Resources.Builders.GridColumnsBuilder!
+StellarAdmin.Resources.Builders.GridColumnsBuilder.Small(int count) -> StellarAdmin.Resources.Builders.GridColumnsBuilder!
+StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>
+StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>.UseAvatar(System.Func<TEntity, string?>! imageUrl) -> StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!
+StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>.UseCode(System.Func<TEntity, string?>! code) -> StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!
+StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>.UseDescription(System.Func<TEntity, string?>! description) -> StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!
+StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>.UseIcon(System.Func<TEntity, string?>! iconName) -> StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!
+StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>.UseImage(System.Func<TEntity, string?>! imageUrl) -> StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!
+StellarAdmin.Resources.Builders.LookupLabelsBuilder
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.AddLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.AllLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.ChangeLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.ChooseLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.ClearAllLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.ClearLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.CreateLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.DoneHint.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.DoneLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.ErrorDescription.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.ErrorTitle.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.LoadMoreLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.MinimumSearchLengthMessage.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.MoreText.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.NewHint.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.NoneText.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.NoResultsDescription.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.NoResultsTitle.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.NoSelectedTitle.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.RemoveLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.RetryLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.SearchLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.SelectedLabel.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.ToggleHint.set -> void
+StellarAdmin.Resources.Builders.LookupLabelsBuilder.ViewLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceBuilder<TResource>.Index(System.Action<StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceBuilder<TResource>.UseDataSource<TDataSource>() -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceBuilder<TResource>.UseKey<TKey>(System.Linq.Expressions.Expression<System.Func<TResource, TKey>!>! key) -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowCreate() -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowCreate(System.Action<StellarAdmin.Resources.Builders.ResourceCreateBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowCreate<TModel, THandler>() -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowCreate<TModel, THandler>(System.Action<StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowDelete() -> StellarAdmin.Resources.Builders.ResourceDeleteBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowDelete(System.Action<StellarAdmin.Resources.Builders.ResourceDeleteBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowEdit() -> StellarAdmin.Resources.Builders.ResourceEditBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowEdit(System.Action<StellarAdmin.Resources.Builders.ResourceEditBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowEdit<TModel, THandler>() -> StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowEdit<TModel, THandler>(System.Action<StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowView() -> StellarAdmin.Resources.Builders.ResourceViewBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowView(System.Action<StellarAdmin.Resources.Builders.ResourceViewBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowView<TModel, THandler>() -> StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.AllowView<TModel, THandler>(System.Action<StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.PluralLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.RequireAuthorization() -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.RequireAuthorization(Microsoft.AspNetCore.Authorization.AuthorizationPolicy! policy) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.RequireAuthorization(params Microsoft.AspNetCore.Authorization.IAuthorizeData![]! authorizeData) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.RequireAuthorization(params string![]! policyNames) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.RequireAuthorization(System.Action<Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!>! configurePolicy) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.ResourceBuilderBase(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.SidebarItem(System.Action<StellarAdmin.Resources.Builders.ResourceSidebarItemBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.SingularLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>.EditsField(string! fieldName) -> StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>.EditsField<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>.EmptyText.set -> void
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>.Sortable() -> StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>.Sortable<TSort>(System.Linq.Expressions.Expression<System.Func<TResource, TSort>!>! selector) -> StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>.UseBuiltInRendering() -> StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>.UseDisplay<TDisplay>() -> StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>.UseDisplay<TDisplay>(System.Action<TDisplay!>! configure) -> StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>.Clear() -> StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.Fields(System.Action<StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TModel>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.SectionLayout.set -> void
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.SubmitLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseFactory(System.Func<TModel>! factory) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseInlineRow() -> StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseInlineRow(System.Action<StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder
+StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder.SubmitLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceDeleteBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceDeleteBuilder<TResource>.CancelLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceDeleteBuilder<TResource>.ConfirmLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceDeleteBuilder<TResource>.Message.set -> void
+StellarAdmin.Resources.Builders.ResourceDeleteBuilder<TResource>.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceDeleteLabelsBuilder
+StellarAdmin.Resources.Builders.ResourceDeleteLabelsBuilder.CancelLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceDeleteLabelsBuilder.ConfirmLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceDeleteLabelsBuilder.Message.set -> void
+StellarAdmin.Resources.Builders.ResourceDeleteLabelsBuilder.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.Columns(int count) -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.Columns(System.Action<StellarAdmin.Resources.Builders.GridColumnsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.ColumnSpan(int span) -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.ColumnSpan(System.Action<StellarAdmin.Resources.Builders.ColumnSpanBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.ColumnSpanFull() -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.Description.set -> void
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.Layout.set -> void
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.Orientation.set -> void
+StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>.Variant.set -> void
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.ColumnSpan(int span) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.ColumnSpan(System.Action<StellarAdmin.Resources.Builders.ColumnSpanBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.ColumnSpanFull() -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.EmptyText.set -> void
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.Orientation.set -> void
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.UseBuiltInRendering() -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.UseDisplay<TDisplay>() -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder.UseDisplay<TDisplay>(System.Action<TDisplay!>! configure) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.Fields(System.Action<StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TModel>!>! configure) -> StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.SectionLayout.set -> void
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.SubmitLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.UseInlineRow() -> StellarAdmin.Resources.Builders.ResourceInlineEditBuilder!
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.UseInlineRow(System.Action<StellarAdmin.Resources.Builders.ResourceInlineEditBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder
+StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder.SubmitLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceFieldBuilder
+StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnSpan(int span) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnSpan(System.Action<StellarAdmin.Resources.Builders.ColumnSpanBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnSpanFull() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder.Description.set -> void
+StellarAdmin.Resources.Builders.ResourceFieldBuilder.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceFieldBuilder.UseEditor<TEditor>() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder.UseEditor<TEditor>(System.Action<TEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceFieldBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddDetails(string! title) -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddDetails(string! title, System.Action<StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddDisplayField<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddDisplayField<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddGroup() -> StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddGroup(System.Action<StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddSection(string! title) -> StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddSection(string! title, System.Action<StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Clear() -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Columns(int count) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Columns(System.Action<StellarAdmin.Resources.Builders.GridColumnsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>.ColumnSpan(int span) -> StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>.ColumnSpan(System.Action<StellarAdmin.Resources.Builders.ColumnSpanBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>.ColumnSpanFull() -> StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceGroupBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableScopes() -> StellarAdmin.Resources.Builders.ResourceScopesBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableScopes(System.Action<StellarAdmin.Resources.Builders.ResourceScopesBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableSearch() -> StellarAdmin.Resources.Builders.ResourceSearchBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableSearch(System.Action<StellarAdmin.Resources.Builders.ResourceSearchBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.CancelLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.Columns(System.Action<StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.CreatedMessage.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.CreateLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.CreateSearchBuilder(System.Func<StellarAdmin.Resources.Options.ResourceSearchOptions!>! createSearch) -> StellarAdmin.Resources.Builders.ResourceSearchBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.DefaultSortBy<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.DefaultSortByDescending<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.DeleteLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EditLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnablePaging() -> StellarAdmin.Resources.Builders.ResourcePagingBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnablePaging(System.Action<StellarAdmin.Resources.Builders.ResourcePagingBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails(string! partialName) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails(string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails(System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>!>! panels) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails(System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>!>! panels, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails<TModel, THandler>(string! partialName) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails<TModel, THandler>(string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.NotShownMessage.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.RegisterRowDetails(StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>! panels) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.RegisterRowDetails(string! partialName, StellarAdmin.Resources.ResourceRowDetailLoader? loader) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.ResourceIndexBuilderBase(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.SavedMessage.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.SaveLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.ViewLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.CancelLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.CreatedMessage.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.CreateLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.DeleteLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.EditLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.NotShownMessage.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.SavedMessage.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.SaveLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.SearchPlaceholder.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.ViewLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder
+StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder.AddButton.set -> void
+StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder.AfterSave.set -> void
+StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder.DimOtherRows.set -> void
+StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder.Position.set -> void
+StellarAdmin.Resources.Builders.ResourceInlineEditBuilder
+StellarAdmin.Resources.Builders.ResourceInlineEditBuilder.AfterSave.set -> void
+StellarAdmin.Resources.Builders.ResourceInlineEditBuilder.DimOtherRows.set -> void
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Create(System.Action<StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Delete(System.Action<StellarAdmin.Resources.Builders.ResourceDeleteLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Edit(System.Action<StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Index(System.Action<StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Lookup(System.Action<StellarAdmin.Resources.Builders.LookupLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Sheet(System.Action<StellarAdmin.Resources.Builders.ResourceSheetLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder.View(System.Action<StellarAdmin.Resources.Builders.ResourceViewLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
+StellarAdmin.Resources.Builders.ResourcePagingBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourcePagingBuilder<TResource>.PageSize.set -> void
+StellarAdmin.Resources.Builders.ResourcePagingBuilder<TResource>.PageSizes.set -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder.Name.set -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Add(string! title, string! partialName) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Add<TModel, THandler>(string! title, string! partialName) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.AddPanel(string! title, string! partialName, StellarAdmin.Resources.ResourceRowDetailLoader? loader) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.ResourceRowDetailPanelsBuilder(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>.Animate.set -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>.Divider.set -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>.Emphasis.set -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>.ExpandMode.set -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>.Inset.set -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>.RowClick.set -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>.Toggle.set -> void
+StellarAdmin.Resources.Builders.ResourceScopesBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceScopesBuilder<TResource>.Add(string! id, string! title) -> StellarAdmin.Resources.Builders.ResourceScopesBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceScopesBuilderBase<TResource>
+StellarAdmin.Resources.Builders.ResourceScopesBuilderBase<TResource>.AddScope(StellarAdmin.Resources.Options.ResourceScopeOptions! scope) -> void
+StellarAdmin.Resources.Builders.ResourceScopesBuilderBase<TResource>.DefaultScope.set -> void
+StellarAdmin.Resources.Builders.ResourceScopesBuilderBase<TResource>.ResourceScopesBuilderBase(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+StellarAdmin.Resources.Builders.ResourceSearchBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceSearchBuilder<TResource>.Placeholder.set -> void
+StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>.ColumnSpan(int span) -> StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>.ColumnSpan(System.Action<StellarAdmin.Resources.Builders.ColumnSpanBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>.ColumnSpanFull() -> StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>.Description.set -> void
+StellarAdmin.Resources.Builders.ResourceSectionBuilder<TResource>.Layout.set -> void
+StellarAdmin.Resources.Builders.ResourceSheetLabelsBuilder
+StellarAdmin.Resources.Builders.ResourceSheetLabelsBuilder.ErrorDescription.set -> void
+StellarAdmin.Resources.Builders.ResourceSheetLabelsBuilder.ErrorTitle.set -> void
+StellarAdmin.Resources.Builders.ResourceSheetLabelsBuilder.RetryLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceSheetLabelsBuilder.SaveErrorDescription.set -> void
+StellarAdmin.Resources.Builders.ResourceSidebarItemBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceSidebarItemBuilder<TResource>.Group.set -> void
+StellarAdmin.Resources.Builders.ResourceSidebarItemBuilder<TResource>.Icon.set -> void
+StellarAdmin.Resources.Builders.ResourceSidebarItemBuilder<TResource>.Label.set -> void
+StellarAdmin.Resources.Builders.ResourceSidebarItemBuilder<TResource>.Order.set -> void
+StellarAdmin.Resources.Builders.ResourceSidebarItemBuilder<TResource>.Visible.set -> void
+StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>
+StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>.Fields(System.Action<StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>.SectionLayout.set -> void
+StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TModel, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TModel, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.AddGroup() -> StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.AddGroup(System.Action<StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.AddSection(string! title) -> StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.AddSection(string! title, System.Action<StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.Clear() -> StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.Columns(int count) -> StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.Columns(System.Action<StellarAdmin.Resources.Builders.GridColumnsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>
+StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>.ColumnSpan(int span) -> StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>.ColumnSpan(System.Action<StellarAdmin.Resources.Builders.ColumnSpanBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>.ColumnSpanFull() -> StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewGroupBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewLabelsBuilder
+StellarAdmin.Resources.Builders.ResourceViewLabelsBuilder.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>
+StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.ColumnSpan(int span) -> StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.ColumnSpan(System.Action<StellarAdmin.Resources.Builders.ColumnSpanBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.ColumnSpanFull() -> StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.Description.set -> void
+StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.Layout.set -> void
+StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.Orientation.set -> void
+StellarAdmin.Resources.Displays.BadgeDisplay
+StellarAdmin.Resources.Displays.BadgeDisplay.BadgeDisplay() -> void
+StellarAdmin.Resources.Displays.BadgeDisplay.Variant.get -> StellarAdmin.UI.BadgeVariant
+StellarAdmin.Resources.Displays.BadgeDisplay.Variant.set -> void
+StellarAdmin.Resources.Displays.BooleanDisplay
+StellarAdmin.Resources.Displays.BooleanDisplay.Appearance.get -> StellarAdmin.Resources.Displays.BooleanDisplayAppearance
+StellarAdmin.Resources.Displays.BooleanDisplay.Appearance.set -> void
+StellarAdmin.Resources.Displays.BooleanDisplay.BooleanDisplay() -> void
+StellarAdmin.Resources.Displays.BooleanDisplay.FalseText.get -> string!
+StellarAdmin.Resources.Displays.BooleanDisplay.FalseText.set -> void
+StellarAdmin.Resources.Displays.BooleanDisplay.TrueText.get -> string!
+StellarAdmin.Resources.Displays.BooleanDisplay.TrueText.set -> void
+StellarAdmin.Resources.Displays.BooleanDisplayAppearance
+StellarAdmin.Resources.Displays.BooleanDisplayAppearance.Icon = 0 -> StellarAdmin.Resources.Displays.BooleanDisplayAppearance
+StellarAdmin.Resources.Displays.BooleanDisplayAppearance.IconAndText = 2 -> StellarAdmin.Resources.Displays.BooleanDisplayAppearance
+StellarAdmin.Resources.Displays.BooleanDisplayAppearance.Text = 1 -> StellarAdmin.Resources.Displays.BooleanDisplayAppearance
+StellarAdmin.Resources.Displays.DateDisplay
+StellarAdmin.Resources.Displays.DateDisplay.DateDisplay() -> void
+StellarAdmin.Resources.Displays.DateDisplay.Format.get -> string?
+StellarAdmin.Resources.Displays.DateDisplay.Format.set -> void
+StellarAdmin.Resources.Displays.EmailDisplay
+StellarAdmin.Resources.Displays.EmailDisplay.EmailDisplay() -> void
+StellarAdmin.Resources.Displays.EnumDisplay
+StellarAdmin.Resources.Displays.EnumDisplay.EnumDisplay() -> void
+StellarAdmin.Resources.Displays.FieldDisplay
+StellarAdmin.Resources.Displays.FieldDisplay.FieldDisplay() -> void
+StellarAdmin.Resources.Displays.FieldDisplayContext
+StellarAdmin.Resources.Displays.FieldDisplayContext.FieldDisplayContext(string! fieldName, object! model, object? value) -> void
+StellarAdmin.Resources.Displays.FieldDisplayContext.FieldName.get -> string!
+StellarAdmin.Resources.Displays.FieldDisplayContext.Model.get -> object!
+StellarAdmin.Resources.Displays.FieldDisplayContext.Value.get -> object?
+StellarAdmin.Resources.Displays.FieldDisplayHandler<TDisplay>
+StellarAdmin.Resources.Displays.FieldDisplayHandler<TDisplay>.Display.get -> TDisplay!
+StellarAdmin.Resources.Displays.FieldDisplayHandler<TDisplay>.FieldDisplayHandler(TDisplay! display) -> void
+StellarAdmin.Resources.Displays.IFieldDisplay
+StellarAdmin.Resources.Displays.IFieldDisplay.HandlerType.get -> System.Type!
+StellarAdmin.Resources.Displays.IFieldDisplay<THandler>
+StellarAdmin.Resources.Displays.IFieldDisplayHandler
+StellarAdmin.Resources.Displays.IFieldDisplayHandler.PrepareAsync(StellarAdmin.Resources.Displays.FieldDisplayContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+StellarAdmin.Resources.Displays.IFieldDisplayHandler<TDisplay>
+StellarAdmin.Resources.Displays.ImageDisplay
+StellarAdmin.Resources.Displays.ImageDisplay.AspectRatio.get -> StellarAdmin.UI.ImageAspectRatio?
+StellarAdmin.Resources.Displays.ImageDisplay.AspectRatio.set -> void
+StellarAdmin.Resources.Displays.ImageDisplay.Fit.get -> StellarAdmin.UI.ImageFit
+StellarAdmin.Resources.Displays.ImageDisplay.Fit.set -> void
+StellarAdmin.Resources.Displays.ImageDisplay.ImageDisplay() -> void
+StellarAdmin.Resources.Displays.ImageDisplay.Interaction.get -> StellarAdmin.Resources.Displays.ImageDisplayInteraction
+StellarAdmin.Resources.Displays.ImageDisplay.Interaction.set -> void
+StellarAdmin.Resources.Displays.ImageDisplay.ResolveUrl(System.Func<string!, string?>! resolve) -> void
+StellarAdmin.Resources.Displays.ImageDisplay.ResolveUrl(System.Func<string!, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<string?>!>! resolve) -> void
+StellarAdmin.Resources.Displays.ImageDisplay.Size.get -> StellarAdmin.Resources.Displays.ImageDisplaySize?
+StellarAdmin.Resources.Displays.ImageDisplay.Size.set -> void
+StellarAdmin.Resources.Displays.ImageDisplayInteraction
+StellarAdmin.Resources.Displays.ImageDisplayInteraction.Lightbox = 0 -> StellarAdmin.Resources.Displays.ImageDisplayInteraction
+StellarAdmin.Resources.Displays.ImageDisplayInteraction.None = 2 -> StellarAdmin.Resources.Displays.ImageDisplayInteraction
+StellarAdmin.Resources.Displays.ImageDisplayInteraction.Preview = 1 -> StellarAdmin.Resources.Displays.ImageDisplayInteraction
+StellarAdmin.Resources.Displays.ImageDisplaySize
+StellarAdmin.Resources.Displays.ImageDisplaySize.ExtraSmall = 0 -> StellarAdmin.Resources.Displays.ImageDisplaySize
+StellarAdmin.Resources.Displays.ImageDisplaySize.Large = 3 -> StellarAdmin.Resources.Displays.ImageDisplaySize
+StellarAdmin.Resources.Displays.ImageDisplaySize.Medium = 2 -> StellarAdmin.Resources.Displays.ImageDisplaySize
+StellarAdmin.Resources.Displays.ImageDisplaySize.Small = 1 -> StellarAdmin.Resources.Displays.ImageDisplaySize
+StellarAdmin.Resources.Displays.LinkDisplay
+StellarAdmin.Resources.Displays.LinkDisplay.LinkDisplay() -> void
+StellarAdmin.Resources.Displays.LinkDisplay.OpenInNewTab.get -> bool
+StellarAdmin.Resources.Displays.LinkDisplay.OpenInNewTab.set -> void
+StellarAdmin.Resources.Displays.NumberDisplay
+StellarAdmin.Resources.Displays.NumberDisplay.Format.get -> string?
+StellarAdmin.Resources.Displays.NumberDisplay.Format.set -> void
+StellarAdmin.Resources.Displays.NumberDisplay.NumberDisplay() -> void
+StellarAdmin.Resources.Displays.PhoneDisplay
+StellarAdmin.Resources.Displays.PhoneDisplay.PhoneDisplay() -> void
+StellarAdmin.Resources.Displays.TextDisplay
+StellarAdmin.Resources.Displays.TextDisplay.LineClamp.get -> int?
+StellarAdmin.Resources.Displays.TextDisplay.LineClamp.set -> void
+StellarAdmin.Resources.Displays.TextDisplay.TextDisplay() -> void
+StellarAdmin.Resources.Editors.CheckboxEditor
+StellarAdmin.Resources.Editors.CheckboxEditor.CheckboxEditor() -> void
+StellarAdmin.Resources.Editors.CheckboxGroupAppearance
+StellarAdmin.Resources.Editors.CheckboxGroupAppearance.Cards = 1 -> StellarAdmin.Resources.Editors.CheckboxGroupAppearance
+StellarAdmin.Resources.Editors.CheckboxGroupAppearance.Default = 0 -> StellarAdmin.Resources.Editors.CheckboxGroupAppearance
+StellarAdmin.Resources.Editors.CheckboxGroupEditor
+StellarAdmin.Resources.Editors.CheckboxGroupEditor.Appearance.get -> StellarAdmin.Resources.Editors.CheckboxGroupAppearance
+StellarAdmin.Resources.Editors.CheckboxGroupEditor.Appearance.set -> void
+StellarAdmin.Resources.Editors.CheckboxGroupEditor.CheckboxGroupEditor() -> void
+StellarAdmin.Resources.Editors.CheckboxGroupEditor.Columns(int count) -> void
+StellarAdmin.Resources.Editors.CheckboxGroupEditor.Columns(System.Action<StellarAdmin.Resources.Builders.GridColumnsBuilder!>! configure) -> void
+StellarAdmin.Resources.Editors.CheckboxGroupEditor.Flow.get -> StellarAdmin.UI.CheckboxGroupFlow
+StellarAdmin.Resources.Editors.CheckboxGroupEditor.Flow.set -> void
+StellarAdmin.Resources.Editors.ChoiceEditor
+StellarAdmin.Resources.Editors.ChoiceEditor.ChoiceEditor() -> void
+StellarAdmin.Resources.Editors.ChoiceEditor.EmptyChoice.get -> StellarAdmin.Resources.Editors.EmptyChoice
+StellarAdmin.Resources.Editors.ChoiceEditor.EmptyChoice.set -> void
+StellarAdmin.Resources.Editors.ChoiceEditor.EmptyChoiceText.get -> string!
+StellarAdmin.Resources.Editors.ChoiceEditor.EmptyChoiceText.set -> void
+StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem!>! items) -> void
+StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(System.Collections.Generic.IEnumerable<StellarAdmin.Resources.Editors.ChoiceItem!>! items) -> void
+StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(System.Func<System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
+StellarAdmin.Resources.Editors.ChoiceEditor.UseItems<TProvider>() -> void
+StellarAdmin.Resources.Editors.ChoiceEditorClassNames
+StellarAdmin.Resources.Editors.ChoiceEditorClassNames.ChoiceEditorClassNames() -> void
+StellarAdmin.Resources.Editors.ChoiceEditorClassNames.Media.get -> string?
+StellarAdmin.Resources.Editors.ChoiceEditorClassNames.Media.set -> void
+StellarAdmin.Resources.Editors.ChoiceEditorHandler
+StellarAdmin.Resources.Editors.ChoiceEditorHandler.ChoiceEditorHandler(StellarAdmin.Resources.Editors.ChoiceEditor! editor, System.IServiceProvider! services) -> void
+StellarAdmin.Resources.Editors.ChoiceGroup
+StellarAdmin.Resources.Editors.ChoiceGroup.<Clone>$() -> StellarAdmin.Resources.Editors.ChoiceGroup!
+StellarAdmin.Resources.Editors.ChoiceGroup.ChoiceGroup(string! Text) -> void
+StellarAdmin.Resources.Editors.ChoiceGroup.Deconstruct(out string! Text) -> void
+StellarAdmin.Resources.Editors.ChoiceGroup.Description.get -> string?
+StellarAdmin.Resources.Editors.ChoiceGroup.Description.init -> void
+StellarAdmin.Resources.Editors.ChoiceGroup.Disabled.get -> bool
+StellarAdmin.Resources.Editors.ChoiceGroup.Disabled.init -> void
+StellarAdmin.Resources.Editors.ChoiceGroup.Equals(StellarAdmin.Resources.Editors.ChoiceGroup? other) -> bool
+StellarAdmin.Resources.Editors.ChoiceGroup.Text.get -> string!
+StellarAdmin.Resources.Editors.ChoiceGroup.Text.init -> void
+StellarAdmin.Resources.Editors.ChoiceItem
+StellarAdmin.Resources.Editors.ChoiceItem.<Clone>$() -> StellarAdmin.Resources.Editors.ChoiceItem!
+StellarAdmin.Resources.Editors.ChoiceItem.ChoiceItem(string! Value, string! Title) -> void
+StellarAdmin.Resources.Editors.ChoiceItem.Deconstruct(out string! Value, out string! Title) -> void
+StellarAdmin.Resources.Editors.ChoiceItem.Description.get -> string?
+StellarAdmin.Resources.Editors.ChoiceItem.Description.init -> void
+StellarAdmin.Resources.Editors.ChoiceItem.Disabled.get -> bool
+StellarAdmin.Resources.Editors.ChoiceItem.Disabled.init -> void
+StellarAdmin.Resources.Editors.ChoiceItem.Equals(StellarAdmin.Resources.Editors.ChoiceItem? other) -> bool
+StellarAdmin.Resources.Editors.ChoiceItem.Group.get -> StellarAdmin.Resources.Editors.ChoiceGroup?
+StellarAdmin.Resources.Editors.ChoiceItem.Group.init -> void
+StellarAdmin.Resources.Editors.ChoiceItem.Media.get -> StellarAdmin.Resources.Editors.ItemMedia?
+StellarAdmin.Resources.Editors.ChoiceItem.Media.init -> void
+StellarAdmin.Resources.Editors.ChoiceItem.Title.get -> string!
+StellarAdmin.Resources.Editors.ChoiceItem.Title.init -> void
+StellarAdmin.Resources.Editors.ChoiceItem.Value.get -> string!
+StellarAdmin.Resources.Editors.ChoiceItem.Value.init -> void
+StellarAdmin.Resources.Editors.DateInputEditor
+StellarAdmin.Resources.Editors.DateInputEditor.DateInputEditor() -> void
+StellarAdmin.Resources.Editors.DateInputEditor.Step.get -> int?
+StellarAdmin.Resources.Editors.DateInputEditor.Step.set -> void
+StellarAdmin.Resources.Editors.DateTimeInputEditor
+StellarAdmin.Resources.Editors.DateTimeInputEditor.DateTimeInputEditor() -> void
+StellarAdmin.Resources.Editors.DateTimeInputEditor.Step.get -> System.TimeSpan?
+StellarAdmin.Resources.Editors.DateTimeInputEditor.Step.set -> void
+StellarAdmin.Resources.Editors.EditorClassNames
+StellarAdmin.Resources.Editors.EditorClassNames.Control.get -> string?
+StellarAdmin.Resources.Editors.EditorClassNames.Control.set -> void
+StellarAdmin.Resources.Editors.EditorClassNames.EditorClassNames() -> void
+StellarAdmin.Resources.Editors.EmptyChoice
+StellarAdmin.Resources.Editors.EmptyChoice.Auto = 0 -> StellarAdmin.Resources.Editors.EmptyChoice
+StellarAdmin.Resources.Editors.EmptyChoice.Include = 1 -> StellarAdmin.Resources.Editors.EmptyChoice
+StellarAdmin.Resources.Editors.EmptyChoice.Omit = 2 -> StellarAdmin.Resources.Editors.EmptyChoice
+StellarAdmin.Resources.Editors.FieldEditor
+StellarAdmin.Resources.Editors.FieldEditor.FieldEditor() -> void
+StellarAdmin.Resources.Editors.FieldEditorContext
+StellarAdmin.Resources.Editors.FieldEditorContext.FieldEditorContext(string! fieldName, object! model, object? value) -> void
+StellarAdmin.Resources.Editors.FieldEditorContext.FieldName.get -> string!
+StellarAdmin.Resources.Editors.FieldEditorContext.Model.get -> object!
+StellarAdmin.Resources.Editors.FieldEditorContext.Value.get -> object?
+StellarAdmin.Resources.Editors.FieldEditorHandler<TEditor>
+StellarAdmin.Resources.Editors.FieldEditorHandler<TEditor>.Editor.get -> TEditor!
+StellarAdmin.Resources.Editors.FieldEditorHandler<TEditor>.FieldEditorHandler(TEditor! editor) -> void
+StellarAdmin.Resources.Editors.IChoiceItemsProvider
+StellarAdmin.Resources.Editors.IChoiceItemsProvider.GetItemsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!
+StellarAdmin.Resources.Editors.IFieldEditor
+StellarAdmin.Resources.Editors.IFieldEditor.HandlerType.get -> System.Type!
+StellarAdmin.Resources.Editors.IFieldEditor<THandler>
+StellarAdmin.Resources.Editors.IFieldEditorHandler
+StellarAdmin.Resources.Editors.IFieldEditorHandler.PrepareAsync(StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+StellarAdmin.Resources.Editors.IFieldEditorHandler<TEditor>
+StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue>
+StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue>.FindAsync(System.Collections.Generic.IReadOnlyCollection<TValue>! values, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyCollection<TEntity>!>!
+StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue>.SearchAsync(StellarAdmin.Resources.Editors.LookupQuery! query, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.Editors.LookupPage<TEntity>!>!
+StellarAdmin.Resources.Editors.ImageEditor
+StellarAdmin.Resources.Editors.ImageEditor.AcceptedTypes.get -> System.Collections.Generic.IReadOnlyList<string!>!
+StellarAdmin.Resources.Editors.ImageEditor.AcceptedTypes.set -> void
+StellarAdmin.Resources.Editors.ImageEditor.ImageEditor() -> void
+StellarAdmin.Resources.Editors.ImageEditor.Layout.get -> StellarAdmin.Resources.Editors.ImageEditorLayout
+StellarAdmin.Resources.Editors.ImageEditor.Layout.set -> void
+StellarAdmin.Resources.Editors.ImageEditor.MaxFileSize.get -> long
+StellarAdmin.Resources.Editors.ImageEditor.MaxFileSize.set -> void
+StellarAdmin.Resources.Editors.ImageEditor.ResolveUrl(System.Func<string!, string?>! resolve) -> void
+StellarAdmin.Resources.Editors.ImageEditor.ResolveUrl(System.Func<string!, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<string?>!>! resolve) -> void
+StellarAdmin.Resources.Editors.ImageEditor.StoreImage(System.Func<Microsoft.AspNetCore.Http.IFormFile!, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<string!>!>! store) -> void
+StellarAdmin.Resources.Editors.ImageEditorClassNames
+StellarAdmin.Resources.Editors.ImageEditorClassNames.Image.get -> string?
+StellarAdmin.Resources.Editors.ImageEditorClassNames.Image.set -> void
+StellarAdmin.Resources.Editors.ImageEditorClassNames.ImageEditorClassNames() -> void
+StellarAdmin.Resources.Editors.ImageEditorClassNames.Note.get -> string?
+StellarAdmin.Resources.Editors.ImageEditorClassNames.Note.set -> void
+StellarAdmin.Resources.Editors.ImageEditorHandler
+StellarAdmin.Resources.Editors.ImageEditorHandler.ImageEditorHandler(StellarAdmin.Resources.Editors.ImageEditor! editor, System.IServiceProvider! services) -> void
+StellarAdmin.Resources.Editors.ImageEditorLayout
+StellarAdmin.Resources.Editors.ImageEditorLayout.Attachment = 2 -> StellarAdmin.Resources.Editors.ImageEditorLayout
+StellarAdmin.Resources.Editors.ImageEditorLayout.Compact = 1 -> StellarAdmin.Resources.Editors.ImageEditorLayout
+StellarAdmin.Resources.Editors.ImageEditorLayout.Dropzone = 0 -> StellarAdmin.Resources.Editors.ImageEditorLayout
+StellarAdmin.Resources.Editors.ItemMedia
+StellarAdmin.Resources.Editors.ItemMedia.Avatar
+StellarAdmin.Resources.Editors.ItemMedia.Avatar.Avatar(string? Url) -> void
+StellarAdmin.Resources.Editors.ItemMedia.Avatar.Deconstruct(out string? Url) -> void
+StellarAdmin.Resources.Editors.ItemMedia.Avatar.Equals(StellarAdmin.Resources.Editors.ItemMedia.Avatar? other) -> bool
+StellarAdmin.Resources.Editors.ItemMedia.Avatar.Url.get -> string?
+StellarAdmin.Resources.Editors.ItemMedia.Avatar.Url.init -> void
+StellarAdmin.Resources.Editors.ItemMedia.Code
+StellarAdmin.Resources.Editors.ItemMedia.Code.Code(string! Value) -> void
+StellarAdmin.Resources.Editors.ItemMedia.Code.Deconstruct(out string! Value) -> void
+StellarAdmin.Resources.Editors.ItemMedia.Code.Equals(StellarAdmin.Resources.Editors.ItemMedia.Code? other) -> bool
+StellarAdmin.Resources.Editors.ItemMedia.Code.Value.get -> string!
+StellarAdmin.Resources.Editors.ItemMedia.Code.Value.init -> void
+StellarAdmin.Resources.Editors.ItemMedia.Icon
+StellarAdmin.Resources.Editors.ItemMedia.Icon.Deconstruct(out string! Name) -> void
+StellarAdmin.Resources.Editors.ItemMedia.Icon.Equals(StellarAdmin.Resources.Editors.ItemMedia.Icon? other) -> bool
+StellarAdmin.Resources.Editors.ItemMedia.Icon.Icon(string! Name) -> void
+StellarAdmin.Resources.Editors.ItemMedia.Icon.Name.get -> string!
+StellarAdmin.Resources.Editors.ItemMedia.Icon.Name.init -> void
+StellarAdmin.Resources.Editors.ItemMedia.Image
+StellarAdmin.Resources.Editors.ItemMedia.Image.Deconstruct(out string! Url) -> void
+StellarAdmin.Resources.Editors.ItemMedia.Image.Equals(StellarAdmin.Resources.Editors.ItemMedia.Image? other) -> bool
+StellarAdmin.Resources.Editors.ItemMedia.Image.Image(string! Url) -> void
+StellarAdmin.Resources.Editors.ItemMedia.Image.Url.get -> string!
+StellarAdmin.Resources.Editors.ItemMedia.Image.Url.init -> void
+StellarAdmin.Resources.Editors.ItemMedia.ItemMedia(StellarAdmin.Resources.Editors.ItemMedia! original) -> void
+StellarAdmin.Resources.Editors.LookupFieldOptions
+StellarAdmin.Resources.Editors.LookupFieldOptions.AllowClear.get -> bool?
+StellarAdmin.Resources.Editors.LookupFieldOptions.AllowClear.set -> void
+StellarAdmin.Resources.Editors.LookupFieldOptions.EmptyText.get -> string?
+StellarAdmin.Resources.Editors.LookupFieldOptions.EmptyText.set -> void
+StellarAdmin.Resources.Editors.LookupFieldOptions.Layout.get -> StellarAdmin.Resources.Editors.LookupSheetEditorLayout?
+StellarAdmin.Resources.Editors.LookupFieldOptions.Layout.set -> void
+StellarAdmin.Resources.Editors.LookupFieldOptions.LookupFieldOptions() -> void
+StellarAdmin.Resources.Editors.LookupFieldOptions.ShowMedia.get -> bool
+StellarAdmin.Resources.Editors.LookupFieldOptions.ShowMedia.set -> void
+StellarAdmin.Resources.Editors.LookupItems
+StellarAdmin.Resources.Editors.LookupItems.LookupItems() -> void
+StellarAdmin.Resources.Editors.LookupPage<TEntity>
+StellarAdmin.Resources.Editors.LookupPage<TEntity>.<Clone>$() -> StellarAdmin.Resources.Editors.LookupPage<TEntity>!
+StellarAdmin.Resources.Editors.LookupPage<TEntity>.Deconstruct(out System.Collections.Generic.IReadOnlyList<TEntity>! Items, out bool HasMore) -> void
+StellarAdmin.Resources.Editors.LookupPage<TEntity>.Equals(StellarAdmin.Resources.Editors.LookupPage<TEntity>? other) -> bool
+StellarAdmin.Resources.Editors.LookupPage<TEntity>.HasMore.get -> bool
+StellarAdmin.Resources.Editors.LookupPage<TEntity>.HasMore.init -> void
+StellarAdmin.Resources.Editors.LookupPage<TEntity>.Items.get -> System.Collections.Generic.IReadOnlyList<TEntity>!
+StellarAdmin.Resources.Editors.LookupPage<TEntity>.Items.init -> void
+StellarAdmin.Resources.Editors.LookupPage<TEntity>.LookupPage(System.Collections.Generic.IReadOnlyList<TEntity>! Items, bool HasMore) -> void
+StellarAdmin.Resources.Editors.LookupQuery
+StellarAdmin.Resources.Editors.LookupQuery.<Clone>$() -> StellarAdmin.Resources.Editors.LookupQuery!
+StellarAdmin.Resources.Editors.LookupQuery.Deconstruct(out string? Term, out int Skip, out int Take) -> void
+StellarAdmin.Resources.Editors.LookupQuery.Equals(StellarAdmin.Resources.Editors.LookupQuery? other) -> bool
+StellarAdmin.Resources.Editors.LookupQuery.LookupQuery(string? Term, int Skip, int Take) -> void
+StellarAdmin.Resources.Editors.LookupQuery.Skip.get -> int
+StellarAdmin.Resources.Editors.LookupQuery.Skip.init -> void
+StellarAdmin.Resources.Editors.LookupQuery.Take.get -> int
+StellarAdmin.Resources.Editors.LookupQuery.Take.init -> void
+StellarAdmin.Resources.Editors.LookupQuery.Term.get -> string?
+StellarAdmin.Resources.Editors.LookupQuery.Term.init -> void
+StellarAdmin.Resources.Editors.LookupResults
+StellarAdmin.Resources.Editors.LookupResults.<Clone>$() -> StellarAdmin.Resources.Editors.LookupResults!
+StellarAdmin.Resources.Editors.LookupResults.Deconstruct(out System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>! Items, out bool HasMore) -> void
+StellarAdmin.Resources.Editors.LookupResults.Equals(StellarAdmin.Resources.Editors.LookupResults? other) -> bool
+StellarAdmin.Resources.Editors.LookupResults.HasMore.get -> bool
+StellarAdmin.Resources.Editors.LookupResults.HasMore.init -> void
+StellarAdmin.Resources.Editors.LookupResults.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!
+StellarAdmin.Resources.Editors.LookupResults.Items.init -> void
+StellarAdmin.Resources.Editors.LookupResults.LookupResults(System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>! Items, bool HasMore) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor
+StellarAdmin.Resources.Editors.LookupSheetEditor.EnableCreate() -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.EnableCreate<TResource>() -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.Field(System.Action<StellarAdmin.Resources.Editors.LookupFieldOptions!>! configure) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.Items.get -> StellarAdmin.Resources.Editors.LookupItems?
+StellarAdmin.Resources.Editors.LookupSheetEditor.LookupSheetEditor() -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.Sheet(System.Action<StellarAdmin.Resources.Editors.LookupSheetOptions!>! configure) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems(StellarAdmin.Resources.Editors.LookupItems! items) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditorClassNames
+StellarAdmin.Resources.Editors.LookupSheetEditorClassNames.LookupSheetEditorClassNames() -> void
+StellarAdmin.Resources.Editors.LookupSheetEditorClassNames.Media.get -> string?
+StellarAdmin.Resources.Editors.LookupSheetEditorClassNames.Media.set -> void
+StellarAdmin.Resources.Editors.LookupSheetEditorHandler
+StellarAdmin.Resources.Editors.LookupSheetEditorHandler.LookupSheetEditorHandler(StellarAdmin.Resources.Editors.LookupSheetEditor! editor, System.IServiceProvider! services) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditorLayout
+StellarAdmin.Resources.Editors.LookupSheetEditorLayout.Card = 1 -> StellarAdmin.Resources.Editors.LookupSheetEditorLayout
+StellarAdmin.Resources.Editors.LookupSheetEditorLayout.Input = 0 -> StellarAdmin.Resources.Editors.LookupSheetEditorLayout
+StellarAdmin.Resources.Editors.LookupSheetOptions
+StellarAdmin.Resources.Editors.LookupSheetOptions.LookupSheetOptions() -> void
+StellarAdmin.Resources.Editors.LookupSheetOptions.MinimumSearchLength.get -> int
+StellarAdmin.Resources.Editors.LookupSheetOptions.MinimumSearchLength.set -> void
+StellarAdmin.Resources.Editors.LookupSheetOptions.PageSize.get -> int
+StellarAdmin.Resources.Editors.LookupSheetOptions.PageSize.set -> void
+StellarAdmin.Resources.Editors.LookupSheetOptions.SearchPlaceholder.get -> string?
+StellarAdmin.Resources.Editors.LookupSheetOptions.SearchPlaceholder.set -> void
+StellarAdmin.Resources.Editors.LookupSheetOptions.ShowMedia.get -> bool
+StellarAdmin.Resources.Editors.LookupSheetOptions.ShowMedia.set -> void
+StellarAdmin.Resources.Editors.LookupSheetOptions.Title.get -> string?
+StellarAdmin.Resources.Editors.LookupSheetOptions.Title.set -> void
+StellarAdmin.Resources.Editors.MultiLookupFieldOptions
+StellarAdmin.Resources.Editors.MultiLookupFieldOptions.EmptyText.get -> string?
+StellarAdmin.Resources.Editors.MultiLookupFieldOptions.EmptyText.set -> void
+StellarAdmin.Resources.Editors.MultiLookupFieldOptions.Layout.get -> StellarAdmin.Resources.Editors.MultiLookupSheetEditorLayout
+StellarAdmin.Resources.Editors.MultiLookupFieldOptions.Layout.set -> void
+StellarAdmin.Resources.Editors.MultiLookupFieldOptions.MultiLookupFieldOptions() -> void
+StellarAdmin.Resources.Editors.MultiLookupFieldOptions.ShowMedia.get -> bool
+StellarAdmin.Resources.Editors.MultiLookupFieldOptions.ShowMedia.set -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.EnableCreate() -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.EnableCreate<TResource>() -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.Field(System.Action<StellarAdmin.Resources.Editors.MultiLookupFieldOptions!>! configure) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.Items.get -> StellarAdmin.Resources.Editors.LookupItems?
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.MultiLookupSheetEditor() -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.Sheet(System.Action<StellarAdmin.Resources.Editors.LookupSheetOptions!>! configure) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems(StellarAdmin.Resources.Editors.LookupItems! items) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames.Media.get -> string?
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames.Media.set -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames.MultiLookupSheetEditorClassNames() -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorHandler
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorHandler.MultiLookupSheetEditorHandler(StellarAdmin.Resources.Editors.MultiLookupSheetEditor! editor, System.IServiceProvider! services) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorLayout
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorLayout.Chips = 1 -> StellarAdmin.Resources.Editors.MultiLookupSheetEditorLayout
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorLayout.List = 0 -> StellarAdmin.Resources.Editors.MultiLookupSheetEditorLayout
+StellarAdmin.Resources.Editors.MultiLookupSheetEditorLayout.Summary = 2 -> StellarAdmin.Resources.Editors.MultiLookupSheetEditorLayout
+StellarAdmin.Resources.Editors.OneTimeCodeEditor
+StellarAdmin.Resources.Editors.OneTimeCodeEditor.Length.get -> int?
+StellarAdmin.Resources.Editors.OneTimeCodeEditor.Length.set -> void
+StellarAdmin.Resources.Editors.OneTimeCodeEditor.OneTimeCodeEditor() -> void
+StellarAdmin.Resources.Editors.RadioGroupAppearance
+StellarAdmin.Resources.Editors.RadioGroupAppearance.Cards = 1 -> StellarAdmin.Resources.Editors.RadioGroupAppearance
+StellarAdmin.Resources.Editors.RadioGroupAppearance.Default = 0 -> StellarAdmin.Resources.Editors.RadioGroupAppearance
+StellarAdmin.Resources.Editors.RadioGroupEditor
+StellarAdmin.Resources.Editors.RadioGroupEditor.Appearance.get -> StellarAdmin.Resources.Editors.RadioGroupAppearance
+StellarAdmin.Resources.Editors.RadioGroupEditor.Appearance.set -> void
+StellarAdmin.Resources.Editors.RadioGroupEditor.Columns(int count) -> void
+StellarAdmin.Resources.Editors.RadioGroupEditor.Columns(System.Action<StellarAdmin.Resources.Builders.GridColumnsBuilder!>! configure) -> void
+StellarAdmin.Resources.Editors.RadioGroupEditor.Flow.get -> StellarAdmin.UI.RadioGroupFlow
+StellarAdmin.Resources.Editors.RadioGroupEditor.Flow.set -> void
+StellarAdmin.Resources.Editors.RadioGroupEditor.RadioGroupEditor() -> void
+StellarAdmin.Resources.Editors.RadioGroupEditorClassNames
+StellarAdmin.Resources.Editors.RadioGroupEditorClassNames.Option.get -> StellarAdmin.UI.InputClassNames!
+StellarAdmin.Resources.Editors.RadioGroupEditorClassNames.RadioGroupEditorClassNames() -> void
+StellarAdmin.Resources.Editors.SegmentedControlEditor
+StellarAdmin.Resources.Editors.SegmentedControlEditor.SegmentedControlEditor() -> void
+StellarAdmin.Resources.Editors.SelectEditor
+StellarAdmin.Resources.Editors.SelectEditor.SelectEditor() -> void
+StellarAdmin.Resources.Editors.SliderEditor
+StellarAdmin.Resources.Editors.SliderEditor.AddMark(double value) -> void
+StellarAdmin.Resources.Editors.SliderEditor.AddMark(double value, string! label) -> void
+StellarAdmin.Resources.Editors.SliderEditor.MarkInterval.get -> double?
+StellarAdmin.Resources.Editors.SliderEditor.MarkInterval.set -> void
+StellarAdmin.Resources.Editors.SliderEditor.MarkLabels.get -> StellarAdmin.UI.SliderMarkLabels
+StellarAdmin.Resources.Editors.SliderEditor.MarkLabels.set -> void
+StellarAdmin.Resources.Editors.SliderEditor.Max.get -> double?
+StellarAdmin.Resources.Editors.SliderEditor.Max.set -> void
+StellarAdmin.Resources.Editors.SliderEditor.Min.get -> double?
+StellarAdmin.Resources.Editors.SliderEditor.Min.set -> void
+StellarAdmin.Resources.Editors.SliderEditor.ShowValue.get -> bool
+StellarAdmin.Resources.Editors.SliderEditor.ShowValue.set -> void
+StellarAdmin.Resources.Editors.SliderEditor.SliderEditor() -> void
+StellarAdmin.Resources.Editors.SliderEditor.Step.get -> double?
+StellarAdmin.Resources.Editors.SliderEditor.Step.set -> void
+StellarAdmin.Resources.Editors.SliderEditor.ValueFormat.get -> string?
+StellarAdmin.Resources.Editors.SliderEditor.ValueFormat.set -> void
+StellarAdmin.Resources.Editors.SliderEditorClassNames
+StellarAdmin.Resources.Editors.SliderEditorClassNames.Mark.get -> string?
+StellarAdmin.Resources.Editors.SliderEditorClassNames.Mark.set -> void
+StellarAdmin.Resources.Editors.SliderEditorClassNames.MarkLabel.get -> string?
+StellarAdmin.Resources.Editors.SliderEditorClassNames.MarkLabel.set -> void
+StellarAdmin.Resources.Editors.SliderEditorClassNames.Marks.get -> string?
+StellarAdmin.Resources.Editors.SliderEditorClassNames.Marks.set -> void
+StellarAdmin.Resources.Editors.SliderEditorClassNames.SliderEditorClassNames() -> void
+StellarAdmin.Resources.Editors.SliderEditorClassNames.Value.get -> string?
+StellarAdmin.Resources.Editors.SliderEditorClassNames.Value.set -> void
+StellarAdmin.Resources.Editors.TemporalInputEditor<TValue>
+StellarAdmin.Resources.Editors.TemporalInputEditor<TValue>.Max.get -> TValue?
+StellarAdmin.Resources.Editors.TemporalInputEditor<TValue>.Max.set -> void
+StellarAdmin.Resources.Editors.TemporalInputEditor<TValue>.Min.get -> TValue?
+StellarAdmin.Resources.Editors.TemporalInputEditor<TValue>.Min.set -> void
+StellarAdmin.Resources.Editors.TextareaEditor
+StellarAdmin.Resources.Editors.TextareaEditor.Placeholder.get -> string?
+StellarAdmin.Resources.Editors.TextareaEditor.Placeholder.set -> void
+StellarAdmin.Resources.Editors.TextareaEditor.Rows.get -> int?
+StellarAdmin.Resources.Editors.TextareaEditor.Rows.set -> void
+StellarAdmin.Resources.Editors.TextareaEditor.TextareaEditor() -> void
+StellarAdmin.Resources.Editors.TextInputEditor
+StellarAdmin.Resources.Editors.TextInputEditor.Max.get -> decimal?
+StellarAdmin.Resources.Editors.TextInputEditor.Max.set -> void
+StellarAdmin.Resources.Editors.TextInputEditor.Min.get -> decimal?
+StellarAdmin.Resources.Editors.TextInputEditor.Min.set -> void
+StellarAdmin.Resources.Editors.TextInputEditor.Placeholder.get -> string?
+StellarAdmin.Resources.Editors.TextInputEditor.Placeholder.set -> void
+StellarAdmin.Resources.Editors.TextInputEditor.Prefix.get -> string?
+StellarAdmin.Resources.Editors.TextInputEditor.Prefix.set -> void
+StellarAdmin.Resources.Editors.TextInputEditor.Step.get -> decimal?
+StellarAdmin.Resources.Editors.TextInputEditor.Step.set -> void
+StellarAdmin.Resources.Editors.TextInputEditor.Suffix.get -> string?
+StellarAdmin.Resources.Editors.TextInputEditor.Suffix.set -> void
+StellarAdmin.Resources.Editors.TextInputEditor.TextInputEditor() -> void
+StellarAdmin.Resources.Editors.TextInputEditor.Type.get -> StellarAdmin.Resources.Editors.TextInputType?
+StellarAdmin.Resources.Editors.TextInputEditor.Type.set -> void
+StellarAdmin.Resources.Editors.TextInputType
+StellarAdmin.Resources.Editors.TextInputType.Email = 1 -> StellarAdmin.Resources.Editors.TextInputType
+StellarAdmin.Resources.Editors.TextInputType.Number = 5 -> StellarAdmin.Resources.Editors.TextInputType
+StellarAdmin.Resources.Editors.TextInputType.Password = 4 -> StellarAdmin.Resources.Editors.TextInputType
+StellarAdmin.Resources.Editors.TextInputType.Tel = 2 -> StellarAdmin.Resources.Editors.TextInputType
+StellarAdmin.Resources.Editors.TextInputType.Text = 0 -> StellarAdmin.Resources.Editors.TextInputType
+StellarAdmin.Resources.Editors.TextInputType.Url = 3 -> StellarAdmin.Resources.Editors.TextInputType
+StellarAdmin.Resources.Editors.TimeInputEditor
+StellarAdmin.Resources.Editors.TimeInputEditor.Step.get -> System.TimeSpan?
+StellarAdmin.Resources.Editors.TimeInputEditor.Step.set -> void
+StellarAdmin.Resources.Editors.TimeInputEditor.TimeInputEditor() -> void
+StellarAdmin.Resources.Editors.ToggleEditor
+StellarAdmin.Resources.Editors.ToggleEditor.ToggleEditor() -> void
+StellarAdmin.Resources.Editors.ToggleGroupAppearance
+StellarAdmin.Resources.Editors.ToggleGroupAppearance.Buttons = 2 -> StellarAdmin.Resources.Editors.ToggleGroupAppearance
+StellarAdmin.Resources.Editors.ToggleGroupAppearance.Chips = 0 -> StellarAdmin.Resources.Editors.ToggleGroupAppearance
+StellarAdmin.Resources.Editors.ToggleGroupAppearance.Joined = 1 -> StellarAdmin.Resources.Editors.ToggleGroupAppearance
+StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement
+StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement.End = 2 -> StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement
+StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement.ReplaceMedia = 0 -> StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement
+StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement.Start = 1 -> StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement
+StellarAdmin.Resources.Editors.ToggleGroupEditor
+StellarAdmin.Resources.Editors.ToggleGroupEditor.Appearance.get -> StellarAdmin.Resources.Editors.ToggleGroupAppearance
+StellarAdmin.Resources.Editors.ToggleGroupEditor.Appearance.set -> void
+StellarAdmin.Resources.Editors.ToggleGroupEditor.CheckPlacement.get -> StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement
+StellarAdmin.Resources.Editors.ToggleGroupEditor.CheckPlacement.set -> void
+StellarAdmin.Resources.Editors.ToggleGroupEditor.ToggleGroupEditor() -> void
+StellarAdmin.Resources.InlineAddButton
+StellarAdmin.Resources.InlineAddButton.Both = 2 -> StellarAdmin.Resources.InlineAddButton
+StellarAdmin.Resources.InlineAddButton.Grid = 1 -> StellarAdmin.Resources.InlineAddButton
+StellarAdmin.Resources.InlineAddButton.Header = 0 -> StellarAdmin.Resources.InlineAddButton
+StellarAdmin.Resources.InlineCreatePosition
+StellarAdmin.Resources.InlineCreatePosition.Bottom = 1 -> StellarAdmin.Resources.InlineCreatePosition
+StellarAdmin.Resources.InlineCreatePosition.Top = 0 -> StellarAdmin.Resources.InlineCreatePosition
+StellarAdmin.Resources.InlineRowAfterSave
+StellarAdmin.Resources.InlineRowAfterSave.KeepInPlace = 1 -> StellarAdmin.Resources.InlineRowAfterSave
+StellarAdmin.Resources.InlineRowAfterSave.ReloadGrid = 0 -> StellarAdmin.Resources.InlineRowAfterSave
+StellarAdmin.Resources.IResourceCreateHandler<TModel>
+StellarAdmin.Resources.IResourceCreateHandler<TModel>.CreateAsync(TModel model, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.ResourceOperationResult!>!
+StellarAdmin.Resources.IResourceCrudDataSource<TResource>
+StellarAdmin.Resources.IResourceDataSource<TResource>
+StellarAdmin.Resources.IResourceDataSource<TResource>.ListAsync(StellarAdmin.Resources.ResourceListRequest! request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.ResourceListResult<TResource>!>!
+StellarAdmin.Resources.IResourceDeleteHandler<TResource>
+StellarAdmin.Resources.IResourceDeleteHandler<TResource>.DeleteAsync(string! id, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.ResourceOperationResult!>!
+StellarAdmin.Resources.IResourceEditHandler<TModel>
+StellarAdmin.Resources.IResourceEditHandler<TModel>.UpdateAsync(string! id, TModel model, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.ResourceOperationResult!>!
+StellarAdmin.Resources.IResourceRowDetailHandler<TModel>
+StellarAdmin.Resources.IResourceRowDetailHandler<TModel>.FindAsync(string! id, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TModel?>!
+StellarAdmin.Resources.IResourceViewHandler<TModel>
+StellarAdmin.Resources.IResourceViewHandler<TModel>.FindAsync(string! id, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TModel?>!
+StellarAdmin.Resources.LookupLabelContext
+StellarAdmin.Resources.LookupLabelContext.Count.get -> int
+StellarAdmin.Resources.LookupLabelContext.Count.init -> void
+StellarAdmin.Resources.LookupLabelContext.FieldLabel.get -> string!
+StellarAdmin.Resources.LookupLabelContext.LookupLabelContext(string! fieldLabel, int minimumSearchLength, string? term) -> void
+StellarAdmin.Resources.LookupLabelContext.MinimumSearchLength.get -> int
+StellarAdmin.Resources.LookupLabelContext.Term.get -> string?
+StellarAdmin.Resources.Options.DataGridColumnOptions
+StellarAdmin.Resources.Options.DataGridColumnOptions.Display.get -> StellarAdmin.Resources.Displays.FieldDisplay?
+StellarAdmin.Resources.Options.DataGridColumnOptions.EditsFieldName.get -> string?
+StellarAdmin.Resources.Options.DataGridColumnOptions.EmptyText.get -> string?
+StellarAdmin.Resources.Options.DataGridColumnOptions.FieldExpression.get -> System.Linq.Expressions.LambdaExpression!
+StellarAdmin.Resources.Options.DataGridColumnOptions.FieldName.get -> string?
+StellarAdmin.Resources.Options.DataGridColumnOptions.Sortable.get -> bool
+StellarAdmin.Resources.Options.DataGridColumnOptions.SortExpression.get -> System.Linq.Expressions.LambdaExpression?
+StellarAdmin.Resources.Options.DataGridColumnOptions.Title.get -> string?
+StellarAdmin.Resources.Options.FormContainerOptions
+StellarAdmin.Resources.Options.FormContainerOptions.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
+StellarAdmin.Resources.Options.FormDetailsOptions
+StellarAdmin.Resources.Options.FormDetailsOptions.Description.get -> string?
+StellarAdmin.Resources.Options.FormDetailsOptions.Fields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormDisplayFieldOptions!>!
+StellarAdmin.Resources.Options.FormDetailsOptions.Layout.get -> StellarAdmin.UI.FormSectionLayout?
+StellarAdmin.Resources.Options.FormDetailsOptions.Orientation.get -> StellarAdmin.UI.DetailsOrientation?
+StellarAdmin.Resources.Options.FormDetailsOptions.Title.get -> string!
+StellarAdmin.Resources.Options.FormDetailsOptions.Variant.get -> StellarAdmin.UI.DetailsVariant?
+StellarAdmin.Resources.Options.FormDisplayFieldOptions
+StellarAdmin.Resources.Options.FormDisplayFieldOptions.Display.get -> StellarAdmin.Resources.Displays.FieldDisplay?
+StellarAdmin.Resources.Options.FormDisplayFieldOptions.EmptyText.get -> string?
+StellarAdmin.Resources.Options.FormDisplayFieldOptions.FieldExpression.get -> System.Linq.Expressions.LambdaExpression!
+StellarAdmin.Resources.Options.FormDisplayFieldOptions.FieldName.get -> string!
+StellarAdmin.Resources.Options.FormDisplayFieldOptions.Orientation.get -> StellarAdmin.UI.DisplayFieldOrientation?
+StellarAdmin.Resources.Options.FormDisplayFieldOptions.PropertyPath.get -> System.Collections.Generic.IReadOnlyList<System.Reflection.PropertyInfo!>!
+StellarAdmin.Resources.Options.FormDisplayFieldOptions.Title.get -> string?
+StellarAdmin.Resources.Options.FormFieldOptions
+StellarAdmin.Resources.Options.FormFieldOptions.Description.get -> string?
+StellarAdmin.Resources.Options.FormFieldOptions.Editor.get -> StellarAdmin.Resources.Editors.FieldEditor?
+StellarAdmin.Resources.Options.FormFieldOptions.FieldExpression.get -> System.Linq.Expressions.LambdaExpression!
+StellarAdmin.Resources.Options.FormFieldOptions.FieldName.get -> string!
+StellarAdmin.Resources.Options.FormFieldOptions.IsReadOnly.get -> bool
+StellarAdmin.Resources.Options.FormFieldOptions.PropertyPath.get -> System.Collections.Generic.IReadOnlyList<System.Reflection.PropertyInfo!>!
+StellarAdmin.Resources.Options.FormFieldOptions.Title.get -> string?
+StellarAdmin.Resources.Options.FormGroupOptions
+StellarAdmin.Resources.Options.FormItemOptions
+StellarAdmin.Resources.Options.FormSectionOptions
+StellarAdmin.Resources.Options.FormSectionOptions.Description.get -> string?
+StellarAdmin.Resources.Options.FormSectionOptions.Layout.get -> StellarAdmin.UI.FormSectionLayout?
+StellarAdmin.Resources.Options.FormSectionOptions.Orientation.get -> StellarAdmin.UI.FieldOrientation?
+StellarAdmin.Resources.Options.FormSectionOptions.Title.get -> string!
+StellarAdmin.Resources.Options.LookupLabelOptions
+StellarAdmin.Resources.Options.LookupLabelOptions.AddLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.AddLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.AllLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.AllLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.ChangeLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.ChangeLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.ChooseLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.ChooseLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.ClearAllLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.ClearAllLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.ClearLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.ClearLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.CreateLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.CreateLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.DoneHint.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.DoneHint.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.DoneLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.DoneLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.ErrorDescription.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.ErrorDescription.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.ErrorTitle.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.ErrorTitle.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.LoadMoreLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.LoadMoreLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.LookupLabelOptions() -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.MinimumSearchLengthMessage.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.MinimumSearchLengthMessage.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.MoreText.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.MoreText.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.NewHint.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.NewHint.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.NoneText.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.NoneText.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.NoResultsDescription.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.NoResultsDescription.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.NoResultsTitle.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.NoResultsTitle.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.NoSelectedTitle.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.NoSelectedTitle.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.RemoveLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.RemoveLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.RetryLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.RetryLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.SearchLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.SearchLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.SelectedLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.SelectedLabel.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.ToggleHint.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.ToggleHint.set -> void
+StellarAdmin.Resources.Options.LookupLabelOptions.ViewLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
+StellarAdmin.Resources.Options.LookupLabelOptions.ViewLabel.set -> void
+StellarAdmin.Resources.Options.ResourceCreateLabelOptions
+StellarAdmin.Resources.Options.ResourceCreateLabelOptions.ResourceCreateLabelOptions() -> void
+StellarAdmin.Resources.Options.ResourceCreateLabelOptions.SubmitLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceCreateLabelOptions.SubmitLabel.set -> void
+StellarAdmin.Resources.Options.ResourceCreateLabelOptions.Title.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceCreateLabelOptions.Title.set -> void
+StellarAdmin.Resources.Options.ResourceCreateOptions
+StellarAdmin.Resources.Options.ResourceCreateOptions.InlineRow.get -> StellarAdmin.Resources.Options.ResourceInlineCreateOptions?
+StellarAdmin.Resources.Options.ResourceCreateOptions.ResourceCreateOptions() -> void
+StellarAdmin.Resources.Options.ResourceCreateOptions<TModel>
+StellarAdmin.Resources.Options.ResourceCreateOptions<TModel>.CreateInstance() -> TModel
+StellarAdmin.Resources.Options.ResourceCreateOptions<TModel>.Factory.get -> System.Func<TModel>?
+StellarAdmin.Resources.Options.ResourceCreateOptions<TModel>.ResourceCreateOptions() -> void
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions.CancelLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions.CancelLabel.set -> void
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions.ConfirmLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions.ConfirmLabel.set -> void
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions.Message.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions.Message.set -> void
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions.ResourceDeleteLabelOptions() -> void
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions.Title.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceDeleteLabelOptions.Title.set -> void
+StellarAdmin.Resources.Options.ResourceDeleteOptions
+StellarAdmin.Resources.Options.ResourceDeleteOptions.CancelLabel.get -> string?
+StellarAdmin.Resources.Options.ResourceDeleteOptions.ConfirmLabel.get -> string?
+StellarAdmin.Resources.Options.ResourceDeleteOptions.Message.get -> string?
+StellarAdmin.Resources.Options.ResourceDeleteOptions.ResourceDeleteOptions() -> void
+StellarAdmin.Resources.Options.ResourceDeleteOptions.Title.get -> string?
+StellarAdmin.Resources.Options.ResourceEditLabelOptions
+StellarAdmin.Resources.Options.ResourceEditLabelOptions.ResourceEditLabelOptions() -> void
+StellarAdmin.Resources.Options.ResourceEditLabelOptions.SubmitLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceEditLabelOptions.SubmitLabel.set -> void
+StellarAdmin.Resources.Options.ResourceEditLabelOptions.Title.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceEditLabelOptions.Title.set -> void
+StellarAdmin.Resources.Options.ResourceEditOptions
+StellarAdmin.Resources.Options.ResourceEditOptions.InlineRow.get -> StellarAdmin.Resources.Options.ResourceInlineEditOptions?
+StellarAdmin.Resources.Options.ResourceEditOptions.ResourceEditOptions() -> void
+StellarAdmin.Resources.Options.ResourceEditOptions<TModel>
+StellarAdmin.Resources.Options.ResourceEditOptions<TModel>.ResourceEditOptions() -> void
+StellarAdmin.Resources.Options.ResourceFormOptions
+StellarAdmin.Resources.Options.ResourceFormOptions.DisplayFields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormDisplayFieldOptions!>!
+StellarAdmin.Resources.Options.ResourceFormOptions.Fields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormFieldOptions!>!
+StellarAdmin.Resources.Options.ResourceFormOptions.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
+StellarAdmin.Resources.Options.ResourceFormOptions.ResourceFormOptions() -> void
+StellarAdmin.Resources.Options.ResourceFormOptions.SectionLayout.get -> StellarAdmin.UI.FormSectionLayout?
+StellarAdmin.Resources.Options.ResourceFormOptions.SubmitLabel.get -> string?
+StellarAdmin.Resources.Options.ResourceFormOptions.Title.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.CancelLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.CancelLabel.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.CreatedMessage.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.CreatedMessage.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.CreateLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.CreateLabel.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.DeleteLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.DeleteLabel.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.EditLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.EditLabel.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.NotShownMessage.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.NotShownMessage.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.ResourceIndexLabelOptions() -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.SavedMessage.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.SavedMessage.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.SaveLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.SaveLabel.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.SearchPlaceholder.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.SearchPlaceholder.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.Title.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.Title.set -> void
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.ViewLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceIndexLabelOptions.ViewLabel.set -> void
+StellarAdmin.Resources.Options.ResourceIndexOptions
+StellarAdmin.Resources.Options.ResourceIndexOptions.CancelLabel.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexOptions.Columns.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.DataGridColumnOptions!>!
+StellarAdmin.Resources.Options.ResourceIndexOptions.CreatedMessage.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexOptions.CreateLabel.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexOptions.DefaultSort.get -> StellarAdmin.Resources.ResourceSort?
+StellarAdmin.Resources.Options.ResourceIndexOptions.DeleteLabel.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexOptions.EditLabel.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexOptions.NotShownMessage.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexOptions.Paging.get -> StellarAdmin.Resources.Options.ResourcePagingOptions?
+StellarAdmin.Resources.Options.ResourceIndexOptions.ResourceIndexOptions() -> void
+StellarAdmin.Resources.Options.ResourceIndexOptions.RowDetails.get -> StellarAdmin.Resources.Options.ResourceRowDetailsOptions?
+StellarAdmin.Resources.Options.ResourceIndexOptions.SavedMessage.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexOptions.SaveLabel.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexOptions.Scopes.get -> StellarAdmin.Resources.Options.ResourceScopesOptions?
+StellarAdmin.Resources.Options.ResourceIndexOptions.Search.get -> StellarAdmin.Resources.Options.ResourceSearchOptions?
+StellarAdmin.Resources.Options.ResourceIndexOptions.Title.get -> string?
+StellarAdmin.Resources.Options.ResourceIndexOptions.ViewLabel.get -> string?
+StellarAdmin.Resources.Options.ResourceInlineCreateOptions
+StellarAdmin.Resources.Options.ResourceInlineCreateOptions.AddButton.get -> StellarAdmin.Resources.InlineAddButton
+StellarAdmin.Resources.Options.ResourceInlineCreateOptions.AfterSave.get -> StellarAdmin.Resources.InlineRowAfterSave
+StellarAdmin.Resources.Options.ResourceInlineCreateOptions.DimOtherRows.get -> bool
+StellarAdmin.Resources.Options.ResourceInlineCreateOptions.Position.get -> StellarAdmin.Resources.InlineCreatePosition
+StellarAdmin.Resources.Options.ResourceInlineCreateOptions.ResourceInlineCreateOptions() -> void
+StellarAdmin.Resources.Options.ResourceInlineEditOptions
+StellarAdmin.Resources.Options.ResourceInlineEditOptions.AfterSave.get -> StellarAdmin.Resources.InlineRowAfterSave
+StellarAdmin.Resources.Options.ResourceInlineEditOptions.DimOtherRows.get -> bool
+StellarAdmin.Resources.Options.ResourceInlineEditOptions.ResourceInlineEditOptions() -> void
+StellarAdmin.Resources.Options.ResourceLabelOptions
+StellarAdmin.Resources.Options.ResourceLabelOptions.Create.get -> StellarAdmin.Resources.Options.ResourceCreateLabelOptions!
+StellarAdmin.Resources.Options.ResourceLabelOptions.Delete.get -> StellarAdmin.Resources.Options.ResourceDeleteLabelOptions!
+StellarAdmin.Resources.Options.ResourceLabelOptions.Edit.get -> StellarAdmin.Resources.Options.ResourceEditLabelOptions!
+StellarAdmin.Resources.Options.ResourceLabelOptions.Index.get -> StellarAdmin.Resources.Options.ResourceIndexLabelOptions!
+StellarAdmin.Resources.Options.ResourceLabelOptions.Lookup.get -> StellarAdmin.Resources.Options.LookupLabelOptions!
+StellarAdmin.Resources.Options.ResourceLabelOptions.ResourceLabelOptions() -> void
+StellarAdmin.Resources.Options.ResourceLabelOptions.Sheet.get -> StellarAdmin.Resources.Options.ResourceSheetLabelOptions!
+StellarAdmin.Resources.Options.ResourceLabelOptions.View.get -> StellarAdmin.Resources.Options.ResourceViewLabelOptions!
+StellarAdmin.Resources.Options.ResourceOptions<TResource>
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.Create.get -> StellarAdmin.Resources.Options.ResourceCreateOptions?
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.Delete.get -> StellarAdmin.Resources.Options.ResourceDeleteOptions?
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.Edit.get -> StellarAdmin.Resources.Options.ResourceEditOptions?
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.Index.get -> StellarAdmin.Resources.Options.ResourceIndexOptions!
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.KeySelector.get -> System.Func<TResource, string!>?
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.PluralLabel.get -> string!
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.PluralLabel.set -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ResourceOptions() -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.SidebarItem.get -> StellarAdmin.Resources.Options.ResourceSidebarItemOptions!
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.SingularLabel.get -> string!
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.SingularLabel.set -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.UseKey(System.Reflection.PropertyInfo! property) -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.View.get -> StellarAdmin.Resources.Options.ResourceViewOptions?
+StellarAdmin.Resources.Options.ResourcePagingOptions
+StellarAdmin.Resources.Options.ResourcePagingOptions.PageSize.get -> int
+StellarAdmin.Resources.Options.ResourcePagingOptions.PageSizes.get -> System.Collections.Generic.IReadOnlyList<int>!
+StellarAdmin.Resources.Options.ResourcePagingOptions.ResourcePagingOptions() -> void
+StellarAdmin.Resources.Options.ResourceRowDetailPanelOptions
+StellarAdmin.Resources.Options.ResourceRowDetailPanelOptions.LoadsOnDemand.get -> bool
+StellarAdmin.Resources.Options.ResourceRowDetailPanelOptions.Name.get -> string?
+StellarAdmin.Resources.Options.ResourceRowDetailPanelOptions.PartialName.get -> string!
+StellarAdmin.Resources.Options.ResourceRowDetailPanelOptions.Title.get -> string?
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.Animate.get -> bool
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.Divider.get -> StellarAdmin.UI.DataGridRowDetailDivider
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.Emphasis.get -> StellarAdmin.UI.DataGridRowDetailEmphasis
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.ExpandMode.get -> StellarAdmin.UI.DataGridRowDetailExpandMode
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.Inset.get -> StellarAdmin.UI.DataGridRowDetailInset
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.Panels.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.ResourceRowDetailPanelOptions!>!
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.ResourceRowDetailsOptions() -> void
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.RowClick.get -> bool
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.Toggle.get -> StellarAdmin.UI.DataGridRowDetailToggle
+StellarAdmin.Resources.Options.ResourceScopeOptions
+StellarAdmin.Resources.Options.ResourceScopeOptions.Id.get -> string!
+StellarAdmin.Resources.Options.ResourceScopeOptions.Id.init -> void
+StellarAdmin.Resources.Options.ResourceScopeOptions.ResourceScopeOptions() -> void
+StellarAdmin.Resources.Options.ResourceScopeOptions.Title.get -> string!
+StellarAdmin.Resources.Options.ResourceScopeOptions.Title.init -> void
+StellarAdmin.Resources.Options.ResourceScopesOptions
+StellarAdmin.Resources.Options.ResourceScopesOptions.DefaultScope.get -> string?
+StellarAdmin.Resources.Options.ResourceScopesOptions.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.ResourceScopeOptions!>!
+StellarAdmin.Resources.Options.ResourceScopesOptions.ResourceScopesOptions() -> void
+StellarAdmin.Resources.Options.ResourceSearchOptions
+StellarAdmin.Resources.Options.ResourceSearchOptions.Placeholder.get -> string?
+StellarAdmin.Resources.Options.ResourceSearchOptions.ResourceSearchOptions() -> void
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions.ErrorDescription.get -> string!
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions.ErrorDescription.set -> void
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions.ErrorTitle.get -> string!
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions.ErrorTitle.set -> void
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions.ResourceSheetLabelOptions() -> void
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions.RetryLabel.get -> string!
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions.RetryLabel.set -> void
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions.SaveErrorDescription.get -> string!
+StellarAdmin.Resources.Options.ResourceSheetLabelOptions.SaveErrorDescription.set -> void
+StellarAdmin.Resources.Options.ResourceSidebarItemOptions
+StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Group.get -> string!
+StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Icon.get -> string?
+StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Label.get -> string?
+StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Order.get -> int
+StellarAdmin.Resources.Options.ResourceSidebarItemOptions.ResourceSidebarItemOptions() -> void
+StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Visible.get -> bool
+StellarAdmin.Resources.Options.ResourceViewLabelOptions
+StellarAdmin.Resources.Options.ResourceViewLabelOptions.ResourceViewLabelOptions() -> void
+StellarAdmin.Resources.Options.ResourceViewLabelOptions.Title.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceViewLabelOptions.Title.set -> void
+StellarAdmin.Resources.Options.ResourceViewOptions
+StellarAdmin.Resources.Options.ResourceViewOptions.Fields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormDisplayFieldOptions!>!
+StellarAdmin.Resources.Options.ResourceViewOptions.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
+StellarAdmin.Resources.Options.ResourceViewOptions.SectionLayout.get -> StellarAdmin.UI.FormSectionLayout?
+StellarAdmin.Resources.Options.ResourceViewOptions.Title.get -> string?
+StellarAdmin.Resources.Options.ResourceViewOptions<TModel>
+StellarAdmin.Resources.Options.ResourceViewOptions<TModel>.ResourceViewOptions() -> void
+StellarAdmin.Resources.ResourceLabelContext
+StellarAdmin.Resources.ResourceLabelContext.PluralLabel.get -> string!
+StellarAdmin.Resources.ResourceLabelContext.ResourceLabelContext(string! singularLabel, string! pluralLabel) -> void
+StellarAdmin.Resources.ResourceLabelContext.SingularLabel.get -> string!
+StellarAdmin.Resources.ResourceListRequest
+StellarAdmin.Resources.ResourceListRequest.<Clone>$() -> StellarAdmin.Resources.ResourceListRequest!
+StellarAdmin.Resources.ResourceListRequest.Equals(StellarAdmin.Resources.ResourceListRequest? other) -> bool
+StellarAdmin.Resources.ResourceListRequest.Keys.get -> System.Collections.Generic.IReadOnlyList<string!>?
+StellarAdmin.Resources.ResourceListRequest.Keys.init -> void
+StellarAdmin.Resources.ResourceListRequest.Paging.get -> StellarAdmin.Resources.ResourcePaging?
+StellarAdmin.Resources.ResourceListRequest.Paging.init -> void
+StellarAdmin.Resources.ResourceListRequest.ResourceListRequest() -> void
+StellarAdmin.Resources.ResourceListRequest.Scope.get -> string?
+StellarAdmin.Resources.ResourceListRequest.Scope.init -> void
+StellarAdmin.Resources.ResourceListRequest.Search.get -> string?
+StellarAdmin.Resources.ResourceListRequest.Search.init -> void
+StellarAdmin.Resources.ResourceListRequest.Sort.get -> StellarAdmin.Resources.ResourceSort?
+StellarAdmin.Resources.ResourceListRequest.Sort.init -> void
+StellarAdmin.Resources.ResourceListResult<TResource>
+StellarAdmin.Resources.ResourceListResult<TResource>.<Clone>$() -> StellarAdmin.Resources.ResourceListResult<TResource>!
+StellarAdmin.Resources.ResourceListResult<TResource>.Deconstruct(out System.Collections.Generic.IReadOnlyList<TResource>! Items, out long TotalCount) -> void
+StellarAdmin.Resources.ResourceListResult<TResource>.Equals(StellarAdmin.Resources.ResourceListResult<TResource>? other) -> bool
+StellarAdmin.Resources.ResourceListResult<TResource>.Items.get -> System.Collections.Generic.IReadOnlyList<TResource>!
+StellarAdmin.Resources.ResourceListResult<TResource>.Items.init -> void
+StellarAdmin.Resources.ResourceListResult<TResource>.ResourceListResult(System.Collections.Generic.IReadOnlyList<TResource>! Items, long TotalCount) -> void
+StellarAdmin.Resources.ResourceListResult<TResource>.TotalCount.get -> long
+StellarAdmin.Resources.ResourceListResult<TResource>.TotalCount.init -> void
+StellarAdmin.Resources.ResourceOperationResult
+StellarAdmin.Resources.ResourceOperationResult.Errors.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.ResourceValidationError!>!
+StellarAdmin.Resources.ResourceOperationResult.IsNotFound.get -> bool
+StellarAdmin.Resources.ResourceOperationResult.IsSuccess.get -> bool
+StellarAdmin.Resources.ResourceOperationResult.Key.get -> string?
+StellarAdmin.Resources.ResourcePaging
+StellarAdmin.Resources.ResourcePaging.<Clone>$() -> StellarAdmin.Resources.ResourcePaging!
+StellarAdmin.Resources.ResourcePaging.Deconstruct(out int Page, out int PageSize) -> void
+StellarAdmin.Resources.ResourcePaging.Equals(StellarAdmin.Resources.ResourcePaging? other) -> bool
+StellarAdmin.Resources.ResourcePaging.Page.get -> int
+StellarAdmin.Resources.ResourcePaging.Page.init -> void
+StellarAdmin.Resources.ResourcePaging.PageSize.get -> int
+StellarAdmin.Resources.ResourcePaging.PageSize.init -> void
+StellarAdmin.Resources.ResourcePaging.ResourcePaging(int Page, int PageSize) -> void
+StellarAdmin.Resources.ResourceRowDetailLoader
+StellarAdmin.Resources.ResourceRowDetailLoader.ResourceRowDetailLoader() -> void
+StellarAdmin.Resources.ResourceSort
+StellarAdmin.Resources.ResourceSort.<Clone>$() -> StellarAdmin.Resources.ResourceSort!
+StellarAdmin.Resources.ResourceSort.Deconstruct(out string! Field, out StellarAdmin.Resources.ResourceSortDirection Direction) -> void
+StellarAdmin.Resources.ResourceSort.Direction.get -> StellarAdmin.Resources.ResourceSortDirection
+StellarAdmin.Resources.ResourceSort.Direction.init -> void
+StellarAdmin.Resources.ResourceSort.Equals(StellarAdmin.Resources.ResourceSort? other) -> bool
+StellarAdmin.Resources.ResourceSort.Field.get -> string!
+StellarAdmin.Resources.ResourceSort.Field.init -> void
+StellarAdmin.Resources.ResourceSort.ResourceSort(string! Field, StellarAdmin.Resources.ResourceSortDirection Direction) -> void
+StellarAdmin.Resources.ResourceSortDirection
+StellarAdmin.Resources.ResourceSortDirection.Ascending = 0 -> StellarAdmin.Resources.ResourceSortDirection
+StellarAdmin.Resources.ResourceSortDirection.Descending = 1 -> StellarAdmin.Resources.ResourceSortDirection
+StellarAdmin.Resources.ResourceValidationError
+StellarAdmin.Resources.ResourceValidationError.<Clone>$() -> StellarAdmin.Resources.ResourceValidationError!
+StellarAdmin.Resources.ResourceValidationError.Deconstruct(out string? FieldName, out string! Message) -> void
+StellarAdmin.Resources.ResourceValidationError.Equals(StellarAdmin.Resources.ResourceValidationError? other) -> bool
+StellarAdmin.Resources.ResourceValidationError.FieldName.get -> string?
+StellarAdmin.Resources.ResourceValidationError.FieldName.init -> void
+StellarAdmin.Resources.ResourceValidationError.Message.get -> string!
+StellarAdmin.Resources.ResourceValidationError.Message.init -> void
+StellarAdmin.Resources.ResourceValidationError.ResourceValidationError(string? FieldName, string! Message) -> void
+StellarAdmin.Sidebar.ActionUserMenuItem
+StellarAdmin.Sidebar.ActionUserMenuItem.ActionName.get -> string!
+StellarAdmin.Sidebar.ActionUserMenuItem.Area.get -> string?
+StellarAdmin.Sidebar.ActionUserMenuItem.ControllerName.get -> string!
+StellarAdmin.Sidebar.ActionUserMenuItem.Icon.get -> string?
+StellarAdmin.Sidebar.ActionUserMenuItem.Text.get -> string!
+StellarAdmin.Sidebar.BrandingBuilder
+StellarAdmin.Sidebar.BrandingBuilder.Href.set -> void
+StellarAdmin.Sidebar.BrandingBuilder.Logo.set -> void
+StellarAdmin.Sidebar.BrandingBuilder.Subtitle.set -> void
+StellarAdmin.Sidebar.BrandingBuilder.Title.set -> void
+StellarAdmin.Sidebar.BrandingLogo
+StellarAdmin.Sidebar.IconBrandingLogo
+StellarAdmin.Sidebar.IconBrandingLogo.Name.get -> string!
+StellarAdmin.Sidebar.ImageBrandingLogo
+StellarAdmin.Sidebar.ImageBrandingLogo.DarkPath.get -> string?
+StellarAdmin.Sidebar.ImageBrandingLogo.Path.get -> string!
+StellarAdmin.Sidebar.ISidebarItemsProvider
+StellarAdmin.Sidebar.ISidebarItemsProvider.GetItemsAsync(Microsoft.AspNetCore.Http.HttpContext! httpContext, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Sidebar.SidebarItem!>!>!
+StellarAdmin.Sidebar.LogoutBuilder
+StellarAdmin.Sidebar.LogoutBuilder.AddAuthenticationScheme(string! scheme) -> StellarAdmin.Sidebar.LogoutBuilder!
+StellarAdmin.Sidebar.LogoutBuilder.Icon.set -> void
+StellarAdmin.Sidebar.LogoutBuilder.Path.set -> void
+StellarAdmin.Sidebar.LogoutBuilder.RedirectPath.set -> void
+StellarAdmin.Sidebar.LogoutBuilder.Show.set -> void
+StellarAdmin.Sidebar.LogoutUserMenuItem
+StellarAdmin.Sidebar.LogoutUserMenuItem.Icon.get -> string?
+StellarAdmin.Sidebar.LogoutUserMenuItem.Path.get -> string?
+StellarAdmin.Sidebar.LogoutUserMenuItem.Text.get -> string!
+StellarAdmin.Sidebar.PageUserMenuItem
+StellarAdmin.Sidebar.PageUserMenuItem.Area.get -> string?
+StellarAdmin.Sidebar.PageUserMenuItem.Icon.get -> string?
+StellarAdmin.Sidebar.PageUserMenuItem.PageName.get -> string!
+StellarAdmin.Sidebar.PageUserMenuItem.Text.get -> string!
+StellarAdmin.Sidebar.SeparatorUserMenuItem
+StellarAdmin.Sidebar.SidebarActionLinkItem
+StellarAdmin.Sidebar.SidebarActionLinkItem.Action.get -> string!
+StellarAdmin.Sidebar.SidebarActionLinkItem.Area.get -> string?
+StellarAdmin.Sidebar.SidebarActionLinkItem.Controller.get -> string!
+StellarAdmin.Sidebar.SidebarActionLinkItem.SidebarActionLinkItem(string! label, string! controller, string! action, string? area) -> void
+StellarAdmin.Sidebar.SidebarBrandModel
+StellarAdmin.Sidebar.SidebarBrandModel.Href.get -> string!
+StellarAdmin.Sidebar.SidebarBrandModel.Logo.get -> StellarAdmin.Sidebar.BrandingLogo?
+StellarAdmin.Sidebar.SidebarBrandModel.Subtitle.get -> string?
+StellarAdmin.Sidebar.SidebarBrandModel.Title.get -> string!
+StellarAdmin.Sidebar.SidebarGroupItem
+StellarAdmin.Sidebar.SidebarGroupItem.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Sidebar.SidebarLinkItemBase!>!
+StellarAdmin.Sidebar.SidebarGroupItem.SidebarGroupItem(string! label, System.Collections.Generic.IEnumerable<StellarAdmin.Sidebar.SidebarLinkItemBase!>! items) -> void
+StellarAdmin.Sidebar.SidebarItem
+StellarAdmin.Sidebar.SidebarItem.Label.get -> string!
+StellarAdmin.Sidebar.SidebarLinkBuilder
+StellarAdmin.Sidebar.SidebarLinkBuilder.Group.set -> void
+StellarAdmin.Sidebar.SidebarLinkBuilder.Icon.set -> void
+StellarAdmin.Sidebar.SidebarLinkBuilder.OpenInNewTab.set -> void
+StellarAdmin.Sidebar.SidebarLinkBuilder.Order.set -> void
+StellarAdmin.Sidebar.SidebarLinkBuilder.RequireAuthorization() -> StellarAdmin.Sidebar.SidebarLinkBuilder!
+StellarAdmin.Sidebar.SidebarLinkBuilder.RequireAuthorization(Microsoft.AspNetCore.Authorization.AuthorizationPolicy! policy) -> StellarAdmin.Sidebar.SidebarLinkBuilder!
+StellarAdmin.Sidebar.SidebarLinkBuilder.RequireAuthorization(params Microsoft.AspNetCore.Authorization.IAuthorizeData![]! authorizeData) -> StellarAdmin.Sidebar.SidebarLinkBuilder!
+StellarAdmin.Sidebar.SidebarLinkBuilder.RequireAuthorization(params string![]! policyNames) -> StellarAdmin.Sidebar.SidebarLinkBuilder!
+StellarAdmin.Sidebar.SidebarLinkBuilder.RequireAuthorization(System.Action<Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!>! configurePolicy) -> StellarAdmin.Sidebar.SidebarLinkBuilder!
+StellarAdmin.Sidebar.SidebarLinkItem
+StellarAdmin.Sidebar.SidebarLinkItem.Href.get -> string!
+StellarAdmin.Sidebar.SidebarLinkItem.SidebarLinkItem(string! label, string! href) -> void
+StellarAdmin.Sidebar.SidebarLinkItemBase
+StellarAdmin.Sidebar.SidebarLinkItemBase.Icon.get -> string?
+StellarAdmin.Sidebar.SidebarLinkItemBase.Icon.init -> void
+StellarAdmin.Sidebar.SidebarLinkItemBase.OpenInNewTab.get -> bool
+StellarAdmin.Sidebar.SidebarLinkItemBase.OpenInNewTab.init -> void
+StellarAdmin.Sidebar.SidebarLinkItemBase.Order.get -> int
+StellarAdmin.Sidebar.SidebarLinkItemBase.Order.init -> void
+StellarAdmin.Sidebar.SidebarLinkTarget
+StellarAdmin.Sidebar.SidebarPageLinkItem
+StellarAdmin.Sidebar.SidebarPageLinkItem.Area.get -> string?
+StellarAdmin.Sidebar.SidebarPageLinkItem.Page.get -> string!
+StellarAdmin.Sidebar.SidebarPageLinkItem.SidebarPageLinkItem(string! label, string! page, string? area) -> void
+StellarAdmin.Sidebar.SidebarUserMenuModel
+StellarAdmin.Sidebar.SidebarUserMenuModel.AvatarUrl.get -> string?
+StellarAdmin.Sidebar.SidebarUserMenuModel.Description.get -> string?
+StellarAdmin.Sidebar.SidebarUserMenuModel.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Sidebar.UserMenuItem!>!
+StellarAdmin.Sidebar.SidebarUserMenuModel.Logout.get -> StellarAdmin.Sidebar.LogoutUserMenuItem?
+StellarAdmin.Sidebar.SidebarUserMenuModel.Name.get -> string!
+StellarAdmin.Sidebar.UrlUserMenuItem
+StellarAdmin.Sidebar.UrlUserMenuItem.Href.get -> string!
+StellarAdmin.Sidebar.UrlUserMenuItem.Icon.get -> string?
+StellarAdmin.Sidebar.UrlUserMenuItem.Text.get -> string!
+StellarAdmin.Sidebar.UserMenuBuilder
+StellarAdmin.Sidebar.UserMenuBuilder.Add(StellarAdmin.Sidebar.UserMenuItem! item) -> StellarAdmin.Sidebar.UserMenuBuilder!
+StellarAdmin.Sidebar.UserMenuBuilder.AvatarClaimType.set -> void
+StellarAdmin.Sidebar.UserMenuBuilder.Clear() -> StellarAdmin.Sidebar.UserMenuBuilder!
+StellarAdmin.Sidebar.UserMenuBuilder.DescriptionClaimType.set -> void
+StellarAdmin.Sidebar.UserMenuBuilder.Logout(System.Action<StellarAdmin.Sidebar.LogoutBuilder!>! configure) -> StellarAdmin.Sidebar.UserMenuBuilder!
+StellarAdmin.Sidebar.UserMenuBuilder.NameClaimType.set -> void
+StellarAdmin.Sidebar.UserMenuItem
+StellarAdmin.Sidebar.UserMenuItemBuilder
+StellarAdmin.Sidebar.UserMenuItemBuilder.Icon.set -> void
+StellarAdmin.Sidebar.WordmarkBrandingLogo
+StellarAdmin.Sidebar.WordmarkBrandingLogo.DarkPath.get -> string?
+StellarAdmin.Sidebar.WordmarkBrandingLogo.Path.get -> string!
+StellarAdmin.StellarAdminBuilder
+StellarAdmin.StellarAdminBuilder.AddApplicationPart(System.Reflection.Assembly! assembly) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.AddController(System.Type! controllerType, string! controllerName) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.AddScript(string! path) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.AddSidebarLink(string! label, StellarAdmin.Sidebar.SidebarLinkTarget! target) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.AddSidebarLink(string! label, StellarAdmin.Sidebar.SidebarLinkTarget! target, System.Action<StellarAdmin.Sidebar.SidebarLinkBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.AddStylesheet(string! path) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.ConfigureBranding(System.Action<StellarAdmin.Sidebar.BrandingBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.ConfigureUI(System.Action<StellarAdmin.UI.StellarAdminUIBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.ConfigureUserMenu(System.Action<StellarAdmin.Sidebar.UserMenuBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.RequireAuthorization() -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.RequireAuthorization(Microsoft.AspNetCore.Authorization.AuthorizationPolicy! policy) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.RequireAuthorization(params Microsoft.AspNetCore.Authorization.IAuthorizeData![]! authorizeData) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.RequireAuthorization(params string![]! policyNames) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.RequireAuthorization(System.Action<Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!>! configurePolicy) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+StellarAdmin.StellarAdminBuilderExtensions
+StellarAdmin.StellarAdminBuilderExtensions.extension(StellarAdmin.StellarAdminBuilder!)
+StellarAdmin.StellarAdminBuilderExtensions.extension(StellarAdmin.StellarAdminBuilder!).AddResource<TResource>() -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
+StellarAdmin.StellarAdminBuilderExtensions.extension(StellarAdmin.StellarAdminBuilder!).AddResource<TResource>(string! slug) -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
+StellarAdmin.StellarAdminBuilderExtensions.extension(StellarAdmin.StellarAdminBuilder!).AddResource<TResource>(string! slug, System.Action<StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilderExtensions.extension(StellarAdmin.StellarAdminBuilder!).AddResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilderExtensions.extension(StellarAdmin.StellarAdminBuilder!).ConfigureResourceLabels(System.Action<StellarAdmin.Resources.Builders.ResourceLabelsBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminEndpointRouteBuilderExtensions
+StellarAdmin.StellarAdminEndpointRouteBuilderExtensions.extension(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder!)
+StellarAdmin.StellarAdminEndpointRouteBuilderExtensions.extension(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder!).MapStellarAdmin() -> Microsoft.AspNetCore.Builder.ControllerActionEndpointConventionBuilder!
+StellarAdmin.StellarAdminEndpointRouteBuilderExtensions.extension(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder!).MapStellarAdmin(Microsoft.AspNetCore.Http.PathString stellarAdminPath) -> Microsoft.AspNetCore.Builder.ControllerActionEndpointConventionBuilder!
+StellarAdmin.StellarAdminLayouts
+StellarAdmin.StellarAdminServiceCollectionExtensions
+StellarAdmin.StellarAdminServiceCollectionExtensions.extension(Microsoft.Extensions.DependencyInjection.IServiceCollection!)
+StellarAdmin.StellarAdminServiceCollectionExtensions.extension(Microsoft.Extensions.DependencyInjection.IServiceCollection!).AddStellarAdmin() -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminServiceCollectionExtensions.extension(Microsoft.Extensions.DependencyInjection.IServiceCollection!).AddStellarAdmin(System.Action<StellarAdmin.StellarAdminBuilder!>! configure) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+StellarAdmin.ViewPageTagHelper
+StellarAdmin.ViewPageTagHelper.Model.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel!
+StellarAdmin.ViewPageTagHelper.Model.set -> void
+StellarAdmin.ViewPageTagHelper.ViewPageTagHelper(Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine! viewEngine) -> void
+virtual StellarAdmin.Resources.Displays.FieldDisplay.RendersEmptyValue.get -> bool
+virtual StellarAdmin.Resources.Editors.FieldEditor.ClassNames.get -> StellarAdmin.Resources.Editors.EditorClassNames!
+virtual StellarAdmin.Resources.Editors.ItemMedia.EqualityContract.get -> System.Type!
+virtual StellarAdmin.Resources.Editors.ItemMedia.Equals(StellarAdmin.Resources.Editors.ItemMedia? other) -> bool
+virtual StellarAdmin.Resources.Editors.ItemMedia.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual StellarAdmin.Resources.Editors.LookupItems.ItemType.get -> System.Type?

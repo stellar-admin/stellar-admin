@@ -11,9 +11,13 @@
          case-sensitive on Linux/macOS. -->
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!-- A public API change fails the build until PublicAPI.Unshipped.txt records it. -->
+    <WarningsAsErrors>$(WarningsAsErrors);RS0016;RS0017</WarningsAsErrors>
     <PackageIcon>stellar-admin-symbol.png</PackageIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\logo\stellar-admin-symbol.png" Pack="true" PackagePath="" />
     <None Include="..\..\readme.md" Pack="true" PackagePath="\" />

@@ -66,7 +66,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J31 | Make the core `LookupItemsBuilder` fluent, like the EF Core one | Done (2026-10-17) |
 | J32 | Configure menu and forms options the same way | On hold (menu options to be removed) |
 | J33 | Fix small builder naming issues | Done (2026-10-17) |
-| J34 | Add PublicApiAnalyzers, and package validation after the preview | |
+| J34 | Add PublicApiAnalyzers, and package validation after the preview | Analyzers and CS1591 done (2026-10-17); package validation after the preview |
 | J35 | Pack `THIRD-PARTY-NOTICES.txt` | Done (2026-10-17) |
 | J36 | Rename the client events to one style | Done (2026-10-17) |
 | J37 | Document the global MVC hooks | Done (2026-10-17) |
@@ -592,6 +592,15 @@ Done (2026-10-17):
 ### J34. Guardrails
 
 Add PublicApiAnalyzers once the other items are done. Set a package validation baseline after the first preview. Stop suppressing CS1591 (missing XML comment) in the packaged projects.
+
+Done:
+- `Microsoft.CodeAnalysis.PublicApiAnalyzers` 5.6.0 is referenced from `src/Directory.Build.props`, so it covers StellarAdmin.UI, StellarAdmin and StellarAdmin.EntityFrameworkCore. RS0016 and RS0017 are errors.
+- Each project has an empty `PublicAPI.Shipped.txt` and a `PublicAPI.Unshipped.txt` with the current surface: 2363 lines for StellarAdmin.UI, 1633 for StellarAdmin and 64 for EF Core.
+- CS1591 is no longer suppressed in `src/Directory.Build.props` or `StellarAdmin.UI.csproj`. None of the three projects has a CS1591 warning.
+- `docs/development.md` explains how to update the lists with `dotnet format analyzers` and when to move Unshipped to Shipped.
+- All 1456 tests pass. The skills have no drift and skill validation passes.
+
+Still to do: move the Unshipped entries to Shipped at the preview release, and set the package validation baseline after it.
 
 ### J35. Third-party notices
 

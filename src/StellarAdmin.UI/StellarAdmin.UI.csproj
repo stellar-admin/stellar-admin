@@ -14,11 +14,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>$(NoWarn);CA2264</NoWarn>
-    <!-- CS1591 (missing XML comment) also fires on DI constructors and ProcessAsync
-         overrides, which never appear in Razor IntelliSense. The consumer-facing surface
-         (tag-helper classes, [HtmlAttributeName] properties, enums) is documented; the rest
-         is intentionally suppressed rather than filled with boilerplate. -->
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
