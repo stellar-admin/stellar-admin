@@ -190,7 +190,7 @@ For a new editor:
 
 1. A settings class deriving from `FieldEditor` and implementing `IFieldEditor<MyEditorHandler>`.
 2. A handler deriving from `FieldEditorHandler<MyEditor>` (or implementing `IFieldEditorHandler<MyEditor>`), taking the editor and any services in its constructor. `TemplateName` names the editor template; `PrepareAsync(FieldEditorContext context, CancellationToken cancellationToken)` can load request data.
-3. A template at `Views/Shared/EditorTemplates/{TemplateName}.cshtml` (or under `Areas/StellarAdmin/Views/Shared/`). It reads the editor and prepared data from `ViewData[ViewDataKeys.FormFieldProperties]` (`FormFieldProperties.Editor`, `.EditorData`), and renders inputs with `asp-for` on the model.
+3. A template at `Views/Shared/EditorTemplates/{TemplateName}.cshtml` (or under `Areas/StellarAdmin/Views/Shared/`). It inherits `FieldEditorView<MyEditor>` (`@inherits StellarAdmin.Areas.StellarAdmin.FieldEditorView<MyEditor>`), reads the typed settings from `Editor` and prepared data from `EditorData`, and renders inputs with `asp-for` on the model. `Title`, `Description`, `IsReadOnly` and `CellErrorId` are also available.
 4. `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { ... })`.
 
 Write the template's markup with `sa-*` components (stellar-admin-ui skill). For the editor to work in an inline row's cell, add a second template under `GridEditorTemplates/` ([inline editing](inline-editing.md#editors-in-cells)).

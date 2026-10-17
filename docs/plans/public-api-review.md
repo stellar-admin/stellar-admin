@@ -40,7 +40,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J5 | Tidy the protected hooks EF Core uses | |
 | J6 | Seal builders, options types, view models and the view component | Done (2026-10-17) |
 | J7 | Make tag helper plumbing internal or protected || Done (2026-10-17) |
-| J8 | Make only `FieldEditorView` and `FormFieldProperties` the documented editor contract | |
+| J8 | Make only `FieldEditorView` and `FormFieldProperties` the documented editor contract || Done (2026-10-17) |
 | J9 | Make `StellarAdminOptions` internal and give `StellarAdminBuilder` an internal constructor | |
 | J10 | Make the resource options read-only | |
 | J11 | Add the missing `TagHelper` suffix to five classes | |
@@ -205,7 +205,11 @@ Done:
 
 ### J8. Editor contract
 
-`editors.md` tells authors to cast `ViewData[ViewDataKeys.FormFieldProperties]`, even though `FieldEditorView<TEditor>` already does it. Document `FieldEditorView<TEditor>` instead. Make the other `ViewDataKeys` internal, except `FormFieldProperties`, `FieldDisplay` and `FieldDisplayData`. They connect the built-in form views and are not override points. Make `GridEditorHtmlHelperExtensions` internal.
+Done:
+- `editors.md` teaches `FieldEditorView<TEditor>` instead of casting `ViewData[ViewDataKeys.FormFieldProperties]`. The integration test's `ProductNameEditor.cshtml` inherits it.
+- All `ViewDataKeys` except `FieldDisplay` and `FieldDisplayData` are internal. `FormFieldProperties` is internal too, because no consumer outside this repository reads it (Jerrie, 2026-10-17).
+- `GridEditorHtmlHelperExtensions` stays public, because an override of `_IndexDataGrid.cshtml` renders inline editors with `GridEditorAsync`.
+- All 1378 tests pass.
 
 ### J9. StellarAdminOptions
 
