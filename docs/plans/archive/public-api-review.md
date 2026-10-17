@@ -1,6 +1,6 @@
 # Public API review before the preview release
 
-Status: proposed (2026-10-16). Nothing is implemented.
+Status: done (2026-10-17). Every item is implemented or settled, and the website follow-up is done.
 
 A read-only review of the public API of StellarAdmin.UI, StellarAdmin and StellarAdmin.EntityFrameworkCore before the first NuGet preview. It started from a reflection dump of the built assemblies (about 700 public types) and was checked against source. Every change below is cheap now and a breaking change after release.
 
@@ -66,7 +66,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J31 | Make the core `LookupItemsBuilder` fluent, like the EF Core one | Done (2026-10-17) |
 | J32 | Configure menu and forms options the same way | Done by removing the menu options (2026-10-17) |
 | J33 | Fix small builder naming issues | Done (2026-10-17) |
-| J34 | Add PublicApiAnalyzers, and package validation after the preview | Analyzers and CS1591 done (2026-10-17); package validation after the preview |
+| J34 | Add PublicApiAnalyzers, and package validation after the preview | Done (2026-10-17); no promotion or package validation during 0.x |
 | J35 | Pack `THIRD-PARTY-NOTICES.txt` | Done (2026-10-17) |
 | J36 | Rename the client events to one style | Done (2026-10-17) |
 | J37 | Document the global MVC hooks | Done (2026-10-17) |
@@ -607,7 +607,7 @@ Done:
 - `docs/development.md` explains how to update the lists with `dotnet format analyzers` and when to move Unshipped to Shipped.
 - All 1456 tests pass. The skills have no drift and skill validation passes.
 
-Still to do: move the Unshipped entries to Shipped at the preview release, and set the package validation baseline after it.
+Releases stay at 0.x for now, with no API stability promise (Jerrie, 2026-10-17). So the API is never promoted: everything stays in `PublicAPI.Unshipped.txt`, the Shipped files stay empty, and there is no package validation baseline. The analyzers still make every public API change visible in review. Promotion and package validation start when StellarAdmin promises a stable API, probably at 1.0. The readme says 0.x releases may contain breaking changes.
 
 ### J35. Third-party notices
 

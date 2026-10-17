@@ -24,7 +24,7 @@ AllowMissingPrunePackageData=true dotnet format analyzers src/StellarAdmin/Stell
 
 The command adds entries for new and changed members (RS0016). It doesn't remove entries for deleted members, so delete those lines from `PublicAPI.Unshipped.txt` by hand; the RS0017 errors name them.
 
-Review the diff of `PublicAPI.Unshipped.txt` like code: it is the public API change. When a package is released, move the Unshipped entries to Shipped. The packaged projects also report CS1591 for a public member without an XML comment.
+Review the diff of `PublicAPI.Unshipped.txt` like code: it is the public API change. During 0.x, StellarAdmin makes no API stability promise, so everything stays in Unshipped and the Shipped files stay empty. When releases start promising a stable API, move the Unshipped entries to Shipped at each release. The packaged projects also report CS1591 for a public member without an XML comment.
 
 ## File encoding
 

@@ -6,6 +6,8 @@
 
 StellarAdmin.UI is a collection of beautifully designed components based on [shadcn/ui](https://ui.shadcn.com/) which you can use to create CRUD screens in [ASP.NET Core](https://dotnet.microsoft.com/en-us/apps/aspnet) MVC and Razor Pages applications.
 
+> **Note:** StellarAdmin is in 0.x, so any release may contain breaking changes. Pin the version you use and read the release notes before you upgrade.
+
 <div align="center">
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![NuGet](https://img.shields.io/nuget/v/StellarAdmin.UI)](https://www.nuget.org/packages/StellarAdmin.UI/)
