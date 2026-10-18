@@ -32,7 +32,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
 | Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
 | Sign-in, roles, per-resource and per-link access | `RequireAuthorization` | [authorization](references/authorization.md) |
-| Replace or extend a generated page, global labels, template overrides | `Areas/StellarAdmin/Views/{slug}/Index.cshtml`, `sa-index-page`, `ConfigureResourceLabels` | [customization](references/customization.md) |
+| Replace or extend a generated page, the home page and its setup checklist, global labels, template overrides | `Areas/StellarAdmin/Views/{slug}/Index.cshtml`, `sa-index-page`, `ConfigureHomePage`, `ConfigureResourceLabels` | [customization](references/customization.md) |
 
 ## A complete resource
 

@@ -6,6 +6,7 @@ Add to or replace generated pages with Razor views in the app, change labels for
 
 - [View imports](#view-imports)
 - [Overriding a page](#overriding-a-page)
+- [Home page](#home-page)
 - [Add content to a generated page](#add-content-to-a-generated-page)
 - [Page tag helpers and slots](#page-tag-helpers-and-slots)
 - [Global labels](#global-labels)
@@ -43,6 +44,21 @@ Add a view named after the action in a folder named by the resource's **slug**: 
 - Models are in `StellarAdmin.Areas.StellarAdmin.ViewModels`. Use these public types, not the interfaces in `.Internal`.
 - Lookup is normal MVC view lookup, so `Areas/StellarAdmin/Views/Shared/ResourceIndex.cshtml` overrides the index of every resource.
 - Override to add to a page; keep `<sa-index-page>`, `<sa-form-page>` or `<sa-view-page>` to render the standard content rather than rebuilding grids and forms.
+
+## Home page
+
+In Development, the panel's home page (`/stellaradmin`) is a setup checklist: it shows which of resources, protection, name and logo, user menu, theme and sidebar the app has configured, with the code and instructions for a coding agent for each step. In other environments it links to the resources the user can open, or says the panel has no pages yet.
+
+Turn the checklist off to show the same page as other environments in Development:
+
+```csharp
+builder.Services.AddStellarAdmin(admin =>
+{
+    admin.ConfigureHomePage(home => home.ShowSetupChecklist = false);
+});
+```
+
+To replace the home page in every environment, add `Areas/StellarAdmin/Views/Home/Index.cshtml` to the app. Its model is internal, so don't declare `@model`; inject services or use a view component for the page's data. It needs the [view imports](#view-imports) like any other override.
 
 ## Add content to a generated page
 

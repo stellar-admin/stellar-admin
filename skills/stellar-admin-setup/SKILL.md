@@ -165,7 +165,7 @@ Stylesheets load after the panel's own, in registration order; `admin.AddScript(
 
 Building is not enough: configuration errors surface on the first request. Run the app and fetch the pages (sign in first if you protected the panel):
 
-1. `/stellaradmin` returns 200 and is styled. Raw `<sa-...>` tags in the HTML mean a view is missing its `_ViewImports.cshtml` tag helper registrations (see the stellar-admin skill's customization reference).
+1. `/stellaradmin` returns 200 and is styled. In Development it shows a setup checklist of the steps the app hasn't configured yet; that's expected. Raw `<sa-...>` tags in the HTML mean a view is missing its `_ViewImports.cshtml` tag helper registrations (see the stellar-admin skill's customization reference).
 2. The sidebar header shows the app's name.
 3. With resources: the sidebar lists each one, `/stellaradmin/{slug}` shows the grid with the configured columns and rows, and `/stellaradmin/{slug}/create` and `/stellaradmin/{slug}/edit/{id}` render and save for resources that allow them. Foreign keys show a list of related rows, not a number box.
 4. With protection: an anonymous request gets the challenge, a signed-in user without access is forbidden, an allowed user gets 200, and Log out in the sidebar footer signs them out.

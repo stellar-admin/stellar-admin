@@ -1,6 +1,6 @@
 # Home page setup checklist
 
-Status: phases 1 and 2 done (2026-10-18); phase 3 (docs) next. Approved design: `sandbox/html/home-setup.html` (option A only; the prototype stays as the record and is not rewritten after extraction).
+Status: phases 1 and 2 done, and the skill docs of phase 3 (2026-10-18); the website docs wait for the admin panel docs batch. Approved design: `sandbox/html/home-setup.html` (option A only; the prototype stays as the record and is not rewritten after extraction).
 
 ## Goal
 
@@ -95,4 +95,6 @@ Phase 2 (2026-10-18): `HomeController` calls `ResolveAsync` first and only build
 - `SetupStatus.HasResources` became `ResourceCount`, and `HasTheme` became `ThemeStylesheet` (with a computed `HasTheme`).
 
 Verification: `tests/StellarAdmin.IntegrationTests/Home/HomePageTests.cs` (8 tests: steps in Development, first open step, production links and empty state, turned off, protection through `admin.RequireAuthorization` and `MapStellarAdmin().RequireAuthorization`, user menu step with authentication) and `tests/StellarAdmin.EntityFrameworkCore.IntegrationTests/Home/HomePageTests.cs` (real `AddDbContext` with `DbSet` properties: suggests the entity that isn't a resource, with the EF Core package present). `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1`: 1500 passed, 0 failed. Browser check over CDP against AdminPlayground in Development: first undone step open, toggles set `aria-expanded`, choosing a tab selects it in every step and survives a reload, copy writes the clipboard and shows the check mark, light, dark and 390px width without overflow, no console errors. Not checked: the theme fixtures (Ops, Soft) and density modes. At phone width the Item component clamps step descriptions to two lines.
+
+Phase 3, skills (2026-10-18): the stellar-admin skill's task table and `references/customization.md` (a Home page section: the checklist, `ConfigureHomePage`, replacing `Home/Index.cshtml` without `@model`), and the stellar-admin-setup skill's verify step (the checklist is expected in Development). `dotnet run --project util/SkillsGenerator -- --check`: no drift. Outstanding: website docs for the home page, and correct docs link targets in `Home/SetupSteps.cs` and `_SetupChecklist.cshtml`, in the batch that creates the admin panel docs.
 
