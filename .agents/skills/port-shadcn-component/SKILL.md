@@ -8,6 +8,8 @@ description: >-
   component", "add X from Base UI / shadcn / base ui", or a link to
   ui.shadcn.com/docs/components/base/X — where X is any shadcn or Base UI component name
   (bubble, message, combobox, toast, ...).
+metadata:
+  internal: true
 ---
 
 # Porting a shadcn component

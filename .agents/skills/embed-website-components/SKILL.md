@@ -1,6 +1,8 @@
 ---
 name: embed-website-components
 description: Embed working StellarAdmin components directly into the React/TanStack website using generated HTML, a shared runtime and scoped CSS. Use when adding or maintaining inline homepage demonstrations; not for ordinary iframe docs demos or designing new library components.
+metadata:
+  internal: true
 ---
 
 # Embed website components

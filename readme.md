@@ -80,15 +80,19 @@ Documentation and code examples for all the Tag Helpers [can be found online](ht
 
 ## Using StellarAdmin with AI agents
 
-The [StellarAdmin UI skill](skills/stellar-admin-ui/SKILL.md) teaches agents how to build MVC and Razor Pages UIs in `.cshtml` files, with component references and workflows for forms, layout, and theming. Its supporting documentation is bundled under `skills/stellar-admin-ui/references/`. The [StellarAdmin theme skill](skills/stellar-admin-theme/SKILL.md) writes theme files from a description or brand colours (`--skill stellar-admin-theme`). Admin panel guidance is planned separately; see the [consumer skills overview](skills/README.md).
+StellarAdmin ships agent skills for each product:
 
-From your application's project directory, install the skill with [Vercel's skills CLI](https://github.com/vercel-labs/skills#readme):
+- The [StellarAdmin UI skill](skills/stellar-admin-ui/SKILL.md) teaches agents how to build MVC and Razor Pages UIs in `.cshtml` files, with component references and workflows for forms, layout, and theming. Its supporting documentation is bundled under `skills/stellar-admin-ui/references/`.
+- The [StellarAdmin theme skill](skills/stellar-admin-theme/SKILL.md) writes theme files from a description or brand colours.
+- The [admin panel setup skill](skills/stellar-admin-setup/SKILL.md) installs the admin panel, and the [admin panel skill](skills/stellar-admin/SKILL.md) builds resources, forms and the sidebar with it.
+
+From your application's project directory, install them with [Vercel's skills CLI](https://github.com/vercel-labs/skills#readme) and choose the ones for the product you use:
 
 ```bash
-npx skills add stellar-admin/stellar-admin --skill stellar-admin-ui
+npx skills add stellar-admin/stellar-admin
 ```
 
-The skill is maintained alongside StellarAdmin; its references may include changes newer than your installed NuGet package. See [installation and compatibility](skills/README.md#install-the-ui-skill) for prerequisites, agent selection, and local-checkout installation.
+The skills are maintained alongside StellarAdmin; their references may include changes newer than your installed NuGet package. See [installation and compatibility](skills/README.md#install-the-skills) for prerequisites, agent selection, installing a single skill, and local-checkout installation.
 
 `StellarAdmin.UI` also supplies the icon services in `StellarAdmin.UI.Icons`; configure icons, menus, and forms through `AddStellarAdminUI(ui => ...)`.
 

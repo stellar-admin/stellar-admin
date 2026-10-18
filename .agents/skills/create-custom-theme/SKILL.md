@@ -1,6 +1,8 @@
 ---
 name: create-custom-theme
 description: Add or change a StellarAdmin theme fixture (a theme file the samples' theme pickers, the website theme builder's seeds and the theme checks offer), or add a theme variable when a design needs one no theme variable covers. Use for product-side theme work; an application's own theme file is the consumer stellar-admin-theme skill's job.
+metadata:
+  internal: true
 ---
 
 # Theme fixtures and theme variables

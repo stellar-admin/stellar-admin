@@ -9,19 +9,27 @@ StellarAdmin has two products, each with its own consumer skills, plus a theme s
 | StellarAdmin — integrated admin panel | [stellar-admin-setup](stellar-admin-setup/SKILL.md) | Available: installing the admin panel (packages, registration, routes, protection, theme) and checking that it works. |
 | StellarAdmin — integrated admin panel | [stellar-admin](stellar-admin/SKILL.md) | Available: resources, index pages, columns, forms, inline editing, fields, editors, relationships, view pages, sidebar, authorization and customization. |
 
-## Install the UI skill
+## Install the skills
 
 With Node.js/npm and Git available, run this from your application's project directory:
 
 ```bash
-npx skills add stellar-admin/stellar-admin --skill stellar-admin-ui
+npx skills add stellar-admin/stellar-admin
 ```
 
-Choose your agent in the installer. Installation is project-scoped by default. Keep `--skill stellar-admin-ui` to select the consumer skill explicitly; this repository also contains internal development skills.
+The installer lists the four skills above. Choose the ones for the product you use, then your agent. Installation is project-scoped by default.
 
-To target a specific agent, append `--agent claude-code`, `--agent codex`, or another supported agent identifier. Add `--global` only if you want the skill available across projects. See [Vercel's installer documentation](https://github.com/vercel-labs/skills#readme) for supported agents and options.
+To target a specific agent, append `--agent claude-code`, `--agent codex`, or another supported agent identifier. Add `--global` only if you want the skills available across projects. See [Vercel's installer documentation](https://github.com/vercel-labs/skills#readme) for supported agents and options.
 
-This installs agent guidance and its bundled references. Install and configure the NuGet package separately using the [UI setup guide](stellar-admin-ui/references/setup.md).
+This installs agent guidance and its bundled references. Install and configure the NuGet packages separately: the [UI setup guide](stellar-admin-ui/references/setup.md) covers StellarAdmin.UI, and the stellar-admin-setup skill installs the admin panel.
+
+## Install the UI skill
+
+To install one skill without choosing in the installer, name it with `--skill`:
+
+```bash
+npx skills add stellar-admin/stellar-admin --skill stellar-admin-ui
+```
 
 ## Install the theme skill
 
@@ -58,4 +66,4 @@ The installer does not select guidance based on your installed NuGet version or 
 
 Each skill keeps its own `SKILL.md`, license, and supporting references inside its directory. Applications customizing admin panel markup can also use the UI skill; admin panel guidance does not duplicate the UI library reference.
 
-These are consumer skills for applications using StellarAdmin. Repository development skills live separately in `.agents/skills/`. See the [maintenance guide](../docs/repos/skills.md) for generation and ownership.
+These are consumer skills for applications using StellarAdmin. Repository development skills live separately in `.agents/skills/` and are marked `metadata.internal: true`, so the installer doesn't offer them; mark any new development skill the same way. See the [maintenance guide](../docs/repos/skills.md) for generation and ownership.

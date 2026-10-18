@@ -6,6 +6,8 @@ description: >-
   Jerrie until approved, and only then extract tag helpers and CSS. Use when designing a new
   built-in component, exploring visual variants (density, spacing, edge treatments), or whenever
   component work starts from "what should this look like" rather than a settled design.
+metadata:
+  internal: true
 ---
 
 # Prototype-first component design
