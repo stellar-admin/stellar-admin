@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Icon field</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Figtree:wght@400..700&display=swap"
+    />
+
+    <!--
+      An icon field: a string property holding the name of an icon registered in IconOptions (Lucide by
+      default, Tabler packs optional, names optionally prefixed). Templates: grid display, display, editor,
+      grid editor. Real built library assets; the icon pieces are candidates in the <style> block. The icons
+      are the real pack definitions, fetched from src/StellarAdmin.UI/Icons/Definitions, so the page needs
+      the static server (python3 -m http.server 8321 from the repository root); file:// can't fetch them.
+    -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <link id="theme-css" rel="stylesheet" />
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <style>
+      /* ---------------------------------------------------------------------------------------- */
+      /* Page chrome (prototype only)                                                              */
+      /* ---------------------------------------------------------------------------------------- */
+      :root { --sa-font-sans: "Inter", sans-serif; }
+      body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+      .proto-page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 220px; }
+      .proto-page > h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+      .proto-intro { margin: 0 0 12px; color: var(--sa-color-ink-muted); font-size: 14px; max-width: 95ch; }
+      .proto-section { margin-top: 72px; scroll-margin-top: 16px; }
+      .proto-section > h2 { margin: 0 0 4px; font-size: 20px; font-weight: 600; padding-top: 20px; border-top: 2px solid var(--sa-color-ink); }
+      .proto-section > p { margin: 0 0 16px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 95ch; }
+      .proto-section h3 { margin: 36px 0 4px; font-size: 15px; font-weight: 600; }
+      .proto-section h3 + p { margin: 0 0 10px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 95ch; }
+      .proto-section h4 { margin: 24px 0 8px; font-size: 13px; font-weight: 600; color: var(--sa-color-ink-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+      .proto-q { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-right: 6px; padding: 0 5px; border-radius: 999px; font-size: 11px; font-weight: 700; background: var(--sa-color-ink); color: var(--sa-color-canvas); vertical-align: 1px; box-sizing: border-box; }
+      .proto-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--proto-min, 240px), 1fr)); gap: 12px; margin: 0; }
+      .proto-cell {
+        display: grid; grid-template-rows: auto 1fr; gap: 10px; padding: 14px; min-width: 0;
+        background: var(--sa-color-surface); border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-box);
+      }
+      .proto-cell > figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--sa-color-ink-muted); }
+      .proto-cell > figcaption b { color: var(--sa-color-ink); font-weight: 600; }
+      .proto-cell[data-chosen] { box-shadow: 0 0 0 2px var(--sa-color-accent); border-color: transparent; }
+      .proto-opt {
+        display: inline-grid; place-items: center; width: 22px; height: 22px; padding: 0; cursor: pointer;
+        font: inherit; font-size: 12px; font-weight: 700; color: var(--sa-color-ink);
+        background: var(--sa-color-surface-subtle); border: var(--sa-border-width) solid var(--sa-color-line); border-radius: 6px;
+      }
+      .proto-cell[data-chosen] .proto-opt { background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); border-color: transparent; }
+      .proto-rec { margin-left: auto; padding: 1px 6px; border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--sa-color-success); border: var(--sa-border-width) solid currentColor; }
+      .proto-card { padding: 20px; background: var(--sa-color-surface); border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container); }
+      .proto-note { margin: 10px 0 0; font-size: 13px; color: var(--sa-color-ink-muted); max-width: 95ch; }
+      .proto-section code, .proto-sheet code, .proto-posted code { font-family: var(--sa-font-mono); font-size: 12px; }
+      .proto-form { display: grid; gap: 24px; max-width: 420px; }
+      .proto-posted { margin: 6px 0 0; font-size: 12px; color: var(--sa-color-ink-muted); }
+      .proto-loading { padding: 48px; text-align: center; color: var(--sa-color-ink-muted); }
+      .w-px { width: 1px; }
+      .proto-panel { max-width: 24rem; border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-overlay); background: var(--sa-color-surface-raised); overflow: hidden; }
+
+      /* Decision sheet */
+      .proto-sheet { margin: 24px 0 0; padding: 16px 20px; background: var(--sa-color-surface); border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container); }
+      .proto-sheet-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 8px; }
+      .proto-sheet-head h2 { margin: 0; font-size: 16px; font-weight: 600; }
+      .proto-sheet-head p { margin: 0; font-size: 13px; color: var(--sa-color-ink-muted); flex: 1; min-width: 20ch; }
+      .proto-sheet table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      .proto-sheet th, .proto-sheet td { text-align: left; padding: 6px 12px 6px 0; border-bottom: var(--sa-border-width) solid var(--sa-color-line); vertical-align: top; }
+      .proto-sheet tr.proto-group td { padding-top: 14px; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sa-color-ink-muted); }
+      .proto-sheet a { color: inherit; }
+      .proto-sheet td[data-answer] { font-weight: 600; white-space: nowrap; }
+      .proto-sheet td[data-answer][data-changed] { color: var(--sa-color-accent-text); }
+      .proto-sheet output { font-family: var(--sa-font-mono); font-size: 12px; }
+
+      .proto-controls button {
+        font: inherit; font-size: 13px; padding: 2px 8px; cursor: pointer; color: var(--sa-color-ink);
+        background: transparent; border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-control-sm);
+      }
+      .proto-controls button[aria-pressed="true"] { background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); border-color: transparent; }
+      .proto-controls {
+        position: fixed; right: 16px; bottom: 16px; z-index: 50;
+        display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center; padding: 12px; font-size: 13px;
+        background: var(--sa-color-surface-raised); color: var(--sa-color-ink);
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container); box-shadow: var(--sa-shadow-overlay);
+      }
+      .proto-controls .group { display: flex; gap: 4px; flex-wrap: wrap; }
+
+      /* ======================================================================================== */
+      /* Candidate CSS, written as the library would (tokens only)                                 */
+      /* ======================================================================================== */
+      @layer sa.components {
+        /* ---- Display: the icon, alone or with its name ---------------------------------------- */
+        .sa-icon-value { display: inline-flex; align-items: center; gap: calc(2 * var(--sa-unit)); min-width: 0; vertical-align: middle; }
+        .sa-icon-value > svg { flex: none; width: var(--sa-control-icon); height: var(--sa-control-icon); }
+        .sa-icon-value[data-tone="muted"] > svg { color: var(--sa-color-ink-muted); }
+        .sa-icon-value-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sa-icon-value-name[data-mono] { font-family: var(--sa-font-mono); font-size: 0.9em; color: var(--sa-color-ink-muted); }
+
+        /* A tinted tile around the icon, sized like the image thumbnail. */
+        .sa-icon-tile {
+          --_size: calc(8 * var(--sa-unit));
+          display: inline-grid; place-items: center; flex: none; width: var(--_size); height: var(--_size);
+          border-radius: min(var(--sa-radius-control-sm), 25%); background: var(--sa-color-tint); color: var(--sa-color-ink);
+        }
+        .sa-icon-tile > svg { width: 55%; height: 55%; }
+        .sa-icon-tile[data-size="sm"] { --_size: calc(7 * var(--sa-unit)); }
+        .sa-icon-tile[data-size="lg"] { --_size: calc(10 * var(--sa-unit)); }
+        .sa-icon-tile[data-size="xl"] { --_size: calc(16 * var(--sa-unit)); }
+
+        /* A name that isn't a registered icon: a dashed box where the icon would be. */
+        .sa-icon-missing {
+          display: inline-block; flex: none; width: var(--sa-control-icon); height: var(--sa-control-icon); box-sizing: border-box;
+          border: var(--sa-border-width) dashed var(--sa-color-ink-placeholder); border-radius: calc(var(--sa-unit));
+        }
+        .sa-icon-tile > .sa-icon-missing { width: 55%; height: 55%; }
+        .sa-icon-value[data-missing] .sa-icon-value-name { color: var(--sa-color-ink-muted); }
+        .sa-icon-value-warn { display: inline-flex; align-items: center; gap: var(--sa-unit); font-size: var(--sa-text-xs); color: var(--sa-color-danger-text); }
+        .sa-icon-value-warn > svg { width: 1em; height: 1em; }
+
+        /* ---- Editor trigger: looks like a select ---------------------------------------------- */
+        .sa-icon-picker-trigger {
+          display: flex; align-items: center; gap: calc(2 * var(--sa-unit)); width: 100%; text-align: start; cursor: pointer; font: inherit;
+        }
+        .sa-icon-picker-trigger > svg:first-child, .sa-icon-picker-trigger > .sa-icon-missing { flex: none; width: var(--sa-control-icon); height: var(--sa-control-icon); }
+        .sa-icon-picker-trigger > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sa-icon-picker-trigger > [data-placeholder] { color: var(--sa-color-ink-placeholder); }
+        .sa-icon-picker-trigger > .sa-icon-picker-chevron { flex: none; width: var(--sa-control-icon); height: var(--sa-control-icon); color: var(--sa-color-ink-muted); }
+        .sa-icon-picker-trigger[data-size="sm"] { height: var(--sa-control-h-sm); width: auto; padding-inline: calc(2 * var(--sa-unit)); gap: var(--sa-unit); }
+
+        /* ---- The picker panel: search, grid, status line --------------------------------------- */
+        .sa-icon-picker { --_cell: calc(10 * var(--sa-unit)); display: grid; grid-template-rows: auto 1fr auto; min-height: 0; }
+        .sa-icon-picker[data-cell="sm"] { --_cell: calc(8 * var(--sa-unit)); }
+        .sa-icon-picker[data-cell="lg"] { --_cell: calc(12 * var(--sa-unit)); }
+        .sa-icon-picker-search { padding: calc(2 * var(--sa-unit)); border-bottom: var(--sa-border-width) solid var(--sa-color-line); }
+        .sa-icon-picker-packs { display: flex; gap: var(--sa-unit); padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit)); border-bottom: var(--sa-border-width) solid var(--sa-color-line); }
+        .sa-icon-picker-scroll { overflow-y: auto; max-height: var(--_max-h, 17.5rem); padding: calc(1.5 * var(--sa-unit)); overscroll-behavior: contain; }
+        .sa-icon-picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--_cell), 1fr)); gap: 2px; }
+        .sa-icon-picker-heading {
+          grid-column: 1 / -1; padding: calc(2 * var(--sa-unit)) var(--sa-unit) var(--sa-unit);
+          font-size: var(--sa-text-xs); font-weight: 500; color: var(--sa-color-ink-muted);
+        }
+        .sa-icon-picker-heading:first-child { padding-top: 0; }
+        .sa-icon-picker-cell {
+          display: grid; place-items: center; height: var(--_cell); padding: 0; cursor: pointer; font: inherit;
+          border: 0; border-radius: var(--sa-radius-item); background: none; color: var(--sa-color-ink); outline: none;
+        }
+        .sa-icon-picker-cell > svg { width: var(--sa-control-icon); height: var(--sa-control-icon); pointer-events: none; }
+        .sa-icon-picker[data-cell="lg"] .sa-icon-picker-cell > svg { width: calc(6 * var(--sa-unit)); height: calc(6 * var(--sa-unit)); }
+        .sa-icon-picker-cell:hover { background: var(--sa-color-hover); }
+        .sa-icon-picker-cell:focus-visible { background: var(--sa-color-highlight); color: var(--sa-color-on-highlight); }
+        .sa-icon-picker-cell[aria-selected="true"] { background: var(--sa-color-selected); box-shadow: inset 0 0 0 2px var(--sa-color-accent); }
+        /* Labelled cells: the name under the icon. */
+        .sa-icon-picker[data-labels] .sa-icon-picker-grid { grid-template-columns: repeat(auto-fill, minmax(calc(20 * var(--sa-unit)), 1fr)); }
+        .sa-icon-picker[data-labels] .sa-icon-picker-cell { height: auto; gap: var(--sa-unit); padding: calc(2.5 * var(--sa-unit)) var(--sa-unit) calc(2 * var(--sa-unit)); }
+        .sa-icon-picker[data-labels] .sa-icon-picker-cell > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); }
+        .sa-icon-picker-empty { padding: calc(8 * var(--sa-unit)) calc(4 * var(--sa-unit)); text-align: center; font-size: var(--sa-text-body); color: var(--sa-color-ink-muted); }
+        .sa-icon-picker-status {
+          display: flex; align-items: center; gap: calc(2 * var(--sa-unit)); min-height: var(--sa-control-h-sm);
+          padding: var(--sa-unit) var(--sa-unit) var(--sa-unit) calc(3 * var(--sa-unit));
+          border-top: var(--sa-border-width) solid var(--sa-color-line); font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted);
+        }
+        .sa-icon-picker-status > [data-name] { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--sa-font-mono); color: var(--sa-color-ink); }
+        .sa-icon-picker-popover.sa-popover-content { width: min(24rem, calc(100vw - 2rem)); padding: 0; }
+        .sa-icon-picker-sheet .sa-icon-picker { flex: 1; }
+        .sa-icon-picker-sheet .sa-icon-picker-scroll { --_max-h: none; }
+
+        /* ---- Combobox: type to filter a list of names ----------------------------------------- */
+        .sa-icon-combobox-list.sa-popover-content { width: anchor-size(width); min-width: 16rem; padding: var(--sa-unit); max-height: 18rem; overflow-y: auto; }
+        .sa-icon-combobox-more { padding: calc(2 * var(--sa-unit)); font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); }
+        .sa-icon-combobox-list mark { background: none; color: inherit; font-weight: 600; }
+
+        /* ---- Curated list shown inline: a group of icon tiles --------------------------------- */
+        .sa-icon-choices { display: flex; flex-wrap: wrap; gap: calc(1.5 * var(--sa-unit)); }
+        .sa-icon-choice {
+          display: grid; place-items: center; width: calc(10 * var(--sa-unit)); height: calc(10 * var(--sa-unit)); padding: 0; cursor: pointer;
+          border: var(--sa-border-width) solid var(--sa-color-line-control); border-radius: var(--sa-radius-control-sm);
+          background: var(--sa-color-field); color: var(--sa-color-ink); box-shadow: var(--sa-shadow-control);
+        }
+        .sa-icon-choice > svg { width: var(--sa-control-icon); height: var(--sa-control-icon); pointer-events: none; }
+        .sa-icon-choice:hover { border-color: var(--sa-color-line-control-hover); }
+        .sa-icon-choice:focus-visible { outline: 2px solid var(--sa-color-accent); outline-offset: 2px; }
+        .sa-icon-choice[aria-checked="true"] { background: var(--sa-color-selected); border-color: var(--sa-color-accent); box-shadow: inset 0 0 0 1px var(--sa-color-accent); }
+        .sa-icon-choices[data-labels] .sa-icon-choice { width: auto; height: auto; min-width: calc(18 * var(--sa-unit)); gap: var(--sa-unit); padding: calc(2.5 * var(--sa-unit)) calc(2 * var(--sa-unit)) calc(2 * var(--sa-unit)); }
+        .sa-icon-choices[data-labels] .sa-icon-choice > span { font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); }
+
+        /* ---- In the grid ---------------------------------------------------------------------- */
+        .sa-table-cell[data-icon-cell] { padding-block: calc(1.5 * var(--sa-unit)); }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="proto-page">
+      <h1>Icon field</h1>
+      <p class="proto-intro">
+        A string property holding the name of a registered icon, such as an amenity's <code>Icon</code>. One section per template: <strong>grid display</strong>, <strong>display</strong>, <strong>editor</strong>, <strong>grid editor</strong>. Each starts with the recommended candidate, then numbered questions with lettered options; click a letter to choose. The icons are the real registered packs, so the picker searches all <span data-total>…</span> of them. Use <strong>Registered icons</strong> in the control bar to add Tabler outline (with the prefix <code>tabler-</code>) and see the picker at 7,000 icons.
+      </p>
+
+      <section class="proto-sheet" aria-labelledby="sheet-title">
+        <div class="proto-sheet-head">
+          <h2 id="sheet-title">Decisions</h2>
+          <p>Recommendations are preselected; click an option's letter in its section to change it.</p>
+          <output id="sheet-summary"></output>
+          <button type="button" class="sa-button sa-button-variant-outline sa-button-size-sm" data-slot="button" id="sheet-copy">Copy answers</button>
+          <button type="button" class="sa-button sa-button-variant-ghost sa-button-size-sm" data-slot="button" id="sheet-reset">Reset</button>
+        </div>
+        <table id="sheet"></table>
+      </section>
+
+      <div id="content"><p class="proto-loading">Loading the icon packs…</p></div>
+    </main>
+
+    <aside class="proto-controls" aria-label="Prototype controls">
+      <span>Theme</span>
+      <div class="group" data-control="theme">
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="ops" aria-pressed="false">Ops</button>
+        <button data-value="soft" aria-pressed="false">Soft</button>
+        <button data-value="ledger" aria-pressed="false">Ledger</button>
+      </div>
+      <span>Mode</span>
+      <div class="group" data-control="mode">
+        <button data-value="light" aria-pressed="true">Light</button>
+        <button data-value="dark" aria-pressed="false">Dark</button>
+      </div>
+      <span>Density</span>
+      <div class="group" data-control="density">
+        <button data-value="compact" aria-pressed="false">Compact</button>
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="comfortable" aria-pressed="false">Comfortable</button>
+      </div>
+      <span>Registered icons</span>
+      <div class="group" data-control="icons">
+        <button data-value="lucide" aria-pressed="true">Lucide</button>
+        <button data-value="both" aria-pressed="false">Lucide + Tabler</button>
+      </div>
+    </aside>
+
+    <script>
+      /* ======================================================================================== */
+      /* Helpers                                                                                  */
+      /* ======================================================================================== */
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      let uid = 0;
+      const nextId = (p) => `${p}-${++uid}`;
+      const fmt = (n) => n.toLocaleString("en");
+      const button = (variant, size, content, attrs = "") => `<button type="button" data-slot="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}" ${attrs}>${content}</button>`;
+
+      const params = new URLSearchParams(location.search);
+      const state = {
+        theme: params.get("theme") ?? "default",
+        mode: params.get("mode") ?? "light",
+        density: params.get("density") ?? "default",
+        icons: params.get("icons") ?? "lucide",
+      };
+
+      /* Registered icons: name -> shapes, like IconOptions after AddIconPack */
+      const PACKS = { lucide: new Map(), tabler: new Map() };
+      let REGISTERED = new Map();
+      let NAMES = [];
+      const TABLER_PREFIX = "tabler-";
+      const packOf = (name) => (name.startsWith(TABLER_PREFIX) ? "tabler" : "lucide");
+      const PACK_TITLES = { lucide: "Lucide", tabler: "Tabler outline" };
+
+      const svgCache = new Map();
+      const ATTRS = 'xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+      function icon(name, cls = "") {
+        const key = `${name}|${cls}`;
+        if (svgCache.has(key)) return svgCache.get(key);
+        const n = String(name ?? "").toLowerCase();
+        // Registered names first; the pack questions show Tabler even when it isn't registered
+        const shapes = REGISTERED.get(n) ?? (n.startsWith(TABLER_PREFIX) ? PACKS.tabler.get(n.slice(TABLER_PREFIX.length)) : PACKS.lucide.get(n));
+        if (!shapes) return null;
+        const html = `<svg ${ATTRS}${cls ? ` class="${cls}"` : ""}>${shapes.map(([t, a]) => `<${t} ${Object.entries(a).map(([k, v]) => `${k}="${esc(v)}"`).join(" ")}/>`).join("")}</svg>`;
+        svgCache.set(key, html);
+        return html;
+      }
+      const registered = (name) => !!name && REGISTERED.has(String(name).toLowerCase());
+      const missing = '<span class="sa-icon-missing" aria-hidden="true"></span>';
+
+      /* ======================================================================================== */
+      /* Display                                                                                  */
+      /* ======================================================================================== */
+      /* opts: show (icon|name|tile|tile-name|mono), tone, unknown (box|name|dash), size */
+      function iconValue(name, o = {}) {
+        const { show = "icon", tone, unknown = "box", size } = o;
+        if (!name) return `<span style="color:var(--sa-color-ink-muted)">—</span>`;
+        const known = registered(name);
+        if (!known && unknown === "dash") return `<span style="color:var(--sa-color-ink-muted)" title="${esc(name)} isn't a registered icon">—</span>`;
+        const glyph = known ? icon(name) : missing;
+        const title = known ? name : `${name} isn't a registered icon`;
+        const nameHtml = (mono) => `<span class="sa-icon-value-name"${mono ? " data-mono" : ""}>${esc(name)}</span>`;
+        const forceName = !known && unknown === "name";
+        const tile = (inner) => `<span class="sa-icon-tile"${size ? ` data-size="${size}"` : ""}>${inner}</span>`;
+        const attrs = `class="sa-icon-value"${tone ? ` data-tone="${tone}"` : ""}${known ? "" : " data-missing"} title="${esc(title)}"`;
+        switch (show) {
+          case "name": return `<span ${attrs}>${glyph}${nameHtml()}</span>`;
+          case "mono": return `<span ${attrs}>${glyph}${nameHtml(true)}</span>`;
+          case "tile": return `<span ${attrs}>${tile(glyph)}${forceName ? nameHtml() : ""}</span>`;
+          case "tile-name": return `<span ${attrs}>${tile(glyph)}${nameHtml()}</span>`;
+          default: return `<span ${attrs} role="img" aria-label="${esc(title)}">${glyph}${forceName ? nameHtml() : ""}</span>`;
+        }
+      }
+
+      /* ======================================================================================== */
+      /* The picker panel: search, grid, status line                                              */
+      /* ======================================================================================== */
+      function matches(names, query) {
+        const q = query.trim().toLowerCase().replace(/\s+/g, " ");
+        if (!q) return names;
+        const terms = q.split(" ");
+        const joined = q.replace(/ /g, "-");
+        const hits = names.filter((n) => terms.every((t) => n.includes(t)));
+        // Exact, then starts with, then the rest; each alphabetical
+        const rank = (n) => {
+          const bare = n.startsWith(TABLER_PREFIX) ? n.slice(TABLER_PREFIX.length) : n;
+          return bare === joined ? 0 : bare.startsWith(joined) ? 1 : 2;
+        };
+        return hits.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+      }
+
+      /* opts: names, value, cell (sm|md|lg), labels, grouping (none|headings|tabs), allowClear, query, onPick, onClear, maxH */
+      class IconPanel {
+        constructor(host, o) {
+          this.o = o;
+          this.pack = "all";
+          this.limit = 0;
+          const listId = nextId("icons");
+          const total = o.names.length;
+          host.innerHTML = `<div class="sa-icon-picker" data-cell="${o.cell ?? "md"}"${o.labels ? " data-labels" : ""}${o.maxH ? ` style="--_max-h:${o.maxH}"` : ""}>
+            <div class="sa-icon-picker-search">
+              <div role="group" data-slot="input-group" class="sa-input-group">
+                <input type="search" placeholder="Search ${fmt(total)} icons" aria-label="Search icons" aria-controls="${listId}" autocomplete="off" spellcheck="false" data-slot="input-group-control" class="sa-input sa-input-group-input" data-search>
+                <div role="group" data-slot="input-group-addon" data-align="start" class="sa-input-group-addon sa-input-group-addon-align-start">${icon("search")}</div>
+              </div>
+            </div>
+            ${o.grouping === "tabs" ? `<div class="sa-icon-picker-packs" data-packs>${["all", "lucide", "tabler"].map((p) => button(p === "all" ? "secondary" : "ghost", "xs", p === "all" ? "All" : PACK_TITLES[p], `data-pack="${p}"`)).join("")}</div>` : "<div hidden></div>"}
+            <div class="sa-icon-picker-scroll" data-scroll><div class="sa-icon-picker-grid" id="${listId}" role="listbox" aria-label="Icons" data-grid></div></div>
+            <div class="sa-icon-picker-status"><span data-name></span><span data-count></span>${o.allowClear !== false ? button("ghost", "xs", "Clear", "data-clear") : ""}</div>
+          </div>`;
+          this.root = host.firstElementChild;
+          this.search = this.root.querySelector("[data-search]");
+          this.grid = this.root.querySelector("[data-grid]");
+          this.scroll = this.root.querySelector("[data-scroll]");
+          this.nameEl = this.root.querySelector("[data-name]");
+          this.countEl = this.root.querySelector("[data-count]");
+          this.search.value = o.query ?? "";
+          this.search.addEventListener("input", () => this.filter());
+          this.search.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowDown") { e.preventDefault(); this.grid.querySelector("[data-icon]")?.focus(); }
+            if (e.key === "Enter") { e.preventDefault(); const first = this.grid.querySelector("[data-icon]"); if (first) this.pick(first.dataset.icon); }
+          });
+          this.root.querySelector("[data-clear]")?.addEventListener("click", () => o.onClear?.());
+          this.root.querySelector("[data-packs]")?.addEventListener("click", (e) => {
+            const b = e.target.closest("[data-pack]");
+            if (!b) return;
+            this.pack = b.dataset.pack;
+            this.root.querySelectorAll("[data-pack]").forEach((x) => (x.className = x.className.replace(/sa-button-variant-\w+/, `sa-button-variant-${x === b ? "secondary" : "ghost"}`)));
+            this.filter();
+          });
+          this.grid.addEventListener("click", (e) => { const c = e.target.closest("[data-icon]"); if (c) this.pick(c.dataset.icon); });
+          this.grid.addEventListener("pointerover", (e) => { const c = e.target.closest("[data-icon]"); if (c) this.showName(c.dataset.icon); });
+          this.grid.addEventListener("pointerleave", () => this.showName(null));
+          this.grid.addEventListener("focusin", (e) => { const c = e.target.closest("[data-icon]"); if (c) this.showName(c.dataset.icon); });
+          this.grid.addEventListener("keydown", (e) => this.key(e));
+          this.io = new IntersectionObserver((entries) => entries.some((x) => x.isIntersecting) && this.more(), { root: this.scroll, rootMargin: "200px" });
+          this.filter();
+        }
+        setValue(v) { this.o.value = v; this.grid.querySelectorAll("[data-icon]").forEach((c) => c.setAttribute("aria-selected", String(c.dataset.icon === v))); this.showName(null); }
+        reset() { this.search.value = ""; this.filter(); }
+        pick(name) { this.setValue(name); this.o.onPick?.(name); }
+        showName(n) {
+          const v = n ?? this.o.value;
+          this.nameEl.textContent = v ?? "";
+          this.nameEl.style.fontFamily = v ? "" : "inherit";
+          if (!v) this.nameEl.textContent = "No icon";
+        }
+        filter() {
+          let names = this.o.names;
+          if (this.pack !== "all") names = names.filter((n) => packOf(n) === this.pack);
+          const q = this.search.value;
+          let list = matches(names, q);
+          if (this.o.grouping === "headings") list = [...list.filter((n) => packOf(n) === "lucide"), ...list.filter((n) => packOf(n) === "tabler")];
+          // With no query, the current icon comes first so it's in view.
+          if (!q.trim() && this.o.value && list.includes(this.o.value) && this.o.grouping !== "headings") list = [this.o.value, ...list.filter((n) => n !== this.o.value)];
+          this.list = list;
+          this.limit = 0;
+          this.grid.innerHTML = "";
+          this.scroll.scrollTop = 0;
+          this.countEl.textContent = q.trim() ? `${fmt(list.length)} of ${fmt(this.o.names.length)}` : `${fmt(list.length)} icons`;
+          if (!list.length) { this.grid.innerHTML = `<div class="sa-icon-picker-empty" style="grid-column:1/-1">No icons match “${esc(q.trim())}”.</div>`; this.showName(null); return; }
+          this.more();
+          this.showName(null);
+        }
+        // Renders the next batch; a sentinel at the end renders more on scroll
+        more() {
+          const start = this.limit;
+          const end = Math.min(this.list.length, start + 240);
+          if (start >= end) return;
+          this.grid.querySelector("[data-sentinel]")?.remove();
+          let html = "";
+          let prevPack = start > 0 ? packOf(this.list[start - 1]) : null;
+          for (let i = start; i < end; i++) {
+            const n = this.list[i];
+            if (this.o.grouping === "headings" && packOf(n) !== prevPack) {
+              prevPack = packOf(n);
+              const count = this.list.filter((x) => packOf(x) === prevPack).length;
+              html += `<div class="sa-icon-picker-heading" role="presentation">${PACK_TITLES[prevPack]} · ${fmt(count)}</div>`;
+            }
+            html += `<button type="button" class="sa-icon-picker-cell" role="option" tabindex="-1" data-icon="${n}" aria-selected="${n === this.o.value}" aria-label="${n}"${this.o.labels ? "" : ` title="${n}"`}>${icon(n)}${this.o.labels ? `<span>${n}</span>` : ""}</button>`;
+          }
+          this.grid.insertAdjacentHTML("beforeend", html);
+          this.limit = end;
+          if (end < this.list.length) {
+            this.grid.insertAdjacentHTML("beforeend", '<div data-sentinel style="grid-column:1/-1;height:1px"></div>');
+            this.io.observe(this.grid.querySelector("[data-sentinel]"));
+          }
+        }
+        key(e) {
+          const cells = [...this.grid.querySelectorAll("[data-icon]")];
+          const i = cells.indexOf(document.activeElement);
+          if (i < 0) return;
+          const cols = getComputedStyle(this.grid).gridTemplateColumns.split(" ").length;
+          const go = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: cols, ArrowUp: -cols, Home: -i, End: cells.length - 1 - i }[e.key];
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.pick(cells[i].dataset.icon); return; }
+          if (go === undefined) return;
+          e.preventDefault();
+          const j = i + go;
+          if (j < 0) { this.search.focus(); return; }
+          if (j >= cells.length - cols && this.limit < this.list.length) this.more();
+          ([...this.grid.querySelectorAll("[data-icon]")][Math.min(j, this.grid.querySelectorAll("[data-icon]").length - 1)])?.focus();
+        }
+      }
+
+      /* ======================================================================================== */
+      /* Editors                                                                                  */
+      /* ======================================================================================== */
+      const chevrons = () => icon("chevrons-up-down", "sa-icon-picker-chevron");
+      function triggerContent(value) {
+        if (!value) return `<span data-placeholder>Choose an icon</span>${chevrons()}`;
+        return `${registered(value) ? icon(value) : missing}<span>${esc(value)}</span>${chevrons()}`;
+      }
+
+      /* opts: mode (popover|combobox|sheet|typed|inline|grid-cell), value, names, cell, labels, grouping, label, inline (curated presentation) */
+      class IconEditor {
+        constructor(host, o) {
+          this.host = host;
+          this.o = { names: NAMES, label: "Icon", ...o };
+          this.value = o.value ?? null;
+          this.id = nextId("icon-field");
+          this.render();
+        }
+        set(v) {
+          this.value = v;
+          this.host.querySelector("[data-posted]")?.replaceChildren(...this.posted());
+          this.update?.();
+        }
+        posted() {
+          const p = document.createElement("span");
+          p.innerHTML = this.value ? `Posts <code>${esc(this.value)}</code>` : "Posts an empty value";
+          return [p];
+        }
+        field(control, after = "") {
+          return `<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field">
+            <label for="${this.id}" data-slot="field-label" class="sa-label sa-field-label">${this.o.label}</label>
+            ${control}
+            ${this.o.description ? `<p data-slot="field-description" class="sa-field-description">${this.o.description}</p>` : ""}
+          </div>${after}${this.o.cell === "grid" ? "" : `<p class="proto-posted" data-posted></p>`}`;
+        }
+        render() {
+          const m = this.o.mode;
+          if (m === "inline") return this.renderInline();
+          if (m === "combobox") return this.renderCombobox();
+          if (m === "typed") return this.renderTyped();
+          if (m === "sheet") return this.renderSheet();
+          return this.renderPopover();
+        }
+        popoverPanel(popId, anchor, extra = "") {
+          return `<div id="${popId}" popover data-slot="popover-content" class="sa-popover-content sa-icon-picker-popover anchored-bottom-start" style="position-anchor:--${anchor}" ${extra}><div data-panel></div></div>`;
+        }
+        wirePanel(pop, onClose) {
+          const panel = new IconPanel(pop.querySelector("[data-panel]"), {
+            names: this.o.names, value: this.value, cell: this.o.cell, labels: this.o.labels, grouping: this.o.grouping,
+            allowClear: !this.o.required,
+            onPick: (n) => { this.set(n); onClose(); },
+            onClear: () => { this.set(null); panel.setValue(null); onClose(); },
+          });
+          return panel;
+        }
+        renderPopover() {
+          const popId = `${this.id}-pop`;
+          const small = this.o.mode === "grid-cell";
+          this.host.innerHTML = this.field(`
+            <button type="button" id="${this.id}" class="${small ? "sa-button sa-button-variant-outline sa-button-size-sm" : "sa-input"} sa-icon-picker-trigger" ${small ? 'data-size="sm"' : ""} popovertarget="${popId}" style="anchor-name:--${popId}" aria-haspopup="dialog" data-trigger>${triggerContent(this.value)}</button>`, this.popoverPanel(popId, popId));
+          if (small) this.host.querySelector("label").classList.add("sr-only");
+          const pop = $(popId);
+          const trigger = this.host.querySelector("[data-trigger]");
+          const panel = this.wirePanel(pop, () => pop.hidePopover());
+          pop.addEventListener("toggle", (e) => {
+            if (e.newState === "open") { panel.setValue(this.value); panel.reset(); panel.search.focus(); }
+            else trigger.focus({ preventScroll: true });
+          });
+          this.update = () => {
+            trigger.innerHTML = small ? (this.value ? (registered(this.value) ? icon(this.value) : missing) : `<span data-placeholder>—</span>`) + chevrons() : triggerContent(this.value);
+            trigger.title = small ? (this.value ?? "No icon") : "";
+          };
+          this.update();
+          this.set(this.value);
+        }
+        renderSheet() {
+          const dlgId = `${this.id}-sheet`;
+          this.host.innerHTML = this.field(`
+            <button type="button" id="${this.id}" class="sa-input sa-icon-picker-trigger" commandfor="${dlgId}" command="show-modal" data-trigger>${triggerContent(this.value)}</button>`, `
+            <sel-dialog><dialog id="${dlgId}" data-slot="sheet-content" data-side="right" class="sa-sheet-content sa-icon-picker-sheet" closedby="any">
+              <button type="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close" commandfor="${dlgId}" command="close" data-slot="button">${icon("x")}<span class="sr-only">Close</span></button>
+              <div class="sa-sheet-body" style="display:flex;flex-direction:column;min-height:0;height:100%">
+                <div data-slot="sheet-header" class="sa-sheet-header"><h2 data-slot="sheet-title" class="sa-sheet-title">Choose an icon</h2><p data-slot="sheet-description" class="sa-sheet-description">${this.o.label} for the amenity.</p></div>
+                <div data-panel style="display:flex;flex-direction:column;min-height:0;flex:1"></div>
+              </div>
+            </dialog></sel-dialog>`);
+          const dlg = $(dlgId);
+          const trigger = this.host.querySelector("[data-trigger]");
+          const panel = this.wirePanel(dlg, () => dlg.close());
+          new MutationObserver(() => { if (dlg.open) { panel.setValue(this.value); panel.reset(); panel.search.focus(); } }).observe(dlg, { attributes: true, attributeFilter: ["open"] });
+          this.update = () => (trigger.innerHTML = triggerContent(this.value));
+          this.set(this.value);
+        }
+        renderTyped() {
+          const popId = `${this.id}-pop`;
+          this.host.innerHTML = this.field(`
+            <div role="group" data-slot="input-group" class="sa-input-group" style="anchor-name:--${popId}">
+              <input id="${this.id}" value="${esc(this.value ?? "")}" placeholder="Icon name" autocomplete="off" spellcheck="false" data-slot="input-group-control" class="sa-input sa-input-group-input" data-input>
+              <div role="group" data-slot="input-group-addon" data-align="start" class="sa-input-group-addon sa-input-group-addon-align-start" data-preview></div>
+              <div role="group" data-slot="input-group-addon" data-align="end" class="sa-input-group-addon sa-input-group-addon-align-end">
+                <button type="button" popovertarget="${popId}" class="sa-button sa-button-variant-ghost sa-button-size-default sa-input-group-button sa-input-group-button-size-xs" data-size="xs" data-slot="button">Browse</button>
+              </div>
+            </div>
+            <p data-slot="field-description" class="sa-field-description" data-warn hidden></p>`, this.popoverPanel(popId, popId));
+          const pop = $(popId);
+          const input = this.host.querySelector("[data-input]");
+          const panel = this.wirePanel(pop, () => pop.hidePopover());
+          pop.addEventListener("toggle", (e) => { if (e.newState === "open") { panel.setValue(this.value); panel.reset(); panel.search.focus(); } });
+          input.addEventListener("input", () => this.set(input.value.trim() || null));
+          this.update = () => {
+            if (document.activeElement !== input) input.value = this.value ?? "";
+            const v = this.value;
+            this.host.querySelector("[data-preview]").innerHTML = v ? (registered(v) ? icon(v) : missing) : icon("search");
+            const warn = this.host.querySelector("[data-warn]");
+            warn.hidden = !v || registered(v);
+            warn.innerHTML = `<span class="sa-icon-value-warn">${icon("triangle-alert")}<span><code>${esc(v)}</code> isn't a registered icon.</span></span>`;
+          };
+          this.set(this.value);
+        }
+        renderCombobox() {
+          const popId = `${this.id}-list`;
+          this.host.innerHTML = this.field(`
+            <div role="group" data-slot="input-group" class="sa-input-group" style="anchor-name:--${popId}">
+              <input id="${this.id}" value="${esc(this.value ?? "")}" placeholder="Search icons" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${popId}" autocomplete="off" spellcheck="false" data-slot="input-group-control" class="sa-input sa-input-group-input" data-input>
+              <div role="group" data-slot="input-group-addon" data-align="start" class="sa-input-group-addon sa-input-group-addon-align-start" data-preview></div>
+              <div role="group" data-slot="input-group-addon" data-align="end" class="sa-input-group-addon sa-input-group-addon-align-end">${chevrons()}</div>
+            </div>`, `
+            <div id="${popId}" popover="manual" class="sa-popover-content sa-icon-combobox-list anchored-bottom-start" style="position-anchor:--${popId}"><div class="sa-command" style="background:none"><div role="listbox" data-list></div></div></div>`);
+          const input = this.host.querySelector("[data-input]");
+          const pop = $(popId);
+          const list = pop.querySelector("[data-list]");
+          let active = 0;
+          let items = [];
+          const LIMIT = 50;
+          const open = () => { if (!pop.matches(":popover-open")) pop.showPopover(); input.setAttribute("aria-expanded", "true"); };
+          const close = () => { if (pop.matches(":popover-open")) pop.hidePopover(); input.setAttribute("aria-expanded", "false"); };
+          const draw = () => {
+            const q = input.value === this.value ? "" : input.value;
+            const hits = matches(this.o.names, q);
+            items = hits.slice(0, LIMIT);
+            active = Math.max(0, items.indexOf(this.value));
+            const hl = (n) => { const t = q.trim().toLowerCase(); if (!t) return n; const i = n.indexOf(t.replace(/\s+/g, "-")); return i < 0 ? n : `${n.slice(0, i)}<mark>${n.slice(i, i + t.length)}</mark>${n.slice(i + t.length)}`; };
+            list.innerHTML = items.length
+              ? items.map((n, i) => `<div role="option" aria-selected="${n === this.value}" data-selected="${i === active}" data-slot="command-item" class="sa-command-item" data-icon="${n}">${icon(n)}<span>${hl(n)}</span></div>`).join("") +
+                (hits.length > LIMIT ? `<div class="sa-icon-combobox-more">${fmt(hits.length - LIMIT)} more. Keep typing to narrow the list.</div>` : "")
+              : `<div class="sa-command-empty">No icons match.</div>`;
+            list.querySelector('[data-selected="true"]')?.scrollIntoView({ block: "nearest" });
+          };
+          const move = (d) => { const els = list.querySelectorAll("[data-icon]"); if (!els.length) return; els[active]?.setAttribute("data-selected", "false"); active = (active + d + els.length) % els.length; els[active].setAttribute("data-selected", "true"); els[active].scrollIntoView({ block: "nearest" }); };
+          const choose = (n) => { this.set(n); input.value = n; close(); };
+          input.addEventListener("focus", () => { input.select(); draw(); open(); });
+          input.addEventListener("input", () => { draw(); open(); });
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowDown") { e.preventDefault(); open(); move(1); }
+            else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+            else if (e.key === "Enter") { e.preventDefault(); if (items[active]) choose(items[active]); }
+            else if (e.key === "Escape") { input.value = this.value ?? ""; close(); }
+          });
+          input.addEventListener("blur", () => setTimeout(() => { if (!pop.contains(document.activeElement)) { input.value = this.value ?? ""; close(); } }, 120));
+          list.addEventListener("pointerdown", (e) => { const c = e.target.closest("[data-icon]"); if (c) { e.preventDefault(); choose(c.dataset.icon); } });
+          this.update = () => { this.host.querySelector("[data-preview]").innerHTML = this.value ? (registered(this.value) ? icon(this.value) : missing) : icon("search"); };
+          this.set(this.value);
+        }
+        renderInline() {
+          const labels = this.o.labels;
+          this.host.innerHTML = this.field(`
+            <div class="sa-icon-choices" role="radiogroup" aria-label="${this.o.label}" id="${this.id}"${labels ? " data-labels" : ""}>
+              ${this.o.names.map((n) => `<button type="button" role="radio" class="sa-icon-choice" data-icon="${n}" aria-checked="${n === this.value}" tabindex="${n === this.value || (!this.value && n === this.o.names[0]) ? 0 : -1}" title="${n}" aria-label="${n}">${icon(n)}${labels ? `<span>${n}</span>` : ""}</button>`).join("")}
+            </div>`);
+          const group = this.host.querySelector("[role=radiogroup]");
+          group.addEventListener("click", (e) => {
+            const c = e.target.closest("[data-icon]");
+            if (!c) return;
+            // Clicking the chosen icon again clears an optional field
+            this.set(!this.o.required && c.dataset.icon === this.value ? null : c.dataset.icon);
+          });
+          group.addEventListener("keydown", (e) => {
+            const els = [...group.querySelectorAll("[data-icon]")];
+            const i = els.indexOf(document.activeElement);
+            const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+            if (d === undefined || i < 0) return;
+            e.preventDefault();
+            const next = els[(i + d + els.length) % els.length];
+            next.focus();
+            this.set(next.dataset.icon);
+          });
+          this.update = () => group.querySelectorAll("[data-icon]").forEach((c) => { const on = c.dataset.icon === this.value; c.setAttribute("aria-checked", String(on)); c.tabIndex = on ? 0 : -1; });
+          this.set(this.value);
+        }
+      }
+
+      /* ======================================================================================== */
+      /* Decisions                                                                                */
+      /* ======================================================================================== */
+      const STORE = "icon-field-answers-v1";
+      const QUESTIONS = [];
+      const chosen = {};
+      try { Object.assign(chosen, JSON.parse(localStorage.getItem(STORE) ?? "{}")); } catch {}
+      const answer = (n) => chosen[n] ?? QUESTIONS.find((x) => x.n === n)?.rec;
+      const liveRenderers = [];
+      function renderQuestions(host, questions) {
+        questions.forEach((q) => {
+          QUESTIONS.push(q);
+          host.insertAdjacentHTML("beforeend", `<h3 id="q${q.n}"><span class="proto-q">${q.n}</span>${q.title}</h3>${q.text ? `<p>${q.text}</p>` : ""}<figure class="proto-strip" data-q="${q.n}" style="--proto-min:${q.min ?? 240}px"></figure>`);
+          const strip = host.lastElementChild;
+          q.options.forEach((o) => {
+            strip.insertAdjacentHTML("beforeend", `<div class="proto-cell" data-opt="${o.id}"><figcaption><button type="button" class="proto-opt" aria-label="Choose ${q.n}${o.id}">${o.id}</button><b>${o.title}</b>${o.note ? ` · ${o.note}` : ""}${o.id === q.rec ? '<span class="proto-rec">Recommended</span>' : ""}</figcaption><div style="min-width:0"></div></div>`);
+            const body = strip.lastElementChild.querySelector("figcaption + div");
+            if (o.render) body.innerHTML = o.render();
+            o.after?.(body);
+          });
+          strip.addEventListener("click", (e) => {
+            const b = e.target.closest(".proto-opt");
+            if (!b) return;
+            chosen[q.n] = b.closest("[data-opt]").dataset.opt;
+            try { localStorage.setItem(STORE, JSON.stringify(chosen)); } catch {}
+            syncSheet();
+          });
+        });
+      }
+      function syncSheet() {
+        document.querySelectorAll(".proto-strip[data-q]").forEach((s) => {
+          const a = answer(+s.dataset.q);
+          s.querySelectorAll("[data-opt]").forEach((c) => c.toggleAttribute("data-chosen", c.dataset.opt === a));
+        });
+        let group = "";
+        $("sheet").innerHTML = `<tr><th>#</th><th>Question</th><th>Answer</th><th>Status</th></tr>` + QUESTIONS.map((q) => {
+          const a = answer(q.n);
+          const opt = q.options.find((o) => o.id === a);
+          const rec = q.options.find((o) => o.id === q.rec);
+          const head = q.group !== group ? `<tr class="proto-group"><td colspan="4">${(group = q.group)}</td></tr>` : "";
+          return `${head}<tr><td>${q.n}</td><td><a href="#q${q.n}">${q.title}</a></td><td data-answer${a !== q.rec ? " data-changed" : ""}>${a} · ${opt.title}</td><td style="font-size:12px;color:var(--sa-color-ink-muted)">Open · recommended ${q.rec} (${rec.title})</td></tr>`;
+        }).join("");
+        $("sheet-summary").textContent = QUESTIONS.map((q) => `${q.n}${answer(q.n)}`).join(" ");
+        liveRenderers.forEach((r) => r());
+      }
+      $("sheet-copy").addEventListener("click", () => navigator.clipboard?.writeText($("sheet-summary").textContent));
+      $("sheet-reset").addEventListener("click", () => { for (const k in chosen) delete chosen[k]; try { localStorage.removeItem(STORE); } catch {} syncSheet(); });
+
+      /* ======================================================================================== */
+      /* Page                                                                                     */
+      /* ======================================================================================== */
+      const AMENITIES = [
+        { name: "Wi-Fi", icon: "wifi" },
+        { name: "Pool", icon: "waves-ladder" },
+        { name: "Breakfast included", icon: "coffee" },
+        { name: "Parking", icon: "square-parking" },
+        { name: "Fitness centre", icon: "dumbbell" },
+        { name: "Airport shuttle", icon: "bus" },
+        { name: "Hot tub", icon: "hot-tub", note: "not a registered icon" },
+        { name: "Late check-out", icon: null, note: "no icon" },
+      ];
+      const CURATED = ["wifi", "waves-ladder", "coffee", "utensils", "square-parking", "dumbbell", "flower-2", "bus", "paw-print", "snowflake", "baby", "accessibility", "wine", "tv", "washing-machine", "cigarette-off", "key-round", "bed-double"];
+
+      function gridHtml(rows, cols) {
+        const head = cols.map((c) => `<th class="sa-table-head${c.narrow ? " w-px" : ""}" data-slot="table-head">${c.title}</th>`).join("");
+        const body = rows.map((r) => `<tr class="sa-table-row" data-slot="table-row">${cols.map((c) => `<td class="sa-table-cell${c.narrow ? " w-px" : ""}" data-slot="table-cell"${c.iconCell ? " data-icon-cell" : ""}>${c.render(r)}</td>`).join("")}</tr>`).join("");
+        return `<div class="sa-data-grid sa-card sa-resource-index-grid" data-slot="data-grid"><div class="sa-table-container" data-slot="table-container"><table class="sa-table" data-slot="table">
+          <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row">${head}</tr></thead>
+          <tbody class="sa-table-body" data-slot="table-body">${body}</tbody></table></div></div>`;
+      }
+      const nameCol = { title: "Amenity", render: (r) => `<span style="font-weight:500">${r.name}</span>${r.note ? ` <span style="color:var(--sa-color-ink-muted);font-size:12px">(${r.note})</span>` : ""}` };
+      const iconCol = (o, narrow = true) => ({ title: "Icon", narrow, iconCell: true, render: (r) => iconValue(r.icon, o) });
+      const miniGrid = (o, rows = AMENITIES.slice(0, 4)) => gridHtml(rows, [iconCol(o, o.show === "icon" || o.show === "tile"), nameCol]);
+      const GD = { A: { show: "icon" }, B: { show: "name" }, C: { show: "tile" }, D: { show: "mono" } };
+      const TONE = { A: {}, B: { tone: "muted" } };
+      const UNKNOWN = { A: { unknown: "box" }, B: { unknown: "name" }, C: { unknown: "dash" } };
+
+      function details(name, o) {
+        const field = (label, value) => `<div data-slot="display-field" data-orientation="vertical" class="sa-field sa-display-field"><dt class="sa-display-field-label" data-slot="display-field-label">${label}</dt><dd class="sa-display-field-value" data-slot="display-field-value">${value}</dd></div>`;
+        return `<div data-slot="details" data-variant="default" class="sa-details"><dl class="sa-details-list" data-slot="details-list" style="--sa-cols-md:2;--sa-cols-lg:2">
+          ${field("Amenity", "Pool")}${field("Icon", iconValue(name, o))}${field("Category", "Leisure")}${field("Shown on listings", "Yes")}
+        </dl></div>`;
+      }
+      const DISPLAY = {
+        A: { show: "name", unknown: "name" },
+        B: { show: "tile-name", unknown: "name" },
+        C: { show: "mono", unknown: "name" },
+        D: { show: "tile", size: "xl", unknown: "name" },
+      };
+
+      function build() {
+        const total = NAMES.length;
+        document.querySelectorAll("[data-total]").forEach((x) => (x.textContent = fmt(total)));
+        $("content").innerHTML = `
+          <section class="proto-section" id="grid-display">
+            <h2>1 · Grid display</h2>
+            <p>The value in an index grid cell. Recommended candidate: the icon alone in the ink colour, its name on hover. An empty value is a dash like other fields; a name that isn't a registered icon shows a dashed box (hover for the name).</p>
+            <div id="gd-live"></div>
+            <div id="gd-questions"></div>
+          </section>
+          <section class="proto-section" id="display">
+            <h2>2 · Display</h2>
+            <p>The value on the view page and in row details. Recommended candidate: the icon with its name beside it, so staff can see which name is stored. A name that isn't registered says so.</p>
+            <div class="proto-card" id="d-live"></div>
+            <div id="d-questions"></div>
+          </section>
+          <section class="proto-section" id="editor">
+            <h2>3 · Editor</h2>
+            <p>The value on the create and edit forms. Every registered icon by default (${fmt(total)} now); an editor setting can restrict the field to a curated list. Recommended candidate: a select-style trigger opening a popover with a search box and an icon grid. Type to filter, ↓ into the grid, arrow keys to move, Enter to choose; the status line names the icon under the pointer. More icons render as you scroll.</p>
+            <div class="proto-card"><div class="proto-form"><div id="e-live"></div><div id="e-live-empty"></div></div></div>
+            <div id="e-questions"></div>
+          </section>
+          <section class="proto-section" id="grid-editor">
+            <h2>4 · Grid editor</h2>
+            <p>The value edited inline, in a row in edit mode: a small trigger showing the icon opens the same popover. One candidate, not a decision; it follows whatever the editor questions settle.</p>
+            <div id="ge-live"></div>
+          </section>`;
+
+        /* 1 — Grid display */
+        liveRenderers.push(() => { $("gd-live").innerHTML = gridHtml(AMENITIES, [iconCol({ ...GD[answer(1)], ...TONE[answer(2)], ...UNKNOWN[answer(3)] }, ["A", "C"].includes(answer(1))), nameCol]); });
+        renderQuestions($("gd-questions"), [
+          {
+            n: 1, group: "Grid display", title: "What the cell shows", rec: "A", min: 300,
+            options: [
+              { id: "A", title: "Icon only", note: "name on hover", render: () => miniGrid(GD.A) },
+              { id: "B", title: "Icon and name", render: () => miniGrid(GD.B) },
+              { id: "C", title: "Icon in a tile", note: "sized like the image thumbnail", render: () => miniGrid(GD.C) },
+              { id: "D", title: "Icon and name in code style", note: "reads as a value, not a label", render: () => miniGrid(GD.D) },
+            ],
+          },
+          {
+            n: 2, group: "Grid display", title: "Icon colour", rec: "A",
+            options: [
+              { id: "A", title: "Ink", note: "like the text", render: () => miniGrid({ show: "icon" }) },
+              { id: "B", title: "Muted", note: "quieter than the row's text", render: () => miniGrid({ show: "icon", tone: "muted" }) },
+            ],
+          },
+          {
+            n: 3, group: "Grid display", title: "A name that isn't a registered icon", rec: "A",
+            text: "Happens when a pack is removed or the name was typed before the editor existed. Shown with the grid display from question 1; the rows are Hot tub (unknown) and Late check-out (empty).",
+            options: [
+              { id: "A", title: "Dashed box", note: "hover for the name", render: () => miniGrid({ show: "icon", unknown: "box" }, AMENITIES.slice(6)) },
+              { id: "B", title: "Dashed box and the name", render: () => miniGrid({ show: "icon", unknown: "name" }, AMENITIES.slice(6)) },
+              { id: "C", title: "Dash, like empty", note: "hover for the name", render: () => miniGrid({ show: "icon", unknown: "dash" }, AMENITIES.slice(6)) },
+            ],
+          },
+        ]);
+
+        /* 2 — Display */
+        liveRenderers.push(() => { $("d-live").innerHTML = details("waves-ladder", DISPLAY[answer(4)]); });
+        renderQuestions($("d-questions"), [
+          {
+            n: 4, group: "Display", title: "Icon on the view page", rec: "A", min: 260,
+            text: "Each option shows a registered icon and, below it, a name that isn't registered.",
+            options: Object.entries({ A: ["Icon and name", "text size"], B: ["Tile and name", "40px tile"], C: ["Icon and name in code style", ""], D: ["Large tile", "64px, name on hover"] }).map(([id, [title, note]]) => ({
+              id, title, note,
+              render: () => `<div style="display:grid;gap:14px">${iconValue("waves-ladder", DISPLAY[id])}${iconValue("hot-tub", DISPLAY[id])}${!registered("hot-tub") ? `<span class="sa-icon-value-warn">${icon("triangle-alert")}<span>hot-tub isn't a registered icon</span></span>` : ""}</div>`,
+            })),
+          },
+        ]);
+
+        /* 3 — Editor */
+        const PICKER = {
+          A: { mode: "popover" },
+          B: { mode: "combobox" },
+          C: { mode: "sheet", cell: "lg" },
+          D: { mode: "typed" },
+        };
+        const CELL = { A: { cell: "sm" }, B: { cell: "md" }, C: { cell: "md", labels: true } };
+        const GROUP = { A: {}, B: { grouping: "headings" }, C: { grouping: "tabs" } };
+        const editorOpts = () => {
+          const p = PICKER[answer(5)];
+          return { ...p, ...(p.mode === "popover" || p.mode === "typed" ? CELL[answer(6)] : {}), ...GROUP[answer(8)] };
+        };
+        liveRenderers.push(() => {
+          new IconEditor($("e-live"), { ...editorOpts(), value: "waves-ladder", label: "Icon", description: "Shown beside the amenity on listings." });
+          new IconEditor($("e-live-empty"), { ...editorOpts(), value: null, label: "Icon (empty)" });
+        });
+        renderQuestions($("e-questions"), [
+          {
+            n: 5, group: "Editor", title: "The picker", rec: "A", min: 280,
+            text: "All four search the same registered names. Open each one: the grid ones scroll through every icon.",
+            options: [
+              { id: "A", title: "Popover grid", note: "select-style trigger; search and browse", after: (el) => new IconEditor(el, { mode: "popover", value: "coffee" }) },
+              { id: "B", title: "Combobox", note: "type to filter a list of names; 50 at a time", after: (el) => new IconEditor(el, { mode: "combobox", value: "coffee" }) },
+              { id: "C", title: "Sheet", note: "like the lookup sheet; larger grid", after: (el) => new IconEditor(el, { mode: "sheet", cell: "lg", value: "coffee" }) },
+              { id: "D", title: "Text box and Browse", note: "type the name, or browse the popover grid", after: (el) => new IconEditor(el, { mode: "typed", value: "coffee" }) },
+            ],
+          },
+          {
+            n: 6, group: "Editor", title: "Grid cells in the popover", rec: "B", min: 300,
+            text: "Opened with “bed” already searched.",
+            options: [
+              { id: "A", title: "32px", note: "dense; ~11 per row", after: (el) => new IconPanel(el, { names: NAMES, value: "bed-double", cell: "sm", query: "bed", maxH: "12rem" }) },
+              { id: "B", title: "40px", note: "~9 per row", after: (el) => new IconPanel(el, { names: NAMES, value: "bed-double", cell: "md", query: "bed", maxH: "12rem" }) },
+              { id: "C", title: "Labelled", note: "name under each icon; ~4 per row", after: (el) => new IconPanel(el, { names: NAMES, value: "bed-double", cell: "md", labels: true, query: "bed", maxH: "12rem" }) },
+            ].map((o) => ({ ...o, after: (el) => { el.className = "proto-panel"; o.after(el); } })),
+          },
+          {
+            n: 7, group: "Editor", title: "A curated list", rec: "C", min: 300,
+            text: `The field restricted to ${CURATED.length} amenity icons with an editor setting. Should a short list skip the picker and show the icons on the form?`,
+            options: [
+              { id: "A", title: "Same picker, fewer icons", after: (el) => new IconEditor(el, { mode: "popover", names: CURATED, value: "coffee", cell: "md" }) },
+              { id: "B", title: "Always inline tiles", note: "a radio group of icons; click again to clear", after: (el) => new IconEditor(el, { mode: "inline", names: CURATED, value: "coffee" }) },
+              { id: "C", title: "Inline up to ~24, picker above", note: "this list is 18, so inline", after: (el) => new IconEditor(el, { mode: "inline", names: CURATED, value: "coffee" }) },
+              { id: "D", title: "Inline tiles with names", after: (el) => new IconEditor(el, { mode: "inline", names: CURATED.slice(0, 8), value: "coffee", labels: true }) },
+            ],
+          },
+          {
+            n: 8, group: "Editor", title: "With more than one pack registered", rec: "A", min: 300,
+            text: "Lucide and Tabler outline (prefixed <code>tabler-</code>), opened with “plane” searched. B and C need IconOptions to remember which pack each icon came from; today it only keeps the prefixed names.",
+            options: [
+              { id: "A", title: "One grid", note: "the prefix tells them apart", after: (el) => both(el, {}) },
+              { id: "B", title: "Headings per pack", after: (el) => both(el, { grouping: "headings" }) },
+              { id: "C", title: "Pack filter", after: (el) => both(el, { grouping: "tabs" }) },
+            ],
+          },
+        ]);
+        function both(el, o) {
+          el.className = "proto-panel";
+          const all = [...PACKS.lucide.keys(), ...[...PACKS.tabler.keys()].map((n) => TABLER_PREFIX + n)].sort();
+          new IconPanel(el, { names: all, value: "plane", query: "plane", maxH: "14rem", ...o });
+        }
+
+        /* 4 — Grid editor */
+        liveRenderers.push(() => {
+          $("ge-live").innerHTML = gridHtml(AMENITIES.slice(0, 4), [
+            { title: "Icon", narrow: true, iconCell: true, render: (r) => (r.name === "Pool" ? `<div data-cell-editor></div>` : iconValue(r.icon, { ...GD[answer(1)], ...TONE[answer(2)] })) },
+            { ...nameCol, render: (r) => (r.name === "Pool" ? `<input class="sa-input" data-slot="input" value="Pool" style="height:var(--sa-control-h-sm)">` : nameCol.render(r)) },
+            { title: "", narrow: true, render: (r) => (r.name === "Pool" ? `<div style="display:flex;gap:4px">${button("default", "xs", "Save")}${button("ghost", "xs", "Cancel")}</div>` : "") },
+          ]);
+          const host = $("ge-live").querySelector("[data-cell-editor]");
+          new IconEditor(host, { ...editorOpts(), mode: "grid-cell", cell: "grid", value: "waves-ladder" });
+          host.querySelector(".sa-field").style.gap = "0";
+        });
+
+        syncSheet();
+      }
+
+      /* ======================================================================================== */
+      /* Load the packs and register them, like IconOptions                                       */
+      /* ======================================================================================== */
+      const DEFS = "../../src/StellarAdmin.UI/Icons/Definitions/";
+      Promise.all([fetch(DEFS + "Lucide.json").then((r) => r.json()), fetch(DEFS + "TablerOutline.json").then((r) => r.json())])
+        .then(([lucide, tabler]) => {
+          for (const [n, s] of Object.entries(lucide)) PACKS.lucide.set(n, s);
+          for (const [n, s] of Object.entries(tabler)) PACKS.tabler.set(n, s);
+          REGISTERED = new Map(PACKS.lucide);
+          if (state.icons === "both") for (const [n, s] of PACKS.tabler) REGISTERED.set(TABLER_PREFIX + n, s);
+          NAMES = [...REGISTERED.keys()].sort();
+          build();
+        })
+        .catch((e) => {
+          $("content").innerHTML = `<p class="proto-loading">Couldn't load the icon packs (${esc(e.message)}). Serve the repository root: <code>python3 -m http.server 8321</code>.</p>`;
+        });
+
+      /* Control bar */
+      function apply() {
+        $("theme-css").href = state.theme === "default" ? "data:text/css," : `../../util/theme-check/presets/${state.theme}.css`;
+        document.documentElement.classList.toggle("dark", state.mode === "dark");
+        if (state.density === "default") document.querySelector("main").removeAttribute("data-sa-density");
+        else document.querySelector("main").setAttribute("data-sa-density", state.density);
+        document.querySelectorAll(".proto-controls [data-control]").forEach((g) =>
+          g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === state[g.dataset.control]))),
+        );
+      }
+      document.querySelector(".proto-controls").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        const control = b.closest("[data-control]").dataset.control;
+        state[control] = b.dataset.value;
+        if (control === "icons") {
+          // Registered icons are fixed at startup, as in the library: reload with the other set
+          const p = new URLSearchParams(state);
+          location.search = p.toString();
+          return;
+        }
+        apply();
+      });
+      apply();
+    </script>
+  </body>
+</html>

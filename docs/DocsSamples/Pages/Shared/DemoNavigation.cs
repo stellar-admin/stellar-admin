@@ -38,6 +38,7 @@ internal static class DemoNavigation
                 new DemoItem("Checkbox", "/Checkbox/Index"),
                 new DemoItem("Checkbox Group", "/CheckboxGroup/Index"),
                 new DemoItem("Field", "/Field/Index"),
+                new DemoItem("Icon Picker", "/IconPicker/Index"),
                 new DemoItem("Image Upload", "/ImageUpload/Index"),
                 new DemoItem("Input", "/Input/Index"),
                 new DemoItem("Input Group", "/InputGroup/Index"),

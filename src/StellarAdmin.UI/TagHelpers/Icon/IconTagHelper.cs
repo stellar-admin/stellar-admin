@@ -9,7 +9,13 @@ namespace StellarAdmin.UI;
 ///     Renders a registered icon as an <c>&lt;svg&gt;</c> element.
 /// </summary>
 /// <remarks>
-///     Attributes set on the element take precedence over the icon's own attributes.
+///     <para>
+///         Attributes set on the element take precedence over the icon's own attributes.
+///     </para>
+///     <para>
+///         Inside an <c>&lt;sa-icon-picker&gt;</c>, the icon is one of the icons the picker
+///         offers, and the picker places it.
+///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-icon", TagStructure = TagStructure.WithoutEndTag)]
 [OutputElementHint("svg")]
@@ -66,6 +72,26 @@ public sealed class IconTagHelper : StellarAdminTagHelperBase
 
     /// <inheritdoc />
     public override void Process(TagHelperContext context, TagHelperOutput output)
+    {
+        var picker = GetContext<IconPickerContext>(context);
+        if (picker is not null && ReferenceEquals(picker.Owner, ParentTagHelper))
+        {
+            var svg = new TagHelperOutput(
+                "svg",
+                new TagHelperAttributeList(output.Attributes),
+                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+            );
+            Render(svg);
+            picker.Icons.Add((Name, svg));
+            output.SuppressOutput();
+
+            return;
+        }
+
+        Render(output);
+    }
+
+    private void Render(TagHelperOutput output)
     {
         var iconDefinition =
             Name != null && _iconOptions.TryGetIcon(Name, out var foundIcon)

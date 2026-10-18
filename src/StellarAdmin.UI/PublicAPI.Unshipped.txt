@@ -1200,6 +1200,35 @@ StellarAdmin.UI.GroupTagHelper.Gap.set -> void
 StellarAdmin.UI.GroupTagHelper.GroupTagHelper() -> void
 StellarAdmin.UI.GroupTagHelper.Justify.get -> StellarAdmin.UI.GroupJustify?
 StellarAdmin.UI.GroupTagHelper.Justify.set -> void
+StellarAdmin.UI.IconPickerClassNames
+StellarAdmin.UI.IconPickerClassNames.Control.get -> string?
+StellarAdmin.UI.IconPickerClassNames.Control.set -> void
+StellarAdmin.UI.IconPickerClassNames.IconPickerClassNames() -> void
+StellarAdmin.UI.IconPickerClassNames.Item.get -> string?
+StellarAdmin.UI.IconPickerClassNames.Item.set -> void
+StellarAdmin.UI.IconPickerClassNames.Popover.get -> string?
+StellarAdmin.UI.IconPickerClassNames.Popover.set -> void
+StellarAdmin.UI.IconPickerClassNames.Trigger.get -> string?
+StellarAdmin.UI.IconPickerClassNames.Trigger.set -> void
+StellarAdmin.UI.IconPickerLayout
+StellarAdmin.UI.IconPickerLayout.Inline = 1 -> StellarAdmin.UI.IconPickerLayout
+StellarAdmin.UI.IconPickerLayout.Picker = 0 -> StellarAdmin.UI.IconPickerLayout
+StellarAdmin.UI.IconPickerTagHelper
+StellarAdmin.UI.IconPickerTagHelper.Disabled.get -> bool?
+StellarAdmin.UI.IconPickerTagHelper.Disabled.set -> void
+StellarAdmin.UI.IconPickerTagHelper.FormName.get -> string?
+StellarAdmin.UI.IconPickerTagHelper.FormName.set -> void
+StellarAdmin.UI.IconPickerTagHelper.IconPickerTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator, Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.Icons.IconOptions!>! iconOptions) -> void
+StellarAdmin.UI.IconPickerTagHelper.IconsUrl.get -> string?
+StellarAdmin.UI.IconPickerTagHelper.IconsUrl.set -> void
+StellarAdmin.UI.IconPickerTagHelper.Layout.get -> StellarAdmin.UI.IconPickerLayout?
+StellarAdmin.UI.IconPickerTagHelper.Layout.set -> void
+StellarAdmin.UI.IconPickerTagHelper.Placeholder.get -> string?
+StellarAdmin.UI.IconPickerTagHelper.Placeholder.set -> void
+StellarAdmin.UI.IconPickerTagHelper.Required.get -> bool?
+StellarAdmin.UI.IconPickerTagHelper.Required.set -> void
+StellarAdmin.UI.IconPickerTagHelper.Value.get -> string?
+StellarAdmin.UI.IconPickerTagHelper.Value.set -> void
 StellarAdmin.UI.Icons.IconDefinition
 StellarAdmin.UI.Icons.IconDefinition.Attributes.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string!>!
 StellarAdmin.UI.Icons.IconDefinition.IconDefinition(System.Collections.Generic.IReadOnlyDictionary<string!, string!>! attributes, System.Collections.Generic.IReadOnlyList<StellarAdmin.UI.Icons.SvgShape!>! shapes) -> void

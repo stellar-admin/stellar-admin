@@ -3,6 +3,7 @@ import "./web-components/sel-collapsible";
 import "./web-components/sel-command";
 import "./web-components/sel-dialog";
 import "./web-components/sel-dropdown-menu";
+import "./web-components/sel-icon-picker";
 import "./web-components/sel-image-upload";
 import "./web-components/sel-input-otp";
 import "./web-components/sel-message-scroller";

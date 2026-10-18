@@ -1,0 +1,139 @@
+/* Icon picker: a select-style trigger that opens a popover with a search box, a grid of icons and a
+   status line, or (inline) the icons as a toggle group of tiles. A stored name that isn't an icon
+   shows a dashed box where the icon would be.
+   Replaces: .sa-icon-picker, .sa-icon-picker-cell, .sa-icon-picker-chevron, .sa-icon-picker-empty,
+   .sa-icon-picker-grid, .sa-icon-picker-popover, .sa-icon-picker-scroll, .sa-icon-picker-search,
+   .sa-icon-picker-status, .sa-icon-picker-trigger, .sa-icon-missing */
+
+@layer sa.components {
+  .sa-icon-picker {
+    display: block;
+    min-width: 0;
+    & > .sa-toggle-group {
+      flex-wrap: wrap;
+      max-width: 100%;
+    }
+  }
+
+  .sa-icon-missing {
+    display: inline-block;
+    flex: none;
+    width: var(--sa-control-icon);
+    height: var(--sa-control-icon);
+    box-sizing: border-box;
+    border: var(--sa-border-width) dashed var(--sa-color-ink-placeholder);
+    border-radius: var(--sa-unit);
+  }
+
+  /* Looks like a select: the chosen icon, its name and the chevron. */
+  .sa-input.sa-icon-picker-trigger {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    text-align: start;
+    font: inherit;
+    font-size: var(--_input-text);
+    cursor: pointer;
+    & > svg {
+      flex: none;
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+    }
+    & > [data-slot="icon-picker-text"] {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    & > [data-placeholder] {
+      color: var(--_input-placeholder-fg);
+    }
+  }
+  .sa-input.sa-icon-picker-trigger > .sa-icon-picker-chevron {
+    margin-inline-start: auto;
+    color: var(--sa-color-ink-muted);
+  }
+
+  .sa-popover-content.sa-icon-picker-popover {
+    --_cell: calc(10 * var(--sa-unit));
+    flex-direction: column;
+    width: min(24rem, calc(100vw - 4rem));
+    padding: 0;
+    &:popover-open {
+      display: flex;
+    }
+  }
+  .sa-icon-picker-search {
+    padding: calc(2 * var(--sa-unit));
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+  }
+  .sa-icon-picker-scroll {
+    max-height: 17.5rem;
+    padding: calc(1.5 * var(--sa-unit));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .sa-icon-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--_cell), 1fr));
+    gap: 2px;
+  }
+  .sa-icon-picker-cell {
+    display: grid;
+    place-items: center;
+    height: var(--_cell);
+    padding: 0;
+    border: 0;
+    border-radius: var(--sa-radius-item);
+    background: none;
+    color: var(--sa-color-ink);
+    font: inherit;
+    cursor: pointer;
+    outline: none;
+    & > svg {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+      pointer-events: none;
+    }
+    &:hover {
+      background: var(--sa-color-hover);
+    }
+    &:focus-visible {
+      background: var(--sa-color-highlight);
+      color: var(--sa-color-on-highlight);
+    }
+    &[aria-selected="true"] {
+      background: var(--sa-color-selected);
+      box-shadow: inset 0 0 0 2px var(--sa-color-accent);
+    }
+  }
+  .sa-icon-picker-empty {
+    grid-column: 1 / -1;
+    padding: calc(8 * var(--sa-unit)) calc(4 * var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-body);
+    text-align: center;
+  }
+  .sa-icon-picker-status {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    min-height: var(--sa-control-h-sm);
+    padding: var(--sa-unit) var(--sa-unit) var(--sa-unit) calc(3 * var(--sa-unit));
+    border-top: var(--sa-border-width) solid var(--sa-color-line);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
+    & > [data-slot="icon-picker-name"] {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--sa-color-ink);
+      &[data-name] {
+        font-family: var(--sa-font-mono);
+      }
+    }
+  }
+}
