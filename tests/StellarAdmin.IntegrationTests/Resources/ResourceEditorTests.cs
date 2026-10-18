@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
+using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
 using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
 
@@ -240,6 +241,54 @@ public class ResourceEditorTests
         await Assert
             .That(secondDocument.QuerySelector("select[name='Entity.Name'] option[value='pen']"))
             .IsNull();
+    }
+
+    [Test]
+    [Arguments("create", new[] { "", "7", "8" }, null)]
+    [Arguments("edit/7", new[] { "7", "8" }, "7")]
+    [Arguments("edit/9", new[] { "", "7", "8" }, null)]
+    public async Task SelectEditor_RequiredValueMatchingNoChoice_StartsOnEmptyChoice(
+        string page,
+        string[] expectedValues,
+        string? expectedSelected
+    )
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m), new(9, "Retired lamp", 24m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowCreate(create => create.Fields(ConfigureFields));
+                resource.AllowEdit(edit => edit.Fields(ConfigureFields));
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync($"/stellaradmin/products/{page}");
+
+        // Assert
+        var select = document.RequiredElement("select[name='Entity.Id']");
+        await Assert
+            .That(select.QuerySelectorAll("option").Select(option => option.GetAttribute("value")))
+            .IsEquivalentTo(expectedValues);
+        await Assert
+            .That(select.QuerySelector("option[selected]")?.GetAttribute("value"))
+            .IsEqualTo(expectedSelected);
+
+        static void ConfigureFields(ResourceFieldsBuilder<Product> fields)
+        {
+            fields.Clear();
+            fields
+                .Add(product => product.Id)
+                .UseEditor<SelectEditor>(options =>
+                    options.UseItems([
+                        new SelectListItem("Notebook", "7"),
+                        new SelectListItem("Lamp", "8"),
+                    ])
+                );
+        }
     }
 
     [Test]

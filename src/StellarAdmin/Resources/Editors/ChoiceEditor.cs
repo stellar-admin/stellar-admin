@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -47,7 +48,7 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     }
 
     // A select shows its first choice as selected when none is, so it keeps the empty choice while a required value
-    // is unset
+    // is unset or matches no choice, such as the 0 of a new entity's foreign key
     internal virtual bool KeepsEmptyChoiceWhileUnset => false;
 
     /// <summary>
@@ -132,7 +133,9 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
         var choices = editorData as IReadOnlyList<ChoiceItem> ?? PropertyChoices(metadata);
 
         // Supplied choices that already clear the value keep their own empty choice
-        return IncludesEmptyChoice(metadata, model) && !choices.Any(choice => choice.Value == "")
+        return
+            IncludesEmptyChoice(metadata, model, choices)
+            && !choices.Any(choice => choice.Value == "")
             ? [new ChoiceItem("", EmptyChoiceText), .. choices]
             : choices;
     }
@@ -164,13 +167,49 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
             .ToList();
     }
 
-    private bool IncludesEmptyChoice(ModelMetadata metadata, object? model) =>
+    // A select matches an enum by name or number and other values by their text, ignoring case
+    private static bool MatchesChoice(object? model, IReadOnlyList<ChoiceItem> choices)
+    {
+        if (model is null)
+        {
+            return false;
+        }
+
+        string?[] values =
+            model is Enum
+                ?
+                [
+                    model.ToString(),
+                    Convert.ToString(
+                        Convert.ChangeType(
+                            model,
+                            Enum.GetUnderlyingType(model.GetType()),
+                            CultureInfo.InvariantCulture
+                        ),
+                        CultureInfo.InvariantCulture
+                    ),
+                ]
+                : [Convert.ToString(model, CultureInfo.CurrentCulture)];
+
+        return choices.Any(choice =>
+            values.Any(value =>
+                string.Equals(value, choice.Value, StringComparison.OrdinalIgnoreCase)
+            )
+        );
+    }
+
+    private bool IncludesEmptyChoice(
+        ModelMetadata metadata,
+        object? model,
+        IReadOnlyList<ChoiceItem> choices
+    ) =>
         metadata.ElementMetadata is null
         && EmptyChoice switch
         {
             EmptyChoice.Include => true,
             EmptyChoice.Omit => false,
-            _ => !metadata.IsRequired || (KeepsEmptyChoiceWhileUnset && model is null),
+            _ => !metadata.IsRequired
+                || (KeepsEmptyChoiceWhileUnset && !MatchesChoice(model, choices)),
         };
 
     private List<ChoiceItem> PropertyChoices(ModelMetadata metadata)

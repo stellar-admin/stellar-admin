@@ -9,8 +9,8 @@ public enum EmptyChoice
     ///     Adds an empty choice when the value is optional.
     /// </summary>
     /// <remarks>
-    ///     A select also adds one while a required value is unset, so that no other choice appears
-    ///     selected. A collection property never gets one.
+    ///     A select also adds one while a required value is unset or matches no choice, so that
+    ///     no other choice appears selected. A collection property never gets one.
     /// </remarks>
     Auto,
 
