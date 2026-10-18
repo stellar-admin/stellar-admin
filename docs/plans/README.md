@@ -15,6 +15,11 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [row-detail-expand-when](row-detail-expand-when.md) | deferred | Per-row expand rules for row details. Deferred until an application needs them; the plan records the smallest route (an admin panel `ExpandWhen` bool backed by a grid marker element) and the reviewed reason-tooltip variant. Prototype in `sandbox/html/row-details-expand-when.html`. |
 | [configured-row-details](configured-row-details.md) | proposed | Row-detail panels configured from display fields, like the view page, instead of hand-written partials. Carried over from info-lists decision 5. |
 | [ef-many-to-many-fields](ef-many-to-many-fields.md) | proposed | Many-to-many navigations as fields on EF Core resources, so a multi-select editor needs no form model or handlers. From the Voyager Travel session feedback. |
+| [save-and-add-another](save-and-add-another.md) | proposed | Add several records in a row from the create page and inline create. From the Voyager Travel session feedback. |
+| [icon-picker-editor](icon-picker-editor.md) | proposed | An editor that picks an icon name from the panel's icons. From the Voyager Travel session feedback. |
+| [grid-keyboard-navigation](grid-keyboard-navigation.md) | proposed | Keyboard navigation and shortcuts in the index grid. From the Voyager Travel session feedback. |
+| [rich-text-editor](rich-text-editor.md) | proposed | An editor for formatted long text. From the Voyager Travel session feedback. |
+| [checklist-component](checklist-component.md) | proposed | An `sa-checklist` component extracted from the home page's setup checklist. |
 | [display-defaults](display-defaults.md) | proposed | App-level configuration of the default displays, and display handlers in index columns. Carried over from info-lists decisions 90 and 129. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
