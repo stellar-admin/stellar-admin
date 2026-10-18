@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
@@ -246,6 +247,38 @@ public class ResourceCustomEditTests
         await Assert.That(document.QuerySelector("[data-slot='form-section-title']")).IsNull();
     }
 
+    [Test]
+    public async Task ModelError_ShowsInSummaryWithoutPersisting()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m)]);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit<CheckedProductModel, CheckedProductHandler>(edit =>
+                    edit.Fields(fields => fields.Add(model => model.ProductName))
+                );
+            }
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
+        values["Entity.ProductName"] = "Discontinued";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(state.UpdateCalls).IsEqualTo(0);
+        var document = await response.ReadDocumentAsync();
+        await Assert
+            .That(document.RequiredElement(".validation-summary-errors").TextContent)
+            .Contains("A discontinued product can't be edited.");
+    }
+
     private static void Configure(ResourceBuilder<Product> resource)
     {
         resource.UseKey(product => product.Id);
@@ -258,6 +291,51 @@ public class ResourceCustomEditTests
                 )
             )
         );
+    }
+
+    public sealed class CheckedProductModel : IValidatableObject
+    {
+        public int Id { get; set; }
+
+        public decimal Price { get; set; }
+
+        public string ProductName { get; set; } = "";
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (ProductName == "Discontinued")
+            {
+                yield return new ValidationResult("A discontinued product can't be edited.");
+            }
+        }
+    }
+
+    public sealed class CheckedProductHandler(ProductDataSource source)
+        : IResourceEditHandler<CheckedProductModel>
+    {
+        public async Task<CheckedProductModel?> FindAsync(
+            string id,
+            CancellationToken cancellationToken
+        ) =>
+            await source.FindAsync(id, cancellationToken) is { } product
+                ? new()
+                {
+                    Id = product.Id,
+                    Price = product.Price,
+                    ProductName = product.Name,
+                }
+                : null;
+
+        public Task<ResourceOperationResult> UpdateAsync(
+            string id,
+            CheckedProductModel model,
+            CancellationToken cancellationToken
+        ) =>
+            source.UpdateAsync(
+                id,
+                new(model.Id, model.ProductName, model.Price),
+                cancellationToken
+            );
     }
 
     public sealed class CreateOnlyDataSource(ProductDataSource source)

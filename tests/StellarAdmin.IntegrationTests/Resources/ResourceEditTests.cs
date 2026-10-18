@@ -347,6 +347,33 @@ public class ResourceEditTests
         await Assert.That(index.Body!.TextContent).Contains("Updated notebook");
     }
 
+    [Test]
+    public async Task InvalidUnconfiguredProperty_DoesNotBlockSave()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "", 8.50m)]);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit().Fields(fields => fields.Add(product => product.Price));
+            }
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
+        values["Entity.Price"] = "12.50";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert.That(state.UpdateCalls).IsEqualTo(1);
+        await Assert.That(state.Products[0].Price).IsEqualTo(12.50m);
+    }
+
     private static ResourceEditBuilder<Product> ConfigureEdit(ResourceBuilder<Product> resource)
     {
         resource.UseKey(product => product.Id);

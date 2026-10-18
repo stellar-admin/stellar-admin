@@ -1698,17 +1698,73 @@ internal sealed class ResourceController<TResource>(
             .SelectMany(field => field.Split('.'))
             .ToHashSet(StringComparer.Ordinal);
 
-        return await TryUpdateModelAsync(
-            model,
-            modelType,
-            prefix,
-            new ConfiguredFieldValueProvider(
-                await CompositeValueProvider.CreateAsync(ControllerContext),
-                fields,
-                prefix
-            ),
-            metadata => propertyNames.Contains(metadata.PropertyName ?? "")
-        );
+        if (
+            await TryUpdateModelAsync(
+                model,
+                modelType,
+                prefix,
+                new ConfiguredFieldValueProvider(
+                    await CompositeValueProvider.CreateAsync(ControllerContext),
+                    fields,
+                    prefix
+                ),
+                metadata => propertyNames.Contains(metadata.PropertyName ?? "")
+            )
+        )
+        {
+            return true;
+        }
+
+        ScopeValidationErrors(fields, prefix);
+        return ModelState.IsValid;
+    }
+
+    // Validation checks the whole model, but the form only sets its configured fields. The errors of
+    // other properties are dropped, such as a required navigation whose foreign key is a field, and
+    // the data source still rejects what it can't save. An error no field displays, such as the
+    // model's own, moves to the summary so a submission never fails without a message.
+    private void ScopeValidationErrors(HashSet<string> fields, string prefix)
+    {
+        var fieldKeys = fields
+            .Select(field => ModelNames.CreatePropertyModelName(prefix, field))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var unshown = new List<string>();
+        foreach (var (key, entry) in ModelState.ToArray())
+        {
+            if (entry.Errors.Count == 0 || key.Length == 0 || fieldKeys.Contains(key))
+            {
+                continue;
+            }
+
+            var withinField = fieldKeys.Any(fieldKey =>
+                key.StartsWith(fieldKey + ".", StringComparison.OrdinalIgnoreCase)
+                || key.StartsWith(fieldKey + "[", StringComparison.OrdinalIgnoreCase)
+            );
+            var otherProperty =
+                !withinField
+                && (
+                    prefix.Length == 0
+                    || key.StartsWith(prefix + ".", StringComparison.OrdinalIgnoreCase)
+                );
+            if (!otherProperty)
+            {
+                unshown.AddRange(
+                    entry.Errors.Select(error =>
+                        string.IsNullOrEmpty(error.ErrorMessage)
+                            ? $"The value for {key} is invalid."
+                            : error.ErrorMessage
+                    )
+                );
+            }
+
+            entry.Errors.Clear();
+            entry.ValidationState = ModelValidationState.Valid;
+        }
+
+        foreach (var message in unshown.Distinct())
+        {
+            ModelState.AddModelError(string.Empty, message);
+        }
     }
 
     private async Task<ResourceOperationResult> UpdateAsync(
