@@ -13,10 +13,10 @@
                     </span>
                     break;
                 case ImageBrandingLogo image:
-                    await RenderImage("sa-sidebar-brand-logo", image.Path, image.DarkPath, "");
+                    await RenderImage("sa-sidebar-brand-logo", image.Path, image.DarkPath, "", null);
                     break;
                 case WordmarkBrandingLogo wordmark:
-                    await RenderImage("sa-sidebar-brand-wordmark", wordmark.Path, wordmark.DarkPath, Model.Title);
+                    await RenderImage("sa-sidebar-brand-wordmark", wordmark.Path, wordmark.DarkPath, Model.Title, WordmarkLayoutValue(wordmark.Layout));
                     break;
             }
             @if (Model.Logo is not WordmarkBrandingLogo)
@@ -36,16 +36,23 @@
 @{
     // Dark mode is a class rather than a media query, so a dark variant renders as a second image the
     // stylesheet swaps in
-    async Task RenderImage(string className, string path, string? darkPath, string alt)
+    async Task RenderImage(string className, string path, string? darkPath, string alt, string? layout)
     {
         if (darkPath is null)
         {
-            <img class="@className" src="@Url.Content(path)" alt="@alt"/>
+            <img class="@className" data-layout="@layout" src="@Url.Content(path)" alt="@alt"/>
         }
         else
         {
-            <img class="@className" data-scheme="light" src="@Url.Content(path)" alt="@alt"/>
-            <img class="@className" data-scheme="dark" src="@Url.Content(darkPath)" alt="@alt"/>
+            <img class="@className" data-layout="@layout" data-scheme="light" src="@Url.Content(path)" alt="@alt"/>
+            <img class="@className" data-layout="@layout" data-scheme="dark" src="@Url.Content(darkPath)" alt="@alt"/>
         }
     }
+
+    static string WordmarkLayoutValue(WordmarkLayout layout) => layout switch
+    {
+        WordmarkLayout.Start => "start",
+        WordmarkLayout.Fill => "fill",
+        _ => "center",
+    };
 }

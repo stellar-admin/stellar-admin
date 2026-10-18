@@ -12,13 +12,19 @@ public sealed class WordmarkBrandingLogo : BrandingLogo
     public string? DarkPath { get; }
 
     /// <summary>
+    ///     Gets how the wordmark is placed in the sidebar header.
+    /// </summary>
+    public WordmarkLayout Layout { get; }
+
+    /// <summary>
     ///     Gets the URL or app-relative path of the image.
     /// </summary>
     public string Path { get; }
 
-    internal WordmarkBrandingLogo(string path, string? darkPath)
+    internal WordmarkBrandingLogo(string path, string? darkPath, WordmarkLayout layout)
     {
         Path = path;
         DarkPath = darkPath;
+        Layout = layout;
     }
 }

@@ -429,13 +429,30 @@
         white-space: nowrap;
     }
 
+    /* A wordmark is centered by default, can align with the start of the header, or can fill the header's width up to
+       twice the standard height, which grows the header link to fit. */
     .sa-sidebar-brand-wordmark {
         display: block;
         width: auto;
         max-width: 100%;
         height: calc(7 * var(--sa-unit));
+        margin-inline: auto;
         object-fit: contain;
-        object-position: left center;
+
+        &[data-layout="start"] {
+            margin-inline: 0 auto;
+            object-position: left center;
+        }
+
+        &[data-layout="fill"] {
+            width: 100%;
+            height: auto;
+            max-height: calc(14 * var(--sa-unit));
+        }
+    }
+
+    .sa-sidebar-menu-button:has(> .sa-sidebar-brand-wordmark[data-layout="fill"]) {
+        height: auto;
     }
 
     /* Dark mode is a class, which a picture element's media queries cannot follow, so a logo with a dark variant

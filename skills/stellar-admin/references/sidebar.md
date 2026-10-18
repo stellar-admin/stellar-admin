@@ -160,9 +160,16 @@ The logo is one of three kinds, so only one can be set:
 
 - `BrandingLogo.Icon("compass")`: an icon from the app's icon set, in an accent-coloured tile beside the title.
 - `BrandingLogo.Image("~/img/logo.svg")`: a square image beside the title.
-- `BrandingLogo.Wordmark("~/img/wordmark.svg")`: an image that replaces the title and subtitle, as tall as the two lines it replaces and up to the sidebar's width. The title becomes its alt text. A wordmark with a `Subtitle` throws at startup.
+- `BrandingLogo.Wordmark("~/img/wordmark.svg")`: an image that replaces the title and subtitle, as tall as the two lines it replaces and up to the sidebar's width. The title becomes its alt text. It's centered by default. A wordmark with a `Subtitle` throws at startup.
 
 `Image` and `Wordmark` take a second path for dark mode: `BrandingLogo.Wordmark("~/img/wordmark.svg", "~/img/wordmark-dark.svg")`. Without it, the same image shows in both modes.
+
+A wordmark takes an optional `WordmarkLayout` last: `Center` (the default), `Start` to line it up with the menu items below, or `Fill` to stretch it to the sidebar's width, up to twice the standard height. Use `Fill` for a wide logo that looks small at the standard height.
+
+```csharp
+branding.Logo = BrandingLogo.Wordmark("~/img/wordmark.svg", WordmarkLayout.Fill);
+branding.Logo = BrandingLogo.Wordmark("~/img/wordmark.svg", "~/img/wordmark-dark.svg", WordmarkLayout.Start);
+```
 
 ## User menu
 

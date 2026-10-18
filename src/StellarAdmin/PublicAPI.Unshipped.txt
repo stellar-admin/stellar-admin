@@ -158,6 +158,8 @@ static StellarAdmin.Sidebar.BrandingLogo.Image(string! path) -> StellarAdmin.Sid
 static StellarAdmin.Sidebar.BrandingLogo.Image(string! path, string! darkPath) -> StellarAdmin.Sidebar.ImageBrandingLogo!
 static StellarAdmin.Sidebar.BrandingLogo.Wordmark(string! path) -> StellarAdmin.Sidebar.WordmarkBrandingLogo!
 static StellarAdmin.Sidebar.BrandingLogo.Wordmark(string! path, string! darkPath) -> StellarAdmin.Sidebar.WordmarkBrandingLogo!
+static StellarAdmin.Sidebar.BrandingLogo.Wordmark(string! path, string! darkPath, StellarAdmin.Sidebar.WordmarkLayout layout) -> StellarAdmin.Sidebar.WordmarkBrandingLogo!
+static StellarAdmin.Sidebar.BrandingLogo.Wordmark(string! path, StellarAdmin.Sidebar.WordmarkLayout layout) -> StellarAdmin.Sidebar.WordmarkBrandingLogo!
 static StellarAdmin.Sidebar.SidebarLinkTarget.Action(string! action, string! controller) -> StellarAdmin.Sidebar.SidebarLinkTarget!
 static StellarAdmin.Sidebar.SidebarLinkTarget.Action(string! action, string! controller, string! area) -> StellarAdmin.Sidebar.SidebarLinkTarget!
 static StellarAdmin.Sidebar.SidebarLinkTarget.Page(string! page) -> StellarAdmin.Sidebar.SidebarLinkTarget!
@@ -1597,7 +1599,12 @@ StellarAdmin.Sidebar.UserMenuItemBuilder
 StellarAdmin.Sidebar.UserMenuItemBuilder.Icon.set -> void
 StellarAdmin.Sidebar.WordmarkBrandingLogo
 StellarAdmin.Sidebar.WordmarkBrandingLogo.DarkPath.get -> string?
+StellarAdmin.Sidebar.WordmarkBrandingLogo.Layout.get -> StellarAdmin.Sidebar.WordmarkLayout
 StellarAdmin.Sidebar.WordmarkBrandingLogo.Path.get -> string!
+StellarAdmin.Sidebar.WordmarkLayout
+StellarAdmin.Sidebar.WordmarkLayout.Center = 0 -> StellarAdmin.Sidebar.WordmarkLayout
+StellarAdmin.Sidebar.WordmarkLayout.Fill = 2 -> StellarAdmin.Sidebar.WordmarkLayout
+StellarAdmin.Sidebar.WordmarkLayout.Start = 1 -> StellarAdmin.Sidebar.WordmarkLayout
 StellarAdmin.StellarAdminBuilder
 StellarAdmin.StellarAdminBuilder.AddApplicationPart(System.Reflection.Assembly! assembly) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.AddController(System.Type! controllerType, string! controllerName) -> StellarAdmin.StellarAdminBuilder!

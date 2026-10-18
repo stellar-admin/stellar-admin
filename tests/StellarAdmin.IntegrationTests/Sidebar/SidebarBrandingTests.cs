@@ -139,6 +139,34 @@ public class SidebarBrandingTests
         await Assert
             .That(images.Select(image => image.GetAttribute("alt") ?? ""))
             .IsEquivalentTo(["Voyager Travel", "Voyager Travel"]);
+        await Assert
+            .That(images.Select(image => image.GetAttribute("data-layout") ?? ""))
+            .IsEquivalentTo(["center", "center"]);
         await Assert.That(header.QuerySelector(".sa-sidebar-brand-text")).IsNull();
+    }
+
+    [Test]
+    [Arguments(WordmarkLayout.Start, "start")]
+    [Arguments(WordmarkLayout.Fill, "fill")]
+    public async Task WordmarkWithLayout_RendersLayout(WordmarkLayout layout, string expected)
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            configureAdmin: admin =>
+                admin.ConfigureBranding(branding =>
+                    branding.Logo = BrandingLogo.Wordmark("~/img/wordmark.svg", layout)
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+
+        // Assert
+        var image = document
+            .RequiredElement(Header)
+            .RequiredElement("img.sa-sidebar-brand-wordmark");
+        await Assert.That(image.GetAttribute("data-layout")).IsEqualTo(expected);
     }
 }
