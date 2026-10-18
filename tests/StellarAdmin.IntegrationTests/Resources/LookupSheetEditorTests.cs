@@ -81,6 +81,7 @@ public class LookupSheetEditorTests
         var choose = document.RequiredElement("#Entity_CategoryId-choose");
         await Assert.That(choose.TextContent.Trim()).IsEqualTo("Choose categoryId");
         await Assert.That(choose.GetAttribute("data-lookup")).IsEqualTo("open");
+        await Assert.That(choose.ParentElement!.ClassList.Contains("flex-1")).IsTrue();
         await Assert.That(document.QuerySelector("[data-lookup='create']")).IsNull();
     }
 

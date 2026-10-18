@@ -126,7 +126,7 @@
             }
 
             <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(item is not null)">
-                <sa-input-group class="@emptyClass">
+                <sa-input-group class="@($"{emptyClass} flex-1 {classes.Control}")">
                     <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
                             data-sheet-open="@sheetUrl" aria-describedby="@describedBy" data-lookup="open">
                         <sa-icon name="search" class="size-4 shrink-0" />
