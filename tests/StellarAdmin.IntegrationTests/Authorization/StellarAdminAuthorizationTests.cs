@@ -13,6 +13,7 @@ public class StellarAdminAuthorizationTests
     [Arguments("/stellaradmin")]
     [Arguments("/stellaradmin/products")]
     [Arguments("/stellaradmin/products/create")]
+    [Arguments("/stellaradmin/home/icons")]
     public async Task RequiredAuthorization_AnonymousRequest_ReturnsUnauthorized(string url)
     {
         // Arrange

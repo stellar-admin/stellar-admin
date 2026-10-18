@@ -1,0 +1,17 @@
+@using StellarAdmin.Infrastructure.Icons
+@inherits FieldEditorView<IconEditor>
+@inject IconCatalog Catalog
+
+@{
+    var icons = Editor.Icons is { Count: > 0 } list ? list : null;
+    var iconsUrl = icons is null ? Url.Action("Icons", "Home", new { id = (string?)null, v = Catalog.Version }) : null;
+}
+
+@* A cell has room for the icon alone, so the button names itself with the icon's name and the column names the field *@
+<sa-icon-picker class="sa-cell-editor" class-names="@EditorClassNamesMapper.ForIconPicker(Editor, "sa-icon-picker-cell-trigger")" wrap-in-field="false"
+                asp-for="@Model" layout="IconPickerLayout.Picker" icons-url="@iconsUrl" disabled="@IsReadOnly" aria-describedby="@CellErrorId">
+    @foreach (var icon in icons ?? [])
+    {
+        <sa-icon name="@icon" />
+    }
+</sa-icon-picker>

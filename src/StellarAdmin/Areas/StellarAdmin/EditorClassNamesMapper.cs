@@ -27,6 +27,22 @@ internal static class EditorClassNamesMapper
         };
     }
 
+    public static IconPickerClassNames ForIconPicker(IconEditor editor, string? trigger = null)
+    {
+        var classes = editor.ClassNames;
+
+        return new IconPickerClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Label = classes.Label,
+            Root = classes.Root,
+            Trigger = trigger,
+        };
+    }
+
     public static ImageUploadClassNames ForImageUpload(ImageEditor editor)
     {
         var classes = editor.ClassNames;

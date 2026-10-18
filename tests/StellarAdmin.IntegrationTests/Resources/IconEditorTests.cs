@@ -1,0 +1,309 @@
+using System.Net;
+using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using StellarAdmin.IntegrationTests.Fixtures;
+using StellarAdmin.IntegrationTests.Infrastructure;
+using StellarAdmin.Resources.Builders;
+using StellarAdmin.Resources.Editors;
+using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+
+namespace StellarAdmin.IntegrationTests.Resources;
+
+public class IconEditorTests
+{
+    private const string EditUrl = "/stellaradmin/products/edit/7";
+
+    private static readonly string[] Amenities = ["wifi", "coffee", "bus"];
+
+    [Test]
+    public async Task Edit_WithoutIcons_RendersPickerLoadingEveryIconFromEndpoint()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(fields =>
+            fields.Add(model => model.Icon).UseEditor<IconEditor>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(EditUrl);
+
+        // Assert
+        var picker = Picker(document, "Icon");
+        await Assert.That(picker.GetAttribute("data-layout")).IsEqualTo("picker");
+        await Assert
+            .That(picker.GetAttribute("data-icons-url"))
+            .Matches("^/stellaradmin/home/icons\\?v=[0-9a-f]{16}$");
+        await Assert
+            .That(picker.RequiredElement("[data-slot='icon-picker-text']").TextContent)
+            .IsEqualTo("coffee");
+        await Assert.That(picker.QuerySelector("template")).IsNull();
+    }
+
+    [Test]
+    [Arguments(IconEditorLayout.Auto, 24, "inline")]
+    [Arguments(IconEditorLayout.Auto, 25, "picker")]
+    [Arguments(IconEditorLayout.Picker, 3, "picker")]
+    [Arguments(IconEditorLayout.Inline, 30, "inline")]
+    public async Task Edit_WithIcons_RendersLayoutWithoutEndpoint(
+        IconEditorLayout layout,
+        int count,
+        string expected
+    )
+    {
+        // Arrange
+        var icons = Icons(count);
+        await using var sut = await CreateAsync(fields =>
+            fields
+                .Add(model => model.Icon)
+                .UseEditor<IconEditor>(editor =>
+                {
+                    editor.Icons = icons;
+                    editor.Layout = layout;
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(EditUrl);
+
+        // Assert
+        var picker = Picker(document, "Icon");
+        await Assert.That(picker.GetAttribute("data-layout")).IsEqualTo(expected);
+        await Assert.That(picker.HasAttribute("data-icons-url")).IsFalse();
+        var names =
+            expected == "inline"
+                ? picker
+                    .QuerySelectorAll("input[type='radio']")
+                    .Select(input => input.GetAttribute("value"))
+                : (
+                    (IHtmlTemplateElement)picker.RequiredElement("template")
+                ).Content.Children.Select(svg => svg.GetAttribute("data-icon-name"));
+        await Assert.That(names).IsEquivalentTo(icons);
+    }
+
+    [Test]
+    public async Task Edit_WithIconsAndUnlistedStoredValue_KeepsStoredValue()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(fields =>
+            fields.Add(model => model.Badge).UseEditor<IconEditor>(Configure)
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(EditUrl);
+
+        // Assert
+        var picker = Picker(document, "Badge");
+        await Assert.That(picker.QuerySelector("input[type='radio']:checked")).IsNull();
+        var fallback = picker.RequiredElement("input[type='hidden'][name='Entity.Badge']");
+        await Assert.That(fallback.GetAttribute("value")).IsEqualTo("spa-flower");
+        await Assert.That(fallback.HasAttribute("disabled")).IsFalse();
+    }
+
+    [Test]
+    public async Task EditRow_WithIconEditor_RendersSmallTriggerOpeningPicker()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "coffee", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                {
+                    edit.Fields(fields =>
+                        fields.Add(product => product.Name).UseEditor<IconEditor>(Configure)
+                    );
+                    edit.UseInlineRow();
+                });
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/editrow/7");
+
+        // Assert
+        var picker = document.RequiredElement("sel-icon-picker");
+        await Assert.That(picker.GetAttribute("data-layout")).IsEqualTo("picker");
+        await Assert
+            .That(
+                picker
+                    .RequiredElement("[data-slot='icon-picker-trigger']")
+                    .ClassList.Contains("sa-icon-picker-cell-trigger")
+            )
+            .IsTrue();
+        await Assert
+            .That(
+                picker.RequiredElement("input[data-slot='icon-picker-value']").GetAttribute("name")
+            )
+            .IsEqualTo("rows[7].Name");
+    }
+
+    [Test]
+    [Arguments("anchor", "bus")]
+    [Arguments("", "")]
+    public async Task Save_WithOfferedIconsOrEmptyValues_SavesValues(string icon, string badge)
+    {
+        // Arrange
+        var icons = new AmenityIcons();
+        await using var sut = await CreateAsync(
+            fields =>
+            {
+                fields.Add(model => model.Icon).UseEditor<IconEditor>();
+                fields.Add(model => model.Badge).UseEditor<IconEditor>(Configure);
+            },
+            icons
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, EditUrl);
+        values["Entity.Icon"] = icon;
+        values["Entity.Badge"] = badge;
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync(EditUrl, content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert.That(icons.Saved?.Icon).IsEqualTo(icon == "" ? null : icon);
+        await Assert.That(icons.Saved?.Badge).IsEqualTo(badge == "" ? null : badge);
+    }
+
+    [Test]
+    public async Task Save_WithUnchangedStoredValueThatIsNotOffered_SavesValue()
+    {
+        // Arrange
+        var icons = new AmenityIcons();
+        await using var sut = await CreateAsync(
+            fields => fields.Add(model => model.Badge).UseEditor<IconEditor>(Configure),
+            icons
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, EditUrl);
+        values["Entity.Badge"] = "spa-flower";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync(EditUrl, content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert.That(icons.Saved?.Badge).IsEqualTo("spa-flower");
+    }
+
+    [Test]
+    [Arguments("Icon", "not-an-icon")]
+    [Arguments("Badge", "anchor")]
+    [Arguments("Badge", "not-an-icon")]
+    public async Task Save_WithIconTheFieldDoesNotOffer_ShowsErrorWithoutSaving(
+        string field,
+        string value
+    )
+    {
+        // Arrange
+        var icons = new AmenityIcons();
+        await using var sut = await CreateAsync(
+            fields =>
+            {
+                fields.Add(model => model.Icon).UseEditor<IconEditor>();
+                fields.Add(model => model.Badge).UseEditor<IconEditor>(Configure);
+            },
+            icons
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, EditUrl);
+        values["Entity.Icon"] = "coffee";
+        values["Entity.Badge"] = "spa-flower";
+        values[$"Entity.{field}"] = value;
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync(EditUrl, content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(icons.Saved).IsNull();
+        var document = await response.ReadDocumentAsync();
+        var picker = Picker(document, field);
+        await Assert
+            .That(
+                picker
+                    .Closest(".sa-field")!
+                    .RequiredElement("[data-slot='field-error']")
+                    .TextContent.Trim()
+            )
+            .IsEqualTo("Choose an icon from the list.");
+    }
+
+    [Test]
+    [Arguments(
+        new[] { "wifi", "spa-flower" },
+        IconEditorLayout.Auto,
+        "The edit form's icon field 'Icon' lists icons that aren't registered: spa-flower."
+    )]
+    [Arguments(
+        new string[0],
+        IconEditorLayout.Auto,
+        "The edit form's icon field 'Icon' has an empty list of icons."
+    )]
+    [Arguments(
+        null,
+        IconEditorLayout.Inline,
+        "The edit form's icon field 'Icon' uses the inline layout, which requires a list of icons."
+    )]
+    public async Task Startup_WithInvalidIconEditor_FailsValidation(
+        string[]? icons,
+        IconEditorLayout layout,
+        string expected
+    )
+    {
+        // Arrange
+        var configure = () =>
+            CreateAsync(fields =>
+                fields
+                    .Add(model => model.Icon)
+                    .UseEditor<IconEditor>(editor =>
+                    {
+                        editor.Icons = icons;
+                        editor.Layout = layout;
+                    })
+            );
+
+        // Act
+        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+
+        // Assert
+        await Assert.That(exception!.Message).Contains(expected);
+    }
+
+    private static void Configure(IconEditor editor) => editor.Icons = Amenities;
+
+    // Registered Lucide names, in the order the pack lists them
+    private static string[] Icons(int count) =>
+        new StellarAdmin.UI.Icons.LucideIconPack().GetIcons().Keys.Take(count).ToArray();
+
+    private static IElement Picker(IDocument document, string name) =>
+        document.QuerySelectorAll($"[name='Entity.{name}']").First().Closest("sel-icon-picker")!;
+
+    private static Task<WebApplication> CreateAsync(
+        Action<ResourceFieldsBuilder<AmenityIconModel>> fields,
+        AmenityIcons? icons = null
+    ) =>
+        StellarAdminTestHost.CreateAsync(
+            new([new(7, "Breakfast", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit<AmenityIconModel, AmenityIconHandler>(edit =>
+                    edit.Fields(fields)
+                );
+            },
+            configureServices: services => services.AddSingleton(icons ?? new AmenityIcons())
+        );
+}

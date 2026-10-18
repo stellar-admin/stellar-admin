@@ -78,6 +78,7 @@ internal static class FieldEditorGalleryRegistration
         );
         admin.AddGalleryResource<SliderGallery>("slider", "Slider", 90, ConfigureSliderFields);
         admin.AddGalleryResource<ImageGallery>("image", "Image", 95, ConfigureImageFields);
+        admin.AddGalleryResource<IconGallery>("icon", "Icon", 97, ConfigureIconFields);
         admin.AddGalleryResource<OneTimeCodeGallery>(
             "one-time-code",
             "One-time code",
@@ -1348,6 +1349,61 @@ internal static class FieldEditorGalleryRegistration
                 section
                     .Add(model => model.StyledDeparture)
                     .UseEditor<DateInputEditor>(date => date.ClassNames.Control = "border-dashed");
+            }
+        );
+    }
+
+    private static void ConfigureIconFields(ResourceFieldsBuilder<IconGallery> fields)
+    {
+        fields.AddSection(
+            "Every registered icon",
+            section =>
+            {
+                section.Description =
+                    "No Icons list: the picker loads every registered icon from the panel's icons endpoint when it first opens.";
+                section.Add(model => model.Icon).UseEditor<IconEditor>();
+                section.Add(model => model.TourIcon).UseEditor<IconEditor>();
+            }
+        );
+        fields.AddSection(
+            "Icons lists and layouts",
+            section =>
+            {
+                section.Description =
+                    "Auto shows tiles for 24 icons or fewer and the picker for more.";
+                section
+                    .Add(model => model.Amenity)
+                    .UseEditor<IconEditor>(editor => editor.Icons = GalleryIcons.Amenities);
+                section
+                    .Add(model => model.Activity)
+                    .UseEditor<IconEditor>(editor => editor.Icons = GalleryIcons.Activities);
+                section
+                    .Add(model => model.PickerAmenity)
+                    .UseEditor<IconEditor>(editor =>
+                    {
+                        editor.Icons = GalleryIcons.Amenities;
+                        editor.Layout = IconEditorLayout.Picker;
+                    });
+                section
+                    .Add(model => model.Transport)
+                    .UseEditor<IconEditor>(editor =>
+                    {
+                        editor.Icons = GalleryIcons.Transport;
+                        editor.Layout = IconEditorLayout.Inline;
+                    });
+            }
+        );
+        fields.AddSection(
+            "Stored values",
+            section =>
+            {
+                section.Description =
+                    "A stored name that isn't an icon shows a dashed box and saves unchanged; a new value must be one the field offers.";
+                section.Add(model => model.LegacyIcon).UseEditor<IconEditor>();
+                section
+                    .Add(model => model.LegacyAmenity)
+                    .UseEditor<IconEditor>(editor => editor.Icons = GalleryIcons.Amenities);
+                section.Add(model => model.ReadOnlyIcon).UseEditor<IconEditor>();
             }
         );
     }

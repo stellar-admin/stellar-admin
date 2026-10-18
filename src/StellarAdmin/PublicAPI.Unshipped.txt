@@ -30,6 +30,7 @@ override StellarAdmin.Resources.Displays.BooleanDisplay.TemplateName.get -> stri
 override StellarAdmin.Resources.Displays.DateDisplay.TemplateName.get -> string!
 override StellarAdmin.Resources.Displays.EmailDisplay.TemplateName.get -> string!
 override StellarAdmin.Resources.Displays.EnumDisplay.TemplateName.get -> string!
+override StellarAdmin.Resources.Displays.IconDisplay.TemplateName.get -> string!
 override StellarAdmin.Resources.Displays.ImageDisplay.RendersEmptyValue.get -> bool
 override StellarAdmin.Resources.Displays.ImageDisplay.TemplateName.get -> string!
 override StellarAdmin.Resources.Displays.LinkDisplay.TemplateName.get -> string!
@@ -48,6 +49,7 @@ override StellarAdmin.Resources.Editors.ChoiceItem.GetHashCode() -> int
 override StellarAdmin.Resources.Editors.ChoiceItem.ToString() -> string!
 override StellarAdmin.Resources.Editors.DateInputEditor.TemplateName.get -> string!
 override StellarAdmin.Resources.Editors.DateTimeInputEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.IconEditor.TemplateName.get -> string!
 override StellarAdmin.Resources.Editors.ImageEditor.ClassNames.get -> StellarAdmin.Resources.Editors.ImageEditorClassNames!
 override StellarAdmin.Resources.Editors.ImageEditor.TemplateName.get -> string!
 override StellarAdmin.Resources.Editors.ImageEditorHandler.PrepareAsync(StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
@@ -738,6 +740,10 @@ StellarAdmin.Resources.Displays.FieldDisplayContext.Value.get -> object?
 StellarAdmin.Resources.Displays.FieldDisplayHandler<TDisplay>
 StellarAdmin.Resources.Displays.FieldDisplayHandler<TDisplay>.Display.get -> TDisplay!
 StellarAdmin.Resources.Displays.FieldDisplayHandler<TDisplay>.FieldDisplayHandler(TDisplay! display) -> void
+StellarAdmin.Resources.Displays.IconDisplay
+StellarAdmin.Resources.Displays.IconDisplay.IconDisplay() -> void
+StellarAdmin.Resources.Displays.IconDisplay.ShowName.get -> bool?
+StellarAdmin.Resources.Displays.IconDisplay.ShowName.set -> void
 StellarAdmin.Resources.Displays.IFieldDisplay
 StellarAdmin.Resources.Displays.IFieldDisplay.HandlerType.get -> System.Type!
 StellarAdmin.Resources.Displays.IFieldDisplay<THandler>
@@ -864,6 +870,16 @@ StellarAdmin.Resources.Editors.FieldEditorHandler<TEditor>.Editor.get -> TEditor
 StellarAdmin.Resources.Editors.FieldEditorHandler<TEditor>.FieldEditorHandler(TEditor! editor) -> void
 StellarAdmin.Resources.Editors.IChoiceItemsProvider
 StellarAdmin.Resources.Editors.IChoiceItemsProvider.GetItemsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!
+StellarAdmin.Resources.Editors.IconEditor
+StellarAdmin.Resources.Editors.IconEditor.IconEditor() -> void
+StellarAdmin.Resources.Editors.IconEditor.Icons.get -> System.Collections.Generic.IReadOnlyList<string!>?
+StellarAdmin.Resources.Editors.IconEditor.Icons.set -> void
+StellarAdmin.Resources.Editors.IconEditor.Layout.get -> StellarAdmin.Resources.Editors.IconEditorLayout
+StellarAdmin.Resources.Editors.IconEditor.Layout.set -> void
+StellarAdmin.Resources.Editors.IconEditorLayout
+StellarAdmin.Resources.Editors.IconEditorLayout.Auto = 0 -> StellarAdmin.Resources.Editors.IconEditorLayout
+StellarAdmin.Resources.Editors.IconEditorLayout.Inline = 2 -> StellarAdmin.Resources.Editors.IconEditorLayout
+StellarAdmin.Resources.Editors.IconEditorLayout.Picker = 1 -> StellarAdmin.Resources.Editors.IconEditorLayout
 StellarAdmin.Resources.Editors.IFieldEditor
 StellarAdmin.Resources.Editors.IFieldEditor.HandlerType.get -> System.Type!
 StellarAdmin.Resources.Editors.IFieldEditor<THandler>

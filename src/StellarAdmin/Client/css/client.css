@@ -380,6 +380,44 @@
         }
     }
 
+    /* An icon field: the icon, or a dashed box for a name that isn't an icon, with the name beside it in the
+       muted colour when it isn't one */
+    .sa-icon-display {
+        display: inline-flex;
+        align-items: center;
+        vertical-align: middle;
+        gap: calc(1.5 * var(--sa-unit));
+        min-width: 0;
+
+        & > svg {
+            flex-shrink: 0;
+            width: var(--sa-control-icon);
+            height: var(--sa-control-icon);
+        }
+
+        & > .sa-icon-missing + span {
+            color: var(--sa-color-ink-muted);
+        }
+    }
+
+    /* In an inline row, the picker's button shows the icon and the chevron; the name stays for screen readers */
+    .sa-input.sa-icon-picker-trigger.sa-icon-picker-cell-trigger {
+        --_input-h: var(--sa-control-h-sm);
+        position: relative;
+        width: auto;
+        gap: var(--sa-unit);
+        padding-inline: calc(2 * var(--sa-unit)) calc(1.5 * var(--sa-unit));
+
+        & > [data-slot="icon-picker-text"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+    }
+
     /* The sidebar header: an icon in an accent tile or a square image beside the title and subtitle, or a wordmark
        that replaces them. */
     .sa-sidebar-brand-mark {

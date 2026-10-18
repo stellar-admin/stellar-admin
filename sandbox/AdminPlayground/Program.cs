@@ -1,4 +1,5 @@
 using AdminPlayground.Data;
+using AdminPlayground.Resources.Amenities;
 using AdminPlayground.Resources.Categories;
 using AdminPlayground.Resources.Customers;
 using AdminPlayground.Resources.Departments;
@@ -77,6 +78,7 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddDepartmentResource();
     admin.AddCustomerResource();
     admin.AddDestinationResource();
+    admin.AddAmenityResource();
     admin.AddProductResource();
     admin.AddCategoryResource();
     admin.AddFieldEditorGallery();

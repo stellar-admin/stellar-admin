@@ -199,3 +199,50 @@ internal static class GalleryAirportCodes
         },
     ];
 }
+
+// Icon names for the icon editor gallery
+internal static class GalleryIcons
+{
+    public static readonly string[] Amenities =
+    [
+        "wifi",
+        "waves-ladder",
+        "coffee",
+        "square-parking",
+        "bus",
+        "utensils",
+        "dumbbell",
+        "bath",
+        "shirt",
+        "sparkles",
+        "snowflake",
+        "dog",
+        "baby",
+    ];
+
+    public static readonly string[] Activities =
+    [
+        .. Amenities,
+        "accessibility",
+        "car",
+        "plane",
+        "mountain",
+        "tent",
+        "sailboat",
+        "bike",
+        "cable-car",
+        "ship",
+        "train-front",
+        "hotel",
+        "bed-double",
+        "tree-palm",
+        "sun",
+        "umbrella-off",
+        "map-pin",
+        "compass",
+        "camera",
+        "wine",
+    ];
+
+    public static readonly string[] Transport = ["bus", "car", "plane", "train-front"];
+}

@@ -1,0 +1,17 @@
+@using StellarAdmin.Infrastructure.Icons
+@inherits FieldEditorView<IconEditor>
+@inject IconCatalog Catalog
+
+@{
+    // A list renders its icons on the server; otherwise the picker loads every registered icon when it opens
+    var icons = Editor.Icons is { Count: > 0 } list ? list : null;
+    var iconsUrl = icons is null ? Url.Action("Icons", "Home", new { id = (string?)null, v = Catalog.Version }) : null;
+}
+
+<sa-icon-picker class-names="@EditorClassNamesMapper.ForIconPicker(Editor)" asp-for="@Model" layout="Editor.ResolveLayout()" icons-url="@iconsUrl"
+                disabled="@IsReadOnly" label="@Title" description="@Description">
+    @foreach (var icon in icons ?? [])
+    {
+        <sa-icon name="@icon" />
+    }
+</sa-icon-picker>

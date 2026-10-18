@@ -1,0 +1,24 @@
+@using Microsoft.Extensions.Options
+@using StellarAdmin.Resources.Displays
+@using StellarAdmin.UI.Icons
+@inherits FieldDisplayView<IconDisplay>
+@inject IOptions<IconOptions> IconOptions
+
+@{
+    // In a cell the icon stands alone, with its name on hover
+    var name = Model?.ToString();
+    var showName = Display.ShowName ?? false;
+    var registered = name is not null && IconOptions.Value.TryGetIcon(name, out _);
+}
+
+<span class="sa-icon-display" title="@(showName ? null : name)">
+    @if (registered)
+    {
+        <sa-icon name="@name" aria-hidden="true" />
+    }
+    else
+    {
+        <span class="sa-icon-missing" aria-hidden="true"></span>
+    }
+    <span class="@(showName ? null : "sr-only")">@name</span>
+</span>

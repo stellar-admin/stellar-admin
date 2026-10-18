@@ -17,6 +17,7 @@ using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
+using StellarAdmin.UI.Icons;
 using StellarAdmin.UI.Toasts;
 
 namespace StellarAdmin.Areas.StellarAdmin.Controllers;
@@ -315,6 +316,7 @@ internal sealed class ResourceController<TResource>(
         var valid = await TryBindConfiguredFieldsAsync(
             resource,
             _resourceOptions.Edit.ModelType,
+            _resourceOptions.Edit.Fields,
             fields,
             ResourceFormPageViewModel.BindingPrefix
         );
@@ -387,7 +389,15 @@ internal sealed class ResourceController<TResource>(
 
         var fields = GetEditFieldNames();
         var prefix = ModelNames.CreateIndexModelName(InlineRowsPrefix, id);
-        if (!await TryBindConfiguredFieldsAsync(resource, edit.ModelType, fields, prefix))
+        if (
+            !await TryBindConfiguredFieldsAsync(
+                resource,
+                edit.ModelType,
+                edit.Fields,
+                fields,
+                prefix
+            )
+        )
         {
             return await EditRowView(id, resource, query, cancellationToken);
         }
@@ -1608,7 +1618,15 @@ internal sealed class ResourceController<TResource>(
             .Fields.Select(field => field.FieldName)
             .ToHashSet(StringComparer.Ordinal);
 
-        if (!await TryBindConfiguredFieldsAsync(resource, create.ModelType, fields, prefix))
+        if (
+            !await TryBindConfiguredFieldsAsync(
+                resource,
+                create.ModelType,
+                create.Fields,
+                fields,
+                prefix
+            )
+        )
         {
             return (resource, null);
         }
@@ -1690,6 +1708,7 @@ internal sealed class ResourceController<TResource>(
     private async Task<bool> TryBindConfiguredFieldsAsync(
         object model,
         Type modelType,
+        IReadOnlyList<FormFieldOptions> formFields,
         HashSet<string> fields,
         string prefix
     )
@@ -1698,8 +1717,19 @@ internal sealed class ResourceController<TResource>(
             .SelectMany(field => field.Split('.'))
             .ToHashSet(StringComparer.Ordinal);
 
+        // An icon field's stored value, which saves unchanged even when it isn't an icon the field offers
+        var iconFields = formFields
+            .Where(field =>
+                field is { IsReadOnly: false, Editor: IconEditor }
+                && fields.Contains(field.FieldName)
+            )
+            .Select(field =>
+                (field, ResourcePropertyPath.GetValue(model, field.PropertyPath) as string)
+            )
+            .ToArray();
+
         if (
-            await TryUpdateModelAsync(
+            !await TryUpdateModelAsync(
                 model,
                 modelType,
                 prefix,
@@ -1712,11 +1742,47 @@ internal sealed class ResourceController<TResource>(
             )
         )
         {
-            return true;
+            ScopeValidationErrors(fields, prefix);
         }
 
-        ScopeValidationErrors(fields, prefix);
+        ValidateIconFields(model, iconFields, prefix);
         return ModelState.IsValid;
+    }
+
+    // A new value must be an icon the field offers: one of its list, or any registered icon
+    private void ValidateIconFields(
+        object model,
+        (FormFieldOptions Field, string? Stored)[] iconFields,
+        string prefix
+    )
+    {
+        if (iconFields.Length == 0)
+        {
+            return;
+        }
+
+        var icons = HttpContext.RequestServices.GetRequiredService<IOptions<IconOptions>>().Value;
+        foreach (var (field, stored) in iconFields)
+        {
+            var key = ModelNames.CreatePropertyModelName(prefix, field.FieldName);
+            if (
+                ModelState.GetFieldValidationState(key) == ModelValidationState.Invalid
+                || ResourcePropertyPath.GetValue(model, field.PropertyPath)
+                    is not string { Length: > 0 } value
+                || value == stored
+            )
+            {
+                continue;
+            }
+
+            var offered = ((IconEditor)field.Editor!).Icons is { Count: > 0 } list
+                ? list.Contains(value, StringComparer.OrdinalIgnoreCase)
+                : icons.TryGetIcon(value, out _);
+            if (!offered)
+            {
+                ModelState.AddModelError(key, "Choose an icon from the list.");
+            }
+        }
     }
 
     // Validation checks the whole model, but the form only sets its configured fields. The errors of
