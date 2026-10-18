@@ -4,5 +4,5 @@ namespace StellarAdmin.EntityFrameworkCore;
 
 internal interface IEfCoreLookupReference
 {
-    INavigation? FindNavigation(IEntityType model, string fieldName);
+    IEnumerable<string> FindIncludePaths(IEntityType model, string fieldName);
 }

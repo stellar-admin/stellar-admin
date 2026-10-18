@@ -59,6 +59,83 @@ public class ResourceLookupTests
     }
 
     [Test]
+    public async Task Edit_DescriptionThroughReference_IncludesReferenceWithEntity()
+    {
+        // Arrange
+        var commands = new ConcurrentQueue<string>();
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                ConfigureLookupEdit(
+                    resource,
+                    items =>
+                        items.UseDescription(category =>
+                            category.Parent!.Name + " / " + category.Name
+                        )
+                ),
+            commands
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/edit/2");
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(DisplayText(document)).IsEqualTo("Technology");
+        await Assert.That(DescriptionText(document)).IsEqualTo("Office / Technology");
+        await Assert.That(commands.Count).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Edit_DescriptionThroughCollection_QueriesSelection()
+    {
+        // Arrange
+        var commands = new ConcurrentQueue<string>();
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                ConfigureLookupEdit(
+                    resource,
+                    items => items.UseDescription(category => category.Products.Count.ToString())
+                ),
+            commands
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/edit/2");
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(DescriptionText(document)).IsEqualTo("2");
+        await Assert.That(commands.Count).IsEqualTo(2);
+    }
+
+    [Test]
+    public async Task Edit_DescriptionFromEntityArgument_QueriesSelection()
+    {
+        // Arrange
+        var commands = new ConcurrentQueue<string>();
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                ConfigureLookupEdit(
+                    resource,
+                    items => items.UseDescription(category => Describe(category))
+                ),
+            commands
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/edit/2");
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(DescriptionText(document)).IsEqualTo("TECHNOLOGY");
+        await Assert.That(commands.Count).IsEqualTo(2);
+    }
+
+    [Test]
     public async Task RejectedEdit_DisplaysChangedSelection()
     {
         // Arrange
@@ -335,6 +412,11 @@ public class ResourceLookupTests
             category => category.Name,
             configure
         );
+
+    private static string? DescriptionText(IDocument document) =>
+        document.QuerySelector("[id$='-selected'] [data-slot='item-description']")?.TextContent;
+
+    private static string Describe(Category category) => category.Name.ToUpperInvariant();
 
     private static string? DisplayText(IDocument document) =>
         document.QuerySelector("[id$='-selected'] [data-lookup='title']")?.TextContent;

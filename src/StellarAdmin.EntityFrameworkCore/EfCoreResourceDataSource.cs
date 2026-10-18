@@ -89,8 +89,8 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         var entityType = db.Model.FindEntityType(typeof(TEntity))!;
         var navigations = _resourceOptions
             .Index.Columns.Select(column =>
-                GetPropertyPath(column.FieldExpression) is { } path
-                    ? FindReferencePath(entityType, path)
+                EfCorePropertyPaths.GetPropertyPath(column.FieldExpression) is { } path
+                    ? EfCorePropertyPaths.FindReferencePath(entityType, path)
                     : null
             )
             .OfType<string>()
@@ -217,24 +217,27 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             query = query.AsNoTracking();
         }
 
-        // Lookup editors display the selected item from the reference loaded with the entity, and
-        // display fields read through the references on their paths. The edit and view pages load
+        // Lookup editors display the selected item from the reference loaded with the entity, with
+        // the references its text reads through, and display fields read through the references on
+        // their paths. The edit and view pages load
         // through the same method, so the entity carries the references either page needs
         if (includeLookups)
         {
             var edit = _resourceOptions.Edit;
             var view = _resourceOptions.View;
-            var lookupNavigations = (edit?.Fields ?? []).Select(field =>
+            var lookupIncludes = (edit?.Fields ?? []).SelectMany(field =>
                 field.Editor is LookupSheetEditor { Items: IEfCoreLookupReference reference }
-                    ? reference.FindNavigation(entityType, field.FieldName)?.Name
-                    : null
+                    ? reference.FindIncludePaths(entityType, field.FieldName)
+                    : []
             );
             var displayFields = (
                 edit?.ModelType == typeof(TEntity) ? edit.DisplayFields : []
             ).Concat(view?.ModelType == typeof(TEntity) ? view.Fields : []);
-            var navigations = lookupNavigations
+            var navigations = lookupIncludes
                 .Concat(
-                    displayFields.Select(field => FindReferencePath(entityType, field.PropertyPath))
+                    displayFields.Select(field =>
+                        EfCorePropertyPaths.FindReferencePath(entityType, field.PropertyPath)
+                    )
                 )
                 .OfType<string>()
                 .Distinct(StringComparer.Ordinal);
@@ -245,55 +248,6 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         }
 
         return query.SingleOrDefaultAsync(predicate, cancellationToken);
-    }
-
-    // The properties a lambda such as p => p.Category.Name reads, or null when it is not a property path
-    private static PropertyInfo[]? GetPropertyPath(LambdaExpression expression)
-    {
-        var properties = new List<PropertyInfo>();
-        var body = expression.Body;
-        while (body is MemberExpression { Member: PropertyInfo property, Expression: { } owner })
-        {
-            properties.Add(property);
-            body = owner;
-        }
-
-        if (body != expression.Parameters[0])
-        {
-            return null;
-        }
-
-        properties.Reverse();
-        return [.. properties];
-    }
-
-    // The include path of the reference navigations a property path reads through, such as
-    // Supplier.Country for Supplier.Country.Name. Owned types load with their owner, so they extend
-    // the path without being included themselves; a collection or plain property ends it.
-    private static string? FindReferencePath(
-        IEntityType entityType,
-        IReadOnlyList<PropertyInfo> propertyPath
-    )
-    {
-        var segments = new List<string>();
-        string? path = null;
-        IEntityType current = entityType;
-        foreach (var property in propertyPath)
-        {
-            if (current.FindNavigation(property.Name) is not { IsCollection: false } navigation)
-            {
-                break;
-            }
-
-            segments.Add(navigation.Name);
-            current = navigation.TargetEntityType;
-            if (!current.IsOwned())
-            {
-                path = string.Join('.', segments);
-            }
-        }
-
-        return path;
     }
 
     private static IQueryable<TEntity> Order(

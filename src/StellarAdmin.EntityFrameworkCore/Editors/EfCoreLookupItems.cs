@@ -32,6 +32,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
     private readonly Func<TEntity, string?>? _media;
     private readonly EfCoreLookupItemsOptions<TEntity, TValue> _options;
     private readonly Expression<Func<TEntity, LookupProjection>> _projection;
+    private readonly IReadOnlyList<PropertyInfo[]>? _readPaths;
     private readonly Func<TEntity, string> _title;
     private readonly Func<TEntity, TValue> _value;
 
@@ -43,6 +44,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         _description = options.DescriptionExpression?.Compile();
         _media = options.Media?.Selector.Compile();
         _projection = CreateProjection(options);
+        _readPaths = ReadPaths(options);
     }
 
     public override bool HasDescription => _description is not null;
@@ -69,7 +71,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         if (
             values is [var current]
             && db.Model.FindEntityType(context.Model.GetType()) is { } model
-            && FindNavigation(model, context.FieldName)?.PropertyInfo?.GetValue(context.Model)
+            && FindLoadedNavigation(model, context.FieldName)?.PropertyInfo?.GetValue(context.Model)
                 is TEntity reference
             && EqualityComparer<TValue>.Default.Equals(_value(reference), current)
         )
@@ -106,29 +108,20 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
             .ToArray();
     }
 
-    public INavigation? FindNavigation(IEntityType model, string fieldName)
+    public IEnumerable<string> FindIncludePaths(IEntityType model, string fieldName)
     {
-        if (_options.Reference is { } reference)
+        if (FindLoadedNavigation(model, fieldName) is not { } navigation)
         {
-            return
-                model.ClrType == reference.ModelType
-                && model.FindNavigation(reference.Navigation) is { IsCollection: false } navigation
-                && navigation.TargetEntityType.ClrType == typeof(TEntity)
-                ? navigation
-                : null;
+            return [];
         }
 
-        var foreignKeys = model
-            .FindProperty(fieldName)
-            ?.GetContainingForeignKeys()
-            .Where(foreignKey =>
-                foreignKey.Properties.Count == 1
-                && foreignKey.PrincipalEntityType.ClrType == typeof(TEntity)
-                && foreignKey.DependentToPrincipal is not null
+        return _readPaths!
+            .Select(path =>
+                EfCorePropertyPaths.FindReferencePath(navigation.TargetEntityType, path)
             )
-            .ToArray();
-
-        return foreignKeys is [var single] ? single.DependentToPrincipal : null;
+            .OfType<string>()
+            .Select(path => $"{navigation.Name}.{path}")
+            .Prepend(navigation.Name);
     }
 
     public override async Task<LookupResults> SearchAsync(
@@ -193,6 +186,33 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         ParameterExpression entity
     ) => selector is null ? Expression.Constant(null, typeof(string)) : Rebind(selector, entity);
 
+    // The property paths the selected item is created from, or null when a selector uses the entity
+    // other than through its properties
+    private static IReadOnlyList<PropertyInfo[]>? ReadPaths(
+        EfCoreLookupItemsOptions<TEntity, TValue> options
+    )
+    {
+        LambdaExpression?[] selectors =
+        [
+            options.ValueExpression,
+            options.TitleExpression,
+            options.DescriptionExpression,
+            options.Media?.Selector,
+        ];
+        var paths = new List<PropertyInfo[]>();
+        foreach (var selector in selectors.OfType<LambdaExpression>())
+        {
+            if (EfCorePropertyPaths.GetPropertyPaths(selector) is not { } selectorPaths)
+            {
+                return null;
+            }
+
+            paths.AddRange(selectorPaths);
+        }
+
+        return paths;
+    }
+
     private static IReadOnlyList<TValue> ReadValues(FieldEditorContext context) =>
         context.Value switch
         {
@@ -219,6 +239,40 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         };
 
     private ItemMedia? CreateMedia(string? value) => _options.Media?.Create(value);
+
+    // The reference that loads the selected item with the model, or null when the item's text reads
+    // something an include can't load, so FindAsync queries the item instead
+    private INavigation? FindLoadedNavigation(IEntityType model, string fieldName) =>
+        _readPaths is not null
+        && FindNavigation(model, fieldName) is { } navigation
+        && _readPaths.All(path => EfCorePropertyPaths.CanInclude(navigation.TargetEntityType, path))
+            ? navigation
+            : null;
+
+    private INavigation? FindNavigation(IEntityType model, string fieldName)
+    {
+        if (_options.Reference is { } reference)
+        {
+            return
+                model.ClrType == reference.ModelType
+                && model.FindNavigation(reference.Navigation) is { IsCollection: false } navigation
+                && navigation.TargetEntityType.ClrType == typeof(TEntity)
+                ? navigation
+                : null;
+        }
+
+        var foreignKeys = model
+            .FindProperty(fieldName)
+            ?.GetContainingForeignKeys()
+            .Where(foreignKey =>
+                foreignKey.Properties.Count == 1
+                && foreignKey.PrincipalEntityType.ClrType == typeof(TEntity)
+                && foreignKey.DependentToPrincipal is not null
+            )
+            .ToArray();
+
+        return foreignKeys is [var single] ? single.DependentToPrincipal : null;
+    }
 
     private Expression<Func<TEntity, bool>> Matches(string term)
     {

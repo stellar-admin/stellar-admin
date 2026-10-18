@@ -67,7 +67,12 @@ internal static class EfCoreTestHost
             db.AddRange(
                 new Category { Id = 1, Name = "Office" },
                 new Category { Id = 2, Name = "Beverage" },
-                new Category { Id = 3, Name = "Technology" }
+                new Category
+                {
+                    Id = 3,
+                    Name = "Technology",
+                    ParentId = 1,
+                }
             );
             db.AddRange(
                 new Product
