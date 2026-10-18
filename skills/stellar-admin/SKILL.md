@@ -99,6 +99,40 @@ builder.Services.AddStellarAdmin(admin =>
 });
 ```
 
+## Organising the configuration
+
+Start in `Program.cs`. When it grows past a few resources, move each resource into an extension method in its own file under `Admin/`, next to that resource's form models and handlers, and have one `AddResources` method call them. `Program.cs` keeps the panel-wide settings: authorization, branding, stylesheets and sidebar. Plain extension methods are all this needs; there is no resource configuration interface or assembly scanning.
+
+```csharp
+// Program.cs
+builder.Services.AddStellarAdmin(admin =>
+{
+    admin.RequireAuthorization(policy => policy.RequireRole("Admin"));
+    admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
+    admin.AddResources();
+});
+
+// Admin/AdminResources.cs
+public static class AdminResources
+{
+    public static StellarAdminBuilder AddResources(this StellarAdminBuilder admin) =>
+        admin.AddGuides().AddTrips().AddBookings();
+}
+
+// Admin/GuidesAdmin.cs
+public static class GuidesAdmin
+{
+    public static StellarAdminBuilder AddGuides(this StellarAdminBuilder admin) =>
+        admin.AddEfCoreResource<VoyagerDbContext, Guide>(resource =>
+        {
+            resource.SidebarItem(item => item.Group = "Operations");
+            // index, forms, view and delete as above
+        });
+}
+```
+
+Resources and sidebar links without an `Order` appear in the sidebar in the order they're registered, so the order of the calls in `AddResources` is the sidebar order. Moving a resource keeps its configuration unchanged; don't rewrite it while moving it.
+
 ## Add a resource: checklist
 
 ```
@@ -160,7 +194,6 @@ Say so rather than inventing an API:
 
 - Custom row or page actions and bulk actions (row actions are view, edit and delete).
 - Index filters other than scope tabs.
-- Sidebar group ordering.
 - Changing the user menu's "Log out" text, and hiding user menu items by authorization (replace `_SidebarUserMenu.cshtml` for either).
 - Form tabs and wizards.
 - Dashboards and widgets (the panel home page is a plain landing page).
