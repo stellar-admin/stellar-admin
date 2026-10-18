@@ -55,6 +55,7 @@ fields.Add(booking => booking.CustomerId).UseEditor<LookupSheetEditor>(lookup =>
 
 - `SearchOn(...)` lists the searched properties, ignoring case (the title by default). `OrderBy` defaults to the title.
 - `UseDescription` adds secondary text and switches the field to a card layout. Media: `UseCode`, `UseAvatar`, `UseImage`, `UseIcon`.
+- Title, description and media selectors can read through references and combine values, for example `UseDescription(destination => destination.Country.Name)` or `destination => destination.Parent!.Name + " / " + destination.Name`. Don't add null checks for references: the edit page loads the references a selector reads, and a selector that reads a collection or passes the entity to a method gets a separate query instead.
 - On an EF Core edit page the selected item comes from the navigation (`Booking.Customer`), loaded with the record. The navigation is inferred from the foreign key; name it with `items.ReferenceFrom<Booking>(booking => booking.Customer)` when it can't be inferred.
 
 ## Creating from a lookup

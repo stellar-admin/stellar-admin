@@ -76,7 +76,7 @@ app.MapStellarAdmin();     // serves the panel at /stellaradmin
 app.MapRazorPages();       // the app's own endpoints, in any order relative to MapStellarAdmin
 ```
 
-- When the app has authentication, `UseAuthentication` and `UseAuthorization` must run before `MapStellarAdmin`, or protection added later won't apply.
+- When the app has authentication, `UseAuthentication` and `UseAuthorization` must run before `MapStellarAdmin`, or protection added later won't apply. The app has authentication when it calls `AddAuthentication`, `AddIdentity`, `AddDefaultIdentity` or `AddIdentityCore`. Such an app can still be missing `app.UseAuthentication()`; check for it and add it before `UseAuthorization`, or the sidebar won't show the signed-in user and protection won't recognise them.
 - `MapStellarAdmin("/admin")` serves the panel under another path.
 - Without static assets mapped, the panel renders as unstyled HTML.
 
