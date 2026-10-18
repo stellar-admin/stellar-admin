@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
+using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
+using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.IntegrationTests.Home;
 
@@ -79,6 +81,44 @@ public class HomePageTests
                     .Select(link => link.GetAttribute("href"))
             )
             .IsEquivalentTo(["/stellaradmin/products"]);
+    }
+
+    [Test]
+    public async Task Production_LinksToResourcesInSidebarOrder()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            configureAdmin: admin =>
+            {
+                admin.AddResource<CustomProduct>(
+                    "catalog",
+                    resource =>
+                    {
+                        resource.UseDataSource<CustomProductDataSource>();
+                        resource.SidebarItem(item => item.Group = "Catalog");
+                    }
+                );
+                admin.ConfigureSidebarGroup("Catalog", group => group.Order = 1);
+            },
+            environmentName: "Production"
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("a[data-slot='item']")
+                    .Select(link => link.GetAttribute("href"))
+            )
+            .IsEquivalentTo(
+                ["/stellaradmin/catalog", "/stellaradmin/products"],
+                CollectionOrdering.Matching
+            );
     }
 
     [Test]

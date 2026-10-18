@@ -300,6 +300,40 @@ public partial class SetupStatusResolverTests
     }
 
     [Test]
+    [Arguments("Group")]
+    [Arguments("SortGroups")]
+    [Arguments("SortItems")]
+    public async Task ResolveAsync_WithSidebarSettings_ReportsSidebarLayout(string change)
+    {
+        // Arrange
+        var services = CreateServices();
+        services.AddStellarAdmin(admin =>
+        {
+            admin.AddResource<Booking>();
+            switch (change)
+            {
+                case "Group":
+                    admin.ConfigureSidebarGroup("Resources", group => group.Order = 1);
+                    break;
+                case "SortGroups":
+                    admin.ConfigureSidebar(sidebar => sidebar.SortGroupsByLabel = true);
+                    break;
+                default:
+                    admin.ConfigureSidebar(sidebar => sidebar.SortItemsByLabel = true);
+                    break;
+            }
+        });
+        using var provider = services.BuildServiceProvider();
+        var sut = provider.GetRequiredService<SetupStatusResolver>();
+
+        // Act
+        var status = await sut.ResolveAsync(new DefaultHttpContext());
+
+        // Assert
+        await Assert.That(status!.HasSidebarLayout).IsTrue();
+    }
+
+    [Test]
     public async Task ResolveAsync_WithEntityRegisteredAsResource_LeavesItOutOfCandidates()
     {
         // Arrange

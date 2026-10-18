@@ -75,9 +75,12 @@ public abstract class SidebarLinkItemBase : SidebarItem
     ///     Gets the position of the link among the links around it.
     /// </summary>
     /// <value>
-    ///     The position, where lower values come first. The default is 0.
+    ///     The position, where lower values come first, or <see langword="null" /> to come after
+    ///     the links with a position. The default is <see langword="null" />.
     /// </value>
-    public int Order { get; init; }
+    public int? Order { get; init; }
+
+    internal int? Position { get; init; }
 
     private protected SidebarLinkItemBase(string label)
         : base(label) { }

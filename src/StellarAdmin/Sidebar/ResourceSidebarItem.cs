@@ -4,6 +4,6 @@ internal sealed record ResourceSidebarItem(
     string Label,
     string Group,
     string? Icon,
-    int Order,
+    int? Order,
     bool Visible
 );

@@ -154,6 +154,7 @@ public static partial class StellarAdminBuilderExtensions
                         typeof(TResource),
                         typeof(ResourceController<TResource>),
                         slug,
+                        builder.Options.NextSidebarPosition(),
                         services =>
                         {
                             var options = services

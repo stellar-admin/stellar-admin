@@ -1,11 +1,13 @@
 namespace StellarAdmin.Sidebar;
 
-// Merges the items of every ISidebarItemsProvider, so providers share groups. A merged group sits
-// where its label first appears. Links within a group, and runs of consecutive ungrouped links,
-// sort by Order; the stable sort keeps provider order, then position, for ties.
+// Merges the items of every ISidebarItemsProvider, so providers share groups, then sorts the top
+// level (groups and ungrouped links) and the items in each group. Items with an order come first,
+// by order; the rest follow by label when sorting by label is on, then in the order they were
+// added to the admin panel. Items from custom providers have no position, so they follow in
+// provider order.
 internal static class SidebarItemsMerger
 {
-    public static List<SidebarItem> Merge(IEnumerable<SidebarItem> items)
+    public static List<SidebarItem> Merge(IEnumerable<SidebarItem> items, SidebarOptions options)
     {
         var merged = new List<SidebarItem>();
         var groups = new Dictionary<string, (int Index, List<SidebarLinkItemBase> Items)>(
@@ -30,34 +32,51 @@ internal static class SidebarItemsMerger
 
         foreach (var (index, groupItems) in groups.Values)
         {
+            var label = merged[index].Label;
+            var groupOptions = options.Groups.GetValueOrDefault(label);
             merged[index] = new SidebarGroupItem(
-                merged[index].Label,
-                groupItems.OrderBy(item => item.Order)
+                label,
+                Sort(
+                    groupItems,
+                    item => item.Order,
+                    item => item.Position,
+                    groupOptions?.SortItemsByLabel ?? options.SortItemsByLabel
+                )
             );
         }
 
-        return SortUngroupedLinks(merged);
+        return
+        [
+            .. Sort(
+                merged,
+                item =>
+                    item is SidebarLinkItemBase link
+                        ? link.Order
+                        : options.Groups.GetValueOrDefault(item.Label)?.Order,
+                item =>
+                    item is SidebarGroupItem group
+                        ? group.Items.Min(groupItem => groupItem.Position)
+                        : ((SidebarLinkItemBase)item).Position,
+                options.SortGroupsByLabel
+            ),
+        ];
     }
 
-    private static List<SidebarItem> SortUngroupedLinks(List<SidebarItem> items)
+    // OrderBy is stable, so items that tie on everything keep the order they were merged in
+    private static IEnumerable<T> Sort<T>(
+        IEnumerable<T> items,
+        Func<T, int?> order,
+        Func<T, int?> position,
+        bool byLabel
+    )
+        where T : SidebarItem
     {
-        var sorted = new List<SidebarItem>(items.Count);
-        var run = new List<SidebarLinkItemBase>();
-        foreach (var item in items)
+        var sorted = items.OrderBy(item => order(item) is null).ThenBy(item => order(item));
+        if (byLabel)
         {
-            if (item is SidebarLinkItemBase link)
-            {
-                run.Add(link);
-                continue;
-            }
-
-            sorted.AddRange(run.OrderBy(link => link.Order));
-            run.Clear();
-            sorted.Add(item);
+            sorted = sorted.ThenBy(item => item.Label, StringComparer.CurrentCultureIgnoreCase);
         }
 
-        sorted.AddRange(run.OrderBy(link => link.Order));
-
-        return sorted;
+        return sorted.ThenBy(item => position(item) is null).ThenBy(item => position(item));
     }
 }

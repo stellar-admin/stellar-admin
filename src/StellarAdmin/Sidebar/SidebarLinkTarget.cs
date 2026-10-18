@@ -123,6 +123,7 @@ public abstract class SidebarLinkTarget
                 Icon = link.Icon,
                 OpenInNewTab = link.OpenInNewTab,
                 Order = link.Order,
+                Position = link.Position,
             };
     }
 
@@ -134,6 +135,7 @@ public abstract class SidebarLinkTarget
                 Icon = link.Icon,
                 OpenInNewTab = link.OpenInNewTab,
                 Order = link.Order,
+                Position = link.Position,
             };
     }
 
@@ -145,6 +147,7 @@ public abstract class SidebarLinkTarget
                 Icon = link.Icon,
                 OpenInNewTab = link.OpenInNewTab,
                 Order = link.Order,
+                Position = link.Position,
             };
     }
 }

@@ -89,7 +89,7 @@ public class SidebarLinkTests
     }
 
     [Test]
-    public async Task LinkInResourceGroup_SortsWithResourcesByOrder()
+    public async Task LinksWithOrder_ComeBeforeResourcesWithout()
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
@@ -125,15 +125,15 @@ public class SidebarLinkTests
         // Assert
         await Assert
             .That(links.Select(link => link.TextContent.Trim()).ToArray())
-            .IsEquivalentTo(["Reports", "Products", "Status"], CollectionOrdering.Matching);
+            .IsEquivalentTo(["Reports", "Status", "Products"], CollectionOrdering.Matching);
         await Assert
             .That(links.Select(link => link.GetAttribute("href")).ToArray())
             .IsEquivalentTo(
                 new string?[]
                 {
                     "/reports",
-                    "/stellaradmin/products",
                     "https://status.example.com",
+                    "/stellaradmin/products",
                 },
                 CollectionOrdering.Matching
             );
@@ -375,7 +375,11 @@ public class SidebarLinkTests
                     SidebarLinkTarget.Url("/reports"),
                     link => link.Order = 10
                 );
-                admin.AddSidebarLink("Overview", SidebarLinkTarget.Url("/overview"));
+                admin.AddSidebarLink(
+                    "Overview",
+                    SidebarLinkTarget.Url("/overview"),
+                    link => link.Order = 5
+                );
             }
         );
         using var client = sut.GetTestClient();

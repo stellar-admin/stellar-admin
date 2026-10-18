@@ -91,10 +91,15 @@ internal sealed class SetupStatusResolver(
     private bool HasSidebarLayout(IReadOnlyList<ResourceRegistration> resources)
     {
         return options.SidebarLinks.Count > 0
+            || options.Sidebar.Groups.Count > 0
+            || options.Sidebar.SortGroupsByLabel
+            || options.Sidebar.SortItemsByLabel
             || resources
                 .Select(resource => resource.ResolveSidebarItem(services))
                 .Any(item =>
-                    item.Group != DefaultSidebarGroup || item.Order != 0 || item.Icon is not null
+                    item.Group != DefaultSidebarGroup
+                    || item.Order is not null
+                    || item.Icon is not null
                 );
     }
 

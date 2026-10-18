@@ -36,7 +36,9 @@ internal sealed class SidebarLinkOptions(string label, SidebarLinkTarget target)
 
     public bool OpenInNewTab { get; set; }
 
-    public int Order { get; set; }
+    public int? Order { get; set; }
+
+    public int Position { get; set; }
 
     public SidebarLinkTarget Target { get; } = target;
 }

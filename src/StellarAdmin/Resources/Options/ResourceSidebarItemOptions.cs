@@ -67,9 +67,10 @@ public sealed class ResourceSidebarItemOptions
     ///     Gets the item's position within its group.
     /// </summary>
     /// <value>
-    ///     The position. Items with lower values come first. The default is 0.
+    ///     The position, where lower values come first, or <see langword="null" /> to come after
+    ///     the items with a position. The default is <see langword="null" />.
     /// </value>
-    public int Order { get; internal set; }
+    public int? Order { get; internal set; }
 
     /// <summary>
     ///     Gets a value that indicates whether the item appears in the sidebar.

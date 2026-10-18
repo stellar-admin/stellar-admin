@@ -165,18 +165,20 @@ public class StellarAdminBuilderExtensionsTests
         sut.AddResource<Product>();
         using var provider = services.BuildServiceProvider();
         var sidebarProviders = provider.GetServices<ISidebarItemsProvider>().ToArray();
-        var group = (SidebarGroupItem)
-            (
-                await sidebarProviders
-                    .Single()
-                    .GetItemsAsync(new DefaultHttpContext(), CancellationToken.None)
-            ).Single();
+        var links = (
+            await sidebarProviders
+                .Single()
+                .GetItemsAsync(new DefaultHttpContext(), CancellationToken.None)
+        )
+            .Cast<SidebarGroupItem>()
+            .SelectMany(group => group.Items)
+            .ToArray();
 
         // Assert
         await Assert.That(sidebarProviders.Length).IsEqualTo(1);
-        await Assert.That(group.Items.Count).IsEqualTo(2);
-        await Assert.That(group.Items[0].Label).IsEqualTo("Products");
-        await Assert.That(group.Items[1].Label).IsEqualTo("Inventory");
+        await Assert.That(links.Length).IsEqualTo(2);
+        await Assert.That(links[0].Label).IsEqualTo("Products");
+        await Assert.That(links[1].Label).IsEqualTo("Inventory");
     }
 
     private sealed class CustomSidebarProvider : ISidebarItemsProvider

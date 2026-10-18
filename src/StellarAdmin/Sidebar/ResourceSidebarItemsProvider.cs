@@ -14,8 +14,8 @@ internal sealed class ResourceSidebarItemsProvider(
         CancellationToken cancellationToken
     )
     {
-        var items = new List<(string ControllerName, ResourceSidebarItem Item, int Index)>();
-        foreach (var (resource, index) in resources.Select((resource, index) => (resource, index)))
+        var items = new List<SidebarItem>();
+        foreach (var resource in resources)
         {
             var item = resource.ResolveSidebarItem(services);
             if (
@@ -26,34 +26,23 @@ internal sealed class ResourceSidebarItemsProvider(
                 )
             )
             {
-                items.Add((resource.ControllerName, item, index));
+                // Each item gets its own group; SidebarItemsMerger merges groups with the same
+                // label and sorts their items.
+                items.Add(new SidebarGroupItem(item.Group, [CreateLink(resource, item)]));
             }
         }
 
-        return items
-            .GroupBy(entry => entry.Item.Group, StringComparer.Ordinal)
-            .Select(
-                SidebarItem (group) =>
-                    new SidebarGroupItem(
-                        group.Key,
-                        group
-                            .OrderBy(entry => entry.Item.Order)
-                            .ThenBy(entry => entry.Index)
-                            .Select(
-                                (entry) =>
-                                    new SidebarActionLinkItem(
-                                        entry.Item.Label,
-                                        entry.ControllerName,
-                                        "Index",
-                                        "StellarAdmin"
-                                    )
-                                    {
-                                        Icon = entry.Item.Icon,
-                                        Order = entry.Item.Order,
-                                    }
-                            )
-                    )
-            )
-            .ToArray();
+        return [.. items];
     }
+
+    public static SidebarActionLinkItem CreateLink(
+        ResourceRegistration resource,
+        ResourceSidebarItem item
+    ) =>
+        new(item.Label, resource.ControllerName, "Index", "StellarAdmin")
+        {
+            Icon = item.Icon,
+            Order = item.Order,
+            Position = resource.SidebarPosition,
+        };
 }

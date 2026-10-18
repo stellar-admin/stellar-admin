@@ -12,6 +12,7 @@ internal sealed class HomeController(
     SetupStatusResolver setup,
     BrandingResolver branding,
     IEnumerable<ResourceRegistration> resources,
+    StellarAdminOptions options,
     IServiceProvider services
 ) : Controller
 {
@@ -43,7 +44,7 @@ internal sealed class HomeController(
     // The resources the sidebar shows the current user, in the sidebar's order
     private async Task<IReadOnlyList<HomeResourceLinkViewModel>> GetResourceLinksAsync()
     {
-        var links = new List<(HomeResourceLinkViewModel Link, int Order)>();
+        var items = new List<SidebarItem>();
         foreach (var resource in resources)
         {
             var item = resource.ResolveSidebarItem(services);
@@ -55,10 +56,23 @@ internal sealed class HomeController(
                 )
             )
             {
-                links.Add((new(item.Label, item.Icon, resource.ControllerName), item.Order));
+                items.Add(
+                    new SidebarGroupItem(
+                        item.Group,
+                        [ResourceSidebarItemsProvider.CreateLink(resource, item)]
+                    )
+                );
             }
         }
 
-        return links.OrderBy(entry => entry.Order).Select(entry => entry.Link).ToArray();
+        return SidebarItemsMerger
+            .Merge(items, options.Sidebar)
+            .SelectMany(item => ((SidebarGroupItem)item).Items)
+            .Select(link => new HomeResourceLinkViewModel(
+                link.Label,
+                link.Icon,
+                ((SidebarActionLinkItem)link).Controller
+            ))
+            .ToArray();
     }
 }

@@ -25,6 +25,8 @@ public sealed class StellarAdminBuilder
     [EditorBrowsable(EditorBrowsableState.Never)]
     public IServiceCollection Services { get; }
 
+    internal StellarAdminOptions Options => _options;
+
     internal StellarAdminBuilder(IServiceCollection services, StellarAdminOptions options)
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
@@ -192,6 +194,7 @@ public sealed class StellarAdminBuilder
 
         var link = new SidebarLinkOptions(label, target);
         configure(new SidebarLinkBuilder(link));
+        link.Position = _options.NextSidebarPosition();
         _options.SidebarLinks.Add(link);
 
         Services.TryAddEnumerable(
@@ -271,6 +274,57 @@ public sealed class StellarAdminBuilder
         ArgumentNullException.ThrowIfNull(configure);
 
         configure(new HomePageBuilder(_options.HomePage));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures how the sidebar sorts its groups and items.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the sidebar.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public StellarAdminBuilder ConfigureSidebar(Action<SidebarBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new SidebarBuilder(_options.Sidebar));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures the sidebar group with a label.
+    /// </summary>
+    /// <param name="label">The label of the group.</param>
+    /// <param name="configure">A delegate that configures the group.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="label" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="label" /> is empty or white space.
+    /// </exception>
+    /// <remarks>
+    ///     Configuring a group doesn't add it. The group appears when a resource or link is in it.
+    /// </remarks>
+    public StellarAdminBuilder ConfigureSidebarGroup(
+        string label,
+        Action<SidebarGroupBuilder> configure
+    )
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(label);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        if (!_options.Sidebar.Groups.TryGetValue(label, out var group))
+        {
+            group = new SidebarGroupOptions();
+            _options.Sidebar.Groups.Add(label, group);
+        }
+
+        configure(new SidebarGroupBuilder(group));
 
         return this;
     }

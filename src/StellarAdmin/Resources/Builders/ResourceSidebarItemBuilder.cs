@@ -68,9 +68,11 @@ public sealed class ResourceSidebarItemBuilder<TResource>
     ///     Sets the position of the item within its group.
     /// </summary>
     /// <value>
-    ///     The position. Items with lower values appear first. The default is 0.
+    ///     The position, where lower values come first, or <see langword="null" /> to come after
+    ///     the items with a position, in the order they're added. The default is
+    ///     <see langword="null" />.
     /// </value>
-    public int Order
+    public int? Order
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>

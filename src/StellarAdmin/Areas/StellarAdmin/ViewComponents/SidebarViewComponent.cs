@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Sidebar;
 
 namespace StellarAdmin.Areas.StellarAdmin.ViewComponents;
@@ -27,7 +28,10 @@ public sealed class SidebarViewComponent(IEnumerable<ISidebarItemsProvider> side
         // A full path, so the sidebar renders from host pages that use the admin panel layout.
         return View(
             "/Areas/StellarAdmin/Views/Shared/Components/Sidebar/Default.cshtml",
-            SidebarItemsMerger.Merge(sidebarItems)
+            SidebarItemsMerger.Merge(
+                sidebarItems,
+                HttpContext.RequestServices.GetRequiredService<StellarAdminOptions>().Sidebar
+            )
         );
     }
 }

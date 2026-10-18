@@ -1416,7 +1416,7 @@ StellarAdmin.Resources.Options.ResourceSidebarItemOptions
 StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Group.get -> string!
 StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Icon.get -> string?
 StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Label.get -> string?
-StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Order.get -> int
+StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Order.get -> int?
 StellarAdmin.Resources.Options.ResourceSidebarItemOptions.ResourceSidebarItemOptions() -> void
 StellarAdmin.Resources.Options.ResourceSidebarItemOptions.Visible.get -> bool
 StellarAdmin.Resources.Options.ResourceViewLabelOptions
@@ -1539,6 +1539,12 @@ StellarAdmin.Sidebar.SidebarBrandModel.Href.get -> string!
 StellarAdmin.Sidebar.SidebarBrandModel.Logo.get -> StellarAdmin.Sidebar.BrandingLogo?
 StellarAdmin.Sidebar.SidebarBrandModel.Subtitle.get -> string?
 StellarAdmin.Sidebar.SidebarBrandModel.Title.get -> string!
+StellarAdmin.Sidebar.SidebarBuilder
+StellarAdmin.Sidebar.SidebarBuilder.SortGroupsByLabel.set -> void
+StellarAdmin.Sidebar.SidebarBuilder.SortItemsByLabel.set -> void
+StellarAdmin.Sidebar.SidebarGroupBuilder
+StellarAdmin.Sidebar.SidebarGroupBuilder.Order.set -> void
+StellarAdmin.Sidebar.SidebarGroupBuilder.SortItemsByLabel.set -> void
 StellarAdmin.Sidebar.SidebarGroupItem
 StellarAdmin.Sidebar.SidebarGroupItem.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Sidebar.SidebarLinkItemBase!>!
 StellarAdmin.Sidebar.SidebarGroupItem.SidebarGroupItem(string! label, System.Collections.Generic.IEnumerable<StellarAdmin.Sidebar.SidebarLinkItemBase!>! items) -> void
@@ -1562,7 +1568,7 @@ StellarAdmin.Sidebar.SidebarLinkItemBase.Icon.get -> string?
 StellarAdmin.Sidebar.SidebarLinkItemBase.Icon.init -> void
 StellarAdmin.Sidebar.SidebarLinkItemBase.OpenInNewTab.get -> bool
 StellarAdmin.Sidebar.SidebarLinkItemBase.OpenInNewTab.init -> void
-StellarAdmin.Sidebar.SidebarLinkItemBase.Order.get -> int
+StellarAdmin.Sidebar.SidebarLinkItemBase.Order.get -> int?
 StellarAdmin.Sidebar.SidebarLinkItemBase.Order.init -> void
 StellarAdmin.Sidebar.SidebarLinkTarget
 StellarAdmin.Sidebar.SidebarPageLinkItem
@@ -1601,6 +1607,8 @@ StellarAdmin.StellarAdminBuilder.AddSidebarLink(string! label, StellarAdmin.Side
 StellarAdmin.StellarAdminBuilder.AddStylesheet(string! path) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureBranding(System.Action<StellarAdmin.Sidebar.BrandingBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureHomePage(System.Action<StellarAdmin.Home.HomePageBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.ConfigureSidebar(System.Action<StellarAdmin.Sidebar.SidebarBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.ConfigureSidebarGroup(string! label, System.Action<StellarAdmin.Sidebar.SidebarGroupBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureUI(System.Action<StellarAdmin.UI.StellarAdminUIBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureUserMenu(System.Action<StellarAdmin.Sidebar.UserMenuBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.RequireAuthorization() -> StellarAdmin.StellarAdminBuilder!

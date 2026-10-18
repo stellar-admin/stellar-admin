@@ -34,7 +34,7 @@ admin.AddEfCoreResource<VoyagerDbContext, Booking>(resource =>
 | Property | Default |
 | --- | --- |
 | `Group` | `"Resources"` |
-| `Order` | `0`, ascending within the group |
+| `Order` | None. Items with an order come first, ascending; the rest follow in the order they're added. |
 | `Label` | The plural label |
 | `Icon` | None. An icon name from the app's icon set (Lucide by default), shown before the label in the sidebar and command palette. |
 | `Visible` | `true`. Hiding the item does not disable or protect the pages. |
@@ -75,8 +75,28 @@ admin.AddSidebarLink("Help centre", SidebarLinkTarget.Url("https://help.voyager.
 
 - Items with the same group label merge into one group, whether they come from resources or links. A link without a `Group` sits at the top level, with no heading.
 - Icons are optional per item, and an item without one reserves no space, so give every item in a group an icon or none.
-- Within a group, items sort by `Order`. With equal orders, resource items and links don't interleave: set `Order` explicitly to mix them.
-- Groups appear in the order their label is first registered. There is no group order setting, so register the resource or link of the group that should come first earlier.
+- Within a group, items with an `Order` come first, ascending. Items without one follow in the order their resources and links are added, so writing the calls in the order you want is usually enough.
+- At the top level, groups and ungrouped links sort the same way: by the group's or link's `Order`, then in the order the link or the group's first item is added.
+
+Set a group's order, or sort its items by label, with `ConfigureSidebarGroup`. Configuring a group doesn't add it; it appears when a resource or link is in it:
+
+```csharp
+admin.ConfigureSidebarGroup("Catalogue", group => group.Order = 1);
+admin.ConfigureSidebarGroup("Sales", group => group.Order = 2);
+admin.ConfigureSidebarGroup("Settings", group => group.SortItemsByLabel = true);
+```
+
+Sort every group and item by label with `ConfigureSidebar`. Anything with an `Order` still comes first, and a group's `SortItemsByLabel` overrides the panel's:
+
+```csharp
+admin.ConfigureSidebar(sidebar =>
+{
+    sidebar.SortGroupsByLabel = true; // groups and ungrouped links
+    sidebar.SortItemsByLabel = true;  // the items in every group
+});
+```
+
+Labels sort ignoring case, in the current culture. Items and groups from an `ISidebarItemsProvider` follow those added with `AddEfCoreResource`, `AddResource` or `AddSidebarLink` when nothing else orders them.
 
 ## Items from code
 

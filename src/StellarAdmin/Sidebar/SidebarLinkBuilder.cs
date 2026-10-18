@@ -59,13 +59,15 @@ public sealed class SidebarLinkBuilder
     ///     Sets the position of the link among the links around it.
     /// </summary>
     /// <value>
-    ///     The position, where lower values come first. The default is 0.
+    ///     The position, where lower values come first, or <see langword="null" /> to come after
+    ///     the items with a position, in the order they're added. The default is
+    ///     <see langword="null" />.
     /// </value>
     /// <remarks>
-    ///     Links in a group are sorted by order. Links outside any group are sorted with the
-    ///     ungrouped links next to them.
+    ///     Links in a group are sorted with the group's other items. Links outside any group are
+    ///     sorted with the groups.
     /// </remarks>
-    public int Order
+    public int? Order
     {
         set => _options.Order = value;
     }
