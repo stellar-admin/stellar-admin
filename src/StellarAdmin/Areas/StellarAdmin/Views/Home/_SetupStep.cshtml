@@ -1,0 +1,55 @@
+@model SetupStepViewModel
+
+@{
+    var open = ViewData["Open"] is true;
+    var variant = Model.Done ? ButtonVariant.Ghost : Model.Essential ? ButtonVariant.Default : ButtonVariant.Outline;
+}
+
+<div role="listitem">
+    <sa-item>
+        <sa-item-media variant="ItemMediaVariant.Icon">
+            @if (Model.Done)
+            {
+                <sa-icon name="circle-check" class="text-[var(--sa-color-success)]"/>
+            }
+            else if (Model.Warn)
+            {
+                <sa-icon name="triangle-alert" class="text-[var(--sa-color-warning)]"/>
+            }
+            else
+            {
+                <sa-icon name="@(Model.Optional ? "circle-dashed" : "circle")" class="text-muted-foreground"/>
+            }
+        </sa-item-media>
+        <sa-item-content>
+            <sa-item-title class="@(Model.Done ? "text-muted-foreground" : null)">
+                @Model.Title
+                @if (Model.Optional && !Model.Done)
+                {
+                    <sa-badge variant="BadgeVariant.Outline">Optional</sa-badge>
+                }
+            </sa-item-title>
+            <sa-item-description>@Model.Description</sa-item-description>
+        </sa-item-content>
+        <sa-item-actions>
+            <sa-button variant="variant" size="ButtonSize.Small" commandfor="--setup-step-@Model.Id" command="--toggle" class="sa-setup-toggle">
+                @(Model.Done ? "Change" : "Show me how")
+                <sa-icon name="chevron-down"/>
+            </sa-button>
+        </sa-item-actions>
+    </sa-item>
+    <sa-collapsible id="--setup-step-@Model.Id" hidden="@(open ? null : "")" class="grid grid-cols-[minmax(0,1fr)] gap-3 ps-3 pe-3 pb-4 sm:ps-12">
+        @if (Model.Detail is { } detail)
+        {
+            <p class="text-sm text-muted-foreground">@detail</p>
+        }
+        <partial name="_SetupTabs" model="@(new SetupTabsViewModel(Model.Id, Model.Install, Model.Code, Model.AgentPrompt))" />
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <partial name="_SetupLink" model="Model.Docs" />
+            @if (Model.ExtraLink is { } extra)
+            {
+                <partial name="_SetupLink" model="extra" />
+            }
+        </div>
+    </sa-collapsible>
+</div>

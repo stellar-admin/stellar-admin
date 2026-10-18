@@ -1,0 +1,12 @@
+@model HomePageViewModel
+
+@* In Development the home page is a setup checklist; elsewhere, and when the checklist is turned off, it links to the
+   resources. An application replaces the whole page with its own Areas/StellarAdmin/Views/Home/Index.cshtml. *@
+@if (Model.Checklist is { } checklist)
+{
+    <partial name="_SetupChecklist" model="checklist" />
+}
+else
+{
+    <partial name="_HomeResources" model="Model" />
+}

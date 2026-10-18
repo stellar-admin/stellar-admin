@@ -453,4 +453,66 @@
             display: block;
         }
     }
+
+    /* The home page's setup checklist: a block of code, or of instructions for a coding agent, with a copy button in
+       its corner. */
+    .sa-setup-code {
+        position: relative;
+        min-width: 0;
+        border: var(--sa-border-width) solid var(--sa-color-line);
+        border-radius: var(--sa-radius-box);
+        background: var(--sa-color-surface-sunken);
+        color: var(--sa-color-ink);
+        font-family: var(--sa-font-mono);
+        font-size: var(--sa-text-xs);
+        font-variant-ligatures: none;
+        line-height: 1.6;
+        text-align: start;
+
+        & pre {
+            margin: 0;
+            font: inherit;
+            padding: calc(3 * var(--sa-unit)) calc(4 * var(--sa-unit));
+            padding-inline-end: calc(10 * var(--sa-unit));
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        & pre code {
+            font: inherit;
+        }
+
+        & .sa-setup-code-copy {
+            position: absolute;
+            inset-block-start: calc(1.5 * var(--sa-unit));
+            inset-inline-end: calc(1.5 * var(--sa-unit));
+        }
+
+        &[data-kind="prompt"] {
+            font-family: var(--sa-font-sans);
+            font-size: var(--sa-text-sm);
+            line-height: 1.5;
+
+            & pre {
+                white-space: pre-wrap;
+            }
+        }
+    }
+
+    /* A copy button shows a check mark for a moment after copying */
+    .sa-setup-copy:not([data-copied]) .sa-setup-copy-done,
+    .sa-setup-copy[data-copied] .sa-setup-copy-idle {
+        display: none;
+    }
+
+    /* A step's toggle turns its chevron while the step is open */
+    .sa-setup-toggle {
+        & svg {
+            transition: transform 150ms;
+        }
+
+        &[aria-expanded="true"] svg {
+            transform: rotate(180deg);
+        }
+    }
 }

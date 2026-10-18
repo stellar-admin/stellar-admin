@@ -1,0 +1,38 @@
+@model SetupTabsViewModel
+
+@* Code and instructions for a coding agent, as tabs. The checklist's script applies the tab the viewer last chose to
+   every step. *@
+<sa-tabs id="--setup-tabs-@Model.Id" class="w-full min-w-0" data-setup-tabs>
+    <sa-tab-list>
+        <sa-tab for="setup-@Model.Id-code">
+            <sa-icon name="code"/>
+            Code
+        </sa-tab>
+        <sa-tab for="setup-@Model.Id-agent">
+            <sa-icon name="sparkles"/>
+            Ask your agent
+        </sa-tab>
+    </sa-tab-list>
+    <sa-tab-panel id="setup-@Model.Id-code" class="grid grid-cols-[minmax(0,1fr)] gap-3">
+        @if (Model.Install is { } install)
+        {
+            <partial name="_SetupCode" model="@(new SetupCodeViewModel(install, false))" />
+        }
+        <partial name="_SetupCode" model="@(new SetupCodeViewModel(Model.Code, false))" />
+    </sa-tab-panel>
+    <sa-tab-panel id="setup-@Model.Id-agent" class="grid grid-cols-[minmax(0,1fr)] gap-3">
+        <partial name="_SetupCode" model="@(new SetupCodeViewModel(Model.AgentPrompt, true))" />
+        <p class="-mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <sa-icon name="triangle-alert" class="size-3.5 shrink-0 text-[var(--sa-color-warning)]"/>
+            <span>
+                <span class="font-medium text-[var(--sa-color-warning)]">Requires the skills:</span>
+                <code class="font-mono text-foreground [overflow-wrap:anywhere]">@SkillsCommand</code>
+            </span>
+            <partial name="_SetupCopyButton" model="@(new SetupCopyButtonViewModel("Copy command", SkillsCommand, ButtonSize.IconExtraSmall, null))" />
+        </p>
+    </sa-tab-panel>
+</sa-tabs>
+
+@functions {
+    private const string SkillsCommand = "npx skills add stellar-admin/stellar-admin";
+}

@@ -379,6 +379,8 @@ StellarAdmin.IndexPageTagHelper
 StellarAdmin.IndexPageTagHelper.IndexPageTagHelper(Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine! viewEngine) -> void
 StellarAdmin.IndexPageTagHelper.Model.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel!
 StellarAdmin.IndexPageTagHelper.Model.set -> void
+StellarAdmin.Home.HomePageBuilder
+StellarAdmin.Home.HomePageBuilder.ShowSetupChecklist.set -> void
 StellarAdmin.Resources.Builders.ColumnSpanBuilder
 StellarAdmin.Resources.Builders.ColumnSpanBuilder.Base(int span) -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
 StellarAdmin.Resources.Builders.ColumnSpanBuilder.BaseFull() -> StellarAdmin.Resources.Builders.ColumnSpanBuilder!
@@ -1598,6 +1600,7 @@ StellarAdmin.StellarAdminBuilder.AddSidebarLink(string! label, StellarAdmin.Side
 StellarAdmin.StellarAdminBuilder.AddSidebarLink(string! label, StellarAdmin.Sidebar.SidebarLinkTarget! target, System.Action<StellarAdmin.Sidebar.SidebarLinkBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.AddStylesheet(string! path) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureBranding(System.Action<StellarAdmin.Sidebar.BrandingBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.ConfigureHomePage(System.Action<StellarAdmin.Home.HomePageBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureUI(System.Action<StellarAdmin.UI.StellarAdminUIBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureUserMenu(System.Action<StellarAdmin.Sidebar.UserMenuBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.RequireAuthorization() -> StellarAdmin.StellarAdminBuilder!

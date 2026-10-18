@@ -1,0 +1,7 @@
+@model SetupCopyButtonViewModel
+
+@* Copies its text, or the text of the code block it's in, and shows a check mark for a moment *@
+<sa-button variant="ButtonVariant.Ghost" size="Model.Size" class="sa-setup-copy @Model.Class" aria-label="@Model.Label" data-setup-copy="@Model.Text">
+    <sa-icon name="copy" class="sa-setup-copy-idle"/>
+    <sa-icon name="check" class="sa-setup-copy-done"/>
+</sa-button>

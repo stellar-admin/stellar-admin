@@ -1,0 +1,41 @@
+@model HomePageViewModel
+
+<sa-page-container>
+    @if (Model.Resources.Count == 0)
+    {
+        <sa-empty>
+            <sa-empty-header>
+                <sa-empty-media variant="EmptyMediaVariant.Icon">
+                    <sa-icon name="layout-dashboard"/>
+                </sa-empty-media>
+                <sa-empty-title>Nothing here yet</sa-empty-title>
+                <sa-empty-description>This admin panel has no pages yet.</sa-empty-description>
+            </sa-empty-header>
+        </sa-empty>
+    }
+    else
+    {
+        <sa-page-header>
+            <sa-page-header-title>@Model.Title</sa-page-header-title>
+        </sa-page-header>
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            @foreach (var resource in Model.Resources)
+            {
+                <sa-item-link variant="ItemVariant.Outline" asp-area="StellarAdmin" asp-controller="@resource.Controller" asp-action="Index">
+                    @if (resource.Icon is { } icon)
+                    {
+                        <sa-item-media variant="ItemMediaVariant.Icon">
+                            <sa-icon name="@icon"/>
+                        </sa-item-media>
+                    }
+                    <sa-item-content>
+                        <sa-item-title>@resource.Label</sa-item-title>
+                    </sa-item-content>
+                    <sa-item-actions>
+                        <sa-icon name="chevron-right" class="size-4"/>
+                    </sa-item-actions>
+                </sa-item-link>
+            }
+        </div>
+    }
+</sa-page-container>

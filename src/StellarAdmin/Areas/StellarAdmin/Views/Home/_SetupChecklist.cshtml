@@ -1,0 +1,152 @@
+@using StellarAdmin.Home
+@model SetupChecklistViewModel
+
+@{
+    var allDone = Model.DoneCount == Model.Steps.Count;
+}
+
+<sa-page-container width="PageContainerWidth.Medium">
+    <sa-page-header>
+        <sa-page-header-title>Welcome to StellarAdmin</sa-page-header-title>
+        <sa-page-header-description>Your admin panel is running. Finish setting it up:</sa-page-header-description>
+    </sa-page-header>
+
+    <div class="grid gap-8">
+        <sa-card>
+            <sa-card-header>
+                <sa-card-title>Set up your panel</sa-card-title>
+                <sa-card-description>
+                    <sa-progress value="@(100.0 * Model.DoneCount / Model.Steps.Count)">
+                        <sa-progress-label>@(allDone ? "All set" : "Progress")</sa-progress-label>
+                        <sa-progress-value>@Model.DoneCount of @Model.Steps.Count</sa-progress-value>
+                    </sa-progress>
+                </sa-card-description>
+            </sa-card-header>
+            <sa-card-content>
+                <div role="list" class="grid">
+                    @foreach (var (step, index) in Model.Steps.Select((step, index) => (step, index)))
+                    {
+                        if (index > 0)
+                        {
+                            <sa-separator/>
+                        }
+
+                        <partial name="_SetupStep" model="step" view-data="@(new ViewDataDictionary(ViewData) { ["Open"] = step.Id == Model.FirstOpenId })" />
+                    }
+                </div>
+            </sa-card-content>
+            <sa-card-footer class="flex-col items-stretch gap-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
+                    <span class="flex items-center gap-1.5">
+                        <sa-icon name="eye-off" class="size-4"/>
+                        Only shown in Development.
+                    </span>
+                    <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Small" commandfor="--setup-step-off" command="--toggle" class="sa-setup-toggle">
+                        Turn off this checklist
+                        <sa-icon name="chevron-down"/>
+                    </sa-button>
+                </div>
+                <sa-collapsible id="--setup-step-off" hidden class="grid grid-cols-[minmax(0,1fr)] gap-3">
+                    <partial name="_SetupTabs" model="SetupSteps.TurnOff" />
+                    <p class="text-sm text-muted-foreground">
+                        To replace the page entirely, add <code class="font-mono">Areas/StellarAdmin/Views/Home/Index.cshtml</code>.
+                    </p>
+                </sa-collapsible>
+            </sa-card-footer>
+        </sa-card>
+
+        <div class="grid gap-3">
+            <div class="text-sm font-medium">Help</div>
+            <div class="grid gap-3 sm:grid-cols-2">
+                <sa-item-link variant="ItemVariant.Outline" size="ItemSize.Small" href="https://www.stellaradmin.com/docs" target="_blank" rel="noopener">
+                    <sa-item-media variant="ItemMediaVariant.Icon">
+                        <sa-icon name="book-open"/>
+                    </sa-item-media>
+                    <sa-item-content>
+                        <sa-item-title>Documentation</sa-item-title>
+                        <sa-item-description>Guides and the full API.</sa-item-description>
+                    </sa-item-content>
+                    <sa-item-actions>
+                        <sa-icon name="external-link" class="size-4"/>
+                    </sa-item-actions>
+                </sa-item-link>
+                <sa-item variant="ItemVariant.Outline" size="ItemSize.Small">
+                    <sa-item-media variant="ItemMediaVariant.Icon">
+                        <sa-icon name="sparkles"/>
+                    </sa-item-media>
+                    <sa-item-content>
+                        <sa-item-title>Skills for your coding agent</sa-item-title>
+                        <sa-item-description>
+                            <code class="font-mono">npx skills add <span class="whitespace-nowrap">stellar-admin/stellar-admin</span></code>
+                        </sa-item-description>
+                    </sa-item-content>
+                    <sa-item-actions>
+                        <partial name="_SetupCopyButton" model="@(new SetupCopyButtonViewModel("Copy command", "npx skills add stellar-admin/stellar-admin", ButtonSize.IconSmall, null))" />
+                    </sa-item-actions>
+                </sa-item>
+            </div>
+        </div>
+    </div>
+</sa-page-container>
+
+@* Runs before the components load, so the tab the viewer last chose (code or instructions for their agent) shows
+   without a flash. Choosing a tab in one step chooses it in every step, and copy buttons copy their text or their
+   code block. *@
+<script>
+    (() => {
+        const key = "stellaradmin:setup-tab";
+        const choose = choice => {
+            for (const tabs of document.querySelectorAll("[data-setup-tabs]")) {
+                for (const tab of tabs.querySelectorAll("[role='tab']")) {
+                    const selected = tab.getAttribute("aria-controls").endsWith(`-${choice}`);
+                    if (tab.getAttribute("aria-selected") === String(selected)) {
+                        continue;
+                    }
+
+                    tab.setAttribute("aria-selected", String(selected));
+                    tab.setAttribute("tabindex", selected ? "0" : "-1");
+                    tab.toggleAttribute("data-active", selected);
+                    document.getElementById(tab.getAttribute("aria-controls")).hidden = !selected;
+                }
+            }
+        };
+
+        try {
+            if (localStorage.getItem(key) === "agent") {
+                choose("agent");
+            }
+        } catch {
+        }
+
+        document.addEventListener("tabshow", event => {
+            const choice = event.detail?.panel?.id.match(/^setup-.+-(code|agent)$/)?.[1];
+            if (!choice) {
+                return;
+            }
+
+            try {
+                localStorage.setItem(key, choice);
+            } catch {
+            }
+            choose(choice);
+        });
+
+        document.addEventListener("click", async event => {
+            const button = event.target.closest("[data-setup-copy]");
+            if (!button) {
+                return;
+            }
+
+            const text = button.dataset.setupCopy || button.closest(".sa-setup-code")?.querySelector("pre").textContent;
+            try {
+                await navigator.clipboard.writeText(text);
+            } catch {
+                return;
+            }
+
+            button.toggleAttribute("data-copied", true);
+            clearTimeout(button.copiedTimer);
+            button.copiedTimer = setTimeout(() => button.removeAttribute("data-copied"), 1500);
+        });
+    })();
+</script>

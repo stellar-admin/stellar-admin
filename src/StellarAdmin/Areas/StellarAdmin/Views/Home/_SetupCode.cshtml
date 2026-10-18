@@ -1,0 +1,7 @@
+@model SetupCodeViewModel
+
+@* A block of code, or instructions for a coding agent, with a button that copies it *@
+<div class="sa-setup-code" data-kind="@(Model.IsPrompt ? "prompt" : "code")">
+    <pre><code>@Model.Text</code></pre>
+    <partial name="_SetupCopyButton" model="@(new SetupCopyButtonViewModel(Model.IsPrompt ? "Copy instructions" : "Copy code", null, ButtonSize.IconSmall, "sa-setup-code-copy"))" />
+</div>

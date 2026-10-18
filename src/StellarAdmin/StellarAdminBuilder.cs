@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StellarAdmin.Home;
 using StellarAdmin.Infrastructure.Authorization;
 using StellarAdmin.Infrastructure.Mvc;
 using StellarAdmin.Sidebar;
@@ -253,6 +254,23 @@ public sealed class StellarAdminBuilder
                 "A wordmark logo replaces the title and cannot be combined with a subtitle."
             );
         }
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures the admin panel's home page.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the home page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public StellarAdminBuilder ConfigureHomePage(Action<HomePageBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new HomePageBuilder(_options.HomePage));
 
         return this;
     }

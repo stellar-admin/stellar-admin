@@ -1,3 +1,4 @@
+using StellarAdmin.Home;
 using StellarAdmin.Sidebar;
 
 namespace StellarAdmin;
@@ -11,6 +12,8 @@ internal sealed class StellarAdminOptions
     internal List<object> AuthorizationMetadata { get; } = [];
 
     internal BrandingOptions Branding { get; } = new();
+
+    internal HomePageOptions HomePage { get; } = new();
 
     internal List<SidebarLinkOptions> SidebarLinks { get; } = [];
 
