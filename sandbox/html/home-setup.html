@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home setup checklist</title>
+<!-- Prototype: a development-only setup checklist on the admin panel's empty home page
+     (Areas/StellarAdmin/Views/Home/Index.cshtml). The shell is the HTML the panel emits (captured from
+     AdminPlayground); the page content is built only from captured sa-* component markup, plus
+     Tailwind utilities for layout as the panel's own views use them, and one new rule set
+     (.sa-setup-code, a code block with a copy button) in the panel's components layer. Build
+     src/StellarAdmin.UI first (npm run build in Client/) if wwwroot/ is empty. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400..700&family=Figtree:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+  /* The panel's views get these utilities from stellar-admin-panel.css, built with the adapter. */
+  @custom-variant dark (&:is(.dark *):not(:where(.dark .light *)), &:is(.dark *):where(.dark .light .dark *));
+  @theme inline {
+    --spacing: var(--sa-unit);
+    --text-xs: var(--sa-text-xs);
+    --text-sm: var(--sa-text-sm);
+    --text-base: var(--sa-text-base);
+    --font-sans: var(--sa-font-sans);
+    --font-mono: var(--sa-font-mono);
+    --font-heading: var(--sa-font-heading);
+    --radius-sm: var(--sa-radius-inner);
+    --radius-md: var(--sa-radius-control-sm);
+    --radius-lg: var(--sa-radius-box);
+    --radius-xl: var(--sa-radius-container);
+    --color-background: var(--sa-color-canvas);
+    --color-foreground: var(--sa-color-ink);
+    --color-card: var(--sa-color-surface);
+    --color-primary: var(--sa-color-accent-fill);
+    --color-primary-foreground: var(--sa-color-on-accent);
+    --color-muted: var(--sa-color-surface-sunken);
+    --color-muted-foreground: var(--sa-color-ink-muted);
+    --color-accent: var(--sa-color-hover);
+    --color-destructive: var(--sa-color-danger-text);
+    --color-border: var(--sa-color-line);
+  }
+</style>
+<style>
+  @layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
+
+  /* Candidate: the panel's own rules (stellar-admin-panel.css, layer components). Only the code
+     block is new; everything else on the page is an existing component. */
+  @layer components {
+    .sa-setup-code {
+      position: relative;
+      border: var(--sa-border-width) solid var(--sa-color-line);
+      border-radius: var(--sa-radius-box);
+      background: var(--sa-color-surface-sunken);
+      color: var(--sa-color-ink);
+      font-family: var(--sa-font-mono);
+      font-size: var(--sa-text-xs);
+      line-height: 1.6;
+      text-align: start;
+      font-variant-ligatures: none;
+      min-width: 0;
+    }
+    .sa-setup-code pre {
+      margin: 0;
+      padding: calc(3 * var(--sa-unit)) calc(4 * var(--sa-unit));
+      padding-inline-end: calc(10 * var(--sa-unit));
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .sa-setup-code .sa-setup-code-copy {
+      position: absolute;
+      inset-block-start: calc(1.5 * var(--sa-unit));
+      inset-inline-end: calc(1.5 * var(--sa-unit));
+    }
+    .sa-setup-code[data-kind="prompt"] {
+      font-family: var(--sa-font-sans);
+      font-size: var(--sa-text-sm);
+      line-height: var(--sa-leading-body, 1.5);
+    }
+    .sa-setup-code[data-kind="prompt"] pre { white-space: pre-wrap; font: inherit; }
+    .sa-setup-code .tok-k { color: var(--sa-color-accent-text); }
+    .sa-setup-code .tok-s { color: var(--sa-color-success); }
+    .sa-setup-code .tok-c { color: var(--sa-color-ink-muted); }
+  }
+
+  /* Prototype chrome: the control bar and the option note. Not extracted. */
+  .proto-bar {
+    position: fixed; right: 12px; bottom: 12px; z-index: 50;
+    width: min(340px, calc(100vw - 24px));
+    background: var(--sa-color-surface-raised); color: var(--sa-color-ink);
+    border: 1px solid var(--sa-color-line); border-radius: 10px;
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.18);
+    font: 12px/1.4 system-ui, sans-serif; padding: 10px 12px; display: grid; gap: 8px;
+  }
+  .proto-bar.collapsed > :not(.proto-head) { display: none; }
+  .proto-head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+  .proto-head button { all: unset; cursor: pointer; color: var(--sa-color-ink-muted); padding: 0 4px; }
+  .proto-row { display: grid; grid-template-columns: 74px 1fr; gap: 6px; align-items: center; }
+  .proto-row > span { color: var(--sa-color-ink-muted); }
+  .proto-seg { display: flex; flex-wrap: wrap; gap: 3px; }
+  .proto-seg button {
+    all: unset; cursor: pointer; padding: 2px 7px; border-radius: 6px;
+    border: 1px solid var(--sa-color-line); background: var(--sa-color-surface);
+  }
+  .proto-seg button[aria-pressed="true"] { background: var(--sa-color-ink); color: var(--sa-color-surface); border-color: var(--sa-color-ink); }
+  .proto-note { color: var(--sa-color-ink-muted); border-top: 1px solid var(--sa-color-line); padding-top: 8px; }
+  .proto-note b { color: var(--sa-color-ink); }
+</style>
+</head>
+<body>
+
+<sel-sidebar id="--sa-sidebar" data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem; --sidebar-width-mobile: 18rem" class="sa-sidebar-wrapper">
+<div data-slot="sidebar" data-variant="sidebar" data-side="left" data-state="expanded" data-mobile="closed" data-collapsible="" data-collapsible-config="offcanvas" class="sa-sidebar"><button aria-label="Close sidebar" class="sa-sidebar-backdrop" data-slot="sidebar-backdrop" type="button"></button><div class="sa-sidebar-gap" data-slot="sidebar-gap"></div><div class="sa-sidebar-container" data-slot="sidebar-container"><div class="sa-sidebar-inner" data-sidebar="sidebar" data-slot="sidebar-inner">
+  <div data-slot="sidebar-header" data-sidebar="header" class="sa-sidebar-header">
+    <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+      <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+        <a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="lg" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-lg sa-sidebar-menu-button-variant-default" id="brand"></a>
+      </li>
+    </ul>
+    <button commandfor="--command-palette" command="show-modal" class="sa-button sa-button-variant-outline sa-button-size-default w-full justify-between text-muted-foreground" data-slot="button">
+      <span class="flex items-center gap-2"><svg data-icon="search"></svg>Search...</span>
+      <kbd aria-hidden="true" data-slot="kbd-group" class="sa-kbd-group"><kbd data-slot="kbd" class="sa-kbd">Ctrl</kbd><kbd data-slot="kbd" class="sa-kbd">K</kbd></kbd>
+    </button>
+  </div>
+  <div data-slot="sidebar-content" data-sidebar="content" class="sa-sidebar-content" id="sidebar-content"></div>
+</div></div></div>
+
+<main data-slot="sidebar-inset" class="sa-sidebar-inset">
+  <header data-slot="app-header" class="sa-app-header">
+    <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm"><svg data-icon="panel-left"></svg></button>
+    <div data-slot="separator" class="sa-separator sa-separator-vertical sa-app-header-separator" role="separator" aria-orientation="vertical" data-orientation="vertical"></div>
+    <span class="text-sm font-medium" id="header-title"></span>
+  </header>
+  <div id="home"></div>
+</main>
+</sel-sidebar>
+
+<div class="proto-bar" id="proto-bar">
+  <div class="proto-head"><span>Home setup prototype</span><button type="button" data-collapse aria-label="Collapse">–</button></div>
+  <div class="proto-row"><span>Setup</span><div class="proto-seg" data-key="setup">
+    <button data-value="fresh">Fresh</button><button data-value="partial">Partial</button><button data-value="done">Done</button>
+  </div></div>
+  <div class="proto-row"><span>App auth</span><div class="proto-seg" data-key="auth">
+    <button data-value="yes">Has auth</button><button data-value="no">None</button>
+  </div></div>
+  <div class="proto-row"><span>Entities</span><div class="proto-seg" data-key="detect">
+    <button data-value="yes">EF + package</button><button data-value="nopkg">EF, no package</button><button data-value="no">No EF</button>
+  </div></div>
+  <div class="proto-row"><span>Checklist</span><div class="proto-seg" data-key="checklist">
+    <button data-value="on">On</button><button data-value="off">Turned off</button>
+  </div></div>
+  <div class="proto-row"><span>Width</span><div class="proto-seg" data-key="width">
+    <button data-value="small">Small</button><button data-value="medium">Medium</button>
+  </div></div>
+  <div class="proto-row"><span>Environment</span><div class="proto-seg" data-key="env">
+    <button data-value="dev">Development</button><button data-value="prod">Production</button>
+  </div></div>
+  <div class="proto-row"><span>Theme</span><div class="proto-seg" data-key="theme">
+    <button data-value="">Default</button><button data-value="ops">Ops</button><button data-value="soft">Soft</button><button data-value="ledger">Ledger</button>
+  </div></div>
+  <div class="proto-row"><span>Mode</span><div class="proto-seg" data-key="mode">
+    <button data-value="light">Light</button><button data-value="dark">Dark</button>
+  </div></div>
+  <div class="proto-row"><span>Density</span><div class="proto-seg" data-key="density">
+    <button data-value="">Default</button><button data-value="compact">Compact</button><button data-value="comfortable">Comfortable</button>
+  </div></div>
+  <div class="proto-note" id="proto-note"></div>
+</div>
+
+<script>
+const ICONS = {"circle": "<circle cx=\"12\" cy=\"12\" r=\"10\"/>", "circle-check": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16 9-5.5 5.5L8 12\"/>", "circle-check-big": "<path d=\"M21.801 10A10 10 0 1 1 17 3.335\"/><path d=\"m9 11 3 3L22 4\"/>", "circle-dashed": "<path d=\"M10.1 2.182a10 10 0 0 1 3.8 0\"/><path d=\"M13.9 21.818a10 10 0 0 1-3.8 0\"/><path d=\"M17.609 3.721a10 10 0 0 1 2.69 2.7\"/><path d=\"M2.182 13.9a10 10 0 0 1 0-3.8\"/><path d=\"M20.279 17.609a10 10 0 0 1-2.7 2.69\"/><path d=\"M21.818 10.1a10 10 0 0 1 0 3.8\"/><path d=\"M3.721 6.391a10 10 0 0 1 2.7-2.69\"/><path d=\"M6.391 20.279a10 10 0 0 1-2.69-2.7\"/>", "database": "<ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\"/><path d=\"M3 5V19A9 3 0 0 0 21 19V5\"/><path d=\"M3 12A9 3 0 0 0 21 12\"/>", "shield": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/>", "shield-check": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>", "shield-alert": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"M12 8v4\"/><path d=\"M12 16h.01\"/>", "palette": "<path d=\"M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z\"/><circle cx=\"13.5\" cy=\"6.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>", "user-round": "<circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/>", "panel-left": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>", "sparkles": "<path d=\"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z\"/><path d=\"M20 2v4\"/><path d=\"M22 4h-4\"/><circle cx=\"4\" cy=\"20\" r=\"2\"/>", "book-open": "<path d=\"M12 5v16\"/><path d=\"M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z\"/>", "copy": "<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>", "check": "<path d=\"M20 6 9 17l-5-5\"/>", "arrow-right": "<path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/>", "external-link": "<path d=\"M15 3h6v6\"/><path d=\"M10 14 21 3\"/><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/>", "chevron-down": "<path d=\"m6 9 6 6 6-6\"/>", "chevron-right": "<path d=\"m9 18 6-6-6-6\"/>", "terminal": "<path d=\"M12 19h8\"/><path d=\"m4 17 6-6-6-6\"/>", "badge-check": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\"/><path d=\"m16 9-5.5 5.5L8 12\"/>", "compass": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z\"/>", "search": "<path d=\"m21 21-4.34-4.34\"/><circle cx=\"11\" cy=\"11\" r=\"8\"/>", "triangle-alert": "<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/>", "info": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>", "layout-dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/>", "eye-off": "<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\"/><path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\"/><path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\"/><path d=\"m2 2 20 20\"/>", "plane": "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><path d=\"M16 3.128a4 4 0 0 1 0 7.744\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/>", "map-pin": "<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>", "x": "<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>", "settings": "<path d=\"M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>", "code": "<path d=\"m16 18 6-6-6-6\"/><path d=\"m8 6-6 6 6 6\"/>", "list-checks": "<path d=\"M13 5h8\"/><path d=\"M13 12h8\"/><path d=\"M13 19h8\"/><path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/>", "rocket": "<path d=\"M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5\"/><path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09\"/><path d=\"M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z\"/><path d=\"M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05\"/>", "menu": "<path d=\"M4 5h16\"/><path d=\"M4 12h16\"/><path d=\"M4 19h16\"/>"};
+const svg = (name, extra = "") =>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"${extra}>${ICONS[name] ?? ""}</svg>`;
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+// ---- State -------------------------------------------------------------------------------------
+
+const params = new URLSearchParams(location.search);
+const state = {
+  setup: params.get("setup") ?? "fresh",
+  auth: params.get("auth") ?? "yes",
+  detect: params.get("detect") ?? "yes",
+  checklist: params.get("checklist") ?? "on",
+  width: params.get("width") ?? "medium",
+  env: params.get("env") ?? "dev",
+  theme: params.get("theme") ?? "",
+  mode: params.get("mode") ?? "light",
+  density: params.get("density") ?? "",
+};
+
+const NOTE = "<b>Setup checklist.</b> A centred card: progress, then one Item per step. \"Show me how\" expands Code and Ask your agent tabs below it (Collapsible); the first open step starts expanded and the chosen tab is remembered. The footer turns the checklist off. Help sits below.";
+
+// ---- Configuration the page would read from the panel's options --------------------------------
+
+function config() {
+  const s = state.setup;
+  return {
+    hasAuth: state.auth === "yes",
+    resources: s === "fresh" ? [] : [
+      { title: "Bookings", slug: "bookings", icon: "plane", group: s === "done" ? "Sales" : null },
+      { title: "Customers", slug: "customers", icon: "users", group: s === "done" ? "Sales" : null },
+      { title: "Destinations", slug: "destinations", icon: "map-pin", group: s === "done" ? "Catalogue" : null },
+    ],
+    branded: s !== "fresh",
+    protectedPanel: s === "done" && state.auth === "yes",
+    userMenu: s === "done" && state.auth === "yes",
+    themed: s === "done",
+    sidebarOrganised: s === "done",
+    efPackage: state.detect === "yes",
+    detected: state.detect !== "no" ? { context: "VoyagerDbContext", entities: ["Booking", "Customer", "Destination", "Airport"] } : null,
+  };
+}
+
+// ---- Steps ---------------------------------------------------------------------------------------
+
+function cs(code) {
+  // Minimal C# colouring for the prototype: strings, comments, a few keywords
+  return esc(code)
+    .replace(/(&quot;|")(.*?)(")/g, '<span class="tok-s">"$2"</span>')
+    .replace(/(\/\/.*)$/gm, '<span class="tok-c">$1</span>')
+    .replace(/\b(var|new|using)\b/g, '<span class="tok-k">$1</span>');
+}
+
+function steps(c) {
+  const entity = c.detected ? c.detected.entities[0] : "Booking";
+  const context = c.detected ? c.detected.context : "AppDbContext";
+  const lower = entity[0].toLowerCase() + entity.slice(1);
+  const list = [
+    {
+      id: "resource", icon: "database", essential: true,
+      title: c.resources.length ? `${c.resources.length} resources registered` : "Add your first resource",
+      todoTitle: "Add your first resource",
+      done: c.resources.length > 0,
+      desc: c.resources.length
+        ? "Each resource gets list, create, edit and delete pages. Add more the same way."
+        : "Register an entity to get list, create, edit and delete pages for it.",
+      detail: c.resources.length ? null
+        : c.detected
+          ? `Found in ${c.detected.context}: ${c.detected.entities.join(", ")}.${c.efPackage ? "" : " EF Core resources need the StellarAdmin.EntityFrameworkCore package."}`
+          : "No EF Core DbContext found. Any class works: a data source implementing IResourceDataSource<T> loads and saves it.",
+      install: c.detected && !c.efPackage ? "dotnet add package StellarAdmin.EntityFrameworkCore" : null,
+      code: c.detected ?
+`builder.Services.AddStellarAdmin(admin =>
+{
+    admin.AddEfCoreResource<${context}, ${entity}>(resource =>
+    {
+        resource.Index(index => index.Columns(columns =>
+        {
+            columns.Add(${lower} => ${lower}.Id);
+        }));
+        resource.AllowCreate(create => create.Fields(fields =>
+        {
+            // fields.Add(${lower} => ${lower}.Name);
+        }));
+    });
+});` :
+`builder.Services.AddStellarAdmin(admin =>
+{
+    admin.AddResource<Booking>(resource =>
+    {
+        resource.UseDataSource<BookingDataSource>();
+        resource.UseKey(booking => booking.Id);
+        resource.Index(index => index.Columns(columns =>
+        {
+            columns.Add(booking => booking.Reference);
+        }));
+    });
+});`,
+      docs: "Resources",
+      agent: c.detected
+        ? `Add ${entity} from ${context} to the StellarAdmin panel as a resource. Show its main properties in the list, and allow create, edit and delete. Use a select or lookup for any foreign key.`
+        : "Add Booking to the StellarAdmin panel as a resource, with a data source that loads and saves bookings. Show its main properties in the list, and allow create, edit and delete.",
+    },
+    {
+      id: "protect", icon: c.protectedPanel ? "shield-check" : "shield-alert", essential: true,
+      title: c.protectedPanel ? "Signed-in Staff only" : "Protect the panel",
+      todoTitle: "Protect the panel",
+      done: c.protectedPanel, warn: !c.protectedPanel,
+      desc: c.protectedPanel
+        ? "Anonymous visitors are sent to sign in; other users are forbidden."
+        : c.hasAuth
+          ? "Anyone who can reach /stellaradmin can use it. Require sign-in, a role or a policy."
+          : "Anyone who can reach /stellaradmin can use it, and the app has no authentication yet. Add authentication before you deploy, then require it here.",
+      code:
+`builder.Services.AddStellarAdmin(admin =>
+{
+    admin.RequireAuthorization(policy => policy.RequireRole("Staff"));
+});`,
+      docs: "Authorization",
+      agent: c.hasAuth
+        ? "Protect the StellarAdmin panel so only signed-in users with the Staff role can use it. Anonymous users should be sent to sign in."
+        : "This app has no authentication. Add cookie authentication with a sign-in page, then protect the StellarAdmin panel so only signed-in users can use it.",
+    },
+    {
+      id: "branding", icon: "compass",
+      title: c.branded ? "Named “Voyager Travel”" : "Set the name and logo",
+      todoTitle: "Set the name and logo",
+      done: c.branded,
+      desc: c.branded
+        ? "The sidebar, header and browser title show your name and logo."
+        : "The sidebar shows “Voyager Web”, made from the assembly name. Set your app's name and logo.",
+      code:
+`builder.Services.AddStellarAdmin(admin =>
+{
+    admin.ConfigureBranding(branding =>
+    {
+        branding.Title = "Voyager Travel";
+        branding.Logo = BrandingLogo.Image("~/img/logo.svg");
+    });
+});`,
+      docs: "Branding",
+      agent: "Set the StellarAdmin panel's name to Voyager Travel, and use the logo in wwwroot/img as its logo.",
+    },
+    {
+      id: "usermenu", icon: "user-round", optional: true, hidden: !c.hasAuth,
+      title: c.userMenu ? "User menu has 2 items" : "Add to the user menu",
+      todoTitle: "Add to the user menu",
+      done: c.userMenu,
+      desc: c.userMenu
+        ? "The sidebar footer menu links to the account page."
+        : "The sidebar footer shows the signed-in user with Log out. Link to their account page, or change how log out works.",
+      code:
+`builder.Services.AddStellarAdmin(admin =>
+{
+    admin.ConfigureUserMenu(menu =>
+    {
+        menu.Add(UserMenuItem.Page("Account", "/Account/Manage/Index", "Identity"));
+    });
+});`,
+      docs: "User menu",
+      agent: "Add a link to the account management page to the StellarAdmin user menu, above Log out.",
+    },
+    {
+      id: "theme", icon: "palette", optional: true,
+      title: c.themed ? "Theme: theme.css" : "Choose a theme",
+      todoTitle: "Choose a theme",
+      done: c.themed,
+      desc: c.themed
+        ? "Your stylesheet loads after the panel's own."
+        : "Build a theme in the theme builder, save it to wwwroot and add it as a stylesheet.",
+      code:
+`builder.Services.AddStellarAdmin(admin =>
+{
+    admin.AddStylesheet("~/css/theme.css");
+});`,
+      docs: "Themes", extra: "Open the theme builder",
+      agent: "Create a StellarAdmin theme from our brand colours: primary #0E6B5C on a warm off-white. Save it to wwwroot/css/theme.css and add it to the panel.",
+    },
+    {
+      id: "sidebar", icon: "panel-left", optional: true, hidden: c.resources.length === 0,
+      title: c.sidebarOrganised ? "Sidebar has 2 groups" : "Organise the sidebar",
+      todoTitle: "Organise the sidebar",
+      done: c.sidebarOrganised,
+      desc: c.sidebarOrganised
+        ? "Resources are grouped, with icons, next to links to your own pages."
+        : "Group resources, give them icons, and link to your own pages.",
+      code:
+`admin.AddEfCoreResource<VoyagerDbContext, Booking>(resource =>
+{
+    resource.SidebarItem(item =>
+    {
+        item.Group = "Sales";
+        item.Icon = "plane";
+    });
+});
+
+admin.AddSidebarLink("Reports", SidebarLinkTarget.Page("/Reports"));`,
+      docs: "Sidebar",
+      agent: "Organise the StellarAdmin sidebar: group Bookings and Customers under Sales and Destinations under Catalogue, give each an icon, and add a link to the Reports page.",
+    },
+  ];
+  return list.filter(s => !s.hidden);
+}
+
+// ---- Shared markup (captured tag helper output) ---------------------------------------------------
+
+const badge = (text, variant = "secondary", icon) =>
+  `<span data-slot="badge" class="sa-badge sa-badge-variant-${variant}">${icon ? svg(icon) : ""}${text}</span>`;
+
+const button = (text, { variant = "default", size = "default", icon, iconEnd, attrs = "", tag = "button", cls = "" } = {}) =>
+  `<${tag} ${tag === "a" ? 'href="#" style="text-decoration: none"' : ""} data-slot="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}${cls ? " " + cls : ""}" ${attrs}>${icon ? svg(icon) : ""}${text}${iconEnd ? svg(iconEnd) : ""}</${tag}>`;
+
+const codeBlock = code =>
+  `<div class="sa-setup-code"><pre><code>${cs(code)}</code></pre>${button("", { variant: "ghost", size: "icon-sm", icon: "copy", cls: "sa-setup-code-copy", attrs: 'aria-label="Copy code" data-copy' })}</div>`;
+
+const promptBlock = text =>
+  `<div class="sa-setup-code" data-kind="prompt"><pre>${esc(text)}</pre>${button("", { variant: "ghost", size: "icon-sm", icon: "copy", cls: "sa-setup-code-copy", attrs: 'aria-label="Copy instructions" data-copy' })}</div>`;
+
+function statusIcon(step) {
+  if (step.done) return `<span class="text-[var(--sa-color-success)] inline-flex">${svg("circle-check")}</span>`;
+  if (step.warn) return `<span class="text-[var(--sa-color-warning)] inline-flex">${svg("triangle-alert")}</span>`;
+  return `<span class="text-muted-foreground inline-flex">${svg(step.optional ? "circle-dashed" : "circle")}</span>`;
+}
+
+const progress = (doneCount, total, label) =>
+  `<div data-slot="progress" class="sa-progress-root"><span data-slot="progress-label" class="sa-progress-label">${label}</span><span data-slot="progress-value" class="sa-progress-value">${doneCount} of ${total}</span><div class="sa-progress-track" data-slot="progress-track"><div class="sa-progress-indicator" data-slot="progress-indicator" style="inset-inline-start: 0px; height: inherit; width: ${Math.round(100 * doneCount / total)}%;"></div></div></div>`;
+
+const pageHeader = (title, actions = "", desc = "") =>
+  `<header data-slot="page-header" class="sa-page-header"><div><h1 data-slot="page-header-title" class="sa-page-header-title">${title}</h1>${desc ? `<p class="text-sm text-muted-foreground mt-1">${desc}</p>` : ""}</div>${actions ? `<div data-slot="page-header-actions" class="sa-page-header-actions">${actions}</div>` : ""}</header>`;
+
+const container = (inner, width = "full") =>
+  `<div data-slot="page-container" data-width="${width}" class="sa-page-container sa-page-container-width-${width}">${inner}</div>`;
+
+const helpItems = () => `
+  <div role="list" data-slot="item-group" class="sa-item-group">
+    <a href="#" data-slot="item" data-variant="outline" data-size="sm" class="sa-item sa-item-size-sm sa-item-variant-outline">
+      <div data-slot="item-media" data-variant="icon" class="sa-item-media sa-item-media-variant-icon">${svg("book-open")}</div>
+      <div data-slot="item-content" class="sa-item-content"><div data-slot="item-title" class="sa-item-title">Documentation</div><p data-slot="item-description" class="sa-item-description">Guides and the full API.</p></div>
+      <div data-slot="item-actions" class="sa-item-actions">${svg("external-link")}</div>
+    </a>
+    <div data-slot="item" data-variant="outline" data-size="sm" class="sa-item sa-item-size-sm sa-item-variant-outline">
+      <div data-slot="item-media" data-variant="icon" class="sa-item-media sa-item-media-variant-icon">${svg("sparkles")}</div>
+      <div data-slot="item-content" class="sa-item-content"><div data-slot="item-title" class="sa-item-title">Skills for your coding agent</div><p data-slot="item-description" class="sa-item-description"><code class="font-mono">npx skills add stellar-admin/stellar-admin</code></p></div>
+      <div data-slot="item-actions" class="sa-item-actions">${button("", { variant: "ghost", size: "icon-sm", icon: "copy", attrs: 'aria-label="Copy command"' })}</div>
+    </div>
+  </div>`;
+
+// The chosen tab (code or agent) is remembered per browser and applied to every step
+const SETUP_TAB_KEY = "stellaradmin:setup-tab";
+function readSetupTab() {
+  try { return localStorage.getItem(SETUP_TAB_KEY) ?? "code"; } catch { return "code"; }
+}
+document.addEventListener("tabshow", e => {
+  const match = e.detail.panel.id.match(/^setup-.+-(code|agent)$/);
+  if (!match) return;
+  try { localStorage.setItem(SETUP_TAB_KEY, match[1]); } catch {}
+  document.querySelectorAll(`[role="tab"][id$="-${match[1]}-tab"][id^="setup-"]`).forEach(tab => {
+    if (tab.getAttribute("aria-selected") !== "true") tab.closest("sel-tabs")?.select(tab);
+  });
+});
+
+// Code and agent instructions for one step, as line tabs (captured sel-tabs output)
+function setupTabs(s) {
+  const tabs = `--tabs-${s.id}`;
+  const agentFirst = readSetupTab() === "agent";
+  const tab = (key, label, icon, active) =>
+    `<button type="button" id="setup-${s.id}-${key}-tab" role="tab" command="--select-tab" commandfor="${tabs}" aria-controls="setup-${s.id}-${key}" aria-selected="${active}" tabindex="${active ? 0 : -1}" data-slot="tabs-trigger"${active ? ' data-active=""' : ""} class="sa-tabs-trigger">${svg(icon)}${label}</button>`;
+  // The skills note: one compact line with the install command and a copy button
+  const skillsNote =
+    `<p class="flex items-center gap-1.5 text-xs text-muted-foreground -mt-1"><span class="inline-flex text-[var(--sa-color-warning)] [&_svg]:size-3.5">${svg("triangle-alert")}</span><span><span class="font-medium text-[var(--sa-color-warning)]">Requires the skills:</span> <code class="font-mono text-foreground whitespace-nowrap">npx skills add stellar-admin/stellar-admin</code></span>${button("", { variant: "ghost", size: "icon-xs", icon: "copy", attrs: 'aria-label="Copy command" data-copy-text="npx skills add stellar-admin/stellar-admin"' })}</p>`;
+  const agentBody = `${promptBlock(s.agent)}${skillsNote}`;
+  const panel = (key, body, active) =>
+    `<div id="setup-${s.id}-${key}" role="tabpanel" aria-labelledby="setup-${s.id}-${key}-tab" tabindex="0" data-slot="tabs-content"${active ? "" : ' hidden="hidden"'} class="sa-tab-panel grid gap-3">${body}</div>`;
+  return `<sel-tabs class="sa-tabs-container w-full" id="${tabs}" data-slot="tabs-container">
+    <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs"><div aria-orientation="horizontal" class="sa-tabs-list sa-tabs-list-variant-default" data-slot="tabs-list" data-variant="default" role="tablist">
+      ${tab("code", "Code", "code", !agentFirst)}${tab("agent", "Ask your agent", "sparkles", agentFirst)}
+    </div></div>
+    ${panel("code", `${s.install ? codeBlock(s.install) : ""}${codeBlock(s.code)}`, !agentFirst)}
+    ${panel("agent", agentBody, agentFirst)}
+  </sel-tabs>`;
+}
+
+// ---- Setup checklist (option A) -------------------------------------------------------------------
+
+function optionA(c) {
+  const list = steps(c);
+  const done = list.filter(s => s.done).length;
+  const firstOpen = list.find(s => !s.done)?.id;
+  // The toggle's chevron turns when sel-collapsible sets aria-expanded on its invokers
+  const toggle = (id, text, variant) =>
+    button(text, { variant, size: "sm", iconEnd: "chevron-down", cls: "[&_svg]:transition-transform [&[aria-expanded=true]_svg]:rotate-180", attrs: `commandfor="--step-${id}" command="--toggle"` });
+  const items = list.map(s => `
+    <div role="listitem">
+      <div data-slot="item" data-variant="default" data-size="default" class="sa-item sa-item-size-default sa-item-variant-default">
+        <div data-slot="item-media" data-variant="icon" class="sa-item-media sa-item-media-variant-icon">${statusIcon(s)}</div>
+        <div data-slot="item-content" class="sa-item-content">
+          <div data-slot="item-title" class="sa-item-title${s.done ? " text-muted-foreground" : ""}">${s.title}${s.optional && !s.done ? badge("Optional", "outline") : ""}</div>
+          <p data-slot="item-description" class="sa-item-description">${s.desc}</p>
+        </div>
+        <div data-slot="item-actions" class="sa-item-actions">${toggle(s.id, s.done ? "Change" : "Show me how", s.done ? "ghost" : s.essential ? "default" : "outline")}</div>
+      </div>
+      <sel-collapsible id="--step-${s.id}"${s.id === firstOpen ? "" : ' hidden=""'} class="grid gap-3 ps-3 sm:ps-12 pe-3 pb-4" data-slot="collapsible">
+        ${s.detail ? `<p class="text-sm text-muted-foreground">${esc(s.detail)}</p>` : ""}
+        ${setupTabs(s)}
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+          ${button(`${s.docs} docs`, { variant: "outline", size: "sm", tag: "a", iconEnd: "external-link" })}
+          ${s.extra ? button(s.extra, { variant: "outline", size: "sm", tag: "a", iconEnd: "external-link" }) : ""}
+        </div>
+      </sel-collapsible>
+    </div>`).join(`<div data-slot="separator" class="sa-separator sa-separator-horizontal" role="none" data-orientation="horizontal"></div>`);
+
+  return container(`
+    ${pageHeader("Welcome to StellarAdmin", "", "Your admin panel is running. Finish setting it up:")}
+    <div class="grid gap-8">
+      <div class="sa-card" data-slot="card" data-size="default">
+        <div data-slot="card-header" class="sa-card-header">
+          <div data-slot="card-title" class="sa-card-title">Set up your panel</div>
+          <div data-slot="card-description" class="sa-card-description">${progress(done, list.length, done === list.length ? "All set" : "Progress")}</div>
+        </div>
+        <div data-slot="card-content" class="sa-card-content"><div role="list" class="grid">${items}</div></div>
+        <div data-slot="card-footer" class="sa-card-footer flex-col items-stretch gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
+            <span class="flex items-center gap-1.5 [&_svg]:size-4">${svg("eye-off")}Only shown in Development.</span>
+            ${button("Turn off this checklist", { variant: "ghost", size: "sm", iconEnd: "chevron-down", cls: "[&_svg]:transition-transform [&[aria-expanded=true]_svg]:rotate-180", attrs: 'commandfor="--step-off" command="--toggle"' })}
+          </div>
+          <sel-collapsible id="--step-off" hidden="" class="grid gap-3" data-slot="collapsible">
+            ${setupTabs({ id: "off", code: `builder.Services.AddStellarAdmin(admin =>
+{
+    admin.ConfigureHomePage(home => home.ShowSetupChecklist = false);
+});`, agent: "Turn off the StellarAdmin setup checklist on the panel's home page." })}
+            <p class="text-sm text-muted-foreground">To replace the page entirely, add <code class="font-mono">Areas/StellarAdmin/Views/Home/Index.cshtml</code>.</p>
+          </sel-collapsible>
+        </div>
+      </div>
+      <div class="grid gap-3">
+        <div class="text-sm font-medium">Help</div>
+        <div class="[&>.sa-item-group]:grid [&>.sa-item-group]:gap-3 [&>.sa-item-group]:sm:grid-cols-2">${helpItems()}</div>
+      </div>
+    </div>`, state.width);
+}
+
+// ---- Production view: what the same page shows outside Development ------------------------------
+
+function production(c) {
+  if (c.resources.length === 0) {
+    return container(`
+      <div class="sa-empty" data-slot="empty">
+        <div data-slot="empty-header" class="sa-empty-header">
+          <div data-slot="empty-icon" data-variant="icon" class="sa-empty-media sa-empty-media-icon">${svg("layout-dashboard")}</div>
+          <div data-slot="empty-title" class="sa-empty-title">Nothing here yet</div>
+          <div data-slot="empty-description" class="sa-empty-description">This admin panel has no pages yet.</div>
+        </div>
+      </div>`);
+  }
+  const resources = c.resources.map(r => `
+    <a href="#" data-slot="item" data-variant="outline" data-size="default" class="sa-item sa-item-size-default sa-item-variant-outline">
+      <div data-slot="item-media" data-variant="icon" class="sa-item-media sa-item-media-variant-icon">${svg(r.icon)}</div>
+      <div data-slot="item-content" class="sa-item-content"><div data-slot="item-title" class="sa-item-title">${r.title}</div></div>
+      <div data-slot="item-actions" class="sa-item-actions">${svg("chevron-right")}</div>
+    </a>`).join("");
+  return container(`${pageHeader(c.branded ? "Voyager Travel" : "Voyager Web")}<div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">${resources}</div>`);
+}
+
+// ---- Render --------------------------------------------------------------------------------------
+
+function renderShell(c) {
+  document.getElementById("brand").innerHTML = c.branded
+    ? `<span class="sa-sidebar-brand-mark" aria-hidden="true">${svg("compass")}</span><span class="sa-sidebar-brand-text"><span class="sa-sidebar-brand-title">Voyager Travel</span></span>`
+    : `<span class="sa-sidebar-brand-text"><span class="sa-sidebar-brand-title">Voyager Web</span></span>`;
+  document.getElementById("header-title").textContent = c.branded ? "Voyager Travel" : "Voyager Web";
+
+  const link = r => `<li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item"><a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">${c.sidebarOrganised ? svg(r.icon) : ""}<span>${r.title}</span></a></li>`;
+  const group = (label, items) => `<div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">${label ? `<div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">${label}</div>` : ""}<div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content"><ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">${items}</ul></div></div>`;
+  let html = "";
+  if (c.sidebarOrganised) {
+    const groups = {};
+    c.resources.forEach(r => (groups[r.group] ??= []).push(r));
+    html = Object.entries(groups).map(([g, rs]) => group(g, rs.map(link).join(""))).join("")
+      + group(null, link({ title: "Reports", icon: "layout-dashboard" }));
+  } else if (c.resources.length) {
+    html = group(null, c.resources.map(link).join(""));
+  }
+  document.getElementById("sidebar-content").innerHTML = html;
+}
+
+function render() {
+  const c = config();
+  renderShell(c);
+  const home = document.getElementById("home");
+  const plain = state.env === "prod" || state.checklist === "off";
+  home.innerHTML = plain
+    ? production(c)
+    : optionA(c);
+  hydrateIcons(document);
+
+  document.documentElement.classList.toggle("dark", state.mode === "dark");
+  const main = document.querySelector(".sa-sidebar-inset");
+  if (state.density) main.setAttribute("data-sa-density", state.density); else main.removeAttribute("data-sa-density");
+  document.getElementById("theme").href = state.theme ? `../../util/theme-check/presets/${state.theme}.css` : "";
+
+  document.querySelectorAll(".proto-seg").forEach(seg => {
+    seg.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(state[seg.dataset.key] === b.dataset.value)));
+  });
+  document.getElementById("proto-note").innerHTML = plain
+    ? (state.env === "prod"
+      ? "<b>Production.</b> The same page outside Development: links to the resources, or an empty state. No setup content."
+      : "<b>Turned off.</b> <code>home.ShowSetupChecklist = false</code>: Development shows the production home page.")
+    : NOTE;
+  history.replaceState(null, "", "?" + new URLSearchParams(state));
+}
+
+function hydrateIcons(root) {
+  root.querySelectorAll("svg[data-icon]").forEach(el => {
+    el.outerHTML = svg(el.dataset.icon);
+  });
+}
+
+document.querySelectorAll(".proto-seg").forEach(seg => {
+  seg.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    state[seg.dataset.key] = b.dataset.value;
+    render();
+  });
+});
+document.querySelector("[data-collapse]").addEventListener("click", e => {
+  const bar = document.getElementById("proto-bar");
+  bar.classList.toggle("collapsed");
+  e.target.textContent = bar.classList.contains("collapsed") ? "+" : "–";
+});
+document.addEventListener("click", e => {
+  const copyText = e.target.closest("[data-copy-text]");
+  if (copyText) navigator.clipboard?.writeText(copyText.dataset.copyText);
+  const copy = e.target.closest("[data-copy]");
+  if (copy) navigator.clipboard?.writeText(copy.closest(".sa-setup-code").querySelector("pre").textContent);
+}, true);
+
+render();
+</script>
+</body>
+</html>
