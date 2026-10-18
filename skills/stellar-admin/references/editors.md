@@ -24,6 +24,16 @@ fields.Add(booking => booking.Notes).UseEditor<TextareaEditor>(text => text.Rows
 fields.Add(customer => customer.IsVip).UseEditor<ToggleEditor>();
 ```
 
+To set a title or other field settings as well, choose the editor inside the field callback. `fields.Add(selector, configure)` returns the fields builder, so `UseEditor` can't be chained after it:
+
+```csharp
+fields.Add(booking => booking.Notes, field =>
+{
+    field.Title = "Special requests";
+    field.UseEditor<TextareaEditor>(text => text.Rows = 6);
+});
+```
+
 ## Which editor
 
 | Property and intent | Editor |
