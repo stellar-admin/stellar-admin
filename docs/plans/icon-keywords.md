@@ -54,5 +54,5 @@ public sealed class IconDefinition
 - `IconDefinition` gains the `keywords` constructor overload and `Keywords`. The existing constructor gives an empty list.
 - Audit: nothing in this repository or the website uses the removed `music` icons, and all 36 semantic mappings of each pack resolve.
 - Size: `StellarAdmin.UI.dll` (Debug) grows from 4.7 MB to 5.7 MB with the keyword strings.
-- Pre-existing, not changed: the Razor SDK treats the definition JSON files (now including the keyword files) as content copied to the output directory.
+- Packaging fix (separate commit): the Razor SDK treated the definition JSON files as content, so the package carried them twice (`content/` and `contentFiles/`, about 9 MB uncompressed) and consumers got them as content. `StellarAdmin.UI.csproj` now removes `Icons/Definitions/**` from `Content`; they stay generator inputs. The package has no JSON definitions and drops from 2.6 MB to 1.3 MB, the build output has no `Icons/` folder, and the UI unit suite still passes (641).
 - Verified: 8 new unit tests (`IconDefinition` keywords; upstream keywords in each pack, including a numeric Tabler tag). Full suites pass: StellarAdmin.UI.Tests 641, StellarAdmin.Tests 253, IntegrationTests 576, UI.IntegrationTests 19, EF IntegrationTests 97. The solution builds without errors, and its warnings are pre-existing.

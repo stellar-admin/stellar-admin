@@ -28,6 +28,8 @@
     <AdditionalFiles Include="Icons/Definitions/TablerFilled.json" />
     <AdditionalFiles Include="Icons/Definitions/TablerOutline.json" />
     <AdditionalFiles Include="Icons/Definitions/Keywords/*.json" />
+    <!-- The generator compiles the icons into the assembly; the JSON isn't content -->
+    <Content Remove="Icons/Definitions/**" />
   </ItemGroup>
 
   <ItemGroup>
