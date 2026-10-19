@@ -28,6 +28,7 @@
 | [FormSection](components/form-section.md) | `<sa-form-section>` | Renders a group of form content under a heading with an optional description. |
 | [Grid](components/grid.md) | `<sa-grid>`, `<sa-grid-item>` | Lays out fields and other content in responsive columns. |
 | [Icon](components/icon.md) | `<sa-icon>` | Renders a registered icon as an `<svg>` element. |
+| [IconPicker](components/icon-picker.md) | `<sa-icon-picker>` | Renders a control for choosing an icon, which posts the icon's name. |
 | [Image](components/image.md) | `<sa-image>`, `<sa-image-upload>` | Renders an image as a thumbnail or a figure. |
 | [Input](components/input.md) | `<sa-input>` | Renders a form input. |
 | [InputGroup](components/input-group.md) | `<sa-input-group>`, `<sa-input-group-addon>`, `<sa-input-group-button>`, … | Renders a group that combines an input with add-ons, buttons or text into one field. |

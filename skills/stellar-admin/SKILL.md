@@ -27,6 +27,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Read-only values in forms, displays, display templates | `AddDisplayField`, `AddDetails`, `UseDisplay<TDisplay>` | [fields](references/fields.md) |
 | Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseEditor<TEditor>` | [editors](references/editors.md) |
 | Images: thumbnails in the grid, photos on the view page, uploads | `ImageDisplay`, `ImageEditor`, `ResolveUrl`, `StoreImage` | [editors](references/editors.md#images), [columns](references/columns.md#built-in-displays-in-cells) |
+| Icons: a field that stores an icon's name, chosen from a picker | `IconEditor`, `IconDisplay` | [editors](references/editors.md#icons) |
 | Foreign keys, lookups, many-to-many, create-from-lookup | `SelectEditor`/`LookupSheetEditor` + EF `UseItems`, `MultiLookupSheetEditor`, `EnableCreate` | [relationships](references/relationships.md) |
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
 | Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |

@@ -12,6 +12,7 @@ An editor is the input a form field renders. Without `UseEditor`, the input is i
 - [Media on choices](#media-on-choices)
 - [Columns in radio and checkbox groups](#columns-in-radio-and-checkbox-groups)
 - [Images](#images)
+- [Icons](#icons)
 - [Overriding and custom editors](#overriding-and-custom-editors)
 
 ```csharp
@@ -52,6 +53,7 @@ fields.Add(booking => booking.Notes, field =>
 | Foreign key with many related rows, searchable, create new | `LookupSheetEditor` ([relationships](relationships.md)) |
 | Several keys from a long list (many-to-many) | `MultiLookupSheetEditor` ([relationships](relationships.md)) |
 | Image stored as a file name, key or URL | `ImageEditor` ([images](#images)) |
+| Name of an icon (an amenity's or a category's icon) | `IconEditor` ([icons](#icons)) |
 
 `ChoiceEditor` is the abstract base of the choice editors; don't pass it to `UseEditor`. There is no general file upload, rich text, colour or tag-input editor.
 
@@ -90,6 +92,7 @@ Settings left unset are inferred from the property (for example, `SliderEditor` 
 | `OneTimeCodeEditor` | `Length` (from max length, else 6) |
 | `LookupSheetEditor`, `MultiLookupSheetEditor` | See [relationships](relationships.md#lookup-sheet-settings) |
 | `ImageEditor` | `StoreImage(...)` (required), `ResolveUrl(...)`, `Layout` (`ImageEditorLayout.Dropzone`, `Compact`, `Attachment`), `MaxFileSize` (bytes, default 5 MB), `AcceptedTypes` (default JPEG, PNG, WebP, GIF, AVIF); see [images](#images) |
+| `IconEditor` | `Icons` (the names offered; default every registered icon), `Layout` (`IconEditorLayout.Auto`, `Picker`, `Inline`); see [icons](#icons) |
 
 Every editor also has `ClassNames` for extra CSS classes on its parts (`ClassNames.Media` on choice editors, `ClassNames.Image` and `ClassNames.Note` on `ImageEditor`). `RadioGroupFlow`, `CheckboxGroupFlow` and `SliderMarkLabels` are in `StellarAdmin.UI`; the appearance enums are in `StellarAdmin.Resources.Editors`.
 
@@ -191,6 +194,29 @@ columns.Add(destination => destination.Photo, column => column.UseDisplay<ImageD
 - `ResolveUrl` has a synchronous overload and `ResolveUrl(async (value, services, ct) => ...)`. In the grid it runs once per row, so compute the URL; don't query for it.
 - Replace and remove take effect when the form saves, and can be undone until then. StellarAdmin never deletes images: replaced, removed and abandoned uploads stay where `StoreImage` put them, so clean up files no record references in the app.
 - In an inline row the editor is a thumbnail button with a remove badge, whatever its `Layout`; the row's Save waits for a running upload.
+
+## Icons
+
+`IconEditor` edits a string property that stores the name of a registered icon, so staff choose an icon instead of typing its name. Without `Icons` it offers every registered icon: a select-style button opens a searchable popover, which loads the icons from an endpoint the panel adds, once, on first open. With `Icons` it offers only those, rendered with the page. Show the same field with `IconDisplay` in columns and on the view page.
+
+```csharp
+using StellarAdmin.Resources.Displays;
+using StellarAdmin.Resources.Editors;
+
+fields.Add(amenity => amenity.Icon).UseEditor<IconEditor>(icon =>
+{
+    icon.Icons = ["wifi", "waves-ladder", "coffee", "square-parking", "dumbbell"];
+});
+fields.Add(category => category.Icon).UseEditor<IconEditor>(); // every registered icon
+
+columns.Add(amenity => amenity.Icon, column => column.UseDisplay<IconDisplay>());
+```
+
+- `Layout = IconEditorLayout.Auto` (the default) shows a list of up to 24 icons as tiles, one click each, and the searchable picker otherwise. `Picker` always uses the picker; `Inline` always uses tiles and requires `Icons`.
+- A resource fails at startup when `Icons` is empty, names an icon that isn't registered, or `Layout` is `Inline` without `Icons`.
+- A newly chosen value must be a registered icon, and one of `Icons` when set; otherwise the field shows "Choose an icon from the list." A stored value that isn't offered still shows and saves unchanged, so records with old names stay editable.
+- The icons endpoint uses the panel's authorization, is cached with a version in its URL and serves Brotli or gzip itself. It sends every registered icon, so register only the packs the app uses.
+- In an inline row the editor is a small button showing the icon, whatever its `Layout`, which opens the picker.
 
 ## Overriding and custom editors
 

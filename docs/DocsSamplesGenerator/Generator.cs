@@ -1,8 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using DocsSamples;
+using StellarAdmin.UI.Icons;
 
 namespace DocsSamplesGenerator;
 
@@ -146,6 +148,11 @@ internal sealed partial class Generator
         "assets"
     );
 
+    // The icon picker demos' icons endpoint, and the static copy of its response that the exported
+    // demos load instead, since they have no server.
+    private const string DemoIconsUrl = "/IconPicker?handler=Icons";
+    private const string ExportedIconsUrl = "/demo/ui/assets/icons.json";
+
     /// <summary>Static assets referenced by demos at fixed, known URLs.</summary>
     public static readonly string[] FixedStaticAssets =
     [
@@ -266,6 +273,30 @@ internal sealed partial class Generator
         );
     }
 
+    /// <summary>
+    /// Downloads the icon picker demos' icons as a static file. Only Lucide's are kept: the samples
+    /// also register the icon packs the docs preview, which would make the file several times larger.
+    /// </summary>
+    public async Task DownloadDemoIconsAsync(HttpClient client)
+    {
+        var response = await client.GetAsync(DemoIconsUrl);
+        response.EnsureSuccessStatusCode();
+
+        var lucide = new LucideIconPack().GetIcons().Keys.ToHashSet(StringComparer.Ordinal);
+        var json = JsonNode.Parse(await response.Content.ReadAsStringAsync())!;
+        var icons = json["icons"]!
+            .AsArray()
+            .Where(icon => lucide.Contains(icon!["name"]!.GetValue<string>()))
+            .Select(icon => icon!.DeepClone());
+
+        await File.WriteAllTextAsync(
+            Path.Combine(DownloadedAssetsOutputFolder, Path.GetFileName(ExportedIconsUrl)),
+            new JsonObject { ["icons"] = new JsonArray([.. icons]) }.ToJsonString(
+                new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }
+            )
+        );
+    }
+
     /// <summary>Downloads the theme variable manifest under its stable name, for the website's theme builder.</summary>
     public async Task DownloadThemeVariableManifestAsync(HttpClient client)
     {
@@ -373,6 +404,15 @@ internal sealed partial class Generator
         if (partialName.StartsWith("ImageUpload/", StringComparison.Ordinal))
         {
             content = content.Replace("<head>", "<head>\n" + DemoUploadScript);
+        }
+
+        if (partialName.StartsWith("IconPicker/", StringComparison.Ordinal))
+        {
+            content = content.Replace(
+                $"\"{DemoIconsUrl}\"",
+                $"\"{ExportedIconsUrl}\"",
+                StringComparison.Ordinal
+            );
         }
 
         if (partialName == "DataGrid/_Intro")
@@ -667,6 +707,11 @@ internal sealed partial class Generator
         new("Icon/_Intro"),
         new("Icon/_Size"),
         new("Icon/_StrokeWidth"),
+        new("IconPicker/_Disabled"),
+        new("IconPicker/_IconsUrl"),
+        new("IconPicker/_Inline"),
+        new("IconPicker/_Intro"),
+        new("IconPicker/_ModelBinding"),
         new("Image/_AspectRatio"),
         new("Image/_Figure"),
         new("Image/_Interaction"),

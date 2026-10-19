@@ -1,6 +1,6 @@
 # Icon display and editor
 
-Status: phase 1 committed (db35960); phase 2 implemented (2026-10-19), awaiting review. UX agreed in the prototype `sandbox/html/icon-field.html`, whose numbered questions are referenced below.
+Status: phases 1 and 2 committed (db35960, a755d96); phase 3 implemented (2026-10-19), awaiting review. UX agreed in the prototype `sandbox/html/icon-field.html`, whose numbered questions are referenced below.
 
 ## Goal
 
@@ -102,3 +102,10 @@ Each phase stops for Jerrie's review before the next starts.
 - Beyond the plan: `IconEditorOptionsValidator` fails startup for an empty `Icons` list, for `Inline` without `Icons`, and for listed names that aren't registered.
 - AdminPlayground: an Icon gallery under Field editors (every icon, required, 13 tiles, 32 in the picker, `Picker` and `Inline` with lists, stored unregistered values, read-only), and an in-memory Amenities resource under Commerce (grid, inline row, view page, create form). Neither is an EF entity, so no migration.
 - Verified: 10 new unit tests (`IconEditor.ResolveLayout`, `IconCatalog`) and 29 new integration tests (endpoint, display, editor, validation, startup validation), plus the icons URL in the anonymous-authorization test. Full suites pass: StellarAdmin.Tests 253, IntegrationTests 576, UI.Tests 633, UI.IntegrationTests 19, EF IntegrationTests 97. A headless Chromium check of the playground passed 23/23: layouts, endpoint load, pick and save, three rejected values with their errors, grid icons and dashed box, the inline row trigger, its popover, pick and row save, and the view page.
+
+## Phase 3 implementation (2026-10-19)
+
+- Website: `content/docs/ui/components/icon-picker.mdx` under Forms, with the five DocsSamples demos, the `icons-url` payload and a sample endpoint, accessibility, part classes and the attribute table, plus a `sel-icon-picker` row on the JavaScript page. The website has no admin panel docs, so the admin icon field is documented in the consumer skill instead of a website page.
+- Docs export: `DocsSamplesGenerator` exports the `IconPicker/` demos, downloads the sample endpoint's response to `public/demo/ui/assets/icons.json`, and rewrites `icons-url` in the exported demos to that file. Jerrie first chose the full set, but DocsSamples also registers the docs' preview packs (9,862 icons, 6.3 MB), so on 2026-10-19 he chose Lucide only: the exporter keeps `LucideIconPack`'s names, 1,838 icons, 790 KB raw, 90 KB gzip. `DocsStatic` gained the model binding demo's model. The picker demos have `min-h` wrappers (260, 440 and 210px) so their popovers fit the demo frame.
+- Consumer skills: the generated `stellar-admin-ui` reference `components/icon-picker.md` (examples manifest entry, hand-written composition section) and its index row. `stellar-admin`: an Icons section in `editors.md`, `IconDisplay` rows in `columns.md` and `fields.md`, the inline row editor in `inline-editing.md`, and a task-table row in `SKILL.md`.
+- Verified: `SkillsGenerator -- --check` reports no drift, and the skill validator passes (4 skills, 87 files). Website lint, type check and build pass after `pnpm examples:export`. The other website diffs are the new asset fingerprints and antiforgery tokens. A headless Chromium check of the built site shows the page with its five demos, the exported URL demo loading the 1,838 Lucide icons from `icons.json`, the popovers inside their frames, and the model binding demo's label.

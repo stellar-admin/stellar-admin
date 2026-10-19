@@ -87,6 +87,7 @@ In `StellarAdmin.Resources.Displays`; the same displays render index cells ([col
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
 | `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant`), the same for every value |
 | `ImageDisplay` | Never a default | The image as a figure, from a stored file name or URL: `ResolveUrl(...)`, `Size` (maximum height, default `Medium`, 15rem), `AspectRatio` (default `Original`), `Fit`, `Interaction` (default `Lightbox`); see [columns](columns.md#built-in-displays-in-cells) |
+| `IconDisplay` | Never a default | The icon a stored name refers to, with its name beside it; `ShowName = false` shows the name on hover only. A name that isn't a registered icon shows a dashed box |
 
 ## Display templates
 

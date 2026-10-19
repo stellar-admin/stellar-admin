@@ -94,7 +94,7 @@ The Add button inserts a new row filled from `UseFactory`, at the top of the gri
 
 ## Editors in cells
 
-A cell renders the field's editor through a grid editor template, resolved in `GridEditorTemplates/` instead of `EditorTemplates/`. These editors have one: text input (including number, email, URL and the other text types), select, checkbox, toggle, date, time and date-time inputs, segmented control, lookup sheet and image (a thumbnail button). Textarea, radio group, checkbox group, toggle group, slider, one-time code and multi-lookup sheet do not.
+A cell renders the field's editor through a grid editor template, resolved in `GridEditorTemplates/` instead of `EditorTemplates/`. These editors have one: text input (including number, email, URL and the other text types), select, checkbox, toggle, date, time and date-time inputs, segmented control, lookup sheet, image (a thumbnail button) and icon (a small button that opens the picker). Textarea, radio group, checkbox group, toggle group, slider, one-time code and multi-lookup sheet do not.
 
 A field whose editor has no grid template does not fail at startup: in development its cell shows an error naming the missing template, and in production the cell is empty. Saving binds only the fields whose cells rendered an editor, so it never overwrites a value; on create, a required field without an editor fails validation in the row message.
 

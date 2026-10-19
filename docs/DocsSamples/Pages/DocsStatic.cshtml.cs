@@ -50,6 +50,7 @@ public class DocsStatic : PageModel
             "Field/_RadioImplicit" => new RadioImplicitModel { InsuranceCover = "annual" },
             "Field/_SelectImplicit" => new SelectImplicitModel { TravelStyle = "beach" },
             "Field/_TextareaImplicit" => new TextareaImplicitModel(),
+            "IconPicker/_ModelBinding" => new IconPicker.Index.ModelBindingModel(),
             "Input/_ModelBinding" => new Pages.Input.Index.ModelBindingModel(),
             "Input/_InputTypesModelBinding" => new Pages.Input.Index.InputTypesModelBindingModel(),
             "Input/_Validation" => new Input.Index.ValidationModel(),
