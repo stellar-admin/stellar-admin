@@ -15,15 +15,21 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var jsonFileProvider = context.AdditionalTextsProvider.Where(file =>
-            Path.GetDirectoryName(file.Path) is { } directoryName
-            && directoryName.EndsWith(Path.Combine("Icons", "Definitions"))
-            && Path.GetExtension(file.Path) == ".json"
+            IsInFolder(file, Path.Combine("Icons", "Definitions"))
         );
 
+        // Keywords/{pack}.json beside the pack's file holds each icon's keywords
+        var keywordFilesProvider = context
+            .AdditionalTextsProvider.Where(file =>
+                IsInFolder(file, Path.Combine("Icons", "Definitions", "Keywords"))
+            )
+            .Collect();
+
         context.RegisterSourceOutput(
-            jsonFileProvider,
-            (sourceContext, provider) =>
+            jsonFileProvider.Combine(keywordFilesProvider),
+            (sourceContext, files) =>
             {
+                var (provider, keywordFiles) = files;
                 var sourceText = provider.GetText();
                 if (sourceText == null || sourceText.Lines.Count == 0)
                 {
@@ -37,6 +43,18 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
                     var data = JsonSerializer.Deserialize<Dictionary<string, List<SvgShape>>>(
                         sourceText.ToString()
                     )!;
+
+                    var keywordsText = keywordFiles
+                        .FirstOrDefault(file =>
+                            Path.GetFileNameWithoutExtension(file.Path) == iconPackName
+                        )
+                        ?.GetText()
+                        ?.ToString();
+                    var keywords = string.IsNullOrWhiteSpace(keywordsText)
+                        ? new Dictionary<string, List<string>>()
+                        : JsonSerializer.Deserialize<Dictionary<string, List<string>>>(
+                            keywordsText!
+                        )!;
 
                     var groupedByAlphabet = data.GroupBy(kvp => kvp.Key.Substring(0, 1));
                     foreach (var grouping in groupedByAlphabet)
@@ -52,7 +70,7 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
                         );
                     }
 
-                    var iconDefinitionsSource = WriteIconDefinitions(iconPackName, data);
+                    var iconDefinitionsSource = WriteIconDefinitions(iconPackName, data, keywords);
                     sourceContext.AddSource(
                         $"{iconPackName}Icons.g.cs",
                         iconDefinitionsSource.ToString()
@@ -79,6 +97,14 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
             }
         );
     }
+
+    private static bool IsInFolder(AdditionalText file, string folder) =>
+        Path.GetDirectoryName(file.Path) is { } directoryName
+        && directoryName.EndsWith(folder)
+        && Path.GetExtension(file.Path) == ".json";
+
+    private static string ToLiteral(string value) =>
+        "\"" + value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
 
     private string IconNameToPascalCase(string name)
     {
@@ -142,7 +168,8 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
 
     private StringBuilder WriteIconDefinitions(
         string iconPackName,
-        Dictionary<string, List<SvgShape>> icons
+        Dictionary<string, List<SvgShape>> icons,
+        Dictionary<string, List<string>> keywords
     )
     {
         var generatedSource = new StringBuilder();
@@ -164,8 +191,12 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
             var declarationClassName =
                 $"{iconPackName}_{iconKvp.Key.Substring(0, 1).ToUpper()}_Icons";
 
+            var iconKeywords = keywords.TryGetValue(iconKvp.Key, out var words)
+                ? $", [{string.Join(", ", words.Select(ToLiteral))}]"
+                : string.Empty;
+
             generatedSource.AppendLine(
-                $"        [\"{iconKvp.Key}\"] = new IconDefinition(SvgAttributes, {declarationClassName}.{IconNameToPascalCase(iconKvp.Key)}),"
+                $"        [\"{iconKvp.Key}\"] = new IconDefinition(SvgAttributes, {declarationClassName}.{IconNameToPascalCase(iconKvp.Key)}{iconKeywords}),"
             );
         }
 

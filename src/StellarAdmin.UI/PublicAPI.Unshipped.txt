@@ -1232,6 +1232,8 @@ StellarAdmin.UI.IconPickerTagHelper.Value.set -> void
 StellarAdmin.UI.Icons.IconDefinition
 StellarAdmin.UI.Icons.IconDefinition.Attributes.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string!>!
 StellarAdmin.UI.Icons.IconDefinition.IconDefinition(System.Collections.Generic.IReadOnlyDictionary<string!, string!>! attributes, System.Collections.Generic.IReadOnlyList<StellarAdmin.UI.Icons.SvgShape!>! shapes) -> void
+StellarAdmin.UI.Icons.IconDefinition.IconDefinition(System.Collections.Generic.IReadOnlyDictionary<string!, string!>! attributes, System.Collections.Generic.IReadOnlyList<StellarAdmin.UI.Icons.SvgShape!>! shapes, System.Collections.Generic.IReadOnlyList<string!>! keywords) -> void
+StellarAdmin.UI.Icons.IconDefinition.Keywords.get -> System.Collections.Generic.IReadOnlyList<string!>!
 StellarAdmin.UI.Icons.IconDefinition.Shapes.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.UI.Icons.SvgShape!>!
 StellarAdmin.UI.Icons.IconOptions
 StellarAdmin.UI.Icons.IconOptions.AddIcon(string! name, StellarAdmin.UI.Icons.IconDefinition! iconDefinition) -> void

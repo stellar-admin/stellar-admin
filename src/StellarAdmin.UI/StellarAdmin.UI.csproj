@@ -27,6 +27,7 @@
     <AdditionalFiles Include="Icons/Definitions/Lucide.json" />
     <AdditionalFiles Include="Icons/Definitions/TablerFilled.json" />
     <AdditionalFiles Include="Icons/Definitions/TablerOutline.json" />
+    <AdditionalFiles Include="Icons/Definitions/Keywords/*.json" />
   </ItemGroup>
 
   <ItemGroup>

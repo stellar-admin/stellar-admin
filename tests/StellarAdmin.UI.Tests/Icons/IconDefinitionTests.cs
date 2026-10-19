@@ -39,4 +39,44 @@ public class IconDefinitionTests
         // Assert
         await Assert.That(isReadOnly).IsTrue();
     }
+
+    [Test]
+    public async Task Constructor_WithoutKeywords_HasNoKeywords()
+    {
+        // Arrange
+        var attributes = new Dictionary<string, string>();
+
+        // Act
+        var sut = new IconDefinition(attributes, []);
+
+        // Assert
+        await Assert.That(sut.Keywords).IsEmpty();
+    }
+
+    [Test]
+    public async Task Constructor_WhenKeywordsChangeAfterwards_KeepsOriginalKeywords()
+    {
+        // Arrange
+        var keywords = new List<string> { "wireless", "internet" };
+        var sut = new IconDefinition(new Dictionary<string, string>(), [], keywords);
+
+        // Act
+        keywords.Clear();
+
+        // Assert
+        await Assert.That(sut.Keywords).IsEquivalentTo(["wireless", "internet"]);
+    }
+
+    [Test]
+    public async Task Constructor_WithNullKeywords_Throws()
+    {
+        // Arrange
+        var attributes = new Dictionary<string, string>();
+
+        // Act
+        var construct = () => new IconDefinition(attributes, [], null!);
+
+        // Assert
+        await Assert.That(construct).Throws<ArgumentNullException>();
+    }
 }
