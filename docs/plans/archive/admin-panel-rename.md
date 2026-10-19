@@ -1,6 +1,6 @@
 # Package rename: StellarAdmin and StellarAdmin.UI
 
-Status: in progress (phases 1–7 done 2026-10-14; follow-ups wait for the first release).
+Status: completed (phases 1–7 done 2026-10-14; released, closed 2026-10-19).
 
 "Dashboard" suggests observability, while the package is a CRUD admin panel. Instead of renaming it to AdminPanel (the first draft of this plan), the panel takes the brand name: the `StellarAdmin` package is the admin panel, and the component library becomes `StellarAdmin.UI`, absorbing `StellarAdmin.Core`. Applications register the panel with a single `AddStellarAdmin` call, and component-only applications call `AddStellarAdminUI`.
 

@@ -8,7 +8,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 
 | Record | Status | Current assessment |
 | --- | --- | --- |
-| [admin-panel-rename](admin-panel-rename.md) | in progress (phases 1–7 done) | Rename the packages before the first release: the panel becomes `StellarAdmin` (from Dashboard) and Core and TagHelpers merge into `StellarAdmin.UI`. |
 | [home-setup-checklist](home-setup-checklist.md) | in progress (website docs outstanding) | A Development-only setup checklist on the panel's home page (resources, protection, branding, user menu, theme, sidebar), detected from the configuration at request time, with `ConfigureHomePage` to turn it off. Prototype in `sandbox/html/home-setup.html`. |
 | [admin-panel-backlog](admin-panel-backlog.md) | backlog | Admin panel features comparable frameworks offer and StellarAdmin lacks (custom and bulk actions, filters, form tabs, dashboards, file uploads and others). Unscheduled; an item becomes a plan when picked up. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
@@ -28,6 +27,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 
 | Record | Current status |
 | --- | --- |
+| [admin-panel-rename](archive/admin-panel-rename.md) | completed (2026-10-19); the panel package became `StellarAdmin` (from Dashboard) and Core and TagHelpers merged into `StellarAdmin.UI`, shipped in the releases since. |
 | [admin-panel-skills](archive/admin-panel-skills.md) | completed; installable `stellar-admin` and `stellar-admin-setup` consumer skills organised by task with one reference per topic, measured against six evaluation tasks in `build/skill-evals/admin-panel`. With the skills, Sonnet, Haiku and Opus passed every check; Opus used about half the tool calls and time of its baseline. |
 | [aurora-theme](archive/aurora-theme.md) | completed |
 | [carousel](oss/archive/carousel.md) | completed |
