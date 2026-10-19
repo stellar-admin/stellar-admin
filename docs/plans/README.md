@@ -8,7 +8,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 
 | Record | Status | Current assessment |
 | --- | --- | --- |
-| [home-setup-checklist](home-setup-checklist.md) | in progress (website docs outstanding) | A Development-only setup checklist on the panel's home page (resources, protection, branding, user menu, theme, sidebar), detected from the configuration at request time, with `ConfigureHomePage` to turn it off. Prototype in `sandbox/html/home-setup.html`. |
 | [admin-panel-backlog](admin-panel-backlog.md) | backlog | Admin panel features comparable frameworks offer and StellarAdmin lacks (custom and bulk actions, filters, form tabs, dashboards, file uploads and others). Unscheduled; an item becomes a plan when picked up. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [row-detail-expand-when](row-detail-expand-when.md) | deferred | Per-row expand rules for row details. Deferred until an application needs them; the plan records the smallest route (an admin panel `ExpandWhen` bool backed by a grid marker element) and the reviewed reason-tooltip variant. Prototype in `sandbox/html/row-details-expand-when.html`. |
@@ -53,6 +52,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [generic-resources-follow-ups](archive/generic-resources-follow-ups.md) | superseded; most items settled by later work, items 2 and 5 not re-checked |
 | [grid-field-expression-binding](archive/grid-field-expression-binding.md) | completed |
 | [grid-nested-field-binding](archive/grid-nested-field-binding.md) | completed |
+| [home-setup-checklist](archive/home-setup-checklist.md) | completed (2026-10-19); a Development-only setup checklist on the panel's home page, detected from the configuration at request time, configured with `ConfigureHomePage`. Website docs belong to the wider admin panel docs work. |
 | [ice-theme](archive/ice-theme.md) | completed |
 | [icon-keywords](archive/icon-keywords.md) | completed (2026-10-19); the Lucide and Tabler packs pinned to 1.59.0 and 3.49.0 by `util/icon-packs/update.mjs`, the upstream keywords generated into `IconDefinition.Keywords`, and the icon picker searching them for child icons (`data-icon-keywords`) and the admin icons endpoint. |
 | [icon-picker-editor](archive/icon-picker-editor.md) | completed (2026-10-19); a public `sa-icon-picker` (popover grid or inline tiles, child `sa-icon` elements or an `icons-url` with a documented payload), and `IconDisplay` and `IconEditor` for icon-name fields in the admin panel. |

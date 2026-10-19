@@ -1,6 +1,6 @@
 # Home page setup checklist
 
-Status: phases 1 and 2 done, and the skill docs of phase 3 (2026-10-18); the website docs wait for the admin panel docs batch. Approved design: `sandbox/html/home-setup.html` (option A only; the prototype stays as the record and is not rewritten after extraction).
+Status: completed (2026-10-19); phases 1 and 2 and the skill docs of phase 3 done (2026-10-18). The website docs moved to the wider admin panel docs work. Approved design: `sandbox/html/home-setup.html` (option A only; the prototype stays as the record and is not rewritten after extraction).
 
 ## Goal
 
@@ -15,7 +15,7 @@ builder.Services.AddStellarAdmin(admin =>
 });
 ```
 
-- `StellarAdminBuilder.ConfigureHomePage(Action<HomePageBuilder>)`, following [options builders](../conventions/options-builders.md): a `Configure*` method for a feature that always exists, a property for the scalar.
+- `StellarAdminBuilder.ConfigureHomePage(Action<HomePageBuilder>)`, following [options builders](../../conventions/options-builders.md): a `Configure*` method for a feature that always exists, a property for the scalar.
 - `HomePageBuilder.ShowSetupChecklist` (`bool`, default `true`). The checklist only ever shows in Development; the property can't force it on in other environments.
 - New internal `HomePageOptions` on `StellarAdminOptions`. Add both public members to `PublicAPI.Unshipped.txt`, with brief XML docs.
 
