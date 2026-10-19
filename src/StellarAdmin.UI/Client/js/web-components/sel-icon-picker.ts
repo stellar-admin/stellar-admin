@@ -204,7 +204,10 @@ export class IconPicker extends LitElement {
         (svg) => ({
           name: svg.dataset.iconName!,
           svg: document.importNode(svg, true),
-          keywords: [],
+          keywords: (svg.dataset.iconKeywords ?? "")
+            .split(",")
+            .filter(Boolean)
+            .map((keyword) => keyword.toLowerCase()),
         }),
       );
     }

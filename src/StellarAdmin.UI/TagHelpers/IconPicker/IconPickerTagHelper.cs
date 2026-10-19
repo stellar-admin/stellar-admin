@@ -180,6 +180,14 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         {
             svg.Attributes.SetAttribute("aria-hidden", "true");
             svg.Attributes.SetAttribute("data-icon-name", name);
+            if (
+                effectiveLayout == IconPickerLayout.Picker
+                && _iconOptions.TryGetIcon(name, out var definition)
+                && FormatKeywords(definition.Keywords) is { } keywords
+            )
+            {
+                svg.Attributes.SetAttribute("data-icon-keywords", keywords);
+            }
         }
 
         var value = For?.Model?.ToString() ?? Value;
@@ -232,6 +240,17 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         }
 
         return FieldLayout.Stacked;
+    }
+
+    // The script splits the list on commas, so a comma inside a keyword becomes a space
+    private static string? FormatKeywords(IReadOnlyList<string> keywords)
+    {
+        var formatted = keywords
+            .Select(keyword => keyword.Replace(',', ' ').Trim())
+            .Where(keyword => keyword.Length > 0)
+            .ToList();
+
+        return formatted.Count > 0 ? string.Join(',', formatted) : null;
     }
 
     private TagHelperOutput RenderIcon(TagHelperContext context, string? name, string? className)

@@ -9,7 +9,7 @@ namespace StellarAdmin.Tests.Infrastructure.Icons;
 public class IconCatalogTests
 {
     [Test]
-    public async Task Json_ListsIconsByNameWithTheirMarkup()
+    public async Task Json_ListsIconsByNameWithTheirMarkupAndKeywords()
     {
         // Arrange
         var sut = new IconCatalog(Options.Create(CreateIcons()));
@@ -21,7 +21,7 @@ public class IconCatalogTests
         await Assert
             .That(json)
             .IsEqualTo(
-                """{"icons":[{"name":"compass","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>"},{"name":"mountain","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" data-label=\"a &amp; b\"><path d=\"m8 3 4 8 5-5 5 15H2L8 3z\"/></svg>"}]}"""
+                """{"icons":[{"name":"compass","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>","keywords":["navigation","direction"]},{"name":"mountain","svg":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" data-label=\"a &amp; b\"><path d=\"m8 3 4 8 5-5 5 15H2L8 3z\"/></svg>"}]}"""
             );
     }
 
@@ -111,7 +111,8 @@ public class IconCatalogTests
                             ["r"] = "10",
                         }
                     ),
-                ]
+                ],
+                ["navigation", "direction"]
             )
         );
 

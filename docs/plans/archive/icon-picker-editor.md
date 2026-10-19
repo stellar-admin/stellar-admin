@@ -1,6 +1,6 @@
 # Icon display and editor
 
-Status: phases 1 and 2 committed (db35960, a755d96); phase 3 implemented (2026-10-19), awaiting review. UX agreed in the prototype `sandbox/html/icon-field.html`, whose numbered questions are referenced below.
+Status: completed (2026-10-19); phases 1–3 committed (db35960, a755d96, 0135100). UX agreed in the prototype `sandbox/html/icon-field.html`, whose numbered questions are referenced below.
 
 ## Goal
 

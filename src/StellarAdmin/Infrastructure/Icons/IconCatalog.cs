@@ -56,6 +56,17 @@ internal sealed class IconCatalog
                 writer.WriteStartObject();
                 writer.WriteString("name", name);
                 writer.WriteString("svg", ToSvg(icon!));
+                if (icon!.Keywords.Count > 0)
+                {
+                    writer.WriteStartArray("keywords");
+                    foreach (var keyword in icon.Keywords)
+                    {
+                        writer.WriteStringValue(keyword);
+                    }
+
+                    writer.WriteEndArray();
+                }
+
                 writer.WriteEndObject();
             }
 

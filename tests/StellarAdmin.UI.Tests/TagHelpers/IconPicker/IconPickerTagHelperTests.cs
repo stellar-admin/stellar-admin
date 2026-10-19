@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+using StellarAdmin.UI.Icons;
 using StellarAdmin.UI.Tests.Support;
 
 namespace StellarAdmin.UI.Tests.TagHelpers.IconPicker;
@@ -46,6 +48,76 @@ public class IconPickerTagHelperTests
             .Select(svg => svg.GetAttribute("data-icon-name"))
             .ToList();
         await Assert.That(names).IsEquivalentTo(["wifi", "coffee"]);
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithChildIcons_GivesEachIconItsKeywords()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut, Icons(context, "wifi"));
+
+        // Assert
+        var template =
+            html.QuerySelector("template[data-slot=icon-picker-icons]") as IHtmlTemplateElement;
+        await Assert
+            .That(template?.Content.QuerySelector("svg")?.GetAttribute("data-icon-keywords"))
+            .IsEqualTo("connection,signal,wireless");
+    }
+
+    [Test]
+    public async Task ProcessAsync_KeywordsWithCommasOrBlanks_ReplacesCommasAndSkipsBlanks()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var iconOptions = new IconOptions();
+        iconOptions.AddIcon("pool", CreateIcon(["swimming, pool", " ", "1,000"]));
+        iconOptions.AddIcon("cabin", CreateIcon([]));
+        var sut = new IconPickerTagHelper(context.Generator, Options.Create(iconOptions))
+        {
+            ViewContext = context.ViewContext,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            sut,
+            async parent =>
+                await TagHelperRenderer.RenderChildAsync(
+                    new IconTagHelper(Options.Create(iconOptions)) { Name = "pool" },
+                    parent
+                )
+                + await TagHelperRenderer.RenderChildAsync(
+                    new IconTagHelper(Options.Create(iconOptions)) { Name = "cabin" },
+                    parent
+                )
+        );
+
+        // Assert
+        var template =
+            html.QuerySelector("template[data-slot=icon-picker-icons]") as IHtmlTemplateElement;
+        var icons = template?.Content.QuerySelectorAll("svg");
+        await Assert
+            .That(icons?[0].GetAttribute("data-icon-keywords"))
+            .IsEqualTo("swimming  pool,1 000");
+        await Assert.That(icons?[1].HasAttribute("data-icon-keywords")).IsFalse();
+    }
+
+    [Test]
+    public async Task ProcessAsync_Inline_RendersNoKeywords()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Layout = IconPickerLayout.Inline;
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut, Icons(context, "wifi"));
+
+        // Assert
+        await Assert.That(html.QuerySelector("[data-icon-keywords]")).IsNull();
     }
 
     [Test]
@@ -373,6 +445,13 @@ public class IconPickerTagHelperTests
             )
             .IsTrue();
     }
+
+    private static IconDefinition CreateIcon(IReadOnlyList<string> keywords) =>
+        new(
+            new Dictionary<string, string> { ["viewBox"] = "0 0 24 24" },
+            [new SvgShape("path", new Dictionary<string, string> { ["d"] = "M2 12h20" })],
+            keywords
+        );
 
     private static IconPickerTagHelper CreateSut(RenderingContext context) =>
         new(context.Generator, context.Icons) { ViewContext = context.ViewContext };

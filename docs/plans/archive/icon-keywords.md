@@ -1,6 +1,6 @@
 # Icon keywords and icon pack refresh
 
-Status: approved (2026-10-19); phase 1 implemented, awaiting review. Follows [icon-picker-editor](icon-picker-editor.md), whose picker already searches `keywords` from `icons-url` but gets none from StellarAdmin's own packs.
+Status: completed (2026-10-19); both phases committed. Follows [icon-picker-editor](icon-picker-editor.md), whose picker already searches `keywords` from `icons-url` but gets none from StellarAdmin's own packs.
 
 ## Goal
 
@@ -18,7 +18,7 @@ Searching the icon picker for "pool" or "internet" should find `waves-ladder` an
 1. **Pinned refresh.** A small script, `util/icon-packs/update.mjs`, downloads pinned versions (Lucide 1.59.0, Tabler 3.49.0) of the icon nodes and the keyword files. It writes `Definitions/Lucide.json`, `TablerOutline.json` and `TablerFilled.json` as now, plus `Lucide.keywords.json` and `Tabler.keywords.json` holding just `{ "name": ["tag", …] }`. The readme records the versions and the command.
 2. **Generator.** `IconsFromJsonDefinitionGenerator` reads the matching keywords file and passes each icon's keywords to its definition. An icon without keywords gets an empty list.
 3. **Public API (StellarAdmin.UI):** `IconDefinition` gains `Keywords` and a constructor overload. The existing constructor stays, with no keywords.
-4. **Picker.** A child `<sa-icon>` inside `sa-icon-picker` carries its registered keywords (`data-icon-keywords`), so search on a curated list matches keywords too. The script already matches keywords from `icons-url`.
+4. **Picker.** A child `<sa-icon>` inside `sa-icon-picker` carries its registered keywords (`data-icon-keywords`, comma-separated; decided 2026-10-19), so search on a curated list matches keywords too. The script already matches keywords from `icons-url`.
 5. **Admin endpoint.** `IconCatalog` writes `keywords` for icons that have them, as the documented payload allows. Measured estimate for Lucide: 90 KB → about 135 KB gzip. The version hash changes with the keywords, so cached copies refresh.
 6. **Docs.** The DocsSamples icons endpoint and the exported `icons.json` include keywords. Update the icon picker page (search matches the packs' keywords), the icons page and the UI skill's icons reference (`Keywords`, the pack versions), and the admin skill's line that search matches names only.
 7. **Tests.** Generator output for an icon with and without keywords, `IconDefinition` copying the list, the picker's child keywords, the endpoint payload, and a check that every semantic mapping and every literal icon name in the samples still resolves after the refresh.
@@ -56,3 +56,11 @@ public sealed class IconDefinition
 - Size: `StellarAdmin.UI.dll` (Debug) grows from 4.7 MB to 5.7 MB with the keyword strings.
 - Packaging fix (separate commit): the Razor SDK treated the definition JSON files as content, so the package carried them twice (`content/` and `contentFiles/`, about 9 MB uncompressed) and consumers got them as content. `StellarAdmin.UI.csproj` now removes `Icons/Definitions/**` from `Content`; they stay generator inputs. The package has no JSON definitions and drops from 2.6 MB to 1.3 MB, the build output has no `Icons/` folder, and the UI unit suite still passes (641).
 - Verified: 8 new unit tests (`IconDefinition` keywords; upstream keywords in each pack, including a numeric Tabler tag). Full suites pass: StellarAdmin.UI.Tests 641, StellarAdmin.Tests 253, IntegrationTests 576, UI.IntegrationTests 19, EF IntegrationTests 97. The solution builds without errors, and its warnings are pre-existing.
+
+## Phase 2 implementation (2026-10-19)
+
+- Picker: in the picker layout, each child icon's `<svg>` in the template gets `data-icon-keywords`, the registered keywords joined with commas. A comma inside a keyword becomes a space, keywords are trimmed, blank ones are skipped, and an icon without keywords gets no attribute. The inline layout has no search and renders none. `sel-icon-picker` splits the attribute on commas and lowercases the keywords, so child icons and `icons-url` share one search.
+- Admin endpoint: `IconCatalog` writes `keywords` for each icon that has any. Lucide's payload grows from 790 KB to 995 KB raw and from 90 KB to 146 KB gzip (the plan estimated 135 KB).
+- DocsSamples: the icons endpoint returns `keywords`, so the exported `public/demo/ui/assets/icons.json` has them.
+- Docs: the website's icon picker page (search matches the icons' keywords, the endpoint sample, the payload size) and icons page (keywords as the third constructor argument, `Keywords` in the `IconDefinition` table). The UI skill's icons reference gets the pack versions, keywords and the `Keywords` row, and its icon picker structure section says where keywords come from. The admin skill's `IconEditor` section says search matches names and keywords.
+- Verified: 3 new picker tests (child keywords, the comma and blank gate, none inline) and the `IconCatalog` payload test with keywords. StellarAdmin.UI.Tests 644, StellarAdmin.Tests 253, IntegrationTests 576 and UI.IntegrationTests 19 pass. A headless check on DocsSamples (5206) found `waves-ladder` for "pool" and `wifi` for "wireless" among child icons, `wifi` for "wireless" from `icons-url`, and name matches still ranked first. SkillsGenerator `--check` reports no drift, the skill validator passes, and the website lint, `types:check` and build pass. The website export also changed every demo's script URL, because the bundle's hash changed.

@@ -197,7 +197,7 @@ columns.Add(destination => destination.Photo, column => column.UseDisplay<ImageD
 
 ## Icons
 
-`IconEditor` edits a string property that stores the name of a registered icon, so staff choose an icon instead of typing its name. Without `Icons` it offers every registered icon: a select-style button opens a searchable popover, which loads the icons from an endpoint the panel adds, once, on first open. With `Icons` it offers only those, rendered with the page. Show the same field with `IconDisplay` in columns and on the view page.
+`IconEditor` edits a string property that stores the name of a registered icon, so staff choose an icon instead of typing its name. Without `Icons` it offers every registered icon: a select-style button opens a popover that searches icon names and keywords, and loads the icons from an endpoint the panel adds, once, on first open. With `Icons` it offers only those, rendered with the page. Show the same field with `IconDisplay` in columns and on the view page.
 
 ```csharp
 using StellarAdmin.Resources.Displays;

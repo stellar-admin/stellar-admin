@@ -8,7 +8,7 @@ StellarAdmin ships the [Lucide](https://lucide.dev/) icon set. It is registered 
 <sa-icon name="plane"/>
 ```
 
-- Names are the kebab-case Lucide names (`circle-arrow-left`, `layout-dashboard`, `map-pinned`), matched **case-insensitively**.
+- Names are the kebab-case Lucide names (`circle-arrow-left`, `layout-dashboard`, `map-pinned`), matched **case-insensitively**. The bundled packs are Lucide 1.59.0 and Tabler Icons 3.49.0, so an icon newer than those isn't available.
 - When no icon matches, `<sa-icon>` renders a placeholder "not found" icon rather than nothing, so a typo is visible on the page rather than silent.
 - Icons render as inline `<svg>` using `currentColor`, so they take the color and size of their surroundings. Size and color them with `class` (`size-5`, `text-muted-foreground`), not with attributes. `stroke-width` passes through to the `<svg>`.
 
@@ -22,7 +22,7 @@ Icons compose naturally inside other components:
 
 Custom icons are registered on the builder returned by `AddStellarAdminUI()` (in an admin panel app, inside `admin.ConfigureUI(ui => ...)`), then used exactly like the built-in ones. An icon is an `IconDefinition`: the attributes for the `<svg>` element plus the ordered list of shapes (`path`, `circle`, `rect`, …) drawn inside it.
 
-Draw on the same 24 x 24 grid with a 2 px `currentColor` stroke to stay visually consistent with Lucide. Any attribute you put on `<sa-icon>` (such as `class` or `stroke-width`) takes precedence over the definition's attributes.
+Draw on the same 24 x 24 grid with a 2 px `currentColor` stroke to stay visually consistent with Lucide. Any attribute you put on `<sa-icon>` (such as `class` or `stroke-width`) takes precedence over the definition's attributes. An optional third constructor argument gives keywords, such as `["luggage", "baggage"]`, which an icon picker's search matches besides the name; the built-in Lucide and Tabler icons have their projects' keywords.
 
 ### A single icon — `AddIcon`
 
@@ -204,6 +204,7 @@ Supply glyphs compatible with component styling: the accordion indicator points 
 | `IIconPack.GetIcons()` | Returns the icons in the pack, keyed by name (`IReadOnlyDictionary<string, IconDefinition>`). |
 | `IconDefinition.Attributes` | Attributes rendered on the `<svg>` element (`viewBox`, `fill`, `stroke`, …). Attributes on `<sa-icon>` take precedence. |
 | `IconDefinition.Shapes` | The shapes rendered inside the `<svg>`, in order (`IReadOnlyList<SvgShape>`). |
+| `IconDefinition.Keywords` | Words an icon picker's search matches besides the name (`IReadOnlyList<string>`); empty unless given. |
 | `SvgShape.Name` | The SVG element name — `path`, `circle`, `rect`, `line`, `polyline`. |
 | `SvgShape.Attributes` | Attributes on the shape element — `d`, `cx`, `cy`, `r` (`IReadOnlyDictionary<string, string>`). |
 

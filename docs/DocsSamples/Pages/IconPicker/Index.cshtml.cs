@@ -25,7 +25,12 @@ public class Index : PageModel
             {
                 icons.TryGetIcon(name, out var icon);
 
-                return new { name, svg = ToSvg(icon!) };
+                return new
+                {
+                    name,
+                    svg = ToSvg(icon!),
+                    keywords = icon!.Keywords,
+                };
             });
 
         return new JsonResult(new { icons = payload });
