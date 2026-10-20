@@ -49,7 +49,17 @@ internal static class ProductResourceRegistration
                             field.UseEditor<LookupSheetEditor>(UseCategories);
                         }
                     );
-                    fields.Add(product => product.Tags).UseEditor<MultiLookupSheetEditor>(UseTags);
+                    fields
+                        .Add(product => product.Tags)
+                        .UseEditor<CheckboxGroupEditor>(checkboxes =>
+                        {
+                            checkboxes.Appearance = CheckboxGroupAppearance.Cards;
+                            checkboxes.Columns(2);
+                            checkboxes.UseItems<ApplicationDbContext, Tag, int>(
+                                tag => tag.Id,
+                                tag => tag.Name
+                            );
+                        });
                 })
             );
             resource.AllowView(view =>
