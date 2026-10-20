@@ -16,7 +16,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [save-and-add-another](save-and-add-another.md) | proposed | Add several records in a row from the create page and inline create. From the Voyager Travel session feedback. |
 | [grid-keyboard-navigation](grid-keyboard-navigation.md) | proposed | Keyboard navigation and shortcuts in the index grid. From the Voyager Travel session feedback. |
 | [rich-text-editor](rich-text-editor.md) | proposed | An editor for formatted long text. From the Voyager Travel session feedback. |
-| [checklist-component](checklist-component.md) | proposed | An `sa-checklist` component extracted from the home page's setup checklist. |
 | [display-defaults](display-defaults.md) | proposed | App-level configuration of the default displays, and display handlers in index columns. Carried over from info-lists decisions 90 and 129. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
@@ -26,6 +25,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 
 | Record | Current status |
 | --- | --- |
+| [checklist-component](archive/checklist-component.md) | completed (2026-10-20); `sa-checklist` with `sa-checklist-item` and `sa-checklist-item-link` rows, `Todo`, `InProgress` and `Done` statuses, custom status, actions, size and divider options, used by the admin home page's setup checklist, with samples, website docs and the consumer reference. |
 | [timeline-component](archive/timeline-component.md) | completed (2026-10-20); `sa-timeline` for lists of events, with media, time placement, marker and media style options, per-item rails and `current` progress, with samples, website docs and the consumer reference. |
 | [admin-panel-rename](archive/admin-panel-rename.md) | completed (2026-10-19); the panel package became `StellarAdmin` (from Dashboard) and Core and TagHelpers merged into `StellarAdmin.UI`, shipped in the releases since. |
 | [admin-panel-skills](archive/admin-panel-skills.md) | completed; installable `stellar-admin` and `stellar-admin-setup` consumer skills organised by task with one reference per topic, measured against six evaluation tasks in `build/skill-evals/admin-panel`. With the skills, Sonnet, Haiku and Opus passed every check; Opus used about half the tool calls and time of its baseline. |

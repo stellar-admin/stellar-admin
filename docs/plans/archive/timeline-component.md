@@ -2,7 +2,7 @@
 
 Status: completed (2026-10-20).
 
-An `sa-timeline` component in `StellarAdmin.UI` for a list of events (booking history, activity feeds, audit logs, itineraries), separate from the checklist, as decided in the [checklist plan](../checklist-component.md).
+An `sa-timeline` component in `StellarAdmin.UI` for a list of events (booking history, activity feeds, audit logs, itineraries), separate from the checklist, as decided in the [checklist plan](checklist-component.md).
 
 ## API decisions (2026-10-20)
 
