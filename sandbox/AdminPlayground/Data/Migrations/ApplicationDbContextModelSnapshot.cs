@@ -17,7 +17,7 @@ namespace AdminPlayground.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
 
-            modelBuilder.Entity("DashboardPlayground.Data.ApplicationRole", b =>
+            modelBuilder.Entity("AdminPlayground.Data.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -47,7 +47,7 @@ namespace AdminPlayground.Data.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("DashboardPlayground.Data.ApplicationUser", b =>
+            modelBuilder.Entity("AdminPlayground.Data.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -134,7 +134,7 @@ namespace AdminPlayground.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("DashboardPlayground.Data.Category", b =>
+            modelBuilder.Entity("AdminPlayground.Data.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -149,7 +149,7 @@ namespace AdminPlayground.Data.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("DashboardPlayground.Data.Department", b =>
+            modelBuilder.Entity("AdminPlayground.Data.Department", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -165,7 +165,7 @@ namespace AdminPlayground.Data.Migrations
                     b.ToTable("Departments");
                 });
 
-            modelBuilder.Entity("DashboardPlayground.Data.Product", b =>
+            modelBuilder.Entity("AdminPlayground.Data.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -187,6 +187,47 @@ namespace AdminPlayground.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("AdminPlayground.Data.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Tags");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "New"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Bestseller"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Clearance"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Eco-friendly"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -295,22 +336,37 @@ namespace AdminPlayground.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DashboardPlayground.Data.ApplicationUser", b =>
+            modelBuilder.Entity("ProductTag", b =>
                 {
-                    b.HasOne("DashboardPlayground.Data.Department", "Department")
+                    b.Property<int>("ProductsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TagsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ProductsId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("ProductTag");
+                });
+
+            modelBuilder.Entity("AdminPlayground.Data.ApplicationUser", b =>
+                {
+                    b.HasOne("AdminPlayground.Data.Department", "Department")
                         .WithMany("Users")
                         .HasForeignKey("DepartmentId");
 
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("DashboardPlayground.Data.Product", b =>
+            modelBuilder.Entity("AdminPlayground.Data.Product", b =>
                 {
-                    b.HasOne("DashboardPlayground.Data.Category", "Category")
+                    b.HasOne("AdminPlayground.Data.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
-                    b.OwnsOne("DashboardPlayground.Data.ProductDetails", "Details", b1 =>
+                    b.OwnsOne("AdminPlayground.Data.ProductDetails", "Details", b1 =>
                         {
                             b1.Property<int>("ProductId")
                                 .HasColumnType("INTEGER");
@@ -336,7 +392,7 @@ namespace AdminPlayground.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("DashboardPlayground.Data.ApplicationRole", null)
+                    b.HasOne("AdminPlayground.Data.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -345,7 +401,7 @@ namespace AdminPlayground.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("DashboardPlayground.Data.ApplicationUser", null)
+                    b.HasOne("AdminPlayground.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -354,7 +410,7 @@ namespace AdminPlayground.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("DashboardPlayground.Data.ApplicationUser", null)
+                    b.HasOne("AdminPlayground.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -363,13 +419,13 @@ namespace AdminPlayground.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("DashboardPlayground.Data.ApplicationRole", null)
+                    b.HasOne("AdminPlayground.Data.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DashboardPlayground.Data.ApplicationUser", null)
+                    b.HasOne("AdminPlayground.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -378,14 +434,29 @@ namespace AdminPlayground.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("DashboardPlayground.Data.ApplicationUser", null)
+                    b.HasOne("AdminPlayground.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DashboardPlayground.Data.Department", b =>
+            modelBuilder.Entity("ProductTag", b =>
+                {
+                    b.HasOne("AdminPlayground.Data.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AdminPlayground.Data.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AdminPlayground.Data.Department", b =>
                 {
                     b.Navigation("Users");
                 });

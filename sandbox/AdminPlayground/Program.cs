@@ -8,6 +8,7 @@ using AdminPlayground.Resources.FieldEditors;
 using AdminPlayground.Resources.FormLayouts;
 using AdminPlayground.Resources.Products;
 using AdminPlayground.Resources.Roles;
+using AdminPlayground.Resources.Tags;
 using AdminPlayground.Resources.Users;
 using Microsoft.EntityFrameworkCore;
 using StellarAdmin;
@@ -81,6 +82,7 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddAmenityResource();
     admin.AddProductResource();
     admin.AddCategoryResource();
+    admin.AddTagResource();
     admin.AddFieldEditorGallery();
     admin.AddFormLayoutGallery();
 

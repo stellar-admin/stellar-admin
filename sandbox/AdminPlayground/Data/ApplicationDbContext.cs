@@ -12,6 +12,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<Product> Products => Set<Product>();
 
+    public DbSet<Tag> Tags => Set<Tag>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -36,6 +38,18 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<ApplicationRole>(role =>
         {
             role.Property(value => value.Description).HasMaxLength(200);
+        });
+
+        builder.Entity<Tag>(tag =>
+        {
+            tag.Property(value => value.Name).IsRequired().HasMaxLength(50);
+            tag.HasIndex(value => value.Name).IsUnique();
+            tag.HasData(
+                new Tag { Id = 1, Name = "New" },
+                new Tag { Id = 2, Name = "Bestseller" },
+                new Tag { Id = 3, Name = "Clearance" },
+                new Tag { Id = 4, Name = "Eco-friendly" }
+            );
         });
 
         builder.Entity<Product>().OwnsOne(product => product.Details);

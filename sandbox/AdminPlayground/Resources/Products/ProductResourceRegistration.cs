@@ -32,6 +32,7 @@ internal static class ProductResourceRegistration
                             field.UseEditor<LookupSheetEditor>(UseCategories);
                         }
                     );
+                    fields.Add(product => product.Tags).UseEditor<MultiLookupSheetEditor>(UseTags);
                 })
             );
             resource.AllowEdit(edit =>
@@ -48,6 +49,7 @@ internal static class ProductResourceRegistration
                             field.UseEditor<LookupSheetEditor>(UseCategories);
                         }
                     );
+                    fields.Add(product => product.Tags).UseEditor<MultiLookupSheetEditor>(UseTags);
                 })
             );
             resource.AllowView(view =>
@@ -165,6 +167,19 @@ internal static class ProductResourceRegistration
                     // Categories have no image, so the avatar shows the name's initials
                     .UseAvatar(category => null)
         );
+        lookup.EnableCreate();
+    }
+
+    // New opens the tag resource's create form, and adds the tag it creates to the selection
+    private static void UseTags(MultiLookupSheetEditor lookup)
+    {
+        lookup.Sheet(sheet =>
+        {
+            sheet.Title = "Select tags";
+            sheet.SearchPlaceholder = "Search tags...";
+        });
+        lookup.UseItems<ApplicationDbContext, Tag, int>(tag => tag.Id, tag => tag.Name);
+        lookup.Field(field => field.Layout = MultiLookupSheetEditorLayout.Chips);
         lookup.EnableCreate();
     }
 }

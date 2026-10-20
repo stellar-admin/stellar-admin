@@ -18,4 +18,7 @@ public sealed class Product
 
     [Range(typeof(decimal), "0.01", "1000000")]
     public decimal Price { get; set; }
+
+    // Many-to-many through a join table without an entity type; the admin binds it without a setter
+    public List<Tag> Tags { get; } = [];
 }

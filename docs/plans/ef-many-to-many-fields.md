@@ -50,7 +50,12 @@ Read the current binding, field and save code in `src/StellarAdmin` and `src/Ste
 - Full suites pass: StellarAdmin.Tests 256, StellarAdmin.IntegrationTests 589, StellarAdmin.EntityFrameworkCore.IntegrationTests 108, StellarAdmin.UI.Tests 681, StellarAdmin.UI.IntegrationTests 19. `util/SkillsGenerator --check` reports no drift.
 - Not checked in a browser.
 
+## Sample (2026-10-20)
+
+- The admin playground has a `Tag` entity (`Name` required, max length 50, unique) and a `Product.Tags` navigation without a setter, joined through the convention table `ProductTag`. Migration `AddProductTags` creates both tables and seeds New, Bestseller, Clearance and Eco-friendly; it is applied to `app.db`.
+- Products' create and edit forms pick tags with `MultiLookupSheetEditor` (chips, create new), and a Tags resource sits in the Commerce sidebar group.
+- Checked over HTTP on port 5206: the Tags index and the product create and edit pages return 200 and render the Tags editor. No save was made, so `app.db` holds only the migration and seed rows.
+
 ## Outstanding
 
-- A sample in the admin playground.
 - Index and view display of the related items.
