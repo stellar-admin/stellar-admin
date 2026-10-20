@@ -76,6 +76,23 @@ Columns without a field keep showing their value in the editing row. Display fie
 
 The Add button inserts a new row filled from `UseFactory`, at the top of the grid or at the bottom of the current page. `AddButton` puts it in the page header (labelled with `CreateLabel`), in a row of the grid, or both. A toast confirms the saved row.
 
+## Save and add another
+
+`create.EnableAddAnother()`, the same call that adds the button to the create page ([forms](forms.md#save-and-add-another)), gives the new row a third action between Save and Cancel. It saves the row and opens a new one in its place, with the `KeepForNext` fields' values:
+
+```csharp
+resource.AllowCreate(create =>
+{
+    create.Fields(fields => fields.Add(department => department.Name));
+    create.UseInlineRow();
+    create.EnableAddAnother();
+});
+```
+
+- The rows added stay next to the new row, marked and usable, and a line under the new row counts them.
+- Save, Enter, Cancel or Escape ends the run. `AfterSave` applies once, when it ends: `ReloadGrid` reloads the page, `KeepInPlace` leaves the added rows where they are.
+- Ctrl+Shift+Enter or Cmd+Shift+Enter presses it from any field of the row.
+
 ## After a save
 
 `AfterSave` on `edit.UseInlineRow(...)` and `create.UseInlineRow(...)` chooses what the grid shows after a row is saved:
@@ -86,7 +103,7 @@ The Add button inserts a new row filled from `UseFactory`, at the top of the gri
 ## What the user sees
 
 - The row's Edit action turns the row into fields, with Save and Cancel in place of the row actions. One row is edited at a time.
-- Enter in a text field saves and Escape cancels. Cancel restores the row without a request.
+- Enter in a text field, or Ctrl+Enter or Cmd+Enter in any field, saves and Escape cancels. Cancel restores the row without a request.
 - On success the row comes back as it displays, through the index query ([after a save](#after-a-save)). Field errors appear under their cells. Errors the row can't place, such as a `ResourceOperationResult` error without a field, appear in a message under the row.
 - While dimming is on, paging, sorting, search and scopes are locked until the row is saved or cancelled; with it off, they discard an unsaved row without asking.
 - A lookup column opens the lookup sheet from the row. Row details stay in place while their row is edited.

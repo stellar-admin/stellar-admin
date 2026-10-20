@@ -137,7 +137,7 @@ admin.ConfigureResourceLabels(labels =>
 | Group | Labels |
 | --- | --- |
 | `Index` | `Title`, `CreateLabel`, `EditLabel`, `ViewLabel`, `DeleteLabel`, `SearchPlaceholder` |
-| `Create`, `Edit` | `Title`, `SubmitLabel` |
+| `Create`, `Edit` | `Title`, `SubmitLabel`; `Create` also has `AddAnotherLabel` |
 | `View` | `Title` |
 | `Delete` | `Title`, `Message`, `ConfirmLabel`, `CancelLabel` |
 | `Lookup` | `ChooseLabel`, `CreateLabel`, `NoneText`, `LoadMoreLabel`, `NoResultsTitle` and the other lookup texts (`LookupLabelContext`) |

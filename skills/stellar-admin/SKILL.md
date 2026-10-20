@@ -22,7 +22,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Register an entity, slugs, labels, enable create/edit/view/delete, custom data source | `AddEfCoreResource<TContext, TEntity>`, `AddResource<T>`, `Allow*`, `UseDataSource` | [resources](references/resources.md) |
 | Search, scope tabs, default sort, paging, expandable rows | `Index(index => ...)`, `EnableSearch`, `EnableScopes`, `DefaultSortBy`, `EnablePaging`, `EnableRowDetails` | [index-pages](references/index-pages.md) |
 | Grid columns: titles, sorting, currency, badges, values through references | `Columns(columns => columns.Add(...))`, `Sortable`, `UseDisplay` | [columns](references/columns.md) |
-| Create and edit pages: layout, sections, validation, defaults, custom models | `AllowCreate`, `AllowEdit`, `Fields`, `AddSection`, `Columns`, `UseFactory` | [forms](references/forms.md) |
+| Create and edit pages: layout, sections, validation, defaults, save and add another, custom models | `AllowCreate`, `AllowEdit`, `Fields`, `AddSection`, `Columns`, `UseFactory`, `EnableAddAnother` | [forms](references/forms.md) |
 | Edit and add small resources in the index grid's rows | `UseInlineRow`, `EditsField`, `InlineCreatePosition`, `InlineAddButton` | [inline-editing](references/inline-editing.md) |
 | Read-only values in forms, displays, display templates | `AddDisplayField`, `AddDetails`, `UseDisplay<TDisplay>` | [fields](references/fields.md) |
 | Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseEditor<TEditor>` | [editors](references/editors.md) |

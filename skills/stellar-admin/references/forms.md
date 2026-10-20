@@ -7,6 +7,7 @@
 - [Fields](#fields)
 - [Page settings](#page-settings)
 - [Defaults and generated values](#defaults-and-generated-values)
+- [Save and add another](#save-and-add-another)
 - [Sharing fields between create and edit](#sharing-fields-between-create-and-edit)
 - [Layout: columns, sections and groups](#layout-columns-sections-and-groups)
 - [Validation](#validation)
@@ -60,6 +61,35 @@ resource.AllowCreate(create =>
 - Without a factory, `DateOnly` and `DateTime` fields start at 0001-01-01.
 - The factory runs for both the GET and the POST, so a generated value shown on the form (as a display field) is regenerated on save. Generate values that must match what the user saw in a create handler instead.
 - Values the database generates (identity keys, defaults) need nothing.
+
+## Save and add another
+
+For entering several records in a row, `EnableAddAnother` adds a "Save and add another" button before the submit button. It saves, shows the "added" toast and opens a new create form with focus on its first field. `KeepForNext` carries a field's saved value into the next record; the other fields start from the factory again:
+
+```csharp
+resource.AllowCreate(create =>
+{
+    create.Fields(fields =>
+    {
+        fields.Add(tour => tour.Name);
+        fields.Add(tour => tour.DestinationId);
+        fields.Add(tour => tour.Days);
+    });
+    create.EnableAddAnother(another =>
+    {
+        another.KeepForNext(tour => tour.DestinationId);
+        another.KeepForNext(tour => tour.Days);
+        another.Label = "Save, then the next tour"; // optional; default "Save and add another"
+    });
+});
+```
+
+- It is off by default. One call covers the create page and, with `UseInlineRow()`, the inline create row ([inline editing](inline-editing.md#save-and-add-another)).
+- `KeepForNext` must name an editable field of the create form; startup fails otherwise.
+- The toast text is `index.CreatedMessage` ([inline editing](inline-editing.md#labels)), and the default label comes from `labels.Create(create => create.AddAnotherLabel = ...)`.
+- The create sheet opened from a lookup has no such button: it closes and selects the created item.
+
+Create and edit pages also take keyboard shortcuts: Ctrl+Enter or Cmd+Enter saves, and Ctrl+Shift+Enter or Cmd+Shift+Enter saves and adds another. A plain Enter in a field still presses the submit button, not "Save and add another".
 
 ## Sharing fields between create and edit
 
