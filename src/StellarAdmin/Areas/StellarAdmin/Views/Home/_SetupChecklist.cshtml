@@ -23,17 +23,12 @@
                 </sa-card-description>
             </sa-card-header>
             <sa-card-content>
-                <div role="list" class="grid">
-                    @foreach (var (step, index) in Model.Steps.Select((step, index) => (step, index)))
+                <sa-checklist>
+                    @foreach (var step in Model.Steps)
                     {
-                        if (index > 0)
-                        {
-                            <sa-separator/>
-                        }
-
                         <partial name="_SetupStep" model="step" view-data="@(new ViewDataDictionary(ViewData) { ["Open"] = step.Id == Model.FirstOpenId })" />
                     }
-                </div>
+                </sa-checklist>
             </sa-card-content>
             <sa-card-footer class="flex-col items-stretch gap-3">
                 <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">

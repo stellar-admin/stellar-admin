@@ -16,6 +16,7 @@
 | [Card](components/card.md) | `<sa-card>`, `<sa-card-action>`, `<sa-card-content>`, … | Renders a container that groups related content. |
 | [Carousel](components/carousel.md) | `<sa-carousel>`, `<sa-carousel-content>`, `<sa-carousel-indicators>`, … | Renders a scrollable set of slides with optional navigation controls. |
 | [CheckboxGroup](components/checkbox-group.md) | `<sa-checkbox-group>`, `<sa-checkbox-group-item>`, `<sa-checkbox-group-item-media>` | Renders a group of checkboxes that posts a set of values. |
+| [Checklist](components/checklist.md) | `<sa-checklist>`, `<sa-checklist-item>`, `<sa-checklist-item-actions>`, … | Renders a list of steps or tasks, each with a status. |
 | [Chip](components/chip.md) | `<sa-chip>`, `<sa-chip-group>`, `<sa-chip-remove>` | Renders a compact token for a selected or entered value. |
 | [Collapsible](components/collapsible.md) | `<sa-collapsible>` | Renders a container whose content can be expanded or collapsed. |
 | [Command](components/command.md) | `<sa-command>`, `<sa-command-dialog>`, `<sa-command-empty>`, … | Renders a searchable menu of commands or options that the keyboard navigates from one search input. |

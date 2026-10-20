@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checklist and timeline</title>
+<!-- Prototype: the checklist and the timeline as two components, after steps.html showed one component's switches
+     falling into two fixed sets. They share the item parts (title, description, actions, details) and the statuses.
+     The timeline's rail takes its style from the status of the item it leaves, with a per-item override. Uses the
+     built library bundle; build it first (npm run build in src/StellarAdmin.UI/Client). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+<style>
+  /* Candidate: written as the library would write it. */
+  @layer sa.components {
+    /* ---------- Checklist: tasks to act on, a rule between them, no rail. ---------- */
+    .sa-checklist {
+      --_marker: calc(5 * var(--sa-unit));
+      --_gap: calc(3 * var(--sa-unit));
+      display: grid;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .sa-checklist-item {
+      display: grid;
+      grid-template-columns: [marker] var(--_marker) [body] minmax(0, 1fr) [actions] auto;
+      align-content: start;
+      column-gap: var(--_gap);
+      padding-block: calc(3 * var(--sa-unit));
+    }
+    .sa-checklist-item + .sa-checklist-item { border-block-start: var(--sa-border-width, 1px) solid var(--sa-color-line); }
+    .sa-checklist-marker {
+      grid-column: marker;
+      grid-row: 1 / span 2;
+      display: grid;
+      place-items: center;
+      block-size: max(var(--_marker), 1lh);
+      color: var(--sa-color-ink-muted);
+      font-size: var(--sa-text-sm);
+      line-height: var(--sa-leading-ui, 1.25rem);
+    }
+    .sa-checklist-marker svg { inline-size: 1.25rem; block-size: 1.25rem; }
+    .sa-checklist-item[data-status="done"] .sa-checklist-marker { color: var(--sa-color-success); }
+    .sa-checklist-item[data-status="warning"] .sa-checklist-marker { color: var(--sa-color-warning); }
+    .sa-checklist-item[data-status="error"] .sa-checklist-marker { color: var(--sa-color-danger); }
+    .sa-checklist-title {
+      grid-column: body;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: calc(2 * var(--sa-unit));
+      min-block-size: var(--_marker);
+      font-size: var(--sa-text-sm);
+      font-weight: 500;
+      line-height: var(--sa-leading-ui, 1.25rem);
+    }
+    .sa-checklist-item[data-status="done"] .sa-checklist-title { color: var(--sa-color-ink-muted); }
+    .sa-checklist-description {
+      grid-column: body;
+      margin: 0;
+      font-size: var(--sa-text-sm);
+      color: var(--sa-color-ink-muted);
+    }
+    .sa-checklist-actions {
+      grid-column: actions;
+      grid-row: 1 / span 2;
+      align-self: start;
+      display: flex;
+      gap: calc(2 * var(--sa-unit));
+    }
+    .sa-checklist-details {
+      display: block;
+      min-inline-size: 0;
+      grid-column: body / -1;
+      padding-block-start: calc(3 * var(--sa-unit));
+      font-size: var(--sa-text-sm);
+    }
+
+    /* ---------- Timeline: a sequence to read, a rail from each marker to the next. ---------- */
+    .sa-timeline {
+      --_marker: calc(6 * var(--sa-unit));
+      --_gap: calc(3 * var(--sa-unit));
+      --_space: calc(4 * var(--sa-unit));
+      --_rail: calc(2 * var(--sa-border-width, 1px));
+      --_rail-gap: calc(0.5 * var(--sa-unit));
+      display: grid;
+      grid-template-columns: [marker] var(--_marker) [body] minmax(0, 1fr) [actions] auto;
+      column-gap: var(--_gap);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: sa-timeline;
+    }
+    .sa-timeline[data-meta="gutter"] {
+      grid-template-columns: [meta] max-content [marker] var(--_marker) [body] minmax(0, 1fr) [actions] auto;
+    }
+    .sa-timeline-item {
+      /* Rows: the marker's line, the description, the details, then the space before the next item. The rail
+         fills the column under the marker down to the next item. */
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-template-rows: [head] auto [description] auto [details] auto [space] var(--_space);
+      counter-increment: sa-timeline;
+      /* Rail style from the status of the item it leaves: solid behind, dashed ahead. data-rail overrides. */
+      --_rail-color: var(--sa-color-line-control);
+      --_rail-paint: linear-gradient(var(--_rail-color), var(--_rail-color));
+    }
+    .sa-timeline-item:last-child { grid-template-rows: [head] auto [description] auto [details] auto; }
+    .sa-timeline-item[data-status="done"],
+    .sa-timeline-item[data-status="warning"] { --_rail-color: var(--sa-color-success); }
+    .sa-timeline-item:is([data-status="current"], [data-status="todo"], [data-status="optional"], [data-status="error"]),
+    .sa-timeline-item[data-rail="dashed"] {
+      --_rail-paint: repeating-linear-gradient(to bottom, var(--_rail-color) 0 var(--sa-unit), transparent var(--sa-unit) calc(1.75 * var(--sa-unit)));
+    }
+    .sa-timeline-item[data-rail="dotted"] {
+      --_rail-paint: repeating-linear-gradient(to bottom, var(--_rail-color) 0 var(--_rail), transparent var(--_rail) calc(2.5 * var(--_rail)));
+    }
+    .sa-timeline-item[data-rail="solid"] { --_rail-paint: linear-gradient(var(--_rail-color), var(--_rail-color)); }
+    .sa-timeline-item:not(:last-child):not([data-rail="none"])::before {
+      content: "";
+      grid-column: marker;
+      grid-row: description / -1;
+      justify-self: center;
+      inline-size: var(--_rail);
+      margin-block: var(--_rail-gap);
+      border-radius: var(--_rail);
+      background: var(--_rail-paint);
+    }
+
+    .sa-timeline-marker {
+      grid-column: marker;
+      grid-row: head;
+      display: grid;
+      place-items: center;
+      inline-size: var(--_marker);
+      block-size: var(--_marker);
+      border-radius: var(--sa-radius-round);
+      background: var(--sa-color-surface);
+      box-shadow: inset 0 0 0 var(--_rail) var(--sa-color-line-control);
+      color: var(--sa-color-ink);
+      font-size: var(--sa-text-xs);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .sa-timeline-marker svg { inline-size: 1rem; block-size: 1rem; }
+    .sa-timeline-item[data-status="optional"] .sa-timeline-marker {
+      box-shadow: none;
+      outline: var(--_rail) dashed var(--sa-color-line-control);
+      outline-offset: calc(-1 * var(--_rail));
+    }
+    .sa-timeline-item[data-status="current"] .sa-timeline-marker {
+      color: var(--sa-color-accent-text);
+      box-shadow: inset 0 0 0 var(--_rail) var(--sa-color-accent);
+    }
+    .sa-timeline-item:is([data-status="done"], [data-status="warning"], [data-status="error"]) .sa-timeline-marker {
+      color: var(--sa-color-surface);
+      box-shadow: none;
+    }
+    .sa-timeline-item:is([data-status="done"], [data-status="warning"], [data-status="error"]) .sa-timeline-marker svg { inline-size: 0.875rem; block-size: 0.875rem; stroke-width: 3; }
+    .sa-timeline-item[data-status="done"] .sa-timeline-marker { background: var(--sa-color-success); }
+    .sa-timeline-item[data-status="warning"] .sa-timeline-marker { background: var(--sa-color-warning); }
+    .sa-timeline-item[data-status="error"] .sa-timeline-marker { background: var(--sa-color-danger); }
+    /* A numbered timeline counts its items; a settled item shows its status instead. */
+    .sa-timeline[data-marker="number"] .sa-timeline-item:not(:is([data-status="done"], [data-status="warning"], [data-status="error"])) .sa-timeline-marker::before { content: counter(sa-timeline); }
+    .sa-timeline[data-marker="number"] .sa-timeline-item:not(:is([data-status="done"], [data-status="warning"], [data-status="error"])) .sa-timeline-marker svg { display: none; }
+    /* A dotted timeline: a small dot in the marker column, for dense feeds. */
+    .sa-timeline[data-marker="dot"] { --_marker: calc(4 * var(--sa-unit)); }
+    .sa-timeline[data-marker="dot"] .sa-timeline-marker { background: transparent; box-shadow: none; outline: none; }
+    .sa-timeline[data-marker="dot"] .sa-timeline-marker > * { display: none; }
+    .sa-timeline[data-marker="dot"] .sa-timeline-marker::before {
+      content: "";
+      inline-size: calc(2.5 * var(--sa-unit));
+      block-size: calc(2.5 * var(--sa-unit));
+      border-radius: var(--sa-radius-round);
+      background: var(--sa-color-line-control);
+    }
+    .sa-timeline[data-marker="dot"] [data-status="done"] .sa-timeline-marker::before { background: var(--sa-color-success); }
+    .sa-timeline[data-marker="dot"] [data-status="current"] .sa-timeline-marker::before { background: var(--sa-color-accent); box-shadow: 0 0 0 var(--sa-unit) color-mix(in oklab, var(--sa-color-accent) 22%, transparent); }
+    .sa-timeline[data-marker="dot"] [data-status="error"] .sa-timeline-marker::before { background: var(--sa-color-danger); }
+    /* An author's icon or avatar fills the marker. */
+    .sa-timeline-marker:has(> .sa-avatar) { box-shadow: none; }
+    .sa-timeline-marker > .sa-avatar { inline-size: 100%; block-size: 100%; }
+    .sa-timeline-marker[data-media] { background: var(--sa-color-surface-sunken); box-shadow: none; }
+
+    .sa-timeline-header {
+      grid-column: body;
+      grid-row: head;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: calc(2 * var(--sa-unit));
+      padding-block-start: max(0px, calc((var(--_marker) - 1lh) / 2));
+      font-size: var(--sa-text-sm);
+      line-height: var(--sa-leading-ui, 1.25rem);
+    }
+    .sa-timeline-title {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(2 * var(--sa-unit));
+      font-weight: 500;
+    }
+    .sa-timeline-item:is([data-status="todo"], [data-status="optional"]) .sa-timeline-title { color: var(--sa-color-ink-muted); }
+    .sa-timeline-meta {
+      margin-inline-start: auto;
+      color: var(--sa-color-ink-muted);
+      font-size: var(--sa-text-xs);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .sa-timeline-item > .sa-timeline-meta {
+      grid-column: meta;
+      grid-row: head;
+      margin: 0;
+      text-align: end;
+      padding-block-start: max(0px, calc((var(--_marker) - 1lh) / 2));
+      line-height: var(--sa-leading-ui, 1.25rem);
+    }
+    .sa-timeline-description {
+      grid-column: body;
+      grid-row: description;
+      margin: calc(0.5 * var(--sa-unit)) 0 0;
+      font-size: var(--sa-text-sm);
+      color: var(--sa-color-ink-muted);
+    }
+    .sa-timeline-actions {
+      grid-column: actions;
+      grid-row: head / span 2;
+      align-self: start;
+      display: flex;
+      gap: calc(2 * var(--sa-unit));
+    }
+    .sa-timeline-details {
+      display: block;
+      min-inline-size: 0;
+      grid-column: body / -1;
+      grid-row: details;
+      padding-block-start: calc(2 * var(--sa-unit));
+      font-size: var(--sa-text-sm);
+    }
+  }
+
+  /* Status and author icons, as the tag helpers would emit them. */
+  .sa-checklist-marker svg, .sa-timeline-marker svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Prototype scaffolding, not extracted. */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  main { max-width: 1120px; margin: 0 auto; padding: 32px 16px 120px; display: grid; gap: 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 8px; }
+  h2 { font-size: 1.15rem; margin: 0 0 4px; }
+  h3 { font-size: 0.95rem; margin: 24px 0 4px; }
+  .lede, .cap { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0 0 12px; max-width: 80ch; }
+  .frame { background: var(--sa-color-surface); border: 1px solid var(--sa-color-line); border-radius: var(--sa-radius-container); padding: 20px; margin: 0; min-width: 0; }
+  .grid2 { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); }
+  .grid3 { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+  .cardhead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+  .cardhead b { font-size: 0.95rem; }
+  .cardhead span { color: var(--sa-color-ink-muted); font-size: 0.8rem; text-align: end; }
+  pre.code { font-family: "JetBrains Mono", monospace; font-size: 12px; background: var(--sa-color-surface-sunken); border-radius: var(--sa-radius-inner); padding: 12px; overflow: auto; margin: 0; white-space: pre; }
+  .progress { height: 6px; border-radius: 99px; background: var(--sa-color-surface-sunken); overflow: hidden; margin: 0 0 8px; }
+  .progress > i { display: block; height: 100%; background: var(--sa-color-success); }
+  table.map { border-collapse: collapse; font-size: 0.85rem; margin: 0 0 12px; }
+  table.map th, table.map td { text-align: start; padding: 4px 16px 4px 0; border-bottom: 1px solid var(--sa-color-line); }
+  table.map th { color: var(--sa-color-ink-muted); font-weight: 500; }
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 10; display: flex; gap: 6px; align-items: center; background: var(--sa-color-surface-raised); border: 1px solid var(--sa-color-line); border-radius: var(--sa-radius-control); padding: 6px; box-shadow: 0 4px 16px rgb(0 0 0 / 0.12); }
+  .controls select { font: inherit; font-size: 0.8rem; }
+  .sa-checklist-details pre, .sa-timeline-details pre { font-family: "JetBrains Mono", monospace; font-size: 12px; background: var(--sa-color-surface-sunken); padding: 10px; border-radius: var(--sa-radius-inner); margin: 8px 0 0; overflow: auto; }
+  .sa-checklist-details p, .sa-timeline-details p { margin: 0; color: var(--sa-color-ink-muted); }
+  .chev { transition: transform 0.15s; }
+  [aria-expanded="true"] .chev { transform: rotate(180deg); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Checklist and timeline</h1>
+    <p class="lede">Two components after <a href="steps.html">steps.html</a> showed one component's switches falling into two fixed sets. <code>sa-checklist</code> is tasks to act on: a rule between items, tinted status icons, actions and details, no rail. <code>sa-timeline</code> is a sequence to read: a rail between markers, dates, and markers that show a status, a number, a dot, an icon or an avatar. Both share the item parts (title, description, actions, details) and the statuses: done, current, to do, optional, warning and error.</p>
+  </header>
+
+  <section>
+    <h2>Checklist</h2>
+    <p class="cap">The home page's setup checklist, extracted. The card and progress bar around it stay separate, so a page composes them as it needs.</p>
+    <div class="grid2">
+      <figure class="frame" id="checklist-home"></figure>
+      <figure class="frame"><pre class="code">&lt;sa-checklist&gt;
+    &lt;sa-checklist-item status="ChecklistStatus.Done"&gt;
+        &lt;sa-checklist-title&gt;Connect your booking system&lt;/sa-checklist-title&gt;
+        &lt;sa-checklist-description&gt;Bookings sync every 15 minutes.&lt;/sa-checklist-description&gt;
+        &lt;sa-checklist-actions&gt;…&lt;/sa-checklist-actions&gt;
+        &lt;sa-checklist-details&gt;…&lt;/sa-checklist-details&gt;
+    &lt;/sa-checklist-item&gt;
+    &lt;sa-checklist-item status="ChecklistStatus.Optional"&gt;…&lt;/sa-checklist-item&gt;
+&lt;/sa-checklist&gt;</pre></figure>
+    </div>
+    <h3>Without the card</h3>
+    <p class="cap">A packing list on a booking's view page: titles only, no actions.</p>
+    <div class="grid2">
+      <figure class="frame" id="checklist-packing"></figure>
+      <figure class="frame" id="checklist-states"></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <p class="cap">The tracker is a timeline whose markers show a status. The rail out of an item takes its style from the item's status; an item's <code>rail</code> overrides it.</p>
+    <table class="map">
+      <tr><th>Item status</th><th>Rail to the next item</th></tr>
+      <tr><td>done, warning</td><td>solid, success colour (the path travelled)</td></tr>
+      <tr><td>current, to do, optional, error</td><td>dashed, line colour (not travelled yet, or blocked)</td></tr>
+      <tr><td>no status</td><td>solid, line colour</td></tr>
+      <tr><td><code>rail="…"</code></td><td>solid, dashed, dotted or none, whatever the status</td></tr>
+    </table>
+    <div class="grid2" id="timelines"></div>
+    <h3>Rail ahead of the current item</h3>
+    <p class="cap">The same booking with the derived rail ahead drawn three ways. Dashed is the candidate.</p>
+    <div class="grid3" id="rails"></div>
+    <h3>Razor sketch</h3>
+    <figure class="frame"><pre class="code">&lt;sa-timeline marker="TimelineMarker.Status" meta-placement="TimelineMetaPlacement.Inline"&gt;
+    &lt;sa-timeline-item status="TimelineStatus.Done"&gt;
+        &lt;sa-timeline-title&gt;Booked&lt;/sa-timeline-title&gt;
+        &lt;sa-timeline-meta&gt;2 Mar, 09:14&lt;/sa-timeline-meta&gt;
+        &lt;sa-timeline-description&gt;Online, by Amara Okafor.&lt;/sa-timeline-description&gt;
+    &lt;/sa-timeline-item&gt;
+    &lt;sa-timeline-item rail="TimelineRail.Dotted"&gt;
+        &lt;sa-timeline-marker&gt;&lt;sa-icon name="train-front"/&gt;&lt;/sa-timeline-marker&gt;
+        …
+    &lt;/sa-timeline-item&gt;
+&lt;/sa-timeline&gt;</pre></figure>
+  </section>
+</main>
+
+<div class="controls">
+  <select id="theme-select" aria-label="Theme">
+    <option value="">Default</option>
+    <option value="ops">Ops</option>
+    <option value="soft">Soft</option>
+    <option value="ledger">Ledger</option>
+  </select>
+  <select id="density-select" aria-label="Density">
+    <option value="">Density: default</option>
+    <option value="compact">Compact</option>
+    <option value="comfortable">Comfortable</option>
+  </select>
+  <button class="sa-button sa-button-variant-outline sa-button-size-sm" data-slot="button" id="dark-toggle">Dark</button>
+</div>
+
+<script>
+  const icon = paths => `<svg viewBox="0 0 24 24" aria-hidden="true">${paths}</svg>`;
+  const I = {
+    check: icon('<path d="M20 6 9 17l-5-5"/>'),
+    circleCheck: icon('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'),
+    alert: icon('<path d="M12 8v5"/><path d="M12 17h.01"/>'),
+    triangle: icon('<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'),
+    x: icon('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
+    circleX: icon('<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>'),
+    circle: icon('<circle cx="12" cy="12" r="10"/>'),
+    circleDot: icon('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/>'),
+    dashed: icon('<path d="M10.1 2.18a9.93 9.93 0 0 1 3.8 0"/><path d="M17.6 3.71a9.95 9.95 0 0 1 2.69 2.7"/><path d="M21.82 10.1a9.93 9.93 0 0 1 0 3.8"/><path d="M20.29 17.6a9.95 9.95 0 0 1-2.7 2.69"/><path d="M13.9 21.82a9.94 9.94 0 0 1-3.8 0"/><path d="M6.4 20.29a9.95 9.95 0 0 1-2.69-2.7"/><path d="M2.18 13.9a9.93 9.93 0 0 1 0-3.8"/><path d="M3.71 6.4a9.95 9.95 0 0 1 2.7-2.69"/>'),
+    dot: icon('<circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/>'),
+    plane: icon('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'),
+    bed: icon('<path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/>'),
+    train: icon('<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>'),
+    utensils: icon('<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>'),
+    pin: icon('<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>'),
+    mountain: icon('<path d="m8 3 4 8 5-5 5 15H2L8 3z"/>'),
+    chev: '<svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
+  };
+  let uid = 0;
+  const button = (label, variant, extra = "") => `<button class="sa-button sa-button-variant-${variant} sa-button-size-sm" data-slot="button"${extra}>${label}</button>`;
+  const optional = `<span class="sa-badge sa-badge-variant-outline" data-slot="badge">Optional</span>`;
+
+  // The icons the checklist tag helper would emit per status.
+  const checklistIcon = { done: I.circleCheck, current: I.circleDot, todo: I.circle, optional: I.dashed, warning: I.triangle, error: I.circleX };
+  function checklist(items) {
+    return `<ul class="sa-checklist">${items.map(it => {
+      const id = `cl-${++uid}`;
+      const toggle = it.details ? button(`${it.status === "done" ? "Change" : "Show me how"} ${I.chev}`, it.status === "done" ? "ghost" : it.primary ? "default" : "outline", ` commandfor="${id}" command="--toggle" aria-expanded="${!!it.open}"`) : "";
+      const actions = toggle || it.actions ? `<div class="sa-checklist-actions">${it.actions ?? ""}${toggle}</div>` : "";
+      return `<li class="sa-checklist-item" data-status="${it.status}">
+        <span class="sa-checklist-marker">${checklistIcon[it.status]}</span>
+        <span class="sa-checklist-title">${it.title}${it.status === "optional" ? optional : ""}</span>
+        ${it.desc ? `<p class="sa-checklist-description">${it.desc}</p>` : ""}
+        ${actions}
+        ${it.details ? `<sel-collapsible id="${id}" class="sa-checklist-details" data-slot="collapsible"${it.open ? "" : " hidden"}>${it.details}</sel-collapsible>` : ""}
+      </li>`;
+    }).join("")}</ul>`;
+  }
+
+  // The icons the timeline tag helper would emit per status (discs and rings).
+  const timelineIcon = { done: I.check, current: I.dot, todo: "", optional: "", warning: I.alert, error: I.x };
+  function timeline(items, opts = {}) {
+    const gutter = opts.meta === "gutter";
+    return `<ol class="sa-timeline"${opts.marker ? ` data-marker="${opts.marker}"` : ""}${gutter ? ` data-meta="gutter"` : ""}>${items.map(it => {
+      const marker = it.avatar
+        ? `<span class="sa-timeline-marker"><span class="sa-avatar" data-slot="avatar"><span class="sa-avatar-fallback" data-slot="avatar-fallback">${it.avatar}</span></span></span>`
+        : it.icon ? `<span class="sa-timeline-marker" data-media>${I[it.icon]}</span>`
+        : `<span class="sa-timeline-marker">${timelineIcon[it.status] ?? ""}</span>`;
+      const meta = it.meta ? `<span class="sa-timeline-meta">${it.meta}</span>` : "";
+      const attrs = `${it.status ? ` data-status="${it.status}"` : ""}${it.status === "current" ? ` aria-current="step"` : ""}${it.rail ? ` data-rail="${it.rail}"` : ""}`;
+      return `<li class="sa-timeline-item"${attrs}>
+        ${gutter ? meta : ""}${marker}
+        <div class="sa-timeline-header"><span class="sa-timeline-title">${it.title}${it.status === "optional" ? optional : ""}</span>${gutter ? "" : meta}</div>
+        ${it.desc ? `<p class="sa-timeline-description">${it.desc}</p>` : ""}
+        ${it.actions ? `<div class="sa-timeline-actions">${it.actions}</div>` : ""}
+        ${it.details ? `<div class="sa-timeline-details">${it.details}</div>` : ""}
+      </li>`;
+    }).join("")}</ol>`;
+  }
+
+  const frame = (title, sub, body) => `<figure class="frame"><div class="cardhead"><b>${title}</b><span>${sub}</span></div>${body}</figure>`;
+
+  // Checklists.
+  document.getElementById("checklist-home").innerHTML = `
+    <div class="cardhead"><b>Set up your panel</b><span>2 of 5</span></div>
+    <div class="progress"><i style="width:40%"></i></div>
+    ${checklist([
+      { status: "done", title: "Connect your booking system", desc: "Bookings sync every 15 minutes.", details: "<pre>builder.AddVoyagerSync(o => o.Interval = TimeSpan.FromMinutes(15));</pre>" },
+      { status: "done", title: "Add your destinations", desc: "42 destinations across 11 countries.", details: "<p>Destinations appear in the sidebar under Catalogue.</p>" },
+      { status: "warning", title: "Require sign-in", desc: "Anyone who can reach the panel can edit bookings.", details: "<pre>resources.RequireAuthorization(\"Staff\");</pre>", open: true, primary: true },
+      { status: "todo", title: "Brand the sidebar", desc: "Show the Voyager logo and name.", details: "<p>Use ConfigureBranding.</p>" },
+      { status: "optional", title: "Install the agent skills", desc: "Let your coding agent build resources for you.", details: "<pre>npx skills add stellar-admin/stellar-admin</pre>" },
+    ])}`;
+  document.getElementById("checklist-packing").innerHTML = `<div class="cardhead"><b>Packing for the Kumano Kodo</b><span>titles only</span></div>` + checklist([
+    { status: "done", title: "Passport and visa" },
+    { status: "done", title: "JR Pass voucher" },
+    { status: "todo", title: "Hiking boots, worn in" },
+    { status: "todo", title: "Rain shell" },
+    { status: "optional", title: "Trekking poles" },
+  ]);
+  document.getElementById("checklist-states").innerHTML = `<div class="cardhead"><b>Every status</b><span>with an action on the error</span></div>` + checklist([
+    { status: "done", title: "Done" },
+    { status: "current", title: "Current", desc: "Being worked on now." },
+    { status: "todo", title: "To do" },
+    { status: "optional", title: "Optional" },
+    { status: "warning", title: "Warning", desc: "Done, but needs a look." },
+    { status: "error", title: "Error", desc: "The payout provider rejected the card.", actions: button("Retry", "default") },
+  ]);
+
+  // Timelines.
+  const booking = [
+    { status: "done", title: "Booked", desc: "Online, by Amara Okafor.", meta: "2 Mar, 09:14" },
+    { status: "done", title: "Payment received", desc: "R 48,200 by card ending 4417.", meta: "2 Mar, 09:15" },
+    { status: "current", title: "Tickets issuing", desc: "Emirates usually issues within 24 hours.", meta: "In progress" },
+    { status: "todo", title: "Online check-in opens", meta: "12 Apr" },
+    { status: "todo", title: "Departure", desc: "EK 768, Johannesburg 18:25.", meta: "14 Apr" },
+  ];
+  document.getElementById("timelines").innerHTML = [
+    frame("Booking VT-2481", "status markers · derived rail", timeline(booking)),
+    frame("Refund RF-118", "status markers · dashed after the error", timeline([
+      { status: "done", title: "Refund requested", desc: "Flight cancelled by the airline.", meta: "9 Mar" },
+      { status: "done", title: "Approved", desc: "By Lindiwe Mokoena.", meta: "10 Mar" },
+      { status: "error", title: "Payout failed", desc: "The card ending 4417 has expired.", meta: "11 Mar", actions: button("Retry", "default") },
+      { status: "todo", title: "Customer notified" },
+    ])),
+    frame("Itinerary: Kansai in ten days", "icon markers · meta in the gutter · rail overrides", timeline([
+      { icon: "plane", title: "Arrive at Kansai International", desc: "EK 316, terminal 1. Pick up the ICOCA cards.", meta: "Day 1" },
+      { icon: "train", title: "Haruka express to Kyoto", desc: "75 minutes; reserved seats.", meta: "Day 1" },
+      { icon: "bed", title: "Ryokan Hanaya, Gion", desc: "Three nights. The rail out is dotted: free days follow.", meta: "Day 1–3", rail: "dotted" },
+      { icon: "mountain", title: "Kumano Kodo day hike", desc: "Optional excursion; the rail out is dashed.", meta: "Day 5", rail: "dashed" },
+      { icon: "utensils", title: "Nishiki Market food tour", desc: "Meet at the Teramachi entrance, 10:00.", meta: "Day 6" },
+    ], { meta: "gutter" })),
+    frame("Activity on VT-2481", "avatar markers · no statuses", timeline([
+      { avatar: "AO", title: "Amara Okafor added a traveller", desc: "Kenji Okafor, adult.", meta: "5 min ago" },
+      { avatar: "LM", title: "Lindiwe Mokoena changed the hotel", desc: "Gion Garden Hotel → Ryokan Hanaya.", meta: "1 h ago" },
+      { avatar: "SY", title: "System sent the payment receipt", meta: "2 Mar" },
+      { avatar: "AO", title: "Amara Okafor created the booking", meta: "2 Mar" },
+    ])),
+    frame("Self check-in at Ryokan Hanaya", "numbered markers · no statuses", timeline([
+      { title: "Collect the key code", desc: "Sent by SMS at 14:00 on the day you arrive." },
+      { title: "Open the lockbox by the side gate", desc: "The gate is on Hanamikoji-dori, left of the noren." },
+      { title: "Leave your shoes in the genkan", desc: "Slippers are on the rack by the step." },
+      { title: "Your room is on the first floor", desc: "Room 3, Sakura. Tea is ready on the table." },
+    ], { marker: "number" })),
+    frame("Changes to VT-2481", "dot markers · meta in the gutter", timeline([
+      { status: "current", title: "Seat change requested", meta: "Today 10:02" },
+      { status: "done", title: "Traveller added", meta: "Today 09:40" },
+      { status: "done", title: "Hotel changed", meta: "Yesterday" },
+      { status: "done", title: "Booking created", meta: "2 Mar" },
+    ], { marker: "dot", meta: "gutter" })),
+  ].join("");
+
+  // Rail ahead of the current item.
+  const ahead = rail => booking.map(it => ({ ...it, desc: null, rail: it.status === "done" ? null : rail }));
+  document.getElementById("rails").innerHTML = [
+    frame("Dashed", "candidate", timeline(ahead(null))),
+    frame("Dotted", "rail=\"dotted\" ahead", timeline(ahead("dotted"))),
+    frame("Solid", "colour only", timeline(ahead("solid"))),
+  ].join("");
+
+  // Control bar.
+  const params = new URLSearchParams(location.search);
+  const themeSelect = document.getElementById("theme-select");
+  const applyTheme = () => {
+    const link = document.getElementById("theme");
+    if (themeSelect.value) link.href = `../../util/theme-check/presets/${themeSelect.value}.css`;
+    else link.removeAttribute("href");
+  };
+  themeSelect.value = params.get("theme") ?? "";
+  themeSelect.addEventListener("change", applyTheme);
+  applyTheme();
+  const densitySelect = document.getElementById("density-select");
+  densitySelect.addEventListener("change", () => {
+    if (densitySelect.value) document.querySelector("main").dataset.saDensity = densitySelect.value;
+    else delete document.querySelector("main").dataset.saDensity;
+  });
+  if (params.get("mode") === "dark") document.documentElement.classList.add("dark");
+  document.getElementById("dark-toggle").addEventListener("click", () => document.documentElement.classList.toggle("dark"));
+</script>
+</body>
+</html>

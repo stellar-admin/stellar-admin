@@ -1,0 +1,18 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var requirements = new[]
+        {
+            (Status: ChecklistStatus.Done, Name: "Passport valid for six months", Detail: "Expires 2029; the return is 24 April."),
+            (Status: ChecklistStatus.InProgress, Name: "Visa", Detail: "Applied 3 March; usually five working days."),
+            (Status: ChecklistStatus.Todo, Name: "Visit Japan Web registration", Detail: "Completes the immigration and customs forms in advance."),
+        };
+    }
+    <sa-checklist>
+        @foreach (var requirement in requirements)
+        {
+            <sa-checklist-item status="requirement.Status" title="@requirement.Name" description="@requirement.Detail"/>
+        }
+    </sa-checklist>
+    <!-- code end -->
+</div>

@@ -1,0 +1,136 @@
+/* Checklist: a list of rows, each with a status icon, a title and description, trailing actions,
+   and anything else the author adds (a collapsible, a nested checklist) under the text. Built-in
+   statuses colour their icon; a custom status is the author's content. Rows are divided by a line
+   from the text column, across the full width, or not at all; a small size tightens the icons
+   and spacing.
+   Replaces: .sa-checklist, .sa-checklist-row, .sa-checklist-item, .sa-checklist-item-status,
+   .sa-checklist-item-title, .sa-checklist-item-description, .sa-checklist-item-actions */
+
+@layer sa.components {
+  .sa-checklist {
+    --_checklist-status: calc(5 * var(--sa-unit));
+    --_checklist-gap: calc(3 * var(--sa-unit));
+    --_checklist-py: calc(3 * var(--sa-unit));
+
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &[data-size="sm"] {
+      --_checklist-status: calc(4 * var(--sa-unit));
+      --_checklist-gap: calc(2 * var(--sa-unit));
+      --_checklist-py: calc(2 * var(--sa-unit));
+    }
+
+    /* The divider belongs to the row, so a link row's hover background doesn't cover it. */
+    & > li + li {
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline: calc(var(--_checklist-status) + var(--_checklist-gap)) 0;
+        border-block-start: var(--sa-border-width) solid var(--sa-color-line);
+      }
+    }
+    &[data-divider="full-width"] > li + li::before { inset-inline-start: 0; }
+    &[data-divider="none"] > li + li::before { content: none; }
+  }
+
+  /* The row: the status, a body column for the text and anything else the author adds, and a
+     trailing column for actions. Other children span from the body to the end, below the text. */
+  .sa-checklist-item {
+    display: grid;
+    grid-template-columns:
+      [status] var(--_checklist-status)
+      [body] minmax(0, 1fr)
+      [trailing] auto
+      [end];
+    align-content: start;
+    column-gap: var(--_checklist-gap);
+    padding-block: var(--_checklist-py);
+    color: inherit;
+    text-decoration: none;
+
+    & > * {
+      grid-column: body / end;
+      min-inline-size: 0;
+    }
+    & > :not(.sa-checklist-item-status, .sa-checklist-item-title, .sa-checklist-item-description, .sa-checklist-item-actions) {
+      margin-block-start: calc(3 * var(--sa-unit));
+    }
+
+    /* A nested checklist sits close under its parent's text, without dividers. */
+    & > .sa-checklist {
+      --_checklist-py: calc(1.5 * var(--sa-unit));
+      margin-block-start: var(--sa-unit);
+
+      & > li + li::before { content: none; }
+    }
+  }
+  a.sa-checklist-item {
+    margin-inline: calc(-2 * var(--sa-unit));
+    padding-inline: calc(2 * var(--sa-unit));
+    border-radius: var(--sa-radius-item);
+    outline: none;
+    transition: background-color var(--sa-motion-fast) var(--sa-motion-ease);
+
+    &:hover { background-color: var(--sa-color-hover); }
+    &:focus-visible { box-shadow: var(--sa-focus-shadow); }
+  }
+
+  .sa-checklist-item-status {
+    grid-column: status;
+    grid-row: 1 / span 2;
+    display: grid;
+    place-items: center;
+    align-self: start;
+    block-size: max(var(--_checklist-status), 1lh);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+
+    & > svg:not([class*="size-"]) {
+      inline-size: min(1.25rem, var(--_checklist-status));
+      block-size: min(1.25rem, var(--_checklist-status));
+    }
+    [data-status="done"] > & { color: var(--sa-color-success); }
+    [data-status="in-progress"] > & { color: var(--sa-color-accent); }
+  }
+
+  .sa-checklist-item-title {
+    grid-column: body;
+    grid-row: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    min-block-size: var(--_checklist-status);
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    line-height: var(--sa-leading-ui);
+
+    &[data-muted] { color: var(--sa-color-ink-muted); }
+  }
+  .sa-checklist-item-description {
+    grid-column: body;
+    grid-row: 2;
+    margin: 0;
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+    color: var(--sa-color-ink-muted);
+  }
+  .sa-checklist-item-actions {
+    grid-column: trailing;
+    grid-row: 1 / span 2;
+    align-self: start;
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    min-block-size: var(--_checklist-status);
+    font-size: var(--sa-text-xs);
+    color: var(--sa-color-ink-muted);
+  }
+}

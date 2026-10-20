@@ -1,0 +1,30 @@
+<div class="w-full max-w-lg">
+    <!-- code begin -->
+    <div class="grid gap-1">
+        <div class="flex items-baseline justify-between gap-2 text-sm font-semibold">
+            Ready to publish?
+            <span class="text-xs font-normal text-muted-foreground">Kumano Kodo, 5 days</span>
+        </div>
+        <sa-checklist>
+            <sa-checklist-item status="ChecklistStatus.Done" title="Photos" description="8 photos, cover set."/>
+            <sa-checklist-item status="ChecklistStatus.Done" title="Price per person" description="¥186,000, two to ten travellers."/>
+            <sa-checklist-item title="Description" description="Too short: 40 words, needs at least 120.">
+                <sa-checklist-item-status label="Failed">
+                    <sa-icon name="circle-x" class="text-destructive"/>
+                </sa-checklist-item-status>
+                <sa-checklist-item-actions>
+                    <sa-button-link variant="ButtonVariant.Outline" size="ButtonSize.Small" href="#">Edit description</sa-button-link>
+                </sa-checklist-item-actions>
+            </sa-checklist-item>
+            <sa-checklist-item title="Cancellation policy" description="Uses the default policy.">
+                <sa-checklist-item-status label="Needs attention">
+                    <sa-icon name="triangle-alert" class="text-[var(--sa-color-warning)]"/>
+                </sa-checklist-item-status>
+                <sa-checklist-item-actions>
+                    <sa-button-link variant="ButtonVariant.Ghost" size="ButtonSize.Small" href="#">Review</sa-button-link>
+                </sa-checklist-item-actions>
+            </sa-checklist-item>
+        </sa-checklist>
+    </div>
+    <!-- code end -->
+</div>

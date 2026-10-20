@@ -1,0 +1,24 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <sa-checklist>
+        <sa-checklist-item status="ChecklistStatus.Todo" title="To do" description="The default status."/>
+        <sa-checklist-item status="ChecklistStatus.InProgress" title="In progress"/>
+        <sa-checklist-item status="ChecklistStatus.Done" title="Done"/>
+        <sa-checklist-item title="Needs attention" description="A status of your own, with a warning icon.">
+            <sa-checklist-item-status label="Needs attention">
+                <sa-icon name="triangle-alert" class="text-[var(--sa-color-warning)]"/>
+            </sa-checklist-item-status>
+        </sa-checklist-item>
+        <sa-checklist-item title="Failed">
+            <sa-checklist-item-status label="Failed">
+                <sa-icon name="circle-x" class="text-destructive"/>
+            </sa-checklist-item-status>
+        </sa-checklist-item>
+        <sa-checklist-item title="Optional">
+            <sa-checklist-item-status label="Optional">
+                <sa-icon name="circle-dashed" class="text-muted-foreground"/>
+            </sa-checklist-item-status>
+        </sa-checklist-item>
+    </sa-checklist>
+    <!-- code end -->
+</div>

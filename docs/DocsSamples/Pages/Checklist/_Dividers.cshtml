@@ -1,0 +1,28 @@
+<div class="grid w-full max-w-md gap-8">
+    <!-- code begin -->
+    <div class="grid gap-2">
+        <p class="text-xs font-medium text-muted-foreground">Inset (default)</p>
+        <sa-checklist>
+            <sa-checklist-item status="ChecklistStatus.Done" title="Book flights" description="Emirates, 14 March."/>
+            <sa-checklist-item status="ChecklistStatus.InProgress" title="Apply for visa" description="Usually five working days."/>
+            <sa-checklist-item title="Buy travel insurance"/>
+        </sa-checklist>
+    </div>
+    <div class="grid gap-2">
+        <p class="text-xs font-medium text-muted-foreground">Full width</p>
+        <sa-checklist divider="ChecklistDivider.FullWidth">
+            <sa-checklist-item status="ChecklistStatus.Done" title="Book flights" description="Emirates, 14 March."/>
+            <sa-checklist-item status="ChecklistStatus.InProgress" title="Apply for visa" description="Usually five working days."/>
+            <sa-checklist-item title="Buy travel insurance"/>
+        </sa-checklist>
+    </div>
+    <div class="grid gap-2">
+        <p class="text-xs font-medium text-muted-foreground">None</p>
+        <sa-checklist divider="ChecklistDivider.None">
+            <sa-checklist-item status="ChecklistStatus.Done" title="Book flights" description="Emirates, 14 March."/>
+            <sa-checklist-item status="ChecklistStatus.InProgress" title="Apply for visa" description="Usually five working days."/>
+            <sa-checklist-item title="Buy travel insurance"/>
+        </sa-checklist>
+    </div>
+    <!-- code end -->
+</div>

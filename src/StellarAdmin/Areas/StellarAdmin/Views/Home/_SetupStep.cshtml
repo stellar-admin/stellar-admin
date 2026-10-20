@@ -5,40 +5,33 @@
     var variant = Model.Done ? ButtonVariant.Ghost : Model.Essential ? ButtonVariant.Default : ButtonVariant.Outline;
 }
 
-<div role="listitem">
-    <sa-item>
-        <sa-item-media variant="ItemMediaVariant.Icon">
-            @if (Model.Done)
-            {
-                <sa-icon name="circle-check" class="text-[var(--sa-color-success)]"/>
-            }
-            else if (Model.Warn)
-            {
-                <sa-icon name="triangle-alert" class="text-[var(--sa-color-warning)]"/>
-            }
-            else
-            {
-                <sa-icon name="@(Model.Optional ? "circle-dashed" : "circle")" class="text-muted-foreground"/>
-            }
-        </sa-item-media>
-        <sa-item-content>
-            <sa-item-title class="@(Model.Done ? "text-muted-foreground" : null)">
-                @Model.Title
-                @if (Model.Optional && !Model.Done)
-                {
-                    <sa-badge variant="BadgeVariant.Outline">Optional</sa-badge>
-                }
-            </sa-item-title>
-            <sa-item-description>@Model.Description</sa-item-description>
-        </sa-item-content>
-        <sa-item-actions>
-            <sa-button variant="variant" size="ButtonSize.Small" commandfor="--setup-step-@Model.Id" command="--toggle" class="sa-setup-toggle">
-                @(Model.Done ? "Change" : "Show me how")
-                <sa-icon name="chevron-down"/>
-            </sa-button>
-        </sa-item-actions>
-    </sa-item>
-    <sa-collapsible id="--setup-step-@Model.Id" hidden="@(open ? null : "")" class="grid grid-cols-[minmax(0,1fr)] gap-3 ps-3 pe-3 pb-4 sm:ps-12">
+<sa-checklist-item status="@(Model.Done ? ChecklistStatus.Done : null)" description="@Model.Description">
+    @if (!Model.Done && Model.Warn)
+    {
+        <sa-checklist-item-status label="Needs attention">
+            <sa-icon name="triangle-alert" class="text-[var(--sa-color-warning)]"/>
+        </sa-checklist-item-status>
+    }
+    else if (!Model.Done && Model.Optional)
+    {
+        <sa-checklist-item-status label="Optional">
+            <sa-icon name="circle-dashed"/>
+        </sa-checklist-item-status>
+    }
+    <sa-checklist-item-title muted="Model.Done">
+        @Model.Title
+        @if (Model.Optional && !Model.Done)
+        {
+            <sa-badge variant="BadgeVariant.Outline">Optional</sa-badge>
+        }
+    </sa-checklist-item-title>
+    <sa-checklist-item-actions>
+        <sa-button variant="variant" size="ButtonSize.Small" commandfor="--setup-step-@Model.Id" command="--toggle" class="sa-setup-toggle">
+            @(Model.Done ? "Change" : "Show me how")
+            <sa-icon name="chevron-down"/>
+        </sa-button>
+    </sa-checklist-item-actions>
+    <sa-collapsible id="--setup-step-@Model.Id" hidden="@(open ? null : "")" class="grid grid-cols-[minmax(0,1fr)] gap-3">
         @if (Model.Detail is { } detail)
         {
             <p class="text-sm text-muted-foreground">@detail</p>
@@ -52,4 +45,4 @@
             }
         </div>
     </sa-collapsible>
-</div>
+</sa-checklist-item>

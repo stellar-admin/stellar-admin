@@ -73,6 +73,13 @@ override StellarAdmin.UI.CarouselPreviousTagHelper.ProcessAsync(Microsoft.AspNet
 override StellarAdmin.UI.CarouselTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.CheckboxGroupItemMediaTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.CheckboxGroupItemTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.ChecklistItemActionsTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.ChecklistItemDescriptionTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.ChecklistItemLinkTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.ChecklistItemStatusTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.ChecklistItemTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.ChecklistItemTitleTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.ChecklistTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.ChipGroupTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.ChipRemoveTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.ChipTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
@@ -602,6 +609,51 @@ StellarAdmin.UI.CheckboxGroupTagHelper.Variant.set -> void
 StellarAdmin.UI.CheckboxGroupVariant
 StellarAdmin.UI.CheckboxGroupVariant.ChoiceCard = 1 -> StellarAdmin.UI.CheckboxGroupVariant
 StellarAdmin.UI.CheckboxGroupVariant.Default = 0 -> StellarAdmin.UI.CheckboxGroupVariant
+StellarAdmin.UI.ChecklistDivider
+StellarAdmin.UI.ChecklistDivider.FullWidth = 1 -> StellarAdmin.UI.ChecklistDivider
+StellarAdmin.UI.ChecklistDivider.Inset = 0 -> StellarAdmin.UI.ChecklistDivider
+StellarAdmin.UI.ChecklistDivider.None = 2 -> StellarAdmin.UI.ChecklistDivider
+StellarAdmin.UI.ChecklistItemActionsTagHelper
+StellarAdmin.UI.ChecklistItemActionsTagHelper.ChecklistItemActionsTagHelper() -> void
+StellarAdmin.UI.ChecklistItemDescriptionTagHelper
+StellarAdmin.UI.ChecklistItemDescriptionTagHelper.ChecklistItemDescriptionTagHelper() -> void
+StellarAdmin.UI.ChecklistItemLinkTagHelper
+StellarAdmin.UI.ChecklistItemLinkTagHelper.ChecklistItemLinkTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator, Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.Icons.IconOptions!>! iconOptions) -> void
+StellarAdmin.UI.ChecklistItemLinkTagHelper.Description.get -> string?
+StellarAdmin.UI.ChecklistItemLinkTagHelper.Description.set -> void
+StellarAdmin.UI.ChecklistItemLinkTagHelper.Status.get -> StellarAdmin.UI.ChecklistStatus?
+StellarAdmin.UI.ChecklistItemLinkTagHelper.Status.set -> void
+StellarAdmin.UI.ChecklistItemLinkTagHelper.Title.get -> string?
+StellarAdmin.UI.ChecklistItemLinkTagHelper.Title.set -> void
+StellarAdmin.UI.ChecklistItemStatusTagHelper
+StellarAdmin.UI.ChecklistItemStatusTagHelper.ChecklistItemStatusTagHelper() -> void
+StellarAdmin.UI.ChecklistItemStatusTagHelper.Label.get -> string?
+StellarAdmin.UI.ChecklistItemStatusTagHelper.Label.set -> void
+StellarAdmin.UI.ChecklistItemTagHelper
+StellarAdmin.UI.ChecklistItemTagHelper.ChecklistItemTagHelper(Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.Icons.IconOptions!>! iconOptions) -> void
+StellarAdmin.UI.ChecklistItemTagHelper.Description.get -> string?
+StellarAdmin.UI.ChecklistItemTagHelper.Description.set -> void
+StellarAdmin.UI.ChecklistItemTagHelper.Status.get -> StellarAdmin.UI.ChecklistStatus?
+StellarAdmin.UI.ChecklistItemTagHelper.Status.set -> void
+StellarAdmin.UI.ChecklistItemTagHelper.Title.get -> string?
+StellarAdmin.UI.ChecklistItemTagHelper.Title.set -> void
+StellarAdmin.UI.ChecklistItemTitleTagHelper
+StellarAdmin.UI.ChecklistItemTitleTagHelper.ChecklistItemTitleTagHelper() -> void
+StellarAdmin.UI.ChecklistItemTitleTagHelper.Muted.get -> bool?
+StellarAdmin.UI.ChecklistItemTitleTagHelper.Muted.set -> void
+StellarAdmin.UI.ChecklistSize
+StellarAdmin.UI.ChecklistSize.Default = 0 -> StellarAdmin.UI.ChecklistSize
+StellarAdmin.UI.ChecklistSize.Small = 1 -> StellarAdmin.UI.ChecklistSize
+StellarAdmin.UI.ChecklistStatus
+StellarAdmin.UI.ChecklistStatus.Done = 2 -> StellarAdmin.UI.ChecklistStatus
+StellarAdmin.UI.ChecklistStatus.InProgress = 1 -> StellarAdmin.UI.ChecklistStatus
+StellarAdmin.UI.ChecklistStatus.Todo = 0 -> StellarAdmin.UI.ChecklistStatus
+StellarAdmin.UI.ChecklistTagHelper
+StellarAdmin.UI.ChecklistTagHelper.ChecklistTagHelper() -> void
+StellarAdmin.UI.ChecklistTagHelper.Divider.get -> StellarAdmin.UI.ChecklistDivider?
+StellarAdmin.UI.ChecklistTagHelper.Divider.set -> void
+StellarAdmin.UI.ChecklistTagHelper.Size.get -> StellarAdmin.UI.ChecklistSize?
+StellarAdmin.UI.ChecklistTagHelper.Size.set -> void
 StellarAdmin.UI.ChipGroupAppearance
 StellarAdmin.UI.ChipGroupAppearance.Input = 1 -> StellarAdmin.UI.ChipGroupAppearance
 StellarAdmin.UI.ChipGroupAppearance.Plain = 0 -> StellarAdmin.UI.ChipGroupAppearance
@@ -1268,6 +1320,9 @@ StellarAdmin.UI.Icons.SemanticIconRole.BreadcrumbSeparator = 1 -> StellarAdmin.U
 StellarAdmin.UI.Icons.SemanticIconRole.CarouselNext = 2 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.CarouselPrevious = 3 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.CheckboxSelected = 4 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.ChecklistDone = 38 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.ChecklistInProgress = 37 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.ChecklistTodo = 36 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.ChoiceSelected = 5 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.Close = 6 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.DropdownIndicator = 7 -> StellarAdmin.UI.Icons.SemanticIconRole

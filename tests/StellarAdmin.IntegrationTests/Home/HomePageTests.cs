@@ -25,7 +25,7 @@ public class HomePageTests
         await Assert
             .That(
                 document
-                    .QuerySelectorAll("[role='listitem'] [data-slot='collapsible']")
+                    .QuerySelectorAll("[data-slot='checklist-item'] [data-slot='collapsible']")
                     .Select(step => step.Id)
             )
             .IsEquivalentTo([
@@ -36,7 +36,7 @@ public class HomePageTests
                 "--setup-step-sidebar",
             ]);
         await Assert
-            .That(document.TextContents("[role='listitem'] [data-slot='item-title']")[0])
+            .That(document.TextContents("[data-slot='checklist-item-title']")[0])
             .IsEqualTo("1 resource registered");
     }
 
@@ -177,7 +177,7 @@ public class HomePageTests
 
         // Assert
         await Assert
-            .That(document.TextContents("[role='listitem'] [data-slot='item-title']"))
+            .That(document.TextContents("[data-slot='checklist-item-title']"))
             .Contains("Panel is protected");
     }
 
@@ -198,7 +198,7 @@ public class HomePageTests
 
         // Assert
         await Assert
-            .That(document.TextContents("[role='listitem'] [data-slot='item-title']"))
+            .That(document.TextContents("[data-slot='checklist-item-title']"))
             .Contains("Panel is protected");
     }
 

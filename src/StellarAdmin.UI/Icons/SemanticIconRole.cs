@@ -184,4 +184,19 @@ public enum SemanticIconRole
     ///     An action that removes a value.
     /// </summary>
     Remove,
+
+    /// <summary>
+    ///     A checklist item that has not been started.
+    /// </summary>
+    ChecklistTodo,
+
+    /// <summary>
+    ///     A checklist item that has been started but is not finished.
+    /// </summary>
+    ChecklistInProgress,
+
+    /// <summary>
+    ///     A finished checklist item.
+    /// </summary>
+    ChecklistDone,
 }

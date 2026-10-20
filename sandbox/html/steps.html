@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steps</title>
+<!-- Prototype: is the home page's setup checklist one component with timelines, trackers, numbered instructions and activity
+     feeds, or two? One markup model (a list of steps, each with a marker, content, actions and details) rendered
+     with a few list-level switches. Uses the built library bundle; build it first (npm run build in
+     src/StellarAdmin.UI/Client). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+<style>
+  /* Candidate: written as the library would write it. */
+  @layer sa.components {
+    .sa-steps {
+      --_marker: calc(6 * var(--sa-unit));
+      --_gap: calc(3 * var(--sa-unit));
+      --_pad: calc(3 * var(--sa-unit));
+      --_rail: calc(2 * var(--sa-border-width, 1px));
+      --_rail-gap: calc(0.5 * var(--sa-unit));
+      --_rail-color: var(--sa-color-line);
+      display: grid;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: sa-step;
+    }
+
+    .sa-step {
+      position: relative;
+      display: grid;
+      grid-template-columns: [marker] var(--_marker) [body] minmax(0, 1fr) [actions] auto;
+      align-content: start;
+      column-gap: var(--_gap);
+      padding-block: var(--_pad);
+      counter-increment: sa-step;
+    }
+    .sa-steps:has(> .sa-step > .sa-step-meta) {
+      /* Line the gutter times up across the steps. */
+      grid-template-columns: max-content minmax(0, 1fr);
+    }
+    .sa-steps:has(> .sa-step > .sa-step-meta) > .sa-step {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+    }
+    .sa-steps:has(> .sa-step > .sa-step-meta) > .sa-step > :not(.sa-step-meta) {
+      grid-column: 2;
+    }
+    .sa-steps:has(> .sa-step > .sa-step-meta) > .sa-step > .sa-step-inner {
+      position: relative;
+      display: grid;
+      grid-template-columns: [marker] var(--_marker) [body] minmax(0, 1fr) [actions] auto;
+      column-gap: var(--_gap);
+    }
+
+    .sa-step-marker {
+      grid-column: marker;
+      grid-row: 1 / span 2;
+      align-self: start;
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      inline-size: var(--_marker);
+      block-size: var(--_marker);
+      border-radius: var(--sa-radius-round);
+      color: var(--sa-color-ink-muted);
+      font-size: var(--sa-text-xs);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .sa-step-marker svg {
+      inline-size: 1rem;
+      block-size: 1rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Status markers: rings for what's ahead, discs for what's settled. */
+    .sa-step[data-status] > .sa-step-marker, .sa-step[data-status] > .sa-step-inner > .sa-step-marker {
+      background: var(--sa-color-surface);
+      box-shadow: inset 0 0 0 var(--_rail) var(--sa-color-line-control);
+    }
+    .sa-step[data-status="optional"] .sa-step-marker {
+      box-shadow: none;
+      outline: var(--_rail) dashed var(--sa-color-line-control);
+      outline-offset: calc(-1 * var(--_rail));
+    }
+    .sa-step[data-status="current"] .sa-step-marker {
+      color: var(--sa-color-accent-text);
+      box-shadow: inset 0 0 0 var(--_rail) var(--sa-color-accent);
+    }
+    .sa-step[data-status="done"] .sa-step-marker,
+    .sa-step[data-status="warning"] .sa-step-marker,
+    .sa-step[data-status="error"] .sa-step-marker {
+      color: var(--sa-color-surface);
+      box-shadow: none;
+    }
+    .sa-step[data-status="done"] .sa-step-marker { background: var(--sa-color-success); }
+    .sa-step[data-status="warning"] .sa-step-marker { background: var(--sa-color-warning); }
+    .sa-step[data-status="error"] .sa-step-marker { background: var(--sa-color-danger); }
+    .sa-step[data-status="done"] .sa-step-marker svg,
+    .sa-step[data-status="warning"] .sa-step-marker svg,
+    .sa-step[data-status="error"] .sa-step-marker svg { stroke-width: 3; inline-size: 0.875rem; block-size: 0.875rem; }
+
+    /* Soft markers: the status as a tinted icon on no fill (the home page today). */
+    .sa-steps[data-marker-style="soft"] .sa-step .sa-step-marker {
+      background: transparent;
+      box-shadow: none;
+      outline: none;
+    }
+    .sa-steps[data-marker-style="soft"] .sa-step[data-status="done"] .sa-step-marker { color: var(--sa-color-success); }
+    .sa-steps[data-marker-style="soft"] .sa-step[data-status="warning"] .sa-step-marker { color: var(--sa-color-warning); }
+    .sa-steps[data-marker-style="soft"] .sa-step[data-status="error"] .sa-step-marker { color: var(--sa-color-danger); }
+    .sa-steps[data-marker-style="soft"] .sa-step .sa-step-marker svg { inline-size: 1.25rem; block-size: 1.25rem; stroke-width: 2; }
+
+    /* Numbered markers count the steps; a settled step shows its status instead. */
+    .sa-step-marker[data-number] {
+      background: var(--sa-color-surface);
+      box-shadow: inset 0 0 0 var(--_rail) var(--sa-color-line-control);
+      color: var(--sa-color-ink);
+    }
+    .sa-step-marker[data-number]::before { content: counter(sa-step); }
+    .sa-step[data-status="done"] .sa-step-marker[data-number]::before,
+    .sa-step[data-status="warning"] .sa-step-marker[data-number]::before,
+    .sa-step[data-status="error"] .sa-step-marker[data-number]::before { content: none; }
+    .sa-step-marker[data-number] svg { display: none; }
+    .sa-step[data-status="done"] .sa-step-marker[data-number] svg,
+    .sa-step[data-status="warning"] .sa-step-marker[data-number] svg,
+    .sa-step[data-status="error"] .sa-step-marker[data-number] svg { display: block; }
+
+    /* Dot markers: a small dot centred in the marker column, for dense feeds. */
+    .sa-step-marker[data-dot] { background: transparent !important; box-shadow: none !important; outline: none !important; }
+    .sa-step-marker[data-dot]::before {
+      content: "";
+      inline-size: calc(2.5 * var(--sa-unit));
+      block-size: calc(2.5 * var(--sa-unit));
+      border-radius: var(--sa-radius-round);
+      background: var(--sa-color-line-control);
+    }
+    .sa-step[data-status="done"] .sa-step-marker[data-dot]::before { background: var(--sa-color-success); }
+    .sa-step[data-status="current"] .sa-step-marker[data-dot]::before { background: var(--sa-color-accent); box-shadow: 0 0 0 calc(1 * var(--sa-unit)) color-mix(in oklab, var(--sa-color-accent) 22%, transparent); }
+    .sa-step[data-status="error"] .sa-step-marker[data-dot]::before { background: var(--sa-color-danger); }
+    .sa-step[data-status="warning"] .sa-step-marker[data-dot]::before { background: var(--sa-color-warning); }
+    .sa-step-marker[data-dot] svg { display: none; }
+
+    /* Media markers (an avatar or an icon of the author's) fill the marker. */
+    .sa-step-marker > .sa-avatar { inline-size: 100%; block-size: 100%; }
+    .sa-step-marker[data-media] { background: var(--sa-color-surface-sunken) !important; box-shadow: 0 0 0 var(--_rail) var(--sa-color-surface) !important; color: var(--sa-color-ink); }
+
+    .sa-step-header {
+      grid-column: body;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: calc(2 * var(--sa-unit));
+      /* Centre the first line on the marker. */
+      padding-block-start: max(0px, calc((var(--_marker) - 1lh) / 2));
+      font-size: var(--sa-text-sm);
+      line-height: var(--sa-leading-ui, 1.25rem);
+    }
+    .sa-step-title {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(2 * var(--sa-unit));
+      font-weight: 500;
+      color: var(--sa-color-ink);
+    }
+    .sa-step-header .sa-step-meta { margin-inline-start: auto; }
+    .sa-step-meta {
+      color: var(--sa-color-ink-muted);
+      font-size: var(--sa-text-xs);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .sa-step > .sa-step-meta {
+      grid-column: 1;
+      text-align: end;
+      padding-block-start: max(0px, calc((var(--_marker) - 1lh) / 2));
+      line-height: var(--sa-leading-ui, 1.25rem);
+    }
+    .sa-step-description {
+      grid-column: body;
+      margin: calc(0.5 * var(--sa-unit)) 0 0;
+      font-size: var(--sa-text-sm);
+      color: var(--sa-color-ink-muted);
+    }
+    .sa-step-actions {
+      grid-column: actions;
+      grid-row: 1 / span 2;
+      align-self: start;
+      display: flex;
+      gap: calc(2 * var(--sa-unit));
+    }
+    .sa-step-details {
+      display: block;
+      min-inline-size: 0;
+      grid-column: body / -1;
+      padding-block-start: calc(3 * var(--sa-unit));
+      font-size: var(--sa-text-sm);
+    }
+    .sa-step[data-status="done"] .sa-step-title { color: var(--sa-color-ink-muted); }
+    .sa-steps[data-connector="line"] .sa-step[data-status="done"] .sa-step-title { color: var(--sa-color-ink); }
+    .sa-step[data-status="todo"] .sa-step-title,
+    .sa-steps[data-connector="line"] .sa-step[data-status="optional"] .sa-step-title { color: var(--sa-color-ink-muted); }
+    .sa-steps:not([data-connector="line"]) .sa-step[data-status="todo"] .sa-step-title { color: var(--sa-color-ink); }
+
+    /* Divided: a rule between steps (the checklist). */
+    .sa-steps[data-divided] > .sa-step + .sa-step { border-block-start: var(--sa-border-width, 1px) solid var(--sa-color-line); }
+
+    /* Connector: a rail from each marker to the next. The rail out of a settled step takes its colour, so the
+       path travelled shows. */
+    .sa-steps[data-connector="line"] { --_pad: calc(2 * var(--sa-unit)); }
+    .sa-steps[data-connector="line"] > .sa-step:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      inset-block-start: calc(var(--_pad) + var(--_marker) + var(--_rail-gap));
+      inset-block-end: calc(-1 * var(--_pad) + var(--_rail-gap));
+      inset-inline-start: calc(var(--_x, 0px) + var(--_marker) / 2 - var(--_rail) / 2);
+      inline-size: var(--_rail);
+      border-radius: var(--_rail);
+      background: var(--_rail-color);
+    }
+    /* With times in the gutter the rail hangs off the inner grid, so it starts after the gutter. */
+    .sa-steps[data-connector="line"]:has(> .sa-step > .sa-step-meta) > .sa-step::before { content: none; }
+    .sa-steps[data-connector="line"]:has(> .sa-step > .sa-step-meta) > .sa-step:not(:last-child) > .sa-step-inner::before {
+      content: "";
+      position: absolute;
+      inset-block-start: calc(var(--_marker) + var(--_rail-gap));
+      inset-block-end: calc(-2 * var(--_pad) + var(--_rail-gap));
+      inset-inline-start: calc(var(--_marker) / 2 - var(--_rail) / 2);
+      inline-size: var(--_rail);
+      border-radius: var(--_rail);
+      background: var(--_rail-color);
+    }
+    .sa-steps[data-connector="line"]:has(> .sa-step > .sa-step-meta) > .sa-step[data-status="done"] > .sa-step-inner::before { background: var(--sa-color-success); }
+    .sa-steps[data-connector="line"] > .sa-step[data-status="done"]::before { background: var(--sa-color-success); }
+    .sa-steps[data-connector="line"][data-rail-gap="none"] { --_rail-gap: 0px; }
+  }
+
+  /* Prototype scaffolding, not extracted. */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  main { max-width: 1120px; margin: 0 auto; padding: 32px 16px 120px; display: grid; gap: 40px; }
+  h1 { font-size: 1.5rem; margin: 0 0 8px; }
+  h2 { font-size: 1.05rem; margin: 0 0 4px; }
+  .lede, .cap { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0 0 12px; max-width: 75ch; }
+  .frame { background: var(--sa-color-surface); border: 1px solid var(--sa-color-line); border-radius: var(--sa-radius-container); padding: 20px; }
+  .grid2 { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); }
+  .cardhead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .cardhead b { font-size: 0.95rem; }
+  .cardhead span { color: var(--sa-color-ink-muted); font-size: 0.8rem; }
+  .bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; align-items: center; }
+  .bar .lbl { font-size: 0.75rem; color: var(--sa-color-ink-muted); margin-inline: 8px 2px; }
+  pre.code { font-family: "JetBrains Mono", monospace; font-size: 12px; background: var(--sa-color-surface-sunken); border-radius: var(--sa-radius-inner); padding: 12px; overflow: auto; margin: 16px 0 0; white-space: pre; }
+  .progress { height: 6px; border-radius: 99px; background: var(--sa-color-surface-sunken); overflow: hidden; margin: 4px 0 12px; }
+  .progress > i { display: block; height: 100%; background: var(--sa-color-success); }
+  .note { border-inline-start: 3px solid var(--sa-color-accent); padding: 4px 12px; font-size: 0.875rem; }
+  .note p { margin: 6px 0; }
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 10; display: flex; gap: 6px; align-items: center; background: var(--sa-color-surface-raised); border: 1px solid var(--sa-color-line); border-radius: var(--sa-radius-control); padding: 6px; box-shadow: 0 4px 16px rgb(0 0 0 / 0.12); }
+  .controls select { font: inherit; font-size: 0.8rem; }
+  .ok { font-family: "JetBrains Mono", monospace; font-size: 0.75rem; }
+  [aria-pressed="true"] { outline: 2px solid var(--sa-color-accent); outline-offset: 1px; }
+  .sa-step-details pre { font-family: "JetBrains Mono", monospace; font-size: 12px; background: var(--sa-color-surface-sunken); padding: 10px; border-radius: var(--sa-radius-inner); margin: 8px 0 0; overflow: auto; }
+  .sa-step-details p { margin: 0; color: var(--sa-color-ink-muted); }
+  [aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .chev { transition: transform 0.15s; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>One component or two? Steps, checklists, timelines</h1>
+    <p class="lede">Every example on this page uses the same markup: <code>sa-steps</code> with <code>sa-step</code> rows, each holding a marker, a header (title and meta), a description, actions and details. What changes between a checklist, a tracker, numbered instructions, an itinerary and an activity feed is a handful of attributes on the list, the marker type and the statuses used. Try the playground first, then the real-world examples.</p>
+  </header>
+
+  <section>
+    <h2>Playground: one list, every shape</h2>
+    <p class="cap">The same five trip-preparation steps. Pick a preset or flip the switches individually; the markup below updates.</p>
+    <div class="bar" id="presets"></div>
+    <div class="bar" id="switches"></div>
+    <div class="frame"><div id="play"></div><pre class="code" id="play-code"></pre></div>
+  </section>
+
+  <section>
+    <h2>Real-world uses</h2>
+    <p class="cap">Voyager Travel screens a StellarAdmin app might build. Each caption names the switches it uses.</p>
+    <div class="grid2" id="examples"></div>
+  </section>
+
+  <section>
+    <h2>Marker style</h2>
+    <p class="cap">Solid discs (settled steps filled, open steps ringed) read well on a rail. The home page today uses soft tinted icons with no fill. Same list, both treatments.</p>
+    <div class="grid2" id="markers"></div>
+  </section>
+
+  <section class="note">
+    <h2>What the prototype shows</h2>
+    <p><b>Shared:</b> the anatomy (marker, title, meta, description, actions, details) and the statuses (done, current, to do, optional, warning, error). The checklist is a vertical list of steps with no rail and a rule between rows.</p>
+    <p><b>Out of scope:</b> a horizontal stepper. A booking wizard is form navigation (locked or clickable steps, panels, back and next) and gets its own component later.</p>
+    <p><b>Where it strains:</b> an activity feed has no status at all; it borrows the marker and rail and nothing else.</p>
+    <p><b>Precedent:</b> Ant Design, Mantine and Chakra each ship <i>Steps</i> (progress through a process, with a current step) and <i>Timeline</i> (dated events) as separate components with near-identical markup.</p>
+  </section>
+</main>
+
+<div class="controls">
+  <select id="theme-select" aria-label="Theme">
+    <option value="">Default</option>
+    <option value="ops">Ops</option>
+    <option value="soft">Soft</option>
+    <option value="ledger">Ledger</option>
+  </select>
+  <select id="density-select" aria-label="Density">
+    <option value="">Density: default</option>
+    <option value="compact">Compact</option>
+    <option value="comfortable">Comfortable</option>
+  </select>
+  <button class="sa-button sa-button-variant-outline sa-button-size-sm" data-slot="button" id="dark-toggle">Dark</button>
+</div>
+
+<script>
+  const icon = paths => `<svg viewBox="0 0 24 24" aria-hidden="true">${paths}</svg>`;
+  const I = {
+    check: icon('<path d="M20 6 9 17l-5-5"/>'),
+    circleCheck: icon('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'),
+    alert: icon('<path d="M12 8v5"/><path d="M12 17h.01"/>'),
+    triangle: icon('<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'),
+    x: icon('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
+    circle: icon('<circle cx="12" cy="12" r="10"/>'),
+    dashed: icon('<path d="M10.1 2.18a9.93 9.93 0 0 1 3.8 0"/><path d="M17.6 3.71a9.95 9.95 0 0 1 2.69 2.7"/><path d="M21.82 10.1a9.93 9.93 0 0 1 0 3.8"/><path d="M20.29 17.6a9.95 9.95 0 0 1-2.7 2.69"/><path d="M13.9 21.82a9.94 9.94 0 0 1-3.8 0"/><path d="M6.4 20.29a9.95 9.95 0 0 1-2.69-2.7"/><path d="M2.18 13.9a9.93 9.93 0 0 1 0-3.8"/><path d="M3.71 6.4a9.95 9.95 0 0 1 2.7-2.69"/>'),
+    dot: icon('<circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/>'),
+    plane: icon('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'),
+    bed: icon('<path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/>'),
+    train: icon('<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>'),
+    utensils: icon('<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>'),
+    pin: icon('<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>'),
+    chev: '<svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
+  };
+
+  // The icon the tag helper would emit for a status; soft markers use the outline versions.
+  const statusIcon = (status, soft) => ({
+    done: soft ? I.circleCheck : I.check,
+    current: soft ? I.circle : I.dot,
+    todo: soft ? I.circle : "",
+    optional: soft ? I.dashed : "",
+    warning: soft ? I.triangle : I.alert,
+    error: I.x,
+  })[status] ?? "";
+
+  let uid = 0;
+  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+  function renderSteps(steps, list) {
+    const attrs = [
+      list.connector ? ` data-connector="${list.connector}"` : "",
+      list.divided ? " data-divided" : "",
+      list.markerStyle === "soft" ? ` data-marker-style="soft"` : "",
+    ].join("");
+    const items = steps.map(s => {
+      const id = `step-${++uid}`;
+      const markerKind = s.avatar ? "media" : s.icon ? "media" : list.marker ?? "status";
+      const markerAttr = { number: " data-number", dot: " data-dot", media: " data-media" }[markerKind] ?? "";
+      const markerInner = s.avatar
+        ? `<span class="sa-avatar" data-slot="avatar"><span class="sa-avatar-fallback" data-slot="avatar-fallback">${s.avatar}</span></span>`
+        : s.icon ? I[s.icon] : statusIcon(s.status, list.markerStyle === "soft");
+      const meta = s.meta ? `<span class="sa-step-meta">${s.meta}</span>` : "";
+      const badge = s.status === "optional" && list.badges !== false ? ` <span class="sa-badge sa-badge-variant-outline" data-slot="badge">Optional</span>` : "";
+      const actions = s.actions?.length || s.details
+        ? `<div class="sa-step-actions">${(s.actions ?? []).map(a => `<button class="sa-button sa-button-variant-${a.variant ?? "outline"} sa-button-size-sm" data-slot="button">${a.label}</button>`).join("")}${s.details ? `<button class="sa-button sa-button-variant-${s.status === "done" ? "ghost" : "outline"} sa-button-size-sm" data-slot="button" commandfor="${id}" command="--toggle" aria-expanded="${!!s.open}">${s.status === "done" ? "Change" : "Show me how"} ${I.chev}</button>` : ""}</div>`
+        : "";
+      const details = s.details ? `<sel-collapsible id="${id}" class="sa-step-details" data-slot="collapsible"${s.open ? "" : " hidden"}>${s.details}</sel-collapsible>` : "";
+      const body = `<span class="sa-step-marker"${markerAttr}>${markerInner}</span>
+      <div class="sa-step-header"><span class="sa-step-title">${s.title}${badge}</span>${list.gutter ? "" : meta}</div>
+      ${s.desc ? `<p class="sa-step-description">${s.desc}</p>` : ""}${actions}${details}`;
+      const status = s.status ? ` data-status="${s.status}"` : "";
+      const current = s.status === "current" ? ` aria-current="step"` : "";
+      return list.gutter
+        ? `<li class="sa-step"${status}${current}>${meta}<div class="sa-step-inner">${body}</div></li>`
+        : `<li class="sa-step"${status}${current}>${body}</li>`;
+    }).join("");
+    return `<ol class="sa-steps"${attrs}>${items}</ol>`;
+  }
+
+  // Playground.
+  const trip = [
+    { status: "done", title: "Passport valid for six months", desc: "Checked against the return date, 14 April.", meta: "2 Mar", details: "<p>Renewals take three weeks; the passport expires in 2029.</p>" },
+    { status: "done", title: "Flights booked", desc: "JNB → KIX via DXB, booking VT-2481.", meta: "4 Mar", details: "<p>Seats 32A and 32B on both legs.</p>" },
+    { status: "warning", title: "Visa", desc: "The visa ends two days before the return flight.", meta: "6 Mar", actions: [{ label: "Extend", variant: "default" }] },
+    { status: "current", title: "Hotel in Kyoto", desc: "Three nights near Gion; two options held until Friday.", meta: "Today", details: "<p>Hold expires Friday 17:00 JST.</p><pre>Ryokan Hanaya · ¥42,000/night\nGion Garden Hotel · ¥31,500/night</pre>", open: true },
+    { status: "optional", title: "Travel insurance", desc: "Recommended for the Kumano Kodo hike.", meta: "—", details: "<p>Cover medical evacuation from trailheads.</p>" },
+  ];
+  const presets = {
+    Checklist: { divided: true, connector: null, marker: "status", markerStyle: "soft", meta: false, gutter: false },
+    Tracker: { divided: false, connector: "line", marker: "status", markerStyle: "solid", meta: true, gutter: false },
+    Timeline: { divided: false, connector: "line", marker: "dot", markerStyle: "solid", meta: true, gutter: true },
+  };
+  let state = { ...presets.Checklist };
+  const switches = [
+    ["divided", "Divided", [true, false]],
+    ["connector", "Rail", ["line", null]],
+    ["marker", "Marker", ["status", "number", "dot"]],
+    ["markerStyle", "Style", ["solid", "soft"]],
+    ["meta", "Meta", [true, false]],
+    ["gutter", "Meta in gutter", [false, true]],
+  ];
+
+  function drawPlay() {
+    const steps = trip.map(s => ({ ...s, meta: state.meta ? s.meta : null }));
+    const html = renderSteps(steps, state);
+    document.getElementById("play").innerHTML = html;
+    document.getElementById("play-code").textContent = razor(state);
+    document.querySelectorAll("#presets button").forEach(b => b.setAttribute("aria-pressed", String(JSON.stringify(presets[b.dataset.preset]) === JSON.stringify(state))));
+    document.querySelectorAll("#switches button").forEach(b => b.setAttribute("aria-pressed", String(JSON.stringify(state[b.dataset.key]) === b.dataset.value)));
+  }
+
+  // A sketch of the Razor that would produce the playground, so the API is visible next to the result.
+  function razor(st) {
+    const a = [
+      st.connector ? ` connector="true"` : "",
+      st.divided ? ` divided="true"` : "",
+      st.marker !== "status" ? ` marker="StepMarker.${st.marker[0].toUpperCase() + st.marker.slice(1)}"` : "",
+    ].join("");
+    const meta = st.meta ? (st.gutter ? `\n        <sa-step-meta placement="Gutter">Today</sa-step-meta>` : `\n        <sa-step-meta>Today</sa-step-meta>`) : "";
+    return `<sa-steps${a}>
+    <sa-step status="StepStatus.Done" title="Passport valid for six months">…</sa-step>
+    …
+    <sa-step status="StepStatus.Current">${meta}
+        <sa-step-title>Hotel in Kyoto</sa-step-title>
+        <sa-step-description>Three nights near Gion…</sa-step-description>
+        <sa-step-actions>…</sa-step-actions>
+        <sa-step-details>…</sa-step-details>
+    </sa-step>
+</sa-steps>`;
+  }
+
+  const btn = (label, data) => `<button class="sa-button sa-button-variant-outline sa-button-size-xs" data-slot="button" ${data}>${label}</button>`;
+  document.getElementById("presets").innerHTML = `<span class="lbl">Preset</span>` + Object.keys(presets).map(p => btn(p, `data-preset="${p}"`)).join("");
+  document.getElementById("switches").innerHTML = switches.map(([key, label, values]) =>
+    `<span class="lbl">${label}</span>` + values.map(v => btn(v === true ? "on" : v === false || v === null ? "off" : v, `data-key="${key}" data-value='${JSON.stringify(v)}'`)).join("")).join("");
+  document.getElementById("presets").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    state = { ...presets[b.dataset.preset] }; drawPlay();
+  });
+  document.getElementById("switches").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    state = { ...state, [b.dataset.key]: JSON.parse(b.dataset.value) }; drawPlay();
+  });
+  drawPlay();
+
+  // Real-world examples.
+  const examples = [
+    {
+      title: "Pre-trip checklist", sub: "divided · status markers · soft · actions · details",
+      progress: 2 / 5,
+      list: { divided: true, markerStyle: "soft" },
+      steps: [
+        { status: "done", title: "Connect your booking system", desc: "Bookings sync every 15 minutes.", details: "<pre>builder.AddVoyagerSync(o => o.Interval = TimeSpan.FromMinutes(15));</pre>" },
+        { status: "done", title: "Add your destinations", desc: "42 destinations across 11 countries." , details: "<p>Destinations appear in the sidebar under Catalogue.</p>" },
+        { status: "warning", title: "Require sign-in", desc: "Anyone who can reach the panel can edit bookings.", details: "<pre>builder.Services.AddStellarAdmin(o => o.RequireAuthorization(\"Staff\"));</pre>", open: true },
+        { status: "todo", title: "Brand the sidebar", desc: "Show the Voyager logo and name.", details: "<p>Use ConfigureBranding.</p>" },
+        { status: "optional", title: "Install the agent skills", desc: "Let your coding agent build resources for you.", details: "<pre>npx skills add stellar-admin/stellar-admin</pre>" },
+      ],
+    },
+    {
+      title: "Booking VT-2481", sub: "rail · status markers · meta",
+      list: { connector: "line" },
+      steps: [
+        { status: "done", title: "Booked", desc: "Online, by Amara Okafor.", meta: "2 Mar, 09:14" },
+        { status: "done", title: "Payment received", desc: "R 48,200 by card ending 4417.", meta: "2 Mar, 09:15" },
+        { status: "current", title: "Tickets issuing", desc: "Emirates usually issues within 24 hours.", meta: "In progress" },
+        { status: "todo", title: "Online check-in opens", meta: "12 Apr" },
+        { status: "todo", title: "Departure", desc: "EK 768, Johannesburg 18:25.", meta: "14 Apr" },
+      ],
+    },
+    {
+      title: "Self check-in at Ryokan Hanaya", sub: "rail · numbered markers · no statuses",
+      list: { connector: "line", marker: "number" },
+      steps: [
+        { title: "Collect the key code", desc: "Sent by SMS at 14:00 on the day you arrive." },
+        { title: "Open the lockbox by the side gate", desc: "The gate is on Hanamikoji-dori, left of the noren." },
+        { title: "Leave your shoes in the genkan", desc: "Slippers are on the rack by the step." },
+        { title: "Your room is on the first floor", desc: "Room 3, Sakura. Tea is ready on the table." },
+      ],
+    },
+    {
+      title: "Refund RF-118", sub: "rail · status markers · meta · an action on a failed step",
+      list: { connector: "line" },
+      steps: [
+        { status: "done", title: "Refund requested", desc: "Flight cancelled by the airline.", meta: "9 Mar" },
+        { status: "done", title: "Approved", desc: "By Lindiwe Mokoena.", meta: "10 Mar" },
+        { status: "error", title: "Payout failed", desc: "The card ending 4417 has expired.", meta: "11 Mar", actions: [{ label: "Retry", variant: "default" }] },
+        { status: "todo", title: "Customer notified" },
+      ],
+    },
+    {
+      title: "Itinerary: Kansai in ten days", sub: "rail · icon markers · meta in the gutter · no statuses",
+      list: { connector: "line", gutter: true },
+      steps: [
+        { icon: "plane", title: "Arrive at Kansai International", desc: "EK 316, terminal 1. Pick up the ICOCA cards.", meta: "Day 1" },
+        { icon: "train", title: "Haruka express to Kyoto", desc: "75 minutes; reserved seats.", meta: "Day 1" },
+        { icon: "bed", title: "Ryokan Hanaya, Gion", desc: "Three nights, kaiseki dinner included.", meta: "Day 1–3" },
+        { icon: "pin", title: "Fushimi Inari at dawn", meta: "Day 2" },
+        { icon: "utensils", title: "Nishiki Market food tour", desc: "Meet at the Teramachi entrance, 10:00.", meta: "Day 3" },
+      ],
+    },
+    {
+      title: "Activity on VT-2481", sub: "rail · avatar markers · meta · no statuses",
+      list: { connector: "line" },
+      steps: [
+        { avatar: "AO", title: "Amara Okafor added a traveller", desc: "Kenji Okafor, adult.", meta: "5 min ago" },
+        { avatar: "LM", title: "Lindiwe Mokoena changed the hotel", desc: "Gion Garden Hotel → Ryokan Hanaya.", meta: "1 h ago" },
+        { avatar: "SY", title: "System sent the payment receipt", meta: "2 Mar" },
+        { avatar: "AO", title: "Amara Okafor created the booking", meta: "2 Mar" },
+      ],
+    },
+  ];
+  document.getElementById("examples").innerHTML = examples.map(ex => `
+    <figure class="frame" style="margin:0">
+      <div class="cardhead"><b>${ex.title}</b><span>${ex.sub}</span></div>
+      ${ex.progress != null ? `<div class="progress"><i style="width:${ex.progress * 100}%"></i></div>` : ""}
+      ${renderSteps(ex.steps, ex.list)}
+    </figure>`).join("");
+
+  const markerSteps = [
+    { status: "done", title: "Flights booked" },
+    { status: "current", title: "Hotel in Kyoto" },
+    { status: "warning", title: "Visa ends early" },
+    { status: "error", title: "Payout failed" },
+    { status: "todo", title: "Check-in" },
+    { status: "optional", title: "Travel insurance" },
+  ];
+  document.getElementById("markers").innerHTML = ["solid", "soft"].flatMap(style => [
+    `<figure class="frame" style="margin:0"><div class="cardhead"><b>${style} · rail</b></div>${renderSteps(markerSteps, { connector: "line", markerStyle: style })}</figure>`,
+    `<figure class="frame" style="margin:0"><div class="cardhead"><b>${style} · divided</b></div>${renderSteps(markerSteps, { divided: true, markerStyle: style })}</figure>`,
+  ]).join("");
+
+  // Control bar.
+  const params = new URLSearchParams(location.search);
+  const themeSelect = document.getElementById("theme-select");
+  const applyTheme = () => {
+    const link = document.getElementById("theme");
+    if (themeSelect.value) link.href = `../../util/theme-check/presets/${themeSelect.value}.css`;
+    else link.removeAttribute("href");
+  };
+  themeSelect.value = params.get("theme") ?? "";
+  themeSelect.addEventListener("change", applyTheme);
+  applyTheme();
+  const densitySelect = document.getElementById("density-select");
+  densitySelect.addEventListener("change", () => {
+    if (densitySelect.value) document.querySelector("main").dataset.saDensity = densitySelect.value;
+    else delete document.querySelector("main").dataset.saDensity;
+  });
+  if (params.get("mode") === "dark") document.documentElement.classList.add("dark");
+  document.getElementById("dark-toggle").addEventListener("click", () => document.documentElement.classList.toggle("dark"));
+</script>
+</body>
+</html>

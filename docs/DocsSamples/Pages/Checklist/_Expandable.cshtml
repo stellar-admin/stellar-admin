@@ -1,0 +1,66 @@
+<div class="w-full max-w-xl">
+    <!-- code begin -->
+    <div class="grid gap-3">
+        <sa-progress value="40">
+            <sa-progress-label>Set up your panel</sa-progress-label>
+            <sa-progress-value>2 of 5</sa-progress-value>
+        </sa-progress>
+        <sa-checklist>
+            <sa-checklist-item status="ChecklistStatus.Done" title="Connect your booking system" description="Bookings sync every 15 minutes.">
+                <sa-checklist-item-actions>
+                    <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Small" commandfor="step-sync" command="--toggle">
+                        Change
+                        <sa-icon name="chevron-down" class="transition-transform in-aria-expanded:rotate-180"/>
+                    </sa-button>
+                </sa-checklist-item-actions>
+                <sa-collapsible id="step-sync" hidden="">
+                    <pre class="overflow-auto rounded-md bg-muted p-3 font-mono text-xs">builder.AddVoyagerSync();</pre>
+                </sa-collapsible>
+            </sa-checklist-item>
+            <sa-checklist-item title="Require sign-in" description="Anyone who can reach the panel can edit bookings.">
+                <sa-checklist-item-status label="Needs attention">
+                    <sa-icon name="triangle-alert" class="text-[var(--sa-color-warning)]"/>
+                </sa-checklist-item-status>
+                <sa-checklist-item-actions>
+                    <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Small" commandfor="step-auth" command="--toggle">
+                        Show me how
+                        <sa-icon name="chevron-down" class="transition-transform in-aria-expanded:rotate-180"/>
+                    </sa-button>
+                </sa-checklist-item-actions>
+                <sa-collapsible id="step-auth">
+                    <pre class="overflow-auto rounded-md bg-muted p-3 font-mono text-xs">resources.RequireAuthorization("Staff");</pre>
+                </sa-collapsible>
+            </sa-checklist-item>
+            <sa-checklist-item title="Brand the sidebar" description="Show the Voyager logo and name.">
+                <sa-checklist-item-actions>
+                    <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Small" commandfor="step-brand" command="--toggle">
+                        Show me how
+                        <sa-icon name="chevron-down" class="transition-transform in-aria-expanded:rotate-180"/>
+                    </sa-button>
+                </sa-checklist-item-actions>
+                <sa-collapsible id="step-brand" hidden="">
+                    <pre class="overflow-auto rounded-md bg-muted p-3 font-mono text-xs">admin.ConfigureBranding(b => b.Title("Voyager"));</pre>
+                </sa-collapsible>
+            </sa-checklist-item>
+            <sa-checklist-item description="Let your coding agent build resources for you.">
+                <sa-checklist-item-status label="Optional">
+                    <sa-icon name="circle-dashed" class="text-muted-foreground"/>
+                </sa-checklist-item-status>
+                <sa-checklist-item-title>
+                    Install the agent skills
+                    <sa-badge variant="BadgeVariant.Outline">Optional</sa-badge>
+                </sa-checklist-item-title>
+                <sa-checklist-item-actions>
+                    <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Small" commandfor="step-skills" command="--toggle">
+                        Show me how
+                        <sa-icon name="chevron-down" class="transition-transform in-aria-expanded:rotate-180"/>
+                    </sa-button>
+                </sa-checklist-item-actions>
+                <sa-collapsible id="step-skills" hidden="">
+                    <pre class="overflow-auto rounded-md bg-muted p-3 font-mono text-xs">npx skills add stellar-admin/stellar-admin</pre>
+                </sa-collapsible>
+            </sa-checklist-item>
+        </sa-checklist>
+    </div>
+    <!-- code end -->
+</div>

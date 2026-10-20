@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checklist scenarios</title>
+<!-- Prototype: the checklist on its own. Many scenarios, each with the Razor that would build it, so the set of
+     checklist tag helpers can be pulled back to the ones every scenario needs, and the rest left to components the
+     library already has (icon, button, collapsible, card, progress, avatar). Uses the built library bundle;
+     build it first (npm run build in src/StellarAdmin.UI/Client). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+<style>
+  /* Candidate: written as the library would write it. */
+  @layer sa.components {
+    .sa-checklist {
+      --_marker: calc(5 * var(--sa-unit));
+      --_gap: calc(3 * var(--sa-unit));
+      --_pad: calc(3 * var(--sa-unit));
+      display: grid;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .sa-checklist[data-size="sm"] { --_marker: calc(4 * var(--sa-unit)); --_gap: calc(2 * var(--sa-unit)); --_pad: calc(2 * var(--sa-unit)); }
+    /* Dividers start at the text column by default; full-width runs edge to edge; none draws nothing. */
+    .sa-checklist > li + li > .sa-checklist-item { position: relative; }
+    .sa-checklist > li + li > .sa-checklist-item::before {
+      content: "";
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline: calc(var(--_edge, 0px) + var(--_marker) + var(--_gap)) var(--_edge, 0px);
+      border-block-start: var(--sa-border-width, 1px) solid var(--sa-color-line);
+    }
+    .sa-checklist[data-divider="full-width"] > li + li > .sa-checklist-item::before { inset-inline-start: var(--_edge, 0px); }
+    .sa-checklist[data-divider="none"] > li + li > .sa-checklist-item::before { content: none; }
+
+    /* The row: the marker, a body column for the text and anything else the author adds, and a trailing column
+       for actions. Children the checklist doesn't know (a collapsible, a nested list) span from the body to
+       the end. */
+    .sa-checklist-item {
+      display: grid;
+      grid-template-columns: [marker] var(--_marker) [body] minmax(0, 1fr) [trailing] auto [end];
+      align-content: start;
+      column-gap: var(--_gap);
+      padding-block: var(--_pad);
+      color: inherit;
+      text-decoration: none;
+    }
+    .sa-checklist-item > * { grid-column: body / end; min-inline-size: 0; }
+    a.sa-checklist-item { --_edge: calc(2 * var(--sa-unit)); cursor: pointer; border-radius: var(--sa-radius-item); margin-inline: calc(-2 * var(--sa-unit)); padding-inline: calc(2 * var(--sa-unit)); }
+    a.sa-checklist-item:hover { background: var(--sa-color-hover); }
+
+    .sa-checklist-item-marker {
+      grid-column: marker;
+      grid-row: 1 / span 2;
+      display: grid;
+      place-items: center;
+      block-size: max(var(--_marker), 1lh);
+      color: var(--sa-color-ink-muted);
+      font-size: var(--sa-text-sm);
+      line-height: var(--sa-leading-ui, 1.25rem);
+    }
+    .sa-checklist-item-marker > svg { inline-size: min(1.25rem, var(--_marker)); block-size: min(1.25rem, var(--_marker)); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    [data-status="done"] > .sa-checklist-item-marker { color: var(--sa-color-success); }
+    [data-status="in-progress"] > .sa-checklist-item-marker { color: var(--sa-color-accent); }
+
+    .sa-checklist-item-title {
+      grid-column: body;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: calc(2 * var(--sa-unit));
+      min-block-size: var(--_marker);
+      font-size: var(--sa-text-sm);
+      font-weight: 500;
+      line-height: var(--sa-leading-ui, 1.25rem);
+    }
+    .sa-checklist-item-title[data-muted] { color: var(--sa-color-ink-muted); }
+    .sa-checklist-item-description {
+      grid-column: body;
+      margin: 0;
+      font-size: var(--sa-text-sm);
+      color: var(--sa-color-ink-muted);
+    }
+    .sa-checklist-item-actions {
+      grid-column: trailing;
+      grid-row: 1 / span 2;
+      align-self: start;
+      display: flex;
+      align-items: center;
+      gap: calc(2 * var(--sa-unit));
+      min-block-size: var(--_marker);
+      font-size: var(--sa-text-xs);
+      color: var(--sa-color-ink-muted);
+    }
+    /* What the author puts after the text (a collapsible, a nested checklist) starts below it. */
+    .sa-checklist-item > :not(.sa-checklist-item-marker, .sa-checklist-item-title, .sa-checklist-item-description, .sa-checklist-item-actions) { margin-block-start: calc(3 * var(--sa-unit)); }
+    .sa-checklist-item > .sa-checklist { --_pad: calc(1.5 * var(--sa-unit)); margin-block-start: calc(1 * var(--sa-unit)); }
+    .sa-checklist-item > .sa-checklist > li + li > .sa-checklist-item::before { content: none; }
+  }
+
+  .sa-checklist-item-marker > svg.chev, .sa-checklist-item-actions svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Prototype scaffolding, not extracted. */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 16px 120px; display: grid; gap: 28px; }
+  h1 { font-size: 1.5rem; margin: 0 0 8px; }
+  h2 { font-size: 1.05rem; margin: 0; }
+  .lede { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0; max-width: 85ch; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.8rem; color: var(--sa-color-ink-muted); margin-top: 12px; }
+  .scenario { display: grid; gap: 12px; }
+  .scenario header p { color: var(--sa-color-ink-muted); font-size: 0.85rem; margin: 2px 0 0; max-width: 85ch; }
+  .pair { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); align-items: start; }
+  .frame { background: var(--sa-color-surface); border: 1px solid var(--sa-color-line); border-radius: var(--sa-radius-container); padding: 16px 20px; min-width: 0; }
+  .frame.plain { background: transparent; border-style: dashed; }
+  pre.code { font-family: "JetBrains Mono", monospace; font-size: 11.5px; line-height: 1.5; background: var(--sa-color-surface-sunken); border-radius: var(--sa-radius-container); padding: 14px; overflow: auto; margin: 0; white-space: pre; color: var(--sa-color-ink-muted); }
+  .k-own { color: var(--sa-color-accent-text); font-weight: 600; }
+  .k-other { color: var(--sa-color-ink); font-weight: 600; text-decoration: underline dotted; text-underline-offset: 3px; }
+  .k-attr { color: var(--sa-color-success); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.75rem; align-items: center; }
+  .chips b { font-weight: 500; color: var(--sa-color-ink-muted); margin-inline-end: 2px; }
+  .chip { border-radius: 99px; padding: 1px 8px; border: 1px solid var(--sa-color-line); font-family: "JetBrains Mono", monospace; }
+  .chip.own { color: var(--sa-color-accent-text); border-color: color-mix(in oklab, var(--sa-color-accent) 40%, transparent); }
+  .chip.gap { color: var(--sa-color-danger-text); border-color: color-mix(in oklab, var(--sa-color-danger) 40%, transparent); }
+  .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 4px; font-size: 0.9rem; font-weight: 600; }
+  .head span { font-weight: 400; font-size: 0.8rem; color: var(--sa-color-ink-muted); }
+  .grouphead { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sa-color-ink-muted); margin: 12px 0 0; }
+  .grouphead:first-child { margin-top: 0; }
+  .sa-checklist-item pre { font-family: "JetBrains Mono", monospace; font-size: 12px; background: var(--sa-color-surface-sunken); padding: 10px; border-radius: var(--sa-radius-inner); margin: 0; overflow: auto; }
+  .chev { transition: transform 0.15s; }
+  [aria-expanded="true"] .chev { transform: rotate(180deg); }
+  table.matrix { border-collapse: collapse; font-size: 0.8rem; width: 100%; }
+  table.matrix th, table.matrix td { padding: 6px 8px; border-bottom: 1px solid var(--sa-color-line); text-align: center; }
+  table.matrix th:first-child, table.matrix td:first-child { text-align: start; font-family: "JetBrains Mono", monospace; }
+  table.matrix thead th { font-weight: 500; color: var(--sa-color-ink-muted); vertical-align: bottom; }
+  table.matrix td.y { color: var(--sa-color-success); font-weight: 600; }
+  .avatar-sm { inline-size: 1.5rem; block-size: 1.5rem; font-size: 0.65rem; }
+  .strip { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+  .opt { display: grid; gap: 8px; align-content: start; }
+  .opt .frame { padding: 8px 16px; }
+  .opt-name { font-size: 0.8rem; font-weight: 600; }
+  .opt-name span { font-weight: 400; color: var(--sa-color-ink-muted); }
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 10; display: flex; gap: 6px; align-items: center; background: var(--sa-color-surface-raised); border: 1px solid var(--sa-color-line); border-radius: var(--sa-radius-control); padding: 6px; box-shadow: 0 4px 16px rgb(0 0 0 / 0.12); }
+  .controls select { font: inherit; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Checklist scenarios</h1>
+    <p class="lede">Ten ways an application might use a checklist, each with the Razor that would build it, to find which checklist tag helpers every scenario needs and where a developer reaches for a component the library already has. The candidate: <code>sa-checklist</code>; <code>sa-checklist-item</code> and <code>sa-checklist-item-link</code> with <code>status</code> (Todo, InProgress, Done), <code>title</code> and <code>description</code> attributes; and the child parts <code>sa-checklist-item-title</code>, <code>sa-checklist-item-description</code>, <code>sa-checklist-item-status</code> (any content, for statuses beyond the three) and <code>sa-checklist-item-actions</code>. Giving an attribute and its own child part together throws. <code>divider</code> on the list draws rules from the text column (default), full width or not at all; <code>muted</code> on the title mutes it. There is no details part: anything else inside an item (a collapsible, a nested checklist) lays out below the text.</p>
+    <div class="legend">
+      <span><span class="k-own">sa-checklist-*</span> checklist tag helper</span>
+      <span><span class="k-other">sa-button</span> existing component</span>
+      <span><span class="k-attr">title=</span> shorthand attribute</span>
+    </div>
+  </header>
+  <section class="scenario">
+    <header><h2>Visual options</h2><p>Decided: ring-and-dot in-progress icon, outline circle check for done, muted ring for to do, 20px icons, 3-unit row padding, the accent colour on the in-progress icon only. The two strips below are attributes.</p></header>
+    <div id="options" style="display:grid;gap:28px"></div>
+  </section>
+  <div id="scenarios" style="display:grid;gap:40px"></div>
+
+  <section class="scenario">
+    <header><h2>Which parts each scenario uses</h2><p>Rows are candidate checklist parts and the other components the scenarios fall back to.</p></header>
+    <div class="frame" style="overflow:auto"><table class="matrix" id="matrix"></table></div>
+  </section>
+</main>
+
+<div class="controls">
+  <select id="theme-select" aria-label="Theme">
+    <option value="">Default</option>
+    <option value="ops">Ops</option>
+    <option value="soft">Soft</option>
+    <option value="ledger">Ledger</option>
+  </select>
+  <select id="density-select" aria-label="Density">
+    <option value="">Density: default</option>
+    <option value="compact">Compact</option>
+    <option value="comfortable">Comfortable</option>
+  </select>
+  <button class="sa-button sa-button-variant-outline sa-button-size-sm" data-slot="button" id="dark-toggle">Dark</button>
+</div>
+
+<script>
+  const svg = (paths, cls = "") => `<svg${cls ? ` class="${cls}"` : ""} viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">${paths}</svg>`;
+  const I = {
+    done: svg('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'),
+    todo: svg('<circle cx="12" cy="12" r="10"/>'),
+    "in-progress": svg('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/>'),
+    optional: svg('<path d="M10.1 2.18a9.93 9.93 0 0 1 3.8 0"/><path d="M17.6 3.71a9.95 9.95 0 0 1 2.69 2.7"/><path d="M21.82 10.1a9.93 9.93 0 0 1 0 3.8"/><path d="M20.29 17.6a9.95 9.95 0 0 1-2.7 2.69"/><path d="M13.9 21.82a9.94 9.94 0 0 1-3.8 0"/><path d="M6.4 20.29a9.95 9.95 0 0 1-2.69-2.7"/><path d="M2.18 13.9a9.93 9.93 0 0 1 0-3.8"/><path d="M3.71 6.4a9.95 9.95 0 0 1 2.7-2.69"/>'),
+    warning: svg('<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'),
+    error: svg('<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>'),
+    chev: svg('<path d="m6 9 6 6 6-6"/>', "chev"),
+    right: svg('<path d="m9 18 6-6-6-6"/>'),
+    calendar: svg('<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>'),
+  };
+  const statusText = { done: "Done", todo: "To do", "in-progress": "In progress" };
+
+  // What the tag helpers would emit. A built-in status sets data-status and draws its icon with hidden text; a
+  // custom sa-checklist-item-status renders the author's content and no data-status.
+  const builtIn = s => s in statusText;
+  const custom = {
+    warning: { icon: I.warning, color: "var(--sa-color-warning)", label: "Needs attention" },
+    error: { icon: I.error, color: "var(--sa-color-danger)", label: "Failed" },
+    optional: { icon: I.optional, color: "var(--sa-color-ink-muted)", label: "Optional" },
+  };
+  const marker = s => builtIn(s)
+    ? `<span class="sa-checklist-item-marker">${I[s]}<span class="sr-only">${statusText[s]}: </span></span>`
+    : `<span class="sa-checklist-item-marker" style="color:${custom[s].color}">${custom[s].icon}<span class="sr-only">${custom[s].label}: </span></span>`;
+  const title = (t, s, muted) => `<span class="sa-checklist-item-title"${muted ? " data-muted" : ""}>${t}${s === "optional" ? ` <span class="sa-badge sa-badge-variant-outline" data-slot="badge">Optional</span>` : ""}</span>`;
+  const desc = d => d ? `<p class="sa-checklist-item-description">${d}</p>` : "";
+  const actions = a => a ? `<div class="sa-checklist-item-actions">${a}</div>` : "";
+  const statusAttr = s => builtIn(s) ? ` data-status="${s}"` : "";
+  const item = (s, inner) => `<li><div class="sa-checklist-item"${statusAttr(s)}>${inner}</div></li>`;
+  const mutedRow = (s, t) => item(s, marker(s) + title(t, s, true));
+  const row = (s, t, d, a, extra = "") => item(s, marker(s) + title(t, s) + desc(d) + actions(a) + extra);
+  const list = (rows, attrs = "") => `<ul class="sa-checklist" role="list"${attrs}>${rows.join("")}</ul>`;
+  const btn = (label, variant = "outline", size = "sm", extra = "") => `<button class="sa-button sa-button-variant-${variant} sa-button-size-${size}" data-slot="button"${extra}>${label}</button>`;
+  const link = (label, variant = "link") => `<a href="#" class="sa-button sa-button-variant-${variant} sa-button-size-sm" data-slot="button">${label}</a>`;
+  const avatar = initials => `<span class="sa-avatar avatar-sm" data-slot="avatar"><span class="sa-avatar-fallback" data-slot="avatar-fallback">${initials}</span></span>`;
+  const progress = pct => `<div data-slot="progress" class="sa-progress-root"><div class="sa-progress-track" data-slot="progress-track"><div class="sa-progress-indicator" data-slot="progress-indicator" style="inset-inline-start: 0px; height: inherit; width: ${pct}%;"></div></div></div>`;
+  let uid = 0;
+  const collapsibleRow = (s, t, d, body, open) => {
+    const id = `cl-${++uid}`;
+    const toggle = btn(`${s === "done" ? "Change" : "Show me how"} ${I.chev}`, s === "done" ? "ghost" : "outline", "sm", ` commandfor="${id}" command="--toggle" aria-expanded="${!!open}"`);
+    return row(s, t, d, toggle, `<sel-collapsible id="${id}" data-slot="collapsible"${open ? "" : " hidden"}>${body}</sel-collapsible>`);
+  };
+
+  const scenarios = [
+    {
+      key: "status", name: "1. Status list, titles only",
+      about: "A packing list on a booking's view page. Read-only: the app decides what is done. The shorthand attributes cover it; the item has no children.",
+      parts: ["sa-checklist", "sa-checklist-item"], other: [],
+      html: list([row("done", "Passport and visa"), row("done", "JR Pass voucher"), row("in-progress", "Hiking boots, worn in"), row("todo", "Rain shell"), row("todo", "Trekking poles")]),
+      razor: `<sa-checklist>
+    <sa-checklist-item status="ChecklistStatus.Done" title="Passport and visa"/>
+    <sa-checklist-item status="ChecklistStatus.Done" title="JR Pass voucher"/>
+    <sa-checklist-item status="ChecklistStatus.InProgress" title="Hiking boots, worn in"/>
+    <sa-checklist-item title="Rain shell"/>   @* Todo is the default *@
+    <sa-checklist-item title="Trekking poles"/>
+</sa-checklist>`,
+    },
+    {
+      key: "desc", name: "2. With descriptions",
+      about: "Entry requirements for Japan on a traveller's record. Still all attributes, bound to the model.",
+      parts: ["sa-checklist", "sa-checklist-item"], other: [],
+      html: list([
+        row("done", "Passport valid for six months", "Expires 2029; the return is 24 April."),
+        row("in-progress", "Visa", "Applied 3 March; usually five working days."),
+        row("todo", "Visit Japan Web registration", "Completes the immigration and customs forms in advance."),
+      ]),
+      razor: `<sa-checklist>
+    @foreach (var requirement in Model.Requirements)
+    {
+        <sa-checklist-item status="requirement.Status"
+                           title="@requirement.Name"
+                           description="@requirement.Detail"/>
+    }
+</sa-checklist>`,
+    },
+    {
+      key: "fix", name: "3. Pre-flight check with fix links",
+      about: "Before a tour listing goes live: what passes, what fails, and a link to fix each failure. Failures aren't one of the three statuses, so they use sa-checklist-item-status with the author's own icon.",
+      parts: ["sa-checklist", "sa-checklist-item", "sa-checklist-item-status", "sa-checklist-item-actions"], other: ["sa-icon", "sa-button"],
+      html: `<div class="head">Ready to publish? <span>Kumano Kodo, 5 days</span></div>` + list([
+        row("done", "Photos", "8 photos, cover set."),
+        row("done", "Price per person", "¥186,000, two to ten travellers."),
+        row("error", "Description", "Too short: 40 words, needs at least 120.", link("Edit description", "outline")),
+        row("warning", "Cancellation policy", "Uses the default policy.", link("Review", "ghost")),
+      ]),
+      razor: `<sa-checklist-item title="Description" description="Too short: 40 words…">
+    <sa-checklist-item-status label="Failed">
+        <sa-icon name="circle-x" class="text-danger"/>
+    </sa-checklist-item-status>
+    <sa-checklist-item-actions>
+        <sa-button-link variant="ButtonVariant.Outline" size="ButtonSize.Small"
+                        asp-page="./Edit" asp-route-id="@tour.Id">Edit description</sa-button-link>
+    </sa-checklist-item-actions>
+</sa-checklist-item>`,
+      note: "Shorthand <code>title</code> and <code>description</code> next to child parts for the status and actions. An attribute and its own child part together (<code>title</code> with <code>sa-checklist-item-title</code>, <code>status</code> with <code>sa-checklist-item-status</code>) throw.",
+    },
+    {
+      key: "rowlink", name: "4. The whole row is a link",
+      about: "Onboarding a new agency: each row opens the page that completes it. A separate tag helper renders the row as an anchor, as sa-item-link does for sa-item.",
+      parts: ["sa-checklist", "sa-checklist-item-link", "sa-checklist-item-actions"], other: ["sa-icon"],
+      html: `<ul class="sa-checklist" role="list">${[
+        ["done", "Add your agency details", "Name, address and IATA number."],
+        ["in-progress", "Invite your agents", "2 of 6 seats used."],
+        ["todo", "Connect a payment provider", "Needed before you take bookings."],
+      ].map(([s, t, d]) => `<li><a href="#" class="sa-checklist-item"${statusAttr(s)}>${marker(s)}${title(t, s)}${desc(d)}<span class="sa-checklist-item-actions">${I.right}</span></a></li>`).join("")}</ul>`,
+      razor: `<sa-checklist>
+    <sa-checklist-item-link status="ChecklistStatus.InProgress" asp-page="/Agents/Invite"
+                            title="Invite your agents" description="2 of 6 seats used.">
+        <sa-checklist-item-actions><sa-icon name="chevron-right"/></sa-checklist-item-actions>
+    </sa-checklist-item-link>
+</sa-checklist>`,
+    },
+    {
+      key: "expand", name: "5. Expandable details (the home page)",
+      about: "The setup checklist: a button in the actions toggles a collapsible inside the item. Both are existing components; the checklist only gives the collapsible a place under the text. The warning and the optional step use sa-checklist-item-status.",
+      parts: ["sa-checklist", "sa-checklist-item", "sa-checklist-item-status", "sa-checklist-item-actions"], other: ["sa-icon", "sa-button", "sa-collapsible", "sa-progress"],
+      html: `<div class="head">Set up your panel <span>2 of 5</span></div>${progress(40)}<div style="height:8px"></div>` + list([
+        collapsibleRow("done", "Connect your booking system", "Bookings sync every 15 minutes.", "<pre>builder.AddVoyagerSync();</pre>"),
+        collapsibleRow("warning", "Require sign-in", "Anyone who can reach the panel can edit bookings.", `<pre>resources.RequireAuthorization("Staff");</pre>`, true),
+        collapsibleRow("todo", "Brand the sidebar", "Show the Voyager logo and name.", "<pre>admin.ConfigureBranding(b => b.Title(\"Voyager\"));</pre>"),
+        collapsibleRow("optional", "Install the agent skills", "Let your coding agent build resources for you.", "<pre>npx skills add stellar-admin/stellar-admin</pre>"),
+      ]),
+      razor: `<sa-checklist-item title="Require sign-in" description="Anyone who can reach…">
+    <sa-checklist-item-status label="Needs attention">
+        <sa-icon name="triangle-alert" class="text-warning"/>
+    </sa-checklist-item-status>
+    <sa-checklist-item-actions>
+        <sa-button size="ButtonSize.Small" variant="ButtonVariant.Outline"
+                   commandfor="step-auth" command="--toggle">
+            Show me how <sa-icon name="chevron-down"/>
+        </sa-button>
+    </sa-checklist-item-actions>
+    <sa-collapsible id="step-auth">…tabs, code, links…</sa-collapsible>
+</sa-checklist-item>
+
+<sa-checklist-item description="Let your coding agent…">
+    <sa-checklist-item-status label="Optional"><sa-icon name="circle-dashed"/></sa-checklist-item-status>
+    <sa-checklist-item-title>Install the agent skills <sa-badge variant="BadgeVariant.Outline">Optional</sa-badge></sa-checklist-item-title>
+    …
+</sa-checklist-item>`,
+      note: "The optional step needs <code>sa-checklist-item-title</code> because its title holds a badge; its description stays an attribute.",
+    },
+    {
+      key: "groups", name: "6. Groups with headings",
+      about: "A day-of-travel list in sections. Built as several checklists with ordinary headings in between.",
+      parts: ["sa-checklist", "sa-checklist-item"], other: [],
+      html: `<p class="grouphead">Before you leave</p>` + list([row("done", "Check in online"), row("done", "Print the ryokan address in Japanese")]) +
+        `<p class="grouphead">At Kansai airport</p>` + list([row("in-progress", "Collect the pocket Wi-Fi"), row("todo", "Exchange the JR Pass voucher")]),
+      razor: `<h3 class="…">Before you leave</h3>
+<sa-checklist>…</sa-checklist>
+<h3 class="…">At Kansai airport</h3>
+<sa-checklist>…</sa-checklist>`,
+      note: "A <code>sa-checklist-group</code> with a label would only style the heading. Plain markup seems enough.",
+    },
+    {
+      key: "nested", name: "7. Nested sub-items",
+      about: "A visa application with its own steps. A checklist inside an item lays out under the text like any other child.",
+      parts: ["sa-checklist", "sa-checklist-item"], other: [],
+      html: list([
+        row("done", "Flights"),
+        row("in-progress", "Visa application", "2 of 4 done.", null, list([row("done", "Passport photo"), row("done", "Application form"), row("todo", "Proof of funds"), row("todo", "Fee, ¥3,000")], ` data-size="sm"`)),
+        row("todo", "Travel insurance"),
+      ]),
+      razor: `<sa-checklist-item status="ChecklistStatus.InProgress" title="Visa application" description="2 of 4 done.">
+    <sa-checklist size="ChecklistSize.Small">
+        <sa-checklist-item status="ChecklistStatus.Done" title="Passport photo"/>
+        …
+    </sa-checklist>
+</sa-checklist-item>`,
+    },
+    {
+      key: "task", name: "8. Assignee and due date",
+      about: "Tasks on a group booking, with who owns each and when it's due. The actions part holds a date and an avatar, as sa-item-actions holds a chevron in the Item docs.",
+      parts: ["sa-checklist", "sa-checklist-item", "sa-checklist-item-actions"], other: ["sa-avatar"],
+      html: list([
+        row("done", "Book the group's coach", null, `<span>12 Mar</span>${avatar("LM")}`),
+        row("in-progress", "Confirm dietary needs with the ryokan", null, `<span style="color:var(--sa-color-danger-text)">Due today</span>${avatar("AO")}`),
+        row("todo", "Send the final itinerary", null, `<span>2 Apr</span>${avatar("KT")}`),
+      ]),
+      razor: `<sa-checklist-item status="ChecklistStatus.InProgress" title="Confirm dietary needs…">
+    <sa-checklist-item-actions>
+        <span>Due today</span>
+        <sa-avatar name="Amara Okafor" size="AvatarSize.Small"/>
+    </sa-checklist-item-actions>
+</sa-checklist-item>`,
+    },
+    {
+      key: "widget", name: "9. Compact widget",
+      about: "A small getting-started card on a dashboard. Small size, titles only, a card and a progress bar around it.",
+      parts: ["sa-checklist", "sa-checklist-item", "sa-checklist-item-title"], other: ["sa-card", "sa-progress"],
+      html: `<div style="max-width:300px">
+        <div class="sa-card" data-slot="card" data-size="sm">
+          <div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Getting started</div><div data-slot="card-description" class="sa-card-description">3 of 5 done</div></div>
+          <div data-slot="card-content" class="sa-card-content">${progress(60)}<div style="height:8px"></div>${list([
+            mutedRow("done", "Create your first tour"), mutedRow("done", "Add photos"), mutedRow("done", "Set prices"), row("in-progress", "Invite an agent"), row("todo", "Take a test booking"),
+          ], ` data-size="sm"`)}</div>
+        </div></div>`,
+      razor: `<sa-card size="CardSize.Small">
+    <sa-card-header>
+        <sa-card-title>Getting started</sa-card-title>
+        <sa-card-description>3 of 5 done</sa-card-description>
+    </sa-card-header>
+    <sa-card-content>
+        <sa-progress value="60"/>
+        <sa-checklist size="ChecklistSize.Small">
+            <sa-checklist-item status="ChecklistStatus.Done">
+                <sa-checklist-item-title muted>Create your first tour</sa-checklist-item-title>
+            </sa-checklist-item>
+            …
+        </sa-checklist>
+    </sa-card-content>
+</sa-card>`,
+      note: "Done titles keep their colour by default. This widget mutes them with <code>muted</code> on <code>sa-checklist-item-title</code>, which works on any row; the <code>title</code> shorthand can't mute.",
+    },
+    {
+      key: "statuses", name: "10. Built-in and custom statuses",
+      about: "Three built-in statuses draw their icon and hidden text (\"Done:\"). Anything else is sa-checklist-item-status with the author's content and a label for screen readers.",
+      parts: ["sa-checklist", "sa-checklist-item", "sa-checklist-item-status"], other: ["sa-icon"],
+      html: list([
+        row("todo", "Todo", "Built in, the default."), row("in-progress", "InProgress", "Built in."), row("done", "Done", "Built in."),
+        row("warning", "Custom: needs attention", "triangle-alert, warning colour."), row("error", "Custom: failed", "circle-x, danger colour."), row("optional", "Custom: optional", "circle-dashed, muted."),
+      ]),
+      razor: `public enum ChecklistStatus { Todo, InProgress, Done }
+
+<sa-checklist-item title="Payout failed">
+    <sa-checklist-item-status label="Failed">
+        <sa-icon name="circle-x" class="text-danger"/>
+    </sa-checklist-item-status>
+</sa-checklist-item>`,
+      note: "A custom status has no <code>data-status</code>, so nothing about the row changes but the icon. <code>label</code> is required on <code>sa-checklist-item-status</code>: it is the hidden text a screen reader announces.",
+    },
+  ];
+
+  // Visual options. Each option renders the same short list with one attribute changed.
+  const sample = (listAttrs, muteDone) => list([
+    item("done", marker("done") + title("Book flights", "done", muteDone) + desc("Emirates, 14 March.")),
+    row("in-progress", "Apply for visa", "Usually five working days."),
+    row("todo", "Buy travel insurance"),
+  ], listAttrs);
+  const strips = [
+    { name: "Divider", about: "<code>divider</code> on <code>sa-checklist</code>.", opts: [
+      ["Inset (default)", "", false],
+      ["FullWidth", ` data-divider="full-width"`, false],
+      ["None", ` data-divider="none"`, false],
+    ] },
+    { name: "Muted title", about: "Done titles keep their colour; <code>muted</code> on <code>sa-checklist-item-title</code> mutes any row.", opts: [
+      ["Not muted (default)", "", false],
+      ["muted on the done title", "", true],
+    ] },
+  ];
+  document.getElementById("options").innerHTML = strips.map(st => `
+    <div class="scenario"><header><h2 style="font-size:0.95rem">${st.name}</h2><p>${st.about}</p></header>
+    <div class="strip">${st.opts.map(([n, a, m]) => `<div class="opt"><div class="opt-name">${n}</div><div class="frame">${sample(a, m)}</div></div>`).join("")}</div></div>`).join("");
+
+  const highlight = code => code
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/(&lt;\/?)(sa-checklist[\w-]*)/g, '$1<span class="k-own">$2</span>')
+    .replace(/(&lt;\/?)(sa-(?!checklist)[\w-]+)/g, '$1<span class="k-other">$2</span>')
+    .replace(/( (?:status|title|description|label)=)/g, '<span class="k-attr">$1</span>');
+
+  document.getElementById("scenarios").innerHTML = scenarios.map(s => `
+    <section class="scenario" id="${s.key}">
+      <header><h2>${s.name}</h2><p>${s.about}</p></header>
+      <div class="pair">
+        <div class="frame">${s.html}</div>
+        <pre class="code">${highlight(s.razor)}</pre>
+      </div>
+      <div class="chips"><b>Checklist</b>${s.parts.map(p => `<span class="chip own">${p.replace("sa-checklist-", "-")}</span>`).join("")}
+        ${s.other.length ? `<b style="margin-inline-start:12px">Existing</b>${s.other.map(p => `<span class="chip">${p}</span>`).join("")}` : ""}</div>
+      ${s.note ? `<p class="lede" style="font-size:0.85rem"><b>Note:</b> ${s.note}</p>` : ""}
+    </section>`).join("");
+
+  // Matrix. Title and description count as used whether written as attributes or child parts.
+  const rows = [
+    ["sa-checklist", "parts"], ["sa-checklist-item", "parts"], ["sa-checklist-item-link", "parts"], ["sa-checklist-item-title", "parts"], ["sa-checklist-item-status", "parts"], ["sa-checklist-item-actions", "parts"],
+    ["sa-icon", "other"], ["sa-button", "other"], ["sa-collapsible", "other"], ["sa-avatar", "other"], ["sa-card", "other"], ["sa-progress", "other"],
+  ];
+  const uses = (s, name) => name === "sa-checklist-item-title" ? s.razor.includes("<sa-checklist-item-title") : (s.parts.includes(name) || s.other.includes(name));
+  document.getElementById("matrix").innerHTML = `<thead><tr><th></th>${scenarios.map((s, i) => `<th title="${s.name}">${i + 1}</th>`).join("")}<th>Uses</th></tr></thead><tbody>` +
+    rows.map(([name, kind]) => {
+      const hits = scenarios.map(s => uses(s, name));
+      return `<tr><td class="${kind === "parts" ? "k-own" : ""}">${name}</td>${hits.map(h => `<td class="${h ? "y" : ""}">${h ? "●" : ""}</td>`).join("")}<td>${hits.filter(Boolean).length}</td></tr>`;
+    }).join("") + "</tbody>";
+
+  // Control bar.
+  const params = new URLSearchParams(location.search);
+  const themeSelect = document.getElementById("theme-select");
+  const applyTheme = () => {
+    const l = document.getElementById("theme");
+    if (themeSelect.value) l.href = `../../util/theme-check/presets/${themeSelect.value}.css`;
+    else l.removeAttribute("href");
+  };
+  themeSelect.value = params.get("theme") ?? "";
+  themeSelect.addEventListener("change", applyTheme);
+  applyTheme();
+  const densitySelect = document.getElementById("density-select");
+  densitySelect.addEventListener("change", () => {
+    if (densitySelect.value) document.querySelector("main").dataset.saDensity = densitySelect.value;
+    else delete document.querySelector("main").dataset.saDensity;
+  });
+  if (params.get("mode") === "dark") document.documentElement.classList.add("dark");
+  document.getElementById("dark-toggle").addEventListener("click", () => document.documentElement.classList.toggle("dark"));
+</script>
+</body>
+</html>
