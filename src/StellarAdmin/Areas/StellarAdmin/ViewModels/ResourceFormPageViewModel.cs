@@ -21,6 +21,12 @@ public sealed class ResourceFormPageViewModel
     public const string BindingPrefix = nameof(Entity);
 
     /// <summary>
+    ///     Gets the label of the button that saves the new resource and opens the create page
+    ///     again, or <see langword="null" /> when the form has no such button.
+    /// </summary>
+    public string? AddAnotherLabel { get; internal set; }
+
+    /// <summary>
     ///     Gets the page's delete confirmation dialog, or <see langword="null" /> when the
     ///     resource can't be deleted.
     /// </summary>
@@ -91,6 +97,9 @@ public sealed class ResourceFormPageViewModel
     public string Title { get; internal init; } = "";
 
     internal FormGridColumnDefinitions Columns { get; init; }
+
+    // Set after save and add another, so the next resource can be typed straight away
+    internal bool FocusFirstField { get; set; }
 
     internal ResourceFormPageViewModel() { }
 }

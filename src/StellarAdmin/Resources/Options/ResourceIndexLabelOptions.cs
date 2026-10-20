@@ -25,7 +25,7 @@ public sealed class ResourceIndexLabelOptions
 
     /// <summary>
     ///     Gets or sets the delegate that returns the default message of the toast shown when a
-    ///     resource is added in a new row.
+    ///     resource is added in a new row or saved with the add another button.
     /// </summary>
     /// <value>
     ///     A delegate that returns the text for a resource. The default returns the resource's

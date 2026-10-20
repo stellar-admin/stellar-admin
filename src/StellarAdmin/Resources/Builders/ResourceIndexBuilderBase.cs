@@ -48,7 +48,8 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Sets the message of the toast shown when a resource is added in a new row.
+    ///     Sets the message of the toast shown when a resource is added in a new row or saved with
+    ///     the add another button.
     /// </summary>
     /// <value>
     ///     The message, or <see langword="null" /> to use the default from

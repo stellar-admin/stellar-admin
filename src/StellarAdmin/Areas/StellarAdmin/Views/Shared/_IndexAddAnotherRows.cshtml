@@ -1,0 +1,6 @@
+@model IndexAddAnotherRowsViewModel
+
+@* After an inline save and add another: the saved row and the new row, in grid order, each rendered as the grid
+   renders its rows *@
+<partial name="_IndexDataGrid" model="Model.First" />
+<partial name="_IndexDataGrid" model="Model.Second" />

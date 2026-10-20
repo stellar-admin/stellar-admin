@@ -14,7 +14,9 @@
         }
     </sa-page-header>
 
-    <form method="post">
+    @* Ctrl+Enter or Cmd+Enter submits the form, and Ctrl+Shift+Enter or Cmd+Shift+Enter saves and adds another. After
+       adding another, the form focuses its first field *@
+    <form method="post" data-resource-form data-focus-first-field="@(Model.FocusFirstField ? "true" : "false")">
         <sa-field-group>
             @Html.ValidationSummary(excludePropertyErrors: true)
 
@@ -30,7 +32,12 @@
                 <div class="sa-resource-form-actions">
                     <sa-slot-outlet name="pre-form-actions"/>
                     <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="form-cancel">Cancel</sa-button-link>
-                    <sa-button type="submit">@Model.SubmitLabel</sa-button>
+                    @if (Model.AddAnotherLabel is { } addAnotherLabel)
+                    {
+                        <sa-button type="submit" name="after" value="add-another" variant="ButtonVariant.Outline"
+                                   data-form-add-another aria-keyshortcuts="Control+Shift+Enter Meta+Shift+Enter">@addAnotherLabel</sa-button>
+                    }
+                    <sa-button type="submit" data-form-submit aria-keyshortcuts="Control+Enter Meta+Enter">@Model.SubmitLabel</sa-button>
                     <sa-slot-outlet name="post-form-actions"/>
                 </div>
             </div>

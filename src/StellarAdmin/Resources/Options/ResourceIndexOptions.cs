@@ -31,7 +31,8 @@ public sealed class ResourceIndexOptions
     public string? CreateLabel { get; internal set; }
 
     /// <summary>
-    ///     Gets the message of the toast shown when a resource is added in a new row.
+    ///     Gets the message of the toast shown when a resource is added in a new row or saved with
+    ///     the add another button.
     /// </summary>
     /// <value>
     ///     The text, or <see langword="null" /> to use

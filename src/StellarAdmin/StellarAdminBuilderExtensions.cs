@@ -133,6 +133,12 @@ public static partial class StellarAdminBuilderExtensions
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<
                     IValidateOptions<ResourceOptions<TResource>>,
+                    AddAnotherOptionsValidator<TResource>
+                >()
+            );
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<
+                    IValidateOptions<ResourceOptions<TResource>>,
                     ImageEditorOptionsValidator<TResource>
                 >()
             );

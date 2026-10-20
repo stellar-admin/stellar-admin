@@ -8,6 +8,18 @@ namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 public sealed class ResourceIndexInlineRowsViewModel
 {
     /// <summary>
+    ///     Gets the label of the button that saves the new row and opens another, or
+    ///     <see langword="null" /> when the new row has no such button.
+    /// </summary>
+    public string? AddAnotherLabel { get; init; }
+
+    /// <summary>
+    ///     Gets the number of resources added with the add another button since the new row was
+    ///     first opened.
+    /// </summary>
+    public int AddedCount { get; init; }
+
+    /// <summary>
     ///     Gets the label of the cancel button.
     /// </summary>
     public required string CancelLabel { get; init; }

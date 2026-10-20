@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using StellarAdmin.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
 using StellarAdmin.Resources;
@@ -37,6 +38,11 @@ internal sealed class ResourceController<TResource>(
     private const string InlineRowsPrefix = "rows";
     private const string NewRowKey = "new";
 
+    // The create page's add another button posts after=add-another, and the next create page finds the kept fields'
+    // posted values in TempData
+    private const string AddAnotherAction = "add-another";
+    private const string AddAnotherTempDataKey = "StellarAdminAddAnother";
+
     // An image upload's body is the file and the multipart form around it
     private const long ImageUploadOverhead = 64 * 1024;
 
@@ -56,9 +62,35 @@ internal sealed class ResourceController<TResource>(
     [HttpGet]
     public async Task<IActionResult> Create(CancellationToken cancellationToken)
     {
-        return _resourceOptions.Create is { InlineRow: null } create
-            ? await CreateView(create.CreateModel(), cancellationToken)
-            : NotFound();
+        if (_resourceOptions.Create is not { InlineRow: null } create)
+        {
+            return NotFound();
+        }
+
+        // After save and add another, the new model starts with the kept fields' values and the form with focus
+        var resource = create.CreateModel();
+        var addingAnother = false;
+        if (create.AddAnother is not null && TempData[AddAnotherTempDataKey] is string kept)
+        {
+            addingAnother = true;
+            var values = JsonSerializer.Deserialize<Dictionary<string, string?[]>>(kept)!;
+            await BindKeptFieldsAsync(
+                resource,
+                new FormValueProvider(
+                    BindingSource.Form,
+                    new FormCollection(
+                        values.ToDictionary(
+                            entry => entry.Key,
+                            entry => new StringValues(entry.Value)
+                        )
+                    ),
+                    CultureInfo.CurrentCulture
+                ),
+                ResourceFormPageViewModel.BindingPrefix
+            );
+        }
+
+        return await CreateView(resource, cancellationToken, addingAnother);
     }
 
     [HttpPost]
@@ -85,6 +117,42 @@ internal sealed class ResourceController<TResource>(
             return await CreateView(resource, cancellationToken);
         }
 
+        // Save and add another confirms the save with a toast and opens the create page again, with the kept fields'
+        // posted values
+        if (
+            _resourceOptions.Create!.AddAnother is { } addAnother
+            && Request.Form.TryGetValue("after", out var after)
+            && after == AddAnotherAction
+        )
+        {
+            var prefixes = addAnother
+                .KeptFields.Select(field =>
+                    ModelNames.CreatePropertyModelName(
+                        ResourceFormPageViewModel.BindingPrefix,
+                        field
+                    )
+                )
+                .ToArray();
+            var kept = Request
+                .Form.Where(entry =>
+                    prefixes.Any(prefix =>
+                        entry.Key.Equals(prefix, StringComparison.OrdinalIgnoreCase)
+                        || entry.Key.StartsWith(prefix + ".", StringComparison.OrdinalIgnoreCase)
+                        || entry.Key.StartsWith(prefix + "[", StringComparison.OrdinalIgnoreCase)
+                    )
+                )
+                .ToDictionary(entry => entry.Key, entry => entry.Value.ToArray());
+            TempData[AddAnotherTempDataKey] = JsonSerializer.Serialize(kept);
+            HttpContext
+                .RequestServices.GetRequiredService<IToastNotifier>()
+                .Success(
+                    _resourceOptions.Index.CreatedMessage
+                        ?? _labelOptions.Index.CreatedMessage(CreateLabelContext())
+                );
+
+            return RedirectToAction(nameof(Create));
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -103,6 +171,8 @@ internal sealed class ResourceController<TResource>(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateRowPost(
         [FromQuery] ResourceIndexQuery query,
+        [FromQuery] bool another,
+        [FromQuery] int added,
         CancellationToken cancellationToken
     )
     {
@@ -123,9 +193,11 @@ internal sealed class ResourceController<TResource>(
             return NotFound();
         }
 
+        // While adding another, a new row counts the rows added before it, and a rejected row keeps the count
+        var addedBefore = _resourceOptions.Create.AddAnother is null ? 0 : Math.Max(added, 0);
         if (result is not { IsSuccess: true })
         {
-            return NewRowView(resource, query);
+            return NewRowView(resource, query, addedBefore);
         }
 
         // A create model other than the resource has no key selector, so its handler returns the key
@@ -133,6 +205,13 @@ internal sealed class ResourceController<TResource>(
         var labels = CreateLabelContext();
         var message =
             _resourceOptions.Index.CreatedMessage ?? _labelOptions.Index.CreatedMessage(labels);
+        if (another && _resourceOptions.Create.AddAnother is not null)
+        {
+            HttpContext.RequestServices.GetRequiredService<IToastNotifier>().Success(message);
+
+            return await AddAnotherRowsView(key, query, addedBefore + 1, cancellationToken);
+        }
+
         if (inline.AfterSave == InlineRowAfterSave.ReloadGrid)
         {
             return await ReloadedGridView(query, key, message, cancellationToken);
@@ -901,6 +980,46 @@ internal sealed class ResourceController<TResource>(
         return true;
     }
 
+    // After save and add another, the saved row and a new row with the kept fields' values. A new row at the top stays
+    // above the rows it added, and one at the bottom below them. The saved row is named for the script to mark and flash
+    private async Task<IActionResult> AddAnotherRowsView(
+        string? key,
+        ResourceIndexQuery query,
+        int added,
+        CancellationToken cancellationToken
+    )
+    {
+        var next = _resourceOptions.Create!.CreateModel();
+        await BindKeptFieldsAsync(
+            next,
+            await CompositeValueProvider.CreateAsync(ControllerContext),
+            ModelNames.CreateIndexModelName(InlineRowsPrefix, NewRowKey)
+        );
+
+        var savedRows = key is null ? [] : await LoadRowsAsync(key, cancellationToken);
+        var newRow = CreateIndexModel(
+            [],
+            query,
+            new(),
+            null,
+            rowsOnly: true,
+            newItem: next,
+            added: added
+        );
+        var saved = CreateIndexModel(savedRows, new(), new(), null, rowsOnly: true);
+        if (savedRows.Length > 0)
+        {
+            Response.Headers["SA-Saved-Row"] = key;
+        }
+
+        return PartialView(
+            "_IndexAddAnotherRows",
+            _resourceOptions.Create.InlineRow!.Position == InlineCreatePosition.Top
+                ? new IndexAddAnotherRowsViewModel(newRow, saved)
+                : new IndexAddAnotherRowsViewModel(saved, newRow)
+        );
+    }
+
     private void AddValidationErrors(
         ResourceOperationResult result,
         HashSet<string> fields,
@@ -929,6 +1048,30 @@ internal sealed class ResourceController<TResource>(
         }
     }
 
+    // Sets the kept fields of a new model from the values posted for the previous one. A value that doesn't bind is left
+    // out, and the form shows no errors for them
+    private async Task BindKeptFieldsAsync(object model, IValueProvider source, string prefix)
+    {
+        var fields = _resourceOptions.Create!.AddAnother!.KeptFields.ToHashSet(
+            StringComparer.Ordinal
+        );
+        if (fields.Count > 0)
+        {
+            var propertyNames = fields
+                .SelectMany(field => field.Split('.'))
+                .ToHashSet(StringComparer.Ordinal);
+            await TryUpdateModelAsync(
+                model,
+                _resourceOptions.Create.ModelType,
+                prefix,
+                new ConfiguredFieldValueProvider(source, fields, prefix),
+                metadata => propertyNames.Contains(metadata.PropertyName ?? "")
+            );
+        }
+
+        ModelState.Clear();
+    }
+
     private ResourceFormDeleteDialogViewModel? CreateDeleteDialog(
         string id,
         string origin,
@@ -953,7 +1096,8 @@ internal sealed class ResourceController<TResource>(
         bool rowsOnly = false,
         string? editingKey = null,
         object? editModel = null,
-        object? newItem = null
+        object? newItem = null,
+        int added = 0
     )
     {
         var labels = CreateLabelContext();
@@ -981,7 +1125,7 @@ internal sealed class ResourceController<TResource>(
                 _resourceOptions.Index.DeleteLabel ?? _labelOptions.Index.DeleteLabel(labels),
             EditLabel = _resourceOptions.Index.EditLabel ?? _labelOptions.Index.EditLabel(labels),
             KeySelector = _resourceOptions.KeySelector,
-            InlineRows = CreateInlineRows(labels, editingKey, editModel, newItem),
+            InlineRows = CreateInlineRows(labels, editingKey, editModel, newItem, added),
             Items = items,
             Paging = pagingModel,
             Query = query,
@@ -1022,7 +1166,8 @@ internal sealed class ResourceController<TResource>(
         ResourceLabelContext labels,
         string? editingKey,
         object? editModel,
-        object? newItem
+        object? newItem,
+        int added
     )
     {
         var edit = _resourceOptions.Edit?.InlineRow;
@@ -1036,6 +1181,11 @@ internal sealed class ResourceController<TResource>(
 
         return new()
         {
+            AddAnotherLabel =
+                create is null || _resourceOptions.Create!.AddAnother is not { } addAnother
+                    ? null
+                    : addAnother.Label ?? _labelOptions.Create.AddAnotherLabel(labels),
+            AddedCount = added,
             CancelLabel =
                 _resourceOptions.Index.CancelLabel ?? _labelOptions.Index.CancelLabel(labels),
             Create = create,
@@ -1129,12 +1279,20 @@ internal sealed class ResourceController<TResource>(
         return PartialView("_CreateSheet", new CreateSheetViewModel(form, lookup, level, postUrl));
     }
 
-    private async Task<ViewResult> CreateView(object resource, CancellationToken cancellationToken)
+    private async Task<ViewResult> CreateView(
+        object resource,
+        CancellationToken cancellationToken,
+        bool focusFirstField = false
+    )
     {
-        return ResourceView(
-            nameof(Create),
-            await CreateFormModelAsync(resource, cancellationToken)
-        );
+        // The create sheet of a lookup has no add another button: it closes and selects what it created
+        var model = await CreateFormModelAsync(resource, cancellationToken);
+        model.AddAnotherLabel = _resourceOptions.Create!.AddAnother is { } addAnother
+            ? addAnother.Label ?? _labelOptions.Create.AddAnotherLabel(CreateLabelContext())
+            : null;
+        model.FocusFirstField = focusFirstField;
+
+        return ResourceView(nameof(Create), model);
     }
 
     private async Task<IActionResult> EditRowView(
@@ -1469,8 +1627,22 @@ internal sealed class ResourceController<TResource>(
     }
 
     // The row keeps the page's query, so a save can reload the page as it shows
-    private PartialViewResult NewRowView(object resource, ResourceIndexQuery query) =>
-        RowsView(CreateIndexModel([], query, new(), null, rowsOnly: true, newItem: resource));
+    private PartialViewResult NewRowView(
+        object resource,
+        ResourceIndexQuery query,
+        int added = 0
+    ) =>
+        RowsView(
+            CreateIndexModel(
+                [],
+                query,
+                new(),
+                null,
+                rowsOnly: true,
+                newItem: resource,
+                added: added
+            )
+        );
 
     private ViewResult ResourceView(string action, object model)
     {

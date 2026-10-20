@@ -314,6 +314,45 @@
         min-width: calc(2 * var(--sa-control-h-sm) + var(--sa-unit) + 2 * var(--sa-space-cell-x));
     }
 
+    /* With add another, it has room for a third button in the new row. Without it, the grid's attribute is empty */
+    .sa-resource-index-grid:is([data-add-another="reload"], [data-add-another="keep"]) .sa-inline-row-actions {
+        min-width: calc(3 * var(--sa-control-h-sm) + 2 * var(--sa-unit) + 2 * var(--sa-space-cell-x));
+    }
+
+    /* While adding another, a row under the new row counts the rows added and tells how to go on or stop; the rows
+       added stay next to it, marked */
+    .sa-add-another-status > td {
+        padding-block: var(--sa-unit) calc(1.5 * var(--sa-unit));
+        background: var(--sa-color-surface-subtle);
+    }
+
+    .sa-table-row.sa-add-another-status:hover {
+        background: transparent;
+    }
+
+    .sa-table-row:has(+ .sa-add-another-status) {
+        border-bottom-color: transparent;
+    }
+
+    .sa-add-another-status-body {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: calc(2 * var(--sa-unit));
+        color: var(--sa-color-ink-muted);
+        font-size: var(--sa-text-sm);
+        white-space: normal;
+    }
+
+    .sa-add-another-status-body strong {
+        color: var(--sa-color-ink);
+        font-weight: var(--sa-weight-control);
+    }
+
+    .sa-table-row[data-added] > td:first-child {
+        box-shadow: inset 2px 0 0 var(--sa-color-success);
+    }
+
     /* A message under the row for errors no cell can show (the cell editors and their errors are styled by
        StellarAdmin.UI) */
     .sa-row-message > td {

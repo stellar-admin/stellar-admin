@@ -181,14 +181,68 @@ document.addEventListener("click", (event) => {
   }
 });
 
+// Ctrl, or Cmd, in the shortcuts the server renders shows as ⌘ on a Mac
+const mac = /mac|iphone|ipad/i.test(navigator.userAgentData?.platform ?? navigator.platform);
+
+function showModKeys(root) {
+  if (!mac) {
+    return;
+  }
+
+  for (const key of root.querySelectorAll("[data-mod-key]")) {
+    key.textContent = "⌘";
+  }
+}
+
+showModKeys(document);
+
+// Create and edit pages: Ctrl+Enter or Cmd+Enter saves, and Ctrl+Shift+Enter or Cmd+Shift+Enter saves and adds
+// another. The add another button comes before the submit button, so a plain Enter in a field, which would press the
+// first, presses the submit button instead. After adding another, the form's first field has focus
+document.addEventListener("keydown", (event) => {
+  const form = event.target.closest?.("form[data-resource-form]");
+  if (!form || event.key !== "Enter" || event.defaultPrevented || event.isComposing) {
+    return;
+  }
+
+  const another = form.querySelector("[data-form-add-another]");
+  const modified = event.ctrlKey || event.metaKey;
+  const button =
+    modified && event.shiftKey
+      ? another
+      : modified ||
+          (another &&
+            !event.shiftKey &&
+            !event.altKey &&
+            event.target.matches(
+              "input:not([type='checkbox'], [type='radio'], [type='button'], [type='submit'], [type='reset'], [type='file'])",
+            ))
+        ? form.querySelector("[data-form-submit]")
+        : null;
+  if (button) {
+    event.preventDefault();
+    form.requestSubmit(button);
+  }
+});
+
+document
+  .querySelector("form[data-focus-first-field='true']")
+  ?.querySelector(
+    "input:not([type='hidden'], [disabled]), select:not([disabled]), textarea:not([disabled]), [data-lookup='open']:not([hidden] *)",
+  )
+  ?.focus();
+
 // Index grid inline rows. One row is edited at a time: Edit or Add cancels the row being edited first. In the row,
-// Enter in a text field saves and Escape cancels, focusing the row's Edit button or the Add button again. A row's
-// message, which follows it with the errors no cell shows, goes when the row is cancelled or a save's response
-// replaces the row, which brings the message back if the save is rejected again.
+// Enter in a text field or Ctrl+Enter saves and Escape cancels, focusing the row's Edit button or the Add button again.
+// A row's message, which follows it with the errors no cell shows, goes when the row is cancelled or a save's response
+// replaces the row, which brings the message back if the save is rejected again. So does the count of rows added
+// with add another, which a new row's response brings back.
 function removeRowMessage(row) {
-  const next = row?.nextElementSibling;
-  if (next?.classList.contains("sa-row-message")) {
+  let next = row?.nextElementSibling;
+  while (next?.matches(".sa-row-message, .sa-add-another-status")) {
+    const following = next.nextElementSibling;
     next.remove();
+    next = following;
   }
 }
 
@@ -240,9 +294,10 @@ function lockInlineRow() {
     next = next.nextElementSibling;
   }
 
+  // Rows added with add another stay next to the new row, and usable
   const locked = [
     ...[...editing.parentElement.children].filter(
-      (row) => !kept.includes(row) && !row.matches("[data-empty]"),
+      (row) => !kept.includes(row) && !row.matches("[data-empty], [data-added]"),
     ),
     ...document.querySelectorAll(
       "[data-row-add]:not(#index-page-grid *), #index-page-scopes, #index-page-search, " +
@@ -255,11 +310,59 @@ function lockInlineRow() {
   }
 }
 
+// Add another keeps a new row open after each save, with the rows it added next to it. Saving the new row, or
+// cancelling it, ends the run: the grid reloads once, unless saved rows stay where they were added. Edit or Add, which
+// open another row straight away, leave the added rows in place
+function endAddAnother({ reload = true } = {}) {
+  const grid = document.getElementById("index-page-grid");
+  const added = [...(grid?.querySelectorAll(".sa-table-body > tr[data-added]") ?? [])];
+  if (added.length === 0) {
+    return;
+  }
+
+  for (const row of added) {
+    row.removeAttribute("data-added");
+  }
+
+  if (!reload || grid.dataset.addAnother !== "reload") {
+    return;
+  }
+
+  const keys = added.map((row) => row.dataset.key);
+  const container = document.getElementById("index-page-data-grid");
+  Promise.resolve(
+    htmx.ajax("GET", location.href, {
+      source: container,
+      target: container,
+      swap: "outerHTML",
+      select: "#index-page-data-grid",
+      selectOOB: undefined,
+      push: undefined,
+      replace: undefined,
+    }),
+  )
+    .then(() => {
+      const body = document.querySelector("#index-page-grid .sa-table-body");
+      for (const key of keys) {
+        const row = body?.querySelector(`:scope > tr[data-key="${CSS.escape(key)}"]`);
+        if (row) {
+          flashRow(row, { focus: false });
+        }
+      }
+      addButton()?.focus({ preventScroll: true });
+    })
+    .catch(() => {});
+}
+
+let switchingRow = false;
+
 document.addEventListener(
   "click",
   (event) => {
     if (event.target.closest("[data-row-edit], [data-row-add]")) {
+      switchingRow = true;
       document.querySelector("#index-page-grid tr[data-editing] [data-row-cancel]")?.click();
+      switchingRow = false;
     }
 
     // Cancel ends the edit; sel-table restores the row, and stops the click
@@ -269,6 +372,9 @@ document.addEventListener(
     if (cancelled) {
       removeRowMessage(cancelled);
       unlockInlineRow();
+      if (cancelled.dataset.key === "new") {
+        endAddAnother({ reload: !switchingRow });
+      }
     }
   },
   { capture: true },
@@ -280,11 +386,20 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
-  if (
+  // Ctrl+Shift+Enter or Cmd+Shift+Enter saves a new row and adds another; Ctrl+Enter or Cmd+Enter saves from any field
+  const modified = event.ctrlKey || event.metaKey;
+  if (event.key === "Enter" && modified && event.shiftKey) {
+    const another = row.querySelector("[data-row-save-another]");
+    if (another) {
+      event.preventDefault();
+      another.click();
+    }
+  } else if (
     event.key === "Enter" &&
-    event.target.matches(
-      "input:not([type='checkbox'], [type='radio'], [type='button'], [type='submit'], [type='reset'])",
-    )
+    (modified ||
+      event.target.matches(
+        "input:not([type='checkbox'], [type='radio'], [type='button'], [type='submit'], [type='reset'])",
+      ))
   ) {
     event.preventDefault();
     row.querySelector("[data-row-save]")?.click();
@@ -298,10 +413,12 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-function flashRow(row) {
+function flashRow(row, { focus = true } = {}) {
   row.setAttribute("data-saved", "");
   setTimeout(() => row.removeAttribute("data-saved"), 1400);
-  row.querySelector("[data-row-edit]")?.focus({ preventScroll: true });
+  if (focus) {
+    row.querySelector("[data-row-edit]")?.focus({ preventScroll: true });
+  }
 }
 
 // The grid's footer, with its record count, as the page's address shows it
@@ -328,6 +445,7 @@ const rowSwaps = new WeakMap();
 
 document.addEventListener("htmx:after:swap", (event) => {
   const ctx = event.detail?.ctx;
+  showModKeys(document);
   lockInlineRow();
   rowSwaps.get(ctx)?.();
   rowSwaps.delete(ctx);
@@ -340,18 +458,21 @@ document.addEventListener("htmx:before:swap", (event) => {
   }
 
   const save = source.closest("[data-row-save]");
+  const another = source.closest("[data-row-save-another]");
   const row = source.closest("tr");
-  if (save) {
+  if (save || another) {
     removeRowMessage(row);
   }
 
-  const kind = save
-    ? "save"
-    : source.matches("[data-row-edit]")
-      ? "edit"
-      : source.matches("[data-row-add]")
-        ? "add"
-        : null;
+  const kind = another
+    ? "another"
+    : save
+      ? "save"
+      : source.matches("[data-row-edit]")
+        ? "edit"
+        : source.matches("[data-row-add]")
+          ? "add"
+          : null;
   if (!kind) {
     return;
   }
@@ -362,7 +483,26 @@ document.addEventListener("htmx:before:swap", (event) => {
   rowSwaps.set(ctx, () => {
     const grid = document.getElementById("index-page-grid");
     const editing = grid?.querySelector("tr[data-editing]");
-    if (kind === "add" && editing) {
+    if (kind === "another") {
+      // The saved row joins the rows added in the run, and the new row takes the focus, or its first field with an
+      // error when the save was rejected. The pager's count may have changed when the rows stay in place
+      const key = ctx.response?.headers.get("SA-Saved-Row");
+      const saved = key
+        ? grid?.querySelector(`.sa-table-body > tr[data-key="${CSS.escape(key)}"]`)
+        : null;
+      if (saved) {
+        saved.setAttribute("data-added", "");
+        flashRow(saved, { focus: false });
+        lockInlineRow();
+        if (grid.dataset.addAnother === "keep") {
+          reloadGridFooter();
+        }
+      }
+      if (editing) {
+        editing.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        focusRow(editing, { invalid: true });
+      }
+    } else if (kind === "add" && editing) {
       editing.scrollIntoView({ block: "nearest", behavior: "smooth" });
       focusRow(editing);
     } else if (kind === "edit" && editing) {
@@ -385,6 +525,9 @@ document.addEventListener("htmx:before:swap", (event) => {
         )?.focus();
       }
     } else if (kind === "save") {
+      // Saving the new row ends a run of add another; its rows stay where they were added
+      endAddAnother({ reload: false });
+
       // A saved row takes the place of the editing row, after the row that was before it. The pager's count may have
       // changed, so the footer is reloaded
       const saved = previous?.isConnected ? previous.nextElementSibling : body?.firstElementChild;

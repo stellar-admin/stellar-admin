@@ -49,6 +49,44 @@ public sealed class ResourceCreateBuilder<TModel>
         _configure = configure;
 
     /// <summary>
+    ///     Adds a button that saves the new resource and starts the next one.
+    /// </summary>
+    /// <returns>A builder that configures saving and adding another.</returns>
+    /// <remarks>
+    ///     The create page and the inline row both show the button. Ctrl+Shift+Enter or
+    ///     Cmd+Shift+Enter presses it.
+    /// </remarks>
+    public ResourceAddAnotherBuilder<TModel> EnableAddAnother()
+    {
+        _configure(options => options.AddAnother ??= new());
+
+        return new(configure => _configure(options => configure(options.AddAnother ??= new())));
+    }
+
+    /// <summary>
+    ///     Adds and configures a button that saves the new resource and starts the next one.
+    /// </summary>
+    /// <param name="configure">A delegate that configures saving and adding another.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The create page and the inline row both show the button. Ctrl+Shift+Enter or
+    ///     Cmd+Shift+Enter presses it.
+    /// </remarks>
+    public ResourceCreateBuilder<TModel> EnableAddAnother(
+        Action<ResourceAddAnotherBuilder<TModel>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(EnableAddAnother());
+
+        return this;
+    }
+
+    /// <summary>
     ///     Configures the form's fields.
     /// </summary>
     /// <param name="configure">A delegate that adds and configures the fields.</param>

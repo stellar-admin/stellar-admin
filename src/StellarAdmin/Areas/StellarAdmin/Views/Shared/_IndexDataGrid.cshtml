@@ -22,15 +22,18 @@
     // The operations that dim the other rows while their row is edited
     var dim = string.Join(' ', new[] { inline?.Edit?.DimOtherRows == true ? "edit" : null, inline?.Create?.DimOtherRows == true ? "create" : null }.OfType<string>());
 
+    // With add another, the script reloads the grid when a run of added rows ends, unless the rows stay where they were added
+    var addAnother = inline?.AddAnotherLabel is null ? null : inline.Create?.AfterSave == InlineRowAfterSave.ReloadGrid ? "reload" : "keep";
+
     // A row's requests carry the page's query, so a save can reload the page as it shows
     var query = Model.Query;
     var queryPage = query.Page is null ? null : Model.Paging?.Page ?? query.Page;
-    string? RowUrl(string action, string? id) => Url.Action(action, new { id, page = queryPage, pageSize = query.PageSize, search = query.Search, scope = query.Scope, sortBy = query.SortBy, sortDirection = query.SortDirection });
+    string? RowUrl(string action, string? id, bool? another = null, int? added = null) => Url.Action(action, new { id, page = queryPage, pageSize = query.PageSize, search = query.Search, scope = query.Scope, sortBy = query.SortBy, sortDirection = query.SortDirection, another, added });
 }
 
 <sa-data-grid id="index-page-grid" items="Model.Items" class="sa-resource-index-grid" key-field="@inline?.KeyField"
               editing-keys="@(inline?.EditingKey is { } editingKey ? new[] { editingKey } : null)"
-              new-item="inline?.NewItem" rows-only="Model.RowsOnly" data-inline-dim="@dim">
+              new-item="inline?.NewItem" rows-only="Model.RowsOnly" data-inline-dim="@dim" data-add-another="@addAnother">
     <sa-data-grid-sort asp-action="Index" asp-route-id="@((string?)null)"
                        asp-route-sortBy="{sortField}" asp-route-sortDirection="{sortDirection}"
                        preserve-query="true" preserve-query-except="page"
@@ -118,8 +121,12 @@
                 <sa-data-grid-edit-template>
                     @{
                         var key = isNewRow ? "new" : inline!.EditingKey!;
-                        var saveUrl = isNewRow ? RowUrl("CreateRow", null) : RowUrl("EditRow", key);
+
+                        // A new row counts the rows added before it, for its add another save to count on
+                        var added = isNewRow && inline!.AddedCount > 0 ? inline.AddedCount : (int?)null;
+                        var saveUrl = isNewRow ? RowUrl("CreateRow", null, added: added) : RowUrl("EditRow", key);
                         var saveTooltipId = $"--resource-save-{key}";
+                        var addAnotherTooltipId = $"--resource-add-another-{key}";
                         var cancelTooltipId = $"--resource-cancel-{key}";
 
                         // A save that reloads the grid retargets its response to the grid. Otherwise a new row is swapped for
@@ -142,6 +149,21 @@
                         <sa-icon name="check" />
                     </sa-button>
                     <sa-tooltip id="@saveTooltipId">@inline.SaveLabel</sa-tooltip>
+                    @* Saves the row and opens a new one in its place, after or before the saved row *@
+                    @if (isNewRow && inline.AddAnotherLabel is { } addAnotherLabel)
+                    {
+                        <sa-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall" data-row-save-another
+                                   hx-post="@RowUrl("CreateRow", null, true, inline.AddedCount)" hx-include="closest tr" hx-target="closest tr"
+                                   hx-swap="outerHTML settle:0" hx-select="" hx-select-oob="" hx-push-url="false"
+                                   aria-label="@addAnotherLabel" aria-keyshortcuts="Control+Shift+Enter Meta+Shift+Enter"
+                                   interestfor="@addAnotherTooltipId">
+                            <sa-icon name="list-plus" />
+                        </sa-button>
+                        <sa-tooltip id="@addAnotherTooltipId">
+                            @addAnotherLabel
+                            <sa-kbd-group><sa-kbd data-mod-key>Ctrl</sa-kbd><sa-kbd>Shift</sa-kbd><sa-kbd>↵</sa-kbd></sa-kbd-group>
+                        </sa-tooltip>
+                    }
                     <sa-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall" data-row-cancel
                                aria-label="@inline.CancelLabel" interestfor="@cancelTooltipId">
                         <sa-icon name="x" />
@@ -267,4 +289,21 @@
             </td>
         </tr>
     }
+}
+@if (Model.RowsOnly && isNewRow && inline!.AddedCount > 0)
+{
+    @* While adding another, the rows added so far and how to go on or stop. The grid hides its add row while a new row
+       is open, so this follows the new row and its message *@
+    var columns = Model.Columns.Count + 1 + (Model.RowDetails?.Toggle is DataGridRowDetailToggle.Start or DataGridRowDetailToggle.End ? 1 : 0);
+    <tr class="sa-table-row sa-add-another-status" data-slot="table-row">
+        <td class="sa-table-cell" data-slot="table-cell" colspan="@columns">
+            <span class="sa-add-another-status-body" role="status">
+                <strong>@inline.AddedCount added</strong>
+                <span>
+                    <sa-kbd-group><sa-kbd data-mod-key>Ctrl</sa-kbd><sa-kbd>Shift</sa-kbd><sa-kbd>↵</sa-kbd></sa-kbd-group> to add another
+                    · <sa-kbd>Esc</sa-kbd> to finish
+                </span>
+            </span>
+        </td>
+    </tr>
 }

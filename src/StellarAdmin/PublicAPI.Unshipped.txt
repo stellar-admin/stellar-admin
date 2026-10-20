@@ -256,6 +256,7 @@ StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel.Mes
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel.Origin.get -> string!
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel.Title.get -> string!
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.AddAnotherLabel.get -> string?
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.Delete.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormDeleteDialogViewModel?
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.DisplayData.get -> System.Collections.Generic.IReadOnlyDictionary<StellarAdmin.Resources.Options.FormDisplayFieldOptions!, object?>!
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel.EditorData.get -> System.Collections.Generic.IReadOnlyDictionary<string!, object?>!
@@ -273,6 +274,10 @@ StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel.Co
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel.Message.get -> string!
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel.Title.get -> string!
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.AddAnotherLabel.get -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.AddAnotherLabel.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.AddedCount.get -> int
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.AddedCount.init -> void
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.CancelLabel.get -> string!
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.CancelLabel.init -> void
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel.Create.get -> StellarAdmin.Resources.Options.ResourceInlineCreateOptions?
@@ -439,6 +444,9 @@ StellarAdmin.Resources.Builders.LookupLabelsBuilder.SearchLabel.set -> void
 StellarAdmin.Resources.Builders.LookupLabelsBuilder.SelectedLabel.set -> void
 StellarAdmin.Resources.Builders.LookupLabelsBuilder.ToggleHint.set -> void
 StellarAdmin.Resources.Builders.LookupLabelsBuilder.ViewLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceAddAnotherBuilder<TModel>
+StellarAdmin.Resources.Builders.ResourceAddAnotherBuilder<TModel>.KeepForNext<TProperty>(System.Linq.Expressions.Expression<System.Func<TModel, TProperty>!>! property) -> StellarAdmin.Resources.Builders.ResourceAddAnotherBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceAddAnotherBuilder<TModel>.Label.set -> void
 StellarAdmin.Resources.Builders.ResourceBuilder<TResource>
 StellarAdmin.Resources.Builders.ResourceBuilder<TResource>.Index(System.Action<StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceBuilder<TResource>.UseDataSource<TDataSource>() -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
@@ -483,6 +491,8 @@ StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>.Add<TProperty>
 StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceColumnBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>.Clear() -> StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.EnableAddAnother() -> StellarAdmin.Resources.Builders.ResourceAddAnotherBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.EnableAddAnother(System.Action<StellarAdmin.Resources.Builders.ResourceAddAnotherBuilder<TModel>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.Fields(System.Action<StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TModel>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.SectionLayout.set -> void
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.SubmitLabel.set -> void
@@ -491,6 +501,7 @@ StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseFactory(System.
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseInlineRow() -> StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseInlineRow(System.Action<StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder
+StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder.AddAnotherLabel.set -> void
 StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder.SubmitLabel.set -> void
 StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder.Title.set -> void
 StellarAdmin.Resources.Builders.ResourceDeleteBuilder<TResource>
@@ -1265,13 +1276,20 @@ StellarAdmin.Resources.Options.LookupLabelOptions.ToggleHint.get -> System.Func<
 StellarAdmin.Resources.Options.LookupLabelOptions.ToggleHint.set -> void
 StellarAdmin.Resources.Options.LookupLabelOptions.ViewLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
 StellarAdmin.Resources.Options.LookupLabelOptions.ViewLabel.set -> void
+StellarAdmin.Resources.Options.ResourceAddAnotherOptions
+StellarAdmin.Resources.Options.ResourceAddAnotherOptions.KeptFields.get -> System.Collections.Generic.IReadOnlyList<string!>!
+StellarAdmin.Resources.Options.ResourceAddAnotherOptions.Label.get -> string?
+StellarAdmin.Resources.Options.ResourceAddAnotherOptions.ResourceAddAnotherOptions() -> void
 StellarAdmin.Resources.Options.ResourceCreateLabelOptions
+StellarAdmin.Resources.Options.ResourceCreateLabelOptions.AddAnotherLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
+StellarAdmin.Resources.Options.ResourceCreateLabelOptions.AddAnotherLabel.set -> void
 StellarAdmin.Resources.Options.ResourceCreateLabelOptions.ResourceCreateLabelOptions() -> void
 StellarAdmin.Resources.Options.ResourceCreateLabelOptions.SubmitLabel.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
 StellarAdmin.Resources.Options.ResourceCreateLabelOptions.SubmitLabel.set -> void
 StellarAdmin.Resources.Options.ResourceCreateLabelOptions.Title.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
 StellarAdmin.Resources.Options.ResourceCreateLabelOptions.Title.set -> void
 StellarAdmin.Resources.Options.ResourceCreateOptions
+StellarAdmin.Resources.Options.ResourceCreateOptions.AddAnother.get -> StellarAdmin.Resources.Options.ResourceAddAnotherOptions?
 StellarAdmin.Resources.Options.ResourceCreateOptions.InlineRow.get -> StellarAdmin.Resources.Options.ResourceInlineCreateOptions?
 StellarAdmin.Resources.Options.ResourceCreateOptions.ResourceCreateOptions() -> void
 StellarAdmin.Resources.Options.ResourceCreateOptions<TModel>

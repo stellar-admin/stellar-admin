@@ -6,6 +6,14 @@ namespace StellarAdmin.Resources.Options;
 public abstract class ResourceCreateOptions : ResourceFormOptions
 {
     /// <summary>
+    ///     Gets the configuration of saving a new resource and starting the next one.
+    /// </summary>
+    /// <value>
+    ///     The configuration, or <see langword="null" /> when the form only saves.
+    /// </value>
+    public ResourceAddAnotherOptions? AddAnother { get; internal set; }
+
+    /// <summary>
     ///     Gets the configuration of the inline row that creates resources.
     /// </summary>
     /// <value>

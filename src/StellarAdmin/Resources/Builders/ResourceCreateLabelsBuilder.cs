@@ -11,6 +11,28 @@ public sealed class ResourceCreateLabelsBuilder
     private readonly IServiceCollection _services;
 
     /// <summary>
+    ///     Sets the callback that generates the default label of the button that saves a new
+    ///     resource and starts the next one.
+    /// </summary>
+    /// <value>
+    ///     The default returns <c>Save and add another</c>.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
+    public Func<ResourceLabelContext, string> AddAnotherLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.Create.AddAnotherLabel = value
+            );
+        }
+    }
+
+    /// <summary>
     ///     Sets the callback that generates the create form's default submit button label.
     /// </summary>
     /// <value>
