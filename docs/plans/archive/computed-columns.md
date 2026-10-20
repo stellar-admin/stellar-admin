@@ -17,7 +17,7 @@ Status: implemented (2026-10-20) for index columns, then for display fields on f
 
 ## How it works
 
-- StellarAdmin.UI: `field-for` accepts any expression. A property chain behaves as before. Any other expression is compiled once per column when the grid collects its columns (`DataGridComputedValue`), and called for each row. Property reads and instance method calls on null give the member type's default instead of throwing; static and extension methods aren't guarded. Templates get the metadata of the expression's return type. `template` no longer requires a property for a computed column.
+- StellarAdmin.UI: `field-for` accepts any expression. A property chain behaves as before. Any other expression is compiled once per column when the grid collects its columns (`ComputedValue`, shared with StellarAdmin from `src/Shared`), and called for each row. Property reads and instance method calls on null give the member type's default instead of throwing; static and extension methods aren't guarded. Templates get the metadata of the expression's return type. `template` no longer requires a property for a computed column.
 - StellarAdmin: `ComputedColumnOptionsValidator` enforces the title, sorting and key rules.
 - StellarAdmin.EntityFrameworkCore: `EfCorePropertyPaths.FindDisplayIncludePaths` collects every property path a column's expression reads from its parameter and includes what each needs, as for a property column. Navigations read through a nested lambda's parameter, such as `t.Category` inside `Select(t => ...)`, aren't included.
 
