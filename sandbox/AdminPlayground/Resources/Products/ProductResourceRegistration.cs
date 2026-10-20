@@ -65,6 +65,11 @@ internal static class ProductResourceRegistration
                                 product => product.Category!.Name,
                                 field => field.Title = "Category"
                             );
+                            section
+                                .Add(product => product.Tags)
+                                .UseDisplay<BadgeDisplay>(badge =>
+                                    badge.UseText<Tag>(tag => tag.Name)
+                                );
                         }
                     );
                     fields.AddSection(
@@ -144,6 +149,13 @@ internal static class ProductResourceRegistration
                             column.Title = "Unit price";
                             column.UseDisplay<NumberDisplay>(number => number.Format = "0.00");
                         }
+                    );
+                    columns.Add(
+                        product => product.Tags,
+                        column =>
+                            column.UseDisplay<BadgeDisplay>(badge =>
+                                badge.UseText<Tag>(tag => tag.Name)
+                            )
                     );
                 });
             });
