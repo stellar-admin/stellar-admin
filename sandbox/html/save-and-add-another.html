@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Save and add another</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Figtree:wght@400..700&display=swap"
+    />
+
+    <!--
+      Real built library and admin panel assets. The create page and the index grid reproduce the
+      markup the admin panel emits (_FormPage, _IndexDataGrid and the inline row partials, captured
+      from AdminPlayground). Saves are simulated (~450ms); the "address bar" above each frame shows
+      where the real page would be after a save.
+    -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css" />
+    <!-- Theme fixture, swapped from the control bar; empty for the default theme. -->
+    <link id="theme-css" rel="stylesheet" />
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <style>
+      /* ---------------------------------------------------------------------------------------- */
+      /* Page chrome (prototype only)                                                              */
+      /* ---------------------------------------------------------------------------------------- */
+      :root { --sa-font-sans: "Inter", sans-serif; }
+      body {
+        margin: 0;
+        background: var(--sa-color-canvas);
+        color: var(--sa-color-ink);
+        font-family: var(--sa-font-sans);
+      }
+      .proto-page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 220px; }
+      .proto-page > h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+      .proto-intro { margin: 0 0 8px; color: var(--sa-color-ink-muted); font-size: 14px; max-width: 95ch; }
+      .proto-nav { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 32px; font-size: 14px; }
+      .proto-nav a { color: var(--sa-color-ink-muted); }
+      .proto-section { margin-bottom: 72px; scroll-margin-top: 16px; }
+      .proto-section-head h2 { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
+      .proto-section-head p { margin: 0 0 6px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 100ch; }
+      .proto-section-head ul { margin: 0 0 12px; padding-left: 18px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 100ch; list-style: disc; }
+      .proto-section-head li { margin: 3px 0; }
+      .proto-section-head strong { color: var(--sa-color-ink); font-weight: 600; }
+      .proto-section-head code, .proto-api code { font-size: 12px; }
+      .proto-options { display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; align-items: center; margin: 0 0 14px; font-size: 13px; color: var(--sa-color-ink-muted); }
+      .proto-options .group { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+      .proto-options button, .proto-controls button {
+        font: inherit; font-size: 13px; padding: 2px 8px; cursor: pointer; color: var(--sa-color-ink);
+        background: transparent; border: var(--sa-border-width) solid var(--sa-color-line);
+        border-radius: var(--sa-radius-control-sm);
+      }
+      .proto-options button[aria-pressed="true"], .proto-controls button[aria-pressed="true"] {
+        background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); border-color: transparent;
+      }
+      .proto-options .note { grid-column: 2; font-size: 12px; margin-top: -2px; }
+      .proto-controls {
+        position: fixed; right: 16px; bottom: 16px; z-index: 50;
+        display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center;
+        padding: 12px; font-size: 13px;
+        background: var(--sa-color-surface-raised); color: var(--sa-color-ink);
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container);
+        box-shadow: var(--sa-shadow-overlay);
+      }
+      .proto-controls .group { display: flex; gap: 4px; flex-wrap: wrap; }
+      .proto-hint { font-size: 12px; color: var(--sa-color-ink-muted); margin-top: 10px; }
+      .proto-hint .sa-kbd, .proto-section-head .sa-kbd { margin-inline: 1px; }
+
+      /* A frame standing in for the browser window, with the address the real page would show. */
+      .proto-frame {
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container);
+        overflow: hidden; background: var(--sa-color-canvas);
+      }
+      .proto-address {
+        display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 12px;
+        color: var(--sa-color-ink-muted); background: var(--sa-color-surface-subtle);
+        border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+        font-family: ui-monospace, monospace;
+      }
+      .proto-address .dots { display: inline-flex; gap: 4px; margin-right: 6px; }
+      .proto-address .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--sa-color-line); }
+      .proto-address [data-nav] { transition: color 0.2s; }
+      .proto-address [data-nav].flash { color: var(--sa-color-accent-text); }
+      .proto-frame-body { padding: 8px 0 24px; min-height: 200px; }
+      .proto-frame-body.leaving { opacity: 0.35; transition: opacity 0.12s; }
+
+      .proto-api {
+        margin: 0 0 40px; padding: 14px 18px; max-width: 100ch; font-size: 13px;
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-box);
+        background: var(--sa-color-surface);
+      }
+      .proto-api h2 { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+      .proto-api p { margin: 6px 0; color: var(--sa-color-ink-muted); }
+      .proto-api pre {
+        margin: 8px 0; padding: 10px 12px; overflow-x: auto; font-size: 12px; line-height: 1.5;
+        background: var(--sa-color-surface-subtle); border-radius: var(--sa-radius-control);
+        border: var(--sa-border-width) solid var(--sa-color-line);
+      }
+
+      .proto-muted { color: var(--sa-color-ink-muted); }
+      .w-px { width: 1px; }
+      .whitespace-nowrap { white-space: nowrap; }
+      .text-right { text-align: right; }
+
+      /* ======================================================================================== */
+      /* Candidate CSS, written as the admin panel would (tokens only)                             */
+      /* ======================================================================================== */
+      @layer sa.components {
+
+        /* Create page: a value kept from the previous record. */
+        .sa-field-kept {
+          display: inline-flex;
+          align-items: center;
+          gap: calc(1 * var(--sa-unit));
+        }
+        .sa-field-kept svg { width: 0.9em; height: 0.9em; }
+
+        /* Inline create: while adding several rows, a row under the open row tells how many were added and how
+           to stop (the add row itself is hidden while a new row is open). */
+        .sa-table-body > .sa-add-status-row > td {
+          padding-block: calc(1 * var(--sa-unit)) calc(1.5 * var(--sa-unit));
+          background: var(--sa-color-surface-subtle);
+        }
+        .sa-table-body > .sa-add-status-row:hover { background: transparent; }
+        .sa-table-row:has(+ .sa-add-status-row) { border-bottom-color: transparent; }
+        .sa-table-add-row-status {
+          display: inline-flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: calc(2 * var(--sa-unit));
+          min-height: var(--sa-control-h-sm);
+          font-size: var(--sa-text-sm);
+          color: var(--sa-color-ink-muted);
+        }
+        .sa-table-add-row-status strong { color: var(--sa-color-ink); font-weight: var(--sa-weight-control); }
+
+        /* Inline create: rows added in this run stay where they were added and are not dimmed. */
+        .sa-table-row[data-added] > td:first-child { box-shadow: inset 2px 0 0 var(--sa-color-success); }
+
+        /* Inline create: room for a third action button while a new row is open. */
+        .sa-resource-index-grid[data-add-another] .sa-inline-row-actions {
+          min-width: calc(3 * var(--sa-control-h-sm) + 2 * var(--sa-unit) + 2 * var(--sa-space-cell-x));
+        }
+
+        .sa-cell-editor {
+          display: block;
+          margin-block: calc(-0.5 * var(--sa-unit));
+          margin-inline: calc(-0.5 * var(--sa-space-cell-x));
+          width: calc(100% + var(--sa-space-cell-x));
+        }
+        .sa-cell-editor.sa-input,
+        .sa-cell-editor .sa-native-select { height: var(--sa-control-h-sm); border-radius: var(--sa-radius-control-sm); }
+        .text-right > .sa-cell-editor.sa-input { text-align: right; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="proto-page">
+      <h1>Save and add another</h1>
+      <p class="proto-intro">
+        Adding several records in a row, on the create page and with inline create, as decided on 2026-10-20. Both frames are live:
+        type, save, and use the toggles above each to switch the feature and its carry-over. Saves are simulated; the address line shows
+        where the real page would be. The Name field is required, so an empty save shows the error path.
+      </p>
+      <nav class="proto-nav">
+        <a href="#api">Proposed API</a>
+        <a href="#form">A — Create page</a>
+        <a href="#inline">B — Inline create</a>
+      </nav>
+
+      <section class="proto-api" id="api">
+        <h2>Proposed API</h2>
+        <p>
+          <strong>Off by default.</strong> <code>EnableAddAnother</code> on the create builder turns it on for the create page and, with
+          <code>UseInlineRow()</code>, the inline row. The optional builder names the fields whose saved values carry over to the next record.
+        </p>
+        <pre><code>resource.AllowCreate(create =>
+{
+    create.Fields(fields => { /* ... */ });
+    create.EnableAddAnother(another =>
+    {
+        another.KeepForNext(tour => tour.DestinationId);   // one call per field
+        another.KeepForNext(tour => tour.Days);
+        // another.Label = "Save and add another";          // default; also on ResourceCreateLabelsBuilder
+    });
+});
+
+create.EnableAddAnother();                                 // no carry-over; returns the add-another builder</code></pre>
+        <p>
+          Create page: the button posts <code>after=add-another</code>; a successful save queues the usual "added" toast and redirects back
+          to Create (Post/Redirect/Get) with a fresh model from the factory plus the kept values, carried in TempData. Inline: the row posts
+          with <code>?another=true</code> and the response is the saved row plus a new open row with the kept values; <code>AfterSave</code>
+          applies once, when the run ends. <code>KeepForNext</code> must name an editable create field. The lookup create sheet is unchanged.
+        </p>
+        <p>
+          Shortcuts everywhere (create and edit pages, inline create and edit rows): <span class="sa-kbd">Ctrl</span>/<span class="sa-kbd">⌘</span>+<span class="sa-kbd">Enter</span>
+          saves, <span class="sa-kbd">Ctrl</span>/<span class="sa-kbd">⌘</span>+<span class="sa-kbd">Shift</span>+<span class="sa-kbd">Enter</span> saves and adds another.
+          Both modifiers work on every platform. Plain <span class="sa-kbd">Enter</span> still saves an inline row.
+        </p>
+      </section>
+
+      <!-- ================================================================================== -->
+      <section class="proto-section" id="form">
+        <div class="proto-section-head">
+          <h2>A — Create page</h2>
+          <p>The create page as <code>_FormPage</code> renders it. Saving normally goes to the index; adding another comes back to an empty form with focus in the first field.</p>
+          <ul>
+            <li><strong>Button:</strong> a second submit button, "Save and add another", before the primary one. The "added" toast confirms each save.</li>
+            <li><strong>Keyboard:</strong> <span class="sa-kbd">Ctrl</span>/<span class="sa-kbd">⌘</span>+<span class="sa-kbd">Enter</span> saves, <span class="sa-kbd">Ctrl</span>/<span class="sa-kbd">⌘</span>+<span class="sa-kbd">Shift</span>+<span class="sa-kbd">Enter</span> saves and adds another.</li>
+          </ul>
+        </div>
+
+        <div class="proto-options" data-scope="form">
+          <span>Add another</span>
+          <div class="group" data-option="trigger">
+            <button data-value="off" aria-pressed="false">Off (default)</button>
+            <button data-value="button" aria-pressed="true">EnableAddAnother()</button>
+          </div>
+          <span>Carry over</span>
+          <div class="group" data-option="keep">
+            <button data-value="none" aria-pressed="true">Nothing</button>
+            <button data-value="some" aria-pressed="false">KeepForNext Destination and Days</button>
+          </div>
+        </div>
+
+        <div class="proto-frame">
+          <div class="proto-address"><span class="dots"><i></i><i></i><i></i></span><span data-nav>/stellaradmin/tours/create</span></div>
+          <div class="proto-frame-body" id="form-body"></div>
+        </div>
+        <p class="proto-hint">Try: add two tours with "add another", then a third with the primary button. The kept fields show a "Kept" note until changed.</p>
+      </section>
+
+      <!-- ================================================================================== -->
+      <section class="proto-section" id="inline">
+        <div class="proto-section-head">
+          <h2>B — Inline create</h2>
+          <p>The Tours index with <code>UseInlineRow()</code>, as <code>_IndexDataGrid</code> renders it. Rows added in a run stay where they were added (marked at the left edge) and aren't dimmed; the rest of the grid stays dimmed until you stop.</p>
+          <ul>
+            <li><strong>Button:</strong> a third row action, "Save and add another", between Save and Cancel. <span class="sa-kbd">Enter</span> and <span class="sa-kbd">Ctrl</span>/<span class="sa-kbd">⌘</span>+<span class="sa-kbd">Enter</span> save and close, as today.</li>
+            <li>A row under the open row counts the rows added. Save, Cancel or <span class="sa-kbd">Esc</span> ends the run: with ReloadGrid, the grid reloads (re-sorted) then; with KeepInPlace, the added rows stay put.</li>
+          </ul>
+        </div>
+
+        <div class="proto-options" data-scope="inline">
+          <span>Add another</span>
+          <div class="group" data-option="trigger">
+            <button data-value="off" aria-pressed="false">Off (default)</button>
+            <button data-value="button" aria-pressed="true">EnableAddAnother()</button>
+          </div>
+          <span>Position</span>
+          <div class="group" data-option="position">
+            <button data-value="top" aria-pressed="true">Top</button>
+            <button data-value="bottom" aria-pressed="false">Bottom</button>
+          </div>
+          <span>Carry over</span>
+          <div class="group" data-option="keep">
+            <button data-value="none" aria-pressed="true">Nothing</button>
+            <button data-value="some" aria-pressed="false">KeepForNext Destination and Days</button>
+          </div>
+          <span>After save</span>
+          <div class="group" data-option="afterSave">
+            <button data-value="reload" aria-pressed="true">ReloadGrid</button>
+            <button data-value="keep" aria-pressed="false">KeepInPlace</button>
+          </div>
+        </div>
+
+        <div class="proto-frame">
+          <div class="proto-address"><span class="dots"><i></i><i></i><i></i></span><span data-nav>/stellaradmin/tours</span></div>
+          <div class="proto-frame-body" id="inline-body"></div>
+        </div>
+        <p class="proto-hint">
+          Keys in the open row: <span class="sa-kbd">Enter</span> or <span class="sa-kbd">Ctrl</span>/<span class="sa-kbd">⌘</span>+<span class="sa-kbd">Enter</span> save,
+          <span class="sa-kbd">Ctrl</span>/<span class="sa-kbd">⌘</span>+<span class="sa-kbd">Shift</span>+<span class="sa-kbd">Enter</span> save and add another, <span class="sa-kbd">Esc</span> cancel.
+        </p>
+      </section>
+    </div>
+
+    <aside class="proto-controls" aria-label="Prototype controls">
+      <span>Theme</span>
+      <div class="group" data-control="theme">
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="ops" aria-pressed="false">Ops</button>
+        <button data-value="soft" aria-pressed="false">Soft</button>
+        <button data-value="ledger" aria-pressed="false">Ledger</button>
+      </div>
+      <span>Mode</span>
+      <div class="group" data-control="mode">
+        <button data-value="light" aria-pressed="true">Light</button>
+        <button data-value="dark" aria-pressed="false">Dark</button>
+      </div>
+      <span>Density</span>
+      <div class="group" data-control="density">
+        <button data-value="compact" aria-pressed="false">Compact</button>
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="comfortable" aria-pressed="false">Comfortable</button>
+      </div>
+    </aside>
+
+    <!-- The admin layout's toaster, as captured. -->
+    <sel-toaster data-slot="toaster" duration="5000" limit="3"><template data-slot="toast-template"><div aria-modal="false" class="sa-toast" data-slot="toast" role="dialog" tabindex="0"><div class="sa-toast-content" data-slot="toast-content"><span class="sa-toast-icon" data-slot="toast-icon"><svg data-toast-icon="success" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m16 9-5.5 5.5L8 12"></path></svg><svg data-toast-icon="info" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><svg data-toast-icon="warning" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg><svg data-toast-icon="error" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 9-6 6"></path><path d="M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z"></path><path d="m9 9 6 6"></path></svg><svg data-toast-icon="loading" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg></span><div class="sa-toast-text" data-slot="toast-text"><div class="sa-toast-title" data-slot="toast-title"></div><div class="sa-toast-description" data-slot="toast-description"></div></div><a data-slot="toast-action" class="sa-button sa-button-variant-outline sa-button-size-sm sa-toast-action"></a><button type="button" data-slot="toast-close" aria-label="Close toast" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-toast-close"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div></div></template><div aria-atomic="false" aria-label="Notifications" aria-live="polite" aria-relevant="additions text" class="sa-toast-viewport" data-position="bottom-right" data-slot="toast-viewport" popover="manual" role="region" tabindex="-1"><div aria-live="assertive" class="sr-only" data-slot="toast-announcer"></div></div></sel-toaster>
+
+    <script>
+      // ------------------------------------------------------------------------------------------
+      // Shared data and helpers
+      // ------------------------------------------------------------------------------------------
+      const DESTINATIONS = ["Cape Town", "Cusco", "Kyoto", "Lisbon", "Marrakech", "Queenstown", "Reykjavík"];
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      const ICON = {
+        check: '<path d="M20 6 9 17l-5-5"></path>',
+        x: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
+        plus: '<path d="M5 12h14"></path><path d="M12 5v14"></path>',
+        listPlus: '<path d="M11 12H3"></path><path d="M16 6H3"></path><path d="M16 18H3"></path><path d="M18 9v6"></path><path d="M21 12h-6"></path>',
+        chevron: '<path d="m6 9 6 6 6-6"></path>',
+        circleCheck: '<circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path>',
+        pencil: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path>',
+        pin: '<path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path>',
+        sort: '<path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path>',
+        spinner: '<path d="M21 12a9 9 0 1 1-6.219-8.56"></path>',
+      };
+      const svg = (paths, cls = "", attrs = "") =>
+        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"${cls ? ` class="${cls}"` : ""} ${attrs}>${paths}</svg>`;
+      const money = (v) => (v === "" || v == null ? "" : `$${Number(v).toLocaleString("en-US")}`);
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const toast = (title, opts) => { try { window.stellarAdmin?.toast?.success(title, opts); } catch (e) { console.error(e); } };
+      let nextId = 100;
+
+      function flashNav(frame, path) {
+        const nav = frame.querySelector("[data-nav]");
+        nav.textContent = path;
+        nav.classList.add("flash");
+        setTimeout(() => nav.classList.remove("flash"), 900);
+      }
+
+      function bindOptions(scope, state, render) {
+        const root = document.querySelector(`.proto-options[data-scope="${scope}"]`);
+        const sync = () =>
+          root.querySelectorAll("[data-option]").forEach((g) =>
+            g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(state[g.dataset.option] === b.dataset.value))),
+          );
+        root.addEventListener("click", (e) => {
+          const b = e.target.closest("button");
+          if (!b) return;
+          state[b.closest("[data-option]").dataset.option] = b.dataset.value;
+          sync();
+          render(true);
+        });
+        sync();
+      }
+
+      // ------------------------------------------------------------------------------------------
+      // A — Create page
+      // ------------------------------------------------------------------------------------------
+      const form = {
+        trigger: "button",
+        keep: "none",
+        page: "create", // "create" | "index"
+        values: { Name: "", Destination: "", Days: "", Price: "" },
+        kept: {}, // field -> name of the tour it was kept from
+        errors: {},
+        saving: null,
+      };
+      const KEEP_FIELDS = ["Destination", "Days"];
+      const formBody = document.getElementById("form-body");
+      const formFrame = formBody.closest(".proto-frame");
+
+      function fieldHtml(name, label, control, { description = "" } = {}) {
+        const id = `Entity_${name}`;
+        const err = form.errors[name];
+        const kept = form.kept[name];
+        const desc = kept
+          ? `<p class="sa-field-description" data-slot="field-description"><span class="sa-field-kept">${svg(ICON.pin, "", 'aria-hidden="true"')}Kept from ${esc(kept)}</span></p>`
+          : description
+            ? `<p class="sa-field-description" data-slot="field-description">${esc(description)}</p>`
+            : "";
+        return `<div data-slot="grid-item" class="sa-grid-item">
+          <div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"${err ? ' data-invalid="true"' : ""}>
+            <label class="sa-label sa-field-label" data-slot="field-label" for="${id}">${label}</label>
+            ${control(id, err)}
+            ${desc}
+            <div id="${id}-error" class="sa-field-error ${err ? "field-validation-error" : "field-validation-valid"}" role="alert" data-slot="field-error">${err ? esc(err) : ""}</div>
+          </div>
+        </div>`;
+      }
+      const input = (name, type = "text", extra = "") => (id, err) =>
+        `<input type="${type}" id="${id}" name="Entity.${name}" value="${esc(form.values[name])}" data-slot="input" class="sa-input" ${err ? 'aria-invalid="true"' : ""} aria-describedby="${id}-error" ${extra}>`;
+      const select = (name, options) => (id) =>
+        `<div class="sa-native-select-wrapper" data-slot="native-select-wrapper">
+          <select class="sa-native-select" data-slot="native-select" id="${id}" name="Entity.${name}">
+            <option value="">Select a destination</option>
+            ${options.map((o) => `<option ${o === form.values[name] ? "selected" : ""}>${esc(o)}</option>`).join("")}
+          </select>${svg(ICON.chevron, "sa-native-select-icon", 'aria-hidden="true"')}</div>`;
+
+      const btn = (variant, inner, attrs = "", size = "default") =>
+        `<button data-slot="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}" ${attrs}>${inner}</button>`;
+
+      function formFooter() {
+        const spin = svg(ICON.spinner, "sa-spinner", 'data-icon="inline-start" aria-hidden="true"');
+        const busy = (which) => (form.saving === which ? spin : "");
+        const disabled = form.saving ? "disabled" : "";
+        const another =
+          form.trigger === "button"
+            ? btn("outline", `${busy("another")}Save and add another`, `type="submit" name="after" value="add-another" data-submit="another" ${disabled}`)
+            : "";
+        return `<div class="sa-resource-form-footer">
+          <div class="sa-resource-form-actions">
+            <a data-slot="form-cancel" href="#" data-cancel class="sa-button sa-button-variant-outline sa-button-size-default">Cancel</a>
+            ${another}
+            ${btn("default", `${busy("save")}Add Tour`, `type="submit" data-submit="save" ${disabled}`)}
+          </div>
+        </div>`;
+      }
+
+      function renderForm(optionsChanged) {
+        if (form.page === "index") {
+          formBody.innerHTML = `<div class="sa-page-container sa-page-container-width-large" data-slot="page-container">
+            <header class="sa-page-header" data-slot="page-header">
+              <h1 data-slot="page-header-title" class="sa-page-header-title">Tours</h1>
+              <div data-slot="page-header-actions" class="sa-page-header-actions">${btn("default", "Create", "data-back")}</div>
+            </header>
+            <p class="proto-muted" style="font-size:14px;margin:0">The index page, where a normal save lands. Press Create to open the create page again.</p>
+          </div>`;
+          return;
+        }
+        formBody.innerHTML = `
+<div class="sa-page-container sa-page-container-width-large sa-resource-form" data-form-layout="split" data-slot="page-container" data-width="large">
+  <header class="sa-page-header sa-resource-form-header" data-slot="page-header">
+    <h1 data-slot="page-header-title" class="sa-page-header-title">Add new Tour</h1>
+  </header>
+  <form method="post" novalidate>
+    <div data-slot="field-group" class="sa-field-group">
+      <div data-slot="field-group" class="sa-field-group">
+        <div data-slot="grid" class="sa-grid"><div class="sa-grid-content" data-slot="grid-content" data-columns="single">
+          ${fieldHtml("Name", "Name", input("Name", "text", 'autocomplete="off"'))}
+          ${fieldHtml("Destination", "Destination", select("Destination", DESTINATIONS))}
+          ${fieldHtml("Days", "Days", input("Days", "number", 'min="1" step="1"'))}
+          ${fieldHtml("Price", "Price", input("Price", "number", 'min="0" step="1"'), { description: "Per person, in US dollars." })}
+        </div></div>
+      </div>
+      ${formFooter()}
+    </div>
+  </form>
+</div>`;
+      }
+
+      function readForm() {
+        formBody.querySelectorAll("[name^='Entity.']").forEach((el) => (form.values[el.name.slice(7)] = el.value));
+      }
+
+      async function submitForm(another) {
+        readForm();
+        form.errors = {};
+        if (!form.values.Name.trim()) form.errors.Name = "The Name field is required.";
+        if (Object.keys(form.errors).length) {
+          renderForm();
+          formBody.querySelector("[aria-invalid='true']")?.focus();
+          return;
+        }
+        form.saving = another ? "another" : "save";
+        renderForm();
+        await wait(450);
+        const saved = { ...form.values, id: nextId++ };
+        form.saving = null;
+
+        // The server queues the "added" toast and redirects; the next page shows it.
+        formBody.classList.add("leaving");
+        await wait(120);
+        formBody.classList.remove("leaving");
+        if (another) {
+          form.values = { Name: "", Destination: "", Days: "", Price: "" };
+          form.kept = {};
+          if (form.keep === "some") {
+            for (const f of KEEP_FIELDS) {
+              if (saved[f] !== "") { form.values[f] = saved[f]; form.kept[f] = saved.Name; }
+            }
+          }
+          flashNav(formFrame, "/stellaradmin/tours/create");
+          renderForm();
+          formFrame.scrollIntoView({ block: "nearest" });
+          formBody.querySelector("#Entity_Name").focus();
+        } else {
+          form.values = { Name: "", Destination: "", Days: "", Price: "" };
+          form.kept = {};
+          form.page = "index";
+          flashNav(formFrame, "/stellaradmin/tours");
+          renderForm();
+        }
+        toast("Tour added", { description: saved.Name, action: { label: "View", href: "#" } });
+      }
+
+      formBody.addEventListener("click", (e) => {
+        const submit = e.target.closest("[data-submit]");
+        if (submit) {
+          e.preventDefault();
+          submitForm(submit.dataset.submit === "another");
+          return;
+        }
+        if (e.target.closest("[data-cancel]")) {
+          e.preventDefault();
+          form.page = "index"; form.kept = {}; form.errors = {};
+          form.values = { Name: "", Destination: "", Days: "", Price: "" };
+          flashNav(formFrame, "/stellaradmin/tours");
+          renderForm();
+        }
+        if (e.target.closest("[data-back]")) {
+          form.page = "create";
+          flashNav(formFrame, "/stellaradmin/tours/create");
+          renderForm();
+          formBody.querySelector("#Entity_Name").focus();
+        }
+      });
+      formBody.addEventListener("input", (e) => {
+        const name = e.target.name?.slice(7);
+        if (name && form.kept[name]) {
+          delete form.kept[name];
+          e.target.closest(".sa-field").querySelector(".sa-field-description")?.remove();
+        }
+        if (name && form.errors[name]) {
+          delete form.errors[name];
+          e.target.removeAttribute("aria-invalid");
+          const err = e.target.closest(".sa-field").querySelector(".sa-field-error");
+          err.textContent = "";
+        }
+      });
+      formBody.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          submitForm(e.shiftKey && form.trigger === "button");
+        } else if (e.key === "Enter" && e.target.matches("input")) {
+          // Enter in a field submits with the default (primary) button, as a browser form does
+          e.preventDefault();
+          submitForm(false);
+        }
+      });
+      formBody.addEventListener("submit", (e) => e.preventDefault());
+
+      bindOptions("form", form, () => { readForm(); renderForm(); });
+      renderForm();
+
+      // ------------------------------------------------------------------------------------------
+      // B — Inline create
+      // ------------------------------------------------------------------------------------------
+      const grid = {
+        trigger: "button",
+        position: "top",
+        keep: "none",
+        afterSave: "reload",
+        rows: [
+          { id: 1, Name: "Atlantic Coast Road Trip", Destination: "Lisbon", Days: 6, Price: 1450 },
+          { id: 2, Name: "Fjords & Northern Lights", Destination: "Reykjavík", Days: 5, Price: 2190 },
+          { id: 3, Name: "Inca Trail Trek", Destination: "Cusco", Days: 4, Price: 1320 },
+          { id: 4, Name: "Kyoto Temples & Tea", Destination: "Kyoto", Days: 3, Price: 980 },
+          { id: 5, Name: "Medina Food Walk", Destination: "Marrakech", Days: 1, Price: 85 },
+          { id: 6, Name: "Table Mountain Sunrise", Destination: "Cape Town", Days: 1, Price: 120 },
+          { id: 7, Name: "Wine & Peninsula Tour", Destination: "Cape Town", Days: 2, Price: 340 },
+        ],
+        run: null, // { added: [ids], editing: bool, values, errors }
+      };
+      const inlineBody = document.getElementById("inline-body");
+      const inlineFrame = inlineBody.closest(".proto-frame");
+      const COLS = [
+        { key: "Name", label: "Name" },
+        { key: "Destination", label: "Destination" },
+        { key: "Days", label: "Days", cls: "text-right" },
+        { key: "Price", label: "Price", cls: "text-right" },
+      ];
+      const sortRows = () => grid.rows.sort((a, b) => a.Name.localeCompare(b.Name));
+      sortRows();
+
+      function displayRow(r) {
+        const added = grid.run?.added.includes(r.id);
+        const locked = grid.run && !added ? " data-inline-locked inert" : "";
+        return `<tr class="sa-table-row" data-key="${r.id}" data-slot="table-row"${added ? " data-added" : ""}${locked}>
+          <td class="sa-table-cell" data-slot="table-cell"><span class="sa-text-display">${esc(r.Name)}</span></td>
+          <td class="sa-table-cell" data-slot="table-cell"><span class="sa-text-display">${esc(r.Destination)}</span></td>
+          <td class="sa-table-cell text-right" data-slot="table-cell">${r.Days}</td>
+          <td class="sa-table-cell text-right" data-slot="table-cell">${money(r.Price)}</td>
+          <td class="sa-table-cell w-px whitespace-nowrap sa-inline-row-actions" data-slot="table-cell">
+            <button aria-label="Edit Tour" interestfor="--edit-${r.id}" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-icon-sm">${svg(ICON.pencil)}</button>
+            <div id="--edit-${r.id}" popover="hint" data-slot="tooltip-content" data-anchor-side="top" class="sa-tooltip-content anchored-top-center">Edit Tour</div>
+          </td>
+        </tr>`;
+      }
+
+      function editingRow() {
+        const run = grid.run;
+        const v = run.values;
+        const err = run.errors;
+        const cellInput = (key, type, extra = "") =>
+          `<input class="sa-input sa-cell-editor" type="${type}" aria-label="${key}" name="rows[new].${key}" value="${esc(v[key])}" data-slot="input" ${err[key] ? 'aria-invalid="true"' : ""} autocomplete="off" ${extra}>`;
+        const destSelect = `<div class="sa-native-select-wrapper sa-cell-editor" data-slot="native-select-wrapper">
+          <select class="sa-native-select" data-slot="native-select" data-size="sm" aria-label="Destination" name="rows[new].Destination">
+            <option value=""></option>
+            ${DESTINATIONS.map((o) => `<option ${o === v.Destination ? "selected" : ""}>${esc(o)}</option>`).join("")}
+          </select>${svg(ICON.chevron, "sa-native-select-icon", 'aria-hidden="true"')}</div>`;
+        const saving = run.saving;
+        const save = `<button data-row-save aria-label="Save" interestfor="--save-new" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-icon-sm" ${saving ? "disabled" : ""}>${saving === "save" ? svg(ICON.spinner, "sa-spinner") : svg(ICON.check)}</button>
+          <div id="--save-new" popover="hint" data-slot="tooltip-content" data-anchor-side="top" class="sa-tooltip-content anchored-top-center">Save</div>`;
+        const another =
+          grid.trigger === "button"
+            ? `<button data-row-save-another aria-label="Save and add another" interestfor="--save-another-new" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-icon-sm" ${saving ? "disabled" : ""}>${saving === "another" ? svg(ICON.spinner, "sa-spinner") : svg(ICON.listPlus)}</button>
+               <div id="--save-another-new" popover="hint" data-slot="tooltip-content" data-anchor-side="top" class="sa-tooltip-content anchored-top-center">Save and add another (Ctrl+Shift+Enter)</div>`
+            : "";
+        const cancel = `<button data-row-cancel aria-label="Cancel" interestfor="--cancel-new" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-icon-sm">${svg(ICON.x)}</button>
+          <div id="--cancel-new" popover="hint" data-slot="tooltip-content" data-anchor-side="top" class="sa-tooltip-content anchored-top-center">Cancel</div>`;
+        const row = `<tr class="sa-table-row" data-editing="" data-key="new" data-slot="table-row">
+          <td class="sa-table-cell" data-slot="table-cell">${cellInput("Name", "text")}</td>
+          <td class="sa-table-cell" data-slot="table-cell">${destSelect}</td>
+          <td class="sa-table-cell text-right" data-slot="table-cell">${cellInput("Days", "number", 'min="1" step="1"')}</td>
+          <td class="sa-table-cell text-right" data-slot="table-cell">${cellInput("Price", "number", 'min="0" step="1"')}</td>
+          <td class="sa-table-cell w-px whitespace-nowrap sa-inline-row-actions" data-slot="table-cell">${save}${another}${cancel}</td>
+        </tr>`;
+        const message = Object.values(err).length
+          ? `<tr class="sa-table-row sa-row-message" data-slot="table-row"><td class="sa-table-cell" colspan="5" data-slot="table-cell"><div class="sa-row-message-body" role="alert">${Object.values(err).map(esc).join(" ")}</div></td></tr>`
+          : "";
+        return row + message;
+      }
+
+      function statusRow() {
+        const run = grid.run;
+        if (!run?.added.length) return "";
+        let inner;
+        {
+          const how = `<span class="sa-kbd">Ctrl</span>/<span class="sa-kbd">⌘</span>+<span class="sa-kbd">Shift</span>+<span class="sa-kbd">Enter</span> to add another · <span class="sa-kbd">Esc</span> to finish`;
+          inner = `<span class="sa-table-add-row-status" role="status"><strong>${run.added.length} added</strong><span>${how}</span></span>`;
+        }
+        return `<tr class="sa-table-row sa-add-status-row" data-slot="table-row"><td class="sa-table-cell" colspan="5" data-slot="table-cell">${inner}</td></tr>`;
+      }
+
+      function addRow() {
+        const run = grid.run;
+        let inner;
+        {
+          inner = `<button data-row-add data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-sm" ${run ? "disabled" : ""}>${svg(ICON.plus, "", 'data-icon="inline-start"')}Create</button>`;
+        }
+        return `<tr class="sa-table-row sa-table-add-row" data-slot="table-add-row"><td class="sa-table-cell" colspan="5" data-slot="table-cell">${inner}</td></tr>`;
+      }
+
+      function renderGrid() {
+        const run = grid.run;
+        // Rows added in this run sit next to the new row, in the order added, until the run ends.
+        const addedRows = run ? run.added.map((id) => grid.rows.find((r) => r.id === id)) : [];
+        const others = grid.rows.filter((r) => !addedRows.includes(r)).map(displayRow);
+        const added = addedRows.map(displayRow);
+        const editing = run?.editing ? editingRow() + statusRow() : "";
+        let body;
+        if (grid.position === "top") {
+          // Newest added row directly under the new row
+          body = addRow() + editing + [...added].reverse().join("") + others.join("");
+        } else {
+          body = others.join("") + added.join("") + editing + addRow();
+        }
+        const locked = run ? " data-inline-locked inert" : "";
+        inlineBody.innerHTML = `
+<div class="sa-page-container sa-page-container-width-full" data-slot="page-container" data-width="full">
+  <header data-slot="page-header" class="sa-page-header">
+    <h1 data-slot="page-header-title" class="sa-page-header-title">Tours</h1>
+    <div data-slot="page-header-actions" class="sa-page-header-actions"${locked}>
+      ${btn("default", "Create", "data-row-add")}
+    </div>
+  </header>
+  <div id="index-page-grid" class="sa-data-grid sa-card sa-resource-index-grid" data-inline-dim="edit create" ${grid.trigger === "button" ? "data-add-another" : ""} data-slot="data-grid">
+    <sel-table ${run ? 'data-editing=""' : ""} data-slot="table-interactivity"><div class="sa-table-container" data-slot="table-container"><table class="sa-table" data-slot="table">
+      <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row">
+        ${COLS.map((c) => `<th class="sa-table-head ${c.cls ?? ""}" data-slot="table-head">${c.key === "Name" ? `<span aria-sort="ascending">${c.label}</span>` : c.label}</th>`).join("")}
+        <th class="sa-table-head w-px whitespace-nowrap sa-inline-row-actions" data-slot="table-head"></th>
+      </tr></thead>
+      <tbody class="sa-table-body" data-slot="table-body">${body}</tbody>
+    </table></div></sel-table>
+    <div data-slot="card-footer" class="sa-card-footer"${locked}><span class="proto-muted" style="font-size:13px">${grid.rows.length} tours</span></div>
+  </div>
+</div>`;
+      }
+
+      function blankValues(from) {
+        const v = { Name: "", Destination: "", Days: "", Price: "" };
+        if (from && grid.keep === "some") { v.Destination = from.Destination; v.Days = from.Days; }
+        return v;
+      }
+
+      function focusNew(selectAll) {
+        const first = inlineBody.querySelector("tr[data-key='new'] [aria-invalid='true']") ?? inlineBody.querySelector("tr[data-key='new'] input");
+        first?.focus();
+        if (selectAll) first?.select?.();
+      }
+
+      function startRun() {
+        grid.run = { added: [], editing: true, values: blankValues(), errors: {}, saving: null };
+        inlineFrame.querySelector("[data-nav]").textContent = "/stellaradmin/tours";
+        renderGrid();
+        inlineBody.querySelector("tr[data-key='new']").scrollIntoView({ block: "nearest", behavior: "smooth" });
+        focusNew();
+      }
+
+      function readRow() {
+        inlineBody.querySelectorAll("tr[data-key='new'] [name^='rows[new].']").forEach((el) => (grid.run.values[el.name.slice(10)] = el.value));
+      }
+
+      async function saveRow(another) {
+        const run = grid.run;
+        readRow();
+        run.errors = {};
+        if (!run.values.Name.trim()) run.errors.Name = "The Name field is required.";
+        if (Object.keys(run.errors).length) { renderGrid(); focusNew(); return; }
+        run.saving = another ? "another" : "save";
+        renderGrid();
+        await wait(450);
+        const saved = { ...run.values, id: nextId++, Days: Number(run.values.Days) || 1, Price: Number(run.values.Price) || 0 };
+        grid.rows.push(saved);
+        run.added.push(saved.id);
+        run.saving = null;
+        toast("Tour added", { description: saved.Name });
+        if (another) {
+          run.values = blankValues(saved);
+          renderGrid();
+          flash(saved.id);
+          focusNew();
+        } else {
+          endRun(saved.id);
+        }
+      }
+
+      // The run ends: the open row closes. ReloadGrid re-sorts the grid once (one request), KeepInPlace leaves the added rows where they were.
+      function endRun(flashId) {
+        const run = grid.run;
+        const added = run?.added ?? [];
+        grid.run = null;
+        if (grid.afterSave === "reload") {
+          sortRows();
+          renderGrid();
+          if (added.length) flashNav(inlineFrame, "/stellaradmin/tours  (grid reloaded)");
+          added.forEach((id) => flash(id));
+        } else {
+          // KeepInPlace: rebuild the order the run showed, then leave it until the next reload
+          const addedRows = added.map((id) => grid.rows.find((r) => r.id === id));
+          const others = grid.rows.filter((r) => !addedRows.includes(r));
+          grid.rows = grid.position === "top" ? [...addedRows.reverse(), ...others] : [...others, ...addedRows];
+          renderGrid();
+          if (flashId) flash(flashId);
+        }
+        const target = flashId ? inlineBody.querySelector(`tr[data-key="${flashId}"] button`) : inlineBody.querySelector("[data-row-add]:not(:disabled)");
+        target?.focus({ preventScroll: true });
+      }
+
+      function flash(id) {
+        const row = inlineBody.querySelector(`tr[data-key="${id}"]`);
+        if (!row) return;
+        row.setAttribute("data-saved", "");
+        setTimeout(() => row.removeAttribute("data-saved"), 1400);
+      }
+
+      inlineBody.addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b || b.disabled) return;
+        if (b.matches("[data-row-add]")) { if (!grid.run) startRun(); }
+        else if (b.matches("[data-row-save]")) saveRow(false);
+        else if (b.matches("[data-row-save-another]")) saveRow(true);
+      });
+      // sel-table removes a new row itself when its [data-row-cancel] is clicked, in the capture phase, and stops the
+      // click there. The run has to end (and ReloadGrid reload) first, so this listens in the capture phase above it.
+      inlineBody.addEventListener("click", (e) => {
+        if (!e.target.closest("tr[data-key='new'] [data-row-cancel]")) return;
+        e.preventDefault();
+        e.stopPropagation();
+        endRun(null);
+      }, true);
+      inlineBody.addEventListener("keydown", (e) => {
+        const row = e.target.closest("tr[data-key='new']");
+        if (!row || grid.run?.saving) return;
+        if (e.key === "Enter" && e.target.matches("input, select")) {
+          e.preventDefault();
+          saveRow(grid.trigger === "button" && e.shiftKey && (e.ctrlKey || e.metaKey));
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          endRun(null);
+        }
+      });
+      inlineBody.addEventListener("input", (e) => {
+        if (e.target.getAttribute("aria-invalid")) {
+          e.target.removeAttribute("aria-invalid");
+          inlineBody.querySelector(".sa-row-message")?.remove();
+          grid.run.errors = {};
+        }
+      });
+
+      bindOptions("inline", grid, () => {
+        if (grid.run) readRow();
+        if (grid.run?.editing) { renderGrid(); focusNew(); } else renderGrid();
+      });
+      renderGrid();
+
+      // ------------------------------------------------------------------------------------------
+      // Control bar
+      // ------------------------------------------------------------------------------------------
+      const view = { theme: "default", mode: "light", density: "default" };
+      function applyView() {
+        document.getElementById("theme-css").href = view.theme === "default" ? "data:text/css," : `../../util/theme-check/presets/${view.theme}.css`;
+        document.documentElement.classList.toggle("dark", view.mode === "dark");
+        const page = document.querySelector(".proto-page");
+        if (view.density === "default") page.removeAttribute("data-sa-density");
+        else page.setAttribute("data-sa-density", view.density);
+        document.querySelectorAll(".proto-controls [data-control]").forEach((g) =>
+          g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(view[g.dataset.control] === b.dataset.value))),
+        );
+      }
+      document.querySelector(".proto-controls").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        view[b.closest("[data-control]").dataset.control] = b.dataset.value;
+        applyView();
+      });
+      applyView();
+    </script>
+  </body>
+</html>
