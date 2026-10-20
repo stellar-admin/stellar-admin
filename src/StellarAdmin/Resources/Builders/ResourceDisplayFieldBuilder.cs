@@ -13,7 +13,7 @@ public sealed class ResourceDisplayFieldBuilder
 {
     private readonly List<Action<FormDisplayFieldOptions>> _configuration = [];
     private readonly LambdaExpression _field;
-    private readonly string _fieldName;
+    private readonly string? _fieldName;
     private readonly PropertyInfo[] _propertyPath;
 
     /// <summary>
@@ -50,6 +50,10 @@ public sealed class ResourceDisplayFieldBuilder
     /// <value>
     ///     The default is the property's display name.
     /// </value>
+    /// <remarks>
+    ///     A field that computes its value, such as <c>tour =&gt; tour.Nights * tour.NightlyRate</c>,
+    ///     has no property to name it, so it requires a title.
+    /// </remarks>
     public string? Title
     {
         set => _configuration.Add(options => options.Title = value);
@@ -57,7 +61,7 @@ public sealed class ResourceDisplayFieldBuilder
 
     private ResourceDisplayFieldBuilder(
         LambdaExpression field,
-        string fieldName,
+        string? fieldName,
         PropertyInfo[] propertyPath
     )
     {
@@ -217,13 +221,19 @@ public sealed class ResourceDisplayFieldBuilder
         return this;
     }
 
-    // Display fields are never bound, so unlike editable fields they need no setter
+    // Display fields are never bound, so unlike editable fields they need no setter. Any other
+    // expression computes the field's value
     internal static ResourceDisplayFieldBuilder Create(LambdaExpression field, string paramName)
     {
         ArgumentNullException.ThrowIfNull(field, paramName);
 
         var properties = ResourcePropertyPath.GetProperties(field);
-        if (properties is null || properties.Any(property => property.GetMethod?.IsPublic != true))
+        if (properties is null)
+        {
+            return new(field, null, []);
+        }
+
+        if (properties.Any(property => property.GetMethod?.IsPublic != true))
         {
             throw new ArgumentException("Select a property path with public getters.", paramName);
         }

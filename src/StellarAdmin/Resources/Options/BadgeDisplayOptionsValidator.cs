@@ -60,7 +60,7 @@ internal sealed class BadgeDisplayOptionsValidator<TResource>
         {
             AddFailure(
                 failures,
-                $"{page}'s field '{field.FieldName}'",
+                $"{page}'s field '{field.FieldName ?? field.Title ?? field.FieldExpression.ToString()}'",
                 field.Display,
                 field.FieldExpression.ReturnType
             );

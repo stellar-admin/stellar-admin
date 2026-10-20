@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,17 +32,26 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
     // Razor binds asp-for to an expression written in the view, so a field chosen at runtime is
     // rendered by pointing the page's model at the field's value, as an editor template sees it,
     // until the returned scope is disposed. The display template reads the field's display and its
-    // prepared data from the view context's data, which the tag helper renders it with.
+    // prepared data from the view context's data, which the tag helper renders it with. A field
+    // that computes its value has the metadata of the value's type.
     internal FieldScope BeginField(FormDisplayFieldOptions field)
     {
-        var fieldName = field.FieldName;
-        var expression = Context
-            .RequestServices.GetRequiredService<ModelExpressionProvider>()
-            .CreateModelExpression(ViewData, fieldName);
+        var fieldName = field.Key;
+        var explorer = field.FieldName is null
+            ? ViewData.ModelExplorer.GetExplorerForExpression(
+                Context
+                    .RequestServices.GetRequiredService<IModelMetadataProvider>()
+                    .GetMetadataForType(field.FieldExpression.ReturnType),
+                ViewData.Model is { } model ? field.GetValue(model) : null
+            )
+            : Context
+                .RequestServices.GetRequiredService<ModelExpressionProvider>()
+                .CreateModelExpression(ViewData, fieldName)
+                .ModelExplorer;
         var original = ViewData;
         ViewData = new ViewDataDictionary<TModel>(original)
         {
-            ModelExplorer = expression.ModelExplorer,
+            ModelExplorer = explorer,
             TemplateInfo =
             {
                 HtmlFieldPrefix = original.TemplateInfo.GetFullHtmlFieldName(fieldName),
@@ -49,7 +59,7 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
         };
 
         // A [UIHint] template wins over the default display, and the tag helper renders it
-        var metadata = expression.Metadata;
+        var metadata = explorer.Metadata;
         var display =
             field.Display
             ?? (

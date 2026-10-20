@@ -18,13 +18,16 @@ public abstract class ResourceViewFieldsBuilder<TModel>
     ///     Adds a field.
     /// </summary>
     /// <typeparam name="TProperty">The type of the selected property.</typeparam>
-    /// <param name="field">An expression that selects the property to display.</param>
+    /// <param name="field">
+    ///     An expression that selects the property the field shows, or computes the value it shows,
+    ///     such as <c>tour =&gt; tour.Nights * tour.NightlyRate</c>.
+    /// </param>
     /// <returns>A builder that configures the field.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property path with public getters.
+    ///     <paramref name="field" /> selects a property path without public getters.
     /// </exception>
     public ResourceDisplayFieldBuilder Add<TProperty>(Expression<Func<TModel, TProperty>> field) =>
         FormScopeBuilder.AddDisplayField(_configure, field, nameof(field));
@@ -33,14 +36,17 @@ public abstract class ResourceViewFieldsBuilder<TModel>
     ///     Adds and configures a field.
     /// </summary>
     /// <typeparam name="TProperty">The type of the selected property.</typeparam>
-    /// <param name="field">An expression that selects the property to display.</param>
+    /// <param name="field">
+    ///     An expression that selects the property the field shows, or computes the value it shows,
+    ///     such as <c>tour =&gt; tour.Nights * tour.NightlyRate</c>.
+    /// </param>
     /// <param name="configure">A delegate that configures the field.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property path with public getters.
+    ///     <paramref name="field" /> selects a property path without public getters.
     /// </exception>
     public ResourceViewFieldsBuilder<TModel> Add<TProperty>(
         Expression<Func<TModel, TProperty>> field,

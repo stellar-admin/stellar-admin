@@ -166,6 +166,12 @@ public static partial class StellarAdminBuilderExtensions
                     ComputedColumnOptionsValidator<TResource>
                 >()
             );
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<
+                    IValidateOptions<ResourceOptions<TResource>>,
+                    ComputedDisplayFieldOptionsValidator<TResource>
+                >()
+            );
             builder.AddController(typeof(ResourceController<TResource>), slug);
 
             builder.Services.TryAddEnumerable(

@@ -70,7 +70,7 @@ columns.Add(booking => booking.Nights * booking.NightlyRate, column =>
 - It sorts only by an expression: `Sortable()` alone fails at startup, so use `Sortable(selector)`. Its title in PascalCase (`Total`) names it in sort links and in `ResourceSort.Field` for a custom data source, so two sortable columns can't share one.
 - The value is computed in memory for each row. EF Core resources load the navigations it reads from the record, such as `tour.Destinations` or `booking.Customer`, but not navigations read through a nested lambda's parameter, such as `destination.Country` inside `Select`.
 - Reading a property of a null value, or calling one of its methods, gives null (or zero or false), which shows the empty text; extension methods such as `Select` still throw on a null collection.
-- View page and form display fields still need a property path.
+- Display fields compute values the same way ([fields](fields.md#computed-values)).
 
 ## How a cell renders
 

@@ -127,13 +127,16 @@ public abstract class ResourceFieldsBuilder<TResource>
     ///     Adds a read-only field.
     /// </summary>
     /// <typeparam name="TProperty">The type of the field's property.</typeparam>
-    /// <param name="field">An expression that selects the property the field shows.</param>
+    /// <param name="field">
+    ///     An expression that selects the property the field shows, or computes the value it shows,
+    ///     such as <c>tour =&gt; tour.Nights * tour.NightlyRate</c>.
+    /// </param>
     /// <returns>A builder that configures the field.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property path with public getters.
+    ///     <paramref name="field" /> selects a property path without public getters.
     /// </exception>
     /// <remarks>
     ///     The field is never bound, so its property needs no setter.
@@ -149,14 +152,17 @@ public abstract class ResourceFieldsBuilder<TResource>
     ///     Adds and configures a read-only field.
     /// </summary>
     /// <typeparam name="TProperty">The type of the field's property.</typeparam>
-    /// <param name="field">An expression that selects the property the field shows.</param>
+    /// <param name="field">
+    ///     An expression that selects the property the field shows, or computes the value it shows,
+    ///     such as <c>tour =&gt; tour.Nights * tour.NightlyRate</c>.
+    /// </param>
     /// <param name="configure">A delegate that configures the field.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property path with public getters.
+    ///     <paramref name="field" /> selects a property path without public getters.
     /// </exception>
     /// <remarks>
     ///     The field is never bound, so its property needs no setter.

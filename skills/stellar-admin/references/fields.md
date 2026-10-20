@@ -5,6 +5,7 @@ Forms have two kinds of field. **Editable fields** (`Add`) render an input and a
 ## Contents
 
 - [Read-only values on a form](#read-only-values-on-a-form)
+- [Computed values](#computed-values)
 - [Details sections](#details-sections)
 - [Read-only through metadata](#read-only-through-metadata)
 - [How a display field renders](#how-a-display-field-renders)
@@ -37,6 +38,24 @@ resource.AllowEdit(edit => edit.Fields(fields =>
 - The property needs only a getter. A posted value is ignored.
 - On create, values come from the new model (the factory's values), so unset values show the empty text.
 - With a custom model (`AllowEdit<TModel, THandler>`), the property must be on `TModel`.
+
+## Computed values
+
+A display field, on a form, in details or on a view page, can show any expression of the record, not just a property:
+
+```csharp
+fields.AddDisplayField(booking => booking.Nights * booking.NightlyRate, field =>
+{
+    field.Title = "Total";
+    field.UseDisplay<NumberDisplay>(number => number.Format = "C");
+});
+view.Fields(fields => fields.Add(tour => string.Join(", ", tour.Destinations.Select(destination => destination.Name)), field => field.Title = "Destinations"));
+```
+
+- A computed field has no property for a default label, so `Title` is required; without it the app fails to start.
+- It renders like a property of the expression's type, with that type's default display; `[UIHint]` and `[DisplayFormat]` don't apply. A display handler receives the computed value as `context.Value` and the title in PascalCase (`Total`) as `context.FieldName`.
+- EF Core resources load the navigations it reads from the record, as for computed columns ([columns](columns.md#computed-values)), but not those read through a nested lambda's parameter.
+- Reading a property of a null value, or calling one of its methods, gives null (or zero or false), which shows the empty text; extension methods such as `Select` still throw on a null collection.
 
 ## Details sections
 

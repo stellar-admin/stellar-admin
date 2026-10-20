@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using Humanizer;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.UI;
 
@@ -29,14 +30,18 @@ public sealed class FormDisplayFieldOptions : FormItemOptions
     public string? EmptyText { get; internal set; }
 
     /// <summary>
-    ///     Gets the expression that selects the property the field displays.
+    ///     Gets the expression that selects the field's value.
     /// </summary>
     public LambdaExpression FieldExpression { get; }
 
     /// <summary>
     ///     Gets the property path that <see cref="FieldExpression" /> selects.
     /// </summary>
-    public string FieldName { get; }
+    /// <value>
+    ///     The property path, or <see langword="null" /> when the expression doesn't select a
+    ///     property path.
+    /// </value>
+    public string? FieldName { get; }
 
     /// <summary>
     ///     Gets whether the label displays above or beside the value.
@@ -50,6 +55,9 @@ public sealed class FormDisplayFieldOptions : FormItemOptions
     /// <summary>
     ///     Gets the properties that <see cref="FieldExpression" /> selects, in order.
     /// </summary>
+    /// <value>
+    ///     The properties, or an empty list when the expression doesn't select a property path.
+    /// </value>
     public IReadOnlyList<PropertyInfo> PropertyPath { get; }
 
     /// <summary>
@@ -60,18 +68,39 @@ public sealed class FormDisplayFieldOptions : FormItemOptions
     /// </value>
     public string? Title { get; internal set; }
 
+    // Computes the value of a field whose expression isn't a property path
+    internal Func<object, object?>? ComputedValue { get; }
+
     internal Type? HandlerType { get; set; }
+
+    // Names a field that computes its value, as its title in PascalCase, where a property field
+    // uses its property path
+    internal string Key =>
+        FieldName
+        ?? (
+            string.IsNullOrWhiteSpace(Title)
+                ? string.Empty
+                : string.Concat(Title.Dehumanize().Where(char.IsLetterOrDigit))
+        );
 
     internal bool UsesBuiltInRendering { get; set; }
 
     internal FormDisplayFieldOptions(
         LambdaExpression fieldExpression,
-        string fieldName,
+        string? fieldName,
         PropertyInfo[] propertyPath
     )
     {
         FieldExpression = fieldExpression;
         FieldName = fieldName;
         PropertyPath = Array.AsReadOnly((PropertyInfo[])propertyPath.Clone());
+        ComputedValue = fieldName is null
+            ? StellarAdmin.ComputedValue.Compile(fieldExpression)
+            : null;
     }
+
+    internal object? GetValue(object model) =>
+        ComputedValue is { } computedValue
+            ? computedValue(model)
+            : ResourcePropertyPath.GetValue(model, PropertyPath);
 }

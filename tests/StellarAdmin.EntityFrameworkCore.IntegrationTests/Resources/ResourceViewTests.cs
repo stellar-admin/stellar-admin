@@ -130,4 +130,46 @@ public class ResourceViewTests
             )
             .IsEquivalentTo(["Sale", "Seasonal"], CollectionOrdering.Any);
     }
+
+    [Test]
+    public async Task View_WithComputedFields_LoadsTheNavigationsTheyRead()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowView(view =>
+                view.Fields(fields =>
+                {
+                    fields.Add(
+                        product =>
+                            string.Join(
+                                ", ",
+                                product.Tags.OrderBy(tag => tag.Name).Select(tag => tag.Name)
+                            ),
+                        field => field.Title = "Tags"
+                    );
+                    fields.Add(
+                        product => product.Category!.Name + " / " + product.Name,
+                        field => field.Title = "Category"
+                    );
+                })
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/view/2");
+        var document = await new HtmlParser().ParseDocumentAsync(
+            await response.Content.ReadAsStringAsync()
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-slot='display-field-value']")
+                    .Select(value => value.TextContent.Trim())
+            )
+            .IsEquivalentTo(["Sale, Seasonal", "Technology / Apple"], CollectionOrdering.Matching);
+    }
 }

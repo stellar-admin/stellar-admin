@@ -1532,11 +1532,7 @@ internal sealed class ResourceController<TResource>(
                         handlerType,
                         field.Display!
                     );
-                var context = new FieldDisplayContext(
-                    field.FieldName,
-                    model,
-                    ResourcePropertyPath.GetValue(model, field.PropertyPath)
-                );
+                var context = new FieldDisplayContext(field.Key, model, field.GetValue(model));
                 data[field] = await handler.PrepareAsync(context, cancellationToken);
             }
         }

@@ -106,30 +106,40 @@ public class ResourceFieldsBuilderTests
     [Test]
     [Arguments("display")]
     [Arguments("details")]
-    public async Task AddDisplayField_WithMethodExpression_RejectsField(string scope)
+    public async Task AddDisplayField_WithMethodExpression_AddsComputedField(string scope)
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create =>
+            create.Fields(fields =>
+            {
+                if (scope == "display")
+                {
+                    fields.AddDisplayField(
+                        product => product.Name.ToUpper(),
+                        field => field.Title = "Shouted"
+                    );
+                }
+                else
+                {
+                    fields
+                        .AddDetails("Audit")
+                        .Add(product => product.Name.ToUpper(), field => field.Title = "Shouted");
+                }
+            })
+        );
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            sut.AllowCreate(create =>
-                create.Fields(fields =>
-                {
-                    if (scope == "display")
-                    {
-                        fields.AddDisplayField(product => product.Name.ToUpper());
-                    }
-                    else
-                    {
-                        fields.AddDetails("Audit").Add(product => product.Name.ToUpper());
-                    }
-                })
-            );
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        var field = options.Create!.DisplayFields.Single();
+        await Assert.That(field.FieldName).IsNull();
+        await Assert.That(field.PropertyPath).IsEmpty();
+        await Assert.That(field.GetValue(new Product { Name = "tent" })).IsEqualTo("TENT");
     }
 
     [Test]

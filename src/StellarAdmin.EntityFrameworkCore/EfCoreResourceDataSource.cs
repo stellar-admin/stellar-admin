@@ -222,7 +222,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         // Lookup editors display the selected item from the reference loaded with the entity, with
         // the references its text reads through, many-to-many fields show the related entities' keys,
         // and display fields read through the references on their paths and load the collections they
-        // show. The edit and view pages load through the same method, so the entity carries the
+        // show, or those their computed values read. The edit and view pages load through the same method, so the entity carries the
         // navigations either page needs
         if (includeLookups)
         {
@@ -244,10 +244,10 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
                 lookupIncludes
                     .Concat(collections)
                     .Concat(
-                        displayFields.Select(field =>
-                            EfCorePropertyPaths.FindDisplayIncludePath(
+                        displayFields.SelectMany(field =>
+                            EfCorePropertyPaths.FindDisplayIncludePaths(
                                 entityType,
-                                field.PropertyPath
+                                field.FieldExpression
                             )
                         )
                     )

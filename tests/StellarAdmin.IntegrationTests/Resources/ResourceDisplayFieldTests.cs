@@ -484,6 +484,39 @@ public class ResourceDisplayFieldTests
     }
 
     [Test]
+    public async Task Edit_WithComputedFields_RendersTheValuesOrEmptyText()
+    {
+        // Arrange
+        await using var sut = await CreateFactsHostAsync(
+            details =>
+            {
+                details.Add(
+                    model => model.ProductName + " for " + model.Price,
+                    field => field.Title = "Summary"
+                );
+                details.Add(
+                    model => model.Email!.ToUpperInvariant(),
+                    field =>
+                    {
+                        field.Title = "Contact";
+                        field.EmptyText = "No email";
+                    }
+                );
+            },
+            model => model.Email = null
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var values = GetValues(document);
+        await Assert.That(values["Summary"].TextContent.Trim()).StartsWith("Notebook for 8");
+        await Assert.That(values["Contact"].TextContent.Trim()).IsEqualTo("No email");
+    }
+
+    [Test]
     public async Task Edit_WithDetails_RendersListWithLayoutAndPlacement()
     {
         // Arrange

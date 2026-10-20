@@ -1,11 +1,13 @@
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.UI;
+using TUnit.Assertions.Enums;
 using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
@@ -277,6 +279,119 @@ public class ResourceViewPageTests
         await Assert
             .That(document.RequiredElement("[data-custom-display='category']").TextContent)
             .IsEqualTo("Notebooks");
+    }
+
+    [Test]
+    public async Task View_WithComputedFields_RendersTheComputedValues()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowView(view =>
+                    view.Fields(fields =>
+                    {
+                        fields.Add(
+                            product => product.Name + " (" + product.Id + ")",
+                            field => field.Title = "Product"
+                        );
+                        fields.Add(
+                            product => product.Price * 2,
+                            field =>
+                            {
+                                field.Title = "Two of them";
+                                field.UseDisplay<NumberDisplay>(number => number.Format = "0.00");
+                            }
+                        );
+                    })
+                );
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
+
+        // Assert
+        var fields = document.QuerySelectorAll("[data-slot='display-field']");
+        await Assert
+            .That(
+                fields.Select(field =>
+                    field.RequiredElement("[data-slot='display-field-label']").TextContent.Trim()
+                )
+            )
+            .IsEquivalentTo(["Product", "Two of them"], CollectionOrdering.Matching);
+        await Assert
+            .That(
+                fields.Select(field =>
+                    field.RequiredElement("[data-slot='display-field-value']").TextContent.Trim()
+                )
+            )
+            .IsEquivalentTo(["Notebook (7)", "17.00"], CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task View_WithComputedFieldAndDisplayHandler_PassesTheComputedValue()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowView(view =>
+                    view.Fields(fields =>
+                        fields.Add(
+                            product => product.Id - 5,
+                            field =>
+                            {
+                                field.Title = "Category";
+                                field.UseDisplay<CategoryNameDisplay>();
+                            }
+                        )
+                    )
+                );
+            },
+            configureServices: services => services.AddSingleton<CategoryStore>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
+
+        // Assert
+        await Assert
+            .That(document.RequiredElement("[data-custom-display='category']").TextContent)
+            .IsEqualTo("Notebooks");
+    }
+
+    [Test]
+    public async Task Startup_WithComputedFieldWithoutTitle_FailsValidation()
+    {
+        // Arrange
+        var configure = () =>
+            StellarAdminTestHost.CreateAsync(
+                new([new(7, "Notebook", 8.50m)]),
+                resource =>
+                {
+                    resource.UseKey(product => product.Id);
+                    resource.AllowView(view =>
+                        view.Fields(fields => fields.Add(product => product.Price * 2))
+                    );
+                }
+            );
+
+        // Act
+        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+
+        // Assert
+        await Assert
+            .That(exception!.Message)
+            .Contains(
+                "The view page's field 'product => (product.Price * 2)' computes its value, so it needs a Title."
+            );
     }
 
     [Test]

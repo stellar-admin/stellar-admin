@@ -1217,7 +1217,7 @@ StellarAdmin.Resources.Options.FormDisplayFieldOptions
 StellarAdmin.Resources.Options.FormDisplayFieldOptions.Display.get -> StellarAdmin.Resources.Displays.FieldDisplay?
 StellarAdmin.Resources.Options.FormDisplayFieldOptions.EmptyText.get -> string?
 StellarAdmin.Resources.Options.FormDisplayFieldOptions.FieldExpression.get -> System.Linq.Expressions.LambdaExpression!
-StellarAdmin.Resources.Options.FormDisplayFieldOptions.FieldName.get -> string!
+StellarAdmin.Resources.Options.FormDisplayFieldOptions.FieldName.get -> string?
 StellarAdmin.Resources.Options.FormDisplayFieldOptions.Orientation.get -> StellarAdmin.UI.DisplayFieldOrientation?
 StellarAdmin.Resources.Options.FormDisplayFieldOptions.PropertyPath.get -> System.Collections.Generic.IReadOnlyList<System.Reflection.PropertyInfo!>!
 StellarAdmin.Resources.Options.FormDisplayFieldOptions.Title.get -> string?

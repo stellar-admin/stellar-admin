@@ -171,6 +171,6 @@ columns.Add(tour => tour.Destinations, column => column.UseDisplay<BadgeDisplay>
 view.Fields(fields => fields.Add(tour => tour.Destinations).UseDisplay<BadgeDisplay>(badge => badge.UseText<Destination>(destination => destination.Name)));
 ```
 
-For one line of text instead of badges, use a computed column such as `columns.Add(tour => string.Join(", ", tour.Destinations.Select(destination => destination.Name)), column => column.Title = "Destinations")` ([columns](columns.md#computed-values)).
+For one line of text instead of badges, use a computed column or field such as `columns.Add(tour => string.Join(", ", tour.Destinations.Select(destination => destination.Name)), column => column.Title = "Destinations")` ([columns](columns.md#computed-values), [fields](fields.md#computed-values)).
 
 EF Core resources load the collection in the same query as the page or record. A collection column can't be `Sortable()` unless it sorts by an expression, such as `Sortable(tour => tour.Destinations.Count)`. To load collections in separate queries, configure the context with `UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)`. For a long list of related records (a customer's bookings), use row details or a view page override instead ([customization](customization.md)).

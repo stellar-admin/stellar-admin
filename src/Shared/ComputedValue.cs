@@ -1,15 +1,13 @@
 using System.Linq.Expressions;
 
-namespace StellarAdmin.UI;
+namespace StellarAdmin;
 
-/// <summary>
-///     Compiles a <c>field-for</c> expression that isn't a property chain, such as
-///     <c>(Booking b) =&gt; b.Customer.Name + " " + b.Reference</c>, into a getter for row items.
-///     Expression trees can't use <c>?.</c>, so reading a property or calling an instance method
-///     on a null value gives the member type's default instead of throwing, as a property chain
-///     reads a null along the chain as a null value.
-/// </summary>
-internal static class DataGridComputedValue
+// Compiles an expression that isn't a property chain, such as
+// (Booking b) => b.Customer.Name + " " + b.Reference, into a getter for a grid column or display
+// field. Expression trees can't use ?., so reading a property or calling an instance method on a
+// null value gives the member type's default instead of throwing, as a property chain reads a null
+// along the chain as a null value. Linked into StellarAdmin.UI and StellarAdmin.
+internal static class ComputedValue
 {
     public static Func<object, object?> Compile(LambdaExpression expression)
     {

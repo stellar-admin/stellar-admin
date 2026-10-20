@@ -298,7 +298,7 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
                     Sortable = effectiveSortable,
                     SortField = sortField,
                     HasEditTemplate = columnContext.HasEditTemplate,
-                    ComputedValue = computed ? DataGridComputedValue.Compile(FieldFor!) : null,
+                    ComputedValue = computed ? ComputedValue.Compile(FieldFor!) : null,
                     ComputedMetadata = computed ? fieldMetadata : null,
                 }
             );
