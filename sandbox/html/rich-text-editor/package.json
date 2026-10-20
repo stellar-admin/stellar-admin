@@ -1,0 +1,13 @@
+{
+  "name": "rich-text-editor-prototype",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rolldown -c",
+    "page": "node generate-page.mjs"
+  },
+  "dependencies": {
+    "prosekit": "^0.22.4",
+    "rolldown": "^1.0.0-rc.3"
+  }
+}

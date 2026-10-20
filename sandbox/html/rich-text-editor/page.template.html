@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rich text editor</title>
+<!-- Prototype: a ProseKit rich text editor with a toolbar made of StellarAdmin components. Generated from
+     rich-text-editor/page.template.html (npm run page in rich-text-editor/, which fills in the Lucide icons).
+     The editor bundle is rich-text-editor/dist/rich-text-editor.js (npm install && npm run build there). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+<link rel="stylesheet" href="rich-text-editor/dist/prosekit.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+<script defer src="rich-text-editor/dist/rich-text-editor.js"></script>
+<style>
+  /* Candidate component CSS, written as the library would write it. */
+  @layer sa.components {
+    .sa-rich-text-editor {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      border: var(--sa-border-width) solid var(--sa-color-line-control);
+      border-radius: var(--sa-radius-box);
+      background: var(--sa-color-field);
+      background-clip: padding-box;
+      box-shadow: var(--sa-shadow-control);
+      color: var(--sa-color-ink);
+      transition: border-color var(--sa-motion-fast) var(--sa-motion-ease), box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+      &:hover:not(:focus-within) {
+        border-color: var(--sa-color-line-control-hover);
+      }
+      &:has([data-slot="rich-text-editor-content"]:focus-visible) {
+        border-color: var(--sa-focus-border);
+        box-shadow: var(--sa-shadow-control), var(--sa-focus-shadow-field);
+      }
+
+      /* Without the script the textarea is the field: raw HTML, still posted with the form. */
+      &:not(:defined) {
+        border: 0;
+        background: none;
+        box-shadow: none;
+        & > [data-slot="rich-text-editor-toolbar"], & > [data-slot="rich-text-editor-content"] {
+          display: none;
+        }
+      }
+      &:defined > textarea {
+        display: none;
+      }
+    }
+
+    .sa-rich-text-editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: calc(0.5 * var(--sa-unit));
+      padding: var(--sa-unit);
+      border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+      background: var(--sa-color-surface-subtle);
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+
+      & > .sa-separator-vertical {
+        align-self: stretch;
+        height: auto;
+        margin: var(--sa-unit) calc(0.5 * var(--sa-unit));
+      }
+      & [data-slot="rich-text-editor-block-label"] {
+        min-width: 5.5rem;
+        text-align: start;
+      }
+    }
+
+    .sa-rich-text-editor-content {
+      min-height: calc(40 * var(--sa-unit));
+      max-height: 32rem;
+      overflow-y: auto;
+      padding: calc(3 * var(--sa-unit)) calc(4 * var(--sa-unit));
+      font-size: var(--sa-text-body);
+      line-height: var(--sa-leading-body);
+      outline: none;
+
+      & > * + * { margin-top: 0.75em; }
+      & h1, & h2, & h3 {
+        font-family: var(--sa-font-heading);
+        font-weight: var(--sa-weight-heading);
+        line-height: 1.25;
+      }
+      & h1 { font-size: 1.6em; margin-top: 1em; }
+      & h2 { font-size: 1.3em; margin-top: 1em; }
+      & h3 { font-size: 1.1em; margin-top: 1em; }
+      & > :first-child { margin-top: 0; }
+      & a {
+        color: var(--sa-color-accent-text);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      & code {
+        padding: 0.1em 0.3em;
+        border-radius: var(--sa-radius-tag);
+        background: var(--sa-color-surface-sunken);
+        font-family: var(--sa-font-mono);
+        font-size: 0.875em;
+      }
+      & pre {
+        padding: calc(3 * var(--sa-unit));
+        border-radius: var(--sa-radius-item);
+        background: var(--sa-color-surface-sunken);
+        font-family: var(--sa-font-mono);
+        font-size: 0.875em;
+        & code { padding: 0; background: none; font-size: inherit; }
+      }
+      & blockquote {
+        padding-inline-start: calc(3 * var(--sa-unit));
+        border-inline-start: 3px solid var(--sa-color-line-control);
+        color: var(--sa-color-ink-muted);
+      }
+      & hr {
+        border: 0;
+        border-top: var(--sa-border-width) solid var(--sa-color-line);
+        margin-block: 1.25em;
+        &.ProseMirror-selectednode { outline-offset: 4px; }
+      }
+      & .prosemirror-flat-list { margin-inline-start: 1.5em; }
+      & .prosemirror-flat-list + .prosemirror-flat-list { margin-top: 0.25em; }
+      & table {
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+        overflow: hidden;
+      }
+      & th, & td {
+        position: relative;
+        padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+        border: var(--sa-border-width) solid var(--sa-color-line);
+        vertical-align: top;
+        text-align: start;
+      }
+      & th { background: var(--sa-color-surface-subtle); font-weight: 600; }
+      & .selectedCell::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: color-mix(in oklab, var(--sa-color-accent) 12%, transparent);
+        pointer-events: none;
+      }
+      & .ProseMirror-selectednode { outline: 2px solid var(--sa-focus-color); }
+      & p.prosekit-placeholder::before, & [data-placeholder]:empty::before {
+        content: attr(data-placeholder);
+        color: var(--sa-color-ink-placeholder);
+        float: inline-start;
+        height: 0;
+        pointer-events: none;
+      }
+    }
+
+    .sa-rich-text-editor-image {
+      position: relative;
+      display: inline-flex;
+      max-width: 100%;
+      vertical-align: bottom;
+
+      & img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: var(--sa-radius-item);
+      }
+      &[data-selected] img { outline: 2px solid var(--sa-focus-color); outline-offset: 2px; }
+    }
+    .sa-rich-text-editor-image-handle {
+      position: absolute;
+      inset-block-end: calc(1.5 * var(--sa-unit));
+      inset-inline-end: calc(1.5 * var(--sa-unit));
+      width: calc(3 * var(--sa-unit));
+      height: calc(3 * var(--sa-unit));
+      border: 2px solid var(--sa-color-surface);
+      border-radius: var(--sa-radius-round);
+      background: var(--sa-color-accent);
+      cursor: nwse-resize;
+      opacity: 0;
+      transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
+    }
+    .sa-rich-text-editor-image:is(:hover, [data-selected], [data-resizing]) .sa-rich-text-editor-image-handle { opacity: 1; }
+    .sa-rich-text-editor-image-progress {
+      position: absolute;
+      inset-block-end: calc(2 * var(--sa-unit));
+      inset-inline-start: calc(2 * var(--sa-unit));
+      padding: calc(0.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+      border-radius: var(--sa-radius-round);
+      background: var(--sa-color-scrim);
+      color: white;
+      font-size: var(--sa-text-xs);
+    }
+
+    /* The selection bubble: ProseKit positions it, the contents are sa-* toggles. */
+    .sa-rich-text-editor-bubble {
+      display: flex;
+      align-items: center;
+      gap: calc(0.5 * var(--sa-unit));
+      padding: calc(0.5 * var(--sa-unit));
+      border: var(--sa-border-width) solid var(--sa-color-line);
+      border-radius: var(--sa-radius-overlay);
+      background: var(--sa-color-surface-raised);
+      box-shadow: var(--sa-shadow-overlay);
+      &:not([data-state="open"]) { display: none; }
+      & > .sa-separator-vertical { align-self: stretch; height: auto; margin: var(--sa-unit) calc(0.5 * var(--sa-unit)); }
+    }
+    prosekit-inline-popover-positioner, prosekit-autocomplete-positioner, prosekit-menu-positioner,
+    prosekit-table-handle-column-positioner, prosekit-table-handle-row-positioner { z-index: 50; }
+
+    /* Table handles: a grip centred on the hovered column's top edge and the hovered row's start edge. */
+    .sa-rich-text-editor-table-handle {
+      display: flex;
+      &[data-axis="column"] { transform: translateY(50%); }
+      &[data-axis="row"] { transform: translateX(50%); }
+    }
+    .sa-rich-text-editor-table-grip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: var(--sa-border-width) solid var(--sa-color-line-control);
+      border-radius: var(--sa-radius-tag);
+      background: var(--sa-color-surface-raised);
+      box-shadow: var(--sa-shadow-control);
+      color: var(--sa-color-ink-muted);
+      cursor: grab;
+      transition: background-color var(--sa-motion-fast) var(--sa-motion-ease), color var(--sa-motion-fast) var(--sa-motion-ease);
+      & svg { width: calc(3.5 * var(--sa-unit)); height: calc(3.5 * var(--sa-unit)); }
+      &:hover, &[data-state="open"], &[aria-expanded="true"] {
+        border-color: var(--sa-color-accent);
+        background: var(--sa-color-accent);
+        color: var(--sa-color-on-accent);
+      }
+      [data-axis="column"] & { width: calc(6 * var(--sa-unit)); height: calc(4 * var(--sa-unit)); }
+      [data-axis="row"] & { width: calc(4 * var(--sa-unit)); height: calc(6 * var(--sa-unit)); }
+    }
+    .sa-rich-text-editor-table-drop { background: var(--sa-color-accent); }
+
+    /* The slash menu and the table handle menus: ProseKit positions them (and filters the slash menu);
+       they are drawn as dropdown menus, with the dropdown's item rows (their [data-highlighted] state included). */
+    .sa-rich-text-editor-menu {
+      display: flex;
+      flex-direction: column;
+      min-width: 15rem;
+      max-height: 20rem;
+      overflow-y: auto;
+      padding: var(--sa-space-overlay);
+      border: var(--sa-border-width) solid var(--sa-color-line);
+      border-radius: var(--sa-radius-overlay);
+      background: var(--sa-color-surface-raised);
+      box-shadow: var(--sa-shadow-overlay);
+      color: var(--sa-color-ink);
+      --_highlight-bg: var(--sa-color-highlight);
+      --_highlight-fg: var(--sa-color-on-highlight);
+      &:not([data-state="open"]) { display: none; }
+      & .sa-dropdown-menu-item { cursor: pointer; }
+      & .sa-dropdown-menu-shortcut { font-family: var(--sa-font-mono); }
+      & [hidden] { display: none; }
+    }
+    .sa-rich-text-editor-slash-menu-empty {
+      padding: var(--sa-space-item-y) var(--sa-space-item-x);
+      color: var(--sa-color-ink-muted);
+      font-size: var(--sa-text-body);
+    }
+
+    .sa-rich-text-editor-link-form {
+      display: flex;
+      gap: var(--sa-unit);
+    }
+  }
+
+  /* Overrides of prosekit.css, which is unlayered and so beats the layer above. A shipped version would
+     carry ProseKit's few structural rules itself and drop the file. */
+  .sa-rich-text-editor-content .selectedCell { border-color: var(--sa-color-line); background: none; }
+  .sa-rich-text-editor-content .column-resize-handle { width: 3px; right: -2px; background: var(--sa-color-accent); }
+  .sa-rich-text-editor-content td, .sa-rich-text-editor-content th { padding-inline: calc(3 * var(--sa-unit)); }
+  prosekit-table-handle-drop-indicator { background: var(--sa-color-accent); }
+
+  /* Page scaffolding (not extracted). */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  main { max-width: 52rem; margin: 0 auto; padding: 40px 16px 120px; display: grid; gap: 28px; }
+  h1.page-title { font-size: 1.5rem; font-weight: 600; margin: 0; }
+  .lede { color: var(--sa-color-ink-muted); margin: 6px 0 0; line-height: 1.6; }
+  .lede code, .notes code { font-family: var(--sa-font-mono); font-size: 0.85em; }
+  .card { border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container); background: var(--sa-color-surface); padding: 24px; display: grid; gap: 20px; }
+  .output { display: grid; gap: 8px; }
+  .output pre { margin: 0; max-height: 18rem; overflow: auto; padding: 12px; border-radius: var(--sa-radius-item); background: var(--sa-color-surface-sunken); font: 12px/1.5 var(--sa-font-mono); white-space: pre-wrap; word-break: break-all; }
+  .section-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--sa-color-ink-muted); }
+  .notes { list-style: disc; font-size: 0.875rem; line-height: 1.6; color: var(--sa-color-ink-muted); margin: 0; padding-left: 1.2em; }
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 100; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 8px 12px; border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-surface-raised); box-shadow: var(--sa-shadow-overlay); font-size: 0.8125rem; }
+  .controls label { display: inline-flex; gap: 6px; align-items: center; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 class="page-title">Rich text editor</h1>
+    <p class="lede">ProseKit (MIT, built on ProseMirror) as the editor, with a toolbar built only from StellarAdmin components: ghost buttons, toggles, a dropdown menu with a radio group, a popover with an input, and separators. Select text for the bubble menu. Paste, drop or pick an image to "upload" it; the upload is simulated (progress, then a data URL) where the real one would post to the <code>ImageEditor</code> upload endpoint. Drag the dot on a selected image to resize it. Hover a toolbar button for its tooltip and shortcut. Type <code>/</code> at the start of a line (or after a space) for the slash menu. In a table, hover a row or column for its grip: click it for the row or column menu, or drag it to reorder. Tab moves to the next cell and adds a row at the end; drag a column border to resize.</p>
+  </header>
+
+  <form class="card" onsubmit="event.preventDefault()">
+    <div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field">
+      <label for="guide-name" data-slot="field-label" class="sa-label sa-field-label">Name</label>
+      <input id="guide-name" name="Name" value="Amara Okafor" data-slot="input" class="sa-input">
+    </div>
+
+    <div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field">
+      <label id="guide-bio-label" for="guide-bio" data-slot="field-label" class="sa-label sa-field-label">Bio</label>
+
+      <sel-rich-text-editor class="sa-rich-text-editor" data-slot="rich-text-editor">
+        <div role="toolbar" aria-label="Formatting" data-slot="rich-text-editor-toolbar" class="sa-rich-text-editor-toolbar">
+          {{button:undo:Undo:undo-2:Ctrl Z}}
+          {{button:redo:Redo:redo-2:Ctrl Shift Z}}
+          {{separator}}
+          <button type="button" data-slot="dropdown-menu-trigger" aria-haspopup="menu" popovertarget="--rte-bio-block" class="sa-button sa-button-variant-ghost sa-button-size-sm">
+            <span data-slot="rich-text-editor-block-label">Text</span>
+            {{icon:chevron-down}}
+          </button>
+          <sel-dropdown-menu class="sa-dropdown-menu-content sa-dropdown-menu-content-logical anchored-bottom-start w-48" id="--rte-bio-block" popover="" role="menu" data-slot="dropdown-menu-content" data-anchor-side="bottom" data-side="bottom">
+            <div role="group" data-slot="dropdown-menu-radio-group" data-radio-group="--rte-bio-block-radio">
+              {{radio:paragraph:Text}}
+              {{radio:h1:Heading 1}}
+              {{radio:h2:Heading 2}}
+              {{radio:h3:Heading 3}}
+            </div>
+          </sel-dropdown-menu>
+          {{separator}}
+          {{toggle:bold:Bold:bold:Ctrl B}}
+          {{toggle:italic:Italic:italic:Ctrl I}}
+          {{toggle:underline:Underline:underline:Ctrl U}}
+          {{toggle:strike:Strikethrough:strikethrough:Ctrl Shift S}}
+          {{toggle:code:Inline code:code:Ctrl E}}
+          {{separator}}
+          {{toggle:bullet-list:Bulleted list:list:}}
+          {{toggle:ordered-list:Numbered list:list-ordered:}}
+          {{toggle:blockquote:Quote:text-quote:Ctrl Shift B}}
+          {{toggle:code-block:Code block:square-code:}}
+          {{separator}}
+          {{toggle:link:Link:link:}}
+          {{button:image:Insert image:image-plus:}}
+          {{button:table:Insert table:table:}}
+          {{button:horizontal-rule:Insert divider:minus:}}
+        </div>
+
+        <div data-slot="rich-text-editor-content" class="sa-rich-text-editor-content" aria-labelledby="guide-bio-label"></div>
+
+        <textarea id="guide-bio" name="Bio" rows="8" placeholder="Tell travellers about this guide…" data-slot="textarea" class="sa-textarea"><h2>Meet Amara</h2><p>Amara has led <strong>small-group walking tours</strong> through Cape Town for twelve years. She grew up in Bo-Kaap and knows every <em>spice merchant</em> by name.</p><ul><li><p>Table Mountain sunrise hikes</p></li><li><p>Bo-Kaap food walks</p></li><li><p>Cape Point day trips</p></li></ul><blockquote><p>"The best way to know a city is on foot, slowly." <a href="https://example.com/amara">Read her story</a></p></blockquote></textarea>
+
+        <div id="--rte-bio-link" popover="" data-slot="rich-text-editor-link" data-anchor-side="bottom" class="sa-popover-content anchored-bottom-start">
+          <div class="sa-rich-text-editor-link-form">
+            <input type="url" aria-label="Link address" placeholder="https://" data-slot="input" class="sa-input">
+            <button type="button" data-link-action="apply" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default">Apply</button>
+            <button type="button" data-link-action="remove" aria-label="Remove link" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-icon">{{icon:unlink}}</button>
+          </div>
+        </div>
+
+        <prosekit-autocomplete-root data-slot="rich-text-editor-slash-menu">
+          <prosekit-autocomplete-positioner placement="bottom-start" offset="6">
+            <prosekit-autocomplete-popup class="sa-rich-text-editor-menu">
+              <prosekit-autocomplete-empty class="sa-rich-text-editor-slash-menu-empty">No matching blocks</prosekit-autocomplete-empty>
+              {{slash:paragraph:Text:pilcrow:text paragraph plain:}}
+              {{slash:h1:Heading 1:heading-1:heading 1 h1 title:#}}
+              {{slash:h2:Heading 2:heading-2:heading 2 h2 subtitle:##}}
+              {{slash:h3:Heading 3:heading-3:heading 3 h3:###}}
+              {{slash:bullet-list:Bulleted list:list:bulleted list unordered ul:-}}
+              {{slash:ordered-list:Numbered list:list-ordered:numbered list ordered ol:1.}}
+              {{slash:blockquote:Quote:text-quote:quote blockquote:>}}
+              {{slash:code-block:Code block:square-code:code block pre:```}}
+              {{slash:image:Image:image-plus:image picture photo upload:}}
+              {{slash:table:Table:table:table grid:}}
+              {{slash:horizontal-rule:Divider:minus:divider horizontal rule hr line:---}}
+            </prosekit-autocomplete-popup>
+          </prosekit-autocomplete-positioner>
+        </prosekit-autocomplete-root>
+
+        <prosekit-table-handle-root>
+          <prosekit-table-handle-drag-preview></prosekit-table-handle-drag-preview>
+          <prosekit-table-handle-drop-indicator class="sa-rich-text-editor-table-drop"></prosekit-table-handle-drop-indicator>
+          <prosekit-table-handle-column-positioner placement="top">
+            <prosekit-table-handle-column-popup class="sa-rich-text-editor-table-handle" data-axis="column">
+              <prosekit-table-handle-column-menu-root>
+                <prosekit-table-handle-column-menu-trigger aria-label="Column options" class="sa-rich-text-editor-table-grip">{{icon:grip-horizontal}}</prosekit-table-handle-column-menu-trigger>
+                <prosekit-menu-positioner placement="bottom-start" offset="6">
+                  <prosekit-menu-popup class="sa-rich-text-editor-menu">
+                    {{table-item:column-before:Insert column left:arrow-left-to-line}}
+                    {{table-item:column-after:Insert column right:arrow-right-to-line}}
+                    {{menu-separator}}
+                    {{table-check:header-column:Header column:panel-left}}
+                    {{table-item:merge:Merge cells:table-cells-merge}}
+                    {{table-item:split:Split cell:table-cells-split}}
+                    {{table-item:clear:Clear contents:eraser}}
+                    {{menu-separator}}
+                    {{table-item:delete-column:Delete column:trash:destructive}}
+                    {{table-item:delete-table:Delete table:trash:destructive}}
+                  </prosekit-menu-popup>
+                </prosekit-menu-positioner>
+              </prosekit-table-handle-column-menu-root>
+            </prosekit-table-handle-column-popup>
+          </prosekit-table-handle-column-positioner>
+          <prosekit-table-handle-row-positioner placement="left">
+            <prosekit-table-handle-row-popup class="sa-rich-text-editor-table-handle" data-axis="row">
+              <prosekit-table-handle-row-menu-root>
+                <prosekit-table-handle-row-menu-trigger aria-label="Row options" class="sa-rich-text-editor-table-grip">{{icon:grip-vertical}}</prosekit-table-handle-row-menu-trigger>
+                <prosekit-menu-positioner placement="right-start" offset="6">
+                  <prosekit-menu-popup class="sa-rich-text-editor-menu">
+                    {{table-item:row-above:Insert row above:arrow-up-to-line}}
+                    {{table-item:row-below:Insert row below:arrow-down-to-line}}
+                    {{menu-separator}}
+                    {{table-check:header-row:Header row:panel-top}}
+                    {{table-item:merge:Merge cells:table-cells-merge}}
+                    {{table-item:split:Split cell:table-cells-split}}
+                    {{table-item:clear:Clear contents:eraser}}
+                    {{menu-separator}}
+                    {{table-item:delete-row:Delete row:trash:destructive}}
+                    {{table-item:delete-table:Delete table:trash:destructive}}
+                  </prosekit-menu-popup>
+                </prosekit-menu-positioner>
+              </prosekit-table-handle-row-menu-root>
+            </prosekit-table-handle-row-popup>
+          </prosekit-table-handle-row-positioner>
+        </prosekit-table-handle-root>
+
+        <prosekit-inline-popover-root>
+          <prosekit-inline-popover-positioner placement="top" offset="8">
+            <prosekit-inline-popover-popup class="sa-rich-text-editor-bubble" data-slot="rich-text-editor-bubble">
+              {{bubble-toggle:bold:Bold:bold}}
+              {{bubble-toggle:italic:Italic:italic}}
+              {{bubble-toggle:underline:Underline:underline}}
+              {{bubble-toggle:code:Inline code:code}}
+              {{separator}}
+              {{bubble-toggle:link:Link:link}}
+            </prosekit-inline-popover-popup>
+          </prosekit-inline-popover-positioner>
+        </prosekit-inline-popover-root>
+      </sel-rich-text-editor>
+
+      <p data-slot="field-description" class="sa-field-description">Shown on the guide's public profile.</p>
+    </div>
+  </form>
+
+  <section class="output">
+    <span class="section-label">Posted value (the hidden textarea, name="Bio")</span>
+    <pre id="output"></pre>
+  </section>
+
+  <section>
+    <span class="section-label">Notes</span>
+    <ul class="notes">
+      <li>The toolbar is plain markup a tag helper can emit; each control names its action with <code>data-action</code>. The element keeps toggles checked and buttons disabled to match the selection.</li>
+      <li>Without JavaScript the textarea shows instead (raw HTML), so the form still posts.</li>
+      <li>The posted HTML is serialized with clean <code>ul</code>/<code>ol</code> lists (ProseKit's flat lists are divs while editing). The server would still sanitize it.</li>
+      <li>Editor bundle: about 440 KB minified, 135 KB gzipped, loaded only on pages with the editor.</li>
+    </ul>
+  </section>
+</main>
+
+<div class="controls">
+  <label>Theme
+    <select id="theme-picker">
+      <option value="">Default</option>
+      <option value="ops">Ops</option>
+      <option value="soft">Soft</option>
+      <option value="ledger">Ledger</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="dark-toggle"> Dark</label>
+  <label>Density
+    <select id="density-picker">
+      <option value="">Default</option>
+      <option value="compact">Compact</option>
+      <option value="comfortable">Comfortable</option>
+    </select>
+  </label>
+</div>
+
+<script>
+  document.getElementById("theme-picker").addEventListener("change", (e) => {
+    const link = document.getElementById("theme");
+    if (e.target.value) link.href = `../../util/theme-check/presets/${e.target.value}.css`;
+    else link.removeAttribute("href");
+  });
+  document.getElementById("dark-toggle").addEventListener("change", (e) => document.documentElement.classList.toggle("dark", e.target.checked));
+  document.getElementById("density-picker").addEventListener("change", (e) => {
+    const main = document.querySelector("main");
+    if (e.target.value) main.dataset.saDensity = e.target.value;
+    else delete main.dataset.saDensity;
+  });
+  const output = document.getElementById("output");
+  const show = () => (output.textContent = document.getElementById("guide-bio").value);
+  document.addEventListener("contentchange", show);
+  show();
+</script>
+</body>
+</html>
