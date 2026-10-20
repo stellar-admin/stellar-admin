@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
+using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
@@ -270,7 +271,13 @@ public class ResourceManyToManyTests
         {
             resource.Index(index =>
                 index.Columns(columns =>
-                    columns.Add(product => product.Tags, column => column.Title = "Tags")
+                    columns.Add(
+                        product => product.Tags,
+                        column =>
+                            column.UseDisplay<BadgeDisplay>(badge =>
+                                badge.UseText<Tag>(tag => tag.Name)
+                            )
+                    )
                 )
             );
             resource.AllowDelete();
@@ -335,6 +342,44 @@ public class ResourceManyToManyTests
             .SelectMany(product => product.Tags)
             .Select(tag => tag.Id)
             .ToArrayAsync();
+    }
+
+    [Test]
+    [Arguments("none")]
+    [Arguments("select")]
+    public async Task Edit_WithSingleValueEditor_FailsToStart(string editor)
+    {
+        // Arrange
+
+        // Act
+        async Task act()
+        {
+            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields =>
+                    {
+                        var field = fields.Add(product => product.Tags);
+                        if (editor == "select")
+                        {
+                            field.UseEditor<SelectEditor>(select =>
+                                select.UseItems<CatalogDbContext, Tag, int>(
+                                    tag => tag.Id,
+                                    tag => tag.Name
+                                )
+                            );
+                        }
+                    })
+                )
+            );
+        }
+
+        // Assert
+        var exception = await Assert.That(act).Throws<InvalidOperationException>();
+        await Assert
+            .That(exception!.Message)
+            .Contains(
+                "Product.Tags is a many-to-many field, so it needs an editor that selects several items."
+            );
     }
 
     private static void UseCheckboxGroup(ResourceFieldsBuilder<Product> fields) =>

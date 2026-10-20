@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Options;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Displays;
@@ -82,7 +83,9 @@ public class ResourceViewTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowView(view =>
                 view.Fields(fields =>
-                    fields.Add(product => product.Tags).UseDisplay<BadgeDisplay>()
+                    fields
+                        .Add(product => product.Tags)
+                        .UseDisplay<BadgeDisplay>(badge => badge.UseText<Tag>(tag => tag.Name))
                 )
             )
         );
@@ -97,6 +100,32 @@ public class ResourceViewTests
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert.That(document.QuerySelectorAll("[data-slot='badge']").Length).IsEqualTo(2);
+    }
+
+    [Test]
+    public async Task View_WithCollectionFieldWithoutText_FailsToStart()
+    {
+        // Arrange
+
+        // Act
+        async Task act()
+        {
+            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+                resource.AllowView(view =>
+                    view.Fields(fields =>
+                        fields.Add(product => product.Tags).UseDisplay<BadgeDisplay>()
+                    )
+                )
+            );
+        }
+
+        // Assert
+        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert
+            .That(exception!.Message)
+            .Contains(
+                "The view page's field 'Tags' shows a collection of Tag, which has no text of its own."
+            );
     }
 
     [Test]

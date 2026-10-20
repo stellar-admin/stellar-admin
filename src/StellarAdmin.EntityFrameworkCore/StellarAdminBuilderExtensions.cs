@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
+using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.EntityFrameworkCore;
@@ -249,6 +250,19 @@ public static class StellarAdminBuilderExtensions
             {
                 throw new InvalidOperationException(
                     $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field. A many-to-many field requires a CLR navigation property and related entities with one CLR primary-key property."
+                );
+            }
+
+            // A built-in single-value editor would show nothing selected and save at most one related entity
+            if (
+                field.Editor is null
+                || field.Editor.GetType().Assembly == typeof(FieldEditor).Assembly
+                    && field.Editor
+                        is not (CheckboxGroupEditor or ToggleGroupEditor or MultiLookupSheetEditor)
+            )
+            {
+                throw new InvalidOperationException(
+                    $"{typeof(TEntity).Name}.{field.FieldName} is a many-to-many field, so it needs an editor that selects several items. Call UseEditor<CheckboxGroupEditor>, UseEditor<ToggleGroupEditor> or UseEditor<MultiLookupSheetEditor>."
                 );
             }
 

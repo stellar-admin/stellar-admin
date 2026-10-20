@@ -87,7 +87,10 @@ public class ResourceColumnTests
                 index.Columns(columns =>
                     columns.Add(
                         product => product.Tags,
-                        column => column.UseDisplay<BadgeDisplay>()
+                        column =>
+                            column.UseDisplay<BadgeDisplay>(badge =>
+                                badge.UseText<Tag>(tag => tag.Name)
+                            )
                     )
                 );
                 index.EnablePaging(paging =>
@@ -172,6 +175,30 @@ public class ResourceColumnTests
                     .Select(badge => badge.TextContent.Trim())
             )
             .IsEquivalentTo(["Sale", "Seasonal"], CollectionOrdering.Any);
+    }
+
+    [Test]
+    public async Task Index_WithCollectionColumnWithoutDisplay_FailsToStart()
+    {
+        // Arrange
+
+        // Act
+        async Task act()
+        {
+            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+                resource.Index(index =>
+                    index.Columns(columns => columns.Add(product => product.Tags))
+                )
+            );
+        }
+
+        // Assert
+        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert
+            .That(exception!.Message)
+            .Contains(
+                "The index column 'Tags' shows a collection of Tag, which has no text of its own. Show it with UseDisplay<BadgeDisplay>(badge => badge.UseText<Tag>(item => ...))."
+            );
     }
 
     [Test]
