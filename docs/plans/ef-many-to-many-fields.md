@@ -1,6 +1,6 @@
 # Many-to-many fields on EF Core resources
 
-Status: implemented (2026-10-20); index and view display of the related items is deferred.
+Status: implemented (2026-10-20), including index and view display of the related items.
 
 ## Problem
 
@@ -34,7 +34,7 @@ Read the current binding, field and save code in `src/StellarAdmin` and `src/Ste
 - `ResourceFieldsBuilder.Add` no longer requires a setter; `FieldBinderOptionsValidator` fails startup for a create or edit field with neither a public setter nor a binder.
 - The EF package attaches an internal `ManyToManyFieldBinder` to fields that select a skip navigation (a join table without an entity type). Explicit join entities and related entities with composite keys still fail at startup.
 - Supported on create, edit and inline rows, and with save and add another's kept fields. Checkbox group and toggle group work as well as the multi-lookup sheet.
-- Index columns and view display fields of the related items are deferred. An index column on the navigation currently renders empty, because the index query includes only references.
+- Index columns and view display fields of the related items were deferred from the first pass, then added: see [Display of the related items](#display-of-the-related-items-2026-10-20).
 
 ## How it works
 
@@ -56,6 +56,11 @@ Read the current binding, field and save code in `src/StellarAdmin` and `src/Ste
 - Products' create and edit forms pick tags with `MultiLookupSheetEditor` (chips, create new), and a Tags resource sits in the Commerce sidebar group.
 - Checked over HTTP on port 5206: the Tags index and the product create and edit pages return 200 and render the Tags editor. No save was made, so `app.db` holds only the migration and seed rows.
 
-## Outstanding
+## Display of the related items (2026-10-20)
 
-- Index and view display of the related items.
+- EF Core index columns and view display fields that read a collection or skip navigation include it, through `EfCorePropertyPaths.FindDisplayIncludePath`: the references on the path and the first collection, nothing past it. Before, an index column on the navigation rendered empty, because the index query included only references.
+- Collections load in the same query (joins). Split queries were declined, because `AsSplitQuery` needs `Microsoft.EntityFrameworkCore.Relational`, which the package doesn't reference; applications can set `UseQuerySplittingBehavior` on their context.
+- A `Sortable()` column that reads a collection without a sort expression fails at startup.
+- `BadgeDisplay.UseText<TItem>(Func<TItem, string?>)` sets each badge's text, once per item of a collection or once for a single value; it isn't called for an empty item. `BadgeDisplayOptionsValidator` fails startup when `TItem` isn't assignable from the field's item type, for index columns, view fields and form display fields.
+- The playground shows product tags as badges with `UseText<Tag>(tag => tag.Name)` on the products index and view page.
+- Verification: `ResourceColumnTests` (collection column loads per row of the page, text per item, sortable collection column and mismatched `UseText` fail at startup), `ResourceViewTests` (collection field loads, text per item), `ResourceDisplayFieldTests` (`UseText` on a single value, mismatched type fails validation). StellarAdmin.EntityFrameworkCore.IntegrationTests 114 and StellarAdmin.IntegrationTests 591 pass. The playground index and view page were checked over HTTP on port 5206 against a scratch copy of `app.db` with tag links.

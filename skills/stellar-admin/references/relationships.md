@@ -161,4 +161,14 @@ view.Fields(fields =>
 });
 ```
 
-Set `Title`, because the default label is the last property's name. Lists of related records (a customer's bookings) have no built-in display; show them in row details or a view page override ([customization](customization.md)).
+Set `Title`, because the default label is the last property's name.
+
+A collection or many-to-many navigation shows as one badge per related record. `UseText<TItem>` picks the text of each badge; the type argument is the related entity, and a mismatch fails at startup:
+
+```csharp
+columns.Add(tour => tour.Destinations, column => column.UseDisplay<BadgeDisplay>(badge => badge.UseText<Destination>(destination => destination.Name)));
+
+view.Fields(fields => fields.Add(tour => tour.Destinations).UseDisplay<BadgeDisplay>(badge => badge.UseText<Destination>(destination => destination.Name)));
+```
+
+EF Core resources load the collection in the same query as the page or record. A collection column can't be `Sortable()` unless it sorts by an expression, such as `Sortable(tour => tour.Destinations.Count)`. To load collections in separate queries, configure the context with `UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)`. For a long list of related records (a customer's bookings), use row details or a view page override instead ([customization](customization.md)).

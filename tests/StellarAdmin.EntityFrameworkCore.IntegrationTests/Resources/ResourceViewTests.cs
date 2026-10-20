@@ -2,8 +2,10 @@ using System.Collections.Concurrent;
 using System.Net;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
+using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Displays;
+using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -95,5 +97,37 @@ public class ResourceViewTests
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert.That(document.QuerySelectorAll("[data-slot='badge']").Length).IsEqualTo(2);
+    }
+
+    [Test]
+    public async Task View_WithCollectionFieldText_ShowsTheTextOfEachItem()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowView(view =>
+                view.Fields(fields =>
+                    fields
+                        .Add(product => product.Tags)
+                        .UseDisplay<BadgeDisplay>(badge => badge.UseText<Tag>(tag => tag.Name))
+                )
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/view/2");
+        var document = await new HtmlParser().ParseDocumentAsync(
+            await response.Content.ReadAsStringAsync()
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-slot='badge']")
+                    .Select(badge => badge.TextContent.Trim())
+            )
+            .IsEquivalentTo(["Sale", "Seasonal"], CollectionOrdering.Any);
     }
 }

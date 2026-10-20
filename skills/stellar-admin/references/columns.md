@@ -77,7 +77,7 @@ All in `StellarAdmin.Resources.Displays`. The same displays are used by display 
 | `EmailDisplay` | `[EmailAddress]` | A `mailto:` link |
 | `PhoneDisplay` | `[Phone]` | A `tel:` link |
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
-| `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant` from `StellarAdmin.UI`, default `Secondary`), the same for every value; collections show one badge per item |
+| `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant` from `StellarAdmin.UI`, default `Secondary`), the same for every value; collections show one badge per item. `UseText<TItem>(item => text)` sets each badge's text, such as a related entity's name ([relationships](relationships.md#showing-related-values)) |
 | `ImageDisplay` | Never a default | A thumbnail from a stored file name or URL: `ResolveUrl(value => url)` or `ResolveUrl(async (value, services, ct) => url)` (without it the value is the URL), `Size` (`ImageDisplaySize`, default `Small`, 32px), `AspectRatio` (`ImageAspectRatio` from `StellarAdmin.UI`, default `Square`), `Fit` (`ImageFit.Cover`, `Contain`), `Interaction` (`ImageDisplayInteraction.Lightbox`, `Preview`, `None`). An empty value shows a placeholder tile, an image that fails to load a broken-image tile |
 | `IconDisplay` | Never a default | The icon a stored name refers to, with the name on hover; `ShowName = true` shows it beside the icon. A name that isn't a registered icon shows a dashed box |
 

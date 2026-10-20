@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using System.Net;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Options;
+using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Displays;
 using TUnit.Assertions.Enums;
@@ -134,5 +136,71 @@ public class ResourceColumnTests
         // Assert
         var exception = await Assert.That(act).Throws<InvalidOperationException>();
         await Assert.That(exception!.Message).Contains("can't be sortable");
+    }
+
+    [Test]
+    public async Task Index_WithCollectionColumnText_ShowsTheTextOfEachItem()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.Index(index =>
+                index.Columns(columns =>
+                    columns.Add(
+                        product => product.Tags,
+                        column =>
+                            column.UseDisplay<BadgeDisplay>(badge =>
+                                badge.UseText<Tag>(tag => tag.Name)
+                            )
+                    )
+                )
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products");
+        var document = await new HtmlParser().ParseDocumentAsync(
+            await response.Content.ReadAsStringAsync()
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("tbody [data-slot='badge']")
+                    .Select(badge => badge.TextContent.Trim())
+            )
+            .IsEquivalentTo(["Sale", "Seasonal"], CollectionOrdering.Any);
+    }
+
+    [Test]
+    public async Task Index_WithCollectionColumnTextOfAnotherType_FailsToStart()
+    {
+        // Arrange
+
+        // Act
+        async Task act()
+        {
+            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+                resource.Index(index =>
+                    index.Columns(columns =>
+                        columns.Add(
+                            product => product.Tags,
+                            column =>
+                                column.UseDisplay<BadgeDisplay>(badge =>
+                                    badge.UseText<Product>(product => product.Name)
+                                )
+                        )
+                    )
+                )
+            );
+        }
+
+        // Assert
+        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert
+            .That(exception!.Message)
+            .Contains("The index column 'Tags' shows Tag badges, but its UseText reads Product.");
     }
 }

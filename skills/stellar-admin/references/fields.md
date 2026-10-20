@@ -85,7 +85,7 @@ In `StellarAdmin.Resources.Displays`; the same displays render index cells ([col
 | `EmailDisplay` | `[EmailAddress]` | `mailto:` link |
 | `PhoneDisplay` | `[Phone]` | `tel:` link |
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
-| `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant`), the same for every value |
+| `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant`), the same for every value; collections show one badge per item, and `UseText<TItem>(item => text)` sets each badge's text ([relationships](relationships.md#showing-related-values)) |
 | `ImageDisplay` | Never a default | The image as a figure, from a stored file name or URL: `ResolveUrl(...)`, `Size` (maximum height, default `Medium`, 15rem), `AspectRatio` (default `Original`), `Fit`, `Interaction` (default `Lightbox`); see [columns](columns.md#built-in-displays-in-cells) |
 | `IconDisplay` | Never a default | The icon a stored name refers to, with its name beside it; `ShowName = false` shows the name on hover only. A name that isn't a registered icon shows a dashed box |
 

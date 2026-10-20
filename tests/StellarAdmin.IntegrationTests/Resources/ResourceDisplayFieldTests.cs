@@ -3,6 +3,7 @@ using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
@@ -108,6 +109,71 @@ public class ResourceDisplayFieldTests
         );
         await Assert.That(badge.TextContent.Trim()).IsEqualTo("Notebook");
         await Assert.That(badge.ClassList.Contains("sa-badge-variant-outline")).IsTrue();
+    }
+
+    [Test]
+    public async Task Edit_WithBadgeDisplayText_RendersTheText()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields =>
+                        fields
+                            .AddDisplayField(product => product.Name)
+                            .UseDisplay<BadgeDisplay>(badge =>
+                                badge.UseText<string>(name => name.ToUpperInvariant())
+                            )
+                    )
+                );
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var badge = document.RequiredElement(
+            "[data-slot='display-field-value'] [data-slot='badge']"
+        );
+        await Assert.That(badge.TextContent.Trim()).IsEqualTo("NOTEBOOK");
+    }
+
+    [Test]
+    public async Task Startup_WithBadgeDisplayTextOfAnotherType_FailsValidation()
+    {
+        // Arrange
+        var configure = () =>
+            StellarAdminTestHost.CreateAsync(
+                new([new(7, "Notebook", 8.50m)]),
+                resource =>
+                {
+                    resource.UseKey(product => product.Id);
+                    resource.AllowEdit(edit =>
+                        edit.Fields(fields =>
+                            fields
+                                .AddDisplayField(product => product.Name)
+                                .UseDisplay<BadgeDisplay>(badge =>
+                                    badge.UseText<int>(value => value.ToString())
+                                )
+                        )
+                    );
+                }
+            );
+
+        // Act
+        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+
+        // Assert
+        await Assert
+            .That(exception!.Message)
+            .Contains(
+                "The edit form's field 'Name' shows String badges, but its UseText reads Int32."
+            );
     }
 
     [Test]

@@ -723,6 +723,7 @@ StellarAdmin.Resources.Displays.BadgeDisplay
 StellarAdmin.Resources.Displays.BadgeDisplay.BadgeDisplay() -> void
 StellarAdmin.Resources.Displays.BadgeDisplay.Variant.get -> StellarAdmin.UI.BadgeVariant
 StellarAdmin.Resources.Displays.BadgeDisplay.Variant.set -> void
+StellarAdmin.Resources.Displays.BadgeDisplay.UseText<TItem>(System.Func<TItem, string?>! text) -> void
 StellarAdmin.Resources.Displays.BooleanDisplay
 StellarAdmin.Resources.Displays.BooleanDisplay.Appearance.get -> StellarAdmin.Resources.Displays.BooleanDisplayAppearance
 StellarAdmin.Resources.Displays.BooleanDisplay.Appearance.set -> void

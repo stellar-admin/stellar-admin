@@ -154,6 +154,12 @@ public static partial class StellarAdminBuilderExtensions
                     FieldBinderOptionsValidator<TResource>
                 >()
             );
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<
+                    IValidateOptions<ResourceOptions<TResource>>,
+                    BadgeDisplayOptionsValidator<TResource>
+                >()
+            );
             builder.AddController(typeof(ResourceController<TResource>), slug);
 
             builder.Services.TryAddEnumerable(
