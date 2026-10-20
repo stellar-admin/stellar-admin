@@ -29,11 +29,12 @@ internal static class DepartmentResourceRegistration
                 );
                 index.EnablePaging();
             });
-            // Departments are edited and added in the index grid's rows
+            // Departments are edited and added in the index grid's rows, several in a row with add another
             resource.AllowCreate(create =>
             {
                 create.Fields(fields => fields.Add(department => department.Name));
                 create.UseInlineRow();
+                create.EnableAddAnother();
             });
             resource.AllowEdit(edit =>
             {

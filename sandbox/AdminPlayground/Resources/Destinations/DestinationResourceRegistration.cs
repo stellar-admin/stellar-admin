@@ -7,6 +7,7 @@ namespace AdminPlayground.Resources.Destinations;
 
 // Image fields: thumbnails in the grid, a photo edited in an inline row and on the create form,
 // and the photo as a figure on the view page. Valparaíso's photo is missing, to show a broken image.
+// The create form saves and adds another, keeping the country.
 internal static class DestinationResourceRegistration
 {
     internal static void AddDestinationResource(this StellarAdminBuilder admin)
@@ -45,7 +46,14 @@ internal static class DestinationResourceRegistration
                         .UseDisplay<ImageDisplay>(ConfigureDisplay);
                 })
             );
-            resource.AllowCreate(create => create.Fields(ConfigureFields));
+            // Save and add another keeps the country, for entering several destinations in one country
+            resource.AllowCreate(create =>
+            {
+                create.Fields(ConfigureFields);
+                create.EnableAddAnother(another =>
+                    another.KeepForNext(destination => destination.Country)
+                );
+            });
             resource.AllowEdit(edit =>
             {
                 edit.Fields(ConfigureFields);
