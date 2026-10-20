@@ -1,6 +1,6 @@
 # Save and add another
 
-Status: implemented, awaiting Jerrie's review (2026-10-20).
+Status: completed (2026-10-20).
 
 Let staff add several records in a row without starting Add again after each save, on the create page and with inline create. From the Voyager Travel session feedback.
 
@@ -78,4 +78,4 @@ resource.AllowCreate(create =>
   - No console errors beyond the playground's intentional missing image.
 - The `build/skill-validation` check passes.
 
-Not yet done: Jerrie's review. Open points: the inline status row's text ("N added", the shortcut hint) is fixed English in `_IndexDataGrid.cshtml`, not a label; the prototype's "Kept from …" note under kept fields was not built.
+Left for the [grid keyboard navigation plan](../grid-keyboard-navigation.md): how shortcuts are shown on the form buttons (prototype in `sandbox/html/form-button-shortcuts.html`), and with it the inline status row's fixed English shortcut hint. The prototype's "Kept from …" note under kept fields was not built.
