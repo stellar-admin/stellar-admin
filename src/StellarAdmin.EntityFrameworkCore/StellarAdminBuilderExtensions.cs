@@ -206,6 +206,7 @@ public static class StellarAdminBuilderExtensions
                     }
 
                     options.UseKey(property);
+                    ValidateSortableColumns<TEntity>(entity, options.Index);
 
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
                     {
@@ -257,6 +258,30 @@ public static class StellarAdminBuilderExtensions
                 key.PropertyType
             );
             field.UseBinder((FieldBinder)Activator.CreateInstance(binderType, property, key)!);
+        }
+    }
+
+    // A collection has no single value to order rows by, unless the column sorts by an expression of its own
+    private static void ValidateSortableColumns<TEntity>(
+        IEntityType entity,
+        ResourceIndexOptions index
+    )
+    {
+        foreach (
+            var column in index.Columns.Where(column =>
+                column is { Sortable: true, SortExpression: null }
+            )
+        )
+        {
+            if (
+                EfCorePropertyPaths.GetPropertyPath(column.FieldExpression) is { } path
+                && !EfCorePropertyPaths.CanInclude(entity, path)
+            )
+            {
+                throw new InvalidOperationException(
+                    $"The {typeof(TEntity).Name} column '{column.FieldName}' reads a collection, so it can't be sortable. Remove Sortable(), or sort it by an expression with Sortable(selector)."
+                );
+            }
         }
     }
 

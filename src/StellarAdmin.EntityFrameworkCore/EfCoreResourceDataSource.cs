@@ -85,20 +85,17 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
 
         var totalCount = await query.LongCountAsync(cancellationToken);
 
-        // Columns read through the references on their paths, such as Category for p => p.Category.Name
+        // Columns read through the references on their paths, such as Category for p => p.Category.Name,
+        // and load the collections they show, such as Tags for p => p.Tags
         var entityType = db.Model.FindEntityType(typeof(TEntity))!;
-        var navigations = _resourceOptions
-            .Index.Columns.Select(column =>
+        query = Include(
+            query,
+            _resourceOptions.Index.Columns.Select(column =>
                 EfCorePropertyPaths.GetPropertyPath(column.FieldExpression) is { } path
-                    ? EfCorePropertyPaths.FindReferencePath(entityType, path)
+                    ? EfCorePropertyPaths.FindDisplayIncludePath(entityType, path)
                     : null
             )
-            .OfType<string>()
-            .Distinct(StringComparer.Ordinal);
-        foreach (var navigation in navigations)
-        {
-            query = query.Include(navigation);
-        }
+        );
 
         var parameter = Expression.Parameter(typeof(TEntity), "entity");
         var keyProperty = entityType.FindPrimaryKey()!.Properties.Single();
@@ -225,8 +222,9 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
 
         // Lookup editors display the selected item from the reference loaded with the entity, with
         // the references its text reads through, many-to-many fields show the related entities' keys,
-        // and display fields read through the references on their paths. The edit and view pages load
-        // through the same method, so the entity carries the references either page needs
+        // and display fields read through the references on their paths and load the collections they
+        // show. The edit and view pages load through the same method, so the entity carries the
+        // navigations either page needs
         if (includeLookups)
         {
             var edit = _resourceOptions.Edit;
@@ -242,22 +240,35 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             var collections = (edit?.Fields ?? []).Select(field =>
                 (field.Binder as IManyToManyFieldBinder)?.NavigationName
             );
-            var navigations = lookupIncludes
-                .Concat(collections)
-                .Concat(
-                    displayFields.Select(field =>
-                        EfCorePropertyPaths.FindReferencePath(entityType, field.PropertyPath)
+            query = Include(
+                query,
+                lookupIncludes
+                    .Concat(collections)
+                    .Concat(
+                        displayFields.Select(field =>
+                            EfCorePropertyPaths.FindDisplayIncludePath(
+                                entityType,
+                                field.PropertyPath
+                            )
+                        )
                     )
-                )
-                .OfType<string>()
-                .Distinct(StringComparer.Ordinal);
-            foreach (var navigation in navigations)
-            {
-                query = query.Include(navigation);
-            }
+            );
         }
 
         return query.SingleOrDefaultAsync(predicate, cancellationToken);
+    }
+
+    private static IQueryable<TEntity> Include(
+        IQueryable<TEntity> query,
+        IEnumerable<string?> navigations
+    )
+    {
+        foreach (var path in navigations.OfType<string>().Distinct(StringComparer.Ordinal))
+        {
+            query = query.Include(path);
+        }
+
+        return query;
     }
 
     private static IQueryable<TEntity> Order(

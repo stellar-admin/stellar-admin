@@ -44,6 +44,48 @@ internal static class EfCorePropertyPaths
         return visitor.ReadsParameterOtherwise ? null : visitor.Paths;
     }
 
+    // The include path a display needs to read a property path: the references it reads through, and
+    // a collection or skip navigation it ends at or reads through, such as Category.Tags for
+    // Category.Tags or Category.Tags.Count. Nothing past the first collection is included.
+    public static string? FindDisplayIncludePath(
+        IEntityType entityType,
+        IReadOnlyList<PropertyInfo> propertyPath
+    )
+    {
+        var segments = new List<string>();
+        string? path = null;
+        IEntityType current = entityType;
+        foreach (var property in propertyPath)
+        {
+            if (current.FindNavigation(property.Name) is { } navigation)
+            {
+                segments.Add(navigation.Name);
+                if (navigation.IsCollection)
+                {
+                    return string.Join('.', segments);
+                }
+
+                current = navigation.TargetEntityType;
+                if (!current.IsOwned())
+                {
+                    path = string.Join('.', segments);
+                }
+
+                continue;
+            }
+
+            if (current.FindSkipNavigation(property.Name) is not null)
+            {
+                segments.Add(property.Name);
+                return string.Join('.', segments);
+            }
+
+            break;
+        }
+
+        return path;
+    }
+
     // The include path of the reference navigations a property path reads through, such as
     // Supplier.Country for Supplier.Country.Name. Owned types load with their owner, so they extend
     // the path without being included themselves; a collection or plain property ends it.
