@@ -28,7 +28,7 @@ Reference example: `sandbox/html/secondary-depth.html`, a prototype written agai
 
 Head of the page:
 
-- **The real built assets**, so you judge true rendering and interactivity works: `<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">` and `<script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>`. Build them first if `wwwroot/` is empty (`npm run build` in `src/StellarAdmin.UI/Client/`).
+- **The real built assets**, so you judge true rendering and interactivity works: `<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">` and `<script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>`, served over HTTP since browsers block modules from `file://`. Build the CSS first if `wwwroot/` has none (`npm run build` in `src/StellarAdmin.UI/Client/`).
 - **An empty theme link after it**, `<link rel="stylesheet" id="theme">`, that the control bar points at a theme fixture (`../../util/theme-check/presets/<name>.css`) or clears for the default theme.
 - **The candidate's CSS in a `<style>` block, written as the library writes it**: plain CSS in `@layer sa.components`, reading the tokens. Extraction is then close to a copy, and the candidate follows every theme and density as the shipped components do. Use only names listed in [theme tokens](../../../docs/design/tokens.md); a private `--_*` variable of another component is not a dependency the extracted CSS may keep.
 - **Fonts**: Inter (the default theme's) plus the families of the fixtures the picker offers (Lexend, IBM Plex Sans, Figtree), from Google Fonts.

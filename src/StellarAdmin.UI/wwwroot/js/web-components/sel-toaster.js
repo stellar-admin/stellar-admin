@@ -1,34 +1,32 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+/** @typedef {"default" | "success" | "info" | "warning" | "error" | "loading"} ToastType */
 
-export type ToastType = "default" | "success" | "info" | "warning" | "error" | "loading";
+/**
+ * @typedef {object} ToastOptions
+ * @property {string} [id]
+ * @property {string} title
+ * @property {string} [description]
+ * @property {ToastType} [type]
+ * @property {number} [duration] Milliseconds; 0 keeps the toast open until it is closed. Defaults to the toaster's duration.
+ * @property {{ label: string; href: string }} [action]
+ */
 
-export interface ToastOptions {
-  id?: string;
-  title: string;
-  description?: string;
-  type?: ToastType;
-  /** Milliseconds; 0 keeps the toast open until it is closed. Defaults to the toaster's duration. */
-  duration?: number;
-  action?: { label: string; href: string };
-}
+/** @typedef {"up" | "down" | "left" | "right"} SwipeDirection */
 
-type SwipeDirection = "up" | "down" | "left" | "right";
-
-interface ToastState {
-  id: string;
-  el: HTMLElement;
-  options: ToastOptions;
-  height: number;
-  ending: boolean;
-  remaining: number;
-  startedAt: number;
-  timer: number;
-  icons: Element[];
-  iconSlot: HTMLElement;
-  description: HTMLElement;
-  action: HTMLAnchorElement;
-}
+/**
+ * @typedef {object} ToastState
+ * @property {string} id
+ * @property {HTMLElement} el
+ * @property {ToastOptions} options
+ * @property {number} height
+ * @property {boolean} ending
+ * @property {number} remaining
+ * @property {number} startedAt
+ * @property {number} timer
+ * @property {Element[]} icons
+ * @property {HTMLElement} iconSlot
+ * @property {HTMLElement} description
+ * @property {HTMLAnchorElement} action
+ */
 
 const SWIPE_THRESHOLD = 40;
 let nextId = 1;
@@ -38,18 +36,23 @@ let nextId = 1;
  * (data-* attributes and --toast-* variables) so upstream's toast styles apply unchanged. The
  * newest toast is first, in the DOM and in #toasts.
  */
-@customElement("sel-toaster")
-export class Toaster extends LitElement {
-  #toasts: ToastState[] = [];
-  #viewport!: HTMLElement;
-  #announcer: HTMLElement | null = null;
-  #template!: HTMLTemplateElement;
+export class Toaster extends HTMLElement {
+  /** @type {ToastState[]} */
+  #toasts = [];
+  /** @type {HTMLElement} */
+  #viewport;
+  /** @type {HTMLElement | null} */
+  #announcer = null;
+  /** @type {HTMLTemplateElement} */
+  #template;
   #hovering = false;
   #focused = false;
   #windowFocused = true;
   #pendingLeave = false;
-  #previousFocus: HTMLElement | null = null;
-  #abort: AbortController | null = null;
+  /** @type {HTMLElement | null} */
+  #previousFocus = null;
+  /** @type {AbortController | null} */
+  #abort = null;
 
   // Heights change when fonts load, the theme stylesheet swaps, or the width changes the
   // wrapping. The text column is never stretched, so it reports its natural size.
@@ -61,15 +64,12 @@ export class Toaster extends LitElement {
     this.#sync();
   });
 
-  override createRenderRoot() {
-    return this;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    const viewport = this.querySelector<HTMLElement>('[data-slot="toast-viewport"]');
-    const template = this.querySelector<HTMLTemplateElement>(
-      'template[data-slot="toast-template"]',
+  connectedCallback() {
+    const viewport = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="toast-viewport"]')
+    );
+    const template = /** @type {HTMLTemplateElement | null} */ (
+      this.querySelector('template[data-slot="toast-template"]')
     );
     if (!viewport || !template) return;
 
@@ -83,14 +83,16 @@ export class Toaster extends LitElement {
     this.#syncHost();
     this.#listen(this.#abort.signal);
 
-    const seed = this.querySelector<HTMLScriptElement>(':scope > script[type="application/json"]');
+    const seed = /** @type {HTMLScriptElement | null} */ (
+      this.querySelector(':scope > script[type="application/json"]')
+    );
     if (seed?.textContent) {
-      for (const toast of JSON.parse(seed.textContent) as ToastOptions[]) this.addToast(toast);
+      for (const toast of /** @type {ToastOptions[]} */ (JSON.parse(seed.textContent)))
+        this.addToast(toast);
     }
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.#abort?.abort();
     this.#abort = null;
     for (const toast of this.#toasts) clearTimeout(toast.timer);
@@ -115,14 +117,21 @@ export class Toaster extends LitElement {
     return this.#hovering || this.#focused || document.hidden || !this.#windowFocused;
   }
 
-  /** Shows a toast and returns its id. */
-  addToast(options: ToastOptions): string {
+  /**
+   * Shows a toast and returns its id.
+   * @param {ToastOptions} options
+   * @returns {string}
+   */
+  addToast(options) {
     const id = options.id ?? `sa-toast-${nextId++}`;
-    const el = (this.#template.content.firstElementChild as HTMLElement).cloneNode(
-      true,
-    ) as HTMLElement;
-    const iconSlot = el.querySelector<HTMLElement>('[data-slot="toast-icon"]')!;
-    const toast: ToastState = {
+    const el = /** @type {HTMLElement} */ (
+      /** @type {HTMLElement} */ (this.#template.content.firstElementChild).cloneNode(true)
+    );
+    const iconSlot = /** @type {HTMLElement | null} */ (
+      el.querySelector('[data-slot="toast-icon"]')
+    );
+    /** @type {ToastState} */
+    const toast = {
       id,
       el,
       options,
@@ -133,8 +142,8 @@ export class Toaster extends LitElement {
       timer: 0,
       iconSlot,
       icons: [...iconSlot.querySelectorAll("[data-toast-icon]")],
-      description: el.querySelector('[data-slot="toast-description"]')!,
-      action: el.querySelector('[data-slot="toast-action"]')!,
+      description: el.querySelector('[data-slot="toast-description"]'),
+      action: el.querySelector('[data-slot="toast-action"]'),
     };
     el.id = id;
     el.style.setProperty("--toast-swipe-movement-x", "0px");
@@ -146,7 +155,7 @@ export class Toaster extends LitElement {
     this.#viewport.prepend(el);
     this.#toasts.unshift(toast);
     toast.height = this.#measure(el);
-    this.#resizeObserver.observe(el.querySelector('[data-slot="toast-text"]')!);
+    this.#resizeObserver.observe(el.querySelector('[data-slot="toast-text"]'));
     this.#syncHost();
     this.#sync();
 
@@ -156,8 +165,12 @@ export class Toaster extends LitElement {
     return id;
   }
 
-  /** Changes an open toast. Options not given keep their current values. */
-  updateToast(id: string, options: Partial<ToastOptions>) {
+  /**
+   * Changes an open toast. Options not given keep their current values.
+   * @param {string} id
+   * @param {Partial<ToastOptions>} options
+   */
+  updateToast(id, options) {
     const toast = this.#toasts.find((t) => t.id === id);
     if (!toast || toast.ending) return;
     clearTimeout(toast.timer);
@@ -167,8 +180,12 @@ export class Toaster extends LitElement {
     this.#sync();
   }
 
-  /** Closes a toast, resolving once its exit animation has finished. */
-  async closeToast(id: string, swipeDirection?: SwipeDirection) {
+  /**
+   * Closes a toast, resolving once its exit animation has finished.
+   * @param {string} id
+   * @param {SwipeDirection} [swipeDirection]
+   */
+  async closeToast(id, swipeDirection) {
     const toast = this.#toasts.find((t) => t.id === id);
     if (!toast || toast.ending) return;
     clearTimeout(toast.timer);
@@ -186,7 +203,7 @@ export class Toaster extends LitElement {
         .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity)
         .map((a) => a.finished),
     );
-    this.#resizeObserver.unobserve(toast.el.querySelector('[data-slot="toast-text"]')!);
+    this.#resizeObserver.unobserve(toast.el.querySelector('[data-slot="toast-text"]'));
     toast.el.remove();
     this.#toasts = this.#toasts.filter((t) => t !== toast);
     if (hadFocus) this.#focusAfterClose();
@@ -194,22 +211,26 @@ export class Toaster extends LitElement {
     this.#flushMouseLeave();
   }
 
-  #fill(toast: ToastState, options: ToastOptions) {
+  /**
+   * @param {ToastState} toast
+   * @param {ToastOptions} options
+   */
+  #fill(toast, options) {
     const { el } = toast;
     const type = options.type ?? "default";
     toast.options = options;
     el.dataset.type = type;
 
     // The template carries an icon for every type; keep only this one.
-    const content = el.querySelector('[data-slot="toast-content"]')!;
+    const content = el.querySelector('[data-slot="toast-content"]');
     toast.iconSlot.replaceChildren(
-      ...toast.icons.filter((svg) => (svg as HTMLElement).dataset.toastIcon === type),
+      ...toast.icons.filter((svg) => /** @type {HTMLElement} */ (svg).dataset.toastIcon === type),
     );
     if (toast.iconSlot.childElementCount === 0) toast.iconSlot.remove();
     else if (!toast.iconSlot.isConnected || toast.iconSlot.parentElement !== content)
       content.prepend(toast.iconSlot);
 
-    const title = el.querySelector<HTMLElement>('[data-slot="toast-title"]')!;
+    const title = /** @type {HTMLElement | null} */ (el.querySelector('[data-slot="toast-title"]'));
     title.id = `${toast.id}-title`;
     title.textContent = options.title;
     el.setAttribute("aria-labelledby", title.id);
@@ -228,7 +249,7 @@ export class Toaster extends LitElement {
       toast.action.textContent = options.action.label;
       toast.action.href = options.action.href;
       if (toast.action.parentElement !== content)
-        el.querySelector('[data-slot="toast-close"]')!.before(toast.action);
+        el.querySelector('[data-slot="toast-close"]').before(toast.action);
     } else {
       toast.action.remove();
     }
@@ -242,7 +263,8 @@ export class Toaster extends LitElement {
     if (!this.#paused) this.#startTimer(toast);
   }
 
-  #startTimer(toast: ToastState) {
+  /** @param {ToastState} toast */
+  #startTimer(toast) {
     if (toast.remaining <= 0 || toast.ending) return;
     toast.startedAt = performance.now();
     toast.timer = window.setTimeout(() => this.closeToast(toast.id), toast.remaining);
@@ -262,7 +284,8 @@ export class Toaster extends LitElement {
     for (const toast of this.#toasts) if (!toast.timer) this.#startTimer(toast);
   }
 
-  #measure(el: HTMLElement) {
+  /** @param {HTMLElement} el */
+  #measure(el) {
     const previous = el.style.height;
     el.style.height = "auto";
     const height = el.offsetHeight;
@@ -282,7 +305,7 @@ export class Toaster extends LitElement {
       el.toggleAttribute("data-expanded", this.#expanded);
       el.toggleAttribute("data-limited", limited);
       el.inert = limited;
-      const content = el.querySelector('[data-slot="toast-content"]')!;
+      const content = el.querySelector('[data-slot="toast-content"]');
       content.toggleAttribute("data-expanded", this.#expanded);
       content.toggleAttribute("data-behind", !toast.ending && visibleIndex > 0);
       offsetY += toast.height;
@@ -316,7 +339,8 @@ export class Toaster extends LitElement {
     if (target?.isConnected) target.focus({ preventScroll: true });
   }
 
-  #setHovering(value: boolean) {
+  /** @param {boolean} value */
+  #setHovering(value) {
     if (this.#hovering === value) return;
     this.#hovering = value;
     if (value) this.#pauseTimers();
@@ -324,7 +348,8 @@ export class Toaster extends LitElement {
     this.#sync();
   }
 
-  #setFocused(value: boolean) {
+  /** @param {boolean} value */
+  #setFocused(value) {
     if (this.#focused === value) return;
     this.#focused = value;
     if (value) this.#pauseTimers();
@@ -340,7 +365,8 @@ export class Toaster extends LitElement {
     this.#setHovering(false);
   }
 
-  #listen(signal: AbortSignal) {
+  /** @param {AbortSignal} signal */
+  #listen(signal) {
     const vp = this.#viewport;
     const enter = () => {
       this.#pendingLeave = false;
@@ -360,14 +386,14 @@ export class Toaster extends LitElement {
     vp.addEventListener(
       "focusin",
       (event) => {
-        if ((event.target as Element).matches(":focus-visible")) this.#setFocused(true);
+        if (/** @type {Element} */ (event.target).matches(":focus-visible")) this.#setFocused(true);
       },
       { signal },
     );
     vp.addEventListener(
       "focusout",
       (event) => {
-        if (!vp.contains(event.relatedTarget as Node | null)) this.#setFocused(false);
+        if (!vp.contains(/** @type {Node | null} */ (event.relatedTarget))) this.#setFocused(false);
       },
       { signal },
     );
@@ -379,7 +405,7 @@ export class Toaster extends LitElement {
           this.#restoreFocus();
         }
         if (event.key === "Escape") {
-          const toast = this.#toasts.find((t) => t.el.contains(event.target as Node));
+          const toast = this.#toasts.find((t) => t.el.contains(/** @type {Node} */ (event.target)));
           if (toast) {
             event.preventDefault();
             this.closeToast(toast.id);
@@ -391,7 +417,7 @@ export class Toaster extends LitElement {
     vp.addEventListener(
       "click",
       (event) => {
-        const close = (event.target as Element).closest('[data-slot="toast-close"]');
+        const close = /** @type {Element} */ (event.target).closest('[data-slot="toast-close"]');
         const toast = close && this.#toasts.find((t) => t.el.contains(close));
         if (toast) this.closeToast(toast.id);
       },
@@ -403,7 +429,7 @@ export class Toaster extends LitElement {
       (event) => {
         if (event.key !== "F6" || event.target === vp || this.#toasts.length === 0) return;
         event.preventDefault();
-        this.#previousFocus = document.activeElement as HTMLElement | null;
+        this.#previousFocus = /** @type {HTMLElement | null} */ (document.activeElement);
         vp.focus({ preventScroll: true });
         this.#setFocused(true);
       },
@@ -432,19 +458,22 @@ export class Toaster extends LitElement {
     );
 
     // Dialogs fire toggle (open and close) and close; neither bubbles, so capture.
-    const onDialog = (event: Event) => {
+    /** @param {Event} event */
+    const onDialog = (event) => {
       if (event.target instanceof HTMLDialogElement) queueMicrotask(() => this.#syncHost());
     };
     document.addEventListener("toggle", onDialog, { capture: true, signal });
     document.addEventListener("close", onDialog, { capture: true, signal });
   }
 
-  #wireSwipe(toast: ToastState) {
+  /** @param {ToastState} toast */
+  #wireSwipe(toast) {
     const { el } = toast;
-    let start: { x: number; y: number; id: number } | null = null;
+    /** @type {{ x: number; y: number; id: number } | null} */
+    let start = null;
 
     el.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0 || (event.target as Element).closest("a, button")) return;
+      if (event.button !== 0 || /** @type {Element} */ (event.target).closest("a, button")) return;
       start = { x: event.clientX, y: event.clientY, id: event.pointerId };
       el.setPointerCapture(event.pointerId);
     });
@@ -457,7 +486,8 @@ export class Toaster extends LitElement {
       el.style.setProperty("--toast-swipe-movement-x", `${dx}px`);
       el.style.setProperty("--toast-swipe-movement-y", `${dy}px`);
     });
-    const end = (event: PointerEvent) => {
+    /** @param {PointerEvent} event */
+    const end = (event) => {
       if (!start || event.pointerId !== start.id) return;
       const { dx, dy } = this.#clampSwipe(event.clientX - start.x, event.clientY - start.y);
       start = null;
@@ -477,17 +507,24 @@ export class Toaster extends LitElement {
 
   // Base UI's default is down and right for a bottom-right toaster; each position swipes towards
   // its own edges.
-  #allowedDirections(): SwipeDirection[] {
+  /** @returns {SwipeDirection[]} */
+  #allowedDirections() {
     const [vertical, horizontal] = (this.#viewport.dataset.position ?? "bottom-right").split("-");
-    const directions: SwipeDirection[] = [vertical === "top" ? "up" : "down"];
+    /** @type {SwipeDirection[]} */
+    const directions = [vertical === "top" ? "up" : "down"];
     if (horizontal === "left" || horizontal === "right") directions.push(horizontal);
     return directions;
   }
 
   // Movement in a disallowed direction is damped, and only one axis moves at a time.
-  #clampSwipe(dx: number, dy: number) {
+  /**
+   * @param {number} dx
+   * @param {number} dy
+   */
+  #clampSwipe(dx, dy) {
     const allowed = this.#allowedDirections();
-    const damp = (d: number) => Math.sign(d) * Math.sqrt(Math.abs(d)) * 2;
+    /** @param {number} d */
+    const damp = (d) => Math.sign(d) * Math.sqrt(Math.abs(d)) * 2;
     const x =
       (dx > 0 && allowed.includes("right")) || (dx < 0 && allowed.includes("left")) ? dx : damp(dx);
     const y =
@@ -495,8 +532,15 @@ export class Toaster extends LitElement {
     return Math.abs(x) >= Math.abs(y) ? { dx: x, dy: 0 } : { dx: 0, dy: y };
   }
 
-  #swipeDirection(dx: number, dy: number) {
-    const candidates: Record<SwipeDirection, number> = { right: dx, left: -dx, down: dy, up: -dy };
+  /**
+   * @param {number} dx
+   * @param {number} dy
+   */
+  #swipeDirection(dx, dy) {
+    /** @type {Record<SwipeDirection, number>} */
+    const candidates = { right: dx, left: -dx, down: dy, up: -dy };
     return this.#allowedDirections().find((d) => candidates[d] > SWIPE_THRESHOLD);
   }
 }
+
+if (!customElements.get("sel-toaster")) customElements.define("sel-toaster", Toaster);

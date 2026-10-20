@@ -1,6 +1,3 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
 const SELECTION_STYLE_ID = "sel-input-otp-selection-style";
 
 /**
@@ -27,28 +24,31 @@ function ensureSelectionStyle() {
  * with the value, reflects the active cell (and a blinking fake caret) via `data-active`, and
  * enforces the `data-pattern` regex by rejecting any input that would make the value fail it.
  */
-@customElement("sel-input-otp")
-export class InputOtp extends LitElement {
-  override createRenderRoot() {
-    return this;
-  }
-
-  #field: HTMLInputElement | null = null;
-  #slots: HTMLElement[] = [];
+export class InputOtp extends HTMLElement {
+  /** @type {HTMLInputElement | null} */
+  #field = null;
+  /** @type {HTMLElement[]} */
+  #slots = [];
   #maxLength = 0;
-  #pattern: RegExp | null = null;
+  /** @type {RegExp | null} */
+  #pattern = null;
   #lastValid = "";
   #caretClass = "sa-input-otp-caret";
   #caretLineClass = "sa-input-otp-caret-line";
-  #resizeObserver: ResizeObserver | null = null;
+  /** @type {ResizeObserver | null} */
+  #resizeObserver = null;
 
-  override connectedCallback() {
-    super.connectedCallback();
-
+  connectedCallback() {
     ensureSelectionStyle();
 
-    this.#field = this.querySelector<HTMLInputElement>('[data-slot="input-otp"]');
-    this.#slots = Array.from(this.querySelectorAll<HTMLElement>('[data-slot="input-otp-slot"]'));
+    this.#field = /** @type {HTMLInputElement | null} */ (
+      this.querySelector('[data-slot="input-otp"]')
+    );
+    this.#slots = Array.from(
+      /** @type {NodeListOf<HTMLElement>} */ (
+        this.querySelectorAll('[data-slot="input-otp-slot"]')
+      ),
+    );
     this.#maxLength = Number(this.getAttribute("maxlength")) || this.#slots.length;
 
     // --root-height drives the field's font-size so the transparent text lines up with the slots.
@@ -86,8 +86,7 @@ export class InputOtp extends LitElement {
     this.#sync();
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.#resizeObserver?.disconnect();
     this.#resizeObserver = null;
     if (this.#field) {
@@ -180,7 +179,8 @@ export class InputOtp extends LitElement {
     }
   }
 
-  #createCaret(): HTMLElement {
+  /** @returns {HTMLElement} */
+  #createCaret() {
     const caret = document.createElement("div");
     caret.className = this.#caretClass;
     const line = document.createElement("div");
@@ -189,3 +189,5 @@ export class InputOtp extends LitElement {
     return caret;
   }
 }
+
+if (!customElements.get("sel-input-otp")) customElements.define("sel-input-otp", InputOtp);

@@ -1,13 +1,18 @@
-import type { Toaster, ToastOptions } from "../web-components/sel-toaster";
+/** @typedef {import("../web-components/sel-toaster.js").Toaster} Toaster */
+/** @typedef {import("../web-components/sel-toaster.js").ToastOptions} ToastOptions */
 
 /** The response header that carries toasts queued on the server during an AJAX request. */
 const HEADER_NAME = "SA-Toasts";
 
-type ToastDetails = Omit<ToastOptions, "title" | "type">;
-type PromiseMessage<T> = string | ((value: T) => string);
+/** @typedef {Omit<ToastOptions, "title" | "type">} ToastDetails */
+/**
+ * @template T
+ * @typedef {string | ((value: T) => string)} PromiseMessage
+ */
 
-function toaster(): Toaster {
-  const el = document.querySelector("sel-toaster") as Toaster | null;
+/** @returns {Toaster} */
+function toaster() {
+  const el = /** @type {Toaster | null} */ (document.querySelector("sel-toaster"));
   if (!el) throw new Error("Toaster not found: add <sa-toaster /> to the layout.");
 
   return el;
@@ -15,22 +20,37 @@ function toaster(): Toaster {
 
 // The typed shortcuts take a description, as the server's Success(title, description) does,
 // or the remaining options.
-function typed(type: ToastOptions["type"]) {
-  return (title: string, details?: string | ToastDetails) =>
+/** @param {ToastOptions["type"]} type */
+function typed(type) {
+  /**
+   * @param {string} title
+   * @param {string | ToastDetails} [details]
+   */
+  const show = (title, details) =>
     add({
       ...(typeof details === "string" ? { description: details } : details),
       title,
       type,
     });
+
+  return show;
 }
 
-function add(options: ToastOptions): string {
+/**
+ * @param {ToastOptions} options
+ * @returns {string}
+ */
+function add(options) {
   return toaster().addToast(options);
 }
 
-type ResponseSource = Response | Headers | XMLHttpRequest | string | null | undefined;
+/** @typedef {Response | Headers | XMLHttpRequest | string | null | undefined} ResponseSource */
 
-function readHeader(source: ResponseSource): string | null {
+/**
+ * @param {ResponseSource} source
+ * @returns {string | null}
+ */
+function readHeader(source) {
   if (source == null) return null;
   if (typeof source === "string") return source;
   if (source instanceof XMLHttpRequest) return source.getResponseHeader(HEADER_NAME);
@@ -61,26 +81,41 @@ export const toast = {
   warning: typed("warning"),
   error: typed("error"),
 
-  /** Changes an open toast. Options not given keep their current values. */
-  update(id: string, options: Partial<ToastOptions>) {
+  /**
+   * Changes an open toast. Options not given keep their current values.
+   * @param {string} id
+   * @param {Partial<ToastOptions>} options
+   */
+  update(id, options) {
     toaster().updateToast(id, options);
   },
 
-  /** Closes a toast, resolving once its exit animation has finished. */
-  close(id: string): Promise<void> {
+  /**
+   * Closes a toast, resolving once its exit animation has finished.
+   * @param {string} id
+   * @returns {Promise<void>}
+   */
+  close(id) {
     return toaster().closeToast(id);
   },
 
   /**
    * Shows a loading toast until the promise settles, then turns it into a success or error
    * toast. Returns the promise, so it can still be awaited.
+   * @template T
+   * @param {Promise<T>} promise
+   * @param {{ loading: string; success: PromiseMessage<T>; error: PromiseMessage<any> }} messages
+   * @returns {Promise<T>}
    */
-  promise<T>(
-    promise: Promise<T>,
-    messages: { loading: string; success: PromiseMessage<T>; error: PromiseMessage<any> },
-  ): Promise<T> {
+  promise(promise, messages) {
     const id = add({ title: messages.loading, type: "loading" });
-    const settle = <V>(type: "success" | "error", message: PromiseMessage<V>, value: V) =>
+    /**
+     * @template V
+     * @param {"success" | "error"} type
+     * @param {PromiseMessage<V>} message
+     * @param {V} value
+     */
+    const settle = (type, message, value) =>
       // An undefined duration goes back to the toaster's default, which loading toasts skip.
       toaster().updateToast(id, {
         title: typeof message === "function" ? message(value) : message,
@@ -99,12 +134,15 @@ export const toast = {
   /**
    * Shows the toasts the server sent in the `SA-Toasts` response header and returns their ids.
    * Takes a fetch `Response`, its `Headers`, an `XMLHttpRequest`, or the header's value.
+   * @param {ResponseSource} source
+   * @returns {string[]}
    */
-  fromResponse(source: ResponseSource): string[] {
+  fromResponse(source) {
     const header = readHeader(source);
     if (!header) return [];
 
-    let toasts: ToastOptions[];
+    /** @type {ToastOptions[]} */
+    let toasts;
     try {
       toasts = JSON.parse(header);
     } catch {

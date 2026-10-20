@@ -34,6 +34,11 @@ jobs:
         npm test --prefix build/skill-validation
         npm run check --prefix build/skill-validation
 
+    - name: Type-check the UI scripts
+      run: |
+        npm ci --prefix src/StellarAdmin.UI/Client --no-audit --no-fund
+        npm run check --prefix src/StellarAdmin.UI/Client
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:

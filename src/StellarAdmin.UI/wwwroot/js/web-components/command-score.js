@@ -32,15 +32,17 @@ const COUNT_GAPS_REGEXP = /[\\/_+.#"@[({&]/g;
 const IS_SPACE_REGEXP = /[\s-]/;
 const COUNT_SPACE_REGEXP = /[\s-]/g;
 
-function scoreInner(
-  text: string,
-  search: string,
-  lowerText: string,
-  lowerSearch: string,
-  textIndex: number,
-  searchIndex: number,
-  memo: Map<string, number>,
-): number {
+/**
+ * @param {string} text
+ * @param {string} search
+ * @param {string} lowerText
+ * @param {string} lowerSearch
+ * @param {number} textIndex
+ * @param {number} searchIndex
+ * @param {Map<string, number>} memo
+ * @returns {number}
+ */
+function scoreInner(text, search, lowerText, lowerSearch, textIndex, searchIndex, memo) {
   if (searchIndex === search.length) {
     return textIndex === text.length ? SCORE_CONTINUE_MATCH : PENALTY_NOT_COMPLETE;
   }
@@ -116,20 +118,28 @@ function scoreInner(
   return highScore;
 }
 
-function formatInput(value: string) {
+/** @param {string} value */
+function formatInput(value) {
   // Treat all space characters and hyphens as equivalent.
   return value.toLowerCase().replace(COUNT_SPACE_REGEXP, " ");
 }
 
-function scoreText(text: string, search: string) {
+/**
+ * @param {string} text
+ * @param {string} search
+ */
+function scoreText(text, search) {
   return scoreInner(text, search, formatInput(text), formatInput(search), 0, 0, new Map());
 }
 
 /**
  * Scores how well `search` fuzzy-matches `value` or, at a lower weight, `keywords`; 0 means no
  * match. A match cannot run from the value into the keywords.
+ * @param {string} value
+ * @param {string} search
+ * @param {string} keywords
  */
-export function commandScore(value: string, search: string, keywords: string) {
+export function commandScore(value, search, keywords) {
   const valueScore = scoreText(value, search);
   return keywords ? Math.max(valueScore, KEYWORD_WEIGHT * scoreText(keywords, search)) : valueScore;
 }

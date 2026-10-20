@@ -1,8 +1,9 @@
-interface Remembered {
-  row: HTMLTableRowElement;
-  selected: boolean;
-  value: string;
-}
+/**
+ * @typedef {object} Remembered
+ * @property {HTMLTableRowElement} row
+ * @property {boolean} selected
+ * @property {string} value
+ */
 
 /**
  * Row selection for a `sel-table` with `data-selection`. The checkbox inside `thead` is
@@ -28,15 +29,18 @@ interface Remembered {
  * select-all counts it, and the row that replaces it gets its selection back.
  */
 export class TableSelection {
-  #host: HTMLElement;
+  /** @type {HTMLElement} */
+  #host;
   // The keyed rows present at the last sync, and whether each was selected.
-  #remembered = new Map<string, Remembered>();
+  /** @type {Map<string, Remembered>} */
+  #remembered = new Map();
   #mutationObserver = new MutationObserver((records) => {
     if (records.some((record) => record.type === "childList")) this.#scheduleSync();
   });
   #syncScheduled = false;
 
-  constructor(host: HTMLElement) {
+  /** @param {HTMLElement} host */
+  constructor(host) {
     this.#host = host;
   }
 
@@ -54,8 +58,11 @@ export class TableSelection {
     this.#mutationObserver.disconnect();
   }
 
-  /** The values of the selected rows, including selected rows in edit mode. */
-  get selectedValues(): string[] {
+  /**
+   * The values of the selected rows, including selected rows in edit mode.
+   * @returns {string[]}
+   */
+  get selectedValues() {
     return [
       ...this.#rowCheckboxes
         .filter((checkbox) => checkbox.checked)
@@ -64,25 +71,32 @@ export class TableSelection {
     ];
   }
 
-  /** The remembered selection of the rows now in edit mode, which have no checkbox. */
-  get #editingRows(): Remembered[] {
+  /**
+   * The remembered selection of the rows now in edit mode, which have no checkbox.
+   * @returns {Remembered[]}
+   */
+  get #editingRows() {
     return Array.from(this.#remembered.values()).filter(
       (entry) => entry.row.isConnected && entry.row.hasAttribute("data-editing"),
     );
   }
 
-  get #selectAll(): HTMLInputElement | null {
+  /** @returns {HTMLInputElement | null} */
+  get #selectAll() {
     return (
       Array.from(
-        this.#host.querySelectorAll<HTMLInputElement>('thead input[type="checkbox"]'),
+        /** @type {NodeListOf<HTMLInputElement>} */ (
+          this.#host.querySelectorAll('thead input[type="checkbox"]')
+        ),
       ).find((checkbox) => this.#owns(checkbox)) ?? null
     );
   }
 
-  get #rowCheckboxes(): HTMLInputElement[] {
+  /** @returns {HTMLInputElement[]} */
+  get #rowCheckboxes() {
     return Array.from(
-      this.#host.querySelectorAll<HTMLInputElement>(
-        'tbody input[type="checkbox"][data-row-select]',
+      /** @type {NodeListOf<HTMLInputElement>} */ (
+        this.#host.querySelectorAll('tbody input[type="checkbox"][data-row-select]')
       ),
     ).filter((checkbox) => this.#owns(checkbox));
   }
@@ -91,14 +105,16 @@ export class TableSelection {
    * Whether a checkbox belongs to this table's selection: not inside a nested table, and
    * not inside a row's details (`tr[data-slot="table-row-detail"]`) — details content is
    * the author's, so its checkboxes are not row selectors.
+   * @param {HTMLInputElement} checkbox
    */
-  #owns(checkbox: HTMLInputElement) {
+  #owns(checkbox) {
     if (checkbox.closest("sel-table") !== this.#host) return false;
     const detailRow = checkbox.closest('tr[data-slot="table-row-detail"]');
     return !detailRow || !this.#host.contains(detailRow);
   }
 
-  #onChange = (event: Event) => {
+  /** @param {Event} event */
+  #onChange = (event) => {
     const target = event.target;
     if (
       !(target instanceof HTMLInputElement) ||
@@ -140,16 +156,19 @@ export class TableSelection {
 
   #syncState() {
     const rowCheckboxes = this.#rowCheckboxes;
-    const remembered = new Map<string, Remembered>();
+    /** @type {Map<string, Remembered>} */
+    const remembered = new Map();
     let selectedCount = 0;
     let count = rowCheckboxes.length;
 
     // A row in edit mode takes over the selection of the row it replaced.
-    for (const row of this.#host.querySelectorAll<HTMLTableRowElement>("tr[data-editing]")) {
+    for (const row of /** @type {NodeListOf<HTMLTableRowElement>} */ (
+      this.#host.querySelectorAll("tr[data-editing]")
+    )) {
       const key = row.dataset.key;
       const previous = key === undefined ? undefined : this.#remembered.get(key);
       if (!previous || row.closest("sel-table") !== this.#host) continue;
-      remembered.set(key!, { ...previous, row });
+      remembered.set(key, { ...previous, row });
       count++;
       if (previous.selected) selectedCount++;
     }

@@ -1,6 +1,3 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
 /** How close to an edge still counts as being at it, in pixels. */
 const EDGE_THRESHOLD = 24;
 
@@ -11,15 +8,7 @@ const SMOOTH_SCROLL_GRACE_MS = 100;
 const USER_SCROLL_IDLE_MS = 300;
 
 /** Keys that scroll the viewport, and so count as the reader taking over. */
-const SCROLL_KEYS = new Set([
-  "ArrowUp",
-  "ArrowDown",
-  "PageUp",
-  "PageDown",
-  "Home",
-  "End",
-  " ",
-]);
+const SCROLL_KEYS = new Set(["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "]);
 
 /**
  * Message scroller web component. Wrap it around a viewport and a transcript - no marker
@@ -43,23 +32,20 @@ const SCROLL_KEYS = new Set([
  * Without JavaScript the transcript still lays out and scrolls; it simply starts at the top and
  * the buttons stay inert.
  */
-@customElement("sel-message-scroller")
-export class MessageScroller extends LitElement {
+export class MessageScroller extends HTMLElement {
   #following = false;
   #initialized = false;
-  #mutationObserver: MutationObserver | undefined;
-  #observedContent: Element | undefined;
-  #resizeObserver: ResizeObserver | undefined;
+  /** @type {MutationObserver | undefined} */
+  #mutationObserver;
+  /** @type {Element | undefined} */
+  #observedContent;
+  /** @type {ResizeObserver | undefined} */
+  #resizeObserver;
   #userScrolling = false;
-  #userScrollTimeout: ReturnType<typeof setTimeout> | undefined;
+  /** @type {ReturnType<typeof setTimeout> | undefined} */
+  #userScrollTimeout;
 
-  override createRenderRoot() {
-    return this;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
+  connectedCallback() {
     // Scroll does not bubble, but a capturing listener on this element still sees it - which
     // keeps working when the viewport itself is replaced by a swap.
     this.addEventListener("scroll", this.#onScroll, { capture: true, passive: true });
@@ -83,9 +69,7 @@ export class MessageScroller extends LitElement {
     this.#initialize();
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-
+  disconnectedCallback() {
     this.removeEventListener("scroll", this.#onScroll, { capture: true });
     this.removeEventListener("command", this.#onCommand);
 
@@ -103,36 +87,55 @@ export class MessageScroller extends LitElement {
     clearTimeout(this.#userScrollTimeout);
   }
 
-  /** Whether the transcript follows new content while the reader is at the newest message. */
-  get #autoScroll(): boolean {
+  /**
+   * Whether the transcript follows new content while the reader is at the newest message.
+   * @returns {boolean}
+   */
+  get #autoScroll() {
     return this.getAttribute("auto-scroll") !== "false";
   }
 
-  get #content(): HTMLElement | null {
-    return this.querySelector<HTMLElement>('[data-slot="message-scroller-content"]');
+  /** @returns {HTMLElement | null} */
+  get #content() {
+    return /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="message-scroller-content"]')
+    );
   }
 
-  get #initialPosition(): string {
+  /** @returns {string} */
+  get #initialPosition() {
     return this.getAttribute("initial-position") ?? "end";
   }
 
-  get #viewport(): HTMLElement | null {
-    return this.querySelector<HTMLElement>('[data-slot="message-scroller-viewport"]');
+  /** @returns {HTMLElement | null} */
+  get #viewport() {
+    return /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="message-scroller-viewport"]')
+    );
   }
 
-  /** Whether the transcript is currently following new content. */
-  get following(): boolean {
+  /**
+   * Whether the transcript is currently following new content.
+   * @returns {boolean}
+   */
+  get following() {
     return this.#following;
   }
 
-  /** Scrolls the transcript to its newest message and resumes following. */
-  scrollToEnd(behavior: ScrollBehavior = "smooth") {
+  /**
+   * Scrolls the transcript to its newest message and resumes following.
+   * @param {ScrollBehavior} [behavior]
+   */
+  scrollToEnd(behavior = "smooth") {
     this.#following = this.#autoScroll;
     this.#scrollTo("end", behavior);
   }
 
-  /** Scrolls the transcript to its oldest message and stops following. */
-  scrollToStart(behavior: ScrollBehavior = "smooth") {
+  /**
+   * Scrolls the transcript to its oldest message and stops following.
+   * @param {ScrollBehavior} [behavior]
+   */
+  scrollToStart(behavior = "smooth") {
     this.#following = false;
     this.#scrollTo("start", behavior);
   }
@@ -172,7 +175,8 @@ export class MessageScroller extends LitElement {
     this.#syncButtons();
   }
 
-  #isAtEnd(): boolean {
+  /** @returns {boolean} */
+  #isAtEnd() {
     const viewport = this.#viewport;
     return (
       viewport !== null &&
@@ -196,7 +200,11 @@ export class MessageScroller extends LitElement {
     }
   }
 
-  #scrollTo(edge: "start" | "end", behavior: ScrollBehavior) {
+  /**
+   * @param {"start" | "end"} edge
+   * @param {ScrollBehavior} behavior
+   */
+  #scrollTo(edge, behavior) {
     const viewport = this.#viewport;
     if (!viewport) {
       return;
@@ -227,16 +235,17 @@ export class MessageScroller extends LitElement {
     const atStart = viewport.scrollTop <= EDGE_THRESHOLD;
     const atEnd = this.#isAtEnd();
 
-    for (const button of this.querySelectorAll<HTMLElement>(
-      '[data-slot="message-scroller-button"]',
+    for (const button of /** @type {NodeListOf<HTMLElement>} */ (
+      this.querySelectorAll('[data-slot="message-scroller-button"]')
     )) {
       const active = button.dataset.direction === "start" ? !atStart : !atEnd;
       button.dataset.active = String(active);
     }
   }
 
-  #onCommand = (event: Event) => {
-    switch ((event as Event & { command: string }).command) {
+  /** @param {Event} event */
+  #onCommand = (event) => {
+    switch (/** @type {Event & { command: string }} */ (event).command) {
       case "--scroll-to-end":
         this.scrollToEnd();
         break;
@@ -257,7 +266,8 @@ export class MessageScroller extends LitElement {
     this.#syncButtons();
   };
 
-  #onScroll = (event: Event) => {
+  /** @param {Event} event */
+  #onScroll = (event) => {
     if (event.target !== this.#viewport) {
       return;
     }
@@ -271,8 +281,9 @@ export class MessageScroller extends LitElement {
     this.#syncButtons();
   };
 
-  #onUserScrollInput = (event: Event) => {
-    if (event.type === "keydown" && !SCROLL_KEYS.has((event as KeyboardEvent).key)) {
+  /** @param {Event} event */
+  #onUserScrollInput = (event) => {
+    if (event.type === "keydown" && !SCROLL_KEYS.has(/** @type {KeyboardEvent} */ (event).key)) {
       return;
     }
 
@@ -282,4 +293,8 @@ export class MessageScroller extends LitElement {
       this.#userScrolling = false;
     }, USER_SCROLL_IDLE_MS);
   };
+}
+
+if (!customElements.get("sel-message-scroller")) {
+  customElements.define("sel-message-scroller", MessageScroller);
 }

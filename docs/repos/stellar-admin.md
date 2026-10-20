@@ -8,7 +8,7 @@ Guidance for working in this repository.
 
 **StellarAdmin.UI** is a library of ASP.NET Core **Tag Helpers** that mirror [shadcn/ui](https://ui.shadcn.com/) components, for building MVC / Razor Pages UIs. It ships as the `StellarAdmin.UI` NuGet package. Consumers register it, add the tag helpers to `_ViewImports.cshtml`, link `stellar-admin.css` (optionally followed by their own theme variable file, for example one downloaded from the [theme builder](https://www.stellaradmin.com/theme-builder)), and reference `stellar-admin.js`. **A theme is a stylesheet of theme variable values**: switching themes is switching the `<link>`, with no server-side involvement.
 
-Each component is a server-rendered tag helper (`<sa-*>`). Interactivity that can't be done with HTML/CSS alone is provided by small **Lit web components** (`<sel-*>`) bundled into `stellar-admin.js`.
+Each component is a server-rendered tag helper (`<sa-*>`). Interactivity that can't be done with HTML/CSS alone is provided by small **web components** (`<sel-*>`): plain JavaScript ES modules that `stellar-admin.js` imports, served without a build.
 
 **This repo contains the complete open-source product.** `StellarAdmin` (the admin panel) and `StellarAdmin.EntityFrameworkCore` provide the integrated admin application and EF Core resources; they share the MIT license. `sandbox/AdminPlayground` demonstrates Identity management through ordinary resources.
 
@@ -29,8 +29,8 @@ services.AddStellarAdmin();     // namespace StellarAdmin — returns StellarAdm
 |------|------|
 | `src/StellarAdmin.UI/` | Tag helpers, icons (namespace `StellarAdmin.UI.Icons`), theming, client assets, the `AddStellarAdminUI()` entry point and `StellarAdminUIBuilder`, and the form and menu options. |
 | `src/StellarAdmin.UI/TagHelpers/<Component>/` | One folder per component (e.g. `Sidebar/`, `Button/`, `Sheet/`). |
-| `src/StellarAdmin.UI/Client/` | All client sources: TypeScript and the plain CSS (`css/reset.css`, `css/tokens.css`, `css/structure.css`, `css/components/<component>.css`, `css/tailwind-adapter.css`) and the theme variable manifest (`css/theme-variables.json`), built into `src/StellarAdmin.UI/wwwroot/`. |
-| `src/StellarAdmin.UI/Client/js/web-components/` | The `sel-*` Lit components. |
+| `src/StellarAdmin.UI/Client/` | The plain CSS sources (`css/reset.css`, `css/tokens.css`, `css/structure.css`, `css/components/<component>.css`, `css/tailwind-adapter.css`) and the theme variable manifest (`css/theme-variables.json`), built into `src/StellarAdmin.UI/wwwroot/`, and the client tooling (`package.json`, the build scripts, `tsconfig.json` for the type check). |
+| `src/StellarAdmin.UI/wwwroot/stellar-admin.js`, `wwwroot/js/` | The JavaScript, written in place and served as written: the entry module, the `sel-*` web components (`js/web-components/`), the `window.stellarAdmin` helpers (`js/wrappers/`) and the image behaviour (`js/image.js`). |
 | `gen/`, `util/`, gen projects | Source generators (icons), the theme checks (`util/theme-check/`: contrast and screenshots across theme fixtures and random themes), visual regression (`util/visual-regression/`) and the skills generator. |
 | `sandbox/` | Throwaway prototypes (e.g. `sandbox/html/*.html` for validating CSS approaches). For a new visual design, use the product `prototype-component` skill; for an existing upstream design, use `port-shadcn-component`. The development skills live in `.agents/skills/` (product-root-relative). Prototypes are point-in-time artifacts, code flows prototype → library only. |
 
@@ -45,16 +45,19 @@ dotnet build src/StellarAdmin.UI/StellarAdmin.UI.csproj
 
 ### Client assets (run from `src/StellarAdmin.UI/Client/`)
 ```bash
-npm run build                 # build:js + build:css
-npm run build:js              # rolldown -> ../wwwroot/stellar-admin.js  (IIFE, minified)
+npm run build                 # build:vendor + build:css
+npm run build:vendor          # interestfor polyfill -> ../wwwroot/vendor/interestfor.js
 npm run build:css             # plain CSS -> ../wwwroot/stellar-admin.css, stellar-admin.tailwind.css, stellar-admin.theme-variables.json
-npm run fmt                   # oxfmt (format TS/JS)
+npm run check                 # tsc --checkJs over the JavaScript in ../wwwroot
+npm run fmt                   # oxfmt (format the JavaScript in ../wwwroot)
 ```
+The JavaScript has no build: `wwwroot/stellar-admin.js` and the modules under `wwwroot/js/` are plain ES modules with types in JSDoc, which `npm run check` checks (CI runs it). Pages load the entry with `<script type="module">`, and the `<script type="importmap"></script>` that ASP.NET fills from the static asset manifest maps each module to its fingerprinted URL. The map's entries are relative to the page, so it needs `<base href="~/"/>` before it, and `.WithStaticAssets()` does nothing on conventional controller routes ([dotnet/aspnetcore#59003](https://github.com/dotnet/aspnetcore/issues/59003)). The admin panel layout has the base tag, and `MapStellarAdmin` adds the static asset metadata to its own routes. DocsSamples and ComponentPlayground have no base tag (their samples use `href="#"`), so only their top-level pages get fingerprinted modules. `build:vendor` copies the one npm dependency, the `interestfor` polyfill, into the gitignored `wwwroot/vendor/`.
+
 `build:css` (`Client/scripts/build-css.mjs`) runs no CSS compiler: it concatenates the layer order, `reset.css`, `tokens.css`, `structure.css` and every `components/*.css` file in name order into `stellar-admin.css`, and copies `tailwind-adapter.css` as it is. It also writes `stellar-admin.theme-variables.json` from `css/theme-variables.json`, the theme variable manifest the website's theme builder reads (label, group, meaning, type, range or choices, default; optional theme variables name the theme variable they follow), and fails when the manifest and the stylesheets disagree: a theme variable in `tokens.css` without an entry, an entry that is no theme variable, a different default, or an optional theme variable no stylesheet reads through a `var()` fallback. Adding or changing a theme variable means updating `theme-variables.json` too. Native nesting and the colour functions stay as written, which sets the [browser baseline](../../readme.md#browser-support). Theme variables, foundation tokens and the theme grammar are documented in [tokens](../design/tokens.md).
 
 The library ships no presets: themes come from the [theme builder](https://www.stellaradmin.com/theme-builder), which seeds from its own copies of the former presets. Adding a client output: add a `ClientOutput` line for it inside the `ClientItems` target in `StellarAdmin.UI.csproj`. The `ClientOutput` items are declared in that target rather than a top-level `ItemGroup` on purpose: Rider silently strips evaluation-time items whose file is deleted in the IDE (that's how they once went missing, leaving the `Client` target's `Outputs` empty — and MSBuild *skips* a target with inputs but no outputs, so client builds silently stopped running). Execution-time items are invisible to Rider but fully visible to the `Client` target's up-to-date check.
 
-`dotnet build` runs `npm run build` for you via the `Client` target, which skips when none of its inputs changed. It hooks `ResolveProjectStaticWebAssets` rather than `Build`: `wwwroot/` is gitignored, so on a clean checkout a `BeforeTargets="Build"` target would run *after* static web asset discovery had already found the folder empty — leaving the first build with no `_content/` assets.
+`dotnet build` runs `npm run build` for you via the `Client` target, which skips when none of its inputs changed. It hooks `ResolveProjectStaticWebAssets` rather than `Build`: the built files in `wwwroot/` are gitignored, so on a clean checkout a `BeforeTargets="Build"` target would run *after* static web asset discovery had already found the folder empty — leaving the first build with no `_content/` assets.
 
 Theme web fonts are optional: each font stack prefers its family and falls back to native fonts, and the library never downloads fonts (a builder theme file may `@import` its Google Fonts). DocsSamples and website exports share the sample `wwwroot/js/theme-fonts.js` loader, which requests only the selected theme's family with `display=swap`.
 
@@ -102,10 +105,10 @@ Optional webfonts are linked from the app layout, **not** `@import`ed in CSS. A 
 
 ### Client web components (`sel-*`)
 
-- **TypeScript formatting:** separate logical groups of statements with blank lines inside methods. Keep related statements together, and separate completed conditional blocks from the next independent operation. Do not insert a blank line between every statement. Follow `sel-carousel.ts` as a reference; running oxfmt alone does not enforce this spacing.
-- Built with **Lit**, but rendered in **light DOM** (`createRenderRoot() { return this; }`) so server-rendered children stay styleable by the page's CSS and participate in layout. Don't use shadow DOM here.
-- Register a new component by adding `import "./web-components/sel-foo";` to `Client/js/stellar-admin-ui.ts`.
-- **Activation uses the native Invoker Commands API**, not click handlers. A button carries `command="--custom"` + `commandfor="<id>"`; the browser dispatches a `command` event on the element with that id, and the component handles it (`addEventListener("command", ...)`, switching on `event.command`). The `interestfor` polyfill is bundled. Reference: `sel-collapsible.ts`, `sel-sidebar.ts`, and on the server side `SheetTagHelper` (auto-generates an id with `context.UniqueId` when the author didn't supply one). **Do not** invent `data-*` "marker" attributes with delegated click handlers — that pattern was tried and removed for being inconsistent with the rest of the repo.
+- **JavaScript formatting:** separate logical groups of statements with blank lines inside methods. Keep related statements together, and separate completed conditional blocks from the next independent operation. Do not insert a blank line between every statement. Follow `sel-carousel.js` as a reference; running oxfmt alone does not enforce this spacing.
+- Plain custom elements that extend `HTMLElement` and work on the server-rendered children in **light DOM**, so those stay styleable by the page's CSS and participate in layout. Don't use shadow DOM here. Types go in JSDoc, with no TypeScript syntax.
+- End a component's module with `if (!customElements.get("sel-foo")) customElements.define("sel-foo", Foo);`, and register it by adding `import "./js/web-components/sel-foo.js";` to `wwwroot/stellar-admin.js`. Relative imports carry the `.js` extension.
+- **Activation uses the native Invoker Commands API**, not click handlers. A button carries `command="--custom"` + `commandfor="<id>"`; the browser dispatches a `command` event on the element with that id, and the component handles it (`addEventListener("command", ...)`, switching on `event.command`). The `interestfor` polyfill is vendored. Reference: `sel-collapsible.js`, `sel-sidebar.js`, and on the server side `SheetTagHelper` (auto-generates an id with `context.UniqueId` when the author didn't supply one). **Do not** invent `data-*` "marker" attributes with delegated click handlers — that pattern was tried and removed for being inconsistent with the rest of the repo.
 - State is exposed to CSS by reflecting it onto `data-*` attributes that the component rules select on.
 
 ## Verifying changes

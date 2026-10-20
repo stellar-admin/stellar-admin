@@ -1,4 +1,4 @@
-import { dialog } from "./dialog";
+import { dialog } from "./dialog.js";
 
 /**
  * Confirmation-focused wrapper around {@link dialog} for `<sa-alert-dialog>` elements.
@@ -15,8 +15,9 @@ import { dialog } from "./dialog";
  * `confirmAsync()` resolves `true` when the user activates the action button (a non-empty
  * `returnValue` other than `"cancel"`) and `false` on cancel, Esc dismissal or a plain close. `confirm()` / `cancel()`
  * are passed through for manual resolution.
+ * @param {string | HTMLDialogElement} selector
  */
-export function alertDialog(selector: string | HTMLDialogElement) {
+export function alertDialog(selector) {
   const d = dialog(selector);
 
   return {

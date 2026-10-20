@@ -4,10 +4,17 @@
  * down; images that finished before this script ran are settled when it starts.
  */
 
-const imageOf = (target: EventTarget | null) =>
-  target instanceof HTMLImageElement ? target.closest<HTMLElement>(".sa-image") : null;
+/** @param {EventTarget | null} target */
+const imageOf = (target) =>
+  target instanceof HTMLImageElement
+    ? /** @type {HTMLElement | null} */ (target.closest(".sa-image"))
+    : null;
 
-function settle(image: HTMLElement, img: HTMLImageElement) {
+/**
+ * @param {HTMLElement} image
+ * @param {HTMLImageElement} img
+ */
+function settle(image, img) {
   if (img.naturalWidth > 0) {
     image.dataset.state = "loaded";
     return;
@@ -24,7 +31,7 @@ document.addEventListener(
   "load",
   (event) => {
     const image = imageOf(event.target);
-    if (image) settle(image, event.target as HTMLImageElement);
+    if (image) settle(image, /** @type {HTMLImageElement} */ (event.target));
   },
   true,
 );
@@ -32,15 +39,15 @@ document.addEventListener(
   "error",
   (event) => {
     const image = imageOf(event.target);
-    if (image) settle(image, event.target as HTMLImageElement);
+    if (image) settle(image, /** @type {HTMLImageElement} */ (event.target));
   },
   true,
 );
 
 function settleAll() {
-  document
-    .querySelectorAll<HTMLImageElement>('.sa-image[data-state="loading"] > img')
-    .forEach((img) => img.complete && settle(img.parentElement!, img));
+  /** @type {NodeListOf<HTMLImageElement>} */ (
+    document.querySelectorAll('.sa-image[data-state="loading"] > img')
+  ).forEach((img) => img.complete && settle(img.parentElement, img));
 }
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", settleAll, { once: true });
@@ -48,21 +55,29 @@ if (document.readyState === "loading") {
   settleAll();
 }
 
-let lightbox: HTMLDialogElement | null = null;
+/** @type {HTMLDialogElement | null} */
+let lightbox = null;
 
-/** Opens the shared lightbox on an image. */
-export function openLightbox(src: string, label = "Image") {
+/**
+ * Opens the shared lightbox on an image.
+ * @param {string} src
+ */
+export function openLightbox(src, label = "Image") {
   if (!lightbox) {
-    const template = document.querySelector<HTMLTemplateElement>(
-      'template[data-slot="image-lightbox-template"]',
+    const template = /** @type {HTMLTemplateElement | null} */ (
+      document.querySelector('template[data-slot="image-lightbox-template"]')
     );
     if (!template) return;
     document.body.append(template.content.cloneNode(true));
-    lightbox = document.querySelector<HTMLDialogElement>("#sa-image-lightbox");
+    lightbox = /** @type {HTMLDialogElement | null} */ (
+      document.querySelector("#sa-image-lightbox")
+    );
     if (!lightbox) return;
   }
 
-  const img = lightbox.querySelector<HTMLImageElement>('[data-slot="image-lightbox-image"]')!;
+  const img = /** @type {HTMLImageElement | null} */ (
+    lightbox.querySelector('[data-slot="image-lightbox-image"]')
+  );
   img.src = src;
   img.alt = label;
   lightbox.setAttribute("aria-label", label);
@@ -70,19 +85,20 @@ export function openLightbox(src: string, label = "Image") {
 }
 
 document.addEventListener("click", (event) => {
-  const image = (event.target as Element).closest?.<HTMLElement>(
-    '.sa-image[data-interaction="lightbox"]',
+  const image = /** @type {HTMLElement | null} */ (
+    /** @type {Element} */ (event.target).closest?.('.sa-image[data-interaction="lightbox"]')
   );
   const img = image?.querySelector("img");
   if (!image || !img || image.dataset.state === "error") return;
   openLightbox(img.currentSrc || img.src, image.getAttribute("aria-label") ?? undefined);
 });
 
-let preview: HTMLElement | null = null;
+/** @type {HTMLElement | null} */
+let preview = null;
 
 document.addEventListener("mouseover", (event) => {
-  const image = (event.target as Element).closest?.<HTMLElement>(
-    '.sa-image[data-interaction="preview"]',
+  const image = /** @type {HTMLElement | null} */ (
+    /** @type {Element} */ (event.target).closest?.('.sa-image[data-interaction="preview"]')
   );
   const img = image?.querySelector("img");
   if (!image || !img || image.dataset.state !== "loaded") return;
@@ -96,7 +112,7 @@ document.addEventListener("mouseover", (event) => {
     document.body.append(preview);
   }
 
-  preview.querySelector("img")!.src = img.currentSrc || img.src;
+  preview.querySelector("img").src = img.currentSrc || img.src;
   preview.showPopover();
 
   // Beside the thumbnail, on whichever side has room, and kept inside the viewport.

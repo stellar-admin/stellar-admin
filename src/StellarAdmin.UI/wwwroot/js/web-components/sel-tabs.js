@@ -1,6 +1,3 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
 const TAB = '[role="tab"]';
 
 /**
@@ -22,36 +19,40 @@ const TAB = '[role="tab"]';
  * events. Because the event fires on the panel, htmx attributes on the panel need
  * no `from:` modifier: `hx-get="…" hx-trigger="tabshow once"`.
  */
-@customElement("sel-tabs")
-export class Tabs extends LitElement {
-  override createRenderRoot() {
-    return this;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
+export class Tabs extends HTMLElement {
+  connectedCallback() {
     this.addEventListener("command", this.#onCommand);
     this.addEventListener("keydown", this.#onKeyDown);
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.removeEventListener("command", this.#onCommand);
     this.removeEventListener("keydown", this.#onKeyDown);
   }
 
-  /** The tabs this element controls (excluding those of nested tabs). */
-  get tabs(): HTMLElement[] {
-    return Array.from(this.querySelectorAll<HTMLElement>(TAB)).filter((tab) => this.#owns(tab));
+  /**
+   * The tabs this element controls (excluding those of nested tabs).
+   * @returns {HTMLElement[]}
+   */
+  get tabs() {
+    return Array.from(/** @type {NodeListOf<HTMLElement>} */ (this.querySelectorAll(TAB))).filter(
+      (tab) => this.#owns(tab),
+    );
   }
 
-  /** The selected tab. */
-  get selectedTab(): HTMLElement | null {
+  /**
+   * The selected tab.
+   * @returns {HTMLElement | null}
+   */
+  get selectedTab() {
     return this.tabs.find((tab) => tab.getAttribute("aria-selected") === "true") ?? null;
   }
 
-  /** Selects a tab and shows its panel. */
-  select(tab: HTMLElement) {
+  /**
+   * Selects a tab and shows its panel.
+   * @param {HTMLElement} tab
+   */
+  select(tab) {
     if (!this.#owns(tab) || this.#isDisabled(tab)) return;
 
     const previous = this.selectedTab;
@@ -73,25 +74,39 @@ export class Tabs extends LitElement {
     if (panel) this.#dispatch("tabshow", tab, panel);
   }
 
-  #owns(element: Element) {
+  /** @param {Element} element */
+  #owns(element) {
     return element.closest("sel-tabs") === this;
   }
 
-  #isDisabled(tab: HTMLElement) {
+  /** @param {HTMLElement} tab */
+  #isDisabled(tab) {
     return tab.matches(":disabled, [aria-disabled='true']");
   }
 
-  #panelFor(tab: Element): HTMLElement | null {
+  /**
+   * @param {Element} tab
+   * @returns {HTMLElement | null}
+   */
+  #panelFor(tab) {
     const controls = tab.getAttribute("aria-controls");
     return controls ? document.getElementById(controls) : null;
   }
 
-  #dispatch(type: "tabshow" | "tabhide", tab: HTMLElement, panel: HTMLElement) {
+  /**
+   * @param {"tabshow" | "tabhide"} type
+   * @param {HTMLElement} tab
+   * @param {HTMLElement} panel
+   */
+  #dispatch(type, tab, panel) {
     panel.dispatchEvent(new CustomEvent(type, { bubbles: true, detail: { tab, panel } }));
   }
 
-  #onCommand = (event: Event) => {
-    const { command, source } = event as Event & { command: string; source: Element | null };
+  /** @param {Event} event */
+  #onCommand = (event) => {
+    const { command, source } = /** @type {Event & { command: string; source: Element | null }} */ (
+      event
+    );
     if (command !== "--select-tab" || !(source instanceof HTMLElement) || !source.matches(TAB)) {
       return;
     }
@@ -99,7 +114,8 @@ export class Tabs extends LitElement {
     this.select(source);
   };
 
-  #onKeyDown = (event: KeyboardEvent) => {
+  /** @param {KeyboardEvent} event */
+  #onKeyDown = (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement) || !target.matches(TAB) || !this.#owns(target)) return;
     if (event.altKey || event.ctrlKey || event.metaKey) return;
@@ -112,7 +128,8 @@ export class Tabs extends LitElement {
     const index = enabled.indexOf(target);
     if (enabled.length === 0) return;
 
-    let next: HTMLElement | undefined;
+    /** @type {HTMLElement | undefined} */
+    let next;
     switch (event.key) {
       case vertical ? "ArrowUp" : rtl ? "ArrowRight" : "ArrowLeft":
         next = enabled[(index - 1 + enabled.length) % enabled.length];
@@ -137,3 +154,5 @@ export class Tabs extends LitElement {
     this.select(next);
   };
 }
+
+if (!customElements.get("sel-tabs")) customElements.define("sel-tabs", Tabs);

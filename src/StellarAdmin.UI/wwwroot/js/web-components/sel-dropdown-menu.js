@@ -1,6 +1,3 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
 /**
  * Menu popup web component for the Dropdown Menu family. Wraps a native `popover`
  * element (rendered by the `sa-dropdown-menu-content` / `sa-dropdown-menu-sub-content`
@@ -15,32 +12,25 @@ import { customElement } from "lit/decorators.js";
  * Rendered in light DOM (like `sel-sidebar`) so the server-rendered items stay
  * styleable by Tailwind and participate in layout.
  */
-@customElement("sel-dropdown-menu")
-export class DropdownMenu extends LitElement {
-  override createRenderRoot() {
-    return this;
-  }
-
+export class DropdownMenu extends HTMLElement {
   #typeBuffer = "";
   #typeTimer = 0;
 
-  override connectedCallback() {
-    super.connectedCallback();
+  connectedCallback() {
     // Made focusable so we can park focus here (clearing the item highlight) when the
     // pointer leaves the menu, without dropping focus to <body> and losing keyboard control.
     if (!this.hasAttribute("tabindex")) {
       this.tabIndex = -1;
     }
-    this.addEventListener("toggle", this.#onToggle as EventListener);
+    this.addEventListener("toggle", /** @type {EventListener} */ (this.#onToggle));
     this.addEventListener("keydown", this.#onKeydown);
     this.addEventListener("click", this.#onClick);
     this.addEventListener("pointermove", this.#onPointerMove);
     this.addEventListener("pointerleave", this.#onPointerLeave);
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener("toggle", this.#onToggle as EventListener);
+  disconnectedCallback() {
+    this.removeEventListener("toggle", /** @type {EventListener} */ (this.#onToggle));
     this.removeEventListener("keydown", this.#onKeydown);
     this.removeEventListener("click", this.#onClick);
     this.removeEventListener("pointermove", this.#onPointerMove);
@@ -56,15 +46,23 @@ export class DropdownMenu extends LitElement {
     return this.hasAttribute("data-sub");
   }
 
-  /** The invoker (trigger / sub-trigger) that targets this popover. */
-  #trigger(): HTMLElement | null {
-    return this.id ? document.querySelector<HTMLElement>(`[popovertarget="${this.id}"]`) : null;
+  /**
+   * The invoker (trigger / sub-trigger) that targets this popover.
+   * @returns {HTMLElement | null}
+   */
+  #trigger() {
+    return this.id
+      ? /** @type {HTMLElement | null} */ (document.querySelector(`[popovertarget="${this.id}"]`))
+      : null;
   }
 
-  /** This menu level's enabled items, excluding any nested submenu's items. */
-  #items(): HTMLElement[] {
-    const all = this.querySelectorAll<HTMLElement>(
-      '[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"]',
+  /**
+   * This menu level's enabled items, excluding any nested submenu's items.
+   * @returns {HTMLElement[]}
+   */
+  #items() {
+    const all = /** @type {NodeListOf<HTMLElement>} */ (
+      this.querySelectorAll('[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"]')
     );
     return Array.from(all).filter(
       (el) =>
@@ -72,7 +70,8 @@ export class DropdownMenu extends LitElement {
     );
   }
 
-  #onToggle = (event: ToggleEvent) => {
+  /** @param {ToggleEvent} event */
+  #onToggle = (event) => {
     const open = event.newState === "open";
 
     if (this.#isSub) {
@@ -102,15 +101,16 @@ export class DropdownMenu extends LitElement {
     }
   };
 
-  #onKeydown = (event: KeyboardEvent) => {
+  /** @param {KeyboardEvent} event */
+  #onKeydown = (event) => {
     // Only the menu level that owns the focused item handles the key — submenu
     // events bubble through the parent popover, so guard against double handling.
-    if ((event.target as Element)?.closest("sel-dropdown-menu") !== this) {
+    if (/** @type {Element} */ (event.target)?.closest("sel-dropdown-menu") !== this) {
       return;
     }
 
     const items = this.#items();
-    const current = document.activeElement as HTMLElement | null;
+    const current = /** @type {HTMLElement | null} */ (document.activeElement);
     const index = current ? items.indexOf(current) : -1;
 
     switch (event.key) {
@@ -171,9 +171,12 @@ export class DropdownMenu extends LitElement {
     }
   };
 
-  #onClick = (event: MouseEvent) => {
-    const item = (event.target as Element)?.closest<HTMLElement>(
-      '[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"]',
+  /** @param {MouseEvent} event */
+  #onClick = (event) => {
+    const item = /** @type {HTMLElement | null} */ (
+      /** @type {Element} */ (event.target)?.closest(
+        '[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"]',
+      )
     );
     if (!item || item.closest("sel-dropdown-menu") !== this) {
       return;
@@ -220,43 +223,50 @@ export class DropdownMenu extends LitElement {
   // Highlight follows the pointer: moving the mouse over an item
   // focuses it so the `focus:bg-accent` styling applies, unifying mouse and keyboard on a
   // single "highlighted = focused" model.
-  #onPointerMove = (event: PointerEvent) => {
+  /** @param {PointerEvent} event */
+  #onPointerMove = (event) => {
     if (event.pointerType === "touch") {
       return;
     }
-    const target = event.target as Element | null;
+    const target = /** @type {Element | null} */ (event.target);
     // A submenu's pointer events bubble through here; let that level handle its own items.
     if (target?.closest("sel-dropdown-menu") !== this) {
       return;
     }
 
-    const item = target.closest<HTMLElement>(
-      '[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"]',
+    const item = /** @type {HTMLElement | null} */ (
+      target.closest('[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"]')
     );
     if (item && item.getAttribute("aria-disabled") !== "true") {
       if (document.activeElement !== item) {
         item.focus();
       }
     } else if (
-      (document.activeElement as HTMLElement | null)?.closest("sel-dropdown-menu") === this
+      /** @type {HTMLElement | null} */ (document.activeElement)?.closest("sel-dropdown-menu") ===
+      this
     ) {
       // Hovering a non-item region (label, separator, padding) clears the highlight.
       this.focus();
     }
   };
 
-  #onPointerLeave = (event: PointerEvent) => {
+  /** @param {PointerEvent} event */
+  #onPointerLeave = (event) => {
     if (event.pointerType === "touch") {
       return;
     }
     // Leaving the menu clears the highlight — but keep the parent sub-trigger's state when
     // the pointer moves into an open submenu (that submenu drives its own highlight).
-    if ((document.activeElement as HTMLElement | null)?.closest("sel-dropdown-menu") === this) {
+    if (
+      /** @type {HTMLElement | null} */ (document.activeElement)?.closest("sel-dropdown-menu") ===
+      this
+    ) {
       this.focus();
     }
   };
 
-  #focusAt(index: number) {
+  /** @param {number} index */
+  #focusAt(index) {
     const items = this.#items();
     if (items.length === 0) {
       return;
@@ -264,7 +274,8 @@ export class DropdownMenu extends LitElement {
     items[(index + items.length) % items.length].focus();
   }
 
-  #openSubmenu(trigger: HTMLElement) {
+  /** @param {HTMLElement} trigger */
+  #openSubmenu(trigger) {
     const id = trigger.getAttribute("popovertarget");
     const sub = id ? document.getElementById(id) : null;
     if (!(sub instanceof DropdownMenu)) {
@@ -285,7 +296,8 @@ export class DropdownMenu extends LitElement {
 
   /** Close this menu and every ancestor menu (close-on-select). */
   #closeChain() {
-    let top: DropdownMenu = this;
+    /** @type {DropdownMenu} */
+    let top = this;
     let parent = this.parentElement?.closest("sel-dropdown-menu");
     while (parent instanceof DropdownMenu) {
       top = parent;
@@ -296,21 +308,29 @@ export class DropdownMenu extends LitElement {
     }
   }
 
-  #setItemState(item: HTMLElement, checked: boolean) {
+  /**
+   * @param {HTMLElement} item
+   * @param {boolean} checked
+   */
+  #setItemState(item, checked) {
     item.setAttribute("aria-checked", String(checked));
     item.setAttribute("data-state", checked ? "checked" : "unchecked");
   }
 
-  #toggleCheckbox(item: HTMLElement) {
+  /** @param {HTMLElement} item */
+  #toggleCheckbox(item) {
     const checked = item.getAttribute("aria-checked") !== "true";
     this.#setItemState(item, checked);
     item.dispatchEvent(new CustomEvent("checkedchange", { detail: { checked }, bubbles: true }));
   }
 
-  #selectRadio(item: HTMLElement) {
+  /** @param {HTMLElement} item */
+  #selectRadio(item) {
     const group = item.getAttribute("data-radio-group");
     const siblings = group
-      ? this.querySelectorAll<HTMLElement>(`[role="menuitemradio"][data-radio-group="${group}"]`)
+      ? /** @type {NodeListOf<HTMLElement>} */ (
+          this.querySelectorAll(`[role="menuitemradio"][data-radio-group="${group}"]`)
+        )
       : [item];
     for (const radio of siblings) {
       this.#setItemState(radio, radio === item);
@@ -323,7 +343,12 @@ export class DropdownMenu extends LitElement {
     );
   }
 
-  #typeahead(char: string, items: HTMLElement[], currentIndex: number) {
+  /**
+   * @param {string} char
+   * @param {HTMLElement[]} items
+   * @param {number} currentIndex
+   */
+  #typeahead(char, items, currentIndex) {
     clearTimeout(this.#typeTimer);
     this.#typeBuffer += char.toLowerCase();
     this.#typeTimer = window.setTimeout(() => {
@@ -340,4 +365,8 @@ export class DropdownMenu extends LitElement {
       }
     }
   }
+}
+
+if (!customElements.get("sel-dropdown-menu")) {
+  customElements.define("sel-dropdown-menu", DropdownMenu);
 }

@@ -7,7 +7,12 @@ const INTERACTIVE =
 
 let idCounter = 0;
 
-function setAttributeIfChanged(element: Element, name: string, value: string) {
+/**
+ * @param {Element} element
+ * @param {string} name
+ * @param {string} value
+ */
+function setAttributeIfChanged(element, name, value) {
   if (element.getAttribute(name) !== value) element.setAttribute(name, value);
 }
 
@@ -43,7 +48,8 @@ function setAttributeIfChanged(element: Element, name: string, value: string) {
  * rendered state.
  */
 export class TableRowDetails {
-  #host: HTMLElement;
+  /** @type {HTMLElement} */
+  #host;
   // Re-syncs when rows are added or removed, or when a script shows or hides a detail row.
   // Attribute changes elsewhere (including the component's own writes) are ignored, so a
   // sync never triggers another.
@@ -60,10 +66,12 @@ export class TableRowDetails {
   });
   #resizeObserver = new ResizeObserver(() => this.#measure());
   // The detail rows of keyed rows present at the last sync, and whether each was open.
-  #remembered = new Map<string, { detailRow: HTMLTableRowElement; open: boolean }>();
+  /** @type {Map<string, { detailRow: HTMLTableRowElement; open: boolean }>} */
+  #remembered = new Map();
   #syncScheduled = false;
 
-  constructor(host: HTMLElement) {
+  /** @param {HTMLElement} host */
+  constructor(host) {
     this.#host = host;
   }
 
@@ -85,25 +93,37 @@ export class TableRowDetails {
     this.#resizeObserver.disconnect();
   }
 
-  /** The detail rows this element controls (excluding those of nested tables). */
-  get detailRows(): HTMLTableRowElement[] {
-    return Array.from(this.#host.querySelectorAll<HTMLTableRowElement>(DETAIL_ROW)).filter((row) =>
-      this.#owns(row),
-    );
+  /**
+   * The detail rows this element controls (excluding those of nested tables).
+   * @returns {HTMLTableRowElement[]}
+   */
+  get detailRows() {
+    return Array.from(
+      /** @type {NodeListOf<HTMLTableRowElement>} */ (this.#host.querySelectorAll(DETAIL_ROW)),
+    ).filter((row) => this.#owns(row));
   }
 
-  /** Expands a detail row. */
-  expand(detailRow: HTMLTableRowElement) {
+  /**
+   * Expands a detail row.
+   * @param {HTMLTableRowElement} detailRow
+   */
+  expand(detailRow) {
     this.#setExpanded(detailRow, true);
   }
 
-  /** Collapses a detail row. */
-  collapse(detailRow: HTMLTableRowElement) {
+  /**
+   * Collapses a detail row.
+   * @param {HTMLTableRowElement} detailRow
+   */
+  collapse(detailRow) {
     this.#setExpanded(detailRow, false);
   }
 
-  /** Expands a collapsed detail row, or collapses an expanded one. */
-  toggle(detailRow: HTMLTableRowElement) {
+  /**
+   * Expands a collapsed detail row, or collapses an expanded one.
+   * @param {HTMLTableRowElement} detailRow
+   */
+  toggle(detailRow) {
     this.#setExpanded(detailRow, !this.#isOpen(detailRow));
   }
 
@@ -126,16 +146,22 @@ export class TableRowDetails {
     return this.#host.dataset.expandMode === "single";
   }
 
-  #owns(element: Element) {
+  /** @param {Element} element */
+  #owns(element) {
     return element.closest("sel-table") === this.#host;
   }
 
-  #isOpen(detailRow: HTMLTableRowElement) {
+  /** @param {HTMLTableRowElement} detailRow */
+  #isOpen(detailRow) {
     return detailRow.dataset.state === "open";
   }
 
-  /** The detail row a toggle controls: its aria-controls target, else the row after its own. */
-  #detailRowFor(toggle: Element): HTMLTableRowElement | null {
+  /**
+   * The detail row a toggle controls: its aria-controls target, else the row after its own.
+   * @param {Element} toggle
+   * @returns {HTMLTableRowElement | null}
+   */
+  #detailRowFor(toggle) {
     const controls = toggle.getAttribute("aria-controls");
     if (controls) {
       const target = document.getElementById(controls);
@@ -145,15 +171,20 @@ export class TableRowDetails {
     return next instanceof HTMLTableRowElement && next.matches(DETAIL_ROW) ? next : null;
   }
 
-  /** The expandable row a detail row belongs to: the row before it. */
-  #rowFor(detailRow: HTMLTableRowElement): HTMLTableRowElement | null {
+  /**
+   * The expandable row a detail row belongs to: the row before it.
+   * @param {HTMLTableRowElement} detailRow
+   * @returns {HTMLTableRowElement | null}
+   */
+  #rowFor(detailRow) {
     const previous = detailRow.previousElementSibling;
     return previous instanceof HTMLTableRowElement && !previous.matches(DETAIL_ROW)
       ? previous
       : null;
   }
 
-  #onClick = (event: MouseEvent) => {
+  /** @param {MouseEvent} event */
+  #onClick = (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
 
@@ -179,7 +210,11 @@ export class TableRowDetails {
     if (next instanceof HTMLTableRowElement && next.matches(DETAIL_ROW)) this.toggle(next);
   };
 
-  #setExpanded(detailRow: HTMLTableRowElement, open: boolean) {
+  /**
+   * @param {HTMLTableRowElement} detailRow
+   * @param {boolean} open
+   */
+  #setExpanded(detailRow, open) {
     if (this.#isOpen(detailRow) === open) return;
 
     if (open && this.#single) {
@@ -213,13 +248,17 @@ export class TableRowDetails {
     this.#dispatch(detailRow);
   }
 
-  #remember(detailRow: HTMLTableRowElement) {
+  /** @param {HTMLTableRowElement} detailRow */
+  #remember(detailRow) {
     const key = this.#rowFor(detailRow)?.dataset.key;
     if (key !== undefined) this.#remembered.set(key, { detailRow, open: this.#isOpen(detailRow) });
   }
 
-  /** Raises the event for the detail row's current state. */
-  #dispatch(detailRow: HTMLTableRowElement) {
+  /**
+   * Raises the event for the detail row's current state.
+   * @param {HTMLTableRowElement} detailRow
+   */
+  #dispatch(detailRow) {
     detailRow.dispatchEvent(
       new CustomEvent(this.#isOpen(detailRow) ? "rowdetailexpand" : "rowdetailcollapse", {
         bubbles: true,
@@ -239,8 +278,10 @@ export class TableRowDetails {
 
   /** Reconciles server-rendered or script-inserted rows with the component's conventions. */
   #sync() {
-    const remembered = new Map<string, { detailRow: HTMLTableRowElement; open: boolean }>();
-    const restored: HTMLTableRowElement[] = [];
+    /** @type {Map<string, { detailRow: HTMLTableRowElement; open: boolean }>} */
+    const remembered = new Map();
+    /** @type {HTMLTableRowElement[]} */
+    const restored = [];
     for (const detailRow of this.detailRows) {
       if (!detailRow.id) detailRow.id = `--sa-row-detail-${++idCounter}`;
       // Rows inserted without a state take it from `hidden`; a hidden row is never open.
@@ -285,7 +326,8 @@ export class TableRowDetails {
     for (const detailRow of restored) this.#dispatch(detailRow);
   }
 
-  #columnCount(detailRow: HTMLTableRowElement) {
+  /** @param {HTMLTableRowElement} detailRow */
+  #columnCount(detailRow) {
     const table = detailRow.closest("table");
     const reference = table?.tHead?.rows[0] ?? this.#rowFor(detailRow);
     let count = 0;
@@ -295,7 +337,9 @@ export class TableRowDetails {
 
   #syncToggles() {
     const rows = this.detailRows;
-    for (const toggle of this.#host.querySelectorAll<HTMLElement>(TOGGLE)) {
+    for (const toggle of /** @type {NodeListOf<HTMLElement>} */ (
+      this.#host.querySelectorAll(TOGGLE)
+    )) {
       if (!this.#owns(toggle)) continue;
       if (toggle.hasAttribute("data-all")) {
         if (toggle.hidden !== this.#single) toggle.hidden = this.#single;
@@ -321,7 +365,9 @@ export class TableRowDetails {
    */
   #measure() {
     const container =
-      this.#host.querySelector<HTMLElement>('[data-slot="table-container"]') ?? this.#host;
+      /** @type {HTMLElement | null} */ (
+        this.#host.querySelector('[data-slot="table-container"]')
+      ) ?? this.#host;
     this.#host.style.setProperty("--sa-table-row-detail-width", `${container.clientWidth}px`);
 
     // Measured from the first row that has a toggle: a row without one (a row a script

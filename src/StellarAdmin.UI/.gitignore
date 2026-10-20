@@ -1,1 +1,3 @@
 wwwroot/*
+!wwwroot/stellar-admin.js
+!wwwroot/js/

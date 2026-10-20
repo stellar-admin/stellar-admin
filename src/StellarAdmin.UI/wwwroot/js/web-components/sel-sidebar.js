@@ -1,6 +1,3 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
 /**
  * Sidebar provider web component. Rendered by the `sa-sidebar-wrapper` tag helper.
  *
@@ -13,20 +10,17 @@ import { customElement } from "lit/decorators.js";
  * Keeping the two states separate means crossing the breakpoint never leaves
  * the sidebar in a half-open state.
  */
-@customElement("sel-sidebar")
-export class Sidebar extends LitElement {
-  override createRenderRoot() {
-    return this;
-  }
-
+export class Sidebar extends HTMLElement {
   #open = true; // desktop: expanded by default
   #openMobile = false; // mobile drawer: closed by default
-  #sidebarEl: HTMLElement | null = null;
+  /** @type {HTMLElement | null} */
+  #sidebarEl = null;
   #mql = window.matchMedia("(min-width: 768px)");
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.#sidebarEl = this.querySelector<HTMLElement>('[data-slot="sidebar"]');
+  connectedCallback() {
+    this.#sidebarEl = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="sidebar"]')
+    );
 
     this.addEventListener("command", this.#onCommand);
     this.#mql.addEventListener("change", this.#onBreakpointChange);
@@ -34,8 +28,7 @@ export class Sidebar extends LitElement {
     this.#syncState();
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.removeEventListener("command", this.#onCommand);
     this.#mql.removeEventListener("change", this.#onBreakpointChange);
   }
@@ -54,8 +47,11 @@ export class Sidebar extends LitElement {
     this.#syncState();
   }
 
-  /** Set the mobile drawer open/closed state. */
-  setOpenMobile(open: boolean) {
+  /**
+   * Set the mobile drawer open/closed state.
+   * @param {boolean} open
+   */
+  setOpenMobile(open) {
     this.#openMobile = open;
     this.#syncState();
   }
@@ -89,8 +85,9 @@ export class Sidebar extends LitElement {
     }
   }
 
-  #onCommand = (event: Event) => {
-    switch ((event as Event & { command: string }).command) {
+  /** @param {Event} event */
+  #onCommand = (event) => {
+    switch (/** @type {Event & { command: string }} */ (event).command) {
       case "--toggle-sidebar":
         this.toggleSidebar();
         break;
@@ -112,3 +109,5 @@ export class Sidebar extends LitElement {
     this.#syncState();
   };
 }
+
+if (!customElements.get("sel-sidebar")) customElements.define("sel-sidebar", Sidebar);

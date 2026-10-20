@@ -1,29 +1,23 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
-@customElement("sel-collapsible")
-export class Collapsible extends LitElement {
-  static override get observedAttributes() {
-    return [...super.observedAttributes, "hidden"];
+export class Collapsible extends HTMLElement {
+  static get observedAttributes() {
+    return ["hidden"];
   }
 
-  override createRenderRoot() {
-    return this;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
+  connectedCallback() {
     this.addEventListener("command", this.#onCommand);
     this.#syncState();
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.removeEventListener("command", this.#onCommand);
   }
 
-  override attributeChangedCallback(name: string, old: string | null, value: string | null) {
-    super.attributeChangedCallback(name, old, value);
+  /**
+   * @param {string} name
+   * @param {string | null} old
+   * @param {string | null} value
+   */
+  attributeChangedCallback(name, old, value) {
     if (name === "hidden") {
       this.#syncState();
     }
@@ -46,8 +40,9 @@ export class Collapsible extends LitElement {
     }
   }
 
-  #onCommand = (event: Event) => {
-    switch ((event as Event & { command: string }).command) {
+  /** @param {Event} event */
+  #onCommand = (event) => {
+    switch (/** @type {Event & { command: string }} */ (event).command) {
       case "--show":
         this.show();
         break;
@@ -72,3 +67,5 @@ export class Collapsible extends LitElement {
     this.hidden = true;
   }
 }
+
+if (!customElements.get("sel-collapsible")) customElements.define("sel-collapsible", Collapsible);

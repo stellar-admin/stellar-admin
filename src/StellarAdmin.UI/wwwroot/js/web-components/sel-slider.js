@@ -1,6 +1,3 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
 /**
  * Slider web component. Rendered by the `sa-slider` tag helper.
  *
@@ -23,19 +20,17 @@ import { customElement } from "lit/decorators.js";
  */
 let labelCount = 0;
 
-/** The number of decimal places in a number, including one written in exponent notation. */
-function countDecimals(value: number) {
+/**
+ * The number of decimal places in a number, including one written in exponent notation.
+ * @param {number} value
+ */
+function countDecimals(value) {
   const [mantissa, exponent] = String(value).split("e");
   const fraction = mantissa.split(".")[1]?.length ?? 0;
   return Math.max(0, fraction - Number(exponent ?? 0));
 }
 
-@customElement("sel-slider")
-export class Slider extends LitElement {
-  override createRenderRoot() {
-    return this;
-  }
-
+export class Slider extends HTMLElement {
   #min = 0;
   #max = 100;
   #step = 1;
@@ -43,23 +38,30 @@ export class Slider extends LitElement {
   #minDistance = 0;
   #vertical = false;
   #edgeAligned = false;
-  #valueFormat: string | null = null;
+  /** @type {string | null} */
+  #valueFormat = null;
   #numberFormat = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
-  #track: HTMLElement | null = null;
-  #range: HTMLElement | null = null;
-  #thumbs: HTMLElement[] = [];
-  #inputs: HTMLInputElement[] = [];
-  #marks: HTMLElement[] = [];
-  #outputs: HTMLOutputElement[] = [];
-  #values: number[] = [];
+  /** @type {HTMLElement | null} */
+  #track = null;
+  /** @type {HTMLElement | null} */
+  #range = null;
+  /** @type {HTMLElement[]} */
+  #thumbs = [];
+  /** @type {HTMLInputElement[]} */
+  #inputs = [];
+  /** @type {HTMLElement[]} */
+  #marks = [];
+  /** @type {HTMLOutputElement[]} */
+  #outputs = [];
+  /** @type {number[]} */
+  #values = [];
 
   #dragIndex = -1;
-  #thumbSizeObserver: ResizeObserver | null = null;
+  /** @type {ResizeObserver | null} */
+  #thumbSizeObserver = null;
 
-  override connectedCallback() {
-    super.connectedCallback();
-
+  connectedCallback() {
     this.#min = this.#numAttr("min", 0);
     this.#max = this.#numAttr("max", 100);
     const step = this.#numAttr("step", 1);
@@ -70,16 +72,26 @@ export class Slider extends LitElement {
     this.#vertical = this.getAttribute("data-orientation") === "vertical";
     this.#edgeAligned = this.getAttribute("data-thumb-alignment") === "edge";
 
-    this.#track = this.querySelector<HTMLElement>('[data-slot="slider-track"]');
-    this.#range = this.querySelector<HTMLElement>('[data-slot="slider-range"]');
-    this.#thumbs = Array.from(this.querySelectorAll<HTMLElement>('[data-slot="slider-thumb"]'));
+    this.#track = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="slider-track"]')
+    );
+    this.#range = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="slider-range"]')
+    );
+    this.#thumbs = Array.from(
+      /** @type {NodeListOf<HTMLElement>} */ (this.querySelectorAll('[data-slot="slider-thumb"]')),
+    );
     this.#inputs = Array.from(
-      this.querySelectorAll<HTMLInputElement>('input[data-slot="slider-input"]'),
+      /** @type {NodeListOf<HTMLInputElement>} */ (
+        this.querySelectorAll('input[data-slot="slider-input"]')
+      ),
     );
     this.#values = this.#thumbs.map((thumb) =>
       this.#clampToRange(Number(thumb.getAttribute("aria-valuenow") ?? this.#min)),
     );
-    this.#marks = Array.from(this.querySelectorAll<HTMLElement>('[data-slot="slider-mark"]'));
+    this.#marks = Array.from(
+      /** @type {NodeListOf<HTMLElement>} */ (this.querySelectorAll('[data-slot="slider-mark"]')),
+    );
     this.#valueFormat = this.getAttribute("data-value-format");
     try {
       this.#numberFormat = new Intl.NumberFormat(
@@ -101,8 +113,7 @@ export class Slider extends LitElement {
     this.addEventListener("keydown", this.#onKeyDown);
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.removeEventListener("pointerdown", this.#onPointerDown);
     this.removeEventListener("keydown", this.#onKeyDown);
     this.#thumbSizeObserver?.disconnect();
@@ -114,16 +125,21 @@ export class Slider extends LitElement {
     return this.hasAttribute("data-disabled");
   }
 
-  #numAttr(name: string, fallback: number) {
+  /**
+   * @param {string} name
+   * @param {number} fallback
+   */
+  #numAttr(name, fallback) {
     const value = Number(this.getAttribute(name));
     return Number.isFinite(value) ? value : fallback;
   }
 
-  #onPointerDown = (event: PointerEvent) => {
+  /** @param {PointerEvent} event */
+  #onPointerDown = (event) => {
     if (this.#disabled || event.button !== 0) return;
 
-    const target = event.target as Element;
-    const thumb = target.closest<HTMLElement>('[data-slot="slider-thumb"]');
+    const target = /** @type {Element} */ (event.target);
+    const thumb = /** @type {HTMLElement | null} */ (target.closest('[data-slot="slider-thumb"]'));
     if (thumb) {
       this.#startDrag(this.#thumbs.indexOf(thumb), event);
       return;
@@ -138,16 +154,20 @@ export class Slider extends LitElement {
     }
   };
 
-  #onKeyDown = (event: KeyboardEvent) => {
+  /** @param {KeyboardEvent} event */
+  #onKeyDown = (event) => {
     if (this.#disabled) return;
 
-    const thumb = (event.target as Element).closest<HTMLElement>('[data-slot="slider-thumb"]');
+    const thumb = /** @type {HTMLElement | null} */ (
+      /** @type {Element} */ (event.target).closest('[data-slot="slider-thumb"]')
+    );
     if (!thumb) return;
     const index = this.#thumbs.indexOf(thumb);
     if (index < 0) return;
 
     const current = this.#values[index];
-    let next: number | null = null;
+    /** @type {number | null} */
+    let next = null;
 
     switch (event.key) {
       case "ArrowRight":
@@ -177,7 +197,11 @@ export class Slider extends LitElement {
     this.#setThumbValue(index, this.#snap(next));
   };
 
-  #startDrag(index: number, event: PointerEvent) {
+  /**
+   * @param {number} index
+   * @param {PointerEvent} event
+   */
+  #startDrag(index, event) {
     if (index < 0) return;
     this.#dragIndex = index;
     this.dataset.dragging = "true";
@@ -189,7 +213,8 @@ export class Slider extends LitElement {
     event.preventDefault();
   }
 
-  #onPointerMove = (event: PointerEvent) => {
+  /** @param {PointerEvent} event */
+  #onPointerMove = (event) => {
     if (this.#dragIndex < 0) return;
     this.#setThumbValue(this.#dragIndex, this.#valueFromPointer(event));
   };
@@ -208,8 +233,11 @@ export class Slider extends LitElement {
     window.removeEventListener("pointerup", this.#onPointerUp);
   }
 
-  /** Map a pointer event to a snapped value along the track. */
-  #valueFromPointer(event: PointerEvent) {
+  /**
+   * Map a pointer event to a snapped value along the track.
+   * @param {PointerEvent} event
+   */
+  #valueFromPointer(event) {
     if (!this.#track) return this.#min;
     const rect = this.#track.getBoundingClientRect();
     const fraction = this.#vertical
@@ -219,14 +247,16 @@ export class Slider extends LitElement {
     return this.#snap(raw);
   }
 
-  #snap(raw: number) {
+  /** @param {number} raw */
+  #snap(raw) {
     const steps = Math.round((raw - this.#min) / this.#step);
     // Round away the floating-point noise of fractional steps, such as 0.1 + 0.2
     const value = Number((this.#min + steps * this.#step).toFixed(this.#decimals));
     return this.#clampToRange(value);
   }
 
-  #nearestThumb(value: number) {
+  /** @param {number} value */
+  #nearestThumb(value) {
     let nearest = 0;
     let smallest = Infinity;
     for (let i = 0; i < this.#values.length; i++) {
@@ -239,7 +269,11 @@ export class Slider extends LitElement {
     return nearest;
   }
 
-  #setThumbValue(index: number, value: number) {
+  /**
+   * @param {number} index
+   * @param {number} value
+   */
+  #setThumbValue(index, value) {
     // Keep thumbs ordered and never closer than the minimum distance.
     const lowerBound = index > 0 ? this.#values[index - 1] + this.#minDistance : this.#min;
     const upperBound =
@@ -255,7 +289,8 @@ export class Slider extends LitElement {
     this.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
-  #renderThumb(index: number) {
+  /** @param {number} index */
+  #renderThumb(index) {
     const thumb = this.#thumbs[index];
     const percent = this.#percent(this.#values[index]);
     // Edge alignment shifts by the value percentage so the thumb edge stays flush with the
@@ -293,18 +328,17 @@ export class Slider extends LitElement {
    * the field's slider, and those whose `for` names this slider's id anywhere in its root.
    */
   #findOutputs() {
-    const outputs = new Set<HTMLOutputElement>();
+    /** @type {Set<HTMLOutputElement>} */
+    const outputs = new Set();
     const field = this.closest('[data-slot="field"]');
-    field
-      ?.querySelectorAll<HTMLOutputElement>('output[data-slot="slider-value"]:not([for])')
-      .forEach((output) => outputs.add(output));
+    /** @type {NodeListOf<HTMLOutputElement> | undefined} */ (
+      field?.querySelectorAll('output[data-slot="slider-value"]:not([for])')
+    )?.forEach((output) => outputs.add(output));
     if (this.id) {
-      const root = this.getRootNode() as Document | ShadowRoot;
-      root
-        .querySelectorAll<HTMLOutputElement>(
-          `output[data-slot="slider-value"][for="${CSS.escape(this.id)}"]`,
-        )
-        .forEach((output) => outputs.add(output));
+      const root = /** @type {Document | ShadowRoot} */ (this.getRootNode());
+      /** @type {NodeListOf<HTMLOutputElement>} */ (
+        root.querySelectorAll(`output[data-slot="slider-value"][for="${CSS.escape(this.id)}"]`)
+      ).forEach((output) => outputs.add(output));
     }
     return Array.from(outputs);
   }
@@ -319,12 +353,16 @@ export class Slider extends LitElement {
     );
     if (unnamed.length === 0) return;
 
-    const root = this.getRootNode() as Document | ShadowRoot;
+    const root = /** @type {Document | ShadowRoot} */ (this.getRootNode());
     const label =
-      this.closest('[data-slot="field"]')?.querySelector<HTMLElement>(
-        '[data-slot="field-label"]',
+      /** @type {HTMLElement | null} */ (
+        this.closest('[data-slot="field"]')?.querySelector('[data-slot="field-label"]')
       ) ??
-      (this.id ? root.querySelector<HTMLElement>(`label[for="${CSS.escape(this.id)}"]`) : null);
+      (this.id
+        ? /** @type {HTMLElement | null} */ (
+            root.querySelector(`label[for="${CSS.escape(this.id)}"]`)
+          )
+        : null);
     if (!label) return;
 
     if (!label.id) label.id = `sel-slider-label-${++labelCount}`;
@@ -372,20 +410,30 @@ export class Slider extends LitElement {
     }
   }
 
-  #format(value: number) {
+  /** @param {number} value */
+  #format(value) {
     const number = this.#numberFormat.format(value);
     return this.#valueFormat === null ? number : this.#valueFormat.replace("{0}", number);
   }
 
-  #percent(value: number) {
+  /** @param {number} value */
+  #percent(value) {
     return ((value - this.#min) / (this.#max - this.#min)) * 100;
   }
 
-  #clampToRange(value: number) {
+  /** @param {number} value */
+  #clampToRange(value) {
     return this.#clamp(value, this.#min, this.#max);
   }
 
-  #clamp(value: number, min: number, max: number) {
+  /**
+   * @param {number} value
+   * @param {number} min
+   * @param {number} max
+   */
+  #clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
   }
 }
+
+if (!customElements.get("sel-slider")) customElements.define("sel-slider", Slider);

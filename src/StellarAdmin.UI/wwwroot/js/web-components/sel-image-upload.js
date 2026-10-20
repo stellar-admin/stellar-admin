@@ -1,11 +1,10 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-import { openLightbox } from "../image";
+import { openLightbox } from "../image.js";
 
-type State = "empty" | "filled" | "uploading" | "removed";
-type Image = { value: string; src: string; name: string; size: number };
+/** @typedef {"empty" | "filled" | "uploading" | "removed"} State */
+/** @typedef {{ value: string; src: string; name: string; size: number }} Image */
 
-const formatSize = (bytes: number) =>
+/** @param {number} bytes */
+const formatSize = (bytes) =>
   bytes >= 1024 * 1024
     ? `${Math.round((bytes / 1024 / 1024) * 10) / 10} MB`
     : `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -19,29 +18,33 @@ const formatSize = (bytes: number) =>
  * posts. Replace and remove are staged until the form saves; undo puts the original value back. Parts
  * that belong to some states only name them in `data-when`, and are shown and hidden here.
  */
-@customElement("sel-image-upload")
-export class ImageUpload extends LitElement {
-  override createRenderRoot() {
-    return this;
-  }
-
-  #file!: HTMLInputElement;
-  #hidden!: HTMLInputElement;
+export class ImageUpload extends HTMLElement {
+  /** @type {HTMLInputElement} */
+  #file;
+  /** @type {HTMLInputElement} */
+  #hidden;
   #original = { value: "", src: "", name: "" };
-  #current: Image = { value: "", src: "", name: "", size: 0 };
+  /** @type {Image} */
+  #current = { value: "", src: "", name: "", size: 0 };
   #removed = false;
-  #request: XMLHttpRequest | null = null;
-  #previous: Image | null = null;
+  /** @type {XMLHttpRequest | null} */
+  #request = null;
+  /** @type {Image | null} */
+  #previous = null;
   #progress = 0;
-  #error: string | null = null;
-  #objectUrl: string | null = null;
+  /** @type {string | null} */
+  #error = null;
+  /** @type {string | null} */
+  #objectUrl = null;
 
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.#file = this.querySelector<HTMLInputElement>('[data-slot="image-upload-file"]')!;
-    this.#hidden = this.querySelector<HTMLInputElement>('[data-slot="image-upload-value"]')!;
-    const img = this.querySelector<HTMLImageElement>(".sa-image > img");
+  connectedCallback() {
+    this.#file = /** @type {HTMLInputElement | null} */ (
+      this.querySelector('[data-slot="image-upload-file"]')
+    );
+    this.#hidden = /** @type {HTMLInputElement | null} */ (
+      this.querySelector('[data-slot="image-upload-value"]')
+    );
+    const img = /** @type {HTMLImageElement | null} */ (this.querySelector(".sa-image > img"));
     this.#original = {
       value: this.#hidden.value,
       src: img?.getAttribute("src") ?? "",
@@ -58,8 +61,7 @@ export class ImageUpload extends LitElement {
     this.#hidden.form?.addEventListener("submit", this.#onSubmit, true);
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.#request?.abort();
     this.#hidden.form?.removeEventListener("submit", this.#onSubmit, true);
     this.#revokeObjectUrl();
@@ -78,15 +80,18 @@ export class ImageUpload extends LitElement {
     return this.dataset.layout ?? "dropzone";
   }
 
-  get #state(): State {
+  /** @returns {State} */
+  get #state() {
     if (this.#request) return "uploading";
     if (this.#removed) return "removed";
     return this.#current.value ? "filled" : "empty";
   }
 
-  #onClick = (event: MouseEvent) => {
-    const target = event.target as Element;
-    const action = target.closest<HTMLElement>("[data-action]")?.dataset.action;
+  /** @param {MouseEvent} event */
+  #onClick = (event) => {
+    const target = /** @type {Element} */ (event.target);
+    const action = /** @type {HTMLElement | null} */ (target.closest("[data-action]"))?.dataset
+      .action;
     if (this.#disabled) return;
 
     switch (action) {
@@ -105,36 +110,41 @@ export class ImageUpload extends LitElement {
     }
 
     // The image opens in the lightbox, except in a cell, where clicking it picks a file
-    const image = target.closest<HTMLElement>(".sa-image");
+    const image = /** @type {HTMLElement | null} */ (target.closest(".sa-image"));
     const img = image?.querySelector("img");
     if (
       img &&
-      image!.closest('[data-slot="image-upload-media"]') &&
+      image.closest('[data-slot="image-upload-media"]') &&
       this.#state === "filled" &&
-      image!.dataset.state === "loaded"
+      image.dataset.state === "loaded"
     ) {
       openLightbox(img.currentSrc || img.src);
     }
   };
 
-  #onKeyDown = (event: KeyboardEvent) => {
-    const drop = (event.target as Element).closest('[data-slot="image-upload-drop"]');
+  /** @param {KeyboardEvent} event */
+  #onKeyDown = (event) => {
+    const drop = /** @type {Element} */ (event.target).closest('[data-slot="image-upload-drop"]');
     if (!drop || this.#disabled || (event.key !== "Enter" && event.key !== " ")) return;
     event.preventDefault();
     this.#file.click();
   };
 
-  #onDragOver = (event: DragEvent) => {
+  /** @param {DragEvent} event */
+  #onDragOver = (event) => {
     if (this.#disabled || !event.dataTransfer?.types.includes("Files")) return;
     event.preventDefault();
     this.toggleAttribute("data-dragover", true);
   };
 
-  #onDragLeave = (event: DragEvent) => {
-    if (!this.contains(event.relatedTarget as Node)) this.removeAttribute("data-dragover");
+  /** @param {DragEvent} event */
+  #onDragLeave = (event) => {
+    if (!this.contains(/** @type {Node} */ (event.relatedTarget)))
+      this.removeAttribute("data-dragover");
   };
 
-  #onDrop = (event: DragEvent) => {
+  /** @param {DragEvent} event */
+  #onDrop = (event) => {
     this.removeAttribute("data-dragover");
     const file = event.dataTransfer?.files[0];
     if (this.#disabled || !file) return;
@@ -148,7 +158,8 @@ export class ImageUpload extends LitElement {
     if (file) this.#accept(file);
   };
 
-  #onSubmit = (event: SubmitEvent) => {
+  /** @param {SubmitEvent} event */
+  #onSubmit = (event) => {
     if (!this.#request) return;
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -156,7 +167,8 @@ export class ImageUpload extends LitElement {
     this.#sync();
   };
 
-  #accept(file: File) {
+  /** @param {File} file */
+  #accept(file) {
     const accepted = (this.dataset.accept ?? "image/*")
       .split(",")
       .map((type) => type.trim().toLowerCase());
@@ -178,7 +190,8 @@ export class ImageUpload extends LitElement {
     this.#sync();
   }
 
-  #upload(file: File) {
+  /** @param {File} file */
+  #upload(file) {
     this.#request?.abort();
     this.#previous ??= { ...this.#current };
     this.#error = null;
@@ -214,7 +227,9 @@ export class ImageUpload extends LitElement {
     request.addEventListener("load", () => {
       if (this.#request !== request) return;
       this.#request = null;
-      const response = request.response as { value?: string; url?: string; error?: string } | null;
+      const response = /** @type {{ value?: string; url?: string; error?: string } | null} */ (
+        request.response
+      );
       if (request.status >= 200 && request.status < 300 && response?.value) {
         this.#current.value = response.value;
         this.#previous = null;
@@ -284,26 +299,29 @@ export class ImageUpload extends LitElement {
   }
 
   // The form's token, or outside a form (an editing table row) the nearest one around the control
-  #antiforgeryToken(): string | undefined {
+  /** @returns {string | undefined} */
+  #antiforgeryToken() {
     const selector = 'input[name="__RequestVerificationToken"]';
     const form = this.#hidden.form;
-    if (form) return form.querySelector<HTMLInputElement>(selector)?.value;
+    if (form) return /** @type {HTMLInputElement | null} */ (form.querySelector(selector))?.value;
     for (let element = this.parentElement; element; element = element.parentElement) {
-      const token = element.querySelector<HTMLInputElement>(selector);
+      const token = /** @type {HTMLInputElement | null} */ (element.querySelector(selector));
       if (token) return token.value;
     }
     return undefined;
   }
 
-  #setValue(value: string) {
+  /** @param {string} value */
+  #setValue(value) {
     if (this.#hidden.value === value) return;
     this.#hidden.value = value;
     this.#hidden.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
   // Points every image of the control at a new source, or empties it
-  #setImage(src: string) {
-    this.querySelectorAll<HTMLElement>(".sa-image").forEach((image) => {
+  /** @param {string} src */
+  #setImage(src) {
+    /** @type {NodeListOf<HTMLElement>} */ (this.querySelectorAll(".sa-image")).forEach((image) => {
       let img = image.querySelector("img");
       if (!src) {
         img?.remove();
@@ -336,11 +354,15 @@ export class ImageUpload extends LitElement {
     this.toggleAttribute("data-error", this.#error !== null);
     this.toggleAttribute("aria-busy", state === "uploading");
 
-    this.querySelectorAll<HTMLElement>("[data-when]").forEach((part) => {
-      part.hidden = !part.dataset.when!.split(" ").includes(state);
-    });
+    /** @type {NodeListOf<HTMLElement>} */ (this.querySelectorAll("[data-when]")).forEach(
+      (part) => {
+        part.hidden = !part.dataset.when.split(" ").includes(state);
+      },
+    );
 
-    const trigger = this.querySelector<HTMLElement>('[data-slot="image-upload-trigger"]');
+    const trigger = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="image-upload-trigger"]')
+    );
     trigger?.setAttribute("aria-label", this.#current.value ? "Replace image" : "Upload image");
 
     this.#syncAttachment(state);
@@ -348,15 +370,20 @@ export class ImageUpload extends LitElement {
     this.#syncProgress();
   }
 
-  #syncAttachment(state: State) {
-    const attachment = this.querySelector<HTMLElement>('[data-slot="attachment"]');
+  /** @param {State} state */
+  #syncAttachment(state) {
+    const attachment = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="attachment"]')
+    );
     if (!attachment) return;
 
     attachment.dataset.state = state === "uploading" ? "uploading" : "done";
-    const title = attachment.querySelector<HTMLElement>('[data-slot="attachment-title"]')!;
-    const description = attachment.querySelector<HTMLElement>(
-      '[data-slot="attachment-description"]',
-    )!;
+    const title = /** @type {HTMLElement | null} */ (
+      attachment.querySelector('[data-slot="attachment-title"]')
+    );
+    const description = /** @type {HTMLElement | null} */ (
+      attachment.querySelector('[data-slot="attachment-description"]')
+    );
     const shown = state === "removed" ? this.#original : this.#current;
     title.textContent = shown.name;
 
@@ -372,8 +399,11 @@ export class ImageUpload extends LitElement {
     description.hidden = text === "";
   }
 
-  #syncNote(state: State) {
-    const note = this.querySelector<HTMLElement>('[data-slot="image-upload-note"]');
+  /** @param {State} state */
+  #syncNote(state) {
+    const note = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="image-upload-note"]')
+    );
     if (!note) return;
 
     note.removeAttribute("data-tone");
@@ -418,15 +448,23 @@ export class ImageUpload extends LitElement {
   }
 
   #syncProgress() {
-    const bar = this.querySelector<HTMLElement>('[data-slot="image-upload-bar"]');
+    const bar = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="image-upload-bar"]')
+    );
     if (bar) bar.style.width = `${this.#progress}%`;
     if (this.#state !== "uploading") return;
 
-    const note = this.querySelector<HTMLElement>('[data-slot="image-upload-note"]');
+    const note = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="image-upload-note"]')
+    );
     if (note && this.#layout !== "cell" && !this.#error) {
       note.textContent = `Uploading ${this.#current.name} · ${this.#progress}%`;
     }
-    const description = this.querySelector<HTMLElement>('[data-slot="attachment-description"]');
+    const description = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="attachment-description"]')
+    );
     if (description) description.textContent = `Uploading · ${this.#progress}%`;
   }
 }
+
+if (!customElements.get("sel-image-upload")) customElements.define("sel-image-upload", ImageUpload);

@@ -1,8 +1,6 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-import { TableEditing } from "./sel-table/editing";
-import { TableRowDetails } from "./sel-table/row-details";
-import { TableSelection } from "./sel-table/selection";
+import { TableEditing } from "./sel-table/editing.js";
+import { TableRowDetails } from "./sel-table/row-details.js";
+import { TableSelection } from "./sel-table/selection.js";
 
 /**
  * Table web component. Wrap it around a table to add the behaviors its data attributes
@@ -17,18 +15,15 @@ import { TableSelection } from "./sel-table/selection";
  * `expand()`, `collapse()` and `toggle()`; wait for `customElements.whenDefined("sel-table")`
  * before reading the initial state.
  */
-@customElement("sel-table")
-export class Table extends LitElement {
-  #editing: TableEditing | null = null;
-  #rowDetails: TableRowDetails | null = null;
-  #selection: TableSelection | null = null;
+export class Table extends HTMLElement {
+  /** @type {TableEditing | null} */
+  #editing = null;
+  /** @type {TableRowDetails | null} */
+  #rowDetails = null;
+  /** @type {TableSelection | null} */
+  #selection = null;
 
-  override createRenderRoot() {
-    return this;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
+  connectedCallback() {
     if (this.hasAttribute("data-selection")) {
       this.#selection = new TableSelection(this);
       this.#selection.connect();
@@ -43,8 +38,7 @@ export class Table extends LitElement {
     }
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.#selection?.disconnect();
     this.#selection = null;
     this.#rowDetails?.disconnect();
@@ -53,28 +47,43 @@ export class Table extends LitElement {
     this.#editing = null;
   }
 
-  /** The values of the selected rows, including selected rows in edit mode. */
-  get selectedValues(): string[] {
+  /**
+   * The values of the selected rows, including selected rows in edit mode.
+   * @returns {string[]}
+   */
+  get selectedValues() {
     return this.#selection?.selectedValues ?? [];
   }
 
-  /** The detail rows this table controls (excluding those of nested tables). */
-  get detailRows(): HTMLTableRowElement[] {
+  /**
+   * The detail rows this table controls (excluding those of nested tables).
+   * @returns {HTMLTableRowElement[]}
+   */
+  get detailRows() {
     return this.#rowDetails?.detailRows ?? [];
   }
 
-  /** Expands a detail row. */
-  expand(detailRow: HTMLTableRowElement) {
+  /**
+   * Expands a detail row.
+   * @param {HTMLTableRowElement} detailRow
+   */
+  expand(detailRow) {
     this.#rowDetails?.expand(detailRow);
   }
 
-  /** Collapses a detail row. */
-  collapse(detailRow: HTMLTableRowElement) {
+  /**
+   * Collapses a detail row.
+   * @param {HTMLTableRowElement} detailRow
+   */
+  collapse(detailRow) {
     this.#rowDetails?.collapse(detailRow);
   }
 
-  /** Expands a collapsed detail row, or collapses an expanded one. */
-  toggle(detailRow: HTMLTableRowElement) {
+  /**
+   * Expands a collapsed detail row, or collapses an expanded one.
+   * @param {HTMLTableRowElement} detailRow
+   */
+  toggle(detailRow) {
     this.#rowDetails?.toggle(detailRow);
   }
 
@@ -88,3 +97,5 @@ export class Table extends LitElement {
     this.#rowDetails?.collapseAll();
   }
 }
+
+if (!customElements.get("sel-table")) customElements.define("sel-table", Table);

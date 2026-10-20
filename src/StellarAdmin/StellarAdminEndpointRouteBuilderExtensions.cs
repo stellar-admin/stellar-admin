@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.StaticAssets.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Infrastructure.Routing;
 using StellarAdmin.Resources;
@@ -55,6 +57,24 @@ public static class StellarAdminEndpointRouteBuilderExtensions
             // before MVC runs. Conventions run when the endpoints are built, after configuration is final.
             route.Add(builder => AddAuthorizationMetadata(builder, endpoints.ServiceProvider));
 
+            // The layout's import map lists the fingerprinted URLs of the client modules, read from
+            // the static asset metadata on the page's endpoint. WithStaticAssets() can't add it to
+            // conventional controller routes (dotnet/aspnetcore#59003), so it's added here. Skipped
+            // when the host or a fixed framework already added it.
+            var staticAssets = new Lazy<ResourceAssetCollection>(() =>
+                ResolveStaticAssets(endpoints)
+            );
+            route.Add(builder =>
+            {
+                if (!builder.Metadata.OfType<ResourceAssetCollection>().Any())
+                {
+                    builder.Metadata.Add(staticAssets.Value);
+                    builder.Metadata.Add(
+                        ImportMapDefinition.FromResourceCollection(staticAssets.Value)
+                    );
+                }
+            });
+
             return route;
         }
     }
@@ -85,5 +105,35 @@ public static class StellarAdminEndpointRouteBuilderExtensions
         {
             builder.Metadata.Add(metadata);
         }
+    }
+
+    // Mirrors the collection WithStaticAssets() builds: the label is an asset's plain path, and its
+    // route the fingerprinted one.
+    private static ResourceAssetCollection ResolveStaticAssets(IEndpointRouteBuilder endpoints)
+    {
+        var assets = new List<ResourceAsset>();
+        foreach (
+            var descriptor in StaticAssetsEndpointDataSourceHelper.ResolveStaticAssetDescriptors(
+                endpoints,
+                null
+            )
+        )
+        {
+            // Compressed variants share the asset's URL.
+            if (descriptor.Selectors.Count > 0)
+            {
+                continue;
+            }
+
+            var properties = descriptor
+                .Properties.Where(property => property.Name is "label" or "integrity")
+                .Select(property => new ResourceAssetProperty(property.Name, property.Value))
+                .ToList();
+            assets.Add(
+                new ResourceAsset(descriptor.Route, properties.Count > 0 ? properties : null)
+            );
+        }
+
+        return new ResourceAssetCollection(assets);
     }
 }

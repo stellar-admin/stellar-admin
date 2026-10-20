@@ -45,7 +45,7 @@ Commands below run from the product repository root unless a working directory i
 | UI HTTP integration tests | `dotnet run --project tests/StellarAdmin.UI.IntegrationTests --configuration Release`; uses an in-process TestServer with MVC controllers and a Razor Page, and carries the TempData cookie between requests. No database. |
 | UI unit tests (including icons) | `dotnet run --project tests/StellarAdmin.UI.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | OSS C# | `dotnet build src/StellarAdmin.UI/StellarAdmin.UI.csproj`; exercise the affected DocsSamples page. |
-| OSS CSS/JS | `npm run build` in `src/StellarAdmin.UI/Client/`; inspect the compiled bundle and exercise changed states. Run `build:css` directly for CSS changes because MSBuild has historically hidden client failures. |
+| OSS CSS/JS | `npm run build` and `npm run check` in `src/StellarAdmin.UI/Client/`; exercise changed states in the browser. Run `build:css` directly for CSS changes because MSBuild has historically hidden client failures. |
 | Admin panel | Build `src/StellarAdmin/StellarAdmin.csproj`. EF Core is included with resource listing and CRUD. AdminPlayground demonstrates Identity users and roles through ordinary resources. |
 | Website app/MDX | `pnpm lint`, `pnpm types:check`, and `pnpm build` in `../website/`; inspect changed pages. |
 | Consumer references | `dotnet run --project util/SkillsGenerator`, then `dotnet run --project util/SkillsGenerator -- --check`. |

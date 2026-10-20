@@ -1,19 +1,23 @@
-export function dialog<TData = Record<string, any>>(
-  selector: string | HTMLDialogElement,
-  { clearReturnValueOnOpen = true }: { clearReturnValueOnOpen?: boolean } = {},
-) {
+/**
+ * @template [TData=Record<string, any>]
+ * @param {string | HTMLDialogElement} selector
+ * @param {{ clearReturnValueOnOpen?: boolean }} [options]
+ */
+export function dialog(selector, { clearReturnValueOnOpen = true } = {}) {
   const el =
-    typeof selector === "string" ? document.querySelector<HTMLDialogElement>(selector) : selector;
+    typeof selector === "string"
+      ? /** @type {HTMLDialogElement | null} */ (document.querySelector(selector))
+      : selector;
 
   if (!el) throw new Error(`Dialog not found: ${selector}`);
   if (!(el instanceof HTMLDialogElement)) throw new Error(`Element is not a dialog: ${selector}`);
 
-  let _resolve:
-    | ((result: { confirmed: boolean; returnValue: string; data: TData | null }) => void)
-    | null = null;
+  /** @type {((result: { confirmed: boolean; returnValue: string; data: TData | null }) => void) | null} */
+  let _resolve = null;
 
   return {
-    showAsync(): Promise<{ confirmed: boolean; returnValue: string; data: TData | null }> {
+    /** @returns {Promise<{ confirmed: boolean; returnValue: string; data: TData | null }>} */
+    showAsync() {
       return new Promise((resolve) => {
         let dismissed = false;
         _resolve = resolve;
@@ -35,7 +39,9 @@ export function dialog<TData = Record<string, any>>(
               _resolve({ confirmed: false, returnValue: el.returnValue, data: null });
             } else {
               const form = el.querySelector("form");
-              const data = form ? (Object.fromEntries(new FormData(form)) as TData) : null;
+              const data = form
+                ? /** @type {TData} */ (Object.fromEntries(new FormData(form)))
+                : null;
 
               _resolve({ confirmed: true, returnValue: el.returnValue, data });
             }
@@ -49,12 +55,13 @@ export function dialog<TData = Record<string, any>>(
         el.showModal();
       });
     },
-    confirm(data?: TData) {
+    /** @param {TData} [data] */
+    confirm(data) {
       if (!_resolve) throw new Error("No dialog is currently open.");
 
       if (!data) {
         const form = el.querySelector("form");
-        data = form ? (Object.fromEntries(new FormData(form)) as TData) : undefined;
+        data = form ? /** @type {TData} */ (Object.fromEntries(new FormData(form))) : undefined;
       }
 
       const resolve = _resolve;

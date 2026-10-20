@@ -3,6 +3,13 @@ const CANCEL = "[data-row-cancel]";
 const LOCKED = "data-columns-locked";
 
 /**
+ * @typedef {object} Widths
+ * @property {number} table
+ * @property {number[]} heads
+ * @property {boolean} fills Whether the table fills its container, so its columns lock as shares of its width.
+ */
+
+/**
  * Inline editing for a `sel-table` with `data-editing`. A row in edit mode is a
  * `tr[data-editing]` with the same `data-key` as the row it shows; htmx (or any script)
  * puts it in the place of that row, and puts a display row back after a save.
@@ -17,26 +24,25 @@ const LOCKED = "data-columns-locked";
  *     a row that was rendered in edit mode lets the click through, so it can ask the server
  *     for its display row.
  */
-interface Widths {
-  table: number;
-  heads: number[];
-  // Whether the table fills its container, so its columns lock as shares of its width.
-  fills: boolean;
-}
-
 export class TableEditing {
-  #host: HTMLElement;
+  /** @type {HTMLElement} */
+  #host;
   // The display rows that editing rows replaced, by key.
-  #displayRows = new Map<string, HTMLTableRowElement>();
+  /** @type {Map<string, HTMLTableRowElement>} */
+  #displayRows = new Map();
   #mutationObserver = new MutationObserver((records) => this.#onMutation(records));
   #resizeObserver = new ResizeObserver(() => this.#track());
-  #observed: Element[] = [];
+  /** @type {Element[]} */
+  #observed = [];
   // The header widths and the table width while no row was in edit mode.
-  #widths: Widths | null = null;
+  /** @type {Widths | null} */
+  #widths = null;
   // The header cells' own style attributes, put back when the columns are released.
-  #headStyles: (string | null)[] = [];
+  /** @type {(string | null)[]} */
+  #headStyles = [];
 
-  constructor(host: HTMLElement) {
+  /** @param {HTMLElement} host */
+  constructor(host) {
     this.#host = host;
   }
 
@@ -55,23 +61,27 @@ export class TableEditing {
     this.#observed = [];
   }
 
-  get #table(): HTMLTableElement | null {
+  /** @returns {HTMLTableElement | null} */
+  get #table() {
     return (
       Array.from(this.#host.querySelectorAll("table")).find((table) => this.#owns(table)) ?? null
     );
   }
 
-  get #heads(): HTMLTableCellElement[] {
+  /** @returns {HTMLTableCellElement[]} */
+  get #heads() {
     return Array.from(this.#table?.tHead?.rows[0]?.cells ?? []);
   }
 
-  get #editingRows(): HTMLTableRowElement[] {
-    return Array.from(this.#host.querySelectorAll<HTMLTableRowElement>(EDITING_ROW)).filter((row) =>
-      this.#owns(row),
-    );
+  /** @returns {HTMLTableRowElement[]} */
+  get #editingRows() {
+    return Array.from(
+      /** @type {NodeListOf<HTMLTableRowElement>} */ (this.#host.querySelectorAll(EDITING_ROW)),
+    ).filter((row) => this.#owns(row));
   }
 
-  #owns(element: Element) {
+  /** @param {Element} element */
+  #owns(element) {
     return element.closest("sel-table") === this.#host;
   }
 
@@ -97,7 +107,11 @@ export class TableEditing {
     this.#widths = this.#measure(table);
   }
 
-  #measure(table: HTMLTableElement): Widths {
+  /**
+   * @param {HTMLTableElement} table
+   * @returns {Widths}
+   */
+  #measure(table) {
     const width = table.getBoundingClientRect().width;
     return {
       table: width,
@@ -106,9 +120,11 @@ export class TableEditing {
     };
   }
 
-  #onMutation(records: MutationRecord[]) {
+  /** @param {MutationRecord[]} records */
+  #onMutation(records) {
     // Display rows that editing rows took the place of, by key.
-    const removed = new Map<string, HTMLTableRowElement>();
+    /** @type {Map<string, HTMLTableRowElement>} */
+    const removed = new Map();
     for (const record of records) {
       for (const node of record.removedNodes) {
         if (
@@ -123,7 +139,7 @@ export class TableEditing {
     }
     for (const row of this.#editingRows) {
       const displayRow = removed.get(row.dataset.key ?? "");
-      if (displayRow) this.#displayRows.set(row.dataset.key!, displayRow);
+      if (displayRow) this.#displayRows.set(row.dataset.key, displayRow);
     }
 
     this.#observeHeads();
@@ -179,11 +195,12 @@ export class TableEditing {
     table.removeAttribute(LOCKED);
   }
 
-  #onClick = (event: MouseEvent) => {
+  /** @param {MouseEvent} event */
+  #onClick = (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
     const cancel = target.closest(CANCEL);
-    const row = cancel?.closest<HTMLTableRowElement>(EDITING_ROW);
+    const row = /** @type {HTMLTableRowElement | null} */ (cancel?.closest(EDITING_ROW));
     if (!row || !this.#owns(row)) return;
 
     const key = row.dataset.key ?? "";
@@ -197,9 +214,11 @@ export class TableEditing {
       this.#displayRows.delete(key);
       // A copy of the kept row: htmx removed its handlers from the row it swapped out but may still
       // mark the row as set up, and a copy carries no such state, so htmx sets it up again.
-      const restored = displayRow.cloneNode(true) as HTMLTableRowElement;
+      const restored = /** @type {HTMLTableRowElement} */ (displayRow.cloneNode(true));
       row.replaceWith(restored);
-      (window as { htmx?: { process?: (element: Element) => void } }).htmx?.process?.(restored);
+      /** @type {{ htmx?: { process?: (element: Element) => void } }} */ (window).htmx?.process?.(
+        restored,
+      );
     } else {
       row.remove();
     }

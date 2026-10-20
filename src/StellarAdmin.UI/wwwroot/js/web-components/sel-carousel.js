@@ -1,24 +1,19 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
 const EPSILON = 1;
 
-@customElement("sel-carousel")
-export class Carousel extends LitElement {
-  #resize?: ResizeObserver;
-  #mutations?: MutationObserver;
+export class Carousel extends HTMLElement {
+  /** @type {ResizeObserver} */
+  #resize;
+  /** @type {MutationObserver} */
+  #mutations;
   #frame = 0;
-  #positions: { offset: number; item: HTMLElement }[] = [];
-  #pending?: number;
-  #settle?: ReturnType<typeof setTimeout>;
+  /** @type {{ offset: number; item: HTMLElement }[]} */
+  #positions = [];
+  /** @type {number} */
+  #pending;
+  /** @type {ReturnType<typeof setTimeout>} */
+  #settle;
 
-  override createRenderRoot() {
-    return this;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
+  connectedCallback() {
     this.addEventListener("command", this.#onCommand);
     this.addEventListener("scroll", this.#onScroll, { capture: true, passive: true });
     this.addEventListener("keydown", this.#onKeyDown);
@@ -29,7 +24,10 @@ export class Carousel extends LitElement {
     this.#mutations = new MutationObserver((records) => {
       // Ignore our generated indicators; observe server/htmx content and author sizing changes.
       if (
-        records.some((r) => !(r.target as Element).closest?.('[data-slot="carousel-indicators"]'))
+        records.some(
+          (r) =>
+            !(/** @type {Element} */ (r.target).closest?.('[data-slot="carousel-indicators"]')),
+        )
       ) {
         this.#observe();
         this.#schedule();
@@ -48,9 +46,7 @@ export class Carousel extends LitElement {
     this.#schedule();
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-
+  disconnectedCallback() {
     this.removeEventListener("command", this.#onCommand);
     this.removeEventListener("scroll", this.#onScroll, true);
     this.removeEventListener("keydown", this.#onKeyDown);
@@ -67,14 +63,19 @@ export class Carousel extends LitElement {
     delete this.dataset.ready;
   }
 
-  #owned<T extends HTMLElement>(selector: string): T[] {
-    return [...this.querySelectorAll<T>(selector)].filter(
+  /**
+   * @template {HTMLElement} T
+   * @param {string} selector
+   * @returns {T[]}
+   */
+  #owned(selector) {
+    return [.../** @type {NodeListOf<T>} */ (this.querySelectorAll(selector))].filter(
       (el) => el.closest("sel-carousel") === this,
     );
   }
 
   get #viewport() {
-    return this.#owned<HTMLElement>('[data-slot="carousel-content"]')[0];
+    return this.#owned('[data-slot="carousel-content"]')[0];
   }
 
   get #vertical() {
@@ -130,9 +131,10 @@ export class Carousel extends LitElement {
         : viewport.scrollWidth - viewport.clientWidth,
     );
     const offset = this.#offset;
-    const positions: { offset: number; item: HTMLElement }[] = [];
+    /** @type {{ offset: number; item: HTMLElement }[]} */
+    const positions = [];
 
-    for (const item of this.#owned<HTMLElement>('[data-slot="carousel-item"]')) {
+    for (const item of this.#owned('[data-slot="carousel-item"]')) {
       if (item.parentElement !== viewport || !item.getClientRects().length) {
         continue;
       }
@@ -161,9 +163,9 @@ export class Carousel extends LitElement {
   }
 
   #renderIndicators() {
-    for (const group of this.#owned<HTMLElement>('[data-slot="carousel-indicators"]')) {
+    for (const group of this.#owned('[data-slot="carousel-indicators"]')) {
       this.#positions.forEach((position, index) => {
-        let button = group.children[index] as HTMLButtonElement | undefined;
+        let button = /** @type {HTMLButtonElement | undefined} */ (group.children[index]);
         if (!button) {
           button = document.createElement("button");
           button.type = "button";
@@ -198,10 +200,14 @@ export class Carousel extends LitElement {
     const offset = this.#offset;
     const last = this.#positions.at(-1)?.offset ?? 0;
 
-    for (const button of this.#owned<HTMLButtonElement>('[data-slot="carousel-previous"]')) {
+    for (const button of /** @type {HTMLButtonElement[]} */ (
+      this.#owned('[data-slot="carousel-previous"]')
+    )) {
       button.disabled = offset <= EPSILON;
     }
-    for (const button of this.#owned<HTMLButtonElement>('[data-slot="carousel-next"]')) {
+    for (const button of /** @type {HTMLButtonElement[]} */ (
+      this.#owned('[data-slot="carousel-next"]')
+    )) {
       button.disabled = offset >= last - EPSILON;
     }
 
@@ -212,7 +218,7 @@ export class Carousel extends LitElement {
       }
     });
 
-    for (const group of this.#owned<HTMLElement>('[data-slot="carousel-indicators"]')) {
+    for (const group of this.#owned('[data-slot="carousel-indicators"]')) {
       [...group.children].forEach((button, index) => {
         if (index === current) {
           button.setAttribute("aria-current", "true");
@@ -223,7 +229,8 @@ export class Carousel extends LitElement {
     }
   }
 
-  #onScroll = (event: Event) => {
+  /** @param {Event} event */
+  #onScroll = (event) => {
     if (event.target !== this.#viewport) {
       return;
     }
@@ -239,7 +246,8 @@ export class Carousel extends LitElement {
     clearTimeout(this.#settle);
   };
 
-  #move(direction: number) {
+  /** @param {number} direction */
+  #move(direction) {
     const offset = this.#pending ?? this.#offset;
     const position =
       direction > 0
@@ -251,7 +259,8 @@ export class Carousel extends LitElement {
     }
   }
 
-  #go(offset: number) {
+  /** @param {number} offset */
+  #go(offset) {
     this.#pending = offset;
 
     const behavior = matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth";
@@ -263,12 +272,13 @@ export class Carousel extends LitElement {
     this.#settle = setTimeout(this.#cancelPending, 500);
   }
 
-  #onCommand = (event: Event) => {
+  /** @param {Event} event */
+  #onCommand = (event) => {
     if (event.target !== this) {
       return;
     }
 
-    const command = (event as Event & { command: string }).command;
+    const command = /** @type {Event & { command: string }} */ (event).command;
     if (command === "--carousel-next") {
       this.#move(1);
     } else if (command === "--carousel-previous") {
@@ -282,7 +292,8 @@ export class Carousel extends LitElement {
     }
   };
 
-  #onKeyDown = (event: KeyboardEvent) => {
+  /** @param {KeyboardEvent} event */
+  #onKeyDown = (event) => {
     // Never capture editing/navigation keys from slide links, forms, or nested widgets.
     if (
       event.target !== this.#viewport ||
@@ -312,3 +323,5 @@ export class Carousel extends LitElement {
     event.preventDefault();
   };
 }
+
+if (!customElements.get("sel-carousel")) customElements.define("sel-carousel", Carousel);

@@ -1,6 +1,3 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
 const CHOICE = '[data-slot="questionnaire-choice"]';
 const CHOICE_INPUT = '[data-slot="questionnaire-choice-input"]';
 const INPUT = '[data-slot="questionnaire-input"]';
@@ -19,8 +16,9 @@ const TEXTUAL_TYPES = ["email", "password", "search", "tel", "text", "url"];
  * The form a free-text answer belongs to, remembered while it is out of that
  * form so it can go back to exactly what the author wrote - which is usually
  * no attribute at all, the input simply sitting inside the form.
+ * @type {WeakMap<HTMLInputElement, string | null>}
  */
-const formOwner = new WeakMap<HTMLInputElement, string | null>();
+const formOwner = new WeakMap();
 
 /**
  * Questionnaire keyboard behaviour: the shortcut keys the choices carry, the
@@ -46,14 +44,8 @@ const formOwner = new WeakMap<HTMLInputElement, string | null>();
  * Without this script the questionnaire still works; the keys go away, and a
  * question whose answers stand in for each other posts both.
  */
-@customElement("sel-questionnaire")
-export class Questionnaire extends LitElement {
-  override createRenderRoot() {
-    return this;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
+export class Questionnaire extends HTMLElement {
+  connectedCallback() {
     this.addEventListener("change", this.#onChange);
     this.addEventListener("input", this.#onInput);
     this.addEventListener("keydown", this.#onKeyDown);
@@ -67,32 +59,38 @@ export class Questionnaire extends LitElement {
     }
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.removeEventListener("change", this.#onChange);
     this.removeEventListener("input", this.#onInput);
     this.removeEventListener("keydown", this.#onKeyDown);
     document.removeEventListener("DOMContentLoaded", this.#syncItems);
   }
 
-  get #items(): HTMLElement[] {
-    return Array.from(this.querySelectorAll<HTMLElement>(ITEM));
+  /** @returns {HTMLElement[]} */
+  get #items() {
+    return Array.from(/** @type {NodeListOf<HTMLElement>} */ (this.querySelectorAll(ITEM)));
   }
 
-  /** The question's answers in the order they are rendered, minus the disabled ones. */
-  #answers(item: HTMLElement): HTMLInputElement[] {
-    return Array.from(item.querySelectorAll<HTMLInputElement>(ANSWER)).filter(
-      (answer) => !answer.disabled,
-    );
+  /**
+   * The question's answers in the order they are rendered, minus the disabled ones.
+   * @param {HTMLElement} item
+   * @returns {HTMLInputElement[]}
+   */
+  #answers(item) {
+    return Array.from(
+      /** @type {NodeListOf<HTMLInputElement>} */ (item.querySelectorAll(ANSWER)),
+    ).filter((answer) => !answer.disabled);
   }
 
   /**
    * The question a keystroke applies to: the one it came from, or the only one
    * there is. With several questions rendered, a keystroke from outside all of
    * them - the actions row, the progress line - is ambiguous and does nothing.
+   * @param {Element} target
+   * @returns {HTMLElement | null}
    */
-  #resolveItem(target: Element): HTMLElement | null {
-    const item = target.closest<HTMLElement>(ITEM);
+  #resolveItem(target) {
+    const item = /** @type {HTMLElement | null} */ (target.closest(ITEM));
     if (item && this.contains(item)) {
       return item;
     }
@@ -101,15 +99,20 @@ export class Questionnaire extends LitElement {
     return items.length === 1 ? items[0] : null;
   }
 
-  #findChoiceInput(item: HTMLElement, shortcut: string): HTMLInputElement | null {
-    for (const choice of item.querySelectorAll<HTMLElement>(CHOICE)) {
+  /**
+   * @param {HTMLElement} item
+   * @param {string} shortcut
+   * @returns {HTMLInputElement | null}
+   */
+  #findChoiceInput(item, shortcut) {
+    for (const choice of /** @type {NodeListOf<HTMLElement>} */ (item.querySelectorAll(CHOICE))) {
       if (choice.dataset.shortcut?.toUpperCase() !== shortcut) {
         continue;
       }
 
       // The key is spoken for either way: a disabled choice does not fall
       // through to whatever else happens to share its key.
-      const input = choice.querySelector<HTMLInputElement>(CHOICE_INPUT);
+      const input = /** @type {HTMLInputElement | null} */ (choice.querySelector(CHOICE_INPUT));
       return input && !input.disabled ? input : null;
     }
 
@@ -122,14 +125,18 @@ export class Questionnaire extends LitElement {
    * checkboxes of a multiple-answer question and the free-text answer at the end
    * of a list stranded; this walks every answer the question holds, in the order
    * they are rendered.
+   * @param {HTMLElement} item
+   * @param {Element} target
+   * @param {boolean} forward
+   * @returns {boolean}
    */
-  #moveAnswerFocus(item: HTMLElement, target: Element, forward: boolean): boolean {
+  #moveAnswerFocus(item, target, forward) {
     const answers = this.#answers(item);
     if (answers.length === 0) {
       return false;
     }
 
-    const index = answers.indexOf(target as HTMLInputElement);
+    const index = answers.indexOf(/** @type {HTMLInputElement} */ (target));
 
     // A free-text answer with something typed in it keeps the arrows for its own
     // caret. An empty one has nothing to move through, so they carry on past it.
@@ -173,19 +180,22 @@ export class Questionnaire extends LitElement {
    * so exactly one of the two answers ever posts. What was typed is never
    * thrown away: an answer out of the form still reads back on the page, ready
    * to be returned to.
+   * @param {HTMLElement} item
    */
-  #syncItem(item: HTMLElement) {
-    const chosen = Array.from(item.querySelectorAll<HTMLInputElement>(CHOICE_INPUT)).some(
-      (choice) => choice.checked,
-    );
+  #syncItem(item) {
+    const chosen = Array.from(
+      /** @type {NodeListOf<HTMLInputElement>} */ (item.querySelectorAll(CHOICE_INPUT)),
+    ).some((choice) => choice.checked);
 
-    for (const input of item.querySelectorAll<HTMLInputElement>(REPLACING_INPUT)) {
+    for (const input of /** @type {NodeListOf<HTMLInputElement>} */ (
+      item.querySelectorAll(REPLACING_INPUT)
+    )) {
       if (!formOwner.has(input)) {
         formOwner.set(input, input.getAttribute("form"));
       }
 
       if (!chosen && input.value.trim().length > 0) {
-        setAttribute(input, "form", formOwner.get(input)!);
+        setAttribute(input, "form", formOwner.get(input));
         continue;
       }
 
@@ -202,7 +212,8 @@ export class Questionnaire extends LitElement {
     }
   };
 
-  #onChange = (event: Event) => {
+  /** @param {Event} event */
+  #onChange = (event) => {
     const choice = event.target;
     if (
       !(choice instanceof HTMLInputElement) ||
@@ -211,19 +222,20 @@ export class Questionnaire extends LitElement {
       return;
     }
 
-    const item = choice.closest<HTMLElement>(ITEM);
+    const item = /** @type {HTMLElement | null} */ (choice.closest(ITEM));
     if (item && this.contains(item)) {
       this.#syncItem(item);
     }
   };
 
-  #onInput = (event: Event) => {
+  /** @param {Event} event */
+  #onInput = (event) => {
     const input = event.target;
     if (!(input instanceof HTMLInputElement) || !input.matches(REPLACING_INPUT)) {
       return;
     }
 
-    const item = input.closest<HTMLElement>(ITEM);
+    const item = /** @type {HTMLElement | null} */ (input.closest(ITEM));
     if (!item || !this.contains(item)) {
       return;
     }
@@ -231,7 +243,9 @@ export class Questionnaire extends LitElement {
     // Typing an answer of your own is answering the question, so the choice that
     // was selected stands down.
     if (input.value.trim().length > 0) {
-      for (const choice of item.querySelectorAll<HTMLInputElement>(CHOICE_INPUT)) {
+      for (const choice of /** @type {NodeListOf<HTMLInputElement>} */ (
+        item.querySelectorAll(CHOICE_INPUT)
+      )) {
         choice.checked = false;
       }
     }
@@ -239,7 +253,8 @@ export class Questionnaire extends LitElement {
     this.#syncItem(item);
   };
 
-  #onKeyDown = (event: KeyboardEvent) => {
+  /** @param {KeyboardEvent} event */
+  #onKeyDown = (event) => {
     if (event.defaultPrevented || event.isComposing || event.keyCode === 229) {
       return;
     }
@@ -291,8 +306,16 @@ export class Questionnaire extends LitElement {
   };
 }
 
-/** Whether the answer is one the question already holds. */
-function isAnswered(answer: HTMLInputElement): boolean {
+if (!customElements.get("sel-questionnaire")) {
+  customElements.define("sel-questionnaire", Questionnaire);
+}
+
+/**
+ * Whether the answer is one the question already holds.
+ * @param {HTMLInputElement} answer
+ * @returns {boolean}
+ */
+function isAnswered(answer) {
   if (answer.type === "checkbox" || answer.type === "radio") {
     return answer.checked;
   }
@@ -300,8 +323,12 @@ function isAnswered(answer: HTMLInputElement): boolean {
   return answer.value.trim().length > 0;
 }
 
-/** Whether the target takes typed characters of its own. */
-function isEditable(target: Element): boolean {
+/**
+ * Whether the target takes typed characters of its own.
+ * @param {Element} target
+ * @returns {boolean}
+ */
+function isEditable(target) {
   if (target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) {
     return true;
   }
@@ -313,15 +340,24 @@ function isEditable(target: Element): boolean {
   return target instanceof HTMLElement && target.isContentEditable;
 }
 
-/** Whether the answer is a text box with nothing typed into it yet. */
-function isEmptyTextAnswer(answer: HTMLInputElement | undefined): boolean {
+/**
+ * Whether the answer is a text box with nothing typed into it yet.
+ * @param {HTMLInputElement | undefined} answer
+ * @returns {boolean}
+ */
+function isEmptyTextAnswer(answer) {
   return (
     answer !== undefined && TEXTUAL_TYPES.includes(answer.type) && answer.value.trim().length === 0
   );
 }
 
-/** Restores an attribute to what it was, which for an absent one is absence. */
-function setAttribute(element: HTMLElement, name: string, value: string | null) {
+/**
+ * Restores an attribute to what it was, which for an absent one is absence.
+ * @param {HTMLElement} element
+ * @param {string} name
+ * @param {string | null} value
+ */
+function setAttribute(element, name, value) {
   if (value === null) {
     element.removeAttribute(name);
   } else {
@@ -329,12 +365,20 @@ function setAttribute(element: HTMLElement, name: string, value: string | null) 
   }
 }
 
-/** Whether the answer is a choice in a question that takes one answer. */
-function isRadio(answer: Element | undefined): boolean {
+/**
+ * Whether the answer is a choice in a question that takes one answer.
+ * @param {Element | undefined} answer
+ * @returns {boolean}
+ */
+function isRadio(answer) {
   return answer instanceof HTMLInputElement && answer.type === "radio";
 }
 
-/** The `data-shortcut` value a key press stands for, uppercased to match on. */
-function resolveShortcut(key: string): string | null {
+/**
+ * The `data-shortcut` value a key press stands for, uppercased to match on.
+ * @param {string} key
+ * @returns {string | null}
+ */
+function resolveShortcut(key) {
   return key.length === 1 && key !== " " ? key.toUpperCase() : null;
 }

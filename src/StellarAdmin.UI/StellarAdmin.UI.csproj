@@ -54,11 +54,7 @@
   <ItemGroup>
     <ClientInput Include="Client/css/**/*.css" />
     <ClientInput Include="Client/css/theme-variables.json" />
-    <ClientInput Include="Client/js/**/*.ts" />
-    <ClientInput Include="Client/js/**/*.js" />
     <ClientInput Include="Client/scripts/*.mjs" />
-    <ClientInput Include="Client/rolldown.config.js" />
-    <ClientInput Include="Client/tsconfig.json" />
     <ClientInput Include="Client/package.json" />
   </ItemGroup>
 
@@ -68,10 +64,10 @@
        silently skipped on every build. -->
   <Target Name="ClientItems">
     <ItemGroup>
-      <ClientOutput Include="wwwroot/stellar-admin.js" />
       <ClientOutput Include="wwwroot/stellar-admin.css" />
       <ClientOutput Include="wwwroot/stellar-admin.tailwind.css" />
       <ClientOutput Include="wwwroot/stellar-admin.theme-variables.json" />
+      <ClientOutput Include="wwwroot/vendor/interestfor.js" />
     </ItemGroup>
   </Target>
 
@@ -90,8 +86,8 @@
     />
     <Exec Command="npm run build" WorkingDirectory="Client" />
 
-    <!-- The CSS build and rolldown skip the write when output is unchanged, leaving it older than the
-         inputs — without this the target never goes up-to-date and re-runs on every build. -->
+    <!-- The CSS build skips the write when output is unchanged, leaving it older than the inputs —
+         without this the target never goes up-to-date and re-runs on every build. -->
     <Touch Files="@(ClientOutput)" />
 
     <!-- Re-glob what we just generated; the evaluation-time Content glob predates it. -->

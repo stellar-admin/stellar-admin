@@ -1,14 +1,5 @@
-﻿import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
-@customElement("sel-dialog")
-class Dialog extends LitElement {
-  createRenderRoot() {
-    return this;
-  }
-
+﻿class Dialog extends HTMLElement {
   connectedCallback() {
-    super.connectedCallback();
     const dialog = this.querySelector("dialog");
     if (!dialog) return;
 
@@ -35,3 +26,5 @@ class Dialog extends LitElement {
     sync();
   }
 }
+
+if (!customElements.get("sel-dialog")) customElements.define("sel-dialog", Dialog);

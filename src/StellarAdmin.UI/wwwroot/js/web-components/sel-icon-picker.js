@@ -1,19 +1,19 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
-type Icon = { name: string; svg: SVGSVGElement; keywords: string[] };
+/** @typedef {{ name: string; svg: SVGSVGElement; keywords: string[] }} Icon */
 
 // Cells rendered at a time; more render as the grid scrolls.
 const BATCH = 240;
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-const formatNumber = (value: number) => value.toLocaleString("en");
+/** @param {number} value */
+const formatNumber = (value) => value.toLocaleString("en");
 
 /**
  * Parses icon markup from an `icons-url` response. Only markup with an `<svg>` root is accepted,
  * and scripts, foreign objects, event handler attributes and `javascript:` links are removed.
+ * @param {string} markup
+ * @returns {SVGSVGElement | null}
  */
-export function sanitizeSvg(markup: string): SVGSVGElement | null {
+export function sanitizeSvg(markup) {
   const doc = new DOMParser().parseFromString(markup, "image/svg+xml");
   const root = doc.documentElement;
   if (
@@ -42,7 +42,7 @@ export function sanitizeSvg(markup: string): SVGSVGElement | null {
   root.setAttribute("aria-hidden", "true");
   root.setAttribute("focusable", "false");
 
-  return document.importNode(root, true) as unknown as SVGSVGElement;
+  return /** @type {SVGSVGElement} */ (/** @type {unknown} */ (document.importNode(root, true)));
 }
 
 /**
@@ -58,32 +58,38 @@ export function sanitizeSvg(markup: string): SVGSVGElement | null {
  * In the inline layout, the icons are toggle group radios. Clicking the chosen tile again clears an
  * optional field: the hidden input then posts an empty value.
  */
-@customElement("sel-icon-picker")
-export class IconPicker extends LitElement {
-  override createRenderRoot() {
-    return this;
-  }
-
-  #clear: HTMLElement | null = null;
-  #count!: HTMLElement;
-  #grid!: HTMLElement;
-  #hidden!: HTMLInputElement;
-  #icons: Icon[] | null = null;
-  #list: Icon[] = [];
-  #loading: Promise<void> | null = null;
-  #name!: HTMLElement;
-  #observer: IntersectionObserver | null = null;
-  #popover!: HTMLElement;
+export class IconPicker extends HTMLElement {
+  /** @type {HTMLElement | null} */
+  #clear = null;
+  /** @type {HTMLElement} */
+  #count;
+  /** @type {HTMLElement} */
+  #grid;
+  /** @type {HTMLInputElement} */
+  #hidden;
+  /** @type {Icon[] | null} */
+  #icons = null;
+  /** @type {Icon[]} */
+  #list = [];
+  /** @type {Promise<void> | null} */
+  #loading = null;
+  /** @type {HTMLElement} */
+  #name;
+  /** @type {IntersectionObserver | null} */
+  #observer = null;
+  /** @type {HTMLElement} */
+  #popover;
   #rendered = 0;
-  #scroll!: HTMLElement;
-  #search!: HTMLInputElement;
-  #trigger!: HTMLButtonElement;
+  /** @type {HTMLElement} */
+  #scroll;
+  /** @type {HTMLInputElement} */
+  #search;
+  /** @type {HTMLButtonElement} */
+  #trigger;
   #wasChecked = false;
 
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.#hidden = this.#part<HTMLInputElement>("icon-picker-value");
+  connectedCallback() {
+    this.#hidden = this.#part("icon-picker-value");
     if (this.dataset.layout === "inline") {
       this.addEventListener("pointerdown", this.#onTilePointerDown);
       this.addEventListener("click", this.#onTileClick);
@@ -93,12 +99,14 @@ export class IconPicker extends LitElement {
 
     this.#trigger = this.#part("icon-picker-trigger");
     this.#popover = this.#part("icon-picker-popover");
-    this.#search = this.#popover.querySelector<HTMLInputElement>('input[type="search"]')!;
+    this.#search = /** @type {HTMLInputElement | null} */ (
+      this.#popover.querySelector('input[type="search"]')
+    );
     this.#scroll = this.#part("icon-picker-scroll");
     this.#grid = this.#part("icon-picker-grid");
     this.#name = this.#part("icon-picker-name");
     this.#count = this.#part("icon-picker-count");
-    this.#clear = this.querySelector<HTMLElement>('[data-action="clear"]');
+    this.#clear = /** @type {HTMLElement | null} */ (this.querySelector('[data-action="clear"]'));
 
     this.#popover.addEventListener("toggle", this.#onToggle);
     this.#search.addEventListener("input", this.#onSearchInput);
@@ -111,8 +119,7 @@ export class IconPicker extends LitElement {
     this.#clear?.addEventListener("click", this.#onClear);
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.#observer?.disconnect();
   }
 
@@ -125,11 +132,16 @@ export class IconPicker extends LitElement {
     return this.dataset.required === "true";
   }
 
-  #part<T extends HTMLElement>(slot: string) {
-    return this.querySelector<T>(`[data-slot="${slot}"]`)!;
+  /**
+   * @template {HTMLElement} T
+   * @param {string} slot
+   */
+  #part(slot) {
+    return /** @type {T | null} */ (this.querySelector(`[data-slot="${slot}"]`));
   }
 
-  #setValue(name: string) {
+  /** @param {string} name */
+  #setValue(name) {
     this.#hidden.value = name;
     this.#hidden.dispatchEvent(new Event("input", { bubbles: true }));
     this.#hidden.dispatchEvent(new Event("change", { bubbles: true }));
@@ -137,15 +149,19 @@ export class IconPicker extends LitElement {
 
   // Inline layout -----------------------------------------------------------------------------
 
-  #onTilePointerDown = (event: PointerEvent) => {
-    const input = (event.target as Element)
-      .closest('[data-slot="toggle-group-item"]')
-      ?.querySelector<HTMLInputElement>('input[type="radio"]');
+  /** @param {PointerEvent} event */
+  #onTilePointerDown = (event) => {
+    const input = /** @type {HTMLInputElement | null} */ (
+      /** @type {Element} */ (event.target)
+        .closest('[data-slot="toggle-group-item"]')
+        ?.querySelector('input[type="radio"]')
+    );
     this.#wasChecked = input?.checked ?? false;
   };
 
-  #onTileClick = (event: MouseEvent) => {
-    const input = event.target as HTMLInputElement;
+  /** @param {MouseEvent} event */
+  #onTileClick = (event) => {
+    const input = /** @type {HTMLInputElement} */ (event.target);
     if (input.type !== "radio") return;
 
     const wasChecked = this.#wasChecked;
@@ -157,14 +173,17 @@ export class IconPicker extends LitElement {
     this.#setValue("");
   };
 
-  #onTileChange = (event: Event) => {
-    if ((event.target as HTMLInputElement).type === "radio") this.#hidden.disabled = true;
+  /** @param {Event} event */
+  #onTileChange = (event) => {
+    if (/** @type {HTMLInputElement} */ (event.target).type === "radio")
+      this.#hidden.disabled = true;
   };
 
   // Picker layout -----------------------------------------------------------------------------
 
-  #onToggle = (event: Event) => {
-    if ((event as ToggleEvent).newState !== "open") {
+  /** @param {Event} event */
+  #onToggle = (event) => {
+    if (/** @type {ToggleEvent} */ (event).newState !== "open") {
       // Closing moves focus off a cell or the search box; it goes back to the trigger
       const active = document.activeElement;
       if (!active || active === document.body || this.#popover.contains(active)) {
@@ -197,23 +216,28 @@ export class IconPicker extends LitElement {
     return this.#loading;
   }
 
-  async #fetchIcons(): Promise<Icon[]> {
-    const template = this.querySelector<HTMLTemplateElement>('[data-slot="icon-picker-icons"]');
+  /** @returns {Promise<Icon[]>} */
+  async #fetchIcons() {
+    const template = /** @type {HTMLTemplateElement | null} */ (
+      this.querySelector('[data-slot="icon-picker-icons"]')
+    );
     if (template) {
-      return [...template.content.querySelectorAll<SVGSVGElement>("svg[data-icon-name]")].map(
-        (svg) => ({
-          name: svg.dataset.iconName!,
-          svg: document.importNode(svg, true),
-          keywords: (svg.dataset.iconKeywords ?? "")
-            .split(",")
-            .filter(Boolean)
-            .map((keyword) => keyword.toLowerCase()),
-        }),
-      );
+      return [
+        .../** @type {NodeListOf<SVGSVGElement>} */ (
+          template.content.querySelectorAll("svg[data-icon-name]")
+        ),
+      ].map((svg) => ({
+        name: svg.dataset.iconName,
+        svg: document.importNode(svg, true),
+        keywords: (svg.dataset.iconKeywords ?? "")
+          .split(",")
+          .filter(Boolean)
+          .map((keyword) => keyword.toLowerCase()),
+      }));
     }
 
     this.#status("Loading icons…");
-    const response = await fetch(this.dataset.iconsUrl!, {
+    const response = await fetch(this.dataset.iconsUrl, {
       headers: { Accept: "application/json" },
       credentials: "same-origin",
     });
@@ -222,8 +246,10 @@ export class IconPicker extends LitElement {
     const payload = await response.json();
     if (!Array.isArray(payload?.icons)) throw new Error("The icons response has no icons array.");
 
-    const icons: Icon[] = [];
-    const names = new Set<string>();
+    /** @type {Icon[]} */
+    const icons = [];
+    /** @type {Set<string>} */
+    const names = new Set();
     for (const item of payload.icons) {
       if (typeof item?.name !== "string" || !item.name || typeof item.svg !== "string") continue;
       if (names.has(item.name)) continue;
@@ -233,8 +259,8 @@ export class IconPicker extends LitElement {
 
       const keywords = Array.isArray(item.keywords)
         ? item.keywords
-            .filter((keyword: unknown) => typeof keyword === "string")
-            .map((keyword: string) => keyword.toLowerCase())
+            .filter(/** @param {unknown} keyword */ (keyword) => typeof keyword === "string")
+            .map(/** @param {string} keyword */ (keyword) => keyword.toLowerCase())
         : [];
       names.add(item.name);
       icons.push({ name: item.name, svg, keywords });
@@ -243,7 +269,8 @@ export class IconPicker extends LitElement {
     return icons;
   }
 
-  #status(text: string) {
+  /** @param {string} text */
+  #status(text) {
     this.#grid.replaceChildren();
     this.#name.textContent = "";
     this.#name.removeAttribute("data-name");
@@ -255,7 +282,7 @@ export class IconPicker extends LitElement {
   };
 
   #filter() {
-    const icons = this.#icons!;
+    const icons = this.#icons;
     const query = this.#search.value.trim().toLowerCase().replace(/\s+/g, " ");
     let list = query ? search(icons, query) : icons;
 
@@ -324,10 +351,11 @@ export class IconPicker extends LitElement {
   }
 
   #cells() {
-    return [...this.#grid.querySelectorAll<HTMLElement>("[data-icon]")];
+    return [.../** @type {NodeListOf<HTMLElement>} */ (this.#grid.querySelectorAll("[data-icon]"))];
   }
 
-  #onSearchKeyDown = (event: KeyboardEvent) => {
+  /** @param {KeyboardEvent} event */
+  #onSearchKeyDown = (event) => {
     if (event.key === "ArrowDown") {
       event.preventDefault();
       this.#cells()[0]?.focus();
@@ -335,23 +363,25 @@ export class IconPicker extends LitElement {
       // Enter picks the first match rather than submitting the form
       event.preventDefault();
       const first = this.#cells()[0];
-      if (first) this.#pick(first.dataset.icon!);
+      if (first) this.#pick(first.dataset.icon);
     }
   };
 
-  #onGridKeyDown = (event: KeyboardEvent) => {
+  /** @param {KeyboardEvent} event */
+  #onGridKeyDown = (event) => {
     const cells = this.#cells();
-    const index = cells.indexOf(document.activeElement as HTMLElement);
+    const index = cells.indexOf(/** @type {HTMLElement} */ (document.activeElement));
     if (index < 0) return;
 
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      this.#pick(cells[index].dataset.icon!);
+      this.#pick(cells[index].dataset.icon);
       return;
     }
 
     const columns = getComputedStyle(this.#grid).gridTemplateColumns.split(" ").length;
-    const moves: Record<string, number> = {
+    /** @type {Record<string, number>} */
+    const moves = {
       ArrowRight: 1,
       ArrowLeft: -1,
       ArrowDown: columns,
@@ -374,14 +404,20 @@ export class IconPicker extends LitElement {
     next[Math.min(target, next.length - 1)]?.focus();
   };
 
-  #onGridClick = (event: MouseEvent) => {
-    const cell = (event.target as Element).closest<HTMLElement>("[data-icon]");
-    if (cell) this.#pick(cell.dataset.icon!);
+  /** @param {MouseEvent} event */
+  #onGridClick = (event) => {
+    const cell = /** @type {HTMLElement | null} */ (
+      /** @type {Element} */ (event.target).closest("[data-icon]")
+    );
+    if (cell) this.#pick(cell.dataset.icon);
   };
 
-  #onGridPointerOver = (event: Event) => {
-    const cell = (event.target as Element).closest<HTMLElement>("[data-icon]");
-    if (cell) this.#showName(cell.dataset.icon!);
+  /** @param {Event} event */
+  #onGridPointerOver = (event) => {
+    const cell = /** @type {HTMLElement | null} */ (
+      /** @type {Element} */ (event.target).closest("[data-icon]")
+    );
+    if (cell) this.#showName(cell.dataset.icon);
   };
 
   #onGridPointerLeave = () => {
@@ -392,21 +428,25 @@ export class IconPicker extends LitElement {
     this.#pick("");
   };
 
-  #pick(name: string) {
+  /** @param {string} name */
+  #pick(name) {
     this.#setValue(name);
     this.#updateTrigger();
     this.#popover.hidePopover();
   }
 
   // The status line names the icon under the pointer or with focus, or else the chosen one
-  #showName(name: string | null) {
+  /** @param {string | null} name */
+  #showName(name) {
     const shown = name ?? this.value;
     this.#name.textContent = shown || "No icon";
     this.#name.toggleAttribute("data-name", !!shown);
   }
 
   #updateTrigger() {
-    const text = this.#trigger.querySelector<HTMLElement>('[data-slot="icon-picker-text"]')!;
+    const text = /** @type {HTMLElement | null} */ (
+      this.#trigger.querySelector('[data-slot="icon-picker-text"]')
+    );
     const name = this.value;
 
     // Before the icons load, the trigger keeps the icon the server rendered
@@ -419,10 +459,11 @@ export class IconPicker extends LitElement {
       return;
     }
 
-    const icon = this.#icons!.find((candidate) => candidate.name === name);
-    let glyph: Element;
+    const icon = this.#icons.find((candidate) => candidate.name === name);
+    /** @type {Element} */
+    let glyph;
     if (icon) {
-      glyph = icon.svg.cloneNode(true) as Element;
+      glyph = /** @type {Element} */ (icon.svg.cloneNode(true));
     } else {
       glyph = document.createElement("span");
       glyph.className = "sa-icon-missing";
@@ -435,13 +476,20 @@ export class IconPicker extends LitElement {
   }
 }
 
+if (!customElements.get("sel-icon-picker")) customElements.define("sel-icon-picker", IconPicker);
+
 // Matches every search term against the name or a keyword. Exact names come first, then names that
 // start with the search, then names with a word that does, then the other name matches, then
 // keyword matches; each alphabetical.
-function search(icons: Icon[], query: string) {
+/**
+ * @param {Icon[]} icons
+ * @param {string} query
+ */
+function search(icons, query) {
   const terms = query.split(" ");
   const joined = terms.join("-");
-  const rank = (icon: Icon) => {
+  /** @param {Icon} icon */
+  const rank = (icon) => {
     const name = icon.name.toLowerCase();
     const inName = terms.every((term) => name.includes(term));
     if (!inName) {

@@ -1,14 +1,16 @@
 # JavaScript and interactivity
 
-StellarAdmin leans on the web platform wherever it can, so most components are pure server-rendered HTML and CSS. Where that isn't enough, a single bundled script adds behavior.
+StellarAdmin leans on the web platform wherever it can, so most components are pure server-rendered HTML and CSS. Where that isn't enough, a single script adds behavior.
 
-## The `stellar-admin.js` bundle
+## The `stellar-admin.js` script
 
 ```razor
-<script defer src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
+<base href="~/"/>
+<script type="importmap"></script>
+<script type="module" src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
 ```
 
-It contains three things:
+It is an ES module, and the base tag and import map before it give the modules it imports cacheable, versioned URLs (see `setup.md` for what the import map needs). It loads three things:
 
 - the **`<sel-*>` web components** that some tag helpers render,
 - the **`interestfor` polyfill**, so hover-triggered tooltips and popovers work in browsers that don't implement it natively,

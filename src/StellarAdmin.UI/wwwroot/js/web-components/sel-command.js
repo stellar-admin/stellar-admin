@@ -1,6 +1,4 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-import { commandScore, RELATIVE_SCORE_CUTOFF } from "./command-score";
+import { commandScore, RELATIVE_SCORE_CUTOFF } from "./command-score.js";
 
 const ITEM = '[data-slot="command-item"]';
 const GROUP = '[data-slot="command-group"]';
@@ -23,23 +21,22 @@ const SEPARATOR = '[data-slot="command-separator"]';
  * Enter or a click activates an item (links navigate) and dispatches a bubbling `itemselect`
  * event with the item's value in `detail.value`.
  */
-@customElement("sel-command")
-export class Command extends LitElement {
-  override createRenderRoot() {
-    return this;
-  }
-
-  #dialog: HTMLDialogElement | null = null;
+export class Command extends HTMLElement {
+  /** @type {HTMLDialogElement | null} */
+  #dialog = null;
   #itemCount = 0;
   #observer = new MutationObserver((records) => this.#refresh(true, records));
   // Children of each container reordered by sorting, in their original order.
-  #originalOrder = new Map<Element, Element[]>();
-  #selectable: HTMLElement[] = [];
-  #selected: HTMLElement | null = null;
-  #values = new WeakMap<HTMLElement, string>();
+  /** @type {Map<Element, Element[]>} */
+  #originalOrder = new Map();
+  /** @type {HTMLElement[]} */
+  #selectable = [];
+  /** @type {HTMLElement | null} */
+  #selected = null;
+  /** @type {WeakMap<HTMLElement, string>} */
+  #values = new WeakMap();
 
-  override connectedCallback() {
-    super.connectedCallback();
+  connectedCallback() {
     this.addEventListener("input", this.#onInput);
     this.addEventListener("keydown", this.#onKeydown);
     this.addEventListener("click", this.#onClick);
@@ -51,8 +48,7 @@ export class Command extends LitElement {
     this.#observer.observe(this, { childList: true, subtree: true });
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.#observer.disconnect();
     this.removeEventListener("input", this.#onInput);
     this.removeEventListener("keydown", this.#onKeydown);
@@ -64,11 +60,13 @@ export class Command extends LitElement {
   }
 
   get #input() {
-    return this.querySelector<HTMLInputElement>('[data-slot="command-input"]');
+    return /** @type {HTMLInputElement | null} */ (
+      this.querySelector('[data-slot="command-input"]')
+    );
   }
 
   get #list() {
-    return this.querySelector<HTMLElement>('[data-slot="command-list"]');
+    return /** @type {HTMLElement | null} */ (this.querySelector('[data-slot="command-list"]'));
   }
 
   get #clientFiltering() {
@@ -76,7 +74,7 @@ export class Command extends LitElement {
   }
 
   #items() {
-    return Array.from(this.querySelectorAll<HTMLElement>(ITEM));
+    return Array.from(/** @type {NodeListOf<HTMLElement>} */ (this.querySelectorAll(ITEM)));
   }
 
   /** Visible, enabled items in display order. */
@@ -84,18 +82,22 @@ export class Command extends LitElement {
     return this.#items().filter((item) => !item.hidden && !this.#isDisabled(item));
   }
 
-  #isDisabled(item: HTMLElement) {
+  /** @param {HTMLElement} item */
+  #isDisabled(item) {
     return item.dataset.disabled === "true";
   }
 
-  /** The item's `data-value`, or its text without any shortcut. */
-  #valueOf(item: HTMLElement) {
+  /**
+   * The item's `data-value`, or its text without any shortcut.
+   * @param {HTMLElement} item
+   */
+  #valueOf(item) {
     if (item.dataset.value) {
       return item.dataset.value;
     }
     let value = this.#values.get(item);
     if (value === undefined) {
-      const copy = item.cloneNode(true) as HTMLElement;
+      const copy = /** @type {HTMLElement} */ (item.cloneNode(true));
       copy.querySelectorAll('[data-slot="command-shortcut"]').forEach((el) => el.remove());
       value = (copy.textContent ?? "").replace(/\s+/g, " ").trim();
       this.#values.set(item, value);
@@ -109,8 +111,9 @@ export class Command extends LitElement {
    * removed, the first item added in the same change takes over, such as the next page swapped in
    * for a "load more" item. An active item removed with nothing added in its place hands over to
    * the item that followed it, or else the one before it, so the highlight stays where it was.
+   * @param {MutationRecord[]} [records]
    */
-  #refresh(fromMutation = false, records: MutationRecord[] = []) {
+  #refresh(fromMutation = false, records = []) {
     if (fromMutation) {
       this.#forgetStaleOrder();
     }
@@ -130,15 +133,18 @@ export class Command extends LitElement {
 
   /** The previously selectable items nearest the active item: those after it, then those before it. */
   #neighbors() {
-    const index = this.#selectable.indexOf(this.#selected!);
+    const index = this.#selectable.indexOf(this.#selected);
     if (index < 0) {
       return [];
     }
     return [...this.#selectable.slice(index + 1), ...this.#selectable.slice(0, index).reverse()];
   }
 
-  /** The nodes added by the mutations when they removed the active item. */
-  #addedInPlaceOfSelected(records: MutationRecord[]) {
+  /**
+   * The nodes added by the mutations when they removed the active item.
+   * @param {MutationRecord[]} records
+   */
+  #addedInPlaceOfSelected(records) {
     const selected = this.#selected;
     const removed =
       selected &&
@@ -148,12 +154,17 @@ export class Command extends LitElement {
     return removed ? records.flatMap((record) => Array.from(record.addedNodes)) : [];
   }
 
-  #filter(keepSelection = false, replacements: Node[] = [], neighbors: HTMLElement[] = []) {
+  /**
+   * @param {Node[]} [replacements]
+   * @param {HTMLElement[]} [neighbors]
+   */
+  #filter(keepSelection = false, replacements = [], neighbors = []) {
     const search = this.#clientFiltering ? (this.#input?.value ?? "").trim() : "";
     const items = this.#items();
 
     if (search) {
-      const scores = new Map<HTMLElement, number>();
+      /** @type {Map<HTMLElement, number>} */
+      const scores = new Map();
       for (const item of items) {
         scores.set(item, commandScore(this.#valueOf(item), search, item.dataset.keywords ?? ""));
       }
@@ -170,15 +181,19 @@ export class Command extends LitElement {
     }
 
     if (this.#clientFiltering) {
-      for (const group of this.querySelectorAll<HTMLElement>(GROUP)) {
+      for (const group of /** @type {NodeListOf<HTMLElement>} */ (this.querySelectorAll(GROUP))) {
         group.hidden = !!search && !group.querySelector(`${ITEM}:not([hidden])`);
       }
-      for (const separator of this.querySelectorAll<HTMLElement>(SEPARATOR)) {
+      for (const separator of /** @type {NodeListOf<HTMLElement>} */ (
+        this.querySelectorAll(SEPARATOR)
+      )) {
         separator.hidden = !!search;
       }
     }
 
-    const empty = this.querySelector<HTMLElement>('[data-slot="command-empty"]');
+    const empty = /** @type {HTMLElement | null} */ (
+      this.querySelector('[data-slot="command-empty"]')
+    );
     if (empty) {
       empty.hidden = items.some((item) => !item.hidden);
     }
@@ -198,14 +213,16 @@ export class Command extends LitElement {
   /**
    * Sorts items by score, then groups by their best item's score. Each is sorted within the slots
    * it occupies in its container, so separators and other children keep their authored positions.
+   * @param {Map<HTMLElement, number>} scores
    */
-  #sort(scores: Map<HTMLElement, number>) {
+  #sort(scores) {
     this.#sortInSlots(scores);
 
-    const groupScores = new Map<HTMLElement, number>();
-    for (const group of this.querySelectorAll<HTMLElement>(GROUP)) {
+    /** @type {Map<HTMLElement, number>} */
+    const groupScores = new Map();
+    for (const group of /** @type {NodeListOf<HTMLElement>} */ (this.querySelectorAll(GROUP))) {
       let best = 0;
-      for (const item of group.querySelectorAll<HTMLElement>(ITEM)) {
+      for (const item of /** @type {NodeListOf<HTMLElement>} */ (group.querySelectorAll(ITEM))) {
         best = Math.max(best, scores.get(item) ?? 0);
       }
       groupScores.set(group, best);
@@ -213,9 +230,13 @@ export class Command extends LitElement {
     this.#sortInSlots(groupScores);
   }
 
-  /** Sorts elements by descending score within the slots they occupy in their container. */
-  #sortInSlots(scores: Map<HTMLElement, number>) {
-    const byContainer = new Map<Element, HTMLElement[]>();
+  /**
+   * Sorts elements by descending score within the slots they occupy in their container.
+   * @param {Map<HTMLElement, number>} scores
+   */
+  #sortInSlots(scores) {
+    /** @type {Map<Element, HTMLElement[]>} */
+    const byContainer = new Map();
     for (const element of scores.keys()) {
       const container = element.parentElement;
       if (container) {
@@ -225,7 +246,7 @@ export class Command extends LitElement {
     for (const [container, elements] of byContainer) {
       this.#rememberOrder(container);
       // Array.prototype.sort is stable, so equal scores keep their authored order.
-      const sorted = [...elements].sort((a, b) => scores.get(b)! - scores.get(a)!);
+      const sorted = [...elements].sort((a, b) => scores.get(b) - scores.get(a));
       const slots = elements.map((element) => {
         const slot = document.createComment("");
         element.before(slot);
@@ -235,7 +256,8 @@ export class Command extends LitElement {
     }
   }
 
-  #rememberOrder(container: Element) {
+  /** @param {Element} container */
+  #rememberOrder(container) {
     if (!this.#originalOrder.has(container)) {
       this.#originalOrder.set(container, Array.from(container.children));
     }
@@ -264,7 +286,8 @@ export class Command extends LitElement {
     this.#originalOrder.clear();
   }
 
-  #select(item: HTMLElement | null, scroll = true) {
+  /** @param {HTMLElement | null} item */
+  #select(item, scroll = true) {
     if (this.#selected && this.#selected !== item) {
       this.#selected.removeAttribute("data-selected");
       this.#selected.setAttribute("aria-selected", "false");
@@ -288,14 +311,15 @@ export class Command extends LitElement {
   /**
    * Scrolls the list (never the page) so the item is visible, along with its whole group heading
    * when it is the group's first selectable item.
+   * @param {HTMLElement} item
    */
-  #scrollIntoList(item: HTMLElement) {
+  #scrollIntoList(item) {
     const list = this.#list;
     if (!list) {
       return;
     }
 
-    const group = item.closest<HTMLElement>(GROUP);
+    const group = /** @type {HTMLElement | null} */ (item.closest(GROUP));
     const firstInGroup =
       group?.querySelector(`${ITEM}:not([hidden]):not([data-disabled="true"])`) === item;
     const target = group && firstInGroup ? group : item;
@@ -310,7 +334,8 @@ export class Command extends LitElement {
     }
   }
 
-  #move(delta: 1 | -1) {
+  /** @param {1 | -1} delta */
+  #move(delta) {
     const items = this.#selectableItems();
     if (items.length === 0) {
       return;
@@ -326,13 +351,15 @@ export class Command extends LitElement {
     this.#select(items[next]);
   }
 
-  #onInput = (event: Event) => {
+  /** @param {Event} event */
+  #onInput = (event) => {
     if (event.target === this.#input) {
       this.#filter();
     }
   };
 
-  #onKeydown = (event: KeyboardEvent) => {
+  /** @param {KeyboardEvent} event */
+  #onKeydown = (event) => {
     if (event.defaultPrevented || event.isComposing || event.keyCode === 229) {
       return;
     }
@@ -378,8 +405,11 @@ export class Command extends LitElement {
     }
   };
 
-  #onClick = (event: MouseEvent) => {
-    const item = (event.target as Element | null)?.closest<HTMLElement>(ITEM);
+  /** @param {MouseEvent} event */
+  #onClick = (event) => {
+    const item = /** @type {HTMLElement | null} */ (
+      /** @type {Element | null} */ (event.target)?.closest(ITEM)
+    );
     if (!item || !this.contains(item)) {
       return;
     }
@@ -396,14 +426,18 @@ export class Command extends LitElement {
   };
 
   // Keeps focus in the input when an item is pressed, so typing and arrow keys keep working.
-  #onMousedown = (event: MouseEvent) => {
-    if ((event.target as Element | null)?.closest(ITEM)) {
+  /** @param {MouseEvent} event */
+  #onMousedown = (event) => {
+    if (/** @type {Element | null} */ (event.target)?.closest(ITEM)) {
       event.preventDefault();
     }
   };
 
-  #onPointerMove = (event: PointerEvent) => {
-    const item = (event.target as Element | null)?.closest<HTMLElement>(ITEM);
+  /** @param {PointerEvent} event */
+  #onPointerMove = (event) => {
+    const item = /** @type {HTMLElement | null} */ (
+      /** @type {Element | null} */ (event.target)?.closest(ITEM)
+    );
     if (item && item !== this.#selected && !item.hidden && !this.#isDisabled(item)) {
       this.#select(item, false);
     }
@@ -418,3 +452,5 @@ export class Command extends LitElement {
     this.#filter();
   };
 }
+
+if (!customElements.get("sel-command")) customElements.define("sel-command", Command);
