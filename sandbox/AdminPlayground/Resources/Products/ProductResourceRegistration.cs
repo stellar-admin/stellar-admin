@@ -49,6 +49,10 @@ internal static class ProductResourceRegistration
                             field.UseEditor<LookupSheetEditor>(UseCategories);
                         }
                     );
+                    fields.AddDisplayField(
+                        product => string.Join(", ", product.Tags.Select(t => t.Name)),
+                        field => field.Title = "Tags (2)"
+                    );
                     fields
                         .Add(product => product.Tags)
                         .UseEditor<CheckboxGroupEditor>(checkboxes =>
@@ -74,6 +78,10 @@ internal static class ProductResourceRegistration
                             section.Add(
                                 product => product.Category!.Name,
                                 field => field.Title = "Category"
+                            );
+                            section.Add(
+                                product => string.Join(", ", product.Tags.Select(t => t.Name)),
+                                field => field.Title = "Tags (2)"
                             );
                             section
                                 .Add(product => product.Tags)
