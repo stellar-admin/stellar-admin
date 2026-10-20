@@ -119,7 +119,7 @@ resource.AllowEdit(edit => edit.Fields(fields =>
 
 This works for navigations whose join table EF Core maps without an entity type, on create, edit and inline rows. A value that matches no related entity shows an error under the field. A join entity of your own, or a related entity with a composite key, fails at startup; use a form model with a key collection and a handler that loads and saves the join instead ([forms](forms.md#custom-create-and-edit-models)).
 
-`[MinLength(1)]` and `[MaxLength(3)]` on the collection or navigation validate the number of selections. For a short list of choices, `CheckboxGroupEditor` or `ToggleGroupEditor` with EF `UseItems` also edit a key collection or a many-to-many navigation.
+`[MinLength(1)]` and `[MaxLength(3)]` on the collection or navigation validate the number of selections. For a short list of choices, `CheckboxGroupEditor` or `ToggleGroupEditor` with EF `UseItems` also edit a key collection or a many-to-many navigation. A many-to-many field with no editor, or with a single-value editor such as `SelectEditor`, fails at startup; use one of these three editors.
 
 ## Lookups without EF Core
 

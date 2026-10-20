@@ -48,7 +48,7 @@ columns.Add(booking => booking.Customer!.Name, column => column.Title = "Custome
 
 Use the null-forgiving `!` on nullable navigations; a null reference shows the empty text. Set a `Title`, because the default comes from the last property (`Name`). Sorting by such a column works in EF Core (`column.Sortable()`).
 
-A column on a collection or many-to-many navigation (`tour => tour.Destinations`) is loaded with the page too. Show it with `BadgeDisplay` and `UseText<TItem>`, since without it each badge shows the entity's type name; it can't be `Sortable()` without a sort expression ([relationships](relationships.md#showing-related-values)).
+A column on a collection or many-to-many navigation (`tour => tour.Destinations`) is loaded with the page too. Show it with `BadgeDisplay` and `UseText<TItem>`; without them the resource fails at startup, since each item would show the entity's type name. It can't be `Sortable()` without a sort expression ([relationships](relationships.md#showing-related-values)).
 
 Selecting a foreign key (`booking => booking.CustomerId`) shows the number; select the navigation's property instead.
 
