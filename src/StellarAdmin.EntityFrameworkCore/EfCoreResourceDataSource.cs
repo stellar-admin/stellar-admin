@@ -151,6 +151,12 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         var entityType = db.Model.FindEntityType(typeof(TEntity))!;
         foreach (var field in edit.Fields)
         {
+            if (field.Binder is IManyToManyFieldBinder binder)
+            {
+                await binder.CopyAsync(db, entity, model, cancellationToken);
+                continue;
+            }
+
             var properties = field.PropertyPath;
             object target = entity;
             object source = model;
@@ -218,8 +224,8 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         }
 
         // Lookup editors display the selected item from the reference loaded with the entity, with
-        // the references its text reads through, and display fields read through the references on
-        // their paths. The edit and view pages load
+        // the references its text reads through, many-to-many fields show the related entities' keys,
+        // and display fields read through the references on their paths. The edit and view pages load
         // through the same method, so the entity carries the references either page needs
         if (includeLookups)
         {
@@ -233,7 +239,11 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             var displayFields = (
                 edit?.ModelType == typeof(TEntity) ? edit.DisplayFields : []
             ).Concat(view?.ModelType == typeof(TEntity) ? view.Fields : []);
+            var collections = (edit?.Fields ?? []).Select(field =>
+                (field.Binder as IManyToManyFieldBinder)?.NavigationName
+            );
             var navigations = lookupIncludes
+                .Concat(collections)
                 .Concat(
                     displayFields.Select(field =>
                         EfCorePropertyPaths.FindReferencePath(entityType, field.PropertyPath)

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Options;
 
@@ -29,7 +30,9 @@ public static class StellarAdminBuilderExtensions
     ///     in <typeparamref name="TContext" />, with a single public primary key property of type
     ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />.
     ///     Fields of a form that binds the entity must be settable properties that aren't keys,
-    ///     concurrency tokens or generated values. Otherwise, the app fails to start.
+    ///     concurrency tokens or generated values, or many-to-many navigations without a join
+    ///     entity type, which bind as the keys of the related entities. Otherwise, the app fails
+    ///     to start.
     /// </remarks>
     public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder
@@ -65,8 +68,9 @@ public static class StellarAdminBuilderExtensions
     ///     <typeparamref name="TEntity" /> must be mapped in <typeparamref name="TContext" />, with
     ///     a single public primary key property of type <see cref="int" />, <see cref="long" />,
     ///     <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
-    ///     must be settable properties that aren't keys, concurrency tokens or generated values.
-    ///     Otherwise, the app fails to start.
+    ///     must be settable properties that aren't keys, concurrency tokens or generated values,
+    ///     or many-to-many navigations without a join entity type, which bind as the keys of the
+    ///     related entities. Otherwise, the app fails to start.
     /// </remarks>
     public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder,
@@ -103,7 +107,9 @@ public static class StellarAdminBuilderExtensions
     ///     in <typeparamref name="TContext" />, with a single public primary key property of type
     ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />.
     ///     Fields of a form that binds the entity must be settable properties that aren't keys,
-    ///     concurrency tokens or generated values. Otherwise, the app fails to start.
+    ///     concurrency tokens or generated values, or many-to-many navigations without a join
+    ///     entity type, which bind as the keys of the related entities. Otherwise, the app fails
+    ///     to start.
     /// </remarks>
     public static StellarAdminBuilder AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder,
@@ -143,8 +149,9 @@ public static class StellarAdminBuilderExtensions
     ///     <typeparamref name="TEntity" /> must be mapped in <typeparamref name="TContext" />, with
     ///     a single public primary key property of type <see cref="int" />, <see cref="long" />,
     ///     <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
-    ///     must be settable properties that aren't keys, concurrency tokens or generated values.
-    ///     Otherwise, the app fails to start.
+    ///     must be settable properties that aren't keys, concurrency tokens or generated values,
+    ///     or many-to-many navigations without a join entity type, which bind as the keys of the
+    ///     related entities. Otherwise, the app fails to start.
     /// </remarks>
     public static StellarAdminBuilder AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder,
@@ -202,10 +209,12 @@ public static class StellarAdminBuilderExtensions
 
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
                     {
+                        UseManyToManyBinders<TContext, TEntity>(entity, create);
                         ValidateEntityFormFields<TEntity>(entity, create);
                     }
                     if (options.Edit is { } edit && edit.ModelType == typeof(TEntity))
                     {
+                        UseManyToManyBinders<TContext, TEntity>(entity, edit);
                         ValidateEntityFormFields<TEntity>(entity, edit);
                     }
                 }
@@ -214,12 +223,51 @@ public static class StellarAdminBuilderExtensions
         return new(builder.Services);
     }
 
+    // A many-to-many navigation without an entity type for its join table binds as the keys of its related entities
+    private static void UseManyToManyBinders<TContext, TEntity>(
+        IEntityType entity,
+        ResourceFormOptions form
+    )
+        where TContext : DbContext
+    {
+        foreach (var field in form.Fields)
+        {
+            if (
+                field.PropertyPath.Count != 1
+                || entity.FindSkipNavigation(field.FieldName) is not { } navigation
+            )
+            {
+                continue;
+            }
+
+            if (
+                navigation.PropertyInfo is not { } property
+                || navigation.TargetEntityType.FindPrimaryKey()?.Properties
+                    is not [{ PropertyInfo: { } key }]
+            )
+            {
+                throw new InvalidOperationException(
+                    $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field. A many-to-many field requires a CLR navigation property and related entities with one CLR primary-key property."
+                );
+            }
+
+            var binderType = typeof(ManyToManyFieldBinder<,,>).MakeGenericType(
+                typeof(TContext),
+                navigation.TargetEntityType.ClrType,
+                key.PropertyType
+            );
+            field.UseBinder((FieldBinder)Activator.CreateInstance(binderType, property, key)!);
+        }
+    }
+
     private static void ValidateEntityFormFields<TEntity>(
         IEntityType entity,
         ResourceFormOptions form
     )
     {
-        foreach (var field in form.Fields)
+        foreach (
+            var field in form.Fields.Where(field => field.Binder is not IManyToManyFieldBinder)
+        )
         {
             var property = EfCoreFormFieldMetadata.FindProperty(entity, field.FieldName);
             if (

@@ -1,5 +1,7 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Microsoft.AspNetCore.Antiforgery;
@@ -621,7 +623,7 @@ internal sealed class ResourceController<TResource>(
             || FindLookupField(query)
                 is not
                 ({ } options, LookupSheetEditor { Items: { } items } editor)
-            || !TryConvertKey(options, value, out var current)
+            || !TryConvertKey(GetValueType(options, query), value, out var current)
         )
         {
             return NotFound();
@@ -700,7 +702,7 @@ internal sealed class ResourceController<TResource>(
             || FindLookupField(query)
                 is not
                 ({ } options, MultiLookupSheetEditor { Items: { } items } editor)
-            || !TryConvertSelected(options, query.Selected, out var values)
+            || !TryConvertSelected(GetValueType(options, query), query.Selected, out var values)
         )
         {
             return NotFound();
@@ -926,11 +928,16 @@ internal sealed class ResourceController<TResource>(
         return element is null ? null : Nullable.GetUnderlyingType(element) ?? element;
     }
 
-    // Keys are formatted in the invariant culture, and converted to the field's type for the lookup's items
-    private static bool TryConvertKey(FormFieldOptions options, string key, out object? value)
+    // Keys are formatted in the invariant culture, and converted to the field's value type for the lookup's items
+    private static bool TryConvertKey(Type? valueType, string key, out object? value)
     {
-        var property = options.PropertyPath[^1];
-        var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+        value = null;
+        if (valueType is null)
+        {
+            return false;
+        }
+
+        var type = Nullable.GetUnderlyingType(valueType) ?? valueType;
         try
         {
             value = TypeDescriptor.GetConverter(type).ConvertFromInvariantString(key);
@@ -945,15 +952,15 @@ internal sealed class ResourceController<TResource>(
     }
 
     // Selected values are posted as the form posts them, in the current culture, and converted to an array of the
-    // field's element type for the lookup's items
+    // element type of the field's value for the lookup's items
     private static bool TryConvertSelected(
-        FormFieldOptions options,
+        Type? valueType,
         IReadOnlyList<string> keys,
         out Array values
     )
     {
         values = Array.Empty<object>();
-        if (GetElementType(options.PropertyPath[^1].PropertyType) is not { } type)
+        if (valueType is null || GetElementType(valueType) is not { } type)
         {
             return false;
         }
@@ -1052,9 +1059,15 @@ internal sealed class ResourceController<TResource>(
     // out, and the form shows no errors for them
     private async Task BindKeptFieldsAsync(object model, IValueProvider source, string prefix)
     {
-        var fields = _resourceOptions.Create!.AddAnother!.KeptFields.ToHashSet(
-            StringComparer.Ordinal
-        );
+        var create = _resourceOptions.Create!;
+        var boundFields = create
+            .Fields.Where(field =>
+                field.Binder is not null && create.AddAnother!.KeptFields.Contains(field.FieldName)
+            )
+            .ToArray();
+        var fields = create
+            .AddAnother!.KeptFields.Except(boundFields.Select(field => field.FieldName))
+            .ToHashSet(StringComparer.Ordinal);
         if (fields.Count > 0)
         {
             var propertyNames = fields
@@ -1062,14 +1075,50 @@ internal sealed class ResourceController<TResource>(
                 .ToHashSet(StringComparer.Ordinal);
             await TryUpdateModelAsync(
                 model,
-                _resourceOptions.Create.ModelType,
+                create.ModelType,
                 prefix,
                 new ConfiguredFieldValueProvider(source, fields, prefix),
                 metadata => propertyNames.Contains(metadata.PropertyName ?? "")
             );
         }
 
+        await BindWithBindersAsync(model, boundFields, source, prefix);
         ModelState.Clear();
+    }
+
+    // The posted values stay in the model state, so an editor shows them again when the form has errors
+    private async Task BindWithBindersAsync(
+        object model,
+        IEnumerable<FormFieldOptions> fields,
+        IValueProvider source,
+        string prefix
+    )
+    {
+        foreach (var field in fields)
+        {
+            var key = ModelNames.CreatePropertyModelName(prefix, field.FieldName);
+            var values = source.GetValue(key).Values;
+            ModelState.SetModelValue(key, values, values.ToString());
+
+            var context = new FieldBindingContext(
+                field,
+                model,
+                values,
+                HttpContext.RequestServices
+            );
+            await field.Binder!.BindAsync(context, HttpContext.RequestAborted);
+            var errors =
+                context.Errors.Count > 0 ? context.Errors : ValidateBoundField(field, model);
+            foreach (var error in errors)
+            {
+                ModelState.AddModelError(key, error);
+            }
+
+            if (errors.Count == 0)
+            {
+                ModelState.MarkFieldValid(key);
+            }
+        }
     }
 
     private ResourceFormDeleteDialogViewModel? CreateDeleteDialog(
@@ -1460,6 +1509,12 @@ internal sealed class ResourceController<TResource>(
         return rowDetails;
     }
 
+    // The type of the value a lookup field's editor edits: the binder's value, or else the property's
+    private Type? GetValueType(FormFieldOptions options, ResourceLookupQuery query) =>
+        options.Binder is null
+            ? options.PropertyPath[^1].PropertyType
+            : options.GetValue(CreateLookupModel(query), HttpContext.RequestServices)?.GetType();
+
     private async Task<IReadOnlyDictionary<FormDisplayFieldOptions, object?>> PrepareDisplaysAsync(
         IEnumerable<FormDisplayFieldOptions> fields,
         object model,
@@ -1518,7 +1573,7 @@ internal sealed class ResourceController<TResource>(
                 var context = new FieldEditorContext(
                     field.FieldName,
                     model,
-                    ResourcePropertyPath.GetValue(model, field.PropertyPath)
+                    field.GetValue(model, HttpContext.RequestServices)
                 );
                 data[field.FieldName] = await handler.PrepareAsync(context, cancellationToken);
             }
@@ -1742,7 +1797,7 @@ internal sealed class ResourceController<TResource>(
     {
         if (
             editor is not MultiLookupSheetEditor
-            || !TryConvertSelected(options, query.Selected, out var values)
+            || !TryConvertSelected(GetValueType(options, query), query.Selected, out var values)
         )
         {
             return NotFound();
@@ -1885,6 +1940,13 @@ internal sealed class ResourceController<TResource>(
         string prefix
     )
     {
+        // A field with a binder is bound by it, after MVC binds the others
+        var boundFields = formFields
+            .Where(field => field.Binder is not null && fields.Contains(field.FieldName))
+            .ToArray();
+        fields = fields
+            .Except(boundFields.Select(field => field.FieldName), StringComparer.Ordinal)
+            .ToHashSet(StringComparer.Ordinal);
         var propertyNames = fields
             .SelectMany(field => field.Split('.'))
             .ToHashSet(StringComparer.Ordinal);
@@ -1900,16 +1962,13 @@ internal sealed class ResourceController<TResource>(
             )
             .ToArray();
 
+        var source = await CompositeValueProvider.CreateAsync(ControllerContext);
         if (
             !await TryUpdateModelAsync(
                 model,
                 modelType,
                 prefix,
-                new ConfiguredFieldValueProvider(
-                    await CompositeValueProvider.CreateAsync(ControllerContext),
-                    fields,
-                    prefix
-                ),
+                new ConfiguredFieldValueProvider(source, fields, prefix),
                 metadata => propertyNames.Contains(metadata.PropertyName ?? "")
             )
         )
@@ -1918,7 +1977,38 @@ internal sealed class ResourceController<TResource>(
         }
 
         ValidateIconFields(model, iconFields, prefix);
+        await BindWithBindersAsync(model, boundFields, source, prefix);
+
         return ModelState.IsValid;
+    }
+
+    // Model validation runs before the binders, so the attributes of a bound field's property, such as [MinLength],
+    // validate the value it bound
+    private IReadOnlyList<string> ValidateBoundField(FormFieldOptions field, object model)
+    {
+        var property = field.PropertyPath[^1];
+        var container = ResourcePropertyPath.GetValue(model, field.PropertyPath.SkipLast(1));
+        if (container is null)
+        {
+            return [];
+        }
+
+        var context = new ValidationContext(container)
+        {
+            DisplayName =
+                field.Title
+                ?? MetadataProvider
+                    .GetMetadataForProperty(property.DeclaringType!, property.Name)
+                    .GetDisplayName(),
+            MemberName = property.Name,
+        };
+        var value = property.GetValue(container);
+
+        return property
+            .GetCustomAttributes<ValidationAttribute>(inherit: true)
+            .Select(attribute => attribute.GetValidationResult(value, context)?.ErrorMessage)
+            .OfType<string>()
+            .ToArray();
     }
 
     // A new value must be an icon the field offers: one of its list, or any registered icon

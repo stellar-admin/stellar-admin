@@ -24,7 +24,8 @@
         <sa-grid-item style="@placementStyle">
             @if (item is FormFieldOptions field)
             {
-                @Html.Editor(field.FieldName, editorTemplates?.GetValueOrDefault(field.FieldName), new Dictionary<string, object>
+                var templateName = editorTemplates?.GetValueOrDefault(field.FieldName);
+                var fieldViewData = new Dictionary<string, object>
                 {
                     [ViewDataKeys.FormFieldProperties] = new FormFieldProperties
                     {
@@ -32,10 +33,16 @@
                         EditorData = editorData?.GetValueOrDefault(field.FieldName),
                         Editor = field.Editor,
                         FieldName = field.FieldName,
+                        IsBound = field.Binder is not null,
                         IsReadOnly = field.IsReadOnly,
                         Title = field.Title,
                     },
-                })
+                };
+
+                // A field with a binder edits the binder's value in place of its property's
+                @(field.Binder is null
+                    ? Html.Editor(field.FieldName, templateName, fieldViewData)
+                    : FieldEditorRenderer.RenderFormEditor(Html, field, Model!, templateName, fieldViewData))
             }
             else if (item is FormDisplayFieldOptions displayField)
             {

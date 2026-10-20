@@ -74,6 +74,9 @@ internal static class EfCoreTestHost
                     ParentId = 1,
                 }
             );
+            var sale = new Tag { Id = 1, Name = "Sale" };
+            var seasonal = new Tag { Id = 2, Name = "Seasonal" };
+            db.AddRange(sale, seasonal, new Tag { Id = 3, Name = "Organic" });
             db.AddRange(
                 new Product
                 {
@@ -90,6 +93,7 @@ internal static class EfCoreTestHost
                     Name = "Apple",
                     Price = 20,
                     Details = new() { Sku = "A-2", InternalNote = "Keep apple note" },
+                    Tags = { sale, seasonal },
                 },
                 new Product
                 {

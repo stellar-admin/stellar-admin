@@ -189,10 +189,7 @@ public class ResourceFieldsBuilderTests
     }
 
     [Test]
-    [Arguments("nested")]
-    [Arguments("method")]
-    [Arguments("readOnly")]
-    public async Task Add_WithUnsupportedExpression_RejectsField(string expression)
+    public async Task Add_WithMethodCall_RejectsField()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -201,25 +198,65 @@ public class ResourceFieldsBuilderTests
         // Act
         Action act = () =>
             sut.AllowCreate(create =>
-                create.Fields(fields =>
-                {
-                    switch (expression)
-                    {
-                        case "nested":
-                            fields.Add(product => product.Name.Length);
-                            break;
-                        case "method":
-                            fields.Add(product => product.Name.ToUpper());
-                            break;
-                        case "readOnly":
-                            fields.Add(product => product.ReadOnly);
-                            break;
-                    }
-                })
+                create.Fields(fields => fields.Add(product => product.Name.ToUpper()))
             );
 
         // Assert
         await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    [Arguments("nested")]
+    [Arguments("readOnly")]
+    public async Task Add_WithoutSetterOrBinder_FailsOptionsValidation(string expression)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create =>
+            create.Fields(fields =>
+            {
+                if (expression == "nested")
+                {
+                    fields.Add(product => product.Name.Length);
+                }
+                else
+                {
+                    fields.Add(product => product.ReadOnly);
+                }
+            })
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        Func<ResourceOptions<Product>> act = () =>
+            provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert.That(exception!.Message).Contains("has no public setter");
+    }
+
+    [Test]
+    public async Task Add_WithoutSetterAndWithBinder_PassesOptionsValidation()
+    {
+        // Arrange
+        var binder = new ReadOnlyBinder();
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create => create.Fields(fields => fields.Add(product => product.ReadOnly)));
+        services
+            .AddOptions<ResourceOptions<Product>>()
+            .PostConfigure(options => options.Create!.Fields[0].UseBinder(binder));
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert.That(options.Create!.Fields[0].Binder).IsSameReferenceAs(binder);
     }
 
     [Test]
@@ -312,6 +349,16 @@ public class ResourceFieldsBuilderTests
     {
         public string Name { get; set; } = "";
         public string ReadOnly => Name;
+    }
+
+    public sealed class ReadOnlyBinder : FieldBinder
+    {
+        public override Task BindAsync(
+            FieldBindingContext context,
+            CancellationToken cancellationToken
+        ) => Task.CompletedTask;
+
+        public override object? GetValue(FieldBindingContext context) => null;
     }
 
     public sealed class ReferenceDisplay : FieldDisplay

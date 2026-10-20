@@ -97,45 +97,29 @@ fields.Add(form => form.DestinationIds).UseEditor<MultiLookupSheetEditor>(lookup
 });
 ```
 
-EF Core resources bind only mapped scalar properties, so a many-to-many navigation can't be a field directly. Use a form model with a key collection and a handler that loads and saves the join ([forms](forms.md#custom-create-and-edit-models)):
+On an EF Core resource, add a many-to-many navigation as a field directly. The editor's `UseItems` value must be the related entity's primary key; the field shows the keys of the related entities, and saving adds and removes the join rows. The navigation needs no setter.
 
 ```csharp
-public sealed class TourForm
+public sealed class Tour
 {
+    public int Id { get; set; }
     public string Name { get; set; } = "";
-    public List<int> DestinationIds { get; set; } = [];
+    public List<Destination> Destinations { get; } = [];
 }
 
-public sealed class TourEditHandler(VoyagerDbContext db) : IResourceEditHandler<TourForm>
+resource.AllowEdit(edit => edit.Fields(fields =>
 {
-    public async Task<TourForm?> FindAsync(string id, CancellationToken cancellationToken) =>
-        await db.Tours.Where(tour => tour.Id == int.Parse(id))
-            .Select(tour => new TourForm { Name = tour.Name, DestinationIds = tour.Destinations.Select(d => d.Id).ToList() })
-            .SingleOrDefaultAsync(cancellationToken);
-
-    public async Task<ResourceOperationResult> UpdateAsync(string id, TourForm form, CancellationToken cancellationToken)
-    {
-        var tour = await db.Tours.Include(t => t.Destinations).SingleOrDefaultAsync(t => t.Id == int.Parse(id), cancellationToken);
-        if (tour is null)
-        {
-            return ResourceOperationResult.NotFound();
-        }
-
-        tour.Name = form.Name;
-        tour.Destinations = await db.Destinations.Where(d => form.DestinationIds.Contains(d.Id)).ToListAsync(cancellationToken);
-        await db.SaveChangesAsync(cancellationToken);
-        return ResourceOperationResult.Success();
-    }
-}
-
-resource.AllowEdit<TourForm, TourEditHandler>(edit => edit.Fields(fields =>
-{
-    fields.Add(form => form.Name);
-    fields.Add(form => form.DestinationIds).UseEditor<MultiLookupSheetEditor>(lookup => { /* as above */ });
+    fields.Add(tour => tour.Name);
+    fields.Add(tour => tour.Destinations).UseEditor<MultiLookupSheetEditor>(lookup =>
+        lookup.UseItems<VoyagerDbContext, Destination, int>(
+            destination => destination.Id,
+            destination => destination.Name));
 }));
 ```
 
-`[MinLength(1)]` and `[MaxLength(3)]` on the collection validate the number of selections. For a short list of choices, `CheckboxGroupEditor` or `ToggleGroupEditor` with EF `UseItems` also bind a key collection.
+This works for navigations whose join table EF Core maps without an entity type, on create, edit and inline rows. A value that matches no related entity shows an error under the field. A join entity of your own, or a related entity with a composite key, fails at startup; use a form model with a key collection and a handler that loads and saves the join instead ([forms](forms.md#custom-create-and-edit-models)).
+
+`[MinLength(1)]` and `[MaxLength(3)]` on the collection or navigation validate the number of selections. For a short list of choices, `CheckboxGroupEditor` or `ToggleGroupEditor` with EF `UseItems` also edit a key collection or a many-to-many navigation.
 
 ## Lookups without EF Core
 

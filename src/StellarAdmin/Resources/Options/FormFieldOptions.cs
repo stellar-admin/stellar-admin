@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.Extensions.Primitives;
 using StellarAdmin.Resources.Editors;
 
 namespace StellarAdmin.Resources.Options;
@@ -9,6 +10,17 @@ namespace StellarAdmin.Resources.Options;
 /// </summary>
 public sealed class FormFieldOptions : FormItemOptions
 {
+    /// <summary>
+    ///     Gets the binder that reads and binds the field.
+    /// </summary>
+    /// <value>
+    ///     The binder, or <see langword="null" /> to bind the field's property.
+    /// </value>
+    /// <remarks>
+    ///     <see cref="UseBinder" /> sets the binder.
+    /// </remarks>
+    public FieldBinder? Binder { get; private set; }
+
     /// <summary>
     ///     Gets the help text shown with the field.
     /// </summary>
@@ -70,4 +82,24 @@ public sealed class FormFieldOptions : FormItemOptions
         FieldName = fieldName;
         PropertyPath = Array.AsReadOnly((PropertyInfo[])propertyPath.Clone());
     }
+
+    /// <summary>
+    ///     Sets the binder that reads and binds the field in place of its property.
+    /// </summary>
+    /// <param name="binder">The binder.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="binder" /> is <see langword="null" />.
+    /// </exception>
+    public void UseBinder(FieldBinder binder)
+    {
+        ArgumentNullException.ThrowIfNull(binder);
+
+        Binder = binder;
+    }
+
+    // The value the field's editor shows: the binder's, or else the property's
+    internal object? GetValue(object model, IServiceProvider services) =>
+        Binder is { } binder
+            ? binder.GetValue(new FieldBindingContext(this, model, StringValues.Empty, services))
+            : ResourcePropertyPath.GetValue(model, PropertyPath);
 }

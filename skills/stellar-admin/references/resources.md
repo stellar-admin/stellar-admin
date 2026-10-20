@@ -44,7 +44,7 @@ admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
 - Queries honour global query filters, count before paging and add primary-key ordering so pages are stable.
 - References on a column's or display field's path (`booking => booking.Customer!.Name`) are loaded in the same query; no `Include` is needed.
 - Create builds the entity with its parameterless constructor or `create.UseFactory(...)`, binds the configured fields and saves. Edit loads the entity, copies only the configured editable fields onto the tracked entity and saves.
-- Form fields must be mapped scalar properties that are not keys, generated values or concurrency tokens. Collections and navigations need a custom model and handler ([forms](forms.md#custom-create-and-edit-models)).
+- Form fields must be mapped scalar properties that are not keys, generated values or concurrency tokens, or many-to-many navigations whose join table has no entity type ([relationships](relationships.md#many-to-many-with-multilookupsheeteditor)). Other collections and navigations need a custom model and handler ([forms](forms.md#custom-create-and-edit-models)).
 - A concurrency conflict on save shows a general error (or not found if the record was deleted). Other database errors, such as a foreign-key violation, propagate as exceptions.
 - Search and scope predicates and sort selectors must translate through the provider.
 

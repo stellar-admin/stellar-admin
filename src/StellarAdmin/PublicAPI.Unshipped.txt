@@ -12,6 +12,8 @@ abstract StellarAdmin.Resources.Options.ResourceCreateOptions.ModelType.get -> S
 abstract StellarAdmin.Resources.Options.ResourceEditOptions.ModelType.get -> System.Type!
 abstract StellarAdmin.Resources.Options.ResourceViewOptions.ModelType.get -> System.Type!
 abstract StellarAdmin.Resources.ResourceRowDetailLoader.LoadAsync(System.IServiceProvider! services, string! key, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
+abstract StellarAdmin.Resources.FieldBinder.BindAsync(StellarAdmin.Resources.FieldBindingContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+abstract StellarAdmin.Resources.FieldBinder.GetValue(StellarAdmin.Resources.FieldBindingContext! context) -> object?
 const StellarAdmin.Areas.StellarAdmin.TempDataKeys.DeleteErrors = "StellarAdminDeleteErrors" -> string!
 const StellarAdmin.Areas.StellarAdmin.TempDataKeys.ErrorMessage = "StellarAdminErrorMessage" -> string!
 const StellarAdmin.Areas.StellarAdmin.ViewDataKeys.FieldDisplay = "StellarAdminFieldDisplay" -> string!
@@ -1153,6 +1155,14 @@ StellarAdmin.Resources.Editors.ToggleGroupEditor.Appearance.set -> void
 StellarAdmin.Resources.Editors.ToggleGroupEditor.CheckPlacement.get -> StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement
 StellarAdmin.Resources.Editors.ToggleGroupEditor.CheckPlacement.set -> void
 StellarAdmin.Resources.Editors.ToggleGroupEditor.ToggleGroupEditor() -> void
+StellarAdmin.Resources.FieldBinder
+StellarAdmin.Resources.FieldBinder.FieldBinder() -> void
+StellarAdmin.Resources.FieldBindingContext
+StellarAdmin.Resources.FieldBindingContext.AddError(string! message) -> void
+StellarAdmin.Resources.FieldBindingContext.Field.get -> StellarAdmin.Resources.Options.FormFieldOptions!
+StellarAdmin.Resources.FieldBindingContext.Model.get -> object!
+StellarAdmin.Resources.FieldBindingContext.Services.get -> System.IServiceProvider!
+StellarAdmin.Resources.FieldBindingContext.Values.get -> Microsoft.Extensions.Primitives.StringValues
 StellarAdmin.Resources.InlineAddButton
 StellarAdmin.Resources.InlineAddButton.Both = 2 -> StellarAdmin.Resources.InlineAddButton
 StellarAdmin.Resources.InlineAddButton.Grid = 1 -> StellarAdmin.Resources.InlineAddButton
@@ -1217,6 +1227,8 @@ StellarAdmin.Resources.Options.FormFieldOptions.FieldName.get -> string!
 StellarAdmin.Resources.Options.FormFieldOptions.IsReadOnly.get -> bool
 StellarAdmin.Resources.Options.FormFieldOptions.PropertyPath.get -> System.Collections.Generic.IReadOnlyList<System.Reflection.PropertyInfo!>!
 StellarAdmin.Resources.Options.FormFieldOptions.Title.get -> string?
+StellarAdmin.Resources.Options.FormFieldOptions.Binder.get -> StellarAdmin.Resources.FieldBinder?
+StellarAdmin.Resources.Options.FormFieldOptions.UseBinder(StellarAdmin.Resources.FieldBinder! binder) -> void
 StellarAdmin.Resources.Options.FormGroupOptions
 StellarAdmin.Resources.Options.FormItemOptions
 StellarAdmin.Resources.Options.FormSectionOptions

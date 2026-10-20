@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StellarAdmin.Resources;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
 
@@ -27,26 +26,19 @@ internal static class GridEditorRenderer
     {
         var viewContext = html.ViewContext;
         var services = viewContext.HttpContext.RequestServices;
-        var explorer = html.MetadataProvider.GetModelExplorerForType(model.GetType(), model);
-        foreach (var property in field.PropertyPath)
-        {
-            explorer =
-                explorer.GetExplorerForProperty(property.Name)
-                ?? throw new InvalidOperationException(
-                    $"{explorer.ModelType.Name} has no property {property.Name} for the field '{field.FieldName}'."
-                );
-        }
+        var explorer = FieldEditorRenderer.CreateExplorer(
+            html.MetadataProvider,
+            field,
+            model,
+            services
+        );
 
         object? editorData = null;
         if (field.HandlerType is { } handlerType)
         {
             var handler = (IFieldEditorHandler)
                 ActivatorUtilities.CreateInstance(services, handlerType, field.Editor);
-            var context = new FieldEditorContext(
-                field.FieldName,
-                model,
-                ResourcePropertyPath.GetValue(model, field.PropertyPath)
-            );
+            var context = new FieldEditorContext(field.FieldName, model, explorer.Model);
             editorData = await handler.PrepareAsync(
                 context,
                 viewContext.HttpContext.RequestAborted
@@ -74,6 +66,7 @@ internal static class GridEditorRenderer
             EditorData = editorData,
             Editor = field.Editor,
             FieldName = field.FieldName,
+            IsBound = field.Binder is not null,
             IsReadOnly = field.IsReadOnly,
             Title = field.Title,
         };

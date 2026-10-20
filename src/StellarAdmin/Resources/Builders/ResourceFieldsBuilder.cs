@@ -23,22 +23,22 @@ public abstract class ResourceFieldsBuilder<TResource>
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property path with public getters and a
-    ///     public setter on its last property.
+    ///     <paramref name="field" /> doesn't select a property path with public getters.
     /// </exception>
+    /// <remarks>
+    ///     The last property needs a public setter unless a <see cref="FieldBinder" /> binds the
+    ///     field, such as the one EF resources use for many-to-many navigations. Otherwise, the app
+    ///     fails to start.
+    /// </remarks>
     public ResourceFieldBuilder Add<TProperty>(Expression<Func<TResource, TProperty>> field)
     {
         ArgumentNullException.ThrowIfNull(field);
 
         var properties = ResourcePropertyPath.GetProperties(field);
-        if (
-            properties is null
-            || properties.Any(property => property.GetMethod?.IsPublic != true)
-            || properties[^1].SetMethod?.IsPublic != true
-        )
+        if (properties is null || properties.Any(property => property.GetMethod?.IsPublic != true))
         {
             throw new ArgumentException(
-                "Select a property path with public getters and a public setter on its final property.",
+                "Select a property path with public getters.",
                 nameof(field)
             );
         }
@@ -64,8 +64,7 @@ public abstract class ResourceFieldsBuilder<TResource>
     ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property path with public getters and a
-    ///     public setter on its last property.
+    ///     <paramref name="field" /> doesn't select a property path with public getters.
     /// </exception>
     public ResourceFieldsBuilder<TResource> Add<TProperty>(
         Expression<Func<TResource, TProperty>> field,

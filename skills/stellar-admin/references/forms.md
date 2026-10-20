@@ -25,7 +25,7 @@ resource.AllowCreate(create => create.Fields(fields =>
 ```
 
 - Fields start empty; only configured fields are shown and bound. Other properties keep their values (the factory's on create, the stored values on edit).
-- A field selects a direct property with a public getter and setter. Paths through references (`b => b.Customer.Name`) are only for display fields.
+- A field selects a direct property with a public getter and setter. An EF Core many-to-many navigation is the exception: it needs no setter ([relationships](relationships.md#many-to-many-with-multilookupsheeteditor)). Paths through references (`b => b.Customer.Name`) are only for display fields.
 - The input comes from the property's type and data annotations unless `UseEditor<TEditor>()` chooses one ([editors](editors.md)).
 - Label: `field.Title`, else `[Display(Name)]`, else the raw property name (`DepartureDate`). Add `[Display(Name = "Departure date")]` to the model, or set `Title`, for readable labels.
 - Help text: `field.Description`, else `[Display(Description)]`.
@@ -169,7 +169,7 @@ Inputs post as `Entity.{Property}` (with a `Sheet` prefix in a create sheet open
 
 ## Custom create and edit models
 
-When the form doesn't map one-to-one onto the entity (a password and confirmation, a many-to-many selection, extra side effects), pair a form model with a handler:
+When the form doesn't map one-to-one onto the entity (a password and confirmation, a many-to-many relationship through a join entity of your own, extra side effects), pair a form model with a handler:
 
 ```csharp
 resource.AllowCreate<NewCustomerForm, NewCustomerHandler>(create => create.Fields(fields =>

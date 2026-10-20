@@ -15,6 +15,9 @@ public sealed class Product
     [Required]
     public string Name { get; set; } = "";
 
+    [MaxLength(2)]
+    public List<Tag> Tags { get; } = [];
+
     [Range(1, 1000)]
     public int Price { get; set; }
     public bool Hidden { get; set; }

@@ -56,7 +56,8 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
     ///     <see langword="true" /> if the field or its property is read-only; otherwise,
     ///     <see langword="false" />.
     /// </value>
-    public bool IsReadOnly => Field?.IsReadOnly == true || ViewData.ModelMetadata.IsReadOnly;
+    public bool IsReadOnly =>
+        Field?.IsReadOnly == true || Field?.IsBound != true && ViewData.ModelMetadata.IsReadOnly;
 
     /// <summary>
     ///     Gets the field's label, or <see langword="null" /> to use the property's display name.
