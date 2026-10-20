@@ -283,6 +283,13 @@ override StellarAdmin.UI.TabListTagHelper.ProcessAsync(Microsoft.AspNetCore.Razo
 override StellarAdmin.UI.TabPanelTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.TabsTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.TabTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.TimelineItemActionsTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.TimelineItemDescriptionTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.TimelineItemMediaTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.TimelineItemTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.TimelineItemTimeTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.TimelineItemTitleTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.TimelineTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.ToasterTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.ToggleGroupItemTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.TooltipTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
@@ -2294,6 +2301,63 @@ StellarAdmin.UI.TextareaClassNames.Control.set -> void
 StellarAdmin.UI.TextareaClassNames.TextareaClassNames() -> void
 StellarAdmin.UI.TextareaTagHelper
 StellarAdmin.UI.TextareaTagHelper.TextareaTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator) -> void
+StellarAdmin.UI.TimelineItemActionsTagHelper
+StellarAdmin.UI.TimelineItemActionsTagHelper.TimelineItemActionsTagHelper() -> void
+StellarAdmin.UI.TimelineItemDescriptionTagHelper
+StellarAdmin.UI.TimelineItemDescriptionTagHelper.TimelineItemDescriptionTagHelper() -> void
+StellarAdmin.UI.TimelineItemMediaTagHelper
+StellarAdmin.UI.TimelineItemMediaTagHelper.Label.get -> string?
+StellarAdmin.UI.TimelineItemMediaTagHelper.Label.set -> void
+StellarAdmin.UI.TimelineItemMediaTagHelper.TimelineItemMediaTagHelper() -> void
+StellarAdmin.UI.TimelineItemTagHelper
+StellarAdmin.UI.TimelineItemTagHelper.Current.get -> bool?
+StellarAdmin.UI.TimelineItemTagHelper.Current.set -> void
+StellarAdmin.UI.TimelineItemTagHelper.Description.get -> string?
+StellarAdmin.UI.TimelineItemTagHelper.Description.set -> void
+StellarAdmin.UI.TimelineItemTagHelper.Rail.get -> StellarAdmin.UI.TimelineRail?
+StellarAdmin.UI.TimelineItemTagHelper.Rail.set -> void
+StellarAdmin.UI.TimelineItemTagHelper.Time.get -> string?
+StellarAdmin.UI.TimelineItemTagHelper.Time.set -> void
+StellarAdmin.UI.TimelineItemTagHelper.TimelineItemTagHelper() -> void
+StellarAdmin.UI.TimelineItemTagHelper.Title.get -> string?
+StellarAdmin.UI.TimelineItemTagHelper.Title.set -> void
+StellarAdmin.UI.TimelineItemTimeTagHelper
+StellarAdmin.UI.TimelineItemTimeTagHelper.DateTime.get -> System.DateTimeOffset?
+StellarAdmin.UI.TimelineItemTimeTagHelper.DateTime.set -> void
+StellarAdmin.UI.TimelineItemTimeTagHelper.TimelineItemTimeTagHelper() -> void
+StellarAdmin.UI.TimelineItemTitleTagHelper
+StellarAdmin.UI.TimelineItemTitleTagHelper.Muted.get -> bool?
+StellarAdmin.UI.TimelineItemTitleTagHelper.Muted.set -> void
+StellarAdmin.UI.TimelineItemTitleTagHelper.TimelineItemTitleTagHelper() -> void
+StellarAdmin.UI.TimelineMarker
+StellarAdmin.UI.TimelineMarker.Dot = 0 -> StellarAdmin.UI.TimelineMarker
+StellarAdmin.UI.TimelineMarker.Number = 2 -> StellarAdmin.UI.TimelineMarker
+StellarAdmin.UI.TimelineMarker.Ring = 1 -> StellarAdmin.UI.TimelineMarker
+StellarAdmin.UI.TimelineMediaStyle
+StellarAdmin.UI.TimelineMediaStyle.Disc = 0 -> StellarAdmin.UI.TimelineMediaStyle
+StellarAdmin.UI.TimelineMediaStyle.Plain = 1 -> StellarAdmin.UI.TimelineMediaStyle
+StellarAdmin.UI.TimelineMediaStyle.Ring = 2 -> StellarAdmin.UI.TimelineMediaStyle
+StellarAdmin.UI.TimelineRail
+StellarAdmin.UI.TimelineRail.Dashed = 1 -> StellarAdmin.UI.TimelineRail
+StellarAdmin.UI.TimelineRail.None = 2 -> StellarAdmin.UI.TimelineRail
+StellarAdmin.UI.TimelineRail.Solid = 0 -> StellarAdmin.UI.TimelineRail
+StellarAdmin.UI.TimelineSize
+StellarAdmin.UI.TimelineSize.Default = 0 -> StellarAdmin.UI.TimelineSize
+StellarAdmin.UI.TimelineSize.Small = 1 -> StellarAdmin.UI.TimelineSize
+StellarAdmin.UI.TimelineTagHelper
+StellarAdmin.UI.TimelineTagHelper.Marker.get -> StellarAdmin.UI.TimelineMarker?
+StellarAdmin.UI.TimelineTagHelper.Marker.set -> void
+StellarAdmin.UI.TimelineTagHelper.MediaStyle.get -> StellarAdmin.UI.TimelineMediaStyle?
+StellarAdmin.UI.TimelineTagHelper.MediaStyle.set -> void
+StellarAdmin.UI.TimelineTagHelper.Size.get -> StellarAdmin.UI.TimelineSize?
+StellarAdmin.UI.TimelineTagHelper.Size.set -> void
+StellarAdmin.UI.TimelineTagHelper.TimePlacement.get -> StellarAdmin.UI.TimelineTimePlacement?
+StellarAdmin.UI.TimelineTagHelper.TimePlacement.set -> void
+StellarAdmin.UI.TimelineTagHelper.TimelineTagHelper() -> void
+StellarAdmin.UI.TimelineTimePlacement
+StellarAdmin.UI.TimelineTimePlacement.Below = 1 -> StellarAdmin.UI.TimelineTimePlacement
+StellarAdmin.UI.TimelineTimePlacement.End = 0 -> StellarAdmin.UI.TimelineTimePlacement
+StellarAdmin.UI.TimelineTimePlacement.Start = 2 -> StellarAdmin.UI.TimelineTimePlacement
 StellarAdmin.UI.ToasterPosition
 StellarAdmin.UI.ToasterPosition.BottomCenter = 4 -> StellarAdmin.UI.ToasterPosition
 StellarAdmin.UI.ToasterPosition.BottomLeft = 3 -> StellarAdmin.UI.ToasterPosition

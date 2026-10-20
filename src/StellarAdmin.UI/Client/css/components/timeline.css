@@ -1,0 +1,250 @@
+/* Timeline: an ordered list of events, each with a marker joined to the next by a rail, a title,
+   time and description, trailing actions, and anything else the author adds (a collapsible, a
+   comment) under the text. An item with no media shows the list's marker: a dot, a ring or its
+   number. Media holds an icon (on a disc, plain or in a ring) or an avatar. The time sits at the
+   end of the title row, under the title, or in a gutter before the markers. A current item, the
+   items before it and the rails between them take the accent.
+   Replaces: .sa-timeline, .sa-timeline-item, .sa-timeline-item-marker, .sa-timeline-item-media,
+   .sa-timeline-item-title, .sa-timeline-item-description, .sa-timeline-item-time,
+   .sa-timeline-item-actions */
+
+@layer sa.components {
+  .sa-timeline {
+    --_timeline-marker: calc(6 * var(--sa-unit));
+    --_timeline-icon: calc(5 * var(--sa-unit));
+    --_timeline-media-icon: calc(3.5 * var(--sa-unit));
+    --_timeline-dot: calc(2.5 * var(--sa-unit));
+    --_timeline-gap: calc(3 * var(--sa-unit));
+    --_timeline-space: calc(5 * var(--sa-unit));
+    --_timeline-rail: calc(2 * var(--sa-border-width));
+    --_timeline-rail-gap: var(--sa-unit);
+
+    /* The gaps are tracks of their own, so an empty time or trailing column takes no space. */
+    display: grid;
+    grid-template-columns:
+      [marker] var(--_timeline-marker) var(--_timeline-gap)
+      [body] minmax(0, 1fr)
+      [time] auto
+      [trailing] auto
+      [end];
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: sa-timeline;
+
+    &[data-time-placement="below"] {
+      grid-template-columns:
+        [marker] var(--_timeline-marker) var(--_timeline-gap)
+        [body] minmax(0, 1fr)
+        [trailing] auto
+        [end];
+    }
+    &[data-time-placement="start"] {
+      grid-template-columns:
+        [time] max-content var(--_timeline-gap)
+        [marker] var(--_timeline-marker) var(--_timeline-gap)
+        [body] minmax(0, 1fr)
+        [trailing] auto
+        [end];
+    }
+    &[data-size="sm"] {
+      --_timeline-marker: calc(4 * var(--sa-unit));
+      --_timeline-icon: calc(4 * var(--sa-unit));
+      --_timeline-media-icon: calc(2.5 * var(--sa-unit));
+      --_timeline-dot: calc(2 * var(--sa-unit));
+      --_timeline-gap: calc(2.5 * var(--sa-unit));
+      --_timeline-space: calc(3 * var(--sa-unit));
+    }
+  }
+
+  /* The item spans the list on a subgrid, so the time gutter lines up across items. The rail runs
+     down the marker column from under the marker to the end of the item; the next item's marker
+     sits below it. Children the timeline doesn't know span from the body to the end, below the
+     text. */
+  .sa-timeline-item {
+    --_timeline-rail-color: var(--sa-color-line);
+    --_timeline-rail-paint: linear-gradient(var(--_timeline-rail-color), var(--_timeline-rail-color));
+
+    position: relative;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-content: start;
+    padding-block-end: var(--_timeline-space);
+    counter-increment: sa-timeline;
+
+    &:last-child { padding-block-end: 0; }
+    &:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      grid-column: marker;
+      inset-block: calc(var(--_timeline-marker) + var(--_timeline-rail-gap)) var(--_timeline-rail-gap);
+      inset-inline-start: calc(50% - var(--_timeline-rail) / 2);
+      inline-size: var(--_timeline-rail);
+      background: var(--_timeline-rail-paint);
+    }
+    &[data-rail="dashed"] {
+      --_timeline-rail-paint: repeating-linear-gradient(
+        to bottom,
+        var(--_timeline-rail-color) 0 var(--sa-unit),
+        transparent var(--sa-unit) calc(2 * var(--sa-unit))
+      );
+    }
+    &[data-rail="none"]::before { content: none; }
+
+    & > * {
+      grid-column: body / end;
+      min-inline-size: 0;
+      order: 4;
+    }
+    & > :not(.sa-timeline-item-marker, .sa-timeline-item-media, .sa-timeline-item-title, .sa-timeline-item-description, .sa-timeline-item-time, .sa-timeline-item-actions) {
+      margin-block-start: calc(2 * var(--sa-unit));
+    }
+
+    /* Progress. The current item and the items before it are reached; with several current items,
+       the reach runs to the last of them. The rails between reached items take the accent; the
+       rail out of the last current item stays neutral. */
+    &:is([data-current], :has(~ [data-current])) {
+      --_timeline-reached: var(--sa-color-accent);
+      --_timeline-reached-text: var(--sa-color-accent-text);
+      --_timeline-reached-tint: color-mix(in oklab, var(--sa-color-accent) 14%, var(--sa-color-surface));
+      --_timeline-reached-ring: 0 0 0 var(--_timeline-rail) var(--sa-color-accent);
+    }
+    &:has(~ [data-current]) { --_timeline-rail-color: var(--sa-color-accent); }
+  }
+
+  .sa-timeline-item-marker,
+  .sa-timeline-item-media {
+    grid-column: marker;
+    grid-row: 1;
+    display: grid;
+    place-items: center;
+    inline-size: var(--_timeline-marker);
+    block-size: var(--_timeline-marker);
+    border-radius: var(--sa-radius-round);
+  }
+
+  /* No media: the list's marker. A dot by default, a ring, or the item's number in a ring. */
+  .sa-timeline-item-marker::before {
+    content: "";
+    inline-size: var(--_timeline-dot);
+    block-size: var(--_timeline-dot);
+    border-radius: var(--sa-radius-round);
+    background: var(--_timeline-reached, var(--sa-color-line-control));
+  }
+  [data-marker="ring"] > .sa-timeline-item > .sa-timeline-item-marker::before {
+    background: none;
+    box-shadow: inset 0 0 0 var(--_timeline-rail) var(--_timeline-reached, var(--sa-color-line-control));
+  }
+  [data-marker="number"] > .sa-timeline-item > .sa-timeline-item-marker::before {
+    content: counter(sa-timeline);
+    display: grid;
+    place-items: center;
+    inline-size: var(--_timeline-marker);
+    block-size: var(--_timeline-marker);
+    background: none;
+    box-shadow: inset 0 0 0 var(--_timeline-rail) var(--_timeline-reached, var(--sa-color-line-control));
+    color: var(--_timeline-reached-text, var(--sa-color-ink));
+    font-size: var(--sa-text-xs);
+    font-weight: var(--sa-weight-control);
+  }
+
+  /* Media: an icon on a sunken disc, in the muted ink unless the icon has its own colour, or an
+     avatar that fills the marker. */
+  .sa-timeline-item-media {
+    color: var(--_timeline-reached, var(--sa-color-ink-muted));
+    background: var(--_timeline-reached-tint, var(--sa-color-surface-sunken));
+
+    & > svg:not([class*="size-"]) {
+      inline-size: var(--_timeline-media-icon);
+      block-size: var(--_timeline-media-icon);
+    }
+    & > .sa-avatar {
+      inline-size: var(--_timeline-marker);
+      block-size: var(--_timeline-marker);
+      box-shadow: var(--_timeline-reached-ring, none);
+    }
+    &:has(> .sa-avatar) { background: none; }
+
+    [data-media-style="plain"] > .sa-timeline-item > & {
+      background: none;
+
+      & > svg:not([class*="size-"]) {
+        inline-size: var(--_timeline-icon);
+        block-size: var(--_timeline-icon);
+      }
+    }
+    [data-media-style="ring"] > .sa-timeline-item > &:not(:has(> .sa-avatar)) {
+      background: var(--sa-color-surface);
+      box-shadow: inset 0 0 0 var(--sa-border-width) var(--_timeline-reached, var(--sa-color-line-control));
+    }
+  }
+
+  /* The current item's marker also gets a halo. */
+  .sa-timeline-item[data-current] > .sa-timeline-item-media,
+  .sa-timeline-item[data-current] > .sa-timeline-item-marker::before {
+    outline: var(--sa-unit) solid color-mix(in oklab, var(--sa-color-accent) 20%, transparent);
+  }
+
+  /* Inline text, not flex: activity titles mix plain and strong text. The padding centres the
+     first line on the marker. */
+  .sa-timeline-item-title {
+    grid-column: body;
+    order: 1;
+    padding-block: max(0px, (var(--_timeline-marker) - 1lh) / 2);
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    line-height: var(--sa-leading-ui);
+
+    &[data-muted] { color: var(--sa-color-ink-muted); }
+  }
+
+  /* The description runs under the time and actions too, so a narrow item keeps its width for
+     text. */
+  .sa-timeline-item-description {
+    grid-column: body / end;
+    order: 3;
+    margin: 0;
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+    color: var(--sa-color-ink-muted);
+  }
+
+  .sa-timeline-item-time {
+    grid-column: time;
+    grid-row: 1;
+    align-self: start;
+    display: flex;
+    align-items: center;
+    min-block-size: var(--_timeline-marker);
+    margin-inline-start: var(--_timeline-gap);
+    font-size: var(--sa-text-xs);
+    line-height: var(--sa-leading-ui);
+    color: var(--sa-color-ink-muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+
+    [data-time-placement="below"] > .sa-timeline-item > & {
+      grid-column: body;
+      grid-row: auto;
+      order: 2;
+      min-block-size: 0;
+      margin: 0;
+    }
+    [data-time-placement="start"] > .sa-timeline-item > & {
+      justify-content: flex-end;
+      margin: 0;
+    }
+  }
+
+  .sa-timeline-item-actions {
+    grid-column: trailing;
+    grid-row: 1;
+    align-self: start;
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    min-block-size: var(--_timeline-marker);
+    margin-inline-start: var(--_timeline-gap);
+  }
+}

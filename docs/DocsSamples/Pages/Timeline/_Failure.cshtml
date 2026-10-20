@@ -1,0 +1,28 @@
+<div class="w-full max-w-lg">
+    <!-- code begin -->
+    <div class="grid gap-3">
+        <div class="flex items-baseline justify-between gap-2 text-sm font-semibold">
+            Refund RF-118
+            <span class="text-xs font-normal text-muted-foreground">R 12,400</span>
+        </div>
+        <sa-timeline>
+            <sa-timeline-item title="Refund requested" description="Flight cancelled by the airline." time="9 Mar">
+                <sa-timeline-item-media><sa-icon name="undo-2"/></sa-timeline-item-media>
+            </sa-timeline-item>
+            <sa-timeline-item title="Approved" description="By Lindiwe Mokoena." time="10 Mar">
+                <sa-timeline-item-media label="Approved">
+                    <sa-icon name="check" class="text-[var(--sa-color-success)]"/>
+                </sa-timeline-item-media>
+            </sa-timeline-item>
+            <sa-timeline-item title="Payout to the traveller" description="The card ending 4417 has expired." time="11 Mar">
+                <sa-timeline-item-media label="Failed">
+                    <sa-icon name="circle-x" class="text-destructive"/>
+                </sa-timeline-item-media>
+                <sa-timeline-item-actions>
+                    <sa-button size="ButtonSize.Small">Retry</sa-button>
+                </sa-timeline-item-actions>
+            </sa-timeline-item>
+        </sa-timeline>
+    </div>
+    <!-- code end -->
+</div>

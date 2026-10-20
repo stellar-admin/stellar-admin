@@ -17,6 +17,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [grid-keyboard-navigation](grid-keyboard-navigation.md) | proposed | Keyboard navigation and shortcuts in the index grid. From the Voyager Travel session feedback. |
 | [rich-text-editor](rich-text-editor.md) | proposed | An editor for formatted long text. From the Voyager Travel session feedback. |
 | [checklist-component](checklist-component.md) | proposed | An `sa-checklist` component extracted from the home page's setup checklist. |
+| [timeline-component](timeline-component.md) | proposed | An `sa-timeline` component for lists of events, separate from the checklist. |
 | [display-defaults](display-defaults.md) | proposed | App-level configuration of the default displays, and display handlers in index columns. Carried over from info-lists decisions 90 and 129. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 

@@ -1,0 +1,44 @@
+<div class="w-full max-w-lg">
+    <!-- code begin -->
+    <sa-timeline>
+        <sa-timeline-item title="Price changed" description="By Lindiwe Mokoena." time="Today 10:02">
+            <sa-timeline-item-media><sa-icon name="pencil"/></sa-timeline-item-media>
+            <sa-timeline-item-actions>
+                <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Small" commandfor="change-81" command="--toggle">
+                    Changes
+                    <sa-icon name="chevron-down" class="transition-transform in-aria-expanded:rotate-180"/>
+                </sa-button>
+            </sa-timeline-item-actions>
+            <sa-collapsible id="change-81">
+                <dl class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 rounded-md bg-muted p-3 text-xs">
+                    <dt class="text-muted-foreground">Price per person</dt>
+                    <dd><del class="text-destructive">¥178,000</del> → ¥186,000</dd>
+                    <dt class="text-muted-foreground">Single supplement</dt>
+                    <dd><del class="text-destructive">¥24,000</del> → ¥28,000</dd>
+                </dl>
+            </sa-collapsible>
+        </sa-timeline-item>
+        <sa-timeline-item title="Day added" description="By Amara Okafor." time="Yesterday">
+            <sa-timeline-item-media><sa-icon name="plus"/></sa-timeline-item-media>
+            <sa-timeline-item-actions>
+                <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Small" commandfor="change-80" command="--toggle">
+                    Changes
+                    <sa-icon name="chevron-down" class="transition-transform in-aria-expanded:rotate-180"/>
+                </sa-button>
+            </sa-timeline-item-actions>
+            <sa-collapsible id="change-80" hidden="">
+                <dl class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 rounded-md bg-muted p-3 text-xs">
+                    <dt class="text-muted-foreground">Day 6</dt>
+                    <dd>Nishiki Market food tour</dd>
+                </dl>
+            </sa-collapsible>
+        </sa-timeline-item>
+        <sa-timeline-item title="Photo removed" description="By Amara Okafor." time="3 Mar">
+            <sa-timeline-item-media><sa-icon name="trash"/></sa-timeline-item-media>
+        </sa-timeline-item>
+        <sa-timeline-item title="Tour created" description="By Amara Okafor." time="2 Mar">
+            <sa-timeline-item-media><sa-icon name="plus"/></sa-timeline-item-media>
+        </sa-timeline-item>
+    </sa-timeline>
+    <!-- code end -->
+</div>

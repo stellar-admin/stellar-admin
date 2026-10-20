@@ -69,6 +69,7 @@
   "Table": ["Table/_Intro", "Table/_Select", "Table/_RowDetails", "Table/_RowDetailsRowClick", "Table/_RowDetailsDivider"],
   "Tabs": ["Tabs/_Intro", "Tabs/_Icons", "Tabs/_Url", "Tabs/_Panels", "Tabs/_PanelsLoadOnShow"],
   "Textarea": ["Textarea/_Intro", "Textarea/_ModelBinding"],
+  "Timeline": ["Timeline/_Intro", "Timeline/_Avatars", "Timeline/_Expandable", "Timeline/_Failure", "Timeline/_Progress"],
   "Toaster": ["Toast/_Intro", "Toast/_Types", "Toast/_Action", "Toast/_Promise"],
   "Toggle": ["Toggle/_Intro", "Toggle/_WithText"],
   "ToggleGroup": ["ToggleGroup/_Intro", "ToggleGroup/_ModelBinding"],

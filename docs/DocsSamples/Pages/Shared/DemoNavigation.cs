@@ -80,6 +80,7 @@ internal static class DemoNavigation
                 new DemoItem("Item", "/Item/Index"),
                 new DemoItem("Kbd", "/Kbd/Index"),
                 new DemoItem("Table", "/Table/Index"),
+                new DemoItem("Timeline", "/Timeline/Index"),
             ]
         ),
         new DemoGroup(

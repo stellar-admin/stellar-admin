@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timeline scenarios</title>
+<!-- Prototype: the timeline on its own, after checklist.html. Many scenarios, each with the Razor that would build
+     it, so the set of timeline tag helpers can be pulled back to the ones every scenario needs, and the rest left to
+     components the library already has (icon, avatar, button, collapsible, card). Uses the built library bundle;
+     build it first (npm run build in src/StellarAdmin.UI/Client). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+<style>
+  /* Candidate: written as the library would write it. */
+  @layer sa.components {
+    .sa-timeline {
+      --_marker: calc(6 * var(--sa-unit));
+      --_icon: calc(5 * var(--sa-unit));
+      --_gap: calc(3 * var(--sa-unit));
+      --_space: calc(5 * var(--sa-unit));
+      --_rail: calc(2 * var(--sa-border-width, 1px));
+      --_rail-gap: var(--sa-unit);
+      /* The gaps are tracks of their own, so an empty time or trailing column takes no space. */
+      display: grid;
+      grid-template-columns: [marker] var(--_marker) var(--_gap) [body] minmax(0, 1fr) [time] auto [trailing] auto [end];
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: sa-timeline;
+    }
+    .sa-timeline[data-time="below"] { grid-template-columns: [marker] var(--_marker) var(--_gap) [body] minmax(0, 1fr) [trailing] auto [end]; }
+    .sa-timeline[data-time="start"] { grid-template-columns: [time] max-content var(--_gap) [marker] var(--_marker) var(--_gap) [body] minmax(0, 1fr) [trailing] auto [end]; }
+    .sa-timeline[data-size="sm"] {
+      --_marker: calc(4 * var(--sa-unit));
+      --_icon: calc(4 * var(--sa-unit));
+      --_gap: calc(2.5 * var(--sa-unit));
+      --_space: calc(3 * var(--sa-unit));
+    }
+
+    /* The item spans the list on a subgrid, so the time gutter lines up across items. The rail runs down the
+       marker column from under the marker to the end of the item; the next item's marker sits below it. */
+    .sa-timeline-item {
+      --_rail-color: var(--sa-color-line);
+      --_rail-paint: linear-gradient(var(--_rail-color), var(--_rail-color));
+      position: relative;
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+      align-content: start;
+      padding-block-end: var(--_space);
+      counter-increment: sa-timeline;
+    }
+    .sa-timeline-item:last-child { padding-block-end: 0; }
+    .sa-timeline-item:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      grid-column: marker;
+      inset-block: calc(var(--_marker) + var(--_rail-gap)) var(--_rail-gap);
+      inset-inline-start: calc(50% - var(--_rail) / 2);
+      inline-size: var(--_rail);
+      background: var(--_rail-paint);
+    }
+    /* Children the timeline doesn't know (a collapsible, a comment, a card) span from the body to the end, below
+       the text. */
+    .sa-timeline-item > * { grid-column: body / end; min-inline-size: 0; order: 4; }
+    .sa-timeline-item > :not(.sa-timeline-item-marker, .sa-timeline-item-title, .sa-timeline-item-description, .sa-timeline-item-time, .sa-timeline-item-actions) { margin-block-start: calc(2 * var(--sa-unit)); }
+
+    .sa-timeline-item-marker {
+      grid-column: marker;
+      grid-row: 1;
+      display: grid;
+      place-items: center;
+      inline-size: var(--_marker);
+      block-size: var(--_marker);
+      border-radius: var(--sa-radius-round);
+      color: var(--sa-color-ink-muted);
+    }
+    .sa-timeline-item-marker > svg { inline-size: var(--_icon); block-size: var(--_icon); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    /* No media: a dot. */
+    .sa-timeline-item-marker:empty::before {
+      content: "";
+      inline-size: calc(2.5 * var(--sa-unit));
+      block-size: calc(2.5 * var(--sa-unit));
+      border-radius: var(--sa-radius-round);
+    }
+    /* marker="Ring": a hollow ring. marker="Number": the item's number in a ring. Items with media keep it. */
+    .sa-timeline[data-marker="ring"] .sa-timeline-item-marker:empty::before { background: none; box-shadow: inset 0 0 0 var(--_rail) var(--sa-color-line-control); }
+    .sa-timeline[data-marker="number"] .sa-timeline-item-marker:empty::before {
+      content: counter(sa-timeline);
+      display: grid;
+      place-items: center;
+      inline-size: var(--_marker);
+      block-size: var(--_marker);
+      background: none;
+      box-shadow: inset 0 0 0 var(--_rail) var(--sa-color-line-control);
+      color: var(--sa-color-ink);
+      font-size: var(--sa-text-xs);
+      font-weight: 600;
+    }
+    /* An author's icon sits on a sunken disc, in the muted ink unless the icon has its own colour; an avatar
+       fills the marker. */
+    .sa-timeline-item-marker[data-media] { background: var(--sa-color-surface-sunken); }
+    .sa-timeline-item-marker[data-media] > svg { inline-size: calc(3.5 * var(--sa-unit)); block-size: calc(3.5 * var(--sa-unit)); }
+    .sa-timeline-item-marker[data-media]:has(> .sa-avatar) { background: none; }
+    .sa-timeline-item-marker > .sa-avatar { inline-size: var(--_marker); block-size: var(--_marker); }
+    /* media-style="Plain": the icon alone. media-style="Ring": a ringed disc. */
+    [data-media-style="plain"] .sa-timeline-item-marker[data-media] { background: none; }
+    [data-media-style="plain"] .sa-timeline-item-marker[data-media] > svg { inline-size: var(--_icon); block-size: var(--_icon); }
+    [data-media-style="ring"] .sa-timeline-item-marker[data-media] { background: var(--sa-color-surface); box-shadow: inset 0 0 0 var(--sa-border-width, 1px) var(--sa-color-line-control); }
+
+    /* rail on an item styles the rail leaving it for the next item. */
+    .sa-timeline-item[data-rail="dashed"] {
+      --_rail-paint: repeating-linear-gradient(to bottom, var(--_rail-color) 0 var(--sa-unit), transparent var(--sa-unit) calc(2 * var(--sa-unit)));
+    }
+    .sa-timeline-item[data-rail="none"]::before { content: none; }
+
+    /* Progress. The current item and the items before it are reached. With several current items, the reach
+       runs to the last of them. Reached markers take the accent; so do the rails between reached items. */
+    .sa-timeline-item:is([data-current], :has(~ [data-current])) {
+      --_reached: var(--sa-color-accent);
+      --_reached-text: var(--sa-color-accent-text);
+      --_reached-tint: color-mix(in oklab, var(--sa-color-accent) 14%, var(--sa-color-surface));
+      --_reached-ring: 0 0 0 var(--_rail) var(--sa-color-accent);
+    }
+    .sa-timeline-item:has(~ [data-current]) {
+      --_rail-color: var(--sa-color-accent);
+    }
+    .sa-timeline-item-marker:empty::before { background: var(--_reached, var(--sa-color-line-control)); }
+    .sa-timeline[data-marker="ring"] .sa-timeline-item-marker:empty::before,
+    .sa-timeline[data-marker="number"] .sa-timeline-item-marker:empty::before { background: none; box-shadow: inset 0 0 0 var(--_rail) var(--_reached, var(--sa-color-line-control)); }
+    .sa-timeline[data-marker="number"] .sa-timeline-item-marker:empty::before { color: var(--_reached-text, var(--sa-color-ink)); }
+    .sa-timeline-item-marker[data-media]:not(:has(> .sa-avatar)) { color: var(--_reached, var(--sa-color-ink-muted)); }
+    .sa-timeline-item-marker[data-media]:not(:has(> .sa-avatar)) { background: var(--_reached-tint, var(--sa-color-surface-sunken)); }
+    [data-media-style="plain"] .sa-timeline-item-marker[data-media]:not(:has(> .sa-avatar)) { background: none; }
+    [data-media-style="ring"] .sa-timeline-item-marker[data-media]:not(:has(> .sa-avatar)) { background: var(--sa-color-surface); box-shadow: inset 0 0 0 var(--sa-border-width, 1px) var(--_reached, var(--sa-color-line-control)); }
+    .sa-timeline-item-marker > .sa-avatar { box-shadow: var(--_reached-ring, none); }
+    /* The current item's marker also gets a halo. */
+    .sa-timeline-item[data-current] > .sa-timeline-item-marker:not(:empty),
+    .sa-timeline-item[data-current] > .sa-timeline-item-marker:empty::before { outline: var(--sa-unit) solid color-mix(in oklab, var(--sa-color-accent) 20%, transparent); }
+
+    /* Inline text, not flex: activity titles mix plain and strong text. The padding centres the first line on
+       the marker. */
+    .sa-timeline-item-title {
+      grid-column: body;
+      order: 1;
+      padding-block: max(0px, (var(--_marker) - 1lh) / 2);
+      font-size: var(--sa-text-sm);
+      font-weight: 500;
+      line-height: var(--sa-leading-ui, 1.25rem);
+    }
+    .sa-timeline-item-title[data-muted] { color: var(--sa-color-ink-muted); }
+    /* The description runs under the time and actions too, so a narrow item keeps its width for text. */
+    .sa-timeline-item-description {
+      grid-column: body / end;
+      order: 3;
+      margin: 0;
+      font-size: var(--sa-text-sm);
+      color: var(--sa-color-ink-muted);
+    }
+    .sa-timeline-item-time {
+      grid-column: time;
+      grid-row: 1;
+      align-self: start;
+      display: flex;
+      align-items: center;
+      min-block-size: var(--_marker);
+      margin-inline-start: var(--_gap);
+      font-size: var(--sa-text-xs);
+      color: var(--sa-color-ink-muted);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    [data-time="below"] > .sa-timeline-item > .sa-timeline-item-time { grid-column: body; grid-row: auto; order: 2; min-block-size: 0; margin: 0; }
+    [data-time="start"] > .sa-timeline-item > .sa-timeline-item-time { justify-content: flex-end; margin: 0; }
+    .sa-timeline-item-actions {
+      grid-column: trailing;
+      grid-row: 1;
+      align-self: start;
+      display: flex;
+      align-items: center;
+      gap: calc(2 * var(--sa-unit));
+      min-block-size: var(--_marker);
+      margin-inline-start: var(--_gap);
+    }
+  }
+
+  .sa-timeline-item-actions svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Prototype scaffolding, not extracted. */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 16px 120px; display: grid; gap: 28px; }
+  h1 { font-size: 1.5rem; margin: 0 0 8px; }
+  h2 { font-size: 1.05rem; margin: 0; }
+  .lede { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0; max-width: 85ch; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.8rem; color: var(--sa-color-ink-muted); margin-top: 12px; }
+  .scenario { display: grid; gap: 12px; }
+  .scenario header p { color: var(--sa-color-ink-muted); font-size: 0.85rem; margin: 2px 0 0; max-width: 85ch; }
+  .pair { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); align-items: start; }
+  .frame { background: var(--sa-color-surface); border: 1px solid var(--sa-color-line); border-radius: var(--sa-radius-container); padding: 16px 20px; min-width: 0; }
+  pre.code { font-family: "JetBrains Mono", monospace; font-size: 11.5px; line-height: 1.5; background: var(--sa-color-surface-sunken); border-radius: var(--sa-radius-container); padding: 14px; overflow: auto; margin: 0; white-space: pre; color: var(--sa-color-ink-muted); }
+  .k-own { color: var(--sa-color-accent-text); font-weight: 600; }
+  .k-other { color: var(--sa-color-ink); font-weight: 600; text-decoration: underline dotted; text-underline-offset: 3px; }
+  .k-attr { color: var(--sa-color-success); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.75rem; align-items: center; }
+  .chips b { font-weight: 500; color: var(--sa-color-ink-muted); margin-inline-end: 2px; }
+  .chip { border-radius: 99px; padding: 1px 8px; border: 1px solid var(--sa-color-line); font-family: "JetBrains Mono", monospace; }
+  .chip.own { color: var(--sa-color-accent-text); border-color: color-mix(in oklab, var(--sa-color-accent) 40%, transparent); }
+  .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 12px; font-size: 0.9rem; font-weight: 600; }
+  .head span { font-weight: 400; font-size: 0.8rem; color: var(--sa-color-ink-muted); }
+  .grouphead { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sa-color-ink-muted); margin: 20px 0 10px; }
+  .grouphead:first-child { margin-top: 0; }
+  .comment { border: 1px solid var(--sa-color-line); border-radius: var(--sa-radius-inner); padding: 10px 12px; font-size: var(--sa-text-sm); background: var(--sa-color-surface); }
+  .changes { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: var(--sa-text-xs); background: var(--sa-color-surface-sunken); border-radius: var(--sa-radius-inner); padding: 10px 12px; margin: 0; }
+  .changes dt { color: var(--sa-color-ink-muted); }
+  .changes dd { margin: 0; }
+  .changes del { color: var(--sa-color-danger-text); }
+  .chev { transition: transform 0.15s; }
+  [aria-expanded="true"] .chev { transform: rotate(180deg); }
+  table.matrix { border-collapse: collapse; font-size: 0.8rem; width: 100%; }
+  table.matrix th, table.matrix td { padding: 6px 8px; border-bottom: 1px solid var(--sa-color-line); text-align: center; }
+  table.matrix th:first-child, table.matrix td:first-child { text-align: start; font-family: "JetBrains Mono", monospace; }
+  table.matrix thead th { font-weight: 500; color: var(--sa-color-ink-muted); vertical-align: bottom; }
+  table.matrix td.y { color: var(--sa-color-success); font-weight: 600; }
+  .strip { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+  .opt { display: grid; gap: 8px; align-content: start; }
+  .opt-name { font-size: 0.8rem; font-weight: 600; }
+  .opt-name span { font-weight: 400; color: var(--sa-color-ink-muted); }
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 10; display: flex; gap: 6px; align-items: center; background: var(--sa-color-surface-raised); border: 1px solid var(--sa-color-line); border-radius: var(--sa-radius-control); padding: 6px; box-shadow: 0 4px 16px rgb(0 0 0 / 0.12); }
+  .controls select { font: inherit; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Timeline scenarios</h1>
+    <p class="lede">Eleven ways an application might use a timeline, each with the Razor that would build it, to find which timeline tag helpers every scenario needs and where a developer reaches for a component the library already has. A timeline is a list of events, with no status: progress you act on is the checklist's job. The candidate: <code>sa-timeline</code> (an <code>ol</code>, with <code>size</code>, <code>time-placement</code>, <code>marker</code>, and <code>media-style</code>); <code>sa-timeline-item</code> with <code>title</code>, <code>description</code> and <code>time</code> attributes, <code>rail</code> (the rail leaving it: solid, dashed or none) and <code>current</code> (progress: it and the items before it take the accent); and the child parts <code>sa-timeline-item-title</code> (with <code>muted</code>), <code>-description</code>, <code>-time</code> (a <code>&lt;time&gt;</code> with <code>datetime</code>), <code>-media</code> (an icon or avatar in the marker, with an optional <code>label</code> for screen readers when the icon means something) and <code>-actions</code>. Giving an attribute and its own child part together throws. Anything else inside an item (a collapsible, a comment, a card) lays out below the text. An item with no media shows the list's marker: a dot, a ring or its number.</p>
+    <div class="legend">
+      <span><span class="k-own">sa-timeline-*</span> timeline tag helper</span>
+      <span><span class="k-other">sa-avatar</span> existing component</span>
+      <span><span class="k-attr">title=</span> shorthand attribute</span>
+    </div>
+  </header>
+  <section class="scenario">
+    <header><h2>Attributes</h2><p>Decided: rail in the line colour at 2px, 5 units between items. Each strip shows one attribute's values.</p></header>
+    <div id="options" style="display:grid;gap:28px"></div>
+  </section>
+  <div id="scenarios" style="display:grid;gap:40px"></div>
+
+  <section class="scenario">
+    <header><h2>Which parts each scenario uses</h2><p>Rows are candidate timeline parts and the other components the scenarios fall back to. Title, description and time count whether written as attributes or child parts.</p></header>
+    <div class="frame" style="overflow:auto"><table class="matrix" id="matrix"></table></div>
+  </section>
+</main>
+
+<div class="controls">
+  <select id="theme-select" aria-label="Theme">
+    <option value="">Default</option>
+    <option value="ops">Ops</option>
+    <option value="soft">Soft</option>
+    <option value="ledger">Ledger</option>
+  </select>
+  <select id="density-select" aria-label="Density">
+    <option value="">Density: default</option>
+    <option value="compact">Compact</option>
+    <option value="comfortable">Comfortable</option>
+  </select>
+  <button class="sa-button sa-button-variant-outline sa-button-size-sm" data-slot="button" id="dark-toggle">Dark</button>
+</div>
+
+<script>
+  const svg = (paths, cls = "") => `<svg${cls ? ` class="${cls}"` : ""} viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">${paths}</svg>`;
+  const I = {
+    check: svg('<path d="M20 6 9 17l-5-5"/>'),
+    ticket: svg('<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>'),
+    undo: svg('<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>'),
+    error: svg('<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>'),
+    warning: svg('<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'),
+    plane: svg('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'),
+    train: svg('<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>'),
+    bed: svg('<path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/>'),
+    mountain: svg('<path d="m8 3 4 8 5-5 5 15H2L8 3z"/>'),
+    utensils: svg('<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>'),
+    pencil: svg('<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>'),
+    userPlus: svg('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>'),
+    card: svg('<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/>'),
+    mail: svg('<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>'),
+    plus: svg('<path d="M5 12h14"/><path d="M12 5v14"/>'),
+    trash: svg('<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>'),
+    chev: svg('<path d="m6 9 6 6 6-6"/>', "chev"),
+  };
+  // What the tag helpers would emit. sa-timeline-item-media renders an icon or avatar on a disc, with its label as
+  // hidden text; without it the marker is empty and draws a dot. tone stands in for a class on the author's icon.
+  const tones = { danger: "var(--sa-color-danger)", warning: "var(--sa-color-warning)", success: "var(--sa-color-success)" };
+  const avatar = initials => `<span class="sa-avatar" data-slot="avatar" data-size="sm"><span class="sa-avatar-fallback" data-slot="avatar-fallback">${initials}</span></span>`;
+  const markerOf = it => {
+    const label = it.label ? `<span class="sr-only">${it.label}: </span>` : "";
+    if (it.icon) return `<span class="sa-timeline-item-marker" data-media>${it.tone ? I[it.icon].replace("<svg", `<svg style="color:${tones[it.tone]}"`) : I[it.icon]}${label}</span>`;
+    if (it.avatar) return `<span class="sa-timeline-item-marker" data-media>${avatar(it.avatar)}</span>`;
+    return `<span class="sa-timeline-item-marker"></span>`;
+  };
+  const item = it => {
+    const attrs = `${it.current ? ` data-current aria-current="step"` : ""}${it.rail ? ` data-rail="${it.rail}"` : ""}`;
+    return `<li class="sa-timeline-item"${attrs}>${markerOf(it)}`
+      + `<div class="sa-timeline-item-title"${it.muted ? " data-muted" : ""}>${it.title}</div>`
+      + (it.time ? `<time class="sa-timeline-item-time"${it.datetime ? ` datetime="${it.datetime}"` : ""}>${it.time}</time>` : "")
+      + (it.desc ? `<p class="sa-timeline-item-description">${it.desc}</p>` : "")
+      + (it.actions ? `<div class="sa-timeline-item-actions">${it.actions}</div>` : "")
+      + (it.extra ?? "") + `</li>`;
+  };
+  const timeline = (items, attrs = "") => `<ol class="sa-timeline" role="list"${attrs}>${items.map(item).join("")}</ol>`;
+  const btn = (label, variant = "outline", extra = "") => `<button class="sa-button sa-button-variant-${variant} sa-button-size-sm" data-slot="button"${extra}>${label}</button>`;
+  let uid = 0;
+  const collapsible = (body, open) => {
+    const id = `tl-${++uid}`;
+    return {
+      actions: btn(`Changes ${I.chev}`, "ghost", ` commandfor="${id}" command="--toggle" aria-expanded="${!!open}"`),
+      extra: `<sel-collapsible id="${id}" data-slot="collapsible"${open ? "" : " hidden"}>${body}</sel-collapsible>`,
+    };
+  };
+  const changes = rows => `<dl class="changes">${rows.map(([k, from, to]) => `<dt>${k}</dt><dd>${from ? `<del>${from}</del> → ` : ""}${to}</dd>`).join("")}</dl>`;
+  const card = (title, sub, body, footer) => `<div style="max-width:340px"><div class="sa-card" data-slot="card" data-size="sm">
+    <div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">${title}</div><div data-slot="card-description" class="sa-card-description">${sub}</div></div>
+    <div data-slot="card-content" class="sa-card-content">${body}</div>
+    ${footer ? `<div data-slot="card-footer" class="sa-card-footer">${footer}</div>` : ""}</div></div>`;
+
+  const booking = [
+    { icon: "plus", title: "Booked", desc: "Online, by Amara Okafor.", time: "2 Mar, 09:14" },
+    { icon: "card", title: "Payment received", desc: "R 48,200 by card ending 4417.", time: "2 Mar, 09:15" },
+    { icon: "ticket", title: "Tickets issued", desc: "Emirates, e-tickets sent to both travellers.", time: "3 Mar, 11:02" },
+    { icon: "mail", title: "Pre-departure pack sent", time: "Today" },
+    { icon: "pencil", title: "Seat changed", desc: "Kenji Okafor: 32A → 14C.", time: "Today" },
+  ];
+
+  const scenarios = [
+    {
+      key: "history", name: "1. Booking history",
+      about: "What has happened to a booking, on its view page. An icon per kind of event, and the time at the end of the title row. Where the booking is going next (check-in, departure) is a checklist, not this.",
+      parts: ["sa-timeline", "sa-timeline-item", "sa-timeline-item-media"], other: ["sa-icon"],
+      html: `<div class="head">Booking VT-2481 <span>Kansai in ten days</span></div>` + timeline(booking),
+      razor: `<sa-timeline>
+    <sa-timeline-item title="Booked" description="Online, by Amara Okafor." time="2 Mar, 09:14">
+        <sa-timeline-item-media><sa-icon name="plus"/></sa-timeline-item-media>
+    </sa-timeline-item>
+    <sa-timeline-item title="Payment received" description="R 48,200 by card ending 4417." time="2 Mar, 09:15">
+        <sa-timeline-item-media><sa-icon name="credit-card"/></sa-timeline-item-media>
+    </sa-timeline-item>
+    …
+</sa-timeline>`,
+    },
+    {
+      key: "activity", name: "2. Activity feed with avatars",
+      about: "Who did what on a booking, newest first. The marker is the person, through sa-timeline-item-media with an existing sa-avatar. The time child part renders a <time> with a machine-readable datetime.",
+      parts: ["sa-timeline", "sa-timeline-item", "sa-timeline-item-media", "sa-timeline-item-time"], other: ["sa-avatar"],
+      html: timeline([
+        { avatar: "AO", title: "Amara Okafor added a traveller", desc: "Kenji Okafor, adult.", time: "5 min ago", datetime: "2026-10-20T09:40" },
+        { avatar: "LM", title: "Lindiwe Mokoena changed the hotel", desc: "Gion Garden Hotel → Ryokan Hanaya.", time: "1 h ago" },
+        { avatar: "SY", title: "Voyager sent the payment receipt", time: "2 Mar" },
+        { avatar: "AO", title: "Amara Okafor created the booking", time: "2 Mar" },
+      ]),
+      razor: `<sa-timeline>
+    @foreach (var entry in Model.Activity)
+    {
+        <sa-timeline-item title="@entry.Summary" description="@entry.Detail">
+            <sa-timeline-item-media>
+                <sa-avatar name="@entry.User.Name" src="@entry.User.Photo" size="AvatarSize.Small"/>
+            </sa-timeline-item-media>
+            <sa-timeline-item-time datetime="entry.At">@entry.At.Humanize()</sa-timeline-item-time>
+        </sa-timeline-item>
+    }
+</sa-timeline>`,
+    },
+    {
+      key: "audit", name: "3. Audit log with expandable changes",
+      about: "Changes to a tour, each with an icon for its kind. A ghost button in the actions toggles a collapsible that lists what changed; both are existing components, the timeline only places the collapsible under the text.",
+      parts: ["sa-timeline", "sa-timeline-item", "sa-timeline-item-media", "sa-timeline-item-actions"], other: ["sa-icon", "sa-button", "sa-collapsible"],
+      html: timeline([
+        { icon: "pencil", title: "Price changed", desc: "By Lindiwe Mokoena.", time: "Today 10:02", ...collapsible(changes([["Price per person", "¥178,000", "¥186,000"], ["Single supplement", "¥24,000", "¥28,000"]]), true) },
+        { icon: "plus", title: "Day added", desc: "By Amara Okafor.", time: "Yesterday", ...collapsible(changes([["Day 6", "", "Nishiki Market food tour"]])) },
+        { icon: "trash", title: "Photo removed", desc: "By Amara Okafor.", time: "3 Mar" },
+        { icon: "plus", title: "Tour created", desc: "By Amara Okafor.", time: "2 Mar" },
+      ]),
+      razor: `<sa-timeline-item title="Price changed" description="By Lindiwe Mokoena." time="Today 10:02">
+    <sa-timeline-item-media><sa-icon name="pencil"/></sa-timeline-item-media>
+    <sa-timeline-item-actions>
+        <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Small"
+                   commandfor="change-81" command="--toggle">
+            Changes <sa-icon name="chevron-down"/>
+        </sa-button>
+    </sa-timeline-item-actions>
+    <sa-collapsible id="change-81">…the changed fields…</sa-collapsible>
+</sa-timeline-item>`,
+    },
+    {
+      key: "itinerary", name: "4. Itinerary with the day in a gutter",
+      about: "A day-by-day trip plan. time-placement=\"Start\" puts the time in a column before the markers, as wide as its longest entry, so the days line up.",
+      parts: ["sa-timeline", "sa-timeline-item", "sa-timeline-item-media"], other: ["sa-icon"],
+      html: timeline([
+        { icon: "plane", title: "Arrive at Kansai International", desc: "EK 316, terminal 1. Pick up the ICOCA cards.", time: "Day 1" },
+        { icon: "train", title: "Haruka express to Kyoto", desc: "75 minutes; reserved seats.", time: "Day 1" },
+        { icon: "bed", title: "Ryokan Hanaya, Gion", desc: "Three nights.", time: "Day 1–3" },
+        { icon: "mountain", title: "Kumano Kodo day hike", desc: "Optional; book by Day 3.", time: "Day 5" },
+        { icon: "utensils", title: "Nishiki Market food tour", desc: "Meet at the Teramachi entrance, 10:00.", time: "Day 6" },
+      ], ` data-time="start"`),
+      razor: `<sa-timeline time-placement="TimelineTimePlacement.Start">
+    @foreach (var stop in Model.Itinerary)
+    {
+        <sa-timeline-item title="@stop.Name" description="@stop.Detail" time="@stop.Days">
+            <sa-timeline-item-media><sa-icon name="@stop.Icon"/></sa-timeline-item-media>
+        </sa-timeline-item>
+    }
+</sa-timeline>`,
+    },
+    {
+      key: "numbered", name: "5. Numbered instructions",
+      about: "Self check-in steps sent to a traveller. marker=\"Number\" on the list numbers the items that have no media; the rail joins the steps.",
+      parts: ["sa-timeline", "sa-timeline-item"], other: [],
+      html: `<div class="head">Self check-in at Ryokan Hanaya</div>` + timeline([
+        { title: "Collect the key code", desc: "Sent by SMS at 14:00 on the day you arrive." },
+        { title: "Open the lockbox by the side gate", desc: "The gate is on Hanamikoji-dori, left of the noren." },
+        { title: "Leave your shoes in the genkan", desc: "Slippers are on the rack by the step." },
+        { title: "Find your room on the first floor", desc: "Room 3, Sakura. Tea is ready on the table." },
+      ], ` data-marker="number"`),
+      razor: `<sa-timeline marker="TimelineMarker.Number">
+    <sa-timeline-item title="Collect the key code"
+                      description="Sent by SMS at 14:00 on the day you arrive."/>
+    <sa-timeline-item title="Open the lockbox by the side gate" …/>
+    …
+</sa-timeline>`,
+    },
+    {
+      key: "widget", name: "6. Compact feed in a dashboard card",
+      about: "Recent changes on the dashboard. Small size; events with no media show a dot. The card and its footer link are existing components.",
+      parts: ["sa-timeline", "sa-timeline-item"], other: ["sa-card", "sa-button-link"],
+      html: card("Recent changes", "Across all bookings", timeline([
+        { title: "VT-2481: seat change requested", time: "10:02" },
+        { title: "VT-2479: traveller added", time: "09:40" },
+        { title: "VT-2466: hotel changed", time: "Yesterday" },
+        { title: "VT-2481: booking created", time: "2 Mar" },
+      ], ` data-size="sm"`), `<a href="#" class="sa-button sa-button-variant-link sa-button-size-sm" data-slot="button" style="padding-inline:0">View all activity</a>`),
+      razor: `<sa-card size="CardSize.Small">
+    <sa-card-header>…</sa-card-header>
+    <sa-card-content>
+        <sa-timeline size="TimelineSize.Small">
+            <sa-timeline-item title="VT-2481: seat change requested" time="10:02"/>
+            …
+        </sa-timeline>
+    </sa-card-content>
+    <sa-card-footer>
+        <sa-button-link variant="ButtonVariant.Link" asp-page="/Activity">View all activity</sa-button-link>
+    </sa-card-footer>
+</sa-card>`,
+    },
+    {
+      key: "failure", name: "7. A failed step with a retry",
+      about: "A refund whose payout failed. The failure is an icon in the danger colour, with a label so a screen reader hears \"Failed: Payout to the traveller\"; a Retry button sits in the actions. Nothing else about the item changes.",
+      parts: ["sa-timeline", "sa-timeline-item", "sa-timeline-item-media", "sa-timeline-item-actions"], other: ["sa-icon", "sa-button"],
+      html: `<div class="head">Refund RF-118 <span>R 12,400</span></div>` + timeline([
+        { icon: "undo", title: "Refund requested", desc: "Flight cancelled by the airline.", time: "9 Mar" },
+        { icon: "check", tone: "success", label: "Approved", title: "Approved", desc: "By Lindiwe Mokoena.", time: "10 Mar" },
+        { icon: "error", tone: "danger", label: "Failed", title: "Payout to the traveller", desc: "The card ending 4417 has expired.", time: "11 Mar", actions: btn("Retry", "default") },
+      ]),
+      razor: `<sa-timeline-item title="Payout to the traveller" description="The card ending 4417 has expired." time="11 Mar">
+    <sa-timeline-item-media label="Failed">
+        <sa-icon name="circle-x" class="text-danger"/>
+    </sa-timeline-item-media>
+    <sa-timeline-item-actions>
+        <sa-button size="ButtonSize.Small" asp-page-handler="RetryPayout">Retry</sa-button>
+    </sa-timeline-item-actions>
+</sa-timeline-item>`,
+      note: "<code>label</code> is optional on <code>sa-timeline-item-media</code>: a kind-of-event icon (a pencil, an avatar) needs none, since the title says it. An icon that adds meaning the title doesn't carry gets one.",
+    },
+    {
+      key: "comments", name: "8. Ticket history with comments",
+      about: "A support ticket mixing comments and small system events. A comment's body is the author's own markup below the text; system events have no media and show a dot. The avatar column fits both.",
+      parts: ["sa-timeline", "sa-timeline-item", "sa-timeline-item-media", "sa-timeline-item-title"], other: ["sa-avatar"],
+      html: timeline([
+        { avatar: "KT", title: "Kenji Tanaka commented", time: "2 h ago", extra: `<div class="comment">Can we move the Kumano Kodo hike to Day 4? My knee needs the rest day first.</div>` },
+        { title: "Status changed to <strong>Waiting on supplier</strong>", muted: true, time: "1 h ago" },
+        { avatar: "LM", title: "Lindiwe Mokoena commented", time: "40 min ago", extra: `<div class="comment">Asked Kii Tours; they'll confirm by tomorrow.</div>` },
+        { title: "Assigned to Lindiwe Mokoena", muted: true, time: "40 min ago" },
+      ]),
+      razor: `<sa-timeline-item title="Kenji Tanaka commented" time="2 h ago">
+    <sa-timeline-item-media><sa-avatar name="Kenji Tanaka" size="AvatarSize.Small"/></sa-timeline-item-media>
+    <div class="rounded-lg border p-3 text-sm">@comment.Body</div>
+</sa-timeline-item>
+
+<sa-timeline-item time="1 h ago">
+    <sa-timeline-item-title muted="true">Status changed to <strong>Waiting on supplier</strong></sa-timeline-item-title>
+</sa-timeline-item>`,
+      note: "<code>muted</code> on the title, as on the checklist's, quiets the system events. The comment box could be an <code>sa-card</code>; plain markup is enough here.",
+    },
+    {
+      key: "groups", name: "9. Grouped by day, with earlier activity",
+      about: "A long feed in sections. Several timelines with ordinary headings in between, as the checklist's groups are, and an existing button to load more after the last.",
+      parts: ["sa-timeline", "sa-timeline-item"], other: ["sa-button"],
+      html: `<p class="grouphead">Today</p>` + timeline([
+        { title: "Seat change requested", desc: "VT-2481, Kenji Okafor: 32A → 14C.", time: "10:02" },
+        { title: "Traveller added", desc: "VT-2479, Mia Laurent.", time: "09:40" },
+      ]) + `<p class="grouphead">Yesterday</p>` + timeline([
+        { title: "Hotel changed", desc: "VT-2466: Gion Garden Hotel → Ryokan Hanaya.", time: "16:21" },
+        { title: "Refund approved", desc: "RF-118, R 12,400.", time: "11:05" },
+      ]) + `<div style="margin-top:16px">${btn("Show earlier activity", "outline")}</div>`,
+      razor: `@foreach (var day in Model.Activity.GroupBy(e => e.At.Date))
+{
+    <h3 class="…">@day.Key.Humanize()</h3>
+    <sa-timeline>
+        @foreach (var entry in day) { <sa-timeline-item title="…" description="…" time="…"/> }
+    </sa-timeline>
+}
+<sa-button variant="ButtonVariant.Outline" size="ButtonSize.Small" …>Show earlier activity</sa-button>`,
+      note: "A <code>sa-timeline-group</code> with a label would only style the heading. Plain markup seems enough, as with the checklist.",
+    },
+    {
+      key: "markers", name: "10. Every kind of marker",
+      about: "No media draws the list's marker (Dot here; Ring and Number in the strips above). sa-timeline-item-media holds an icon on a disc, coloured if the icon has a colour class, or an avatar that fills the marker.",
+      parts: ["sa-timeline", "sa-timeline-item", "sa-timeline-item-media"], other: ["sa-icon", "sa-avatar"],
+      html: timeline([
+        { title: "No media", desc: "A plain event: a dot." },
+        { icon: "mail", title: "An icon", desc: "On a sunken disc, in the muted ink." },
+        { icon: "warning", tone: "warning", label: "Needs attention", title: "A coloured icon with a label", desc: "triangle-alert with text-warning; the label is hidden text." },
+        { avatar: "AO", title: "An avatar", desc: "Fills the marker." },
+      ]),
+      razor: `<sa-timeline-item title="Plain event"/>
+
+<sa-timeline-item title="Email sent">
+    <sa-timeline-item-media><sa-icon name="mail"/></sa-timeline-item-media>
+</sa-timeline-item>
+
+<sa-timeline-item title="Supplier hasn't confirmed">
+    <sa-timeline-item-media label="Needs attention">
+        <sa-icon name="triangle-alert" class="text-warning"/>
+    </sa-timeline-item-media>
+</sa-timeline-item>`,
+      note: "There is no status: no built-in icons and no <code>SemanticIconRole</code> members. The marker is the list's dot, ring or number, or what the author puts in it.",
+    },
+    {
+      key: "progress", name: "11. Trip progress, with dashed and broken rails",
+      about: "The itinerary while the trip is on. current on today's stop gives it and every stop before it the accent, and the rails between them. rail=\"Dashed\" leaves an optional stop; rail=\"None\" breaks the line before the days the plan doesn't cover.",
+      parts: ["sa-timeline", "sa-timeline-item", "sa-timeline-item-media"], other: ["sa-icon"],
+      html: `<div class="head">Kansai in ten days <span>Day 2 of 10</span></div>` + timeline([
+        { icon: "plane", title: "Arrive at Kansai International", time: "Day 1" },
+        { icon: "train", title: "Haruka express to Kyoto", time: "Day 1" },
+        { icon: "bed", title: "Ryokan Hanaya, Gion", desc: "You are here. Check-out is at 10:00 on Day 4.", time: "Day 1–3", current: true },
+        { icon: "mountain", title: "Kumano Kodo day hike", desc: "Optional; book by Day 3.", time: "Day 5", rail: "dashed" },
+        { icon: "utensils", title: "Nishiki Market food tour", time: "Day 6", rail: "none" },
+        { icon: "plane", title: "Fly home", desc: "EK 317, 23:45.", time: "Day 10" },
+      ], ` data-time="start"`),
+      razor: `<sa-timeline time-placement="TimelineTimePlacement.Start">
+    @foreach (var stop in Model.Itinerary)
+    {
+        <sa-timeline-item title="@stop.Name" description="@stop.Detail" time="@stop.Days"
+                          current="stop.Id == Model.TodayStopId"
+                          rail="stop.IsOptional ? TimelineRail.Dashed : stop.GapAfter ? TimelineRail.None : TimelineRail.Solid">
+            <sa-timeline-item-media><sa-icon name="@stop.Icon"/></sa-timeline-item-media>
+        </sa-timeline-item>
+    }
+</sa-timeline>`,
+      note: "The current item gets <code>aria-current=\"step\"</code> and a halo. Several current items are allowed: the reach runs to the last of them, and each gets <code>aria-current</code>. The rail out of the current item stays neutral; the way ahead isn't travelled yet.",
+    },
+  ];
+
+  // Attributes. Each option renders the same short booking with one attribute changed.
+  const sample = (listAttrs, opts = {}) => timeline(booking.slice(0, 4).map((it, i) => ({ ...it, desc: opts.short ? null : it.desc, icon: opts.plain ? null : it.icon, ...(opts.items?.[i] ?? {}) })), listAttrs);
+  const strips = [
+    { name: "Marker", about: "<code>marker</code> on <code>sa-timeline</code>: what an item with no media shows. <code>Dot</code> by default.", plain: true, short: true, opts: [
+      ["Dot <span>(default)</span>", ""],
+      ["Ring", ` data-marker="ring"`],
+      ["Number", ` data-marker="number"`],
+    ] },
+    { name: "Media style", about: "<code>media-style</code> on <code>sa-timeline</code>: how an icon in <code>sa-timeline-item-media</code> draws. <code>Disc</code> by default.", short: true, opts: [
+      ["Disc <span>(default)</span>", ""],
+      ["Plain", ` data-media-style="plain"`],
+      ["Ring", ` data-media-style="ring"`],
+    ] },
+    { name: "Rail", about: "<code>rail</code> on <code>sa-timeline-item</code>: the rail leaving it. Here on the second item. <code>Solid</code> by default.", short: true, perOpt: true, opts: [
+      ["Solid <span>(default)</span>", "", {}],
+      ["Dashed", "", { 1: { rail: "dashed" } }],
+      ["None", "", { 1: { rail: "none" } }],
+    ] },
+    { name: "Progress", about: "<code>current</code> on the third item, with each marker.", short: true, perOpt: true, opts: [
+      ["Dot", "", { 2: { current: true } }, true],
+      ["Number", ` data-marker="number"`, { 2: { current: true } }, true],
+      ["Media, disc", "", { 2: { current: true } }],
+      ["Media, ring", ` data-media-style="ring"`, { 2: { current: true } }],
+    ] },
+    { name: "Time placement", about: "<code>time-placement</code> on <code>sa-timeline</code>. <code>End</code> by default.", opts: [
+      ["End <span>(default)</span>", ""],
+      ["Below the title", ` data-time="below"`],
+      ["Start, in a gutter", ` data-time="start"`],
+    ] },
+  ];
+  document.getElementById("options").innerHTML = strips.map(st => `
+    <div class="scenario"><header><h2 style="font-size:0.95rem">${st.name}</h2><p>${st.about}</p></header>
+    <div class="strip">${st.opts.map(([n, a, items, plain]) => `<div class="opt"><div class="opt-name">${n}</div><div class="frame">${sample(a, { ...st, items, plain: plain ?? st.plain })}</div></div>`).join("")}</div></div>`).join("");
+
+  const highlight = code => code
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/(&lt;\/?)(sa-timeline[\w-]*)/g, '$1<span class="k-own">$2</span>')
+    .replace(/(&lt;\/?)(sa-(?!timeline)[\w-]+)/g, '$1<span class="k-other">$2</span>')
+    .replace(/( (?:title|description|time|label|datetime|marker|media-style|rail|current|time-placement|muted)=)/g, '<span class="k-attr">$1</span>');
+
+  document.getElementById("scenarios").innerHTML = scenarios.map(s => `
+    <section class="scenario" id="${s.key}">
+      <header><h2>${s.name}</h2><p>${s.about.replace(/<time>/g, "&lt;time&gt;")}</p></header>
+      <div class="pair">
+        <div class="frame">${s.html}</div>
+        <pre class="code">${highlight(s.razor)}</pre>
+      </div>
+      <div class="chips"><b>Timeline</b>${s.parts.map(p => `<span class="chip own">${p.replace("sa-timeline-", "-")}</span>`).join("")}
+        ${s.other.length ? `<b style="margin-inline-start:12px">Existing</b>${s.other.map(p => `<span class="chip">${p}</span>`).join("")}` : ""}</div>
+      ${s.note ? `<p class="lede" style="font-size:0.85rem"><b>Note:</b> ${s.note}</p>` : ""}
+    </section>`).join("");
+
+  // Matrix.
+  const rows = [
+    ["sa-timeline", "parts"], ["sa-timeline-item", "parts"], ["sa-timeline-item-title", "parts"], ["sa-timeline-item-time", "parts"], ["sa-timeline-item-media", "parts"], ["sa-timeline-item-actions", "parts"],
+    ["sa-icon", "other"], ["sa-avatar", "other"], ["sa-button", "other"], ["sa-button-link", "other"], ["sa-collapsible", "other"], ["sa-card", "other"],
+  ];
+  const uses = (s, name) => ["sa-timeline-item-title", "sa-timeline-item-time"].includes(name) ? s.razor.includes(`<${name}`) : (s.parts.includes(name) || s.other.includes(name));
+  document.getElementById("matrix").innerHTML = `<thead><tr><th></th>${scenarios.map((s, i) => `<th title="${s.name}">${i + 1}</th>`).join("")}<th>Uses</th></tr></thead><tbody>` +
+    rows.map(([name, kind]) => {
+      const hits = scenarios.map(s => uses(s, name));
+      return `<tr><td class="${kind === "parts" ? "k-own" : ""}">${name}</td>${hits.map(h => `<td class="${h ? "y" : ""}">${h ? "●" : ""}</td>`).join("")}<td>${hits.filter(Boolean).length}</td></tr>`;
+    }).join("") + "</tbody>";
+
+  // Control bar.
+  const params = new URLSearchParams(location.search);
+  const themeSelect = document.getElementById("theme-select");
+  const applyTheme = () => {
+    const l = document.getElementById("theme");
+    if (themeSelect.value) l.href = `../../util/theme-check/presets/${themeSelect.value}.css`;
+    else l.removeAttribute("href");
+  };
+  themeSelect.value = params.get("theme") ?? "";
+  themeSelect.addEventListener("change", applyTheme);
+  applyTheme();
+  const densitySelect = document.getElementById("density-select");
+  densitySelect.addEventListener("change", () => {
+    if (densitySelect.value) document.querySelector("main").dataset.saDensity = densitySelect.value;
+    else delete document.querySelector("main").dataset.saDensity;
+  });
+  if (params.get("mode") === "dark") document.documentElement.classList.add("dark");
+  document.getElementById("dark-toggle").addEventListener("click", () => document.documentElement.classList.toggle("dark"));
+</script>
+</body>
+</html>

@@ -59,6 +59,7 @@
 | [Table](components/table.md) | `<sa-table>`, `<sa-table-body>`, `<sa-table-caption>`, … | Renders a table in a container that scrolls sideways when the table is too wide. |
 | [Tabs](components/tabs.md) | `<sa-tab>`, `<sa-tab-link>`, `<sa-tab-list>`, … | Renders a tab that shows its panel when selected. |
 | [Textarea](components/textarea.md) | `<sa-textarea>` | Renders a multi-line text input that grows with its content. |
+| [Timeline](components/timeline.md) | `<sa-timeline>`, `<sa-timeline-item>`, `<sa-timeline-item-actions>`, … | Renders an ordered list of events, each with a marker joined to the next by a rail. |
 | [Toaster](components/toaster.md) | `<sa-toaster>` | Renders the region that shows toast notifications. |
 | [Toggle](components/toggle.md) | `<sa-toggle>` | Renders a button that can be pressed on or off. |
 | [ToggleGroup](components/toggle-group.md) | `<sa-toggle-group>`, `<sa-toggle-group-item>` | Renders a group of toggle items that lets the user select one item or several. |
