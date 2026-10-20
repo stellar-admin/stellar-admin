@@ -6,6 +6,7 @@ Index columns are configured in `index.Columns(columns => ...)`. They start empt
 
 - [Adding columns](#adding-columns)
 - [Values through references](#values-through-references)
+- [Computed values](#computed-values)
 - [How a cell renders](#how-a-cell-renders)
 - [Built-in displays in cells](#built-in-displays-in-cells)
 - [A badge styled by value](#a-badge-styled-by-value)
@@ -50,6 +51,26 @@ Use the null-forgiving `!` on nullable navigations; a null reference shows the e
 A column on a collection or many-to-many navigation (`tour => tour.Destinations`) is loaded with the page too. Show it with `BadgeDisplay` and `UseText<TItem>`, since without it each badge shows the entity's type name; it can't be `Sortable()` without a sort expression ([relationships](relationships.md#showing-related-values)).
 
 Selecting a foreign key (`booking => booking.CustomerId`) shows the number; select the navigation's property instead.
+
+## Computed values
+
+A column can show any expression of the record, not just a property:
+
+```csharp
+columns.Add(tour => string.Join(", ", tour.Destinations.Select(destination => destination.Name)), column => column.Title = "Destinations");
+columns.Add(booking => booking.Nights * booking.NightlyRate, column =>
+{
+    column.Title = "Total";
+    column.Sortable(booking => booking.Nights * booking.NightlyRate);
+    column.UseDisplay<NumberDisplay>(number => number.Format = "C");
+});
+```
+
+- A computed column has no property for a default header, so `Title` is required; without it the app fails to start.
+- It sorts only by an expression: `Sortable()` alone fails at startup, so use `Sortable(selector)`. Its title in PascalCase (`Total`) names it in sort links and in `ResourceSort.Field` for a custom data source, so two sortable columns can't share one.
+- The value is computed in memory for each row. EF Core resources load the navigations it reads from the record, such as `tour.Destinations` or `booking.Customer`, but not navigations read through a nested lambda's parameter, such as `destination.Country` inside `Select`.
+- Reading a property of a null value, or calling one of its methods, gives null (or zero or false), which shows the empty text; extension methods such as `Select` still throw on a null collection.
+- View page and form display fields still need a property path.
 
 ## How a cell renders
 

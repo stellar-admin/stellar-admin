@@ -33,7 +33,8 @@ public sealed class ResourceColumnBuilder<TResource>
     ///     Sets the column title.
     /// </summary>
     /// <value>
-    ///     The default is the property's display name.
+    ///     The default is the property's display name. A column that computes its value has no
+    ///     property, so it requires a title, which also names the column in sort links.
     /// </value>
     public string? Title
     {
@@ -102,6 +103,10 @@ public sealed class ResourceColumnBuilder<TResource>
     ///     Lets users sort by the column's property.
     /// </summary>
     /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     A column that computes its value fails at startup with this method; sort it with
+    ///     <see cref="Sortable{TSort}(Expression{Func{TResource, TSort}})" /> instead.
+    /// </remarks>
     public ResourceColumnBuilder<TResource> Sortable()
     {
         _configuration.Add(options =>

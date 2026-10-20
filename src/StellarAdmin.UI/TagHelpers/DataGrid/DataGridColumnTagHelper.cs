@@ -64,17 +64,24 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
     ///     Gets or sets an expression that selects the item property whose value the cells show.
     /// </summary>
     /// <value>
-    ///     A lambda that selects a property or a chain of properties, with an explicit parameter
-    ///     type, such as <c>field-for="(Booking b) =&gt; b.Reference"</c>.
+    ///     A lambda with an explicit parameter type that selects a property or a chain of
+    ///     properties, such as <c>field-for="(Booking b) =&gt; b.Reference"</c>, or computes a
+    ///     value, such as <c>field-for="(Booking b) =&gt; b.Nights * b.Rate"</c>.
     /// </value>
     /// <remarks>
     ///     <para>
-    ///         A typed alternative to <c>field</c> that behaves the same way. Can't be combined
-    ///         with <c>field</c>. A null value along the chain shows as an empty value.
+    ///         A typed alternative to <c>field</c> that behaves the same way for a property
+    ///         chain. Can't be combined with <c>field</c>. A null value along the chain shows as
+    ///         an empty value.
     ///     </para>
     ///     <para>
     ///         The property's metadata comes from the parameter type, so <c>[UIHint]</c>
     ///         templates and display names also work on an empty grid.
+    ///     </para>
+    ///     <para>
+    ///         A computed value has no property, so set <c>title</c>, and <c>sort-field</c> to
+    ///         sort it. Reading a property or calling an instance method on a null value
+    ///         doesn't throw: it reads as null, or as zero or false for a value type.
     ///     </para>
     /// </remarks>
     [HtmlAttributeName("field-for")]
@@ -126,8 +133,8 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
     /// </value>
     /// <remarks>
     ///     Requires <c>field</c> or <c>field-for</c>. The template's model is the field value, and
-    ///     its metadata is the field property's. Takes precedence over a <c>[UIHint]</c> on the
-    ///     property.
+    ///     its metadata is the field property's, or the value type's for a computed
+    ///     <c>field-for</c>. Takes precedence over a <c>[UIHint]</c> on the property.
     /// </remarks>
     [HtmlAttributeName("template")]
     public string? Template { get; set; }
@@ -189,9 +196,8 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
     /// <inheritdoc />
     /// <exception cref="InvalidOperationException">
     ///     <see cref="Field" /> and <see cref="FieldFor" /> are both set, a sortable column has no
-    ///     field or sort field, <see cref="Template" /> is set without a field, the grid display
-    ///     template isn't found, or <see cref="FieldFor" /> selects something other than a
-    ///     property chain.
+    ///     field or sort field, <see cref="Template" /> is set without a field, or the grid display
+    ///     template isn't found.
     /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -217,7 +223,8 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
         Template = string.IsNullOrEmpty(Template) ? null : Template;
         Format = string.IsNullOrEmpty(Format) ? null : Format;
 
-        var fieldPropertyChain = FieldFor is null ? null : ExtractPropertyChain(FieldFor);
+        var fieldPropertyChain = FieldFor is null ? null : FindPropertyChain(FieldFor);
+        var computed = FieldFor is not null && fieldPropertyChain is null;
         var fieldName =
             Field
             ?? (
@@ -253,7 +260,7 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
                 );
             }
 
-            if (Template is not null && fieldName is null)
+            if (Template is not null && fieldName is null && !computed)
             {
                 throw new InvalidOperationException(
                     "An <sa-data-grid-column> with a template attribute requires a field or "
@@ -264,7 +271,9 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
 
             // Resolve field metadata and the display template now, while collecting, so
             // their lookup cost is paid once per column rather than once per row.
-            var fieldMetadata = GetFieldMetadata(gridContext, fieldName);
+            var fieldMetadata = computed
+                ? _metadataProvider.GetMetadataForType(FieldFor!.ReturnType)
+                : GetFieldMetadata(gridContext, fieldName);
             if ((Template ?? fieldMetadata?.TemplateHint) is { } templateName)
             {
                 ResolveDisplayTemplate(gridContext, templateName);
@@ -289,6 +298,8 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
                     Sortable = effectiveSortable,
                     SortField = sortField,
                     HasEditTemplate = columnContext.HasEditTemplate,
+                    ComputedValue = computed ? DataGridComputedValue.Compile(FieldFor!) : null,
+                    ComputedMetadata = computed ? fieldMetadata : null,
                 }
             );
 
@@ -314,13 +325,18 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
         {
             cellHtml = childContent.GetContent();
         }
-        else if (fieldName is not null)
+        else if (fieldName is not null || computed)
         {
-            var value = currentRow.Item is { } item
-                ? GetFieldValue(item, fieldName, fieldPropertyChain)
-                : null;
+            // A computed column was compiled when it was collected, at the cell's position
+            var column = computed ? gridContext.Columns[currentRow.Cells.Count] : null;
+            var value =
+                currentRow.Item is not { } item ? null
+                : column is not null ? column.ComputedValue!(item)
+                : GetFieldValue(item, fieldName!, fieldPropertyChain);
 
-            var fieldMetadata = GetFieldMetadata(gridContext, fieldName);
+            var fieldMetadata = column is not null
+                ? column.ComputedMetadata
+                : GetFieldMetadata(gridContext, fieldName);
             var templateName = Template ?? fieldMetadata?.TemplateHint;
             if (IsEmpty(value) && !((TemplateRendersEmpty ?? false) && templateName is not null))
             {
@@ -359,14 +375,14 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
     }
 
     /// <summary>
-    ///     Extracts the property chain selected by a <c>field-for</c> expression,
+    ///     Finds the property chain selected by a <c>field-for</c> expression,
     ///     root-first (<c>b =&gt; b.Customer.Name</c> yields <c>[Customer, Name]</c>).
     ///     Every link must be a property access and the chain must start at the lambda
-    ///     parameter — anything else (method calls, indexers, fields, casts mid-chain) is
-    ///     unsupported. A boxing <c>Convert</c> node (from an expression built as
-    ///     <c>Func&lt;T, object&gt;</c>) is unwrapped first.
+    ///     parameter; anything else (method calls, operators, fields, casts mid-chain) is a
+    ///     computed value, for which this returns <c>null</c>. A boxing <c>Convert</c> node
+    ///     (from an expression built as <c>Func&lt;T, object&gt;</c>) is unwrapped first.
     /// </summary>
-    private static PropertyInfo[] ExtractPropertyChain(LambdaExpression fieldFor)
+    private static PropertyInfo[]? FindPropertyChain(LambdaExpression fieldFor)
     {
         var body = fieldFor.Body;
         if (
@@ -386,17 +402,13 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
             body = instance;
         }
 
-        if (body is ParameterExpression && chain.Count > 0)
+        if (body is not ParameterExpression || chain.Count == 0)
         {
-            chain.Reverse();
-            return chain.ToArray();
+            return null;
         }
 
-        throw new InvalidOperationException(
-            $"The <sa-data-grid-column> field-for expression '{fieldFor}' is not supported. "
-                + "Only a property or chain of properties selected on the row item is "
-                + "supported, like (Booking b) => b.Customer.Name."
-        );
+        chain.Reverse();
+        return chain.ToArray();
     }
 
     private static bool IsEmpty([NotNullWhen(false)] object? value)

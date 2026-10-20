@@ -1883,7 +1883,7 @@ internal sealed class ResourceController<TResource>(
 
         var column = _resourceOptions.Index.Columns.FirstOrDefault(column =>
             column.Sortable
-            && string.Equals(column.FieldName, query.SortBy, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(column.SortField, query.SortBy, StringComparison.OrdinalIgnoreCase)
         );
         request = new()
         {
@@ -1902,7 +1902,7 @@ internal sealed class ResourceController<TResource>(
             Sort = column is null
                 ? _resourceOptions.Index.DefaultSort
                 : new(
-                    column.FieldName!,
+                    column.SortField!,
                     direction == "desc"
                         ? ResourceSortDirection.Descending
                         : ResourceSortDirection.Ascending

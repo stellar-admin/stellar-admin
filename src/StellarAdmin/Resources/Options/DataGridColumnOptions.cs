@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Humanizer;
 using StellarAdmin.Resources.Displays;
 
 namespace StellarAdmin.Resources.Options;
@@ -65,6 +66,25 @@ public sealed class DataGridColumnOptions
     ///     The expression, or <see langword="null" /> to sort by <see cref="FieldExpression" />.
     /// </value>
     public LambdaExpression? SortExpression { get; internal set; }
+
+    /// <summary>
+    ///     Gets the name that identifies the column when the list is sorted by it.
+    /// </summary>
+    /// <value>
+    ///     <see cref="FieldName" />, or for a column that computes its value, its title in
+    ///     PascalCase, such as <c>TagNames</c> for <c>Tag names</c>. <see langword="null" /> when
+    ///     neither is set.
+    /// </value>
+    /// <remarks>
+    ///     Sort links and <see cref="ResourceSort.Field" /> use this name.
+    /// </remarks>
+    public string? SortField =>
+        FieldName
+        ?? (
+            string.IsNullOrWhiteSpace(Title)
+                ? null
+                : string.Concat(Title.Dehumanize().Where(char.IsLetterOrDigit))
+        );
 
     /// <summary>
     ///     Gets the column's header text.

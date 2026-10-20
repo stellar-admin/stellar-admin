@@ -1202,6 +1202,7 @@ StellarAdmin.Resources.Options.DataGridColumnOptions.FieldExpression.get -> Syst
 StellarAdmin.Resources.Options.DataGridColumnOptions.FieldName.get -> string?
 StellarAdmin.Resources.Options.DataGridColumnOptions.Sortable.get -> bool
 StellarAdmin.Resources.Options.DataGridColumnOptions.SortExpression.get -> System.Linq.Expressions.LambdaExpression?
+StellarAdmin.Resources.Options.DataGridColumnOptions.SortField.get -> string?
 StellarAdmin.Resources.Options.DataGridColumnOptions.Title.get -> string?
 StellarAdmin.Resources.Options.FormContainerOptions
 StellarAdmin.Resources.Options.FormContainerOptions.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+
 namespace StellarAdmin.UI;
 
 /// <summary>A column definition registered during the collect pass.</summary>
@@ -19,4 +21,13 @@ internal sealed class DataGridColumn
 
     /// <summary>Whether the column has an edit template, which editing rows render.</summary>
     public bool HasEditTemplate { get; init; }
+
+    /// <summary>
+    ///     The getter of a computed <c>field-for</c> expression, compiled once for the grid's rows,
+    ///     or <c>null</c> when the column reads a property chain or no field.
+    /// </summary>
+    public Func<object, object?>? ComputedValue { get; init; }
+
+    /// <summary>The metadata of a computed expression's return type, which its template sees.</summary>
+    public ModelMetadata? ComputedMetadata { get; init; }
 }

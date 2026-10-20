@@ -203,4 +203,47 @@ public class ResourceColumnTests
             .That(exception!.Message)
             .Contains("The index column 'Tags' shows Tag badges, but its UseText reads Product.");
     }
+
+    [Test]
+    public async Task Index_WithComputedColumns_LoadsTheNavigationsTheyRead()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.Index(index =>
+                index.Columns(columns =>
+                {
+                    columns.Add(
+                        product =>
+                            string.Join(
+                                ", ",
+                                product.Tags.OrderBy(tag => tag.Name).Select(tag => tag.Name)
+                            ),
+                        column => column.Title = "Tags"
+                    );
+                    columns.Add(
+                        product => product.Category!.Name + " / " + product.Name,
+                        column => column.Title = "Category"
+                    );
+                })
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products");
+        var document = await new HtmlParser().ParseDocumentAsync(
+            await response.Content.ReadAsStringAsync()
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        var row = document
+            .QuerySelectorAll("tbody tr")
+            .Single(row => row.QuerySelector("td")!.TextContent.Trim() == "2")
+            .QuerySelectorAll("td")
+            .Select(cell => cell.TextContent.Trim())
+            .ToArray();
+        await Assert.That(row[^2]).IsEqualTo("Sale, Seasonal");
+        await Assert.That(row[^1]).IsEqualTo("Technology / Apple");
+    }
 }

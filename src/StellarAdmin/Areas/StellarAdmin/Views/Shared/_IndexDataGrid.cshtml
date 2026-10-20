@@ -49,7 +49,7 @@
         <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
                              template="@display?.TemplateName" template-renders-empty="@(display?.RendersEmptyValue == true)"
                              empty-text="@column.EmptyText"
-                             sortable="@column.Sortable" sort-field="@column.FieldName"
+                             sortable="@column.Sortable" sort-field="@column.SortField"
                              class="@(display is NumberDisplay ? "text-right" : null)">
             @if (rowFields?[index] is { } field)
             {

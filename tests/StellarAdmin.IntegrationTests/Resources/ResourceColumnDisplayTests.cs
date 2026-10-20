@@ -2,11 +2,13 @@ using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.UI;
+using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -80,6 +82,77 @@ public class ResourceColumnDisplayTests
         await Assert
             .That(document.RequiredElement("thead th").ClassList.Contains("text-right"))
             .IsTrue();
+    }
+
+    [Test]
+    public async Task Index_WithComputedColumn_RendersTheComputedValue()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(columns =>
+        {
+            columns.Add(
+                facts => facts.ProductName + " (" + facts.Code + ")",
+                column => column.Title = "Product"
+            );
+            columns.Add(
+                facts => facts.Price * 2,
+                column =>
+                {
+                    column.Title = "Two of them";
+                    column.UseDisplay<NumberDisplay>(number => number.Format = "0.00");
+                }
+            );
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/facts");
+
+        // Assert
+        var cells = Cells(document);
+        await Assert.That(cells[0].TextContent.Trim()).IsEqualTo("Notebook (NB-01)");
+        await Assert.That(cells[1].TextContent.Trim()).IsEqualTo("17.00");
+        await Assert
+            .That(document.QuerySelectorAll("thead th").Select(header => header.TextContent.Trim()))
+            .IsEquivalentTo(["Product", "Two of them"], CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task Index_WithComputedColumnReadingNull_ShowsEmptyText()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(
+            columns =>
+                columns.Add(
+                    facts => facts.Email!.ToUpperInvariant(),
+                    column =>
+                    {
+                        column.Title = "Email";
+                        column.EmptyText = "None";
+                    }
+                ),
+            change: facts => facts.Email = null
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/facts");
+
+        // Assert
+        await Assert.That(Cells(document)[0].TextContent.Trim()).IsEqualTo("None");
+    }
+
+    [Test]
+    public async Task Startup_WithComputedColumnWithoutTitle_FailsValidation()
+    {
+        // Arrange
+        var configure = () => CreateAsync(columns => columns.Add(facts => facts.Price * 2));
+
+        // Act
+        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+
+        // Assert
+        await Assert.That(exception!.Message).Contains("computes its value, so it needs a Title.");
     }
 
     [Test]

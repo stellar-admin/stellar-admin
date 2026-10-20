@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using StellarAdmin.UI.Tests.Support;
+using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.UI.Tests.TagHelpers.DataGrid;
 
@@ -110,6 +112,65 @@ public class DataGridColumnTagHelperTests
         await Assert.That(viewEngine.Renders).IsEqualTo(0);
     }
 
+    [Test]
+    public async Task ProcessAsync_WithComputedFieldFor_ShowsTheValueOfEachRow()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateColumn(context, new TemplateViewEngine());
+        sut.FieldFor =
+            (Expression<Func<GridProduct, string>>)(
+                product => product.Name + " (" + product.Notes + ")"
+            );
+
+        // Act
+        var cells = await RenderCellsAsync(
+            context,
+            sut,
+            new GridProduct { Name = "Tent", Notes = "Fragile" },
+            new GridProduct { Name = "Map" }
+        );
+
+        // Assert
+        await Assert
+            .That(cells)
+            .IsEquivalentTo(["Tent (Fragile)", "Map ()"], CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithComputedFieldForThroughNull_ShowsEmptyText()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateColumn(context, new TemplateViewEngine());
+        sut.FieldFor =
+            (Expression<Func<GridProduct, string>>)(product => product.Notes!.ToUpperInvariant());
+        sut.EmptyText = "None";
+
+        // Act
+        var cells = await RenderCellsAsync(context, sut, new GridProduct());
+
+        // Assert
+        await Assert.That(cells[0]).IsEqualTo("None");
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithComputedFieldForAndTemplate_RendersTemplateWithValue()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateColumn(context, new TemplateViewEngine());
+        sut.FieldFor =
+            (Expression<Func<GridProduct, string>>)(product => product.Name.ToUpperInvariant());
+        sut.Template = "Notes";
+
+        // Act
+        var cells = await RenderCellsAsync(context, sut, new GridProduct { Name = "Tent" });
+
+        // Assert
+        await Assert.That(cells[0]).IsEqualTo("::TENT");
+    }
+
     private static DataGridColumnTagHelper CreateColumn(
         RenderingContext context,
         ICompositeViewEngine viewEngine
@@ -118,13 +179,13 @@ public class DataGridColumnTagHelperTests
     private static async Task<string[]> RenderCellsAsync(
         RenderingContext context,
         DataGridColumnTagHelper column,
-        GridProduct item
+        params GridProduct[] items
     )
     {
         var grid = new DataGridTagHelper(context.Generator, context.Icons)
         {
             ViewContext = context.ViewContext,
-            Items = new[] { item },
+            Items = items,
         };
         using var html = await TagHelperRenderer.RenderAsync(
             grid,

@@ -84,7 +84,7 @@ public static partial class StellarAdminBuilderExtensions
                     options =>
                         options.Index.DefaultSort is not { } sort
                         || options.Index.Columns.Any(column =>
-                            column.Sortable && column.FieldName == sort.Field
+                            column.Sortable && column.SortField == sort.Field
                         ),
                     "The default sort must select a configured sortable column."
                 )
@@ -158,6 +158,12 @@ public static partial class StellarAdminBuilderExtensions
                 ServiceDescriptor.Singleton<
                     IValidateOptions<ResourceOptions<TResource>>,
                     BadgeDisplayOptionsValidator<TResource>
+                >()
+            );
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<
+                    IValidateOptions<ResourceOptions<TResource>>,
+                    ComputedColumnOptionsValidator<TResource>
                 >()
             );
             builder.AddController(typeof(ResourceController<TResource>), slug);

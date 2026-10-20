@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
@@ -350,6 +351,115 @@ public class ResourceSortingTests
         await Assert
             .That(response.Headers.Location?.OriginalString)
             .IsEqualTo("/stellaradmin/products?page=2");
+    }
+
+    [Test]
+    public async Task ComputedColumn_SortsByItsTitle()
+    {
+        // Arrange
+        var state = CreateState();
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns =>
+                    {
+                        columns.Clear();
+                        columns.Add(
+                            product => product.Price * 2,
+                            column =>
+                            {
+                                column.Title = "Double price";
+                                column.Sortable(product => product.Price);
+                            }
+                        );
+                    })
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products?sortBy=doubleprice&sortDirection=desc"
+        );
+
+        // Assert
+        await Assert
+            .That(state.ListRequests.Single().Sort)
+            .IsEqualTo(new ResourceSort("DoublePrice", ResourceSortDirection.Descending));
+        await Assert
+            .That(
+                document.RequiredElement("[data-slot='data-grid-sort-link']").GetAttribute("href")
+            )
+            .Contains("sortBy=DoublePrice");
+    }
+
+    [Test]
+    public async Task Startup_WithSortableComputedColumnWithoutSelector_FailsValidation()
+    {
+        // Arrange
+        var configure = () =>
+            StellarAdminTestHost.CreateAsync(
+                CreateState(),
+                resource =>
+                    resource.Index(index =>
+                        index.Columns(columns =>
+                            columns.Add(
+                                product => product.Price * 2,
+                                column =>
+                                {
+                                    column.Title = "Double price";
+                                    column.Sortable();
+                                }
+                            )
+                        )
+                    )
+            );
+
+        // Act
+        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+
+        // Assert
+        await Assert
+            .That(exception!.Message)
+            .Contains(
+                "The index column 'Double price' computes its value, so it can only be sorted by an expression. Use Sortable(selector)."
+            );
+    }
+
+    [Test]
+    public async Task Startup_WithComputedColumnSortedAsAnotherColumn_FailsValidation()
+    {
+        // Arrange
+        var configure = () =>
+            StellarAdminTestHost.CreateAsync(
+                CreateState(),
+                resource =>
+                    resource.Index(index =>
+                        index.Columns(columns =>
+                        {
+                            columns.Add(product => product.Name, column => column.Sortable());
+                            columns.Add(
+                                product => product.Name.ToUpper(),
+                                column =>
+                                {
+                                    column.Title = "Name";
+                                    column.Sortable(product => product.Name);
+                                }
+                            );
+                        })
+                    )
+            );
+
+        // Act
+        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+
+        // Assert
+        await Assert
+            .That(exception!.Message)
+            .Contains(
+                "The index column 'Name' is sorted as 'Name', as another sortable column is."
+            );
     }
 
     private static void ConfigureSorting(ResourceBuilder<Product> resource) =>

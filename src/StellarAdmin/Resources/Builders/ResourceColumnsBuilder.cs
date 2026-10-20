@@ -18,11 +18,17 @@ public sealed class ResourceColumnsBuilder<TResource>
     ///     Adds a column.
     /// </summary>
     /// <typeparam name="TProperty">The type of the column's property.</typeparam>
-    /// <param name="field">An expression that selects the property the column shows.</param>
+    /// <param name="field">
+    ///     An expression that selects the property the column shows, or computes the value it
+    ///     shows, such as <c>product =&gt; product.Price * product.Quantity</c>.
+    /// </param>
     /// <returns>A builder that configures the column.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
+    /// <remarks>
+    ///     A column that computes its value requires a title, and sorts only by an expression.
+    /// </remarks>
     public ResourceColumnBuilder<TResource> Add<TProperty>(
         Expression<Func<TResource, TProperty>> field
     )
@@ -41,7 +47,10 @@ public sealed class ResourceColumnsBuilder<TResource>
     ///     Adds and configures a column.
     /// </summary>
     /// <typeparam name="TProperty">The type of the column's property.</typeparam>
-    /// <param name="field">An expression that selects the property the column shows.</param>
+    /// <param name="field">
+    ///     An expression that selects the property the column shows, or computes the value it
+    ///     shows, such as <c>product =&gt; product.Price * product.Quantity</c>.
+    /// </param>
     /// <param name="configure">A delegate that configures the column.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">

@@ -89,6 +89,22 @@ internal static class EfCorePropertyPaths
     // The include path of the reference navigations a property path reads through, such as
     // Supplier.Country for Supplier.Country.Name. Owned types load with their owner, so they extend
     // the path without being included themselves; a collection or plain property ends it.
+    // The include paths a display needs to evaluate a lambda in memory: those of each property path it
+    // reads from its parameter, such as Tags for p => string.Join(", ", p.Tags.Select(t => t.Name)).
+    // Navigations read from another lambda's parameter, such as t.Category in that Select, aren't found.
+    public static IEnumerable<string> FindDisplayIncludePaths(
+        IEntityType entityType,
+        LambdaExpression expression
+    )
+    {
+        var visitor = new PropertyPathVisitor(expression.Parameters[0]);
+        visitor.Visit(expression.Body);
+
+        return visitor
+            .Paths.Select(path => FindDisplayIncludePath(entityType, path))
+            .OfType<string>();
+    }
+
     public static string? FindReferencePath(
         IEntityType entityType,
         IReadOnlyList<PropertyInfo> propertyPath

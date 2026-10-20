@@ -86,14 +86,13 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         var totalCount = await query.LongCountAsync(cancellationToken);
 
         // Columns read through the references on their paths, such as Category for p => p.Category.Name,
-        // and load the collections they show, such as Tags for p => p.Tags
+        // and load the collections they show, such as Tags for p => p.Tags. A column that computes its
+        // value loads what each path it reads needs.
         var entityType = db.Model.FindEntityType(typeof(TEntity))!;
         query = Include(
             query,
-            _resourceOptions.Index.Columns.Select(column =>
-                EfCorePropertyPaths.GetPropertyPath(column.FieldExpression) is { } path
-                    ? EfCorePropertyPaths.FindDisplayIncludePath(entityType, path)
-                    : null
+            _resourceOptions.Index.Columns.SelectMany(column =>
+                EfCorePropertyPaths.FindDisplayIncludePaths(entityType, column.FieldExpression)
             )
         );
 
@@ -104,7 +103,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         if (request.Sort is { } sort)
         {
             var column = _resourceOptions.Index.Columns.Single(column =>
-                column.Sortable && column.FieldName == sort.Field
+                column.Sortable && column.SortField == sort.Field
             );
             query = Order(
                 query,
