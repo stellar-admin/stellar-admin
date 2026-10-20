@@ -1,8 +1,8 @@
 # Timeline component
 
-Status: extracted, awaiting review (2026-10-20).
+Status: completed (2026-10-20).
 
-An `sa-timeline` component in `StellarAdmin.UI` for a list of events (booking history, activity feeds, audit logs, itineraries), separate from the checklist, as decided in the [checklist plan](checklist-component.md).
+An `sa-timeline` component in `StellarAdmin.UI` for a list of events (booking history, activity feeds, audit logs, itineraries), separate from the checklist, as decided in the [checklist plan](../checklist-component.md).
 
 ## API decisions (2026-10-20)
 
@@ -19,6 +19,4 @@ Visuals approved: rail in the line colour at 2px, 5 units between items, sunken 
 - Library: `TagHelpers/Timeline/` (`TimelineTagHelper`, `TimelineItemTagHelper`, the five part tag helpers and the five enums) and `Client/css/components/timeline.css`. An item without media renders an empty, `aria-hidden` `.sa-timeline-item-marker`; the stylesheet draws the dot, ring or number.
 - Samples: `docs/DocsSamples/Pages/Timeline/`, the eleven prototype scenarios plus marker style, media style and time placement demos. Website: `content/docs/ui/components/timeline.mdx` and the exported demos. Consumer reference: `skills/stellar-admin-ui/references/components/timeline.md`, with a hand-written composition section.
 
-Verified on 2026-10-20: the UI library builds with no warnings; `StellarAdmin.UI.Tests` (681) pass; the DocsSamples page has no unresolved `sa-*` tags and was checked in light and dark mode and at mobile width; the website passes `pnpm lint`, `pnpm types:check` and `pnpm build`; `SkillsGenerator --check` reports no drift. Not run: the Ops and Soft themes, `util/theme-check/contrast.mjs`.
-
-Not yet done: Jerrie's review.
+Verified on 2026-10-20: the UI library builds with no warnings; `StellarAdmin.UI.Tests` (681) pass; the DocsSamples page has no unresolved `sa-*` tags and was checked in light and dark mode and at mobile width; the website passes `pnpm lint`, `pnpm types:check` and `pnpm build`; `SkillsGenerator --check` reports no drift. Jerrie reviewed the component and checked it visually on 2026-10-20. Also on 2026-10-20: `util/theme-check/contrast.mjs` on the DocsSamples timeline page passes (0 of 10,432 texts below contrast, across the base theme, the Ledger, Ops and Soft fixtures and 12 random themes in light and dark mode). For review, not failures: the media disc separates from a card at 1.08 in light mode (below the 1.1 guide, as approved), and the samples' `rounded-md` change list reads as a pill in Soft. `screenshots.mjs` captures of the page in each theme fixture looked right.
