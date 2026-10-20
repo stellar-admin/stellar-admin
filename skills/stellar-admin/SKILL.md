@@ -28,7 +28,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseEditor<TEditor>` | [editors](references/editors.md) |
 | Images: thumbnails in the grid, photos on the view page, uploads | `ImageDisplay`, `ImageEditor`, `ResolveUrl`, `StoreImage` | [editors](references/editors.md#images), [columns](references/columns.md#built-in-displays-in-cells) |
 | Icons: a field that stores an icon's name, chosen from a picker | `IconEditor`, `IconDisplay` | [editors](references/editors.md#icons) |
-| Foreign keys, lookups, many-to-many, create-from-lookup | `SelectEditor`/`LookupSheetEditor` + EF `UseItems`, `MultiLookupSheetEditor`, `EnableCreate` | [relationships](references/relationships.md) |
+| Foreign keys, lookups, many-to-many, create-from-lookup, related records in columns | `SelectEditor`/`LookupSheetEditor` + EF `UseItems`, `MultiLookupSheetEditor`, `EnableCreate`, `BadgeDisplay.UseText` | [relationships](references/relationships.md) |
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
 | Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
 | Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
@@ -157,7 +157,8 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 | `StellarAdmin.Resources.Editors` | StellarAdmin | Editors, `ChoiceItem`, `ItemMedia`, `ILookupSource` |
 | `StellarAdmin.Resources.Displays` | StellarAdmin | Displays such as `NumberDisplay`, `BadgeDisplay`, `FieldDisplay` |
 | `StellarAdmin.Resources.Builders` | StellarAdmin | Builder types, for helper methods such as `void BookingFields(ResourceFieldsBuilder<Booking> fields)` |
-| `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `InlineCreatePosition`, `InlineAddButton` |
+| `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `InlineCreatePosition`, `InlineAddButton`, `FieldBinder` |
+| `StellarAdmin.Resources.Options` | StellarAdmin | Resolved options such as `ResourceOptions<T>` and `FormFieldOptions`, for post-configuration |
 | `StellarAdmin.Sidebar` | StellarAdmin | `SidebarLinkTarget`, `BrandingLogo`, `UserMenuItem` |
 | `StellarAdmin.Areas.StellarAdmin.ViewModels` | StellarAdmin | Page view models for overrides (`ResourceIndexPageViewModel<T>`) |
 | `StellarAdmin.UI` | StellarAdmin.UI | Shared enums: `FormSectionLayout`, `BadgeVariant`, `FieldOrientation`, `DetailsOrientation`, `DisplayFieldOrientation`, `DetailsVariant`, `RadioGroupFlow`, `SliderMarkLabels` |
@@ -176,6 +177,7 @@ These come from agents building real tasks without this skill. Each compiled or 
 - **`ChoiceEditor` is abstract.** Use `SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor`, `SegmentedControlEditor` or `ToggleGroupEditor`.
 - **Index cells use `GridDisplayTemplates/`**, not `DisplayTemplates/`. A custom display or `[UIHint]` used in a column needs `GridDisplayTemplates/{TemplateName}.cshtml`; the same display on a form or view page needs `DisplayTemplates/{TemplateName}.cshtml` ([columns](references/columns.md)).
 - **`BadgeDisplay` has one variant for every value.** A badge whose style depends on the value needs a custom display and template.
+- **A collection of entities needs `UseText`.** A column or display field on a navigation such as `tour => tour.Destinations` shows each entity's type name unless it uses `BadgeDisplay` with `badge.UseText<Destination>(destination => destination.Name)` ([relationships](references/relationships.md#showing-related-values)).
 - **App views in the admin area need their own `_ViewImports.cshtml`.** Create `Areas/StellarAdmin/Views/_ViewImports.cshtml` with `@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers`, `@addTagHelper *, StellarAdmin.UI` and `@addTagHelper *, StellarAdmin`. Without it `<sa-index-page>` renders as literal text and the page looks empty, with no error.
 - **Override models are in `StellarAdmin.Areas.StellarAdmin.ViewModels`.** A resource's own index view uses `ResourceIndexPageViewModel<T>`. A shared index view overridden for every resource uses `IResourceIndexPageViewModel`.
 - **Style admin and host pages with `sa-*` components**, not Tailwind utilities: the shipped CSS contains only the classes its components use, so `p-4`, `text-gray-700` and similar render unstyled. Use `sa-page-container`, `sa-page-header`, `sa-card`, `sa-table`, `sa-alert` and friends (stellar-admin-ui skill).

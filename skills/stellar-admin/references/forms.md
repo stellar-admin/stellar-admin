@@ -12,6 +12,7 @@
 - [Layout: columns, sections and groups](#layout-columns-sections-and-groups)
 - [Validation](#validation)
 - [Custom create and edit models](#custom-create-and-edit-models)
+- [Fields bound by code](#fields-bound-by-code)
 
 ## Fields
 
@@ -211,3 +212,38 @@ public sealed class NewCustomerHandler(VoyagerDbContext db) : IResourceCreateHan
 - Mark passwords `[DataType(DataType.Password)]`; they are left empty when the form redisplays.
 - This is also the place for save-time side effects; there are no before/after save hooks.
 - Labels and titles still come from the resource.
+
+## Fields bound by code
+
+A `FieldBinder` reads and binds a field whose posted values aren't its property's value, such as the keys of a collection of entities. MVC never binds a field with a binder, so its property needs no setter. EF Core resources attach one to many-to-many navigations automatically; a custom data source can attach its own with `UseBinder` after the resource is configured:
+
+```csharp
+builder.Services.AddOptions<ResourceOptions<Tour>>().PostConfigure(options =>
+{
+    foreach (var field in options.Edit?.Fields ?? [])
+    {
+        if (field.FieldName == nameof(Tour.DestinationCodes))
+        {
+            field.UseBinder(new DestinationCodesBinder());
+        }
+    }
+});
+
+public sealed class DestinationCodesBinder : FieldBinder
+{
+    // The value the editor shows
+    public override object? GetValue(FieldBindingContext context) => ((Tour)context.Model).DestinationCodes.ToList();
+
+    public override Task BindAsync(FieldBindingContext context, CancellationToken cancellationToken)
+    {
+        var codes = ((Tour)context.Model).DestinationCodes;
+        codes.Clear();
+        codes.AddRange(context.Values.Where(value => !string.IsNullOrEmpty(value))!);
+        return Task.CompletedTask;
+    }
+}
+```
+
+- One binder instance serves every request; get services from `context.Services`.
+- `context.AddError(message)` shows an error under the field. Validation attributes on the property run after binding.
+- A create or edit field whose property has no public setter and no binder fails at startup.

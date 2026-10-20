@@ -67,7 +67,7 @@ In order of precedence:
 2. The display field's own text rendering after `UseBuiltInRendering()`.
 3. The template named by `[UIHint("Name")]`: `DisplayTemplates/Name.cshtml`, with the value as its model. A missing template throws.
 4. The default display for the property's data type, then its CLR type.
-5. Text rendering, which joins collections with commas and applies `[DisplayFormat]`.
+5. Text rendering, which joins collections with commas and applies `[DisplayFormat]`. A collection of entities shows their type names; use `BadgeDisplay` with `UseText<TItem>` instead ([relationships](relationships.md#showing-related-values)).
 
 An empty value shows `EmptyText`, else `[DisplayFormat(NullDisplayText)]`, else a dash, unless the display renders empty values itself (`ImageDisplay` shows "No image").
 
