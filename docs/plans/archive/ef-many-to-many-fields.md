@@ -4,7 +4,7 @@ Status: implemented (2026-10-20), including index and view display of the relate
 
 ## Problem
 
-EF Core resources bind only mapped scalar properties, so a many-to-many navigation such as `Guide.Languages` can't be a field. Today an application needs a form model with a key collection plus create and edit handlers that load and save the join ([relationships reference](../../skills/stellar-admin/references/relationships.md#many-to-many-with-multilookupsheeteditor)).
+EF Core resources bind only mapped scalar properties, so a many-to-many navigation such as `Guide.Languages` can't be a field. Today an application needs a form model with a key collection plus create and edit handlers that load and save the join ([relationships reference](../../../skills/stellar-admin/references/relationships.md#many-to-many-with-multilookupsheeteditor)).
 
 In the Voyager Travel session (2026-10-18), adding a Languages picker to Guides took about 130 lines: `GuideForm` duplicating the entity's fields and validation attributes, `GuideCreateHandler` and `GuideEditHandler`, and a hand-written duplicate-email check because the custom handlers replaced the built-in save. The picker itself (`MultiLookupSheetEditor`) worked well; the plumbing around it was the cost.
 
