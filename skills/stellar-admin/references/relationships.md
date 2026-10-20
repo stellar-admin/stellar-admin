@@ -161,7 +161,7 @@ view.Fields(fields =>
 });
 ```
 
-Set `Title`, because the default label is the last property's name.
+Set `Title`, because the default label is the last property's name. Read a property of the related entity (`booking.Customer!.Name`), not the entity itself: a column or display field on `booking => booking.Customer` fails at startup, since the entity would show its type name.
 
 A collection or many-to-many navigation shows as one badge per related record. `UseText<TItem>` picks the text of each badge; the type argument is the related entity, and a mismatch fails at startup:
 

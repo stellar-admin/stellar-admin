@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -345,6 +347,23 @@ public class ResourceManyToManyTests
     }
 
     [Test]
+    public async Task Edit_WithCustomEditor_Starts()
+    {
+        // Arrange
+
+        // Act
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowEdit(edit =>
+                edit.Fields(fields => fields.Add(product => product.Tags).UseEditor<TagEditor>())
+            )
+        );
+
+        // Assert
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert.That(options.Edit!.Fields.Single().Editor).IsTypeOf<TagEditor>();
+    }
+
+    [Test]
     [Arguments("none")]
     [Arguments("select")]
     public async Task Edit_WithSingleValueEditor_FailsToStart(string editor)
@@ -402,4 +421,9 @@ public class ResourceManyToManyTests
             .UseEditor<MultiLookupSheetEditor>(editor =>
                 editor.UseItems<CatalogDbContext, Tag, int>(tag => tag.Id, tag => tag.Name)
             );
+
+    private sealed class TagEditor : FieldEditor
+    {
+        public override string TemplateName => "Tags";
+    }
 }
