@@ -160,12 +160,20 @@ internal static class ProductResourceRegistration
                             column.UseDisplay<NumberDisplay>(number => number.Format = "0.00");
                         }
                     );
+                    // columns.Add(
+                    //     product => product.Tags,
+                    //     column =>
+                    //         column.UseDisplay<BadgeDisplay>(badge =>
+                    //             badge.UseText<Tag>(tag => tag.Name)
+                    //         )
+                    // );
                     columns.Add(
-                        product => product.Tags,
+                        product => string.Join(",", product.Tags.Select(t => t.Name)),
                         column =>
-                            column.UseDisplay<BadgeDisplay>(badge =>
-                                badge.UseText<Tag>(tag => tag.Name)
-                            )
+                        {
+                            column.Title = "Tags";
+                            column.Sortable(c => c.Tags.Count);
+                        }
                     );
                 });
             });
