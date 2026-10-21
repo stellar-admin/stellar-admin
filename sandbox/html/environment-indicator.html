@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Environment indicator</title>
+<!-- Prototype: an environment indicator the admin panel renders itself, so an application shows
+     "Production", "Staging", "Local"... without editing the layout. The shell is the HTML the panel
+     emits (from home-setup.html); each treatment is a candidate rule set in the components layer,
+     reading one private colour, --_env, that the environment sets. Build src/StellarAdmin.UI first
+     (npm run build in Client/) if wwwroot/ is empty. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400..700&family=Figtree:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+<link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css">
+<link rel="stylesheet" id="theme">
+<script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+<style>
+  /* Candidates: written as the library would write them. */
+  @layer sa.components {
+    /* The environment colour and the colours derived from it. An application picks a colour per
+       environment; the defaults map to the status colours. */
+    [data-sa-env] {
+      --_env: var(--sa-color-info);
+      /* White or near-black text on the solid colour, by lightness. */
+      --_env-on: oklch(from var(--_env) clamp(0.15, (0.66 - l) * 1000, 1) 0 0);
+    }
+    [data-sa-env="local"] { --_env: var(--sa-color-info); }
+    [data-sa-env="testing"] { --_env: var(--sa-color-warning); }
+    [data-sa-env="staging"] { --_env: oklch(0.55 0.2 300); }
+    [data-sa-env="production"] { --_env: var(--sa-color-danger); }
+
+    /* The name on a tab hanging from the top edge, centred; the stripe and the frame share it. */
+    .sa-env-tab {
+      position: absolute;
+      inset-block-start: 0;
+      left: 50%;
+      translate: -50% 0;
+      padding: 2px calc(2.5 * var(--sa-unit)) 3px;
+      border-radius: 0 0 var(--sa-radius-item) var(--sa-radius-item);
+      background: var(--_env);
+      color: var(--_env-on);
+      font-size: var(--sa-text-2xs, 0.6875rem);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+    .sa-env-tab[data-size="md"] { padding: 3px calc(3 * var(--sa-unit)) 4px; font-size: var(--sa-text-xs); }
+    .sa-env-tab[data-size="lg"] { padding: 4px calc(4 * var(--sa-unit)) 6px; font-size: var(--sa-text-sm); letter-spacing: 0.05em; }
+    .sa-env-tab[data-size="xl"] { padding: 6px calc(6 * var(--sa-unit)) 8px; font-size: var(--sa-text-base); letter-spacing: 0.05em; font-weight: 700; }
+
+    /* A. Stripe: a thin bar across the top of the window. */
+    .sa-env-stripe {
+      position: fixed;
+      inset-inline: 0;
+      inset-block-start: 0;
+      z-index: 40;
+      height: 3px;
+      background: var(--_env);
+      pointer-events: none;
+    }
+
+    /* B. Banner: a full-width bar above the shell; the fixed sidebar moves down with it. */
+    .sa-env-banner {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: calc(2 * var(--sa-unit));
+      height: var(--sa-env-banner-h);
+      padding-inline: calc(4 * var(--sa-unit));
+      background: var(--_env);
+      color: var(--_env-on);
+      font-size: var(--sa-text-xs);
+      line-height: 1;
+      & strong { font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+      & span { opacity: 0.85; }
+    }
+    body:has(> .sa-env-banner) {
+      --sa-env-banner-h: calc(7 * var(--sa-unit));
+      & .sa-sidebar-wrapper { min-height: calc(100svh - var(--sa-env-banner-h)); }
+      & .sa-sidebar-gap { height: calc(100svh - var(--sa-env-banner-h)); }
+      & .sa-sidebar-container { inset-block-start: var(--sa-env-banner-h); height: calc(100svh - var(--sa-env-banner-h)); }
+    }
+
+    /* C. Frame: a border around the whole window, the name on the top edge. */
+    .sa-env-frame {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      border: 3px solid var(--_env);
+      pointer-events: none;
+      & .sa-env-tab { inset-block-start: -3px; }
+    }
+  }
+
+  /* Prototype chrome, not extracted. */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  .proto-page { padding: calc(6 * var(--sa-unit)); display: grid; gap: calc(6 * var(--sa-unit)); }
+  .proto-bar {
+    position: fixed; right: 12px; bottom: 12px; z-index: 60;
+    width: min(360px, calc(100vw - 24px));
+    background: var(--sa-color-surface-raised); color: var(--sa-color-ink);
+    border: 1px solid var(--sa-color-line); border-radius: 10px;
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.18);
+    font: 12px/1.4 system-ui, sans-serif; padding: 10px 12px; display: grid; gap: 8px;
+  }
+  .proto-bar.collapsed > :not(.proto-head) { display: none; }
+  .proto-head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+  .proto-head button { all: unset; cursor: pointer; color: var(--sa-color-ink-muted); padding: 0 4px; }
+  .proto-row { display: grid; grid-template-columns: 74px 1fr; gap: 6px; align-items: start; }
+  .proto-row[hidden] { display: none; }
+  .proto-row > span { color: var(--sa-color-ink-muted); padding-top: 3px; }
+  .proto-seg { display: flex; flex-wrap: wrap; gap: 3px; }
+  .proto-seg button {
+    all: unset; cursor: pointer; padding: 2px 7px; border-radius: 6px;
+    border: 1px solid var(--sa-color-line); background: var(--sa-color-surface);
+  }
+  .proto-seg button[aria-pressed="true"] { background: var(--sa-color-ink); color: var(--sa-color-surface); border-color: var(--sa-color-ink); }
+  .proto-note { color: var(--sa-color-ink-muted); border-top: 1px solid var(--sa-color-line); padding-top: 8px; }
+  .proto-note b { color: var(--sa-color-ink); }
+  .proto-kbd { font-family: var(--sa-font-mono); font-size: 11px; }
+</style>
+</head>
+<body>
+
+<div id="env-before"></div>
+
+<sel-sidebar id="--sa-sidebar" data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem; --sidebar-width-mobile: 18rem" class="sa-sidebar-wrapper">
+<div data-slot="sidebar" data-variant="sidebar" data-side="left" data-state="expanded" data-mobile="closed" data-collapsible="" data-collapsible-config="offcanvas" class="sa-sidebar"><button aria-label="Close sidebar" class="sa-sidebar-backdrop" data-slot="sidebar-backdrop" type="button"></button><div class="sa-sidebar-gap" data-slot="sidebar-gap"></div><div class="sa-sidebar-container" data-slot="sidebar-container"><div class="sa-sidebar-inner" data-sidebar="sidebar" data-slot="sidebar-inner">
+  <div data-slot="sidebar-header" data-sidebar="header" class="sa-sidebar-header">
+    <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+      <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+        <a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="lg" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-lg sa-sidebar-menu-button-variant-default">
+          <span class="sa-sidebar-brand-mark" aria-hidden="true"><svg data-icon="compass"></svg></span>
+          <span class="sa-sidebar-brand-text"><span class="sa-sidebar-brand-title">Voyager Travel</span><span class="sa-sidebar-brand-subtitle" id="brand-subtitle">Admin Console</span></span>
+        </a>
+      </li>
+    </ul>
+    <button commandfor="--command-palette" command="show-modal" class="sa-button sa-button-variant-outline sa-button-size-default" style="width: 100%; justify-content: space-between; color: var(--sa-color-ink-muted)" data-slot="button">
+      <span style="display: flex; align-items: center; gap: 8px"><svg data-icon="search"></svg>Search...</span>
+      <kbd aria-hidden="true" data-slot="kbd-group" class="sa-kbd-group"><kbd data-slot="kbd" class="sa-kbd">Ctrl</kbd><kbd data-slot="kbd" class="sa-kbd">K</kbd></kbd>
+    </button>
+  </div>
+  <div data-slot="sidebar-content" data-sidebar="content" class="sa-sidebar-content" id="sidebar-content"></div>
+</div></div></div>
+
+<main data-slot="sidebar-inset" class="sa-sidebar-inset">
+  <header data-slot="app-header" class="sa-app-header">
+    <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm"><svg data-icon="panel-left"></svg></button>
+    <div data-slot="separator" class="sa-separator sa-separator-vertical sa-app-header-separator" role="separator" aria-orientation="vertical" data-orientation="vertical"></div>
+    <span style="font-size: var(--sa-text-sm); font-weight: 500">Bookings</span>
+  </header>
+  <div class="proto-page">
+    <div data-slot="page-header" class="sa-page-header">
+      <div>
+        <h1 data-slot="page-header-title" class="sa-page-header-title">Bookings</h1>
+        <p data-slot="page-header-description" class="sa-page-header-description">Every trip booked through Voyager, newest first.</p>
+      </div>
+      <div data-slot="page-header-actions" class="sa-page-header-actions">
+        <button data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-default"><svg data-icon="download"></svg>Export</button>
+        <button data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default"><svg data-icon="plus"></svg>New booking</button>
+      </div>
+    </div>
+    <div data-slot="card" class="sa-card" style="padding-block: 0; overflow: hidden">
+      <div data-slot="table-container" class="sa-table-container">
+        <table data-slot="table" class="sa-table">
+          <thead data-slot="table-header" class="sa-table-header"><tr data-slot="table-row" class="sa-table-row">
+            <th data-slot="table-head" class="sa-table-head">Reference</th><th data-slot="table-head" class="sa-table-head">Traveller</th><th data-slot="table-head" class="sa-table-head">Destination</th><th data-slot="table-head" class="sa-table-head">Departs</th><th data-slot="table-head" class="sa-table-head">Status</th><th data-slot="table-head" class="sa-table-head" style="text-align: right">Total</th>
+          </tr></thead>
+          <tbody data-slot="table-body" class="sa-table-body" id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+</sel-sidebar>
+
+<div id="env-after"></div>
+
+<div class="proto-bar" id="proto-bar">
+  <div class="proto-head"><span>Environment indicator</span><button type="button" data-collapse aria-label="Collapse">–</button></div>
+  <div class="proto-row"><span>Treatment</span><div class="proto-seg" data-key="t">
+    <button data-value="stripe">A Stripe + tab</button>
+    <button data-value="banner">B Banner</button>
+    <button data-value="frame">C Frame</button>
+  </div></div>
+  <div class="proto-row" id="size-row"><span>Tab size</span><div class="proto-seg" data-key="size">
+    <button data-value="sm">S</button><button data-value="md">M</button><button data-value="lg">L</button><button data-value="xl">XL</button>
+  </div></div>
+  <div class="proto-row"><span>Environment</span><div class="proto-seg" data-key="env">
+    <button data-value="local">Local</button><button data-value="testing">Testing</button><button data-value="staging">Staging</button><button data-value="production">Production</button>
+  </div></div>
+  <div class="proto-row"><span>Theme</span><div class="proto-seg" data-key="theme">
+    <button data-value="">Default</button><button data-value="ops">Ops</button><button data-value="soft">Soft</button><button data-value="ledger">Ledger</button>
+  </div></div>
+  <div class="proto-row"><span>Mode</span><div class="proto-seg" data-key="mode">
+    <button data-value="light">Light</button><button data-value="dark">Dark</button>
+  </div></div>
+  <div class="proto-note" id="proto-note"></div>
+</div>
+
+<script>
+const ICONS = {
+  "compass": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z\"/>",
+  "search": "<path d=\"m21 21-4.34-4.34\"/><circle cx=\"11\" cy=\"11\" r=\"8\"/>",
+  "panel-left": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>",
+  "plane": "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>",
+  "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><path d=\"M16 3.128a4 4 0 0 1 0 7.744\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/>",
+  "map-pin": "<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>",
+  "layout-dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/>",
+  "settings": "<path d=\"M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+  "download": "<path d=\"M12 15V3\"/><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><path d=\"m7 10 5 5 5-5\"/>",
+  "plus": "<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>",
+  "server": "<rect width=\"20\" height=\"8\" x=\"2\" y=\"2\" rx=\"2\" ry=\"2\"/><rect width=\"20\" height=\"8\" x=\"2\" y=\"14\" rx=\"2\" ry=\"2\"/><path d=\"M6 6h.01\"/><path d=\"M6 18h.01\"/>",
+};
+const svg = name => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] ?? ""}</svg>`;
+
+const ENVS = {
+  local: { label: "Local", note: "Running on your machine" },
+  testing: { label: "Testing", note: "Test data, reset nightly" },
+  staging: { label: "Staging", note: "Mirrors production" },
+  production: { label: "Production", note: "Changes affect live customers" },
+};
+
+const NOTES = {
+  stripe: "<b>A. Stripe + tab.</b> 3px bar across the top of the window with the name hanging from the middle. Takes no layout space.",
+  banner: "<b>B. Banner.</b> A full-width bar above the shell; the sidebar moves down with it. Takes 28px.",
+  frame: "<b>C. Frame.</b> A border around the whole window, the name on the top edge like the stripe's tab.",
+};
+
+const state = { t: "stripe", size: "sm", env: "production", theme: "", mode: "light" };
+new URLSearchParams(location.search).forEach((v, k) => { if (k in state) state[k] = v; });
+
+const rows = [
+  ["VY-20841", "Amelia Hart", "Lisbon, Portugal", "12 Nov", "Confirmed", "€1,240.00"],
+  ["VY-20840", "Noah Bennett", "Kyoto, Japan", "18 Nov", "Pending", "€3,815.50"],
+  ["VY-20839", "Isla Moreau", "Cape Town, South Africa", "2 Dec", "Confirmed", "€2,090.00"],
+  ["VY-20838", "Leo Fischer", "Reykjavík, Iceland", "9 Dec", "Cancelled", "€0.00"],
+  ["VY-20837", "Maya Okafor", "Marrakesh, Morocco", "14 Dec", "Confirmed", "€980.00"],
+  ["VY-20836", "Ethan Park", "Queenstown, New Zealand", "20 Dec", "Pending", "€4,420.00"],
+];
+const badgeVariant = { Confirmed: "secondary", Pending: "outline", Cancelled: "destructive" };
+document.getElementById("rows").innerHTML = rows.map(r => `<tr data-slot="table-row" class="sa-table-row">${r.map((c, i) =>
+  `<td data-slot="table-cell" class="sa-table-cell"${i === 5 ? ' style="text-align: right; font-variant-numeric: tabular-nums"' : ""}>${i === 4 ? `<span data-slot="badge" class="sa-badge sa-badge-variant-${badgeVariant[c]}">${c}</span>` : c}</td>`).join("")}</tr>`).join("");
+
+const link = (title, icon, active) => `<li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item"><a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default"${active ? ' data-active="true"' : ""} class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">${svg(icon)}<span>${title}</span></a></li>`;
+const group = (label, items) => `<div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">${label ? `<div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">${label}</div>` : ""}<div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content"><ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">${items}</ul></div></div>`;
+document.getElementById("sidebar-content").innerHTML =
+  group(null, link("Dashboard", "layout-dashboard"))
+  + group("Trips", link("Bookings", "plane", true) + link("Destinations", "map-pin") + link("Travellers", "users"))
+  + group("System", link("Settings", "settings"));
+
+function render() {
+  const env = ENVS[state.env];
+  const e = `data-sa-env="${state.env}"`;
+  let before = "", after = "";
+  switch (state.t) {
+    case "stripe": after = `<div class="sa-env-stripe" ${e} role="status"><span class="sa-env-tab" data-size="${state.size}">${env.label}</span></div>`; break;
+    case "banner": before = `<div class="sa-env-banner" ${e} role="status"><strong>${env.label}</strong><span>${env.note}</span></div>`; break;
+    case "frame": after = `<div class="sa-env-frame" ${e} role="status"><span class="sa-env-tab" data-size="${state.size}">${env.label}</span></div>`; break;
+  }
+  // The banner is a direct child of body, which the sidebar offset rule keys on.
+  document.querySelectorAll("body > .sa-env-banner").forEach(n => n.remove());
+  document.getElementById("env-before").insertAdjacentHTML("beforebegin", before);
+  document.getElementById("env-after").innerHTML = after;
+  document.getElementById("size-row").hidden = state.t === "banner";
+
+  document.querySelectorAll("svg[data-icon]").forEach(el => { el.outerHTML = svg(el.dataset.icon); });
+  document.documentElement.classList.toggle("dark", state.mode === "dark");
+  const theme = document.getElementById("theme");
+  if (state.theme) theme.href = `../../util/theme-check/presets/${state.theme}.css`; else theme.removeAttribute("href");
+  document.querySelectorAll(".proto-seg").forEach(seg => seg.querySelectorAll("button").forEach(b =>
+    b.setAttribute("aria-pressed", String(state[seg.dataset.key] === b.dataset.value))));
+  document.getElementById("proto-note").innerHTML = NOTES[state.t];
+  history.replaceState(null, "", "?" + new URLSearchParams(state));
+}
+
+document.querySelectorAll(".proto-seg").forEach(seg => seg.addEventListener("click", ev => {
+  const b = ev.target.closest("button");
+  if (!b) return;
+  state[seg.dataset.key] = b.dataset.value;
+  render();
+}));
+document.querySelector("[data-collapse]").addEventListener("click", ev => {
+  const bar = document.getElementById("proto-bar");
+  bar.classList.toggle("collapsed");
+  ev.target.textContent = bar.classList.contains("collapsed") ? "+" : "–";
+});
+document.addEventListener("keydown", ev => {
+  if (ev.target.closest("input, textarea")) return;
+  const keys = [...document.querySelectorAll('[data-key="t"] button')].map(b => b.dataset.value);
+  const i = keys.indexOf(state.t);
+  if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") {
+    state.t = keys[(i + (ev.key === "ArrowRight" ? 1 : keys.length - 1)) % keys.length];
+    render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+@using static StellarAdmin.EnvironmentIndicatorTagValues
+@model EnvironmentIndicator
+
+@* The indicator that shows which environment the application runs in. Replace this partial at the same path to render
+   your own. *@
+@switch (Model)
+{
+    case StripeEnvironmentIndicator stripe:
+        <sa-environment-stripe label="@stripe.Label"
+                               color="ToStripeColor(stripe.Color)"
+                               custom-color="@GetCustomColor(stripe.Color)"
+                               custom-dark-color="@GetCustomDarkColor(stripe.Color)"
+                               tab-size="ToStripeTabSize(stripe.TabSize)"/>
+        break;
+    case FrameEnvironmentIndicator frame:
+        <sa-environment-frame label="@frame.Label"
+                              color="ToFrameColor(frame.Color)"
+                              custom-color="@GetCustomColor(frame.Color)"
+                              custom-dark-color="@GetCustomDarkColor(frame.Color)"
+                              tab-size="ToFrameTabSize(frame.TabSize)"/>
+        break;
+    case BannerEnvironmentIndicator banner:
+        <sa-environment-banner label="@banner.Label"
+                               color="ToBannerColor(banner.Color)"
+                               custom-color="@GetCustomColor(banner.Color)"
+                               custom-dark-color="@GetCustomDarkColor(banner.Color)"
+                               description="@banner.Description"/>
+        break;
+}

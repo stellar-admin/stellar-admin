@@ -15,6 +15,8 @@ internal sealed class StellarAdminOptions
 
     internal BrandingOptions Branding { get; } = new();
 
+    internal EnvironmentIndicator? EnvironmentIndicator { get; set; }
+
     internal HomePageOptions HomePage { get; } = new();
 
     internal List<SidebarLinkOptions> SidebarLinks { get; } = [];

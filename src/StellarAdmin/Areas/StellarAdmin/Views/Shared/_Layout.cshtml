@@ -20,6 +20,11 @@
     }
 </head>
 <body>
+@if (ProOptions.EnvironmentIndicator is { } environmentIndicator)
+{
+    <partial name="/Areas/StellarAdmin/Views/Shared/_EnvironmentIndicator.cshtml" model="environmentIndicator"/>
+}
+
 <sa-sidebar-wrapper>
     <vc:sidebar></vc:sidebar>
 

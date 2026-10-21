@@ -1,0 +1,117 @@
+/* Environment indicator: shows which environment the application runs in (<sa-environment-stripe>,
+   <sa-environment-frame>, <sa-environment-banner>).
+   Replaces: .sa-environment-stripe, .sa-environment-frame, .sa-environment-banner,
+   .sa-environment-banner-label, .sa-environment-banner-description, .sa-environment-tab */
+
+@layer sa.tokens {
+  /* The environment colour: a theme status colour, or the author's custom colours, which the tag
+     helpers set inline as --_custom and --_custom-dark. */
+  :is(.sa-environment-stripe, .sa-environment-frame, .sa-environment-banner) {
+    --_env: var(--_custom, var(--_theme));
+  }
+  @scope (.dark) to (.light) {
+    :scope :is(.sa-environment-stripe, .sa-environment-frame, .sa-environment-banner) {
+      --_env: var(--_custom-dark, var(--_custom, var(--_theme)));
+    }
+  }
+}
+
+@layer sa.components {
+  :is(.sa-environment-stripe, .sa-environment-frame, .sa-environment-banner) {
+    --_theme: var(--sa-color-ink-muted);
+    /* White or near-black text on the solid colour, by lightness. */
+    --_env-on: oklch(from var(--_env) clamp(0.15, (0.66 - l) * 1000, 1) 0 0);
+    &[data-color="info"] { --_theme: var(--sa-color-info); }
+    &[data-color="success"] { --_theme: var(--sa-color-success); }
+    &[data-color="warning"] { --_theme: var(--sa-color-warning); }
+    &[data-color="danger"] { --_theme: var(--sa-color-danger); }
+  }
+
+  /* The name on a tab hanging from the top edge, centred; the stripe and the frame share it. */
+  .sa-environment-tab {
+    position: absolute;
+    inset-block-start: 0;
+    left: 50%;
+    translate: -50% 0;
+    padding: 3px calc(3 * var(--sa-unit)) 4px;
+    border-radius: 0 0 var(--sa-radius-item) var(--sa-radius-item);
+    background: var(--_env);
+    color: var(--_env-on);
+    font-size: var(--sa-text-xs);
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    &[data-size="sm"] { padding: 2px calc(2.5 * var(--sa-unit)) 3px; font-size: var(--sa-text-2xs); }
+    &[data-size="lg"] { padding: 4px calc(4 * var(--sa-unit)) 6px; font-size: var(--sa-text-sm); letter-spacing: 0.05em; }
+    &[data-size="xl"] {
+      padding: 6px calc(6 * var(--sa-unit)) 8px;
+      font-size: var(--sa-text-base);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  /* Stripe: a thin bar across the top of the window. */
+  .sa-environment-stripe {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: 40;
+    height: 3px;
+    background: var(--_env);
+    pointer-events: none;
+  }
+
+  /* Frame: a border around the whole window, the name on the top edge. */
+  .sa-environment-frame {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    border: 3px solid var(--_env);
+    pointer-events: none;
+    & .sa-environment-tab { inset-block-start: -3px; }
+  }
+
+  /* Banner: a full-width bar across the top of the window; the page and the fixed sidebar move down
+     by its height. */
+  .sa-environment-banner {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(2 * var(--sa-unit));
+    height: var(--_env-banner-height);
+    padding-inline: calc(4 * var(--sa-unit));
+    overflow: hidden;
+    background: var(--_env);
+    color: var(--_env-on);
+    font-size: var(--sa-text-xs);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .sa-environment-banner-label {
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .sa-environment-banner-description {
+    overflow: hidden;
+    opacity: 0.85;
+    text-overflow: ellipsis;
+  }
+  body:has(.sa-environment-banner) {
+    --_env-banner-height: calc(7 * var(--sa-unit));
+    padding-block-start: var(--_env-banner-height);
+    & .sa-sidebar-wrapper { min-height: calc(100svh - var(--_env-banner-height)); }
+    & .sa-sidebar-gap { height: calc(100svh - var(--_env-banner-height)); }
+    & .sa-sidebar-container {
+      inset-block-start: var(--_env-banner-height);
+      height: calc(100svh - var(--_env-banner-height));
+    }
+  }
+}

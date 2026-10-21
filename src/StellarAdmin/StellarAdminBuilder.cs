@@ -369,6 +369,30 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
+    ///     Shows which environment the application runs in on every admin panel page.
+    /// </summary>
+    /// <param name="indicator">
+    ///     The indicator to show, created with <see cref="EnvironmentIndicator.Stripe(string)" />,
+    ///     <see cref="EnvironmentIndicator.Frame(string)" /> or
+    ///     <see cref="EnvironmentIndicator.Banner(string)" />.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="indicator" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Call this method only in the environments that should show an indicator.
+    /// </remarks>
+    public StellarAdminBuilder EnableEnvironmentIndicator(EnvironmentIndicator indicator)
+    {
+        ArgumentNullException.ThrowIfNull(indicator);
+
+        _options.EnvironmentIndicator = indicator;
+
+        return this;
+    }
+
+    /// <summary>
     ///     Requires an authenticated user for every admin panel page.
     /// </summary>
     /// <returns>The builder, so that calls can be chained.</returns>

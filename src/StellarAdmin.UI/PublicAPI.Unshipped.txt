@@ -2546,3 +2546,70 @@ StellarAdmin.UI.RichTextEditorTagHelper.UploadUrl.get -> string?
 StellarAdmin.UI.RichTextEditorTagHelper.UploadUrl.set -> void
 StellarAdmin.UI.RichTextEditorTagHelper.Value.get -> string?
 StellarAdmin.UI.RichTextEditorTagHelper.Value.set -> void
+StellarAdmin.UI.EnvironmentBannerColor
+StellarAdmin.UI.EnvironmentBannerColor.Danger = 4 -> StellarAdmin.UI.EnvironmentBannerColor
+StellarAdmin.UI.EnvironmentBannerColor.Info = 1 -> StellarAdmin.UI.EnvironmentBannerColor
+StellarAdmin.UI.EnvironmentBannerColor.Neutral = 0 -> StellarAdmin.UI.EnvironmentBannerColor
+StellarAdmin.UI.EnvironmentBannerColor.Success = 2 -> StellarAdmin.UI.EnvironmentBannerColor
+StellarAdmin.UI.EnvironmentBannerColor.Warning = 3 -> StellarAdmin.UI.EnvironmentBannerColor
+StellarAdmin.UI.EnvironmentBannerTagHelper
+StellarAdmin.UI.EnvironmentBannerTagHelper.Color.get -> StellarAdmin.UI.EnvironmentBannerColor?
+StellarAdmin.UI.EnvironmentBannerTagHelper.Color.set -> void
+StellarAdmin.UI.EnvironmentBannerTagHelper.CustomColor.get -> string?
+StellarAdmin.UI.EnvironmentBannerTagHelper.CustomColor.set -> void
+StellarAdmin.UI.EnvironmentBannerTagHelper.CustomDarkColor.get -> string?
+StellarAdmin.UI.EnvironmentBannerTagHelper.CustomDarkColor.set -> void
+StellarAdmin.UI.EnvironmentBannerTagHelper.Description.get -> string?
+StellarAdmin.UI.EnvironmentBannerTagHelper.Description.set -> void
+StellarAdmin.UI.EnvironmentBannerTagHelper.EnvironmentBannerTagHelper() -> void
+StellarAdmin.UI.EnvironmentBannerTagHelper.Label.get -> string!
+StellarAdmin.UI.EnvironmentBannerTagHelper.Label.set -> void
+StellarAdmin.UI.EnvironmentFrameColor
+StellarAdmin.UI.EnvironmentFrameColor.Danger = 4 -> StellarAdmin.UI.EnvironmentFrameColor
+StellarAdmin.UI.EnvironmentFrameColor.Info = 1 -> StellarAdmin.UI.EnvironmentFrameColor
+StellarAdmin.UI.EnvironmentFrameColor.Neutral = 0 -> StellarAdmin.UI.EnvironmentFrameColor
+StellarAdmin.UI.EnvironmentFrameColor.Success = 2 -> StellarAdmin.UI.EnvironmentFrameColor
+StellarAdmin.UI.EnvironmentFrameColor.Warning = 3 -> StellarAdmin.UI.EnvironmentFrameColor
+StellarAdmin.UI.EnvironmentFrameTabSize
+StellarAdmin.UI.EnvironmentFrameTabSize.ExtraLarge = 3 -> StellarAdmin.UI.EnvironmentFrameTabSize
+StellarAdmin.UI.EnvironmentFrameTabSize.Large = 2 -> StellarAdmin.UI.EnvironmentFrameTabSize
+StellarAdmin.UI.EnvironmentFrameTabSize.Medium = 1 -> StellarAdmin.UI.EnvironmentFrameTabSize
+StellarAdmin.UI.EnvironmentFrameTabSize.Small = 0 -> StellarAdmin.UI.EnvironmentFrameTabSize
+StellarAdmin.UI.EnvironmentFrameTagHelper
+StellarAdmin.UI.EnvironmentFrameTagHelper.Color.get -> StellarAdmin.UI.EnvironmentFrameColor?
+StellarAdmin.UI.EnvironmentFrameTagHelper.Color.set -> void
+StellarAdmin.UI.EnvironmentFrameTagHelper.CustomColor.get -> string?
+StellarAdmin.UI.EnvironmentFrameTagHelper.CustomColor.set -> void
+StellarAdmin.UI.EnvironmentFrameTagHelper.CustomDarkColor.get -> string?
+StellarAdmin.UI.EnvironmentFrameTagHelper.CustomDarkColor.set -> void
+StellarAdmin.UI.EnvironmentFrameTagHelper.EnvironmentFrameTagHelper() -> void
+StellarAdmin.UI.EnvironmentFrameTagHelper.Label.get -> string!
+StellarAdmin.UI.EnvironmentFrameTagHelper.Label.set -> void
+StellarAdmin.UI.EnvironmentFrameTagHelper.TabSize.get -> StellarAdmin.UI.EnvironmentFrameTabSize?
+StellarAdmin.UI.EnvironmentFrameTagHelper.TabSize.set -> void
+StellarAdmin.UI.EnvironmentStripeColor
+StellarAdmin.UI.EnvironmentStripeColor.Danger = 4 -> StellarAdmin.UI.EnvironmentStripeColor
+StellarAdmin.UI.EnvironmentStripeColor.Info = 1 -> StellarAdmin.UI.EnvironmentStripeColor
+StellarAdmin.UI.EnvironmentStripeColor.Neutral = 0 -> StellarAdmin.UI.EnvironmentStripeColor
+StellarAdmin.UI.EnvironmentStripeColor.Success = 2 -> StellarAdmin.UI.EnvironmentStripeColor
+StellarAdmin.UI.EnvironmentStripeColor.Warning = 3 -> StellarAdmin.UI.EnvironmentStripeColor
+StellarAdmin.UI.EnvironmentStripeTabSize
+StellarAdmin.UI.EnvironmentStripeTabSize.ExtraLarge = 3 -> StellarAdmin.UI.EnvironmentStripeTabSize
+StellarAdmin.UI.EnvironmentStripeTabSize.Large = 2 -> StellarAdmin.UI.EnvironmentStripeTabSize
+StellarAdmin.UI.EnvironmentStripeTabSize.Medium = 1 -> StellarAdmin.UI.EnvironmentStripeTabSize
+StellarAdmin.UI.EnvironmentStripeTabSize.Small = 0 -> StellarAdmin.UI.EnvironmentStripeTabSize
+StellarAdmin.UI.EnvironmentStripeTagHelper
+StellarAdmin.UI.EnvironmentStripeTagHelper.Color.get -> StellarAdmin.UI.EnvironmentStripeColor?
+StellarAdmin.UI.EnvironmentStripeTagHelper.Color.set -> void
+StellarAdmin.UI.EnvironmentStripeTagHelper.CustomColor.get -> string?
+StellarAdmin.UI.EnvironmentStripeTagHelper.CustomColor.set -> void
+StellarAdmin.UI.EnvironmentStripeTagHelper.CustomDarkColor.get -> string?
+StellarAdmin.UI.EnvironmentStripeTagHelper.CustomDarkColor.set -> void
+StellarAdmin.UI.EnvironmentStripeTagHelper.EnvironmentStripeTagHelper() -> void
+StellarAdmin.UI.EnvironmentStripeTagHelper.Label.get -> string!
+StellarAdmin.UI.EnvironmentStripeTagHelper.Label.set -> void
+StellarAdmin.UI.EnvironmentStripeTagHelper.TabSize.get -> StellarAdmin.UI.EnvironmentStripeTabSize?
+StellarAdmin.UI.EnvironmentStripeTagHelper.TabSize.set -> void
+override StellarAdmin.UI.EnvironmentBannerTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.EnvironmentFrameTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.EnvironmentStripeTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
