@@ -14,6 +14,9 @@ public sealed class ProductState(IReadOnlyList<Product> products)
 
     public bool DisappearOnUpdate { get; set; }
 
+    // Thrown by create, update and delete
+    public Exception? WriteException { get; set; }
+
     public List<Product> Products { get; } = [.. products];
     public List<ResourceListRequest> ListRequests { get; } = [];
 

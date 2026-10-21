@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using StellarAdmin.Areas.StellarAdmin.ViewModels;
@@ -33,7 +34,8 @@ internal sealed class ResourceController<TResource>(
     IResourceDataSource<TResource> dataSource,
     IOptions<ResourceOptions<TResource>> options,
     IOptions<ResourceLabelOptions> labelOptions,
-    ICompositeViewEngine viewEngine
+    ICompositeViewEngine viewEngine,
+    ILogger<ResourceController<TResource>> logger
 ) : Controller
 {
     // The view page's action, whose method cannot be named View alongside the controller's View helpers
@@ -47,6 +49,9 @@ internal sealed class ResourceController<TResource>(
     // posted values in TempData
     private const string AddAnotherAction = "add-another";
     private const string AddAnotherTempDataKey = "StellarAdminAddAnother";
+
+    // Shown when a create or update handler throws
+    private const string SaveFailedMessage = "This record couldn't be saved. Try again.";
 
     // An image upload's body is the file and the multipart form around it
     private const long ImageUploadOverhead = 64 * 1024;
@@ -308,7 +313,12 @@ internal sealed class ResourceController<TResource>(
             return BadRequest();
         }
 
-        var result = await handler.DeleteAsync(id, cancellationToken);
+        var result = await RunHandlerAsync(
+            () => handler.DeleteAsync(id, cancellationToken),
+            "delete",
+            "This record couldn't be deleted. Try again.",
+            cancellationToken
+        );
         if (result.IsNotFound)
         {
             return NotFound();
@@ -1893,12 +1903,18 @@ internal sealed class ResourceController<TResource>(
             return (resource, null);
         }
 
-        var result = _resourceOptions.CreateHandler is { } handler
-            ? await handler(HttpContext.RequestServices, resource, cancellationToken)
-            : await ((IResourceCreateHandler<TResource>)dataSource).CreateAsync(
-                (TResource)resource,
-                cancellationToken
-            );
+        var result = await RunHandlerAsync(
+            () =>
+                _resourceOptions.CreateHandler is { } handler
+                    ? handler(HttpContext.RequestServices, resource, cancellationToken)
+                    : ((IResourceCreateHandler<TResource>)dataSource).CreateAsync(
+                        (TResource)resource,
+                        cancellationToken
+                    ),
+            "create",
+            SaveFailedMessage,
+            cancellationToken
+        );
         if (!result.IsSuccess && !result.IsNotFound)
         {
             AddValidationErrors(result, fields, prefix);
@@ -2166,18 +2182,53 @@ internal sealed class ResourceController<TResource>(
         }
     }
 
-    private async Task<ResourceOperationResult> UpdateAsync(
+    private Task<ResourceOperationResult> UpdateAsync(
         string id,
         object resource,
         CancellationToken cancellationToken
     ) =>
-        _resourceOptions.EditHandler is { } handler
-            ? await handler(HttpContext.RequestServices, id, resource, cancellationToken)
-            : await ((IResourceEditHandler<TResource>)dataSource).UpdateAsync(
-                id,
-                (TResource)resource,
-                cancellationToken
+        RunHandlerAsync(
+            () =>
+                _resourceOptions.EditHandler is { } handler
+                    ? handler(HttpContext.RequestServices, id, resource, cancellationToken)
+                    : ((IResourceEditHandler<TResource>)dataSource).UpdateAsync(
+                        id,
+                        (TResource)resource,
+                        cancellationToken
+                    ),
+            "update",
+            SaveFailedMessage,
+            cancellationToken
+        );
+
+    // A handler that throws fails its operation with a general error, so the page shows the error instead of the
+    // request failing. The exception goes to the log; an aborted request still cancels
+    private async Task<ResourceOperationResult> RunHandlerAsync(
+        Func<Task<ResourceOperationResult>> handler,
+        string operation,
+        string message,
+        CancellationToken cancellationToken
+    )
+    {
+        try
+        {
+            return await handler();
+        }
+        catch (Exception exception)
+            when (exception is not OperationCanceledException
+                || !cancellationToken.IsCancellationRequested
+            )
+        {
+            logger.LogError(
+                exception,
+                "The {Operation} of a {Resource} failed.",
+                operation,
+                typeof(TResource).Name
             );
+
+            return ResourceOperationResult.ValidationFailed(null, message);
+        }
+    }
 
     private sealed class ConfiguredFieldValueProvider(
         IValueProvider source,

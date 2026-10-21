@@ -45,7 +45,7 @@ admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
 - References on a column's or display field's path (`booking => booking.Customer!.Name`) are loaded in the same query; no `Include` is needed.
 - Create builds the entity with its parameterless constructor or `create.UseFactory(...)`, binds the configured fields and saves. Edit loads the entity, copies only the configured editable fields onto the tracked entity and saves.
 - Form fields must be mapped scalar properties that are not keys, generated values or concurrency tokens, or many-to-many navigations whose join table has no entity type ([relationships](relationships.md#many-to-many-with-multilookupsheeteditor)). Other collections and navigations need a custom model and handler ([forms](forms.md#custom-create-and-edit-models)).
-- A concurrency conflict on save shows a general error (or not found if the record was deleted). A delete the database refuses, such as one that other records still refer to, shows a general error and logs the exception as a warning; the record stays. Other database errors on save, such as a unique index violation, propagate as exceptions.
+- A concurrency conflict on save shows a general error (or not found if the record was deleted). A delete the database refuses, such as one that other records still refer to, shows a general error and logs the exception as a warning; the record stays. Other database errors on save, such as a unique index violation, show a general error (see [delete](#delete)).
 - Search and scope predicates and sort selectors must translate through the provider.
 
 ## Slugs and labels
@@ -93,7 +93,7 @@ resource.AllowDelete(delete =>
 });
 ```
 
-Delete posts with an antiforgery token after a confirmation dialog. A rejected delete (validation errors from the data source) redisplays the page it came from with the errors. There is no delete hook; to block with a specific message or to cascade, use a custom data source or a database constraint.
+Delete posts with an antiforgery token after a confirmation dialog. A rejected delete (validation errors from the data source) redisplays the page it came from with the errors. When a data source or handler throws on create, edit or delete, the page shows "This record couldn't be saved. Try again." (or "couldn't be deleted") and the exception is logged as an error; return `ResourceOperationResult.ValidationFailed` for a specific message. There is no delete hook; to block with a specific message or to cascade, use a custom data source or a database constraint.
 
 ## Custom data sources
 

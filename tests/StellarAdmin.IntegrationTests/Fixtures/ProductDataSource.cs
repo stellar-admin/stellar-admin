@@ -12,6 +12,11 @@ public sealed class ProductDataSource(ProductState state) : IResourceCrudDataSou
     )
     {
         cancellationToken.ThrowIfCancellationRequested();
+        if (state.WriteException is { } exception)
+        {
+            throw exception;
+        }
+
         if (state.CreateResult is { } result)
         {
             return Task.FromResult(result);
@@ -28,6 +33,11 @@ public sealed class ProductDataSource(ProductState state) : IResourceCrudDataSou
     {
         cancellationToken.ThrowIfCancellationRequested();
         state.DeleteCalls++;
+        if (state.WriteException is { } exception)
+        {
+            throw exception;
+        }
+
         if (state.DeleteResult is { } result)
         {
             return Task.FromResult(result);
@@ -110,6 +120,11 @@ public sealed class ProductDataSource(ProductState state) : IResourceCrudDataSou
     {
         cancellationToken.ThrowIfCancellationRequested();
         state.UpdateCalls++;
+        if (state.WriteException is { } exception)
+        {
+            throw exception;
+        }
+
         if (state.UpdateResult is { } result)
         {
             return Task.FromResult(result);
