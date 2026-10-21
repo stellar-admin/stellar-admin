@@ -12,6 +12,7 @@ An editor is the input a form field renders. Without `UseEditor`, the input is i
 - [Media on choices](#media-on-choices)
 - [Columns in radio and checkbox groups](#columns-in-radio-and-checkbox-groups)
 - [Images](#images)
+- [Rich text](#rich-text)
 - [Icons](#icons)
 - [Overriding and custom editors](#overriding-and-custom-editors)
 
@@ -41,6 +42,7 @@ fields.Add(booking => booking.Notes, field =>
 | --- | --- |
 | Short text, number, email, URL, password | `TextInputEditor` (inferred) |
 | Long text | `TextareaEditor` (inferred for `[DataType(DataType.MultilineText)]`) |
+| Formatted text stored as HTML: headings, lists, links, tables, images | `RichTextEditor` (inferred for `[DataType(DataType.Html)]`; [rich text](#rich-text)) |
 | `DateOnly`, `DateTime`, `TimeOnly` | `DateInputEditor`, `DateTimeInputEditor`, `TimeInputEditor` (inferred) |
 | `bool` as a checkbox / a switch | `CheckboxEditor` (inferred) / `ToggleEditor` |
 | Enum or fixed list, compact | `SelectEditor` (inferred for enums) |
@@ -55,7 +57,7 @@ fields.Add(booking => booking.Notes, field =>
 | Image stored as a file name, key or URL | `ImageEditor` ([images](#images)) |
 | Name of an icon (an amenity's or a category's icon) | `IconEditor` ([icons](#icons)) |
 
-`ChoiceEditor` is the abstract base of the choice editors; don't pass it to `UseEditor`. There is no general file upload, rich text, colour or tag-input editor.
+`ChoiceEditor` is the abstract base of the choice editors; don't pass it to `UseEditor`. There is no general file upload, colour or tag-input editor.
 
 ## What is inferred
 
@@ -64,6 +66,7 @@ fields.Add(booking => booking.Notes, field =>
 | `string`, `Guid` | Text input; `[DataType]` or `[EmailAddress]`/`[Phone]`/`[Url]` pick email, tel, url or password |
 | Numbers | Number input: `step="1"` for whole numbers, `step="any"` for `decimal`, `double`, `float` |
 | `[DataType(DataType.MultilineText)]` | Text area |
+| `[DataType(DataType.Html)]` | Rich text editor |
 | `DateOnly`, `DateTime`, `TimeOnly` | Date, date-time or time input |
 | `DateTimeOffset` | Text input in round-trip format, keeping the offset |
 | `bool` | Checkbox |
@@ -80,6 +83,7 @@ Settings left unset are inferred from the property (for example, `SliderEditor` 
 | --- | --- |
 | `TextInputEditor` | `Type` (`TextInputType.Text`, `Email`, `Tel`, `Url`, `Password`, `Number`), `Placeholder`, `Prefix`, `Suffix`, `Min`, `Max`, `Step` |
 | `TextareaEditor` | `Placeholder`, `Rows` |
+| `RichTextEditor` | `Placeholder`, `Rows` (lines before it grows, default 8), `StoreImage(...)` (turns on images), `MaxFileSize` (bytes, default 5 MB), `AcceptedTypes` (default JPEG, PNG, WebP, GIF, AVIF); see [rich text](#rich-text) |
 | `DateInputEditor` | `Min`, `Max`, `Step` (days) |
 | `DateTimeInputEditor`, `TimeInputEditor` | `Min`, `Max`, `Step` (`TimeSpan`) |
 | `CheckboxEditor`, `ToggleEditor` | None |
@@ -194,6 +198,33 @@ columns.Add(destination => destination.Photo, column => column.UseDisplay<ImageD
 - `ResolveUrl` has a synchronous overload and `ResolveUrl(async (value, services, ct) => ...)`. In the grid it runs once per row, so compute the URL; don't query for it.
 - Replace and remove take effect when the form saves, and can be undone until then. StellarAdmin never deletes images: replaced, removed and abandoned uploads stay where `StoreImage` put them, so clean up files no record references in the app.
 - In an inline row the editor is a thumbnail button with a remove badge, whatever its `Layout`; the row's Save waits for a running upload.
+
+## Rich text
+
+`RichTextEditor` edits a string property that stores HTML, with a toolbar (undo, text style, bold, italic, underline, strikethrough, inline code, lists, quote, code block, link, table, divider), a bubble over selected text, a `/` menu for blocks, Markdown shortcuts (`##`, `-`, `1.`, `>`) and table handles for rows and columns. `[DataType(DataType.Html)]` on the property picks it without `UseEditor`, and picks `HtmlDisplay` for its columns and view page ([columns](columns.md#built-in-displays-in-cells)).
+
+```csharp
+using StellarAdmin.Resources.Editors;
+
+public class Guide
+{
+    [DataType(DataType.Html)]
+    public string? Bio { get; set; }
+}
+
+fields.Add(guide => guide.Bio).UseEditor<RichTextEditor>(editor =>
+{
+    editor.Placeholder = "Tell travellers about this guide";
+    editor.StoreImage(async (file, services, ct) =>
+        await services.GetRequiredService<IPhotoStore>().SaveAsync(file, ct)); // returns the image's URL
+});
+```
+
+- The form saves the HTML after sanitizing it, and `HtmlDisplay` sanitizes it again when it shows it, with `IRichTextSanitizer` (in `StellarAdmin.Resources`). The default keeps the editor's markup (headings, paragraphs, lists, quotes, code, tables, links, images, line breaks), allows http, https and mailto links and relative URLs, and removes everything else: scripts, event handlers, styles, classes and other elements. To change it, register your own: `builder.Services.AddSingleton<IRichTextSanitizer, MySanitizer>()`, which covers saving and showing. A field with another editor, such as `TextareaEditor`, isn't sanitized.
+- Images are off until `StoreImage` is set. Then staff paste, drop or insert images, which upload straight away through the same endpoint as `ImageEditor`, with the same checks of `MaxFileSize` and `AcceptedTypes`. `StoreImage` returns the URL the text shows the image from, not a value for a resolver. A resource fails at startup when such a field has no `AcceptedTypes` or a `MaxFileSize` that isn't positive. StellarAdmin never deletes images, including ones removed from the text.
+- A value without tags, such as text written before the field became rich text, opens as paragraphs, one per blank-line-separated block.
+- The editor's script is a separate file, about 120 KB compressed, which the editor loads itself, only on pages that show it.
+- There is no inline row template: don't make a rich text field editable in an inline row.
 
 ## Icons
 

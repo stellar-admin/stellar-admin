@@ -97,6 +97,7 @@ In `StellarAdmin.Resources.Displays`; the same displays render index cells ([col
 | Display | Default for | Settings |
 | --- | --- | --- |
 | `TextDisplay` | Strings; multiline text keeps its line breaks | `LineClamp` |
+| `HtmlDisplay` | `[DataType(DataType.Html)]` | The HTML, sanitized with `IRichTextSanitizer` and formatted as the rich text editor shows it ([editors](editors.md#rich-text)); `LineClamp` applies in index cells |
 | `NumberDisplay` | Numeric types | `Format`, else `[DisplayFormat]` |
 | `DateDisplay` | `DateTime`, `DateTimeOffset`, `DateOnly`, `TimeOnly` | `Format`, else `[DisplayFormat]`, else `d MMM yyyy`, `HH:mm` or `d MMM yyyy, HH:mm`. `[DataType(DataType.Date)]` brings MVC's short date format (`10/14/2026` in en-US), so set `Format` for those |
 | `BooleanDisplay` | `bool` | `Appearance` (`BooleanDisplayAppearance.Icon`, `Text`, `IconAndText`), `TrueText`, `FalseText` |

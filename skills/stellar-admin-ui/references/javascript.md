@@ -24,6 +24,7 @@ A handful of tag helpers render a custom element around or in place of their mar
 | `<sa-dialog>`, `<sa-alert-dialog>`, `<sa-sheet>` | `<sel-dialog>` | Locks page scrolling while a modal is open; mirrors open state in `data-open`. |
 | `<sa-dropdown-menu-content>`, `<sa-dropdown-menu-sub-content>` | `<sel-dropdown-menu>` | Menu semantics over a native popover: roving arrow-key focus, Home/End, type-ahead, Enter/Space activation, close-on-select, checkbox and radio items, sub-menu open/close. |
 | `<sa-input-otp>` | `<sel-input-otp>` | Keeps the visual slot cells in sync with the backing `<input>`, shows the active cell and caret, enforces the pattern. |
+| `<sa-rich-text-editor>` | `<sel-rich-text-editor>` | The editor itself: toolbar state, the selection bubble, the `/` menu, links, tables and image uploads, writing the HTML to the child textarea. It is in its own file, which the tag helper loads (see below). |
 | `<sa-questionnaire>` | `<sel-questionnaire>` | Shortcut keys for the choices; arrow keys that move between a question's answers and wrap at either end; a free-text answer and the choices standing in for each other, keeping only one of the two in the form. |
 | `<sa-sidebar-wrapper>` | `<sel-sidebar>` | Tracks expanded/collapsed on desktop and the drawer state on mobile; handles `--toggle-sidebar`, `--open-mobile`, `--close-mobile`. |
 | `<sa-slider>` | `<sel-slider>` | Pointer and keyboard interaction for the thumbs; keeps the range fill, `aria-valuenow` and hidden form inputs in sync. |
@@ -33,6 +34,8 @@ A handful of tag helpers render a custom element around or in place of their mar
 All of these render in the **light DOM** — there is no shadow root, so the server-rendered markup stays visible to CSS, to Tailwind utilities and to your own scripts, and the elements participate in layout like any other.
 
 Where a component can degrade gracefully it does: a `<sa-table selection="true">` table still posts its checked rows without the script, and a `<sa-dialog>` still opens from a plain `command="show-modal"` button.
+
+Large components that few pages use keep their script out of the bundle. The rich text editor is one: `<sa-rich-text-editor>` renders a `<script type="module">` for `rich-text-editor.js` inside its element, so the file loads only on pages with an editor, once however many editors there are, and also when an htmx response swaps an editor in. There is nothing to add to the layout.
 
 Custom elements are upgraded when the script runs, which for a module script is after the document is parsed. If your own code needs to touch one — reading `selectedValues` off a `<sel-table>`, say — wait for it first:
 

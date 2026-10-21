@@ -28,6 +28,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseEditor<TEditor>` | [editors](references/editors.md) |
 | Images: thumbnails in the grid, photos on the view page, uploads | `ImageDisplay`, `ImageEditor`, `ResolveUrl`, `StoreImage` | [editors](references/editors.md#images), [columns](references/columns.md#built-in-displays-in-cells) |
 | Icons: a field that stores an icon's name, chosen from a picker | `IconEditor`, `IconDisplay` | [editors](references/editors.md#icons) |
+| Formatted text (HTML) with headings, lists, links, tables and images, sanitized | `RichTextEditor`, `HtmlDisplay`, `[DataType(DataType.Html)]`, `IRichTextSanitizer` | [editors](references/editors.md#rich-text) |
 | Foreign keys, lookups, many-to-many, create-from-lookup, related records in columns | `SelectEditor`/`LookupSheetEditor` + EF `UseItems`, `MultiLookupSheetEditor`, `EnableCreate`, `BadgeDisplay.UseText` | [relationships](references/relationships.md) |
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
 | Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
@@ -200,7 +201,7 @@ Say so rather than inventing an API:
 - Changing the user menu's "Log out" text, and hiding user menu items by authorization (replace `_SidebarUserMenu.cshtml` for either).
 - Form tabs and wizards.
 - Dashboards and widgets (the panel home page is a plain landing page).
-- File upload editors other than images (`ImageEditor`), and deleting replaced or removed images: StellarAdmin never deletes them, so the app cleans up files no record references.
+- File upload editors other than images (`ImageEditor`, and images in `RichTextEditor`), and deleting replaced or removed images: StellarAdmin never deletes them, so the app cleans up files no record references.
 - A fluent read-only field option (use display fields, or `[ReadOnly(true)]`/`[Editable(false)]` metadata).
 - Before/after save hooks (use a custom create or edit handler).
 - Search and scope predicates for non-EF data sources (the data source reads `ResourceListRequest.Search` and `Scope`).

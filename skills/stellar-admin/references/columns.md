@@ -93,6 +93,7 @@ All in `StellarAdmin.Resources.Displays`. The same displays are used by display 
 | Display | Default for | Settings |
 | --- | --- | --- |
 | `TextDisplay` | Strings | `LineClamp` (in a cell, line breaks show only when it is set) |
+| `HtmlDisplay` | `[DataType(DataType.Html)]` | The HTML's text without formatting, clamped to `LineClamp` lines (default 2) |
 | `NumberDisplay` | Numeric types; right-aligned in cells | `Format` (`"C"`, `"N2"`, `"0.0"`), else `[DisplayFormat]` |
 | `DateDisplay` | `DateTime`, `DateTimeOffset`, `DateOnly`, `TimeOnly` | `Format` (`"d MMM yyyy"`), else `[DisplayFormat]`, else `d MMM yyyy` / `HH:mm` / `d MMM yyyy, HH:mm`. `[DataType(DataType.Date)]` brings MVC's short date format (`10/14/2026` in en-US), so set `Format` for those |
 | `BooleanDisplay` | `bool` | `Appearance` (`BooleanDisplayAppearance.Icon`, `Text`, `IconAndText`), `TrueText`, `FalseText` |
