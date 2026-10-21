@@ -64,7 +64,7 @@ Two constraints:
 
 ## Interest invokers
 
-Tooltips and hover-triggered popovers use [interest invokers](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using_interest_invokers): an `interestfor` attribute on the trigger shows the target popover on hover, focus and long-press. The `interestfor` polyfill **is** bundled, so this works regardless of native support.
+Tooltips and hover-triggered popovers use [interest invokers](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using_interest_invokers): an `interestfor` attribute on the trigger shows the target popover on hover, focus and long-press. The `interestfor` polyfill **is** bundled, so this works regardless of native support. Browsers with native support honour `interestfor` only on buttons and links, so the bundle also handles it on other elements, such as inputs, selects and toggles; a control inside a label (a toggle's checkbox) takes its hover from the label, and the tooltip lines up with the label.
 
 ## `window.stellarAdmin.dialog(selector, options?)`
 

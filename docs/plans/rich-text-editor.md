@@ -1,10 +1,21 @@
 # Rich text editor
 
-Status: ready to resume (2026-10-21), now that [client modules](archive/client-modules.md) is done. Proposed 2026-10-18.
+Status: in progress (2026-10-21) on the `rich-text-editor` branch. Approach and public API approved 2026-10-21. Proposed 2026-10-18.
 
 An editor for long text that staff can format, such as bold, lists and links. From the Voyager Travel session feedback, where a guide's `Bio` had only a plain text area.
 
 Explore the options first, then propose the approach and public API to Jerrie before implementing.
+
+## Approach and public API (approved 2026-10-21)
+
+- The editor's script is plain JavaScript with JSDoc in `Client/js/rich-text-editor/`, written fresh from the prototype rather than ported from `editor.ts`. ProseKit is a dependency of the UI client package, and its type definitions feed `npm run check`. A second, separate Rolldown build writes `wwwroot/rich-text-editor.js` (see Loading the editor's assets below).
+- StellarAdmin.UI: `<sa-rich-text-editor asp-for label description placeholder rows upload-url accept max-file-size readonly>` on the same field base as `sa-textarea` (label, description, validation, `class-names`). `rows` sets the minimum height. The image button and slash item appear only with `upload-url`. The tag helper renders the toolbar, selection bubble, slash menu, link popover and table handles, and a textarea that holds the value and stands in until the script loads.
+- Uploads use `sa-image-upload`'s protocol: POST `file` with the antiforgery token, JSON `{ url, error }` back. The editor inserts `url`.
+- StellarAdmin: `RichTextEditor : FieldEditor` with `Placeholder`, `Rows`, `AcceptedTypes` and `MaxFileSize` as on `ImageEditor`, and `StoreImage`, whose delegate returns the image's URL and turns on images. The admin panel's upload action is generalized from image fields to both editors. `HtmlDisplay` renders the HTML on view pages and details and a plain-text excerpt in index columns. `string` properties with `[DataType(DataType.Html)]` get `RichTextEditor` and `HtmlDisplay` by default.
+- Decision 1: the admin panel depends on `HtmlSanitizer` (Ganss.Xss, MIT) and sanitizes the HTML on save and on display by default, with a hook to replace it.
+- Decision 2: every tool is on in the first version (images only with uploads). A tools flags enum waits until an app asks for it.
+- Decision 3: fix toggle tooltips in the library first, as its own change (see Follow-ups).
+- Phases, stopping at each boundary: the UI component (tag helper, script, CSS, DocsSamples, tests); the admin panel editor, display and sanitizing; the website docs and consumer skills.
 
 ## Prototype (2026-10-20)
 
@@ -27,4 +38,5 @@ The editor's script (about 440 KB, or 135 KB compressed) must not load on every 
 
 ## Follow-ups
 
-- **Tooltips on toggles don't open natively.** `sa-toggle` renders a `<label>` around a hidden checkbox, and browsers with native `interestfor` (Chromium 151 here) honour it only on buttons and links, so the polyfill stands down and a toggle's tooltip never opens. The prototype opens them from the editor element (`#setUpToggleTooltips` in `editor.ts`). This needs a library fix: either library script that does the same for every toggle with `interestfor`, or toolbar toggles rendered as `<button aria-pressed>`. Also check the Tooltip docs' "Elements" example: an `<input>` has no native `interestfor` either, so its input, select and checkbox tooltips probably don't open.
+- **Done (2026-10-21): tooltips on toggles don't open natively.** `sa-toggle` renders a `<label>` around a hidden checkbox, and browsers with native `interestfor` (Chromium 151 here) honour it only on buttons and links, so the polyfill stands down and a toggle's tooltip never opens. The prototype opens them from the editor element (`#setUpToggleTooltips` in `editor.ts`). This needs a library fix: either library script that does the same for every toggle with `interestfor`, or toolbar toggles rendered as `<button aria-pressed>`. Also check the Tooltip docs' "Elements" example: an `<input>` has no native `interestfor` either, so its input, select and checkbox tooltips probably don't open.
+  Fixed in the library: `Client/js/interest-fallback.js`, in the main bundle, handles `interestfor` on any element the browser doesn't (anything without `interestForElement`) when native support exists, with the `interest-delay-start` and `interest-delay-end` delays and the `interest` and `loseinterest` events. A control inside a label, such as a toggle's hidden checkbox, takes its hover from the label and anchors the tooltip to it. Verified in headless Chromium 151 on DocsSamples `/Tooltip`: the input, checkbox and select tooltips open on hover and close on leave (the button one still opens natively), and an injected `sa-toggle` opens its tooltip after the delay, above and centred on the label, closes it on leave and on click (the click still toggles), and opens it on keyboard focus and closes it on blur. `npm run check` passes. The skill's JavaScript reference and the product guide mention it. Not done: the website's JavaScript and Tooltip pages, which say only that the polyfill is bundled.

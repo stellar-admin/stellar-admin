@@ -21,6 +21,7 @@ import { dialog } from "./wrappers/dialog.js";
 import { toast } from "./wrappers/toast.js";
 
 import "interestfor";
+import "./interest-fallback.js";
 
 const stellarAdmin = { alertDialog, dialog, toast };
 
