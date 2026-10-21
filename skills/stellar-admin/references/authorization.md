@@ -33,7 +33,7 @@ All `RequireAuthorization` methods take the same arguments as endpoint `RequireA
 
 ## Requirements
 
-- Requirements are endpoint metadata applied by `MapStellarAdmin`, so the app's authentication and authorization middleware must run before it (`UseAuthentication`, `UseAuthorization`).
+- Requirements are endpoint metadata applied by `MapStellarAdmin`, so the app needs authorization middleware (`UseAuthorization`, after `UseRouting`). `WebApplication` adds the authentication middleware itself when authentication is registered; only an app that orders its middleware explicitly, for example with `UseCors`, calls `UseAuthentication` before `UseAuthorization`.
 - Anonymous users get the authentication challenge; signed-in users who fail get the forbidden response. With cookie authentication both are redirects, to `LoginPath` and `AccessDeniedPath` (`/Account/Login`, `/Account/AccessDenied` by default); make sure those pages exist.
 - `resource.SidebarItem(item => item.Visible = false)` hides an item but leaves its pages reachable.
 - There are no per-action rules (for example, everyone can view but only managers can delete). To restrict an action, leave it disabled for that resource, or enforce the rule in a custom handler or data source and return `ValidationFailed`.

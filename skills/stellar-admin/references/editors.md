@@ -59,6 +59,8 @@ fields.Add(booking => booking.Notes, field =>
 
 `ChoiceEditor` is the abstract base of the choice editors; don't pass it to `UseEditor`. There is no general file upload, colour or tag-input editor.
 
+A `string` without `[DataType]` gets a single-line text input, however long its values are. Descriptions, bios, notes and other long text, often a property with no `MaxLength` or a large one, need `TextareaEditor`, or `RichTextEditor` when the values are HTML. The data shows which: seed data or stored values that contain tags, or app views that render the property with `Html.Raw`. Use `RichTextEditor` only for HTML; plain text loses its line breaks there, because HTML ignores them.
+
 ## What is inferred
 
 | Property | Input |
