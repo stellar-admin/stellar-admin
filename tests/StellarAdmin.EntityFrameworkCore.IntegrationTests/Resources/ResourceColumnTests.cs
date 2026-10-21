@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Displays;
@@ -120,25 +120,24 @@ public class ResourceColumnTests
     }
 
     [Test]
-    public async Task Index_WithSortableCollectionColumn_FailsToStart()
+    public async Task Index_WithSortableCollectionColumn_LogsProblem()
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.Index(index =>
-                    index.Columns(columns =>
-                        columns.Add(product => product.Tags, column => column.Sortable())
-                    )
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.Index(index =>
+                index.Columns(columns =>
+                    columns.Add(product => product.Tags, column => column.Sortable())
                 )
-            );
-        }
+            )
+        );
 
         // Assert
-        var exception = await Assert.That(act).Throws<InvalidOperationException>();
-        await Assert.That(exception!.Message).Contains("can't be sortable");
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(logs.ConfigurationProblems.Any(log => log.Message.Contains("can't be sortable")))
+            .IsTrue();
     }
 
     [Test]
@@ -178,57 +177,59 @@ public class ResourceColumnTests
     }
 
     [Test]
-    public async Task Index_WithCollectionColumnWithoutDisplay_FailsToStart()
+    public async Task Index_WithCollectionColumnWithoutDisplay_LogsProblem()
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.Index(index =>
-                    index.Columns(columns => columns.Add(product => product.Tags))
-                )
-            );
-        }
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.Index(index => index.Columns(columns => columns.Add(product => product.Tags)))
+        );
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains(
-                "The index column 'Tags' shows a collection of Tag, which has no text of its own. Show it with UseDisplay<BadgeDisplay>(badge => badge.UseText<Tag>(item => ...))."
-            );
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The index column 'Tags' shows a collection of Tag, which has no text of its own. Show it with UseDisplay<BadgeDisplay>(badge => badge.UseText<Tag>(item => ...))."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]
-    public async Task Index_WithCollectionColumnTextOfAnotherType_FailsToStart()
+    public async Task Index_WithCollectionColumnTextOfAnotherType_LogsProblem()
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.Index(index =>
-                    index.Columns(columns =>
-                        columns.Add(
-                            product => product.Tags,
-                            column =>
-                                column.UseDisplay<BadgeDisplay>(badge =>
-                                    badge.UseText<Product>(product => product.Name)
-                                )
-                        )
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.Index(index =>
+                index.Columns(columns =>
+                    columns.Add(
+                        product => product.Tags,
+                        column =>
+                            column.UseDisplay<BadgeDisplay>(badge =>
+                                badge.UseText<Product>(product => product.Name)
+                            )
                     )
                 )
-            );
-        }
+            )
+        );
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains("The index column 'Tags' shows Tag badges, but its UseText reads Product.");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The index column 'Tags' shows Tag badges, but its UseText reads Product."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

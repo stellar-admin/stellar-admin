@@ -17,14 +17,11 @@ public sealed class BrandingBuilder
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or white space.
-    /// </exception>
     public string Href
     {
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             _options.Href = value;
         }
@@ -73,14 +70,11 @@ public sealed class BrandingBuilder
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or white space.
-    /// </exception>
     public string Title
     {
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             _options.Title = value;
         }

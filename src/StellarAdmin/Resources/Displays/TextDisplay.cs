@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
@@ -19,17 +21,22 @@ public sealed class TextDisplay : FieldDisplay
     ///     The number of lines, or <see langword="null" /> to show all of the text. The default is
     ///     <see langword="null" />.
     /// </value>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     The value is less than 1.
-    /// </exception>
+    /// <remarks>
+    ///     A value less than 1 is a configuration problem, and the setting keeps its value.
+    /// </remarks>
     public int? LineClamp
     {
         get;
         set
         {
-            if (value is { } lines)
+            if (value is < 1)
             {
-                ArgumentOutOfRangeException.ThrowIfLessThan(lines, 1);
+                ResourceProblemSink.ReportInvalidNumber(
+                    nameof(LineClamp),
+                    value.Value,
+                    "1 or more"
+                );
+                return;
             }
 
             field = value;

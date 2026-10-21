@@ -4,7 +4,6 @@ using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
@@ -257,29 +256,30 @@ public class IconEditorTests
         IconEditorLayout.Inline,
         "The edit form's icon field 'Icon' uses the inline layout, which requires a list of icons."
     )]
-    public async Task Startup_WithInvalidIconEditor_FailsValidation(
+    public async Task Startup_WithInvalidIconEditor_LogsProblem(
         string[]? icons,
         IconEditorLayout layout,
         string expected
     )
     {
         // Arrange
-        var configure = () =>
-            CreateAsync(fields =>
-                fields
-                    .Add(model => model.Icon)
-                    .UseEditor<IconEditor>(editor =>
-                    {
-                        editor.Icons = icons;
-                        editor.Layout = layout;
-                    })
-            );
 
         // Act
-        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+        await using var app = await CreateAsync(fields =>
+            fields
+                .Add(model => model.Icon)
+                .UseEditor<IconEditor>(editor =>
+                {
+                    editor.Icons = icons;
+                    editor.Layout = layout;
+                })
+        );
 
         // Assert
-        await Assert.That(exception!.Message).Contains(expected);
+        var logs = app.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(logs.ConfigurationProblems.Any(log => log.Message.Contains(expected)))
+            .IsTrue();
     }
 
     private static void Configure(IconEditor editor) => editor.Icons = Amenities;

@@ -12,7 +12,7 @@ public partial class ResourceBuilderTests
     [Test]
     [Arguments("edit")]
     [Arguments("create")]
-    public async Task UseInlineRow_WhenFieldMatchesNoColumn_RejectsConfiguration(string operation)
+    public async Task UseInlineRow_WhenFieldMatchesNoColumn_TurnsInlineRowOff(string operation)
     {
         // Arrange
         var services = new ServiceCollection();
@@ -30,12 +30,14 @@ public partial class ResourceBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
-        await Assert.That(exception!.Message).Contains("'CountryId' matches no index column");
+        await Assert
+            .That(options.Problems.Single().Message)
+            .Contains("'CountryId' match no index column");
+        await Assert.That(options.Create?.InlineRow).IsNull();
+        await Assert.That(options.Edit?.InlineRow).IsNull();
     }
 
     [Test]
@@ -70,7 +72,7 @@ public partial class ResourceBuilderTests
     }
 
     [Test]
-    public async Task UseInlineRow_WhenRequiredCreatePropertyHasNoField_RejectsConfiguration()
+    public async Task UseInlineRow_WhenRequiredCreatePropertyHasNoField_TurnsInlineRowOff()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -92,18 +94,18 @@ public partial class ResourceBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
-        await Assert.That(exception!.Message).Contains("required property 'Name'");
+        await Assert.That(options.Problems.Single().Message).Contains("required properties 'Name'");
+        await Assert.That(options.Create?.InlineRow).IsNull();
+        await Assert.That(options.Edit?.InlineRow).IsNull();
     }
 
     [Test]
     [Arguments("edit")]
     [Arguments("create")]
-    public async Task UseInlineRow_WithoutKey_RejectsConfiguration(string operation)
+    public async Task UseInlineRow_WithoutKey_TurnsInlineRowOff(string operation)
     {
         // Arrange
         var services = new ServiceCollection();
@@ -120,12 +122,12 @@ public partial class ResourceBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
-        await Assert.That(exception!.Message).Contains("Inline rows require a resource key");
+        await Assert.That(options.Problems.Single().Message).Contains("requires a resource key");
+        await Assert.That(options.Create?.InlineRow).IsNull();
+        await Assert.That(options.Edit?.InlineRow).IsNull();
     }
 
     [Test]

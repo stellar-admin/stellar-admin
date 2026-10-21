@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using StellarAdmin.Diagnostics;
 
 namespace StellarAdmin.Resources.Editors;
 
@@ -48,14 +49,18 @@ public sealed class RichTextEditor : FieldEditor, IImageUploadEditor
     /// <value>
     ///     The number of lines, or <see langword="null" /> for the default of 8.
     /// </value>
+    /// <remarks>
+    ///     A value less than 1 is a configuration problem, and the setting keeps its value.
+    /// </remarks>
     public int? Rows
     {
         get;
         set
         {
-            if (value is { } rows)
+            if (value is < 1)
             {
-                ArgumentOutOfRangeException.ThrowIfLessThan(rows, 1);
+                ResourceProblemSink.ReportInvalidNumber(nameof(Rows), value.Value, "1 or more");
+                return;
             }
 
             field = value;

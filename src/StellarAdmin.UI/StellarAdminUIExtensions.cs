@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using StellarAdmin.UI.Icons;
 using StellarAdmin.UI.Toasts;
 
@@ -39,12 +40,20 @@ public static class StellarAdminUIExtensions
         /// <returns>A builder that configures the StellarAdmin UI services.</returns>
         public StellarAdminUIBuilder AddStellarAdminUI()
         {
-            // Freezing after every Configure call, and resolving at startup, makes a bad icon
-            // registration fail when the app starts rather than on the first render
+            // Freezing after every Configure call makes the registry fixed for every render. The
+            // options are built when the app starts, so a mistake in an icon registration is
+            // logged then, rather than on the first render.
             services
                 .AddOptions<IconOptions>()
-                .PostConfigure(options => options.Freeze())
-                .ValidateOnStart();
+                .PostConfigure<ILoggerFactory>(
+                    (options, loggerFactory) =>
+                    {
+                        options.Freeze();
+                        IconOptionsLogger.Log(options, loggerFactory);
+                    }
+                );
+            services.AddLogging();
+            services.AddHostedService<IconOptionsLogger>();
             services.AddHttpContextAccessor();
             services.TryAddScoped<IToastNotifier, TempDataToastNotifier>();
             services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>

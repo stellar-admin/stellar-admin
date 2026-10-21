@@ -248,60 +248,84 @@ public class ResourceCrudTests
     }
 
     [Test]
-    public async Task PrimaryKeyAsCreateField_RejectsConfiguration()
+    public async Task PrimaryKeyAsCreateField_LogsProblem()
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.AllowCreate(create =>
-                    create.Fields(fields => fields.Add(product => product.Number))
-                )
-            );
-        }
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowCreate(create =>
+                create.Fields(fields => fields.Add(product => product.Number))
+            )
+        );
 
         // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "Product.Number cannot be used as an EF resource form field"
+                    )
+                )
+            )
+            .IsTrue();
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert.That(options.Create!.Fields).IsEmpty();
     }
 
     [Test]
-    public async Task ConcurrencyTokenAsEditField_RejectsConfiguration()
+    public async Task ConcurrencyTokenAsEditField_LogsProblem()
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.AllowEdit(edit =>
-                    edit.Fields(fields => fields.Add(product => product.Version))
-                )
-            );
-        }
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowEdit(edit =>
+                edit.Fields(fields => fields.Add(product => product.Version))
+            )
+        );
 
         // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "Product.Version cannot be used as an EF resource form field"
+                    )
+                )
+            )
+            .IsTrue();
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert.That(options.Edit!.Fields).IsEmpty();
     }
 
     [Test]
-    public async Task GeneratedValueAsEditField_RejectsConfiguration()
+    public async Task GeneratedValueAsEditField_LogsProblem()
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.AllowEdit(edit =>
-                    edit.Fields(fields => fields.Add(product => product.GeneratedCode))
-                )
-            );
-        }
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowEdit(edit =>
+                edit.Fields(fields => fields.Add(product => product.GeneratedCode))
+            )
+        );
 
         // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "Product.GeneratedCode cannot be used as an EF resource form field"
+                    )
+                )
+            )
+            .IsTrue();
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert.That(options.Edit!.Fields).IsEmpty();
     }
 
     [Test]

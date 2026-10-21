@@ -6,6 +6,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
@@ -26,6 +27,9 @@ internal static class EfCoreTestHost
             }
         );
         builder.WebHost.UseTestServer();
+        var logs = new RecordingLoggerProvider();
+        builder.Logging.AddProvider(logs);
+        builder.Services.AddSingleton(logs);
         builder.Services.AddSingleton(_ =>
         {
             var connection = new SqliteConnection("Data Source=:memory:");

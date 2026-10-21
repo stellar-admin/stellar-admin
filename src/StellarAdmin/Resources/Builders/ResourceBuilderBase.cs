@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Infrastructure.Authorization;
 using StellarAdmin.Resources.Options;
 
@@ -468,11 +469,17 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>
             {
+                // The create model was selected again since this builder was created
                 if (options.Create is not ResourceCreateOptions<TModel> create)
                 {
-                    throw new InvalidOperationException(
-                        "The create builder's model no longer matches the selected create model."
+                    options.Report(
+                        ConfigurationProblemKind.StaleModelBuilder,
+                        ConfigurationProblemEffect.Ignored,
+                        $"A create configuration for {typeof(TModel).Name} no longer applies, because another create model was selected later.",
+                        "Its settings are skipped."
                     );
+
+                    return;
                 }
 
                 configure(create);
@@ -483,11 +490,17 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>
             {
+                // The edit model was selected again since this builder was created
                 if (options.Edit is not ResourceEditOptions<TModel> edit)
                 {
-                    throw new InvalidOperationException(
-                        "The edit builder's model no longer matches the selected edit model."
+                    options.Report(
+                        ConfigurationProblemKind.StaleModelBuilder,
+                        ConfigurationProblemEffect.Ignored,
+                        $"A edit configuration for {typeof(TModel).Name} no longer applies, because another edit model was selected later.",
+                        "Its settings are skipped."
                     );
+
+                    return;
                 }
 
                 configure(edit);
@@ -498,11 +511,17 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>
             {
+                // The view model was selected again since this builder was created
                 if (options.View is not ResourceViewOptions<TModel> view)
                 {
-                    throw new InvalidOperationException(
-                        "The view builder's model no longer matches the selected view model."
+                    options.Report(
+                        ConfigurationProblemKind.StaleModelBuilder,
+                        ConfigurationProblemEffect.Ignored,
+                        $"A view configuration for {typeof(TModel).Name} no longer applies, because another view model was selected later.",
+                        "Its settings are skipped."
                     );
+
+                    return;
                 }
 
                 configure(view);

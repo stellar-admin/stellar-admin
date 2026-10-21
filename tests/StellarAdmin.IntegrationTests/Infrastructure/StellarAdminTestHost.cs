@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
@@ -28,6 +29,9 @@ internal static class StellarAdminTestHost
             }
         );
         builder.WebHost.UseTestServer();
+        var logs = new RecordingLoggerProvider();
+        builder.Logging.AddProvider(logs);
+        builder.Services.AddSingleton(logs);
         builder.Services.AddSingleton(state);
         configureServices?.Invoke(builder.Services);
         builder.Services.AddStellarAdmin(admin =>

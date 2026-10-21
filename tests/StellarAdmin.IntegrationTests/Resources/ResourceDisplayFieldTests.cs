@@ -3,7 +3,6 @@ using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
@@ -144,36 +143,39 @@ public class ResourceDisplayFieldTests
     }
 
     [Test]
-    public async Task Startup_WithBadgeDisplayTextOfAnotherType_FailsValidation()
+    public async Task Startup_WithBadgeDisplayTextOfAnotherType_LogsProblem()
     {
         // Arrange
-        var configure = () =>
-            StellarAdminTestHost.CreateAsync(
-                new([new(7, "Notebook", 8.50m)]),
-                resource =>
-                {
-                    resource.UseKey(product => product.Id);
-                    resource.AllowEdit(edit =>
-                        edit.Fields(fields =>
-                            fields
-                                .AddDisplayField(product => product.Name)
-                                .UseDisplay<BadgeDisplay>(badge =>
-                                    badge.UseText<int>(value => value.ToString())
-                                )
-                        )
-                    );
-                }
-            );
 
         // Act
-        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+        await using var app = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields =>
+                        fields
+                            .AddDisplayField(product => product.Name)
+                            .UseDisplay<BadgeDisplay>(badge =>
+                                badge.UseText<int>(value => value.ToString())
+                            )
+                    )
+                );
+            }
+        );
 
         // Assert
+        var logs = app.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains(
-                "The edit form's field 'Name' shows String badges, but its UseText reads Int32."
-            );
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The edit form's field 'Name' shows String badges, but its UseText reads Int32."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

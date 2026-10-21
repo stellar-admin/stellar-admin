@@ -609,4 +609,156 @@
             transform: rotate(180deg);
         }
     }
+
+    /* The configuration problems indicator: an ink pill fixed at the bottom centre of the main area, clear of the
+       sidebar and of the environment frame's border. Warning, not danger: the app's users are unaffected. */
+    .sa-configuration-problems {
+        --_inset: calc(4 * var(--sa-unit));
+        --_sidebar: var(--sidebar-width);
+        position: fixed;
+        inset-block-end: var(--_inset);
+        left: calc(var(--_sidebar) + (100vw - var(--_sidebar)) / 2);
+        translate: -50% 0;
+        z-index: 35;
+    }
+
+    /* An open sheet or dialog covers the page, the indicator included */
+    body:has(dialog:modal) .sa-configuration-problems {
+        display: none;
+    }
+
+    body:has(.sa-environment-frame) .sa-configuration-problems {
+        --_inset: calc(4 * var(--sa-unit) + 3px);
+    }
+
+    body:has(.sa-sidebar[data-state="collapsed"][data-collapsible="offcanvas"]) .sa-configuration-problems {
+        --_sidebar: 0px;
+    }
+
+    body:has(.sa-sidebar[data-state="collapsed"][data-collapsible="icon"]) .sa-configuration-problems {
+        --_sidebar: var(--sidebar-width-icon);
+    }
+
+    @media (width < 48rem) {
+        .sa-configuration-problems {
+            --_sidebar: 0px;
+        }
+    }
+
+    .sa-configuration-problems-trigger {
+        all: unset;
+        box-sizing: border-box;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: calc(2 * var(--sa-unit));
+        padding: calc(1.5 * var(--sa-unit)) calc(3.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit));
+        border-radius: 999px;
+        background: var(--sa-color-ink);
+        color: var(--sa-color-surface);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 8px 24px rgb(0 0 0 / 0.18);
+        font-family: var(--sa-font-sans);
+        font-size: var(--sa-text-sm);
+        font-weight: 500;
+        line-height: 1.2;
+        white-space: nowrap;
+        transition: translate 150ms;
+
+        &:hover {
+            translate: 0 -1px;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--sa-color-ring, var(--sa-color-ink));
+            outline-offset: 2px;
+        }
+    }
+
+    .sa-configuration-problems-count {
+        display: inline-grid;
+        place-items: center;
+        min-width: 20px;
+        height: 20px;
+        padding-inline: 6px;
+        border-radius: 999px;
+        background: var(--sa-color-warning);
+        color: oklch(from var(--sa-color-warning) clamp(0.15, (0.66 - l) * 1000, 1) 0 0);
+        font-size: var(--sa-text-xs);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .sa-configuration-problems-list {
+        display: grid;
+        gap: calc(5 * var(--sa-unit));
+        padding: 0 calc(4 * var(--sa-unit)) calc(4 * var(--sa-unit));
+        overflow-y: auto;
+    }
+
+    .sa-configuration-problems-group {
+        display: grid;
+        gap: calc(2 * var(--sa-unit));
+    }
+
+    .sa-configuration-problems-group-title {
+        display: flex;
+        align-items: center;
+        gap: calc(2 * var(--sa-unit));
+        margin: 0;
+        color: var(--sa-color-ink-muted);
+        font-size: var(--sa-text-xs);
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+
+        & a {
+            margin-inline-start: auto;
+            color: var(--sa-color-ink-muted);
+            font-weight: 500;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+    }
+
+    .sa-configuration-problem {
+        display: grid;
+        gap: calc(1.5 * var(--sa-unit));
+        padding: calc(3 * var(--sa-unit));
+        border: var(--sa-border-width) solid var(--sa-color-line);
+        border-radius: var(--sa-radius-box);
+        background: var(--sa-color-surface);
+        font-size: var(--sa-text-sm);
+    }
+
+    .sa-configuration-problem-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: calc(2 * var(--sa-unit));
+    }
+
+    .sa-configuration-problem-message {
+        font-weight: 600;
+    }
+
+    .sa-configuration-problem-outcome {
+        margin: 0;
+        color: var(--sa-color-ink-muted);
+    }
+
+    .sa-badge.sa-configuration-problem-off {
+        border-color: transparent;
+        background: color-mix(in oklab, var(--sa-color-warning) 22%, var(--sa-color-surface));
+        color: var(--sa-color-ink);
+    }
+
+    .sa-configuration-problems-footnote {
+        margin: 0;
+        color: var(--sa-color-ink-muted);
+        font-size: var(--sa-text-xs);
+
+        & code {
+            font-family: var(--sa-font-mono);
+        }
+    }
 }

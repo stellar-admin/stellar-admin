@@ -9,6 +9,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | Record | Status | Current assessment |
 | --- | --- | --- |
 | [admin-panel-backlog](admin-panel-backlog.md) | backlog | Admin panel features comparable frameworks offer and StellarAdmin lacks (custom and bulk actions, filters, form tabs, dashboards, file uploads and others). Unscheduled; an item becomes a plan when picked up. |
+| [configuration-problems](configuration-problems.md) | proposed | Configuration problems are logged and worked around instead of failing at startup, and Development shows them with a floating pill that opens a sheet. `ConfigureDiagnostics` turns the pill off or makes problems fail startup. Decisions settled. Prototype in `sandbox/html/config-problems.html`. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [row-detail-expand-when](row-detail-expand-when.md) | deferred | Per-row expand rules for row details. Deferred until an application needs them; the plan records the smallest route (an admin panel `ExpandWhen` bool backed by a grid marker element) and the reviewed reason-tooltip variant. Prototype in `sandbox/html/row-details-expand-when.html`. |
 | [configured-row-details](configured-row-details.md) | proposed | Row-detail panels configured from display fields, like the view page, instead of hand-written partials. Carried over from info-lists decision 5. |

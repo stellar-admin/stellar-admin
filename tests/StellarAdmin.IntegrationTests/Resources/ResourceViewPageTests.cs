@@ -1,7 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
@@ -368,30 +367,33 @@ public class ResourceViewPageTests
     }
 
     [Test]
-    public async Task Startup_WithComputedFieldWithoutTitle_FailsValidation()
+    public async Task Startup_WithComputedFieldWithoutTitle_LogsProblem()
     {
         // Arrange
-        var configure = () =>
-            StellarAdminTestHost.CreateAsync(
-                new([new(7, "Notebook", 8.50m)]),
-                resource =>
-                {
-                    resource.UseKey(product => product.Id);
-                    resource.AllowView(view =>
-                        view.Fields(fields => fields.Add(product => product.Price * 2))
-                    );
-                }
-            );
 
         // Act
-        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+        await using var app = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowView(view =>
+                    view.Fields(fields => fields.Add(product => product.Price * 2))
+                );
+            }
+        );
 
         // Assert
+        var logs = app.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains(
-                "The view page's field 'product => (product.Price * 2)' computes its value, so it needs a Title."
-            );
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The view page's field 'product => (product.Price * 2)' computes its value, so it needs a Title."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

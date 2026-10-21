@@ -1,3 +1,4 @@
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
 
@@ -53,16 +54,22 @@ public class ResourceColumnBuilderTests
     }
 
     [Test]
-    public async Task UseDisplay_WithHandlerDisplay_Throws()
+    public async Task UseDisplay_WithHandlerDisplay_KeepsDefaultDisplay()
     {
         // Arrange
         var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+        sut.UseDisplay<PreparedDisplay>();
+        var outer = ResourceProblemSink.Open();
 
         // Act
-        Action act = () => sut.UseDisplay<PreparedDisplay>();
+        var options = sut.Build();
 
         // Assert
-        await Assert.That(act).Throws<NotSupportedException>();
+        var problems = ResourceProblemSink.Close(outer);
+        await Assert.That(options.Display).IsNull();
+        await Assert
+            .That(problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.ColumnDisplayWithHandler);
     }
 
     [Test]
@@ -94,16 +101,22 @@ public class ResourceColumnBuilderTests
     }
 
     [Test]
-    public async Task EditsField_WithComputedValue_Throws()
+    public async Task EditsField_WithComputedValue_IgnoresCall()
     {
         // Arrange
         var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+        sut.EditsField(product => product.Name.ToUpperInvariant());
+        var outer = ResourceProblemSink.Open();
 
         // Act
-        Action act = () => sut.EditsField(product => product.Name.ToUpperInvariant());
+        var options = sut.Build();
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        var problems = ResourceProblemSink.Close(outer);
+        await Assert.That(options.EditsFieldName).IsNull();
+        await Assert
+            .That(problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.InvalidSelector);
     }
 
     public sealed class Product

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Options;
@@ -53,18 +54,23 @@ public class ResourceFieldsBuilderTests
     [Test]
     [Arguments("")]
     [Arguments(" ")]
-    public async Task AddDetails_WithBlankTitle_ThrowsArgumentException(string title)
+    public async Task AddDetails_WithBlankTitle_ReportsProblem(string title)
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create => create.Fields(fields => fields.AddDetails(title)));
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            sut.AllowCreate(create => create.Fields(fields => fields.AddDetails(title)));
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(options.Create!.Items).HasCount(1);
+        await Assert
+            .That(options.Problems.Single().Effect)
+            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 
     [Test]
@@ -177,7 +183,7 @@ public class ResourceFieldsBuilderTests
     }
 
     [Test]
-    public async Task UseDisplay_WithHandlerForAnotherDisplay_ThrowsInvalidOperationException()
+    public async Task UseDisplay_WithHandlerForAnotherDisplay_KeepsDefaultDisplay()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -191,34 +197,41 @@ public class ResourceFieldsBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
+        await Assert.That(options.Create!.DisplayFields.Single().Display).IsNull();
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.MismatchedHandler);
     }
 
     [Test]
-    public async Task Add_WithMethodCall_RejectsField()
+    public async Task Add_WithMethodCall_LeavesOutField()
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create =>
+            create.Fields(fields => fields.Add(product => product.Name.ToUpper()))
+        );
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            sut.AllowCreate(create =>
-                create.Fields(fields => fields.Add(product => product.Name.ToUpper()))
-            );
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(options.Create!.Fields).IsEmpty();
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.InvalidSelector);
     }
 
     [Test]
     [Arguments("nested")]
     [Arguments("readOnly")]
-    public async Task Add_WithoutSetterOrBinder_FailsOptionsValidation(string expression)
+    public async Task Add_WithoutSetterOrBinder_LeavesOutField(string expression)
     {
         // Arrange
         var services = new ServiceCollection();
@@ -240,12 +253,11 @@ public class ResourceFieldsBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Func<ResourceOptions<Product>> act = () =>
-            provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
-        await Assert.That(exception!.Message).Contains("has no public setter");
+        await Assert.That(options.Create!.Fields).IsEmpty();
+        await Assert.That(options.Problems.Single().Message).Contains("has no public setter");
     }
 
     [Test]
@@ -285,74 +297,74 @@ public class ResourceFieldsBuilderTests
     [Arguments("detailsColumns")]
     [Arguments("detailsSpan")]
     [Arguments("detailsStart")]
-    public async Task Fields_WithGridValueOutOfRange_ThrowsArgumentOutOfRangeException(
-        string setting
-    )
+    public async Task Fields_WithGridValueOutOfRange_ClampsValue(string setting)
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create =>
+            create.Fields(fields =>
+            {
+                switch (setting)
+                {
+                    case "columns":
+                        fields.Columns(0);
+                        break;
+                    case "columnTier":
+                        fields.Columns(columns => columns.Large(13));
+                        break;
+                    case "fieldSpan":
+                        fields.Add(product => product.Name).ColumnSpan(0);
+                        break;
+                    case "spanTier":
+                        fields.Add(product => product.Name).ColumnSpan(span => span.Small(13));
+                        break;
+                    case "groupSpan":
+                        fields.AddGroup().ColumnSpan(0);
+                        break;
+                    case "sectionSpan":
+                        fields.AddSection("Details").ColumnSpan(13);
+                        break;
+                    case "fieldStart":
+                        fields.Add(product => product.Name).ColumnStart(0);
+                        break;
+                    case "startTier":
+                        fields.Add(product => product.Name).ColumnStart(start => start.Medium(13));
+                        break;
+                    case "groupStart":
+                        fields.AddGroup().ColumnStart(13);
+                        break;
+                    case "sectionStart":
+                        fields.AddSection("Details").ColumnStart(0);
+                        break;
+                    case "displayFieldSpan":
+                        fields.AddDisplayField(product => product.Name).ColumnSpan(0);
+                        break;
+                    case "displayFieldStart":
+                        fields.AddDisplayField(product => product.Name).ColumnStart(13);
+                        break;
+                    case "detailsColumns":
+                        fields.AddDetails("Audit").Columns(13);
+                        break;
+                    case "detailsSpan":
+                        fields.AddDetails("Audit").ColumnSpan(0);
+                        break;
+                    case "detailsStart":
+                        fields.AddDetails("Audit").ColumnStart(13);
+                        break;
+                }
+            })
+        );
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            sut.AllowCreate(create =>
-                create.Fields(fields =>
-                {
-                    switch (setting)
-                    {
-                        case "columns":
-                            fields.Columns(0);
-                            break;
-                        case "columnTier":
-                            fields.Columns(columns => columns.Large(13));
-                            break;
-                        case "fieldSpan":
-                            fields.Add(product => product.Name).ColumnSpan(0);
-                            break;
-                        case "spanTier":
-                            fields.Add(product => product.Name).ColumnSpan(span => span.Small(13));
-                            break;
-                        case "groupSpan":
-                            fields.AddGroup().ColumnSpan(0);
-                            break;
-                        case "sectionSpan":
-                            fields.AddSection("Details").ColumnSpan(13);
-                            break;
-                        case "fieldStart":
-                            fields.Add(product => product.Name).ColumnStart(0);
-                            break;
-                        case "startTier":
-                            fields
-                                .Add(product => product.Name)
-                                .ColumnStart(start => start.Medium(13));
-                            break;
-                        case "groupStart":
-                            fields.AddGroup().ColumnStart(13);
-                            break;
-                        case "sectionStart":
-                            fields.AddSection("Details").ColumnStart(0);
-                            break;
-                        case "displayFieldSpan":
-                            fields.AddDisplayField(product => product.Name).ColumnSpan(0);
-                            break;
-                        case "displayFieldStart":
-                            fields.AddDisplayField(product => product.Name).ColumnStart(13);
-                            break;
-                        case "detailsColumns":
-                            fields.AddDetails("Audit").Columns(13);
-                            break;
-                        case "detailsSpan":
-                            fields.AddDetails("Audit").ColumnSpan(0);
-                            break;
-                        case "detailsStart":
-                            fields.AddDetails("Audit").ColumnStart(13);
-                            break;
-                    }
-                })
-            );
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<ArgumentOutOfRangeException>();
+        var problem = options.Problems.Single();
+        await Assert.That(problem.Kind).IsEqualTo(ConfigurationProblemKind.InvalidValue);
+        await Assert.That(problem.Effect).IsEqualTo(ConfigurationProblemEffect.Adjusted);
     }
 
     public sealed class Product

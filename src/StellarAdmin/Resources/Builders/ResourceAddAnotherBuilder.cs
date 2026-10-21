@@ -35,11 +35,10 @@ public sealed class ResourceAddAnotherBuilder<TModel>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="property" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="property" /> doesn't select a property path.
-    /// </exception>
     /// <remarks>
-    ///     The property must be an editable field of the create form.
+    ///     The property must be an editable field of the create form. Otherwise, or when the
+    ///     expression doesn't select a property path, it is a configuration problem, and the call is
+    ///     ignored.
     /// </remarks>
     public ResourceAddAnotherBuilder<TModel> KeepForNext<TProperty>(
         Expression<Func<TModel, TProperty>> property
@@ -47,10 +46,10 @@ public sealed class ResourceAddAnotherBuilder<TModel>
     {
         ArgumentNullException.ThrowIfNull(property);
 
-        var properties =
-            ResourcePropertyPath.GetProperties(property)
-            ?? throw new ArgumentException("Select a property path.", nameof(property));
-        var fieldName = ResourcePropertyPath.GetName(properties);
+        // KeepForNext's check reports a name that matches no editable field, as this one never does
+        var fieldName = ResourcePropertyPath.GetProperties(property) is { } properties
+            ? ResourcePropertyPath.GetName(properties)
+            : property.ToString();
         _configure(options =>
         {
             if (!options.KeptFieldNames.Contains(fieldName))

@@ -1,0 +1,61 @@
+@using StellarAdmin.Diagnostics
+@model IReadOnlyList<ConfigurationProblem>
+
+@* The configuration problems, which the layout shows in Development: a pill at the bottom of the page that opens a
+   sheet listing them, grouped by resource *@
+@{
+    var count = Model.Count;
+    var groups = Model.GroupBy(problem => problem.Resource ?? "Admin panel");
+}
+
+<div class="sa-configuration-problems">
+    <button type="button" class="sa-configuration-problems-trigger" commandfor="configuration-problems" command="show-modal">
+        <span class="sa-configuration-problems-count">@count</span>
+        @(count == 1 ? "Configuration problem" : "Configuration problems")
+    </button>
+</div>
+
+<sa-sheet id="configuration-problems" aria-labelledby="configuration-problems-title" style="width: min(34rem, 100vw); max-width: none">
+    <sa-sheet-header>
+        <sa-sheet-title id="configuration-problems-title">Configuration problems</sa-sheet-title>
+        <sa-sheet-description>The admin panel kept running and worked around these. Fix them before you deploy.</sa-sheet-description>
+    </sa-sheet-header>
+    <div class="sa-configuration-problems-list">
+        @foreach (var group in groups)
+        {
+            var slug = group.FirstOrDefault(problem => problem.ResourceSlug is not null)?.ResourceSlug;
+            var isOff = group.Any(problem => problem.Effect == ConfigurationProblemEffect.ResourceOff);
+            <section class="sa-configuration-problems-group">
+                <h3 class="sa-configuration-problems-group-title">
+                    <span>@group.Key</span>
+                    @if (slug is not null && !isOff)
+                    {
+                        <a asp-area="StellarAdmin" asp-controller="@slug" asp-action="Index">Open</a>
+                    }
+                </h3>
+                @foreach (var problem in group)
+                {
+                    var turnedOff = problem.Effect is ConfigurationProblemEffect.TurnedOff or ConfigurationProblemEffect.ResourceOff;
+                    <div class="sa-configuration-problem">
+                        <div class="sa-configuration-problem-head">
+                            <span class="sa-configuration-problem-message">@problem.Message</span>
+                            <sa-badge variant="@(turnedOff ? BadgeVariant.Secondary : BadgeVariant.Outline)" class="@(turnedOff ? "sa-configuration-problem-off" : null)">
+                                @(problem.Effect switch
+                                {
+                                    ConfigurationProblemEffect.Ignored => "Ignored",
+                                    ConfigurationProblemEffect.Adjusted => "Adjusted",
+                                    ConfigurationProblemEffect.TurnedOff => "Turned off",
+                                    _ => "Resource off",
+                                })
+                            </sa-badge>
+                        </div>
+                        <p class="sa-configuration-problem-outcome">@problem.Outcome</p>
+                    </div>
+                }
+            </section>
+        }
+    </div>
+    <sa-sheet-footer>
+        <p class="sa-configuration-problems-footnote">Only Development shows this. Every environment logs each problem once at startup as a warning from <code>StellarAdmin.Configuration</code>.</p>
+    </sa-sheet-footer>
+</sa-sheet>

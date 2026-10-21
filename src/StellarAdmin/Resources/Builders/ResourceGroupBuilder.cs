@@ -23,9 +23,6 @@ public sealed class ResourceGroupBuilder<TResource> : ResourceFieldsBuilder<TRes
     /// <remarks>
     ///     Without a span, the group spans one column.
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     public ResourceGroupBuilder<TResource> ColumnSpan(int span)
     {
         _columnSpan = ColumnSpanBuilder.FromSpan(span);
@@ -68,9 +65,6 @@ public sealed class ResourceGroupBuilder<TResource> : ResourceFieldsBuilder<TRes
     ///     Without a start, the group follows the item before it. The start is ignored where the
     ///     parent has one column or the group would extend past the last column.
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     public ResourceGroupBuilder<TResource> ColumnStart(int start)
     {
         _columnStart = ColumnStartBuilder.FromStart(start);

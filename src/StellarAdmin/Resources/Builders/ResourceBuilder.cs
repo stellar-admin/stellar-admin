@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -65,11 +66,10 @@ public sealed class ResourceBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="key" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="key" /> doesn't select a property of the resource with a public getter.
-    /// </exception>
     /// <remarks>
-    ///     The edit page, the view page and deletion need a key.
+    ///     The edit page, the view page and deletion need a key. An expression that doesn't select
+    ///     a property of the resource with a public getter is a configuration problem, and the key
+    ///     is left unchanged.
     /// </remarks>
     public ResourceBuilder<TResource> UseKey<TKey>(Expression<Func<TResource, TKey>> key)
     {
@@ -80,10 +80,16 @@ public sealed class ResourceBuilder<TResource>
             || property.GetMethod?.IsPublic != true
         )
         {
-            throw new ArgumentException(
-                "Select a direct property with a public getter.",
-                nameof(key)
+            Services.Configure<ResourceOptions<TResource>>(options =>
+                options.Report(
+                    ConfigurationProblemKind.InvalidSelector,
+                    ConfigurationProblemEffect.Ignored,
+                    $"UseKey selects '{key}', which isn't a direct property with a public getter.",
+                    "The key is left unchanged."
+                )
             );
+
+            return this;
         }
 
         Services.Configure<ResourceOptions<TResource>>(options => options.UseKey(property));

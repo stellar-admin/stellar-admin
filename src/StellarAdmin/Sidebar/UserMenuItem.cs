@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
@@ -10,6 +12,9 @@ public abstract class UserMenuItem
 {
     private protected UserMenuItem() { }
 
+    // Why the value can't be used, when a factory method got a blank value
+    internal string? Problem { get; init; }
+
     /// <summary>
     ///     Returns an item that links to an MVC controller action.
     /// </summary>
@@ -21,17 +26,20 @@ public abstract class UserMenuItem
     ///     <paramref name="text" />, <paramref name="action" /> or <paramref name="controller" />
     ///     is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="text" />, <paramref name="action" /> or <paramref name="controller" />
-    ///     is empty or white space.
-    /// </exception>
     public static ActionUserMenuItem Action(string text, string action, string controller)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(text);
-        ArgumentException.ThrowIfNullOrWhiteSpace(action);
-        ArgumentException.ThrowIfNullOrWhiteSpace(controller);
+        ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(action);
+        ArgumentNullException.ThrowIfNull(controller);
 
-        return new(text, action, controller, null);
+        return new(text, action, controller, null)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                (nameof(text), text),
+                (nameof(action), action),
+                (nameof(controller), controller)
+            ),
+        };
     }
 
     /// <summary>
@@ -46,10 +54,6 @@ public abstract class UserMenuItem
     ///     <paramref name="text" />, <paramref name="action" />, <paramref name="controller" /> or
     ///     <paramref name="area" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="text" />, <paramref name="action" />, <paramref name="controller" /> or
-    ///     <paramref name="area" /> is empty or white space.
-    /// </exception>
     public static ActionUserMenuItem Action(
         string text,
         string action,
@@ -57,12 +61,20 @@ public abstract class UserMenuItem
         string area
     )
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(text);
-        ArgumentException.ThrowIfNullOrWhiteSpace(action);
-        ArgumentException.ThrowIfNullOrWhiteSpace(controller);
-        ArgumentException.ThrowIfNullOrWhiteSpace(area);
+        ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(action);
+        ArgumentNullException.ThrowIfNull(controller);
+        ArgumentNullException.ThrowIfNull(area);
 
-        return new(text, action, controller, area);
+        return new(text, action, controller, area)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                (nameof(text), text),
+                (nameof(action), action),
+                (nameof(controller), controller),
+                (nameof(area), area)
+            ),
+        };
     }
 
     /// <summary>
@@ -76,10 +88,6 @@ public abstract class UserMenuItem
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="text" />, <paramref name="action" />, <paramref name="controller" /> or
     ///     <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="text" />, <paramref name="action" /> or <paramref name="controller" />
-    ///     is empty or white space.
     /// </exception>
     public static ActionUserMenuItem Action(
         string text,
@@ -109,10 +117,6 @@ public abstract class UserMenuItem
     ///     <paramref name="text" />, <paramref name="action" />, <paramref name="controller" />,
     ///     <paramref name="area" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="text" />, <paramref name="action" />, <paramref name="controller" /> or
-    ///     <paramref name="area" /> is empty or white space.
-    /// </exception>
     public static ActionUserMenuItem Action(
         string text,
         string action,
@@ -138,15 +142,15 @@ public abstract class UserMenuItem
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="text" /> or <paramref name="page" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="text" /> or <paramref name="page" /> is empty or white space.
-    /// </exception>
     public static PageUserMenuItem Page(string text, string page)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(text);
-        ArgumentException.ThrowIfNullOrWhiteSpace(page);
+        ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(page);
 
-        return new(text, page, null);
+        return new(text, page, null)
+        {
+            Problem = ConfigurationValues.FindBlank((nameof(text), text), (nameof(page), page)),
+        };
     }
 
     /// <summary>
@@ -159,9 +163,6 @@ public abstract class UserMenuItem
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="text" />, <paramref name="page" /> or <paramref name="configure" /> is
     ///     <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="text" /> or <paramref name="page" /> is empty or white space.
     /// </exception>
     public static PageUserMenuItem Page(
         string text,
@@ -194,11 +195,18 @@ public abstract class UserMenuItem
     /// </exception>
     public static PageUserMenuItem Page(string text, string page, string area)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(text);
-        ArgumentException.ThrowIfNullOrWhiteSpace(page);
-        ArgumentException.ThrowIfNullOrWhiteSpace(area);
+        ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(page);
+        ArgumentNullException.ThrowIfNull(area);
 
-        return new(text, page, area);
+        return new(text, page, area)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                (nameof(text), text),
+                (nameof(page), page),
+                (nameof(area), area)
+            ),
+        };
     }
 
     /// <summary>
@@ -249,15 +257,15 @@ public abstract class UserMenuItem
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="text" /> or <paramref name="url" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="text" /> or <paramref name="url" /> is empty or white space.
-    /// </exception>
     public static UrlUserMenuItem Url(string text, string url)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(text);
-        ArgumentException.ThrowIfNullOrWhiteSpace(url);
+        ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(url);
 
-        return new(text, url);
+        return new(text, url)
+        {
+            Problem = ConfigurationValues.FindBlank((nameof(text), text), (nameof(url), url)),
+        };
     }
 
     /// <summary>
@@ -272,9 +280,6 @@ public abstract class UserMenuItem
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="text" />, <paramref name="url" /> or <paramref name="configure" /> is
     ///     <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="text" /> or <paramref name="url" /> is empty or white space.
     /// </exception>
     public static UrlUserMenuItem Url(
         string text,

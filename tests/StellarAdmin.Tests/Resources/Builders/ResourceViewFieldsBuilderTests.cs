@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
@@ -110,7 +111,7 @@ public class ResourceViewFieldsBuilderTests
     }
 
     [Test]
-    public async Task AllowView_WithoutFields_RejectsConfiguration()
+    public async Task AllowView_WithoutFields_TurnsViewOff()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -120,15 +121,17 @@ public class ResourceViewFieldsBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert.That(options.View).IsNull();
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.ViewWithoutFields);
     }
 
     [Test]
-    public async Task AllowView_WithDataSourceWithoutViewHandler_RejectsConfiguration()
+    public async Task AllowView_WithDataSourceWithoutViewHandler_TurnsViewOff()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -138,11 +141,13 @@ public class ResourceViewFieldsBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert.That(options.View).IsNull();
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.ViewWithoutHandler);
     }
 
     [Test]
@@ -167,17 +172,29 @@ public class ResourceViewFieldsBuilderTests
     [Test]
     [Arguments("")]
     [Arguments(" ")]
-    public async Task AddSection_WithBlankTitle_ThrowsArgumentException(string title)
+    public async Task AddSection_WithBlankTitle_ReportsProblem(string title)
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowView(view =>
+            view.Fields(fields =>
+            {
+                fields.Add(product => product.Name);
+                fields.AddSection(title);
+            })
+        );
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () => sut.AllowView(view => view.Fields(fields => fields.AddSection(title)));
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(options.View!.Items).HasCount(2);
+        await Assert
+            .That(options.Problems.Single().Effect)
+            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 
     public sealed class Product

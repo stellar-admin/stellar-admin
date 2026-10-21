@@ -22,15 +22,12 @@ public sealed class ColumnStartBuilder
     /// </summary>
     /// <param name="start">The column number, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     By default, the item follows the item before it.
     /// </remarks>
     public ColumnStartBuilder Base(int start)
     {
-        Start = Start with { Base = ResponsiveGrid.ValidateColumns(start, nameof(start)) };
+        Start = Start with { Base = Requested(start) };
 
         return this;
     }
@@ -40,12 +37,9 @@ public sealed class ColumnStartBuilder
     /// </summary>
     /// <param name="start">The column number, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     public ColumnStartBuilder Large(int start)
     {
-        Start = Start with { Large = ResponsiveGrid.ValidateColumns(start, nameof(start)) };
+        Start = Start with { Large = Requested(start) };
 
         return this;
     }
@@ -66,12 +60,9 @@ public sealed class ColumnStartBuilder
     /// </summary>
     /// <param name="start">The column number, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     public ColumnStartBuilder Medium(int start)
     {
-        Start = Start with { Medium = ResponsiveGrid.ValidateColumns(start, nameof(start)) };
+        Start = Start with { Medium = Requested(start) };
 
         return this;
     }
@@ -92,12 +83,9 @@ public sealed class ColumnStartBuilder
     /// </summary>
     /// <param name="start">The column number, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     public ColumnStartBuilder Small(int start)
     {
-        Start = Start with { Small = ResponsiveGrid.ValidateColumns(start, nameof(start)) };
+        Start = Start with { Small = Requested(start) };
 
         return this;
     }
@@ -123,6 +111,9 @@ public sealed class ColumnStartBuilder
         return builder.Start;
     }
 
-    internal static FormColumnStartDefinitions FromStart(int start) =>
-        new(Base: ResponsiveGrid.ValidateColumns(start, nameof(start)));
+    internal static FormColumnStartDefinitions FromStart(int start) => new(Base: Requested(start));
+
+    // A requested start of 0 is out of range, but 0 also marks an automatic start, so it is kept as another
+    // out-of-range number for the grid layout check to report
+    private static int Requested(int start) => start == ResponsiveGrid.AutoStart ? -1 : start;
 }

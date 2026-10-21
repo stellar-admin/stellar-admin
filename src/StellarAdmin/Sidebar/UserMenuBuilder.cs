@@ -16,9 +16,6 @@ public sealed class UserMenuBuilder
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or white space.
-    /// </exception>
     /// <remarks>
     ///     Without a picture, the avatar shows the user's initials.
     /// </remarks>
@@ -26,7 +23,7 @@ public sealed class UserMenuBuilder
     {
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             _options.AvatarClaimType = value;
         }
@@ -42,9 +39,6 @@ public sealed class UserMenuBuilder
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or white space.
-    /// </exception>
     /// <remarks>
     ///     A claim with several values, such as one role claim per role, shows them all. Without
     ///     the claim, the menu shows the name alone.
@@ -53,7 +47,7 @@ public sealed class UserMenuBuilder
     {
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             _options.DescriptionClaimType = value;
         }
@@ -69,9 +63,6 @@ public sealed class UserMenuBuilder
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or white space.
-    /// </exception>
     /// <remarks>
     ///     Without the claim, the menu shows the description in place of the name.
     /// </remarks>
@@ -79,7 +70,7 @@ public sealed class UserMenuBuilder
     {
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             _options.NameClaimType = value;
         }

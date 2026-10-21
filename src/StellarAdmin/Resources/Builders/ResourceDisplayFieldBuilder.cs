@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
@@ -75,9 +76,6 @@ public sealed class ResourceDisplayFieldBuilder
     /// </summary>
     /// <param name="span">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1.
     /// </remarks>
@@ -121,9 +119,6 @@ public sealed class ResourceDisplayFieldBuilder
     /// </summary>
     /// <param name="start">The column number, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     By default, the field follows the item before it. The start is ignored where the grid
     ///     has one column or the field would extend past the last column.
@@ -180,9 +175,14 @@ public sealed class ResourceDisplayFieldBuilder
                 && !typeof(IFieldDisplayHandler<TDisplay>).IsAssignableFrom(handlerType)
             )
             {
-                throw new InvalidOperationException(
-                    $"{handlerType.Name} must implement IFieldDisplayHandler<{typeof(TDisplay).Name}>."
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.MismatchedHandler,
+                    ConfigurationProblemEffect.Ignored,
+                    $"The field '{options.FieldName ?? options.Title}' uses {typeof(TDisplay).Name} with the handler {handlerType.Name}, which must implement IFieldDisplayHandler<{typeof(TDisplay).Name}>.",
+                    "The field keeps its default display."
                 );
+
+                return;
             }
 
             options.Display = display;
@@ -233,9 +233,20 @@ public sealed class ResourceDisplayFieldBuilder
             return new(field, null, []);
         }
 
+        // Without public getters the value can't be read by property, so the field computes it from the expression
         if (properties.Any(property => property.GetMethod?.IsPublic != true))
         {
-            throw new ArgumentException("Select a property path with public getters.", paramName);
+            var computed = new ResourceDisplayFieldBuilder(field, null, []);
+            computed._configuration.Add(_ =>
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.InvalidSelector,
+                    ConfigurationProblemEffect.Adjusted,
+                    $"The field '{field}' selects a property without a public getter.",
+                    "The field computes its value from the expression, and needs a Title."
+                )
+            );
+
+            return computed;
         }
 
         return new(field, ResourcePropertyPath.GetName(properties), properties);

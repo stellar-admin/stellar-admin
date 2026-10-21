@@ -16,14 +16,14 @@ public class EnvironmentIndicatorTests
     }
 
     [Test]
-    public async Task Stripe_WithWhiteSpaceLabel_ThrowsArgumentException()
+    public async Task Stripe_WithWhiteSpaceLabel_RecordsProblem()
     {
         // Arrange
 
         // Act
-        Action act = () => EnvironmentIndicator.Stripe(" ");
+        var result = EnvironmentIndicator.Stripe(" ");
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(result.Problem).IsNotNull();
     }
 }

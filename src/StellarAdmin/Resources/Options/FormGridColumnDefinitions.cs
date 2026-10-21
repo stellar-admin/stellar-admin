@@ -11,8 +11,7 @@ internal readonly record struct FormGridColumnDefinitions(
 )
 {
     // A plain count keeps one column below the medium tier.
-    public static FormGridColumnDefinitions FromCount(int count) =>
-        new(Medium: ResponsiveGrid.ValidateColumns(count, nameof(count)));
+    public static FormGridColumnDefinitions FromCount(int count) => new(Medium: count);
 
     public GridTiers Resolve() => ResponsiveGrid.ResolveColumns(Base, Small, Medium, Large);
 }

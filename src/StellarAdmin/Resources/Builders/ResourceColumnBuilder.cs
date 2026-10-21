@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Options;
 
@@ -52,12 +53,10 @@ public sealed class ResourceColumnBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property path.
-    /// </exception>
     /// <remarks>
     ///     Use it when the column shows a different property than the field binds. By default,
-    ///     the column edits the field with the same property path.
+    ///     the column edits the field with the same property path. An expression that doesn't
+    ///     select a property path is a configuration problem, and the call is ignored.
     /// </remarks>
     public ResourceColumnBuilder<TResource> EditsField<TProperty>(
         Expression<Func<TResource, TProperty>> field
@@ -66,7 +65,16 @@ public sealed class ResourceColumnBuilder<TResource>
         ArgumentNullException.ThrowIfNull(field);
         if (ResourcePropertyPath.GetProperties(field) is not { } properties)
         {
-            throw new ArgumentException("Select a property path.", nameof(field));
+            _configuration.Add(options =>
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.InvalidSelector,
+                    ConfigurationProblemEffect.Ignored,
+                    $"The index column '{options.FieldName ?? options.Title}' edits '{field}', which isn't a property path.",
+                    "The column edits the field with its own property path."
+                )
+            );
+
+            return this;
         }
 
         return EditsField(ResourcePropertyPath.GetName(properties));
@@ -83,18 +91,31 @@ public sealed class ResourceColumnBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="fieldName" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="fieldName" /> is empty or consists only of white space.
-    /// </exception>
     /// <remarks>
     ///     Use it when the column shows a different property than the field binds. By default,
-    ///     the column edits the field with the same property path.
+    ///     the column edits the field with the same property path. An empty or white space name
+    ///     is a configuration problem, and the call is ignored.
     /// </remarks>
     public ResourceColumnBuilder<TResource> EditsField(string fieldName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(fieldName);
+        ArgumentNullException.ThrowIfNull(fieldName);
 
-        _configuration.Add(options => options.EditsFieldName = fieldName);
+        _configuration.Add(options =>
+        {
+            if (string.IsNullOrWhiteSpace(fieldName))
+            {
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.InvalidValue,
+                    ConfigurationProblemEffect.Ignored,
+                    $"The index column '{options.FieldName ?? options.Title}' edits a field with a blank name.",
+                    "The column edits the field with its own property path."
+                );
+
+                return;
+            }
+
+            options.EditsFieldName = fieldName;
+        });
 
         return this;
     }
@@ -151,13 +172,11 @@ public sealed class ResourceColumnBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="NotSupportedException">
-    ///     <typeparamref name="TDisplay" /> has a handler.
-    /// </exception>
     /// <remarks>
     ///     Without a display, the cells render the grid display template their property's
     ///     <c>[UIHint]</c> names, or the default display for its type. Columns don't support
-    ///     displays with a handler.
+    ///     displays with a handler: one is a configuration problem, and the column keeps its
+    ///     default display.
     /// </remarks>
     public ResourceColumnBuilder<TResource> UseDisplay<TDisplay>(Action<TDisplay> configure)
         where TDisplay : FieldDisplay, new()
@@ -167,9 +186,16 @@ public sealed class ResourceColumnBuilder<TResource>
         // A handler would prepare its data once for every row, so columns leave them out for now
         if (typeof(IFieldDisplay).IsAssignableFrom(typeof(TDisplay)))
         {
-            throw new NotSupportedException(
-                $"{typeof(TDisplay).Name} has a handler, which columns do not support."
+            _configuration.Add(options =>
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.ColumnDisplayWithHandler,
+                    ConfigurationProblemEffect.Ignored,
+                    $"The index column '{options.FieldName ?? options.Title}' uses {typeof(TDisplay).Name}, which has a handler. Columns don't support displays with a handler.",
+                    "The column uses its default display."
+                )
             );
+
+            return this;
         }
 
         _configuration.Add(options =>
@@ -188,9 +214,10 @@ public sealed class ResourceColumnBuilder<TResource>
     /// </summary>
     /// <typeparam name="TDisplay">The type of the display.</typeparam>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="NotSupportedException">
-    ///     <typeparamref name="TDisplay" /> has a handler.
-    /// </exception>
+    /// <remarks>
+    ///     Columns don't support displays with a handler: one is a configuration problem, and the
+    ///     column keeps its default display.
+    /// </remarks>
     public ResourceColumnBuilder<TResource> UseDisplay<TDisplay>()
         where TDisplay : FieldDisplay, new() => UseDisplay<TDisplay>(_ => { });
 

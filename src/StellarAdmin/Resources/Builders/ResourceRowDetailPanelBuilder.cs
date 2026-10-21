@@ -17,19 +17,17 @@ public sealed class ResourceRowDetailPanelBuilder
     ///     punctuation.
     /// </value>
     /// <remarks>
-    ///     Each panel in a row's details needs a unique name.
+    ///     Each panel in a row's details needs a unique name. An empty or white space name, or one
+    ///     another panel has, is a configuration problem, and the panel is left out.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or whitespace.
     /// </exception>
     public string Name
     {
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
             _options.Name = value;
         }
     }

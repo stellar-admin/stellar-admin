@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin;
 
 /// <summary>
@@ -41,6 +43,9 @@ public abstract class EnvironmentColor
     public static EnvironmentColor Warning { get; } =
         new ThemeEnvironmentColor(EnvironmentThemeColor.Warning);
 
+    // Why the colour can't be used, when a factory method got a blank colour
+    internal string? Problem { get; init; }
+
     private protected EnvironmentColor() { }
 
     /// <summary>
@@ -51,14 +56,11 @@ public abstract class EnvironmentColor
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="color" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="color" /> is empty or white space.
-    /// </exception>
     public static CustomEnvironmentColor Custom(string color)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(color);
+        ArgumentNullException.ThrowIfNull(color);
 
-        return new(color, null);
+        return new(color, null) { Problem = ConfigurationValues.FindBlank((nameof(color), color)) };
     }
 
     /// <summary>
@@ -70,14 +72,17 @@ public abstract class EnvironmentColor
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="color" /> or <paramref name="darkColor" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="color" /> or <paramref name="darkColor" /> is empty or white space.
-    /// </exception>
     public static CustomEnvironmentColor Custom(string color, string darkColor)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(color);
-        ArgumentException.ThrowIfNullOrWhiteSpace(darkColor);
+        ArgumentNullException.ThrowIfNull(color);
+        ArgumentNullException.ThrowIfNull(darkColor);
 
-        return new(color, darkColor);
+        return new(color, darkColor)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                (nameof(color), color),
+                (nameof(darkColor), darkColor)
+            ),
+        };
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
@@ -9,9 +10,7 @@ namespace StellarAdmin.Tests.Resources.Builders;
 public partial class ResourceBuilderTests
 {
     [Test]
-    [Arguments("duplicate")]
-    [Arguments("missing-default")]
-    public async Task EnableScopes_WithInvalidConfiguration_RejectsOptions(string scenario)
+    public async Task EnableScopes_WithRepeatedIdentifier_LeavesOutLaterScope()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -20,24 +19,46 @@ public partial class ResourceBuilderTests
             index.EnableScopes(scopes =>
             {
                 scopes.Add("all", "All");
-                if (scenario == "duplicate")
-                {
-                    scopes.Add("ALL", "Duplicate");
-                }
-                else
-                {
-                    scopes.DefaultScope = "missing";
-                }
+                scopes.Add("ALL", "Duplicate");
             })
         );
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert
+            .That(options.Index.Scopes!.Items.Select(scope => scope.Title))
+            .IsEquivalentTo(["All"]);
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.RepeatedScope);
+    }
+
+    [Test]
+    public async Task EnableScopes_WithUnknownDefaultScope_HasNoDefaultScope()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.Index(index =>
+            index.EnableScopes(scopes =>
+            {
+                scopes.Add("all", "All");
+                scopes.DefaultScope = "missing";
+            })
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert.That(options.Index.Scopes!.DefaultScope).IsNull();
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.UnknownDefaultScope);
     }
 
     [Test]
@@ -92,7 +113,7 @@ public partial class ResourceBuilderTests
     }
 
     [Test]
-    public async Task DefaultSort_WithoutSortableColumn_RejectsConfiguration()
+    public async Task DefaultSort_WithoutSortableColumn_IgnoresDefaultSort()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -105,20 +126,27 @@ public partial class ResourceBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert.That(options.Index.DefaultSort).IsNull();
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.UnsortableDefaultSort);
     }
 
     [Test]
-    [Arguments(0, "2,3")]
-    [Arguments(2, "")]
-    [Arguments(2, "2,0")]
-    [Arguments(2, "2,2")]
-    [Arguments(2, "3,4")]
-    public async Task EnablePaging_WithInvalidSizes_RejectsConfiguration(int pageSize, string sizes)
+    [Arguments(0, "2,3", 2, "2,3")]
+    [Arguments(2, "", 2, "2,10,25,50,100")]
+    [Arguments(2, "2,0", 2, "2")]
+    [Arguments(2, "2,2", 2, "2")]
+    [Arguments(2, "3,4", 2, "2,3,4")]
+    public async Task EnablePaging_WithInvalidSizes_AdjustsPaging(
+        int pageSize,
+        string sizes,
+        int expectedPageSize,
+        string expectedSizes
+    )
     {
         // Arrange
         var services = new ServiceCollection();
@@ -136,11 +164,21 @@ public partial class ResourceBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert.That(options.Index.Paging!.PageSize).IsEqualTo(expectedPageSize);
+        await Assert
+            .That(string.Join(",", options.Index.Paging.PageSizes))
+            .IsEqualTo(expectedSizes);
+        await Assert
+            .That(
+                options.Problems.All(problem =>
+                    problem.Effect == ConfigurationProblemEffect.Adjusted
+                )
+            )
+            .IsTrue();
+        await Assert.That(options.Problems).IsNotEmpty();
     }
 
     [Test]
@@ -170,9 +208,7 @@ public partial class ResourceBuilderTests
     [Arguments("edit")]
     [Arguments("delete")]
     [Arguments("view")]
-    public async Task UseDataSource_WhenConfiguredActionIsUnsupported_RejectsConfiguration(
-        string action
-    )
+    public async Task UseDataSource_WhenConfiguredActionIsUnsupported_TurnsActionOff(string action)
     {
         // Arrange
         var services = new ServiceCollection();
@@ -196,11 +232,16 @@ public partial class ResourceBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert.That(options.Create).IsNull();
+        await Assert.That(options.Edit).IsNull();
+        await Assert.That(options.Delete).IsNull();
+        await Assert.That(options.View).IsNull();
+        await Assert
+            .That(options.Problems.Single().Effect)
+            .IsEqualTo(ConfigurationProblemEffect.TurnedOff);
     }
 
     [Test]
@@ -222,17 +263,22 @@ public partial class ResourceBuilderTests
     }
 
     [Test]
-    public async Task UseKey_WithComputedValue_RejectsSelector()
+    public async Task UseKey_WithComputedValue_LeavesKeyUnset()
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.UseKey(product => product.Name.ToUpperInvariant());
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () => sut.UseKey(product => product.Name.ToUpperInvariant());
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(options.KeySelector).IsNull();
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.InvalidSelector);
     }
 
     public sealed class Product

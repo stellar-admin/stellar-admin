@@ -21,15 +21,12 @@ public sealed class GridColumnsBuilder
     /// </summary>
     /// <param name="count">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="count" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1.
     /// </remarks>
     public GridColumnsBuilder Base(int count)
     {
-        Columns = Columns with { Base = ResponsiveGrid.ValidateColumns(count, nameof(count)) };
+        Columns = Columns with { Base = count };
 
         return this;
     }
@@ -39,12 +36,9 @@ public sealed class GridColumnsBuilder
     /// </summary>
     /// <param name="count">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="count" /> is less than 1 or greater than 12.
-    /// </exception>
     public GridColumnsBuilder Large(int count)
     {
-        Columns = Columns with { Large = ResponsiveGrid.ValidateColumns(count, nameof(count)) };
+        Columns = Columns with { Large = count };
 
         return this;
     }
@@ -54,12 +48,9 @@ public sealed class GridColumnsBuilder
     /// </summary>
     /// <param name="count">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="count" /> is less than 1 or greater than 12.
-    /// </exception>
     public GridColumnsBuilder Medium(int count)
     {
-        Columns = Columns with { Medium = ResponsiveGrid.ValidateColumns(count, nameof(count)) };
+        Columns = Columns with { Medium = count };
 
         return this;
     }
@@ -69,12 +60,9 @@ public sealed class GridColumnsBuilder
     /// </summary>
     /// <param name="count">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="count" /> is less than 1 or greater than 12.
-    /// </exception>
     public GridColumnsBuilder Small(int count)
     {
-        Columns = Columns with { Small = ResponsiveGrid.ValidateColumns(count, nameof(count)) };
+        Columns = Columns with { Small = count };
 
         return this;
     }

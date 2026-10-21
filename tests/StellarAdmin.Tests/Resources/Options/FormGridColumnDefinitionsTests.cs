@@ -19,20 +19,6 @@ public class FormGridColumnDefinitionsTests
     }
 
     [Test]
-    [Arguments(0)]
-    [Arguments(13)]
-    public async Task FromCount_WithCountOutOfRange_ThrowsArgumentOutOfRangeException(int count)
-    {
-        // Arrange
-
-        // Act
-        Action act = () => FormGridColumnDefinitions.FromCount(count);
-
-        // Assert
-        await Assert.That(act).Throws<ArgumentOutOfRangeException>();
-    }
-
-    [Test]
     public async Task Resolve_WithNoTiers_UsesOneColumn()
     {
         // Arrange

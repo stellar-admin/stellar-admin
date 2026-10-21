@@ -19,22 +19,6 @@ public class ResourceRowDetailPanelBuilderTests
         await Assert.That(panels.Panels.Single().Name).IsEqualTo("orders");
     }
 
-    [Test]
-    [Arguments("")]
-    [Arguments(" ")]
-    public async Task Name_WhenBlank_ThrowsArgumentException(string name)
-    {
-        // Arrange
-        var panels = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
-        var sut = panels.Add("Orders", "_Orders");
-
-        // Act
-        Action act = () => sut.Name = name;
-
-        // Assert
-        await Assert.That(act).Throws<ArgumentException>();
-    }
-
     public sealed class Product
     {
         public int Id { get; set; }

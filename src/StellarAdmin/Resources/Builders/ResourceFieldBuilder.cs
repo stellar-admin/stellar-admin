@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
@@ -54,9 +55,6 @@ public sealed class ResourceFieldBuilder
     /// </summary>
     /// <param name="span">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1.
     /// </remarks>
@@ -100,9 +98,6 @@ public sealed class ResourceFieldBuilder
     /// </summary>
     /// <param name="start">The column number, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     By default, the field follows the item before it. The start is ignored where the grid
     ///     has one column or the field would extend past the last column.
@@ -155,9 +150,14 @@ public sealed class ResourceFieldBuilder
                 && !typeof(IFieldEditorHandler<TEditor>).IsAssignableFrom(handlerType)
             )
             {
-                throw new InvalidOperationException(
-                    $"{handlerType.Name} must implement IFieldEditorHandler<{typeof(TEditor).Name}>."
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.MismatchedHandler,
+                    ConfigurationProblemEffect.Ignored,
+                    $"The field '{options.FieldName}' uses {typeof(TEditor).Name} with the handler {handlerType.Name}, which must implement IFieldEditorHandler<{typeof(TEditor).Name}>.",
+                    "The field keeps its default editor."
                 );
+
+                return;
             }
 
             options.Editor = editor;

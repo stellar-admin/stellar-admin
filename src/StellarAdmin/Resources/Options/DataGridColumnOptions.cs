@@ -101,4 +101,14 @@ public sealed class DataGridColumnOptions
         FieldExpression = fieldExpression;
         FieldName = fieldName;
     }
+
+    /// <summary>
+    ///     Stops the list from being sorted by the column.
+    /// </summary>
+    /// <remarks>
+    ///     An integration calls it from a post-configuration callback when it can't sort by the
+    ///     column, and reports the problem with
+    ///     <see cref="ResourceOptions{TResource}.ReportProblem" />.
+    /// </remarks>
+    public void DisableSorting() => Sortable = false;
 }

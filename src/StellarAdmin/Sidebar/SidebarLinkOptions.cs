@@ -4,33 +4,9 @@ internal sealed class SidebarLinkOptions(string label, SidebarLinkTarget target)
 {
     public List<object> AuthorizationMetadata { get; } = [];
 
-    public string? Group
-    {
-        get;
-        set
-        {
-            if (value is not null)
-            {
-                ArgumentException.ThrowIfNullOrWhiteSpace(value);
-            }
+    public string? Group { get; set; }
 
-            field = value;
-        }
-    }
-
-    public string? Icon
-    {
-        get;
-        set
-        {
-            if (value is not null)
-            {
-                ArgumentException.ThrowIfNullOrWhiteSpace(value);
-            }
-
-            field = value;
-        }
-    }
+    public string? Icon { get; set; }
 
     public string Label { get; } = label;
 

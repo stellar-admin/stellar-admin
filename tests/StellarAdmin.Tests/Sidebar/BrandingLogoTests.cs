@@ -15,12 +15,12 @@ public class BrandingLogoTests
     }
 
     [Test]
-    public async Task Wordmark_WithUndefinedLayout_ThrowsArgumentOutOfRangeException()
+    public async Task Wordmark_WithUndefinedLayout_RecordsProblem()
     {
         // Act
-        Action act = () => BrandingLogo.Wordmark("~/img/wordmark.svg", (WordmarkLayout)99);
+        var result = BrandingLogo.Wordmark("~/img/wordmark.svg", (WordmarkLayout)99);
 
         // Assert
-        await Assert.That(act).Throws<ArgumentOutOfRangeException>();
+        await Assert.That(result.Problem).IsNotNull();
     }
 }

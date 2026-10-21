@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Reflection;
 using Humanizer;
+using Microsoft.Extensions.Logging;
+using StellarAdmin.Diagnostics;
 
 namespace StellarAdmin.Resources.Options;
 
@@ -60,15 +62,15 @@ public sealed class ResourceOptions<TResource>
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or whitespace.
-    /// </exception>
+    /// <remarks>
+    ///     An empty or white space label is a configuration problem, and the default is used.
+    /// </remarks>
     public string PluralLabel
     {
         get => field ?? SingularLabel.Pluralize();
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
             field = value;
         }
     }
@@ -88,18 +90,18 @@ public sealed class ResourceOptions<TResource>
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or whitespace.
-    /// </exception>
+    /// <remarks>
+    ///     An empty or white space label is a configuration problem, and the default is used.
+    /// </remarks>
     public string SingularLabel
     {
         get;
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
             field = value;
         }
-    } = typeof(TResource).Name.Split('`')[0].Humanize();
+    } = DefaultSingularLabel;
 
     /// <summary>
     ///     Gets the configuration of the view page.
@@ -129,6 +131,8 @@ public sealed class ResourceOptions<TResource>
         CancellationToken,
         Task<object?>
     >? EditLoader { get; set; }
+    internal bool IsOff =>
+        Problems.Any(problem => problem.Effect == ConfigurationProblemEffect.ResourceOff);
     internal string? KeyPropertyName { get; set; }
     internal Func<
         IServiceProvider,
@@ -136,21 +140,22 @@ public sealed class ResourceOptions<TResource>
         CancellationToken,
         Task<object?>
     >? ViewLoader { get; set; }
+    internal List<ConfigurationProblem> Problems { get; } = [];
+
+    private static string DefaultSingularLabel => typeof(TResource).Name.Split('`')[0].Humanize();
 
     /// <summary>
     ///     Sets the property that identifies a resource.
     /// </summary>
     /// <param name="property">The property that holds the resource's key.</param>
-    /// <remarks>
-    ///     The key is converted to a string with the invariant culture.
-    /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="property" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="property" /> isn't a property of the resource with a public instance
-    ///     getter, or is an indexer.
-    /// </exception>
+    /// <remarks>
+    ///     The key is converted to a string with the invariant culture. A property that isn't a
+    ///     property of the resource with a public instance getter, or is an indexer, is a
+    ///     configuration problem, and the key is left unchanged.
+    /// </remarks>
     public void UseKey(PropertyInfo property)
     {
         ArgumentNullException.ThrowIfNull(property);
@@ -160,14 +165,118 @@ public sealed class ResourceOptions<TResource>
             || property.DeclaringType?.IsAssignableFrom(typeof(TResource)) != true
         )
         {
-            throw new ArgumentException(
-                "Select a direct resource property with a public getter.",
-                nameof(property)
+            Report(
+                ConfigurationProblemKind.InvalidSelector,
+                ConfigurationProblemEffect.Ignored,
+                $"UseKey selects '{property.Name}', which isn't a direct property of {typeof(TResource).Name} with a public getter.",
+                "The key is left unchanged."
             );
+            return;
         }
 
         KeySelector = resource =>
             Convert.ToString(property.GetValue(resource), CultureInfo.InvariantCulture)!;
         KeyPropertyName = property.Name;
+    }
+
+    /// <summary>
+    ///     Reports a problem in the resource's configuration that an integration worked around.
+    /// </summary>
+    /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
+    /// <param name="effect">
+    ///     One of the enumeration values that specifies what was done about the problem.
+    /// </param>
+    /// <param name="message">What is wrong and how to fix it.</param>
+    /// <param name="outcome">What was done instead, such as "The field is left out."</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="message" /> or <paramref name="outcome" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Call it from a post-configuration callback after correcting the options, so that they
+    ///     can still be used. The problem is logged once when the app starts, and Development
+    ///     shows it. <see cref="ConfigurationProblemEffect.ResourceOff" /> turns the resource off.
+    /// </remarks>
+    public void ReportProblem(
+        EventId eventId,
+        ConfigurationProblemEffect effect,
+        string message,
+        string outcome
+    )
+    {
+        ArgumentNullException.ThrowIfNull(message);
+        ArgumentNullException.ThrowIfNull(outcome);
+
+        Problems.Add(
+            new(ConfigurationProblemKind.Integration, effect, message, outcome)
+            {
+                IntegrationEventId = eventId,
+            }
+        );
+    }
+
+    internal void Report(
+        ConfigurationProblemKind kind,
+        ConfigurationProblemEffect effect,
+        string message,
+        string outcome
+    ) => Problems.Add(new(kind, effect, message, outcome));
+
+    // Labels set to blank text fall back to their defaults
+    internal void RepairLabels()
+    {
+        if (string.IsNullOrWhiteSpace(SingularLabel))
+        {
+            Report(
+                ConfigurationProblemKind.BlankLabel,
+                ConfigurationProblemEffect.Ignored,
+                "The resource's SingularLabel is blank. Set it to text, or leave it unset.",
+                $"The resource uses the default label '{DefaultSingularLabel}'."
+            );
+            SingularLabel = DefaultSingularLabel;
+        }
+
+        if (string.IsNullOrWhiteSpace(SidebarItem.Group))
+        {
+            Report(
+                ConfigurationProblemKind.BlankLabel,
+                ConfigurationProblemEffect.Ignored,
+                "The resource's sidebar item has a blank Group. Set it to text, or leave it unset.",
+                $"The item appears in the '{ResourceSidebarItemOptions.DefaultGroup}' group."
+            );
+            SidebarItem.Group = ResourceSidebarItemOptions.DefaultGroup;
+        }
+
+        if (SidebarItem.Label is { } label && string.IsNullOrWhiteSpace(label))
+        {
+            Report(
+                ConfigurationProblemKind.BlankLabel,
+                ConfigurationProblemEffect.Ignored,
+                "The resource's sidebar item has a blank Label. Set it to text, or leave it unset.",
+                "The item shows the resource's plural label."
+            );
+            SidebarItem.Label = null;
+        }
+
+        if (SidebarItem.Icon is { } icon && string.IsNullOrWhiteSpace(icon))
+        {
+            Report(
+                ConfigurationProblemKind.BlankLabel,
+                ConfigurationProblemEffect.Ignored,
+                "The resource's sidebar item has a blank Icon. Set it to an icon name, or leave it unset.",
+                "The item has no icon."
+            );
+            SidebarItem.Icon = null;
+        }
+
+        if (string.IsNullOrWhiteSpace(PluralLabel))
+        {
+            Report(
+                ConfigurationProblemKind.BlankLabel,
+                ConfigurationProblemEffect.Ignored,
+                "The resource's PluralLabel is blank. Set it to text, or leave it unset.",
+                $"The resource uses the default plural label '{SingularLabel.Pluralize()}'."
+            );
+            PluralLabel = SingularLabel.Pluralize();
+        }
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Displays;
@@ -103,29 +103,30 @@ public class ResourceViewTests
     }
 
     [Test]
-    public async Task View_WithCollectionFieldWithoutText_FailsToStart()
+    public async Task View_WithCollectionFieldWithoutText_LogsProblem()
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.AllowView(view =>
-                    view.Fields(fields =>
-                        fields.Add(product => product.Tags).UseDisplay<BadgeDisplay>()
-                    )
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowView(view =>
+                view.Fields(fields =>
+                    fields.Add(product => product.Tags).UseDisplay<BadgeDisplay>()
                 )
-            );
-        }
+            )
+        );
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains(
-                "The view page's field 'Tags' shows a collection of Tag, which has no text of its own."
-            );
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The view page's field 'Tags' shows a collection of Tag, which has no text of its own."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

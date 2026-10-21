@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Options;
 
@@ -10,19 +11,22 @@ public class ResourceIndexBuilderBaseTests
     [Test]
     [Arguments("")]
     [Arguments(" ")]
-    public async Task EnableRowDetails_WithBlankPartialName_ThrowsArgumentException(
-        string partialName
-    )
+    public async Task EnableRowDetails_WithBlankPartialName_DoesNotExpandRows(string partialName)
     {
         // Arrange
         var services = new ServiceCollection();
         var resource = services.AddStellarAdmin().AddResource<Product>();
+        resource.Index(index => index.EnableRowDetails(partialName));
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () => resource.Index(index => index.EnableRowDetails(partialName));
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(options.Index.RowDetails).IsNull();
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.RowDetailsWithoutPanels);
     }
 
     [Test]
@@ -78,59 +82,86 @@ public class ResourceIndexBuilderBaseTests
     }
 
     [Test]
-    public async Task EnableRowDetails_WithoutPanels_ThrowsInvalidOperationException()
+    public async Task EnableRowDetails_WithoutPanels_DoesNotExpandRows()
     {
         // Arrange
         var services = new ServiceCollection();
         var resource = services.AddStellarAdmin().AddResource<Product>();
+        resource.Index(index => index.EnableRowDetails(panels => { }));
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () => resource.Index(index => index.EnableRowDetails(panels => { }));
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
+        await Assert.That(options.Index.RowDetails).IsNull();
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.RowDetailsWithoutPanels);
     }
 
     [Test]
-    public async Task EnableRowDetails_WithDuplicatePanelNames_ThrowsInvalidOperationException()
+    public async Task EnableRowDetails_WithDuplicatePanelNames_LeavesOutLaterPanel()
     {
         // Arrange
         var services = new ServiceCollection();
         var resource = services.AddStellarAdmin().AddResource<Product>();
+        resource.Index(index =>
+            index.EnableRowDetails(panels =>
+            {
+                panels.Add("Order history", "_OrderHistory");
+                panels.Add("Orders", "_Orders").Name = "order-history";
+            })
+        );
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            resource.Index(index =>
-                index.EnableRowDetails(panels =>
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert
+            .That(options.Index.RowDetails!.Panels.Select(panel => panel.Title))
+            .IsEquivalentTo(["Order history"]);
+        await Assert.That(options.Problems.Single().Message).Contains("order-history");
+    }
+
+    [Test]
+    [Arguments("?!", "_Panel", "")]
+    [Arguments("Panel", " ", "")]
+    [Arguments(" ", "_Panel", "")]
+    [Arguments("Panel", "_Panel", " ")]
+    public async Task EnableRowDetails_WithBlankPanelValue_LeavesOutPanel(
+        string title,
+        string partialName,
+        string name
+    )
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var resource = services.AddStellarAdmin().AddResource<Product>();
+        resource.Index(index =>
+            index.EnableRowDetails(panels =>
+            {
+                panels.Add("Notes", "_Notes");
+                var panel = panels.Add(title, partialName);
+                if (name.Length > 0)
                 {
-                    panels.Add("Order history", "_OrderHistory");
-                    panels.Add("Orders", "_Orders").Name = "order-history";
-                })
-            );
-
-        // Assert
-        await Assert
-            .That(act)
-            .Throws<InvalidOperationException>()
-            .WithMessageContaining("order-history");
-    }
-
-    [Test]
-    public async Task EnableRowDetails_WithUnnamedPanel_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        var resource = services.AddStellarAdmin().AddResource<Product>();
+                    panel.Name = name;
+                }
+            })
+        );
+        using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            resource.Index(index => index.EnableRowDetails(panels => panels.Add("?!", "_Panel")));
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
         await Assert
-            .That(act)
-            .Throws<InvalidOperationException>()
-            .WithMessageContaining("Set Name");
+            .That(options.Index.RowDetails!.Panels.Select(panel => panel.Title))
+            .IsEquivalentTo(["Notes"]);
+        await Assert
+            .That(options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.RowDetailPanelWithoutName);
     }
 
     public sealed class Product

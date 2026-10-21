@@ -382,6 +382,14 @@ StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Fields.get 
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.SectionLayout.get -> StellarAdmin.UI.FormSectionLayout?
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Title.get -> string!
+StellarAdmin.Diagnostics.ConfigurationProblemEffect
+StellarAdmin.Diagnostics.ConfigurationProblemEffect.Adjusted = 1 -> StellarAdmin.Diagnostics.ConfigurationProblemEffect
+StellarAdmin.Diagnostics.ConfigurationProblemEffect.Ignored = 0 -> StellarAdmin.Diagnostics.ConfigurationProblemEffect
+StellarAdmin.Diagnostics.ConfigurationProblemEffect.ResourceOff = 3 -> StellarAdmin.Diagnostics.ConfigurationProblemEffect
+StellarAdmin.Diagnostics.ConfigurationProblemEffect.TurnedOff = 2 -> StellarAdmin.Diagnostics.ConfigurationProblemEffect
+StellarAdmin.Diagnostics.DiagnosticsBuilder
+StellarAdmin.Diagnostics.DiagnosticsBuilder.ShowIndicator.set -> void
+StellarAdmin.Diagnostics.DiagnosticsBuilder.ThrowOnProblems.set -> void
 StellarAdmin.FormPageTagHelper
 StellarAdmin.FormPageTagHelper.FormPageTagHelper(Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine! viewEngine) -> void
 StellarAdmin.FormPageTagHelper.Model.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel!
@@ -1195,6 +1203,7 @@ StellarAdmin.Resources.LookupLabelContext.LookupLabelContext(string! fieldLabel,
 StellarAdmin.Resources.LookupLabelContext.MinimumSearchLength.get -> int
 StellarAdmin.Resources.LookupLabelContext.Term.get -> string?
 StellarAdmin.Resources.Options.DataGridColumnOptions
+StellarAdmin.Resources.Options.DataGridColumnOptions.DisableSorting() -> void
 StellarAdmin.Resources.Options.DataGridColumnOptions.Display.get -> StellarAdmin.Resources.Displays.FieldDisplay?
 StellarAdmin.Resources.Options.DataGridColumnOptions.EditsFieldName.get -> string?
 StellarAdmin.Resources.Options.DataGridColumnOptions.EmptyText.get -> string?
@@ -1341,6 +1350,7 @@ StellarAdmin.Resources.Options.ResourceFormOptions
 StellarAdmin.Resources.Options.ResourceFormOptions.DisplayFields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormDisplayFieldOptions!>!
 StellarAdmin.Resources.Options.ResourceFormOptions.Fields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormFieldOptions!>!
 StellarAdmin.Resources.Options.ResourceFormOptions.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
+StellarAdmin.Resources.Options.ResourceFormOptions.RemoveField(StellarAdmin.Resources.Options.FormFieldOptions! field) -> bool
 StellarAdmin.Resources.Options.ResourceFormOptions.ResourceFormOptions() -> void
 StellarAdmin.Resources.Options.ResourceFormOptions.SectionLayout.get -> StellarAdmin.UI.FormSectionLayout?
 StellarAdmin.Resources.Options.ResourceFormOptions.SubmitLabel.get -> string?
@@ -1414,6 +1424,7 @@ StellarAdmin.Resources.Options.ResourceOptions<TResource>.Index.get -> StellarAd
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.KeySelector.get -> System.Func<TResource, string!>?
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.PluralLabel.get -> string!
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.PluralLabel.set -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, StellarAdmin.Diagnostics.ConfigurationProblemEffect effect, string! message, string! outcome) -> void
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.ResourceOptions() -> void
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.SidebarItem.get -> StellarAdmin.Resources.Options.ResourceSidebarItemOptions!
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.SingularLabel.get -> string!
@@ -1661,6 +1672,7 @@ StellarAdmin.StellarAdminBuilder.AddSidebarLink(string! label, StellarAdmin.Side
 StellarAdmin.StellarAdminBuilder.AddSidebarLink(string! label, StellarAdmin.Sidebar.SidebarLinkTarget! target, System.Action<StellarAdmin.Sidebar.SidebarLinkBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.AddStylesheet(string! path) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureBranding(System.Action<StellarAdmin.Sidebar.BrandingBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
+StellarAdmin.StellarAdminBuilder.ConfigureDiagnostics(System.Action<StellarAdmin.Diagnostics.DiagnosticsBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureHomePage(System.Action<StellarAdmin.Home.HomePageBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureSidebar(System.Action<StellarAdmin.Sidebar.SidebarBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!
 StellarAdmin.StellarAdminBuilder.ConfigureSidebarGroup(string! label, System.Action<StellarAdmin.Sidebar.SidebarGroupBuilder!>! configure) -> StellarAdmin.StellarAdminBuilder!

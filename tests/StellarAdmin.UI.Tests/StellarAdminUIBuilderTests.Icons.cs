@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StellarAdmin.UI.Icons;
 using StellarAdmin.UI.Tests.Support;
@@ -68,19 +69,22 @@ public partial class StellarAdminUIBuilderTests
     }
 
     [Test]
-    public async Task AddIconPack_WhenPackIsInvalid_FailsStartupValidation()
+    public async Task AddIconPack_WhenPackIsInvalid_LogsProblem()
     {
         // Arrange
+        var logs = new RecordingLoggerProvider();
         var services = new ServiceCollection();
+        services.AddLogging(logging => logging.AddProvider(logs));
         services.AddStellarAdminUI().AddIconPack<InvalidMappingPack>();
         using var provider = services.BuildServiceProvider();
-        var validator = provider.GetRequiredService<IStartupValidator>();
 
         // Act
-        Action act = () => validator.Validate();
+        _ = provider.GetRequiredService<IOptions<IconOptions>>().Value;
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        var log = logs.Logs.Single(log => log.Category == "StellarAdmin.Configuration");
+        await Assert.That(log.Level).IsEqualTo(LogLevel.Warning);
+        await Assert.That(log.Message).Contains("The mapping is skipped.");
     }
 
     [Test]

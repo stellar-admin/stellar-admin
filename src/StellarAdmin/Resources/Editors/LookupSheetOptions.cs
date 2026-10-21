@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
@@ -11,15 +13,24 @@ public sealed class LookupSheetOptions
     /// <value>
     ///     The number of characters, or 0 to list items when the sheet opens. The default is 0.
     /// </value>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     The value is negative.
-    /// </exception>
+    /// <remarks>
+    ///     A negative value is a configuration problem, and the setting keeps its value.
+    /// </remarks>
     public int MinimumSearchLength
     {
         get;
         set
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            if (value < 0)
+            {
+                ResourceProblemSink.ReportInvalidNumber(
+                    nameof(MinimumSearchLength),
+                    value,
+                    "0 or more"
+                );
+                return;
+            }
+
             field = value;
         }
     }
@@ -30,15 +41,20 @@ public sealed class LookupSheetOptions
     /// <value>
     ///     The number of items. The default is 20.
     /// </value>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     The value is less than 1.
-    /// </exception>
+    /// <remarks>
+    ///     A value less than 1 is a configuration problem, and the setting keeps its value.
+    /// </remarks>
     public int PageSize
     {
         get;
         set
         {
-            ArgumentOutOfRangeException.ThrowIfLessThan(value, 1);
+            if (value < 1)
+            {
+                ResourceProblemSink.ReportInvalidNumber(nameof(PageSize), value, "1 or more");
+                return;
+            }
+
             field = value;
         }
     } = 20;

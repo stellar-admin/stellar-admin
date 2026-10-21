@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
@@ -32,8 +33,7 @@ public static class StellarAdminBuilderExtensions
     ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />.
     ///     Fields of a form that binds the entity must be settable properties that aren't keys,
     ///     concurrency tokens or generated values, or many-to-many navigations without a join
-    ///     entity type, which bind as the keys of the related entities. Otherwise, the app fails
-    ///     to start.
+    ///     entity type, which bind as the keys of the related entities. Otherwise, the resource is turned off or the field is left out, and the problem is logged.
     /// </remarks>
     public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder
@@ -62,16 +62,14 @@ public static class StellarAdminBuilderExtensions
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="builder" /> or <paramref name="slug" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="slug" /> is empty, white space or not a valid slug.
-    /// </exception>
     /// <remarks>
     ///     <typeparamref name="TEntity" /> must be mapped in <typeparamref name="TContext" />, with
     ///     a single public primary key property of type <see cref="int" />, <see cref="long" />,
     ///     <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
     ///     must be settable properties that aren't keys, concurrency tokens or generated values,
     ///     or many-to-many navigations without a join entity type, which bind as the keys of the
-    ///     related entities. Otherwise, the app fails to start.
+    ///     related entities. Otherwise, the resource is turned off or the field is left out, and the problem is logged. A slug that isn't valid, or that another resource
+    ///     uses, also turns the resource off.
     /// </remarks>
     public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder,
@@ -109,8 +107,7 @@ public static class StellarAdminBuilderExtensions
     ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />.
     ///     Fields of a form that binds the entity must be settable properties that aren't keys,
     ///     concurrency tokens or generated values, or many-to-many navigations without a join
-    ///     entity type, which bind as the keys of the related entities. Otherwise, the app fails
-    ///     to start.
+    ///     entity type, which bind as the keys of the related entities. Otherwise, the resource is turned off or the field is left out, and the problem is logged.
     /// </remarks>
     public static StellarAdminBuilder AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder,
@@ -143,16 +140,14 @@ public static class StellarAdminBuilderExtensions
     ///     <paramref name="builder" />, <paramref name="slug" /> or <paramref name="configure" />
     ///     is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="slug" /> is empty, white space or not a valid slug.
-    /// </exception>
     /// <remarks>
     ///     <typeparamref name="TEntity" /> must be mapped in <typeparamref name="TContext" />, with
     ///     a single public primary key property of type <see cref="int" />, <see cref="long" />,
     ///     <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
     ///     must be settable properties that aren't keys, concurrency tokens or generated values,
     ///     or many-to-many navigations without a join entity type, which bind as the keys of the
-    ///     related entities. Otherwise, the app fails to start.
+    ///     related entities. Otherwise, the resource is turned off or the field is left out, and the problem is logged. A slug that isn't valid, or that another resource
+    ///     uses, also turns the resource off.
     /// </remarks>
     public static StellarAdminBuilder AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder,
@@ -184,11 +179,18 @@ public static class StellarAdminBuilderExtensions
                     // Options are cached. Use a separate scope to read metadata without retaining a DbContext.
                     using var scope = scopeFactory.CreateScope();
                     var db = scope.ServiceProvider.GetRequiredService<TContext>();
-                    var entity =
-                        db.Model.FindEntityType(typeof(TEntity))
-                        ?? throw new InvalidOperationException(
-                            $"{typeof(TEntity).Name} is not mapped in {typeof(TContext).Name}."
+                    if (db.Model.FindEntityType(typeof(TEntity)) is not { } entity)
+                    {
+                        options.ReportProblem(
+                            EfCoreConfigurationEvents.EntityNotMapped,
+                            ConfigurationProblemEffect.ResourceOff,
+                            $"{typeof(TEntity).Name} is not mapped in {typeof(TContext).Name}. Add it to the context's model.",
+                            "The resource is turned off: it leaves the sidebar and its pages return 404."
                         );
+
+                        return;
+                    }
+
                     var keys = entity.FindPrimaryKey()?.Properties;
                     if (
                         keys is not { Count: 1 }
@@ -201,23 +203,28 @@ public static class StellarAdminBuilderExtensions
                         )
                     )
                     {
-                        throw new InvalidOperationException(
-                            "EF resources require one public CLR primary-key property of type int, long, Guid, or string."
+                        options.ReportProblem(
+                            EfCoreConfigurationEvents.UnsupportedPrimaryKey,
+                            ConfigurationProblemEffect.ResourceOff,
+                            $"{typeof(TEntity).Name} has no supported primary key. EF resources require one public CLR primary-key property of type int, long, Guid, or string.",
+                            "The resource is turned off: it leaves the sidebar and its pages return 404."
                         );
+
+                        return;
                     }
 
                     options.UseKey(property);
-                    ValidateSortableColumns<TEntity>(entity, options.Index);
+                    DisableCollectionSorting(options, entity);
 
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
                     {
-                        UseManyToManyBinders<TContext, TEntity>(entity, create);
-                        ValidateEntityFormFields<TEntity>(entity, create);
+                        UseManyToManyBinders<TContext, TEntity>(options, entity, create);
+                        RemoveUnsupportedFormFields(options, entity, create);
                     }
                     if (options.Edit is { } edit && edit.ModelType == typeof(TEntity))
                     {
-                        UseManyToManyBinders<TContext, TEntity>(entity, edit);
-                        ValidateEntityFormFields<TEntity>(entity, edit);
+                        UseManyToManyBinders<TContext, TEntity>(options, entity, edit);
+                        RemoveUnsupportedFormFields(options, entity, edit);
                     }
                 }
             );
@@ -225,8 +232,10 @@ public static class StellarAdminBuilderExtensions
         return new(builder.Services);
     }
 
-    // A many-to-many navigation without an entity type for its join table binds as the keys of its related entities
+    // A many-to-many navigation without an entity type for its join table binds as the keys of its related entities.
+    // A navigation that can't be bound, or an editor that selects one item, leaves the field out.
     private static void UseManyToManyBinders<TContext, TEntity>(
+        ResourceOptions<TEntity> options,
         IEntityType entity,
         ResourceFormOptions form
     )
@@ -248,9 +257,14 @@ public static class StellarAdminBuilderExtensions
                     is not [{ PropertyInfo: { } key }]
             )
             {
-                throw new InvalidOperationException(
-                    $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field. A many-to-many field requires a CLR navigation property and related entities with one CLR primary-key property."
+                form.RemoveField(field);
+                options.ReportProblem(
+                    EfCoreConfigurationEvents.UnsupportedManyToManyField,
+                    ConfigurationProblemEffect.TurnedOff,
+                    $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field. A many-to-many field requires a CLR navigation property and related entities with one CLR primary-key property.",
+                    "The field is left out."
                 );
+                continue;
             }
 
             // A built-in single-value editor would show nothing selected and save at most one related entity
@@ -261,9 +275,14 @@ public static class StellarAdminBuilderExtensions
                         is not (CheckboxGroupEditor or ToggleGroupEditor or MultiLookupSheetEditor)
             )
             {
-                throw new InvalidOperationException(
-                    $"{typeof(TEntity).Name}.{field.FieldName} is a many-to-many field, so it needs an editor that selects several items. Call UseEditor<CheckboxGroupEditor>, UseEditor<ToggleGroupEditor> or UseEditor<MultiLookupSheetEditor>."
+                form.RemoveField(field);
+                options.ReportProblem(
+                    EfCoreConfigurationEvents.SingleValueManyToManyEditor,
+                    ConfigurationProblemEffect.TurnedOff,
+                    $"{typeof(TEntity).Name}.{field.FieldName} is a many-to-many field, so it needs an editor that selects several items. Call UseEditor<CheckboxGroupEditor>, UseEditor<ToggleGroupEditor> or UseEditor<MultiLookupSheetEditor>.",
+                    "The field is left out."
                 );
+                continue;
             }
 
             var binderType = typeof(ManyToManyFieldBinder<,,>).MakeGenericType(
@@ -276,13 +295,13 @@ public static class StellarAdminBuilderExtensions
     }
 
     // A collection has no single value to order rows by, unless the column sorts by an expression of its own
-    private static void ValidateSortableColumns<TEntity>(
-        IEntityType entity,
-        ResourceIndexOptions index
+    private static void DisableCollectionSorting<TEntity>(
+        ResourceOptions<TEntity> options,
+        IEntityType entity
     )
     {
         foreach (
-            var column in index.Columns.Where(column =>
+            var column in options.Index.Columns.Where(column =>
                 column is { Sortable: true, SortExpression: null }
             )
         )
@@ -292,14 +311,20 @@ public static class StellarAdminBuilderExtensions
                 && !EfCorePropertyPaths.CanInclude(entity, path)
             )
             {
-                throw new InvalidOperationException(
-                    $"The {typeof(TEntity).Name} column '{column.FieldName}' reads a collection, so it can't be sortable. Remove Sortable(), or sort it by an expression with Sortable(selector)."
+                column.DisableSorting();
+                options.ReportProblem(
+                    EfCoreConfigurationEvents.SortableCollectionColumn,
+                    ConfigurationProblemEffect.Ignored,
+                    $"The {typeof(TEntity).Name} column '{column.FieldName}' reads a collection, so it can't be sortable. Remove Sortable(), or sort it by an expression with Sortable(selector).",
+                    "The column isn't sortable."
                 );
             }
         }
     }
 
-    private static void ValidateEntityFormFields<TEntity>(
+    // Keys, concurrency tokens, generated values and properties without a public setter can't be saved from a form
+    private static void RemoveUnsupportedFormFields<TEntity>(
+        ResourceOptions<TEntity> options,
         IEntityType entity,
         ResourceFormOptions form
     )
@@ -316,8 +341,12 @@ public static class StellarAdminBuilderExtensions
                 || property.ValueGenerated != ValueGenerated.Never
             )
             {
-                throw new InvalidOperationException(
-                    $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field."
+                form.RemoveField(field);
+                options.ReportProblem(
+                    EfCoreConfigurationEvents.UnsupportedFormField,
+                    ConfigurationProblemEffect.TurnedOff,
+                    $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field: it is a key, a concurrency token or a generated value, or has no public setter.",
+                    "The field is left out."
                 );
             }
         }

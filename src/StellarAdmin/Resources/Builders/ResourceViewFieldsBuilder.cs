@@ -26,9 +26,6 @@ public abstract class ResourceViewFieldsBuilder<TModel>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> selects a property path without public getters.
-    /// </exception>
     public ResourceDisplayFieldBuilder Add<TProperty>(Expression<Func<TModel, TProperty>> field) =>
         FormScopeBuilder.AddDisplayField(_configure, field, nameof(field));
 
@@ -44,9 +41,6 @@ public abstract class ResourceViewFieldsBuilder<TModel>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> selects a property path without public getters.
     /// </exception>
     public ResourceViewFieldsBuilder<TModel> Add<TProperty>(
         Expression<Func<TModel, TProperty>> field,
@@ -98,12 +92,9 @@ public abstract class ResourceViewFieldsBuilder<TModel>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="title" /> is empty or whitespace.
-    /// </exception>
     public ResourceViewSectionBuilder<TModel> AddSection(string title)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        FormScopeBuilder.ReportBlankTitle(_configure, title, "section");
 
         return FormScopeBuilder.AddContainer(
             _configure,
@@ -120,9 +111,6 @@ public abstract class ResourceViewFieldsBuilder<TModel>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" /> or <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="title" /> is empty or whitespace.
     /// </exception>
     public ResourceViewFieldsBuilder<TModel> AddSection(
         string title,
@@ -156,9 +144,6 @@ public abstract class ResourceViewFieldsBuilder<TModel>
     ///     The columns apply when the fields' container is at least 40rem wide. A narrower
     ///     container shows one column. Without columns, the fields use one column.
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="count" /> is less than 1 or greater than 12.
-    /// </exception>
     public ResourceViewFieldsBuilder<TModel> Columns(int count)
     {
         var columns = FormGridColumnDefinitions.FromCount(count);

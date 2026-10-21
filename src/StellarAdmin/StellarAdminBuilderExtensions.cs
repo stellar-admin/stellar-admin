@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Areas.StellarAdmin.Controllers;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Options;
@@ -42,143 +43,36 @@ public static partial class StellarAdminBuilderExtensions
         /// <exception cref="ArgumentNullException">
         ///     <paramref name="slug" /> is <see langword="null" />.
         /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     <paramref name="slug" /> is empty, white space or not a valid slug.
-        /// </exception>
+        /// <remarks>
+        ///     A slug that isn't valid, or that another resource uses, is a configuration problem,
+        ///     and the resource is turned off. A second slug for a resource that is already added is
+        ///     ignored.
+        /// </remarks>
         public ResourceBuilder<TResource> AddResource<TResource>(string slug)
         {
             ArgumentNullException.ThrowIfNull(builder);
-            ValidateSlug(slug);
+            ArgumentNullException.ThrowIfNull(slug);
 
             builder.Services.AddOptions<ResourceLabelOptions>();
-            builder
-                .Services.AddOptions<ResourceOptions<TResource>>()
-                .Validate(
-                    options =>
-                        options.Index.Paging is not { } paging
-                        || paging.PageSize > 0
-                            && paging.PageSizes is { Count: > 0 }
-                            && paging.PageSizes.All(size => size > 0)
-                            && paging.PageSizes.Distinct().Count() == paging.PageSizes.Count
-                            && paging.PageSizes.Contains(paging.PageSize),
-                    "Paging requires positive, distinct page sizes including the default page size."
-                )
-                .Validate(
-                    options =>
-                        options.Index.Scopes is not { } scopes
-                        || scopes.Items.All(scope =>
-                            !string.IsNullOrWhiteSpace(scope.Id)
-                            && !string.IsNullOrWhiteSpace(scope.Title)
-                        )
-                            && scopes
-                                .Items.Select(scope => scope.Id)
-                                .Distinct(StringComparer.OrdinalIgnoreCase)
-                                .Count() == scopes.Items.Count
-                            && (
-                                scopes.DefaultScope is null
-                                || scopes.Items.Any(scope => scope.Id == scopes.DefaultScope)
-                            ),
-                    "Scopes require distinct identifiers, nonblank labels, and a default scope matching a configured identifier."
-                )
-                .Validate(
-                    options =>
-                        options.Index.DefaultSort is not { } sort
-                        || options.Index.Columns.Any(column =>
-                            column.Sortable && column.SortField == sort.Field
-                        ),
-                    "The default sort must select a configured sortable column."
-                )
-                .Validate(
-                    options =>
-                        options.Create is null
-                        || options.CreateHandler is not null
-                        || options.DataSourceType is { } type
-                            && typeof(IResourceCreateHandler<TResource>).IsAssignableFrom(type),
-                    "The create form requires a data source implementing IResourceCreateHandler or an explicit create handler."
-                )
-                .Validate(
-                    options =>
-                        options.Edit is null
-                        || options.EditHandler is not null
-                        || options.DataSourceType is { } type
-                            && typeof(IResourceEditHandler<TResource>).IsAssignableFrom(type),
-                    "The edit form requires a data source implementing IResourceEditHandler or an explicit edit handler."
-                )
-                .Validate(
-                    options => options.View is null || options.View.Fields.Count > 0,
-                    "The view page requires at least one field."
-                )
-                .Validate(
-                    options =>
-                        options.View is null
-                        || options.ViewLoader is not null
-                        || options.DataSourceType is { } type
-                            && typeof(IResourceViewHandler<TResource>).IsAssignableFrom(type),
-                    "The view page requires a data source implementing IResourceViewHandler or an explicit view handler."
-                )
-                .Validate(
-                    options =>
-                        options.Delete is null
-                        || options.DataSourceType is { } type
-                            && typeof(IResourceDeleteHandler<TResource>).IsAssignableFrom(type),
-                    "Delete configuration requires a data source implementing IResourceDeleteHandler."
-                )
-                .ValidateOnStart();
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<
-                    IValidateOptions<ResourceOptions<TResource>>,
-                    InlineRowOptionsValidator<TResource>
-                >()
-            );
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<
-                    IValidateOptions<ResourceOptions<TResource>>,
-                    AddAnotherOptionsValidator<TResource>
-                >()
-            );
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<
-                    IValidateOptions<ResourceOptions<TResource>>,
-                    ImageEditorOptionsValidator<TResource>
-                >()
-            );
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<
-                    IValidateOptions<ResourceOptions<TResource>>,
-                    IconEditorOptionsValidator<TResource>
-                >()
-            );
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<
-                    IValidateOptions<ResourceOptions<TResource>>,
-                    FieldBinderOptionsValidator<TResource>
-                >()
-            );
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<
-                    IValidateOptions<ResourceOptions<TResource>>,
-                    BadgeDisplayOptionsValidator<TResource>
-                >()
-            );
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<
-                    IValidateOptions<ResourceOptions<TResource>>,
-                    ValueTextOptionsValidator<TResource>
-                >()
-            );
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<
-                    IValidateOptions<ResourceOptions<TResource>>,
-                    ComputedColumnOptionsValidator<TResource>
-                >()
-            );
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<
-                    IValidateOptions<ResourceOptions<TResource>>,
-                    ComputedDisplayFieldOptionsValidator<TResource>
-                >()
-            );
-            builder.AddController(typeof(ResourceController<TResource>), slug);
+            builder.Services.AddOptions<ResourceOptions<TResource>>();
+            builder.Services.TryAddTransient<
+                IOptionsFactory<ResourceOptions<TResource>>,
+                ResourceOptionsFactory<TResource>
+            >();
+
+            // A resource that can't have its URL is left out, and its configuration goes nowhere
+            if (FindSlugProblem<TResource>(builder, slug) is { } problem)
+            {
+                builder.Options.Problems.Add(problem);
+                if (problem.Effect == ConfigurationProblemEffect.ResourceOff)
+                {
+                    return new(builder.Services);
+                }
+            }
+            else
+            {
+                builder.AddController(typeof(ResourceController<TResource>), slug);
+            }
 
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<ISidebarItemsProvider, ResourceSidebarItemsProvider>()
@@ -209,7 +103,7 @@ public static partial class StellarAdminBuilderExtensions
                                 sidebarItem.Group,
                                 sidebarItem.Icon,
                                 sidebarItem.Order,
-                                sidebarItem.Visible
+                                sidebarItem.Visible && !options.IsOff
                             );
                         },
                         services =>
@@ -222,7 +116,11 @@ public static partial class StellarAdminBuilderExtensions
                             services
                                 .GetRequiredService<IOptions<ResourceOptions<TResource>>>()
                                 .Value.Create
-                                is not null
+                                is not null,
+                        services =>
+                            services
+                                .GetRequiredService<IOptions<ResourceOptions<TResource>>>()
+                                .Value.Problems
                     )
                 );
             }
@@ -269,9 +167,11 @@ public static partial class StellarAdminBuilderExtensions
         ///     <paramref name="slug" /> or <paramref name="configure" /> is
         ///     <see langword="null" />.
         /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     <paramref name="slug" /> is empty, white space or not a valid slug.
-        /// </exception>
+        /// <remarks>
+        ///     A slug that isn't valid, or that another resource uses, is a configuration problem,
+        ///     and the resource is turned off. A second slug for a resource that is already added is
+        ///     ignored.
+        /// </remarks>
         public StellarAdminBuilder AddResource<TResource>(
             string slug,
             Action<ResourceBuilder<TResource>> configure
@@ -307,17 +207,60 @@ public static partial class StellarAdminBuilderExtensions
     private static string DefaultSlug<TResource>() =>
         typeof(TResource).Name.Split('`')[0].Kebaberize().Pluralize();
 
-    private static void ValidateSlug(string slug)
+    // A second slug for the same resource is ignored, and the resource keeps its first. An invalid slug, or one
+    // another controller has, turns the resource off.
+    private static ConfigurationProblem? FindSlugProblem<TResource>(
+        StellarAdminBuilder builder,
+        string slug
+    )
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(slug);
+        var controllerType = typeof(ResourceController<TResource>);
+        var conflict = builder.FindControllerConflict(controllerType, slug);
+        var resource = typeof(TResource).Name.Split('`')[0];
+        if (conflict is { } repeated && repeated.ControllerType == controllerType)
+        {
+            return new(
+                ConfigurationProblemKind.ResourceSlugRepeated,
+                ConfigurationProblemEffect.Ignored,
+                $"The resource is added again under the slug '{slug}', but it already has the slug '{repeated.ControllerName}'. Add each resource once.",
+                $"The resource keeps the slug '{repeated.ControllerName}'."
+            )
+            {
+                Resource = resource,
+            };
+        }
+
         if (!SlugPattern().IsMatch(slug))
         {
-            throw new ArgumentException(
-                "Use lowercase letters and digits, optionally separated by single hyphens.",
-                nameof(slug)
-            );
+            return new(
+                ConfigurationProblemKind.InvalidSlug,
+                ConfigurationProblemEffect.ResourceOff,
+                $"The slug '{slug}' isn't valid. Use lowercase letters and digits, optionally separated by single hyphens.",
+                "The resource is turned off: it has no pages and isn't in the sidebar."
+            )
+            {
+                Resource = resource,
+            };
         }
+
+        return conflict is { } inUse
+            ? new(
+                ConfigurationProblemKind.SlugInUse,
+                ConfigurationProblemEffect.ResourceOff,
+                $"The slug '{slug}' is already used by {DescribeController(inUse.ControllerType)}. Give the resource another slug.",
+                "The resource is turned off: it has no pages and isn't in the sidebar."
+            )
+            {
+                Resource = resource,
+            }
+            : null;
     }
+
+    private static string DescribeController(Type controllerType) =>
+        controllerType.IsGenericType
+        && controllerType.GetGenericTypeDefinition() == typeof(ResourceController<>)
+            ? $"the {controllerType.GetGenericArguments()[0].Name.Split('`')[0]} resource"
+            : controllerType.Name;
 
     [GeneratedRegex("^[a-z0-9]+(?:-[a-z0-9]+)*$")]
     private static partial Regex SlugPattern();
