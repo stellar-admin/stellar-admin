@@ -1,6 +1,6 @@
 # Rich text editor
 
-Status: completed (2026-10-21) on the `rich-text-editor` branch, not yet merged. Proposed 2026-10-18.
+Status: completed (2026-10-21), merged into `master`. Proposed 2026-10-18.
 
 An editor for long text that staff can format, such as bold, lists and links. From the Voyager Travel session feedback, where a guide's `Bio` had only a plain text area.
 
