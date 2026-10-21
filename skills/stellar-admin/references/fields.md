@@ -52,7 +52,7 @@ fields.AddDisplayField(booking => booking.Nights * booking.NightlyRate, field =>
 view.Fields(fields => fields.Add(tour => string.Join(", ", tour.Destinations.Select(destination => destination.Name)), field => field.Title = "Destinations"));
 ```
 
-- A computed field has no property for a default label, so `Title` is required; without it the app fails to start.
+- A computed field has no property for a default label, so `Title` is required; without it the field is left out ([configuration problems](configuration-problems.md)).
 - It renders like a property of the expression's type, with that type's default display; `[UIHint]` and `[DisplayFormat]` don't apply. A display handler receives the computed value as `context.Value` and the title in PascalCase (`Total`) as `context.FieldName`.
 - EF Core resources load the navigations it reads from the record, as for computed columns ([columns](columns.md#computed-values)), but not those read through a nested lambda's parameter.
 - Reading a property of a null value, or calling one of its methods, gives null (or zero or false), which shows the empty text; extension methods such as `Select` still throw on a null collection.
@@ -86,7 +86,7 @@ In order of precedence:
 2. The display field's own text rendering after `UseBuiltInRendering()`.
 3. The template named by `[UIHint("Name")]`: `DisplayTemplates/Name.cshtml`, with the value as its model. A missing template throws.
 4. The default display for the property's data type, then its CLR type.
-5. Text rendering, which joins collections with commas and applies `[DisplayFormat]`. An entity, a collection of entities, or any other class that doesn't override `ToString()` fails at startup with it or with no display; show a property of the entity, or use `BadgeDisplay` with `UseText<TItem>` ([relationships](relationships.md#showing-related-values)).
+5. Text rendering, which joins collections with commas and applies `[DisplayFormat]`. An entity, a collection of entities, or any other class that doesn't override `ToString()` is left out with it or with no display, and a configuration problem is logged; show a property of the entity, or use `BadgeDisplay` with `UseText<TItem>` ([relationships](relationships.md#showing-related-values)).
 
 An empty value shows `EmptyText`, else `[DisplayFormat(NullDisplayText)]`, else a dash, unless the display renders empty values itself (`ImageDisplay` shows "No image").
 

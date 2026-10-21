@@ -67,7 +67,7 @@ lookup.UseItems<VoyagerDbContext, Customer, int>(customer => customer.Id, custom
 lookup.EnableCreate();
 ```
 
-- The related type (`Customer`) must be registered as a resource with `AllowCreate`; otherwise the form throws when it renders. `EnableCreate<TResource>()` names the resource explicitly.
+- The related type (`Customer`) must be registered as a resource with `AllowCreate`; otherwise the lookup has no New button, and a configuration problem is logged when the form renders. `EnableCreate<TResource>()` names the resource explicitly.
 - The lookup's value must be that resource's key. EF Core resources report it automatically; a custom create handler must return `ResourceOperationResult.Success(key)`.
 - Users the related resource's authorization rejects don't see New.
 - The sheet's form always stacks its sections.
@@ -117,9 +117,9 @@ resource.AllowEdit(edit => edit.Fields(fields =>
 }));
 ```
 
-This works for navigations whose join table EF Core maps without an entity type, on create, edit and inline rows. A value that matches no related entity shows an error under the field. A join entity of your own, or a related entity with a composite key, fails at startup; use a form model with a key collection and a handler that loads and saves the join instead ([forms](forms.md#custom-create-and-edit-models)).
+This works for navigations whose join table EF Core maps without an entity type, on create, edit and inline rows. A value that matches no related entity shows an error under the field. A join entity of your own, or a related entity with a composite key, is left out of the form, and a configuration problem is logged; use a form model with a key collection and a handler that loads and saves the join instead ([forms](forms.md#custom-create-and-edit-models)).
 
-`[MinLength(1)]` and `[MaxLength(3)]` on the collection or navigation validate the number of selections. For a short list of choices, `CheckboxGroupEditor` or `ToggleGroupEditor` with EF `UseItems` also edit a key collection or a many-to-many navigation. A many-to-many field with no editor, or with a single-value editor such as `SelectEditor`, fails at startup; use one of these three editors.
+`[MinLength(1)]` and `[MaxLength(3)]` on the collection or navigation validate the number of selections. For a short list of choices, `CheckboxGroupEditor` or `ToggleGroupEditor` with EF `UseItems` also edit a key collection or a many-to-many navigation. A many-to-many field with no editor, or with a single-value editor such as `SelectEditor`, is left out of the form, and a configuration problem is logged; use one of these three editors.
 
 ## Lookups without EF Core
 
@@ -161,9 +161,9 @@ view.Fields(fields =>
 });
 ```
 
-Set `Title`, because the default label is the last property's name. Read a property of the related entity (`booking.Customer!.Name`), not the entity itself: a column or display field on `booking => booking.Customer` fails at startup, since the entity would show its type name.
+Set `Title`, because the default label is the last property's name. Read a property of the related entity (`booking.Customer!.Name`), not the entity itself: a column or display field on `booking => booking.Customer` is left out, with a configuration problem logged, since the entity would show its type name.
 
-A collection or many-to-many navigation shows as one badge per related record. `UseText<TItem>` picks the text of each badge; the type argument is the related entity, and a mismatch fails at startup:
+A collection or many-to-many navigation shows as one badge per related record. `UseText<TItem>` picks the text of each badge; the type argument is the related entity, and with a mismatch the column or field is left out:
 
 ```csharp
 columns.Add(tour => tour.Destinations, column => column.UseDisplay<BadgeDisplay>(badge => badge.UseText<Destination>(destination => destination.Name)));

@@ -53,6 +53,36 @@ public class ConfigurationProblemsTests
     }
 
     [Test]
+    public async Task BrokenResourceOutsideDevelopment_ReturnsPlainNotFound()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            configureAdmin: admin =>
+            {
+                admin.AddResource<CustomProduct>(
+                    "catalog",
+                    resource => resource.UseDataSource<CustomProductDataSource>()
+                );
+                admin.Services.Configure<ResourceOptions<CustomProduct>>(_ =>
+                    throw new InvalidOperationException("Broken catalog")
+                );
+            },
+            environmentName: "Production"
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/catalog");
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+        await Assert
+            .That(await response.Content.ReadAsStringAsync())
+            .DoesNotContain("Broken catalog");
+    }
+
+    [Test]
     public async Task EditorWithAnotherEditorsTemplate_LeavesFieldOutAndReportsIt()
     {
         // Arrange

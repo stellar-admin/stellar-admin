@@ -193,7 +193,7 @@ fields.Add(destination => destination.Photo).UseEditor<ImageEditor>(image =>
 columns.Add(destination => destination.Photo, column => column.UseDisplay<ImageDisplay>(image => image.ResolveUrl(value => $"https://cdn.voyager.example/photos/{value}")));
 ```
 
-- `StoreImage` is required: a resource whose create or edit form has an `ImageEditor` without it fails at startup. It receives the `IFormFile`, the request's services and a cancellation token, and must return a non-empty value.
+- `StoreImage` is required: an `ImageEditor` field without it is left out of its form, and a configuration problem is logged. It receives the `IFormFile`, the request's services and a cancellation token, and must return a non-empty value.
 - The upload endpoint uses the resource's authorization and antiforgery validation, and raises the request body limit to `MaxFileSize` for that request only. It checks the size and the type again: JPEG, PNG, GIF, WebP and AVIF are recognised by their content, so a renamed file is rejected; other `AcceptedTypes` go by the type the browser declares. SVG is not accepted by default.
 - `ResolveUrl` has a synchronous overload and `ResolveUrl(async (value, services, ct) => ...)`. In the grid it runs once per row, so compute the URL; don't query for it.
 - Replace and remove take effect when the form saves, and can be undone until then. StellarAdmin never deletes images: replaced, removed and abandoned uploads stay where `StoreImage` put them, so clean up files no record references in the app.
@@ -221,7 +221,7 @@ fields.Add(guide => guide.Bio).UseEditor<RichTextEditor>(editor =>
 ```
 
 - The form saves the HTML after sanitizing it, and `HtmlDisplay` sanitizes it again when it shows it, with `IRichTextSanitizer` (in `StellarAdmin.Resources`). The default keeps the editor's markup (headings, paragraphs, lists, quotes, code, tables, links, images, line breaks), allows http, https and mailto links and relative URLs, and removes everything else: scripts, event handlers, styles, classes and other elements. To change it, register your own: `builder.Services.AddSingleton<IRichTextSanitizer, MySanitizer>()`, which covers saving and showing. A field with another editor, such as `TextareaEditor`, isn't sanitized.
-- Images are off until `StoreImage` is set. Then staff paste, drop or insert images, which upload straight away through the same endpoint as `ImageEditor`, with the same checks of `MaxFileSize` and `AcceptedTypes`. `StoreImage` returns the URL the text shows the image from, not a value for a resolver. A resource fails at startup when such a field has no `AcceptedTypes` or a `MaxFileSize` that isn't positive. StellarAdmin never deletes images, including ones removed from the text.
+- Images are off until `StoreImage` is set. Then staff paste, drop or insert images, which upload straight away through the same endpoint as `ImageEditor`, with the same checks of `MaxFileSize` and `AcceptedTypes`. `StoreImage` returns the URL the text shows the image from, not a value for a resolver. Such a field with no `AcceptedTypes` or a `MaxFileSize` that isn't positive uses the editor's defaults, and a configuration problem is logged. StellarAdmin never deletes images, including ones removed from the text.
 - A value without tags, such as text written before the field became rich text, opens as paragraphs, one per blank-line-separated block.
 - The editor's script is a separate file, about 120 KB compressed, which the editor loads itself, only on pages that show it.
 - There is no inline row template: don't make a rich text field editable in an inline row.
@@ -244,7 +244,7 @@ columns.Add(amenity => amenity.Icon, column => column.UseDisplay<IconDisplay>())
 ```
 
 - `Layout = IconEditorLayout.Auto` (the default) shows a list of up to 24 icons as tiles, one click each, and the searchable picker otherwise. `Picker` always uses the picker; `Inline` always uses tiles and requires `Icons`.
-- A resource fails at startup when `Icons` is empty, names an icon that isn't registered, or `Layout` is `Inline` without `Icons`.
+- An empty `Icons` offers every registered icon, names that aren't registered are dropped, and `Inline` without `Icons` uses `Auto`; each is logged as a configuration problem.
 - A newly chosen value must be a registered icon, and one of `Icons` when set; otherwise the field shows "Choose an icon from the list." A stored value that isn't offered still shows and saves unchanged, so records with old names stay editable.
 - The icons endpoint uses the panel's authorization, is cached with a version in its URL and serves Brotli or gzip itself. It sends every registered icon, so register only the packs the app uses.
 - In an inline row the editor is a small button showing the icon, whatever its `Layout`, which opens the picker.

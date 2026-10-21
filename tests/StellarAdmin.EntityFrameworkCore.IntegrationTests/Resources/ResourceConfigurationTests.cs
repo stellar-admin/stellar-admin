@@ -1,7 +1,10 @@
+using System.Net;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
+using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Options;
 using TUnit.Assertions;
 using TUnit.Core;
@@ -10,6 +13,28 @@ namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
 public class ResourceConfigurationTests
 {
+    [Test]
+    public async Task UnmappedEntity_TurnsOnlyThatResourceOff()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(configureAdmin: admin =>
+            admin.AddEfCoreResource<CatalogDbContext, Supplier>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var unmapped = await client.GetAsync("/stellaradmin/suppliers");
+        using var products = await client.GetAsync("/stellaradmin/products");
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(unmapped.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+        await Assert.That(products.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(logs.ConfigurationProblems.Single().Message)
+            .Contains("Supplier is not mapped in CatalogDbContext.");
+    }
+
     [Test]
     public async Task SeparateProviders_DoNotShareSearchConfiguration()
     {
@@ -43,5 +68,10 @@ public class ResourceConfigurationTests
         await Assert
             .That(secondOptions.Index.Search)
             .IsTypeOf<EfCoreResourceSearchOptions<Product>>();
+    }
+
+    public sealed class Supplier
+    {
+        public int Id { get; set; }
     }
 }

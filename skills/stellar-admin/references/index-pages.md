@@ -108,7 +108,7 @@ index.EnablePaging(paging =>
 });
 ```
 
-`PageSize` must be one of `PageSizes` (default 10, 25, 50, 100); otherwise options validation fails every panel request with a 500. Set both when using another size: `paging.PageSize = 15; paging.PageSizes = [15, 30, 60];`. Without paging, every matching record is listed.
+`PageSize` must be one of `PageSizes` (default 10, 25, 50, 100); otherwise the panel adds it to the sizes and logs a configuration problem ([configuration problems](configuration-problems.md)). Set both when using another size: `paging.PageSize = 15; paging.PageSizes = [15, 30, 60];`. Without paging, every matching record is listed.
 
 ## Row details
 
