@@ -15,9 +15,20 @@ public sealed class IconOptions
     private readonly Dictionary<string, IconDefinition> _icons = new(
         StringComparer.OrdinalIgnoreCase
     );
+    private readonly List<string> _problems = [];
     private readonly Dictionary<SemanticIconRole, string> _semanticIcons = new();
     private FrozenDictionary<string, IconDefinition>? _frozenIcons;
     private FrozenDictionary<SemanticIconRole, string>? _frozenSemanticIcons;
+
+    /// <summary>
+    ///     Gets the problems found in the icon registrations.
+    /// </summary>
+    /// <value>
+    ///     A description of each problem, such as a semantic icon mapping that names an icon that
+    ///     isn't registered. Each problem is logged when the app starts, and the admin panel shows
+    ///     it in Development.
+    /// </value>
+    public IReadOnlyList<string> Problems => _problems;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="IconOptions" /> class.
@@ -59,12 +70,11 @@ public sealed class IconOptions
     ///     Adds the icons of an icon pack and its semantic icon mappings.
     /// </summary>
     /// <remarks>
-    ///     The pack's icons replace any icons already registered with the same names.
+    ///     The pack's icons replace any icons already registered with the same names. A semantic
+    ///     role that the pack maps to an icon it doesn't supply is a configuration problem: it is
+    ///     logged, and the mapping is skipped.
     /// </remarks>
     /// <typeparam name="TIconPack">The type of the icon pack to add.</typeparam>
-    /// <exception cref="ArgumentException">
-    ///     The icon pack maps a semantic role to an icon that it doesn't supply.
-    /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     The options have already been configured.
     /// </exception>
@@ -78,15 +88,14 @@ public sealed class IconOptions
     ///     Adds the icons of an icon pack, configured by a delegate.
     /// </summary>
     /// <remarks>
-    ///     The pack's icons replace any icons already registered with the same names.
+    ///     The pack's icons replace any icons already registered with the same names. A semantic
+    ///     role that the pack maps to an icon it doesn't supply is a configuration problem: it is
+    ///     logged, and the mapping is skipped.
     /// </remarks>
     /// <typeparam name="TIconPack">The type of the icon pack to add.</typeparam>
     /// <param name="configure">A delegate that configures how the icon pack is added.</param>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The icon pack maps a semantic role to an icon that it doesn't supply.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     The options have already been configured.
@@ -108,17 +117,6 @@ public sealed class IconOptions
             : new Dictionary<SemanticIconRole, string>();
         var incomingIconNames = icons.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        // Validate the whole pack before changing existing registrations.
-        foreach (var (role, name) in semanticIconMappings)
-        {
-            if (name is null || !incomingIconNames.Contains(name))
-            {
-                throw new ArgumentException(
-                    $"Icon '{name}' for role '{role}' is not supplied by this icon pack."
-                );
-            }
-        }
-
         foreach (var (name, definition) in icons)
         {
             _icons[registration.Prefix + name] = definition;
@@ -126,6 +124,14 @@ public sealed class IconOptions
 
         foreach (var (role, name) in semanticIconMappings)
         {
+            if (name is null || !incomingIconNames.Contains(name))
+            {
+                _problems.Add(
+                    $"The `{role}` role keeps its previous icon because `{typeof(TIconPack).Name}` maps it to `{name}`, which the pack doesn't supply. Map the role to an icon that `{typeof(TIconPack).Name}` supplies."
+                );
+                continue;
+            }
+
             _semanticIcons[role] = registration.Prefix + name;
         }
     }
@@ -170,15 +176,14 @@ public sealed class IconOptions
     ///     Maps a registered icon to a semantic role.
     /// </summary>
     /// <remarks>
-    ///     Components render the icon wherever they need the icon for <paramref name="role" />.
+    ///     Components render the icon wherever they need the icon for <paramref name="role" />. An
+    ///     icon name that isn't registered is a configuration problem: it is logged, and the
+    ///     mapping is skipped.
     /// </remarks>
     /// <param name="role">One of the enumeration values that specifies the semantic role.</param>
     /// <param name="name">The name of the registered icon.</param>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="name" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     No icon is registered with the name <paramref name="name" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     The options have already been configured.
@@ -189,7 +194,11 @@ public sealed class IconOptions
         ThrowIfFrozen();
         if (!_icons.ContainsKey(name))
         {
-            throw new ArgumentException($"Icon '{name}' is not registered.", nameof(name));
+            _problems.Add(
+                $"The `{role}` role keeps its previous icon because `MapSemanticIcon` maps it to `{name}`, which isn't registered. Register `{name}`, or map the role to an icon that's registered."
+            );
+
+            return;
         }
 
         _semanticIcons[role] = name;

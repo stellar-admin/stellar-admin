@@ -1,5 +1,8 @@
+@using Microsoft.Extensions.Hosting
 @inject StellarAdminOptions ProOptions
 @inject StellarAdmin.Sidebar.BrandingResolver Branding
+@inject StellarAdmin.Diagnostics.ConfigurationProblems ConfigurationProblems
+@inject IHostEnvironment Environment
 <!doctype html>
 <html lang="en">
 <head>
@@ -36,6 +39,13 @@
         </sa-app-header>
         @RenderBody()
     </sa-sidebar-inset>
+
+    @* Development lists the configuration problems the admin panel worked around; other environments only log them.
+       Inside the wrapper, so the indicator reads the sidebar's width. *@
+    @if (Environment.IsDevelopment() && ProOptions.Diagnostics.ShowIndicator && ConfigurationProblems.GetProblems() is { Count: > 0 } problems)
+    {
+        <partial name="/Areas/StellarAdmin/Views/Shared/_ConfigurationProblems.cshtml" model="problems"/>
+    }
 </sa-sidebar-wrapper>
 
 @* Toasts queued for the page, and those htmx responses carry in their header *@

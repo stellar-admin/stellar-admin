@@ -48,7 +48,7 @@ columns.Add(booking => booking.Customer!.Name, column => column.Title = "Custome
 
 Use the null-forgiving `!` on nullable navigations; a null reference shows the empty text. Set a `Title`, because the default comes from the last property (`Name`). Sorting by such a column works in EF Core (`column.Sortable()`).
 
-A column on a collection or many-to-many navigation (`tour => tour.Destinations`) is loaded with the page too. Show it with `BadgeDisplay` and `UseText<TItem>`; without them the resource fails at startup, since each item would show the entity's type name. It can't be `Sortable()` without a sort expression ([relationships](relationships.md#showing-related-values)).
+A column on a collection or many-to-many navigation (`tour => tour.Destinations`) is loaded with the page too. Show it with `BadgeDisplay` and `UseText<TItem>`; without them the column is left out and a configuration problem is logged, since each item would show the entity's type name. It can't be `Sortable()` without a sort expression ([relationships](relationships.md#showing-related-values)).
 
 Selecting a foreign key (`booking => booking.CustomerId`) shows the number; select the navigation's property instead.
 
@@ -66,8 +66,8 @@ columns.Add(booking => booking.Nights * booking.NightlyRate, column =>
 });
 ```
 
-- A computed column has no property for a default header, so `Title` is required; without it the app fails to start.
-- It sorts only by an expression: `Sortable()` alone fails at startup, so use `Sortable(selector)`. Its title in PascalCase (`Total`) names it in sort links and in `ResourceSort.Field` for a custom data source, so two sortable columns can't share one.
+- A computed column has no property for a default header, so `Title` is required; without it the column is left out ([configuration problems](configuration-problems.md)).
+- It sorts only by an expression: `Sortable()` alone leaves it unsortable, so use `Sortable(selector)`. Its title in PascalCase (`Total`) names it in sort links and in `ResourceSort.Field` for a custom data source, so two sortable columns can't share one.
 - The value is computed in memory for each row. EF Core resources load the navigations it reads from the record, such as `tour.Destinations` or `booking.Customer`, but not navigations read through a nested lambda's parameter, such as `destination.Country` inside `Select`.
 - Reading a property of a null value, or calling one of its methods, gives null (or zero or false), which shows the empty text; extension methods such as `Select` still throw on a null collection.
 - Display fields compute values the same way ([fields](fields.md#computed-values)).

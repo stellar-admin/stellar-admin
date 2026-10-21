@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -159,6 +161,8 @@ public sealed class ResourceIndexOptions
     ///     <see langword="null" />.
     /// </value>
     public string? ViewLabel { get; internal set; }
+
+    internal ConfigurationSource? DefaultSortSource { get; set; }
 
     internal List<DataGridColumnOptions> MutableColumns { get; } = [];
 }

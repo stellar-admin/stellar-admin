@@ -68,9 +68,6 @@ public sealed class ResourceViewSectionBuilder<TModel> : ResourceViewFieldsBuild
     /// <remarks>
     ///     Without a span, the section spans one column.
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     public ResourceViewSectionBuilder<TModel> ColumnSpan(int span)
     {
         _columnSpan = ColumnSpanBuilder.FromSpan(span);
@@ -113,9 +110,6 @@ public sealed class ResourceViewSectionBuilder<TModel> : ResourceViewFieldsBuild
     ///     Without a start, the section follows the item before it. The start is ignored where the
     ///     parent has one column or the section would extend past the last column.
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     public ResourceViewSectionBuilder<TModel> ColumnStart(int start)
     {
         _columnStart = ColumnStartBuilder.FromStart(start);

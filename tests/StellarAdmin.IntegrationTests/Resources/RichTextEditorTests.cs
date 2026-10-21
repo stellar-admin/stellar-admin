@@ -4,7 +4,6 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
@@ -219,29 +218,32 @@ public class RichTextEditorTests
     }
 
     [Test]
-    public async Task Startup_WithRichTextEditorWithoutAcceptedTypes_FailsValidation()
+    public async Task Startup_WithRichTextEditorWithoutAcceptedTypes_LogsProblem()
     {
         // Arrange
-        var configure = () =>
-            CreateAsync(fields =>
-                fields
-                    .Add(model => model.Story)
-                    .UseEditor<RichTextEditor>(editor =>
-                    {
-                        Configure(editor);
-                        editor.AcceptedTypes = [];
-                    })
-            );
 
         // Act
-        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+        await using var app = await CreateAsync(fields =>
+            fields
+                .Add(model => model.Story)
+                .UseEditor<RichTextEditor>(editor =>
+                {
+                    Configure(editor);
+                    editor.AcceptedTypes = [];
+                })
+        );
 
         // Assert
+        var logs = app.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains(
-                "The edit form's rich text field 'Story' requires at least one accepted type."
-            );
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "uses the default MaxFileSize or AcceptedTypes because its own aren't valid."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     private static void Configure(RichTextEditor editor) =>

@@ -35,6 +35,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
 | Show the environment (live, staging, local) on every page | `EnableEnvironmentIndicator`, `EnvironmentIndicator.Stripe`/`Frame`/`Banner`, `EnvironmentColor` | [customization](references/customization.md#environment-indicator) |
 | Sign-in, roles, per-resource and per-link access | `RequireAuthorization` | [authorization](references/authorization.md) |
+| Configuration mistakes: what the panel does, the Development indicator, logs, failing tests on problems | `ConfigureDiagnostics`, `ShowIndicator`, `ThrowOnProblems` | [configuration-problems](references/configuration-problems.md) |
 | Replace or extend a generated page, the home page and its setup checklist, global labels, template overrides | `Areas/StellarAdmin/Views/{slug}/Index.cshtml`, `sa-index-page`, `ConfigureHomePage`, `ConfigureResourceLabels` | [customization](references/customization.md) |
 
 ## A complete resource
@@ -173,13 +174,13 @@ These come from agents building real tasks without this skill. Each compiled or 
 - **A foreign key needs a choice editor.** `fields.Add(b => b.CustomerId)` alone renders a number box. Use `SelectEditor` or `LookupSheetEditor` with EF `UseItems<TContext, TEntity, TValue>(value, title)` ([relationships](references/relationships.md)).
 - **EF search and scopes take predicates.** `index.EnableSearch(term => entity => ...)` requires the predicate factory. Scopes filter through the third argument: `scopes.Add("pending", "Pending", b => b.Status == BookingStatus.Pending)`. The id is only the URL value; putting filter text in it filters nothing.
 - **`Add(selector, callback)` returns the parent builder, not the field.** `fields.Add(b => b.CustomerId, f => f.Title = "Customer").UseEditor<...>()` doesn't compile. Configure everything inside the callback (`f => { f.Title = "Customer"; f.UseEditor<LookupSheetEditor>(...); }`) or use `fields.Add(b => b.CustomerId).UseEditor<...>()`. The same holds for columns, sections and display fields.
-- **`PageSize` must be in `PageSizes`** (default 10, 25, 50, 100), or every panel page is a 500. Set both for other sizes.
+- **`PageSize` must be in `PageSizes`** (default 10, 25, 50, 100), or the panel adds it and logs a configuration problem. Set both for other sizes.
 - **`Allow*` calls don't chain.** Each returns its own page builder (or the resource builder when given a callback). Call them as separate statements on `resource`.
-- **`AllowView` needs fields.** `AllowView()` without `view.Fields(...)` fails every panel request with a 500.
+- **`AllowView` needs fields.** `AllowView()` without `view.Fields(...)` leaves the resource without a view page.
 - **`ChoiceEditor` is abstract.** Use `SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor`, `SegmentedControlEditor` or `ToggleGroupEditor`.
 - **Index cells use `GridDisplayTemplates/`**, not `DisplayTemplates/`. A custom display or `[UIHint]` used in a column needs `GridDisplayTemplates/{TemplateName}.cshtml`; the same display on a form or view page needs `DisplayTemplates/{TemplateName}.cshtml` ([columns](references/columns.md)).
 - **`BadgeDisplay` has one variant for every value.** A badge whose style depends on the value needs a custom display and template.
-- **A collection of entities needs `UseText`.** A column or display field on a navigation such as `tour => tour.Destinations` fails at startup unless it uses `BadgeDisplay` with `badge.UseText<Destination>(destination => destination.Name)`, since each entity would show its type name. A single related entity (`tour => tour.Guide`) fails the same way; show one of its properties (`tour => tour.Guide!.Name`) ([relationships](references/relationships.md#showing-related-values)).
+- **A collection of entities needs `UseText`.** A column or display field on a navigation such as `tour => tour.Destinations` is left out unless it uses `BadgeDisplay` with `badge.UseText<Destination>(destination => destination.Name)`, since each entity would show its type name. A single related entity (`tour => tour.Guide`) is left out the same way; show one of its properties (`tour => tour.Guide!.Name`) ([relationships](references/relationships.md#showing-related-values)).
 - **App views in the admin area need their own `_ViewImports.cshtml`.** Create `Areas/StellarAdmin/Views/_ViewImports.cshtml` with `@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers`, `@addTagHelper *, StellarAdmin.UI` and `@addTagHelper *, StellarAdmin`. Without it `<sa-index-page>` renders as literal text and the page looks empty, with no error.
 - **Override models are in `StellarAdmin.Areas.StellarAdmin.ViewModels`.** A resource's own index view uses `ResourceIndexPageViewModel<T>`. A shared index view overridden for every resource uses `IResourceIndexPageViewModel`.
 - **Style admin and host pages with `sa-*` components**, not Tailwind utilities: the shipped CSS contains only the classes its components use, so `p-4`, `text-gray-700` and similar render unstyled. Use `sa-page-container`, `sa-page-header`, `sa-card`, `sa-table`, `sa-alert` and friends (stellar-admin-ui skill).
@@ -191,7 +192,7 @@ These come from agents building real tasks without this skill. Each compiled or 
 - **EF `Contains` is case-sensitive on SQLite** (and on case-sensitive collations). Lower-case both sides in search predicates when that matters: `b.Reference.ToLower().Contains(term.ToLower())`.
 - **Form and view labels come from the property name** (`DepartureDate`) unless `[Display(Name = "Departure date")]` or the field's `Title` is set; index headers are humanized. Set `[Display(Name)]` on the model for consistent labels.
 - **Enum values in Razor attributes are fully qualified**: `variant="BadgeVariant.Destructive"`, `width="PageContainerWidth.Full"`.
-- **Verify in a running app.** Configuration errors surface as a 500 on the first request, and missing `_ViewImports` fails silently. Load each page you changed.
+- **Verify in a running app.** The panel works around configuration mistakes instead of failing: in Development a "Configuration problems" pill at the bottom of every admin page lists them, and every environment logs them as warnings from `StellarAdmin.Configuration`. Fix every listed problem, and load each page you changed, since a missing `_ViewImports` fails silently ([configuration problems](references/configuration-problems.md)).
 
 ## Not supported
 
@@ -206,7 +207,7 @@ Say so rather than inventing an API:
 - A fluent read-only field option (use display fields, or `[ReadOnly(true)]`/`[Editable(false)]` metadata).
 - Before/after save hooks (use a custom create or edit handler).
 - Search and scope predicates for non-EF data sources (the data source reads `ResourceListRequest.Search` and `Scope`).
-- Displays with handlers in index columns (they throw).
+- Displays with handlers in index columns (the column keeps its default display).
 - Localization through `IStringLocalizer` (labels come from `ConfigureResourceLabels` delegates).
 - Per-action authorization (requirements apply to the panel, a resource or a link).
 - Global record search (the command palette searches navigation only).

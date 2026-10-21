@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
@@ -10,6 +12,9 @@ public abstract class SidebarLinkTarget
 {
     private protected SidebarLinkTarget() { }
 
+    // Why the value can't be used, when a factory method got a blank value
+    internal ConfigurationValueProblem? Problem { get; init; }
+
     /// <summary>
     ///     Returns a target for an MVC controller action outside any area.
     /// </summary>
@@ -19,15 +24,19 @@ public abstract class SidebarLinkTarget
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="action" /> or <paramref name="controller" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="action" /> or <paramref name="controller" /> is empty or white space.
-    /// </exception>
     public static SidebarLinkTarget Action(string action, string controller)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(action);
-        ArgumentException.ThrowIfNullOrWhiteSpace(controller);
+        ArgumentNullException.ThrowIfNull(action);
+        ArgumentNullException.ThrowIfNull(controller);
 
-        return new ActionTarget(action, controller, null);
+        return new ActionTarget(action, controller, null)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "SidebarLinkTarget.Action",
+                (nameof(action), action),
+                (nameof(controller), controller)
+            ),
+        };
     }
 
     /// <summary>
@@ -41,17 +50,21 @@ public abstract class SidebarLinkTarget
     ///     <paramref name="action" />, <paramref name="controller" /> or <paramref name="area" />
     ///     is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="action" />, <paramref name="controller" /> or <paramref name="area" />
-    ///     is empty or white space.
-    /// </exception>
     public static SidebarLinkTarget Action(string action, string controller, string area)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(action);
-        ArgumentException.ThrowIfNullOrWhiteSpace(controller);
-        ArgumentException.ThrowIfNullOrWhiteSpace(area);
+        ArgumentNullException.ThrowIfNull(action);
+        ArgumentNullException.ThrowIfNull(controller);
+        ArgumentNullException.ThrowIfNull(area);
 
-        return new ActionTarget(action, controller, area);
+        return new ActionTarget(action, controller, area)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "SidebarLinkTarget.Action",
+                (nameof(action), action),
+                (nameof(controller), controller),
+                (nameof(area), area)
+            ),
+        };
     }
 
     /// <summary>
@@ -62,14 +75,14 @@ public abstract class SidebarLinkTarget
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="page" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="page" /> is empty or white space.
-    /// </exception>
     public static SidebarLinkTarget Page(string page)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(page);
+        ArgumentNullException.ThrowIfNull(page);
 
-        return new PageTarget(page, null);
+        return new PageTarget(page, null)
+        {
+            Problem = ConfigurationValues.FindBlank("SidebarLinkTarget.Page", (nameof(page), page)),
+        };
     }
 
     /// <summary>
@@ -81,15 +94,19 @@ public abstract class SidebarLinkTarget
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="page" /> or <paramref name="area" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="page" /> or <paramref name="area" /> is empty or white space.
-    /// </exception>
     public static SidebarLinkTarget Page(string page, string area)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(page);
-        ArgumentException.ThrowIfNullOrWhiteSpace(area);
+        ArgumentNullException.ThrowIfNull(page);
+        ArgumentNullException.ThrowIfNull(area);
 
-        return new PageTarget(page, area);
+        return new PageTarget(page, area)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "SidebarLinkTarget.Page",
+                (nameof(page), page),
+                (nameof(area), area)
+            ),
+        };
     }
 
     /// <summary>
@@ -100,14 +117,14 @@ public abstract class SidebarLinkTarget
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="url" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="url" /> is empty or white space.
-    /// </exception>
     public static SidebarLinkTarget Url(string url)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(url);
+        ArgumentNullException.ThrowIfNull(url);
 
-        return new UrlTarget(url);
+        return new UrlTarget(url)
+        {
+            Problem = ConfigurationValues.FindBlank("SidebarLinkTarget.Url", (nameof(url), url)),
+        };
     }
 
     internal abstract SidebarLinkItemBase CreateItem(SidebarLinkOptions link);

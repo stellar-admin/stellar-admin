@@ -4,6 +4,7 @@ using AdminPlayground.Resources.Categories;
 using AdminPlayground.Resources.Customers;
 using AdminPlayground.Resources.Departments;
 using AdminPlayground.Resources.Destinations;
+using AdminPlayground.Resources.Excursions;
 using AdminPlayground.Resources.FieldEditors;
 using AdminPlayground.Resources.FormLayouts;
 using AdminPlayground.Resources.Guides;
@@ -87,6 +88,7 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddTagResource();
     admin.AddFieldEditorGallery();
     admin.AddFormLayoutGallery();
+    admin.AddMisconfiguredExcursionResource();
 
     admin.AddSidebarLink(
         "Sales report",

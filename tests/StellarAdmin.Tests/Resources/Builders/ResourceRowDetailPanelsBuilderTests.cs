@@ -57,26 +57,6 @@ public class ResourceRowDetailPanelsBuilderTests
         await Assert.That(registration.Lifetime).IsEqualTo(ServiceLifetime.Scoped);
     }
 
-    [Test]
-    [Arguments("", "_Panel")]
-    [Arguments(" ", "_Panel")]
-    [Arguments("Panel", "")]
-    [Arguments("Panel", " ")]
-    public async Task Add_WithBlankTitleOrPartialName_ThrowsArgumentException(
-        string title,
-        string partialName
-    )
-    {
-        // Arrange
-        var sut = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
-
-        // Act
-        Action act = () => sut.Add(title, partialName);
-
-        // Assert
-        await Assert.That(act).Throws<ArgumentException>();
-    }
-
     public sealed class Product
     {
         public int Id { get; set; }

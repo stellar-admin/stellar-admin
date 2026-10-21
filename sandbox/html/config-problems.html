@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configuration problems</title>
+<!-- Prototype: how the admin panel shows configuration problems in Development once it stops failing
+     at startup. Each problem is logged, the affected feature degrades (a setting is ignored, a feature
+     is turned off), and Development shows a floating indicator that opens the list. Jerrie picked the
+     floating treatment; this page compares floating styles, where they sit, and what they open. The
+     environment indicator (the shipped classes) switches too, since the frame and banner share the
+     window's edges. Build src/StellarAdmin.UI first (npm run build in Client/) if wwwroot/ is empty. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400..700&family=Figtree:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+<link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css">
+<link rel="stylesheet" id="theme">
+<script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+<style>
+  @layer sa.components {
+    /* The floating root: fixed to the main area's bottom edge, clear of the sidebar and of the
+       environment frame's border. Warning, not danger: the app's users are unaffected. */
+    .sa-config-float {
+      --_c: var(--sa-color-warning);
+      --_c-on: oklch(from var(--_c) clamp(0.15, (0.66 - l) * 1000, 1) 0 0);
+      /* Warning as text on the surface: darkened in light mode so it passes contrast. */
+      --_c-text: oklch(from var(--_c) min(l, 0.52) c h);
+      --_inset: calc(4 * var(--sa-unit));
+      --_left: calc(var(--sidebar-width) + var(--_inset));
+      position: fixed;
+      inset-block-end: var(--_inset);
+      z-index: 35;
+      display: flex;
+      flex-direction: column;
+      gap: calc(2 * var(--sa-unit));
+      font-family: var(--sa-font-sans);
+      &[data-position="left"] { inset-inline-start: var(--_left); align-items: flex-start; }
+      &[data-position="center"] { left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width)) / 2); translate: -50% 0; align-items: center; }
+      &[data-position="right"] { inset-inline-end: var(--_inset); align-items: flex-end; }
+      & svg { width: 16px; height: 16px; flex: none; }
+    }
+    .dark .sa-config-float { --_c-text: var(--_c); }
+    body:has(.sa-environment-frame) .sa-config-float { --_inset: calc(4 * var(--sa-unit) + 3px); }
+    body:has([data-slot="sidebar"][data-state="collapsed"]) .sa-config-float { --_left: var(--_inset); }
+
+    .sa-config-trigger {
+      all: unset;
+      box-sizing: border-box;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: calc(2 * var(--sa-unit));
+      font-size: var(--sa-text-sm);
+      font-weight: 500;
+      line-height: 1.2;
+      white-space: nowrap;
+      transition: box-shadow 150ms, translate 150ms, background-color 150ms;
+      &:hover { translate: 0 -1px; }
+      &:focus-visible { outline: 2px solid var(--sa-color-ring, var(--sa-color-ink)); outline-offset: 2px; }
+    }
+    .sa-config-count {
+      display: inline-grid; place-items: center;
+      min-width: 20px; height: 20px; padding-inline: 6px;
+      border-radius: 999px;
+      background: var(--_c); color: var(--_c-on);
+      font-size: var(--sa-text-xs); font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .sa-config-shadow { box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 8px 24px rgb(0 0 0 / 0.18); }
+
+    /* 1. Ink pill: the inverse colours, a warning count. */
+    [data-style="ink"] .sa-config-trigger {
+      padding: calc(1.5 * var(--sa-unit)) calc(3.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit));
+      border-radius: 999px;
+      background: var(--sa-color-ink); color: var(--sa-color-surface);
+    }
+
+    /* 2. Warning pill: filled with the warning colour. */
+    [data-style="warning"] .sa-config-trigger {
+      padding: calc(1.5 * var(--sa-unit)) calc(3.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
+      border-radius: 999px;
+      background: var(--_c); color: var(--_c-on); font-weight: 600;
+    }
+
+    /* 3. Surface pill: a raised surface with a warning icon; the quietest. */
+    [data-style="surface"] .sa-config-trigger {
+      padding: calc(1.5 * var(--sa-unit)) calc(3.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
+      border-radius: 999px;
+      border: var(--sa-border-width) solid var(--sa-color-line);
+      background: var(--sa-color-surface-raised, var(--sa-color-surface)); color: var(--sa-color-ink);
+      & svg { color: var(--_c-text); }
+      & .sa-config-trigger-meta { color: var(--sa-color-ink-muted); font-weight: 400; }
+    }
+
+    /* 4. Bubble: a round icon with a count, widening to its label on hover or focus. */
+    [data-style="bubble"] .sa-config-trigger {
+      height: 40px; padding-inline: 11px; gap: 0;
+      border-radius: 999px;
+      background: var(--sa-color-ink); color: var(--sa-color-surface);
+      position: relative;
+      & svg { width: 18px; height: 18px; color: var(--_c); }
+      & .sa-config-trigger-label { max-width: 0; overflow: hidden; opacity: 0; transition: max-width 200ms, opacity 150ms, margin 200ms; }
+      &:is(:hover, :focus-visible, [aria-expanded="true"]) .sa-config-trigger-label { max-width: 16rem; opacity: 1; margin-inline: calc(2 * var(--sa-unit)) calc(1 * var(--sa-unit)); }
+      & .sa-config-count { position: absolute; inset-block-start: -4px; inset-inline-end: -4px; min-width: 18px; height: 18px; padding-inline: 5px; font-size: 11px; box-shadow: 0 0 0 2px var(--sa-color-canvas); }
+    }
+
+    /* 5. Card: a toast-like summary naming the first problem, with an action. */
+    [data-style="card"] .sa-config-trigger {
+      cursor: default;
+      display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: calc(1 * var(--sa-unit)) calc(3 * var(--sa-unit));
+      width: 22rem; max-width: calc(100vw - var(--_left) - var(--_inset));
+      padding: calc(3 * var(--sa-unit));
+      border-radius: var(--sa-radius-box);
+      border: var(--sa-border-width) solid var(--sa-color-line);
+      border-inline-start: 3px solid var(--_c);
+      background: var(--sa-color-surface-raised, var(--sa-color-surface)); color: var(--sa-color-ink);
+      white-space: normal;
+      &:hover { translate: none; }
+      & > svg { color: var(--_c-text); margin-top: 1px; }
+      & .sa-config-card-text { display: grid; gap: 2px; min-width: 0; }
+      & .sa-config-card-title { font-weight: 600; }
+      & .sa-config-card-body { color: var(--sa-color-ink-muted); font-size: var(--sa-text-sm); font-weight: 400; }
+      & .sa-config-card-actions { grid-column: 2 / -1; display: flex; gap: calc(2 * var(--sa-unit)); margin-top: calc(1.5 * var(--sa-unit)); }
+      & .sa-config-card-close { all: unset; cursor: pointer; color: var(--sa-color-ink-muted); line-height: 0; padding: 2px; border-radius: 4px; }
+      & .sa-config-card-close:hover { color: var(--sa-color-ink); }
+    }
+
+    /* 6. Edge tab: a tab rising from the window's bottom edge, the environment tab's counterpart. */
+    .sa-config-float[data-style="tab"] { inset-block-end: 0; }
+    body:has(.sa-environment-frame) .sa-config-float[data-style="tab"] { inset-block-end: 3px; }
+    [data-style="tab"] .sa-config-trigger {
+      padding: calc(1.5 * var(--sa-unit)) calc(3.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
+      border-radius: var(--sa-radius-item) var(--sa-radius-item) 0 0;
+      background: var(--_c); color: var(--_c-on);
+      font-size: var(--sa-text-xs); font-weight: 600;
+      &:hover { translate: none; padding-block-end: calc(2.5 * var(--sa-unit)); }
+    }
+
+    /* 7. Glass: a translucent, blurred pill with a pulsing dot; reads as an overlay, not as the page. */
+    [data-style="glass"] .sa-config-trigger {
+      padding: calc(2 * var(--sa-unit)) calc(3.5 * var(--sa-unit));
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--sa-color-surface) 70%, transparent);
+      backdrop-filter: blur(12px) saturate(1.4);
+      border: var(--sa-border-width) solid color-mix(in oklab, var(--sa-color-ink) 12%, transparent);
+      color: var(--sa-color-ink);
+      & .sa-config-pulse { position: relative; width: 8px; height: 8px; border-radius: 999px; background: var(--_c); }
+      & .sa-config-pulse::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--_c); animation: sa-config-pulse 1.8s ease-out infinite; }
+    }
+    @keyframes sa-config-pulse { from { transform: scale(1); opacity: 0.7; } to { transform: scale(3); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { .sa-config-pulse::after { animation: none; } }
+
+    /* 8. Split: the count and label open the list; a second segment hides it until the problems change. */
+    [data-style="split"] .sa-config-split {
+      display: inline-flex; align-items: stretch;
+      border-radius: 999px; overflow: hidden;
+      background: var(--sa-color-ink); color: var(--sa-color-surface);
+    }
+    [data-style="split"] .sa-config-trigger {
+      padding: calc(1.5 * var(--sa-unit)) calc(3 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit));
+      &:hover { translate: none; background: color-mix(in oklab, var(--sa-color-surface) 12%, transparent); }
+    }
+    [data-style="split"] .sa-config-split-hide {
+      all: unset; cursor: pointer; display: grid; place-items: center; padding-inline: calc(2.5 * var(--sa-unit));
+      border-inline-start: 1px solid color-mix(in oklab, var(--sa-color-surface) 20%, transparent);
+      color: color-mix(in oklab, var(--sa-color-surface) 70%, transparent);
+      &:hover { background: color-mix(in oklab, var(--sa-color-surface) 12%, transparent); color: var(--sa-color-surface); }
+      & svg { width: 14px; height: 14px; }
+    }
+
+    /* The panel: a compact list that opens above the trigger, instead of the sheet. */
+    .sa-config-panel {
+      width: 26rem; max-width: calc(100vw - 2 * var(--_inset));
+      max-height: min(28rem, 70vh);
+      display: flex; flex-direction: column;
+      border: var(--sa-border-width) solid var(--sa-color-line);
+      border-radius: var(--sa-radius-box);
+      background: var(--sa-color-surface-raised, var(--sa-color-surface)); color: var(--sa-color-ink);
+      overflow: hidden;
+      font-size: var(--sa-text-sm);
+      &[hidden] { display: none; }
+      & .sa-config-panel-head { display: flex; align-items: center; justify-content: space-between; gap: calc(2 * var(--sa-unit)); padding: calc(3 * var(--sa-unit)) calc(3.5 * var(--sa-unit)); border-block-end: var(--sa-border-width) solid var(--sa-color-line); font-weight: 600; }
+      & .sa-config-panel-body { overflow-y: auto; padding: calc(1 * var(--sa-unit)) 0; }
+      & .sa-config-row { display: grid; grid-template-columns: 1fr auto; gap: 2px calc(3 * var(--sa-unit)); padding: calc(2 * var(--sa-unit)) calc(3.5 * var(--sa-unit)); }
+      & .sa-config-row:hover { background: var(--sa-color-surface-sunken, color-mix(in oklab, var(--sa-color-ink) 4%, transparent)); }
+      & .sa-config-row-resource { font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); font-weight: 500; }
+      & .sa-config-row-title { grid-column: 1; }
+      & .sa-config-row .sa-badge { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+      & .sa-config-panel-foot { display: flex; align-items: center; justify-content: space-between; gap: calc(2 * var(--sa-unit)); padding: calc(2 * var(--sa-unit)) calc(3.5 * var(--sa-unit)); border-block-start: var(--sa-border-width) solid var(--sa-color-line); font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); }
+    }
+
+    /* The sheet's list, shared by every style. */
+    .sa-config-list { display: grid; gap: calc(5 * var(--sa-unit)); }
+    .sa-config-group { display: grid; gap: calc(2 * var(--sa-unit)); }
+    .sa-config-group-title {
+      display: flex; align-items: center; gap: calc(2 * var(--sa-unit));
+      font-size: var(--sa-text-xs); font-weight: 600; color: var(--sa-color-ink-muted); text-transform: uppercase; letter-spacing: 0.05em;
+      & a { margin-inline-start: auto; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--sa-color-ink-muted); }
+    }
+    .sa-config-item {
+      display: grid; gap: calc(1.5 * var(--sa-unit));
+      padding: calc(3 * var(--sa-unit));
+      border: var(--sa-border-width) solid var(--sa-color-line);
+      border-radius: var(--sa-radius-box);
+      background: var(--sa-color-surface);
+      font-size: var(--sa-text-sm);
+    }
+    .sa-config-item-head { display: flex; align-items: start; gap: calc(2 * var(--sa-unit)); justify-content: space-between; }
+    .sa-config-item-title { font-weight: 600; }
+    .sa-config-item-effect { color: var(--sa-color-ink-muted); }
+    .sa-config-item-fix code, .sa-config-panel code { font-family: var(--sa-font-mono); font-size: 0.85em; padding: 1px 4px; border-radius: 4px; background: color-mix(in oklab, var(--sa-color-ink) 6%, transparent); }
+    .sa-config-item-where { font-family: var(--sa-font-mono); font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); }
+    .sa-config-footnote { font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); & code { font-family: var(--sa-font-mono); } }
+    .sa-badge.sa-config-badge-off { background: color-mix(in oklab, var(--sa-color-warning) 22%, var(--sa-color-surface)); color: var(--sa-color-ink); border-color: transparent; }
+  }
+
+  /* Prototype chrome, not extracted. */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  .proto-page { padding: calc(6 * var(--sa-unit)); display: grid; gap: calc(6 * var(--sa-unit)); }
+  .proto-bar {
+    position: fixed; right: 12px; top: 64px; z-index: 60;
+    width: min(380px, calc(100vw - 24px));
+    background: var(--sa-color-surface-raised); color: var(--sa-color-ink);
+    border: 1px solid var(--sa-color-line); border-radius: 10px;
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.18);
+    font: 12px/1.4 system-ui, sans-serif; padding: 10px 12px; display: grid; gap: 8px;
+  }
+  .proto-bar.collapsed > :not(.proto-head) { display: none; }
+  .proto-head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+  .proto-head button { all: unset; cursor: pointer; color: var(--sa-color-ink-muted); padding: 0 4px; }
+  .proto-row { display: grid; grid-template-columns: 74px 1fr; gap: 6px; align-items: start; }
+  .proto-row > span { color: var(--sa-color-ink-muted); padding-top: 3px; }
+  .proto-seg { display: flex; flex-wrap: wrap; gap: 3px; }
+  .proto-seg button {
+    all: unset; cursor: pointer; padding: 2px 7px; border-radius: 6px;
+    border: 1px solid var(--sa-color-line); background: var(--sa-color-surface);
+  }
+  .proto-seg button[aria-pressed="true"] { background: var(--sa-color-ink); color: var(--sa-color-surface); border-color: var(--sa-color-ink); }
+  .proto-note { color: var(--sa-color-ink-muted); border-top: 1px solid var(--sa-color-line); padding-top: 8px; }
+  .proto-note b { color: var(--sa-color-ink); }
+  .proto-restore { all: unset; cursor: pointer; text-decoration: underline; color: var(--sa-color-ink); }
+</style>
+</head>
+<body>
+
+<div id="env-slot"></div>
+
+<sel-sidebar id="--sa-sidebar" data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem; --sidebar-width-mobile: 18rem" class="sa-sidebar-wrapper">
+<div data-slot="sidebar" data-variant="sidebar" data-side="left" data-state="expanded" data-mobile="closed" data-collapsible="" data-collapsible-config="offcanvas" class="sa-sidebar"><button aria-label="Close sidebar" class="sa-sidebar-backdrop" data-slot="sidebar-backdrop" type="button"></button><div class="sa-sidebar-gap" data-slot="sidebar-gap"></div><div class="sa-sidebar-container" data-slot="sidebar-container"><div class="sa-sidebar-inner" data-sidebar="sidebar" data-slot="sidebar-inner">
+  <div data-slot="sidebar-header" data-sidebar="header" class="sa-sidebar-header">
+    <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+      <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+        <a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="lg" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-lg sa-sidebar-menu-button-variant-default">
+          <span class="sa-sidebar-brand-mark" aria-hidden="true"><svg data-icon="compass"></svg></span>
+          <span class="sa-sidebar-brand-text"><span class="sa-sidebar-brand-title">Voyager Travel</span><span class="sa-sidebar-brand-subtitle">Admin Console</span></span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div data-slot="sidebar-content" data-sidebar="content" class="sa-sidebar-content" id="sidebar-content"></div>
+</div></div></div>
+
+<main data-slot="sidebar-inset" class="sa-sidebar-inset">
+  <header data-slot="app-header" class="sa-app-header">
+    <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm"><svg data-icon="panel-left"></svg></button>
+    <div data-slot="separator" class="sa-separator sa-separator-vertical sa-app-header-separator" role="separator" aria-orientation="vertical" data-orientation="vertical"></div>
+    <span style="font-size: var(--sa-text-sm); font-weight: 500">Bookings</span>
+  </header>
+  <div class="proto-page">
+    <div data-slot="page-header" class="sa-page-header">
+      <div>
+        <h1 data-slot="page-header-title" class="sa-page-header-title">Bookings</h1>
+        <p data-slot="page-header-description" class="sa-page-header-description">Every trip booked through Voyager, newest first.</p>
+      </div>
+      <div data-slot="page-header-actions" class="sa-page-header-actions">
+        <button data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-default"><svg data-icon="download"></svg>Export</button>
+        <button data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default"><svg data-icon="plus"></svg>New booking</button>
+      </div>
+    </div>
+    <div data-slot="card" class="sa-card" style="padding-block: 0; overflow: hidden">
+      <div data-slot="table-container" class="sa-table-container">
+        <table data-slot="table" class="sa-table">
+          <thead data-slot="table-header" class="sa-table-header"><tr data-slot="table-row" class="sa-table-row">
+            <th data-slot="table-head" class="sa-table-head">Reference</th><th data-slot="table-head" class="sa-table-head">Traveller</th><th data-slot="table-head" class="sa-table-head">Destination</th><th data-slot="table-head" class="sa-table-head">Departs</th><th data-slot="table-head" class="sa-table-head">Status</th><th data-slot="table-head" class="sa-table-head" style="text-align: right">Total</th>
+          </tr></thead>
+          <tbody data-slot="table-body" class="sa-table-body" id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+<!-- Inside the wrapper, so it reads the sidebar width. -->
+<div id="float-slot"></div>
+</sel-sidebar>
+
+<sel-dialog>
+<dialog id="config-problems" data-slot="sheet-content" data-side="right" class="sa-sheet-content" aria-labelledby="config-problems-title" style="width: min(34rem, 100vw); max-width: none">
+  <button type="button" commandfor="config-problems" command="close" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close"><svg data-icon="x"></svg><span class="sr-only">Close</span></button>
+  <div class="sa-sheet-body">
+    <div data-slot="sheet-header" class="sa-sheet-header">
+      <h2 id="config-problems-title" data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">Configuration problems</h2>
+      <p data-slot="sheet-description" class="sa-sheet-description">The admin panel kept running and worked around these. Fix them before you deploy.</p>
+    </div>
+    <div style="padding: 0 calc(4 * var(--sa-unit)) calc(4 * var(--sa-unit)); overflow-y: auto" id="sheet-list"></div>
+    <div data-slot="sheet-footer" class="sa-sheet-footer">
+      <p class="sa-config-footnote">Only Development shows this. Every environment logs each problem once at startup as a warning from <code>StellarAdmin.Configuration</code>.</p>
+    </div>
+  </div>
+</dialog>
+</sel-dialog>
+
+<div class="proto-bar" id="proto-bar">
+  <div class="proto-head"><span>Floating indicator</span><button type="button" data-collapse aria-label="Collapse">–</button></div>
+  <div class="proto-row"><span>Style</span><div class="proto-seg" data-key="s">
+    <button data-value="ink">1 Ink</button>
+    <button data-value="warning">2 Warning</button>
+    <button data-value="surface">3 Surface</button>
+    <button data-value="bubble">4 Bubble</button>
+    <button data-value="card">5 Card</button>
+    <button data-value="tab">6 Edge tab</button>
+    <button data-value="glass">7 Glass</button>
+    <button data-value="split">8 Split</button>
+  </div></div>
+  <div class="proto-row"><span>Position</span><div class="proto-seg" data-key="pos">
+    <button data-value="left">Bottom left</button><button data-value="center">Bottom centre</button><button data-value="right">Bottom right</button>
+  </div></div>
+  <div class="proto-row"><span>Opens</span><div class="proto-seg" data-key="opens">
+    <button data-value="sheet">Sheet</button><button data-value="panel">Panel above</button>
+  </div></div>
+  <div class="proto-row"><span>Environment</span><div class="proto-seg" data-key="env">
+    <button data-value="none">None</button><button data-value="stripe">Stripe</button><button data-value="frame">Frame</button><button data-value="banner">Banner</button>
+  </div></div>
+  <div class="proto-row"><span>Theme</span><div class="proto-seg" data-key="theme">
+    <button data-value="">Default</button><button data-value="ops">Ops</button><button data-value="soft">Soft</button><button data-value="ledger">Ledger</button>
+  </div></div>
+  <div class="proto-row"><span>Mode</span><div class="proto-seg" data-key="mode">
+    <button data-value="light">Light</button><button data-value="dark">Dark</button>
+  </div></div>
+  <div class="proto-note" id="proto-note"></div>
+</div>
+
+<script>
+const ICONS = {
+  "compass": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z\"/>",
+  "panel-left": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>",
+  "plane": "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>",
+  "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><path d=\"M16 3.128a4 4 0 0 1 0 7.744\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/>",
+  "map-pin": "<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>",
+  "layout-dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/>",
+  "settings": "<path d=\"M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+  "download": "<path d=\"M12 15V3\"/><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><path d=\"m7 10 5 5 5-5\"/>",
+  "plus": "<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>",
+  "x": "<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>",
+  "eye-off": "<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\"/><path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\"/><path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\"/><path d=\"m2 2 20 20\"/>",
+  "triangle-alert": "<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/>",
+};
+const svg = name => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] ?? ""}</svg>`;
+
+// What each problem did, in the words the panel would use. "Ignored": a setting fell back to its
+// default. "Adjusted": the panel corrected a setting. "Turned off": a feature is unavailable.
+const PROBLEMS = [
+  { resource: "Bookings", effect: "Ignored",
+    title: "The default sort names a column that isn't sortable.",
+    did: "The list uses the data source's order.",
+    fix: "Make <code>DepartsOn</code> sortable, or sort by a sortable column.",
+    where: "AddResource<Booking>() → Index → DefaultSort(b => b.DepartsOn)" },
+  { resource: "Bookings", effect: "Adjusted",
+    title: "The page sizes don't include the default page size.",
+    did: "The list adds 20 to the page sizes.",
+    fix: "Add 20 to <code>PageSizes(25, 50, 100)</code>, or pick one of them as the page size.",
+    where: "AddResource<Booking>() → Index → Paging" },
+  { resource: "Travellers", effect: "Turned off",
+    title: "The create form has no create handler.",
+    did: "The New button is hidden and /travellers/create returns 404.",
+    fix: "Implement <code>IResourceCreateHandler&lt;Traveller&gt;</code> on the data source, or set a create handler.",
+    where: "AddResource<Traveller>() → Create" },
+  { resource: "Destinations", effect: "Turned off",
+    title: "The edit form's field 'Slug' has no public setter.",
+    did: "The field is left out of the edit form.",
+    fix: "Add a public setter, or bind the field with a <code>FieldBinder</code>.",
+    where: "AddResource<Destination>() → Edit → Field(d => d.Slug)" },
+];
+const COUNT = PROBLEMS.length;
+
+const badge = effect => `<span data-slot="badge" class="sa-badge ${effect !== "Turned off" ? "sa-badge-variant-outline" : "sa-badge-variant-secondary sa-config-badge-off"}">${effect}</span>`;
+const item = p => `<div class="sa-config-item">
+  <div class="sa-config-item-head"><span class="sa-config-item-title">${p.title}</span>${badge(p.effect)}</div>
+  <div class="sa-config-item-effect">${p.did}</div>
+  <div class="sa-config-item-fix">${p.fix}</div>
+  <div class="sa-config-item-where">${p.where.replace(/</g, "&lt;")}</div>
+</div>`;
+const groups = [...new Set(PROBLEMS.map(p => p.resource))];
+document.getElementById("sheet-list").innerHTML = `<div class="sa-config-list">${groups.map(g =>
+  `<div class="sa-config-group"><div class="sa-config-group-title">${g}<a href="#">Open</a></div>${PROBLEMS.filter(p => p.resource === g).map(item).join("")}</div>`).join("")}</div>`;
+
+const rows = [
+  ["VY-20841", "Amelia Hart", "Lisbon, Portugal", "12 Nov", "Confirmed", "€1,240.00"],
+  ["VY-20840", "Noah Bennett", "Kyoto, Japan", "18 Nov", "Pending", "€3,815.50"],
+  ["VY-20839", "Isla Moreau", "Cape Town, South Africa", "2 Dec", "Confirmed", "€2,090.00"],
+  ["VY-20838", "Leo Fischer", "Reykjavík, Iceland", "9 Dec", "Cancelled", "€0.00"],
+  ["VY-20837", "Maya Okafor", "Marrakesh, Morocco", "14 Dec", "Confirmed", "€980.00"],
+  ["VY-20836", "Ethan Park", "Queenstown, New Zealand", "20 Dec", "Pending", "€4,420.00"],
+  ["VY-20835", "Zara Ahmed", "Hoi An, Vietnam", "3 Jan", "Confirmed", "€1,675.00"],
+  ["VY-20834", "Oliver Grant", "Cusco, Peru", "8 Jan", "Pending", "€2,310.00"],
+];
+const badgeVariant = { Confirmed: "secondary", Pending: "outline", Cancelled: "destructive" };
+document.getElementById("rows").innerHTML = rows.map(r => `<tr data-slot="table-row" class="sa-table-row">${r.map((c, i) =>
+  `<td data-slot="table-cell" class="sa-table-cell"${i === 5 ? ' style="text-align: right; font-variant-numeric: tabular-nums"' : ""}>${i === 4 ? `<span data-slot="badge" class="sa-badge sa-badge-variant-${badgeVariant[c]}">${c}</span>` : c}</td>`).join("")}</tr>`).join("");
+
+const link = (title, icon, active) => `<li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item"><a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default"${active ? ' data-active="true"' : ""} class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">${svg(icon)}<span>${title}</span></a></li>`;
+const group = (label, items) => `<div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">${label ? `<div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">${label}</div>` : ""}<div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content"><ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">${items}</ul></div></div>`;
+document.getElementById("sidebar-content").innerHTML =
+  group(null, link("Dashboard", "layout-dashboard"))
+  + group("Trips", link("Bookings", "plane", true) + link("Destinations", "map-pin") + link("Travellers", "users"))
+  + group("System", link("Settings", "settings"));
+
+const NOTES = {
+  ink: "<b>1. Ink pill.</b> The inverse colours with a warning count; what you liked. Reads as a dev tool, not as part of the page, in every theme.",
+  warning: "<b>2. Warning pill.</b> Filled with the warning colour: the loudest, and unmistakably a problem.",
+  surface: "<b>3. Surface pill.</b> A raised surface with a warning icon and a short summary of the effect. Blends with the theme; the quietest.",
+  bubble: "<b>4. Bubble.</b> A round icon with a count badge, widening to its label on hover or focus. Smallest footprint.",
+  card: "<b>5. Card.</b> A toast-like card naming the first problem, with Review and a close button that shrinks it to the ink pill. Tells you what happened without a click; covers the most.",
+  tab: "<b>6. Edge tab.</b> A tab rising from the window's bottom edge, the counterpart of the environment stripe's tab at the top. Covers almost nothing.",
+  glass: "<b>7. Glass.</b> A translucent, blurred pill with a pulsing dot (static under reduced motion). Reads as an overlay without a heavy block of colour.",
+  split: "<b>8. Split.</b> The ink pill with a second segment that hides it until the problems change (stored in the browser). For people who've seen the list and want it gone for now.",
+};
+
+const state = { s: "ink", pos: "left", opens: "sheet", env: "stripe", theme: "", mode: "light" };
+new URLSearchParams(location.search).forEach((v, k) => { if (k in state) state[k] = v; });
+let collapsed = false; // The card's closed state
+let hidden = false; // The split's hidden state
+
+function trigger() {
+  const attrs = state.opens === "sheet"
+    ? `commandfor="config-problems" command="show-modal"`
+    : `data-toggle-panel aria-expanded="false" aria-controls="config-panel"`;
+  const label = `${COUNT} configuration problems`;
+  switch (collapsed && state.s === "card" ? "ink" : state.s) {
+    case "ink": return `<button type="button" class="sa-config-trigger sa-config-shadow" ${attrs}><span class="sa-config-count">${COUNT}</span>Configuration problems</button>`;
+    case "warning": return `<button type="button" class="sa-config-trigger sa-config-shadow" ${attrs}>${svg("triangle-alert")}${label}</button>`;
+    case "surface": return `<button type="button" class="sa-config-trigger sa-config-shadow" ${attrs}>${svg("triangle-alert")}<span>${label}</span><span class="sa-config-trigger-meta">· 2 features off</span></button>`;
+    case "bubble": return `<button type="button" class="sa-config-trigger sa-config-shadow" aria-label="${label}" ${attrs}>${svg("triangle-alert")}<span class="sa-config-trigger-label">Configuration problems</span><span class="sa-config-count">${COUNT}</span></button>`;
+    case "card": return `<div class="sa-config-trigger sa-config-shadow" role="status">${svg("triangle-alert")}<div class="sa-config-card-text"><span class="sa-config-card-title">${label}</span><span class="sa-config-card-body">Bookings: ${PROBLEMS[0].title.charAt(0).toLowerCase() + PROBLEMS[0].title.slice(1)} And ${COUNT - 1} more; 2 features are off.</span></div><button type="button" class="sa-config-card-close" aria-label="Minimise" data-card-close>${svg("x")}</button><div class="sa-config-card-actions"><button type="button" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-sm" ${attrs}>Review</button></div></div>`;
+    case "tab": return `<button type="button" class="sa-config-trigger" ${attrs}>${svg("triangle-alert")}${label}</button>`;
+    case "glass": return `<button type="button" class="sa-config-trigger sa-config-shadow" ${attrs}><span class="sa-config-pulse" aria-hidden="true"></span>${label}</button>`;
+    case "split": return `<div class="sa-config-split sa-config-shadow"><button type="button" class="sa-config-trigger" ${attrs}><span class="sa-config-count">${COUNT}</span>Configuration problems</button><button type="button" class="sa-config-split-hide" aria-label="Hide until the problems change" title="Hide until the problems change" data-split-hide>${svg("eye-off")}</button></div>`;
+  }
+}
+
+function panel() {
+  return `<div class="sa-config-panel sa-config-shadow" id="config-panel" hidden role="dialog" aria-label="Configuration problems">
+    <div class="sa-config-panel-head"><span>${COUNT} configuration problems</span><button type="button" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm" aria-label="Close" data-toggle-panel>${svg("x")}</button></div>
+    <div class="sa-config-panel-body">${PROBLEMS.map(p => `<a href="#" class="sa-config-row" style="color: inherit; text-decoration: none" data-open-sheet><span class="sa-config-row-resource">${p.resource}</span>${badge(p.effect)}<span class="sa-config-row-title">${p.title}</span></a>`).join("")}</div>
+    <div class="sa-config-panel-foot"><span>Only Development shows this.</span><button type="button" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-sm" data-open-sheet>Details and fixes</button></div>
+  </div>`;
+}
+
+function render() {
+  const tab = label => `<span class="sa-environment-tab" data-size="md">${label}</span>`;
+  const env = {
+    none: "",
+    stripe: `<div class="sa-environment-stripe" data-color="info" role="status">${tab("Local")}</div>`,
+    frame: `<div class="sa-environment-frame" data-color="info" role="status">${tab("Local")}</div>`,
+    banner: `<div class="sa-environment-banner" data-color="info" role="status"><span class="sa-environment-banner-label">Local</span><span class="sa-environment-banner-description">Running on your machine</span></div>`,
+  }[state.env];
+  document.getElementById("env-slot").innerHTML = env;
+
+  const isHidden = state.s === "split" && hidden;
+  document.getElementById("float-slot").innerHTML = isHidden ? "" :
+    `<div class="sa-config-float" data-style="${state.s}" data-position="${state.pos}">${state.opens === "panel" ? panel() : ""}${trigger()}</div>`;
+
+  document.querySelectorAll("svg[data-icon]").forEach(el => { el.outerHTML = svg(el.dataset.icon); });
+  document.documentElement.classList.toggle("dark", state.mode === "dark");
+  const theme = document.getElementById("theme");
+  if (state.theme) theme.href = `../../util/theme-check/presets/${state.theme}.css`; else theme.removeAttribute("href");
+  document.querySelectorAll(".proto-seg").forEach(seg => seg.querySelectorAll("button").forEach(b =>
+    b.setAttribute("aria-pressed", String(state[seg.dataset.key] === b.dataset.value))));
+  document.getElementById("proto-note").innerHTML = NOTES[state.s]
+    + (state.s === "tab" ? " The panel opens above it like the others." : "")
+    + (isHidden ? ` <button type="button" class="proto-restore" data-restore>Show it again</button>` : "")
+    + (state.s === "card" && collapsed ? ` <button type="button" class="proto-restore" data-restore>Expand the card</button>` : "");
+  history.replaceState(null, "", "?" + new URLSearchParams(state));
+}
+
+function setPanel(open) {
+  const p = document.getElementById("config-panel");
+  if (!p) return;
+  p.hidden = !open;
+  document.querySelectorAll(".sa-config-float [aria-controls]").forEach(b => b.setAttribute("aria-expanded", String(open)));
+}
+
+document.addEventListener("click", ev => {
+  if (ev.target.closest("[data-toggle-panel]")) { setPanel(document.getElementById("config-panel").hidden); return; }
+  if (ev.target.closest("[data-open-sheet]")) { ev.preventDefault(); setPanel(false); document.getElementById("config-problems").showModal(); return; }
+  if (ev.target.closest("[data-card-close]")) { collapsed = true; render(); return; }
+  if (ev.target.closest("[data-split-hide]")) { hidden = true; render(); return; }
+  if (ev.target.closest("[data-restore]")) { hidden = false; collapsed = false; render(); return; }
+  const p = document.getElementById("config-panel");
+  if (p && !p.hidden && !ev.target.closest(".sa-config-float")) setPanel(false);
+});
+document.addEventListener("keydown", ev => {
+  if (ev.key === "Escape") setPanel(false);
+  if (ev.target.closest("input, textarea, dialog")) return;
+  const keys = [...document.querySelectorAll('[data-key="s"] button')].map(b => b.dataset.value);
+  const i = keys.indexOf(state.s);
+  if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") {
+    state.s = keys[(i + (ev.key === "ArrowRight" ? 1 : keys.length - 1)) % keys.length];
+    collapsed = false; hidden = false;
+    render();
+  }
+});
+document.querySelectorAll(".proto-seg").forEach(seg => seg.addEventListener("click", ev => {
+  const b = ev.target.closest("button");
+  if (!b) return;
+  state[seg.dataset.key] = b.dataset.value;
+  if (seg.dataset.key === "s") { collapsed = false; hidden = false; }
+  render();
+}));
+document.querySelector("[data-collapse]").addEventListener("click", ev => {
+  const bar = document.getElementById("proto-bar");
+  bar.classList.toggle("collapsed");
+  ev.target.textContent = bar.classList.contains("collapsed") ? "+" : "–";
+});
+
+render();
+</script>
+</body>
+</html>

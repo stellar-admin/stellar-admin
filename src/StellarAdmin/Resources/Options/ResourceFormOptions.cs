@@ -1,3 +1,4 @@
+using StellarAdmin.Diagnostics;
 using StellarAdmin.UI;
 
 namespace StellarAdmin.Resources.Options;
@@ -61,12 +62,38 @@ public abstract class ResourceFormOptions : IFormScope
 
     internal List<FormItemOptions> MutableItems { get; } = [];
 
+    internal ConfigurationSource? Source { get; set; }
+
     IList<FormItemOptions> IFormScope.Items => MutableItems;
+
+    ConfigurationSource? IFormScope.Source => Source;
 
     FormGridColumnDefinitions IFormScope.Columns
     {
         get => Columns;
         set => Columns = value;
+    }
+
+    /// <summary>
+    ///     Removes a field from the form, wherever its sections and groups hold it.
+    /// </summary>
+    /// <param name="field">The field to remove.</param>
+    /// <returns>
+    ///     <see langword="true" /> if the form had the field; otherwise, <see langword="false" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     An integration calls it from a post-configuration callback to leave out a field it
+    ///     can't support, and reports the problem with
+    ///     <see cref="ResourceOptions{TResource}.ReportProblem" />.
+    /// </remarks>
+    public bool RemoveField(FormFieldOptions field)
+    {
+        ArgumentNullException.ThrowIfNull(field);
+
+        return FormItems.Remove(this, field);
     }
 
     internal static IEnumerable<FormDisplayFieldOptions> EnumerateDisplayFields(

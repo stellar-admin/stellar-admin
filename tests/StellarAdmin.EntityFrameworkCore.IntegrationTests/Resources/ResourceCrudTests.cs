@@ -1,4 +1,5 @@
 using System.Net;
+using System.Runtime.CompilerServices;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
@@ -248,60 +249,84 @@ public class ResourceCrudTests
     }
 
     [Test]
-    public async Task PrimaryKeyAsCreateField_RejectsConfiguration()
+    public async Task PrimaryKeyAsCreateField_LogsProblemWithTheFieldsLine()
     {
         // Arrange
+        var line = 0;
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.AllowCreate(create =>
-                    create.Fields(fields => fields.Add(product => product.Number))
-                )
-            );
-        }
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowCreate(create =>
+                create.Fields(fields =>
+                {
+                    line = CurrentLine() + 1;
+                    fields.Add(product => product.Number);
+                })
+            )
+        );
 
         // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        var problem = logs.ConfigurationProblems.Single(log =>
+            log.Message.Contains("Product.Number is the primary key")
+        );
+        await Assert.That(problem.Message).EndsWith($"Configured at {CurrentFile()}:{line}.");
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert.That(options.Create!.Fields).IsEmpty();
     }
 
     [Test]
-    public async Task ConcurrencyTokenAsEditField_RejectsConfiguration()
+    public async Task ConcurrencyTokenAsEditField_LogsProblem()
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.AllowEdit(edit =>
-                    edit.Fields(fields => fields.Add(product => product.Version))
-                )
-            );
-        }
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowEdit(edit =>
+                edit.Fields(fields => fields.Add(product => product.Version))
+            )
+        );
 
         // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "Product.Version is a concurrency token"
+                    )
+                )
+            )
+            .IsTrue();
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert.That(options.Edit!.Fields).IsEmpty();
     }
 
     [Test]
-    public async Task GeneratedValueAsEditField_RejectsConfiguration()
+    public async Task GeneratedValueAsEditField_LogsProblem()
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.AllowEdit(edit =>
-                    edit.Fields(fields => fields.Add(product => product.GeneratedCode))
-                )
-            );
-        }
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowEdit(edit =>
+                edit.Fields(fields => fields.Add(product => product.GeneratedCode))
+            )
+        );
 
         // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "the database generates Product.GeneratedCode"
+                    )
+                )
+            )
+            .IsTrue();
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert.That(options.Edit!.Fields).IsEmpty();
     }
 
     [Test]
@@ -344,6 +369,10 @@ public class ResourceCrudTests
         );
         resource.AllowDelete();
     }
+
+    private static string CurrentFile([CallerFilePath] string path = "") => path;
+
+    private static int CurrentLine([CallerLineNumber] int line = 0) => line;
 
     private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
     {

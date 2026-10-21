@@ -7,7 +7,7 @@ namespace StellarAdmin.Tests.Resources.Builders;
 public partial class ResourceBuilderTests
 {
     [Test]
-    public async Task EnableAddAnother_WhenKeptPropertyIsNoCreateField_RejectsConfiguration()
+    public async Task EnableAddAnother_WhenKeptPropertyIsNoCreateField_IgnoresProperty()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -23,13 +23,12 @@ public partial class ResourceBuilderTests
         using var provider = services.BuildServiceProvider();
 
         // Act
-        Action act = () =>
-            _ = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
         await Assert
-            .That(exception!.Message)
-            .Contains("KeepForNext names 'CountryId', which isn't an editable field");
+            .That(options.Problems.Single().Message)
+            .Contains("doesn't keep `CountryId` because it isn't an editable field");
+        await Assert.That(options.Create!.AddAnother!.KeptFields).IsEmpty();
     }
 }

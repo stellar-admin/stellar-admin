@@ -1303,6 +1303,7 @@ StellarAdmin.UI.Icons.IconOptions.GetIconNames() -> string![]!
 StellarAdmin.UI.Icons.IconOptions.GetSemanticIconName(StellarAdmin.UI.Icons.SemanticIconRole role) -> string?
 StellarAdmin.UI.Icons.IconOptions.IconOptions() -> void
 StellarAdmin.UI.Icons.IconOptions.MapSemanticIcon(StellarAdmin.UI.Icons.SemanticIconRole role, string! name) -> void
+StellarAdmin.UI.Icons.IconOptions.Problems.get -> System.Collections.Generic.IReadOnlyList<string!>!
 StellarAdmin.UI.Icons.IconOptions.RemoveIcon(string! name) -> bool
 StellarAdmin.UI.Icons.IconOptions.TryGetIcon(string! name, out StellarAdmin.UI.Icons.IconDefinition? iconDefinition) -> bool
 StellarAdmin.UI.Icons.IconPackOptions

@@ -1,3 +1,4 @@
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Sidebar;
 
 namespace StellarAdmin.Resources;
@@ -9,5 +10,10 @@ internal sealed record ResourceRegistration(
     int SidebarPosition,
     Func<IServiceProvider, ResourceSidebarItem> ResolveSidebarItem,
     Func<IServiceProvider, IReadOnlyList<object>> ResolveAuthorizationMetadata,
-    Func<IServiceProvider, bool> ResolveCanCreate
-);
+    Func<IServiceProvider, bool> ResolveCanCreate,
+    Func<IServiceProvider, IReadOnlyList<ConfigurationProblem>> ResolveProblems
+)
+{
+    // Where the app added the resource, for its problems that have no more specific place
+    public ConfigurationSource? Source { get; init; }
+}

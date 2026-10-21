@@ -5,7 +5,6 @@ using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
@@ -346,19 +345,26 @@ public class ImageEditorTests
     }
 
     [Test]
-    public async Task Startup_WithImageEditorWithoutStoreImage_FailsValidation()
+    public async Task Startup_WithImageEditorWithoutStoreImage_LogsProblem()
     {
         // Arrange
-        var configure = () =>
-            CreateAsync(fields => fields.Add(model => model.Photo).UseEditor<ImageEditor>());
 
         // Act
-        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+        await using var app = await CreateAsync(fields =>
+            fields.Add(model => model.Photo).UseEditor<ImageEditor>()
+        );
 
         // Assert
+        var logs = app.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains("The edit form's image field 'Photo' has nowhere to store uploads.");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The Photo field isn't on the edit form because its image editor has nowhere to store uploads."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     private static void Configure(ImageEditor editor)

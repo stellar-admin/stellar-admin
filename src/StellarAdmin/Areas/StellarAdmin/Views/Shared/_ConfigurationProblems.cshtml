@@ -1,0 +1,167 @@
+@using Microsoft.Extensions.Hosting
+@using StellarAdmin.Diagnostics
+@model IReadOnlyList<ConfigurationProblem>
+@inject IHostEnvironment HostEnvironment
+
+@* The configuration problems, which the layout shows in Development: a pill at the bottom of the page that opens a
+   sheet with the lines of the app's code that configured them, each problem under its line *@
+@{
+    var sheet = ConfigurationProblemsSheet.Create(Model, HostEnvironment.ContentRootPath, ReadLines);
+    var counts = sheet.Counts;
+    var isInfoOnly = counts.Infos == counts.Total;
+    var title = isInfoOnly ? "Configuration info" : "Configuration problems";
+    var label = isInfoOnly ? title : counts.Total == 1 ? "Configuration problem" : title;
+    var description = isInfoOnly
+        ? "The admin panel adjusted these next to what you configured."
+        : "The admin panel kept running and worked around these. Fix them before you deploy.";
+}
+
+<div class="sa-configuration-problems">
+    <button type="button" class="sa-configuration-problems-trigger" commandfor="configuration-problems" command="show-modal">
+        <span class="sa-configuration-problems-counts">
+            @foreach (var (level, count) in counts.GetLevels())
+            {
+                <span class="sa-configuration-problems-count" data-level="@LevelName(level)" title="@Describe(level, count)">
+                    <sa-icon name="@LevelIcon(level)"/>@count
+                </span>
+            }
+        </span>
+        @label
+    </button>
+</div>
+
+<sa-sheet id="configuration-problems" aria-labelledby="configuration-problems-title" style="width: min(34rem, 100vw); max-width: none">
+    <sa-sheet-header>
+        <sa-sheet-title id="configuration-problems-title">@title</sa-sheet-title>
+        <sa-sheet-description>@description</sa-sheet-description>
+    </sa-sheet-header>
+    <div class="sa-configuration-problems-list">
+        @foreach (var file in sheet.Files)
+        {
+            <section class="sa-configuration-problems-file">
+                <div class="sa-configuration-problems-file-head">
+                    <h3 class="sa-configuration-problems-location" title="@file.FilePath">
+                        <sa-icon name="file-code"/>
+                        <span class="sa-configuration-problems-path">
+                            <span class="sa-configuration-problems-directory"><bdi>@file.Directory</bdi></span>
+                            <span class="sa-configuration-problems-file-name">@file.FileName</span>
+                        </span>
+                    </h3>
+                    @{ await Badges(file.Counts); }
+                </div>
+                <div class="sa-configuration-problems-lines">
+                    @foreach (var row in file.Rows)
+                    {
+                        if (row.IsGap)
+                        {
+                            <div class="sa-configuration-problems-gap" aria-hidden="true">⋯</div>
+                            continue;
+                        }
+
+                        @* Only a line that configured a problem has a level, which colours it *@
+                        if (row.Level is { } rowLevel)
+                        {
+                            <span class="sa-configuration-problems-number" data-level="@LevelName(rowLevel)">@row.Number</span>
+                            <span class="sa-configuration-problems-code" data-level="@LevelName(rowLevel)">@ConfigurationProblemsSheet.HighlightCode(row.Text)</span>
+                        }
+                        else
+                        {
+                            <span class="sa-configuration-problems-number">@row.Number</span>
+                            <span class="sa-configuration-problems-code">@ConfigurationProblemsSheet.HighlightCode(row.Text)</span>
+                        }
+                        foreach (var problem in row.Problems)
+                        {
+                            await Problem(problem);
+                        }
+                    }
+                </div>
+            </section>
+        }
+        @foreach (var group in sheet.Unlocated.GroupBy(problem => problem.Resource ?? "Admin panel"))
+        {
+            <section class="sa-configuration-problems-file">
+                <div class="sa-configuration-problems-file-head">
+                    <h3 class="sa-configuration-problems-location">
+                        <span class="sa-configuration-problems-resource">@group.Key</span>
+                    </h3>
+                    @{ await Badges(ConfigurationProblemCounts.From(group)); }
+                </div>
+                @foreach (var problem in group.OrderBy(problem => problem.Level))
+                {
+                    await Problem(problem);
+                }
+            </section>
+        }
+    </div>
+    <sa-sheet-footer>
+        <p class="sa-configuration-problems-footnote">Only Development shows this. Every environment logs each problem once at startup, at its level, from <code>StellarAdmin.Configuration</code>.</p>
+    </sa-sheet-footer>
+</sa-sheet>
+
+@functions {
+    // The source lines are only read in Development, where the files are usually on disk
+    private static IReadOnlyList<string>? ReadLines(string path)
+    {
+        try
+        {
+            return File.Exists(path) ? File.ReadAllLines(path) : null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    private static string LevelName(ConfigurationProblemLevel level) =>
+        level switch
+        {
+            ConfigurationProblemLevel.Error => "error",
+            ConfigurationProblemLevel.Info => "info",
+            _ => "warning",
+        };
+
+    private static string LevelIcon(ConfigurationProblemLevel level) =>
+        level switch
+        {
+            ConfigurationProblemLevel.Error => "ban",
+            ConfigurationProblemLevel.Info => "info",
+            _ => "triangle-alert",
+        };
+
+    private static string Describe(ConfigurationProblemLevel level, int count) =>
+        level switch
+        {
+            ConfigurationProblemLevel.Error => count == 1 ? "1 error" : $"{count} errors",
+            ConfigurationProblemLevel.Info => $"{count} info",
+            _ => count == 1 ? "1 warning" : $"{count} warnings",
+        };
+}
+
+@{
+    // Each level's count in a file
+    async Task Badges(ConfigurationProblemCounts fileCounts)
+    {
+        <span class="sa-configuration-problems-badges">
+            @foreach (var (level, count) in fileCounts.GetLevels())
+            {
+                <span class="sa-configuration-problems-badge" data-level="@LevelName(level)" title="@Describe(level, count)">
+                    <sa-icon name="@LevelIcon(level)"/>@count
+                </span>
+            }
+        </span>
+    }
+
+    // The level is the stripe's colour, and is spoken before the message
+    async Task Problem(ConfigurationProblem problem)
+    {
+        <div class="sa-configuration-problem" data-level="@LevelName(problem.Level)">
+            <p class="sa-configuration-problem-message">
+                <span class="sr-only">@(problem.Level switch { ConfigurationProblemLevel.Error => "Error", ConfigurationProblemLevel.Info => "Info", _ => "Warning" }): </span>@ConfigurationProblemsSheet.FormatMessage(problem.Message)
+            </p>
+            <p class="sa-configuration-problem-fix">
+                <sa-icon name="wrench"/>
+                <span>@ConfigurationProblemsSheet.FormatMessage(problem.Fix)</span>
+            </p>
+        </div>
+    }
+}

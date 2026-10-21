@@ -22,25 +22,20 @@ public partial class IconOptionsTests
     }
 
     [Test]
-    public async Task AddIconPack_WhenLaterMappingIsInvalid_PreservesExistingRegistrations()
+    public async Task AddIconPack_WhenLaterMappingIsInvalid_SkipsOnlyThatMapping()
     {
         // Arrange
         var sut = new IconOptions();
-        var originalNames = sut.GetIconNames();
-        sut.TryGetIcon("x", out var originalIcon);
 
         // Act
-        Action act = () => sut.AddIconPack<PartiallyValidPack>();
+        sut.AddIconPack<PartiallyValidPack>();
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
-        await Assert.That(sut.GetIconNames()).IsEquivalentTo(originalNames);
-        await Assert.That(sut.GetSemanticIconName(SemanticIconRole.Close)).IsEqualTo("x");
+        await Assert.That(sut.TryGetIcon("new-icon", out _)).IsTrue();
+        await Assert.That(sut.GetSemanticIconName(SemanticIconRole.Close)).IsEqualTo("new-icon");
         await Assert
             .That(sut.GetSemanticIconName(SemanticIconRole.PaginationEllipsis))
             .IsEqualTo("ellipsis");
-        await Assert.That(sut.TryGetIcon("x", out var icon)).IsTrue();
-        await Assert.That(icon).IsSameReferenceAs(originalIcon);
     }
 
     [Test]
@@ -109,7 +104,7 @@ public partial class IconOptionsTests
     }
 
     [Test]
-    public async Task AddIconPack_WhenMappingTargetExistsOnlyInRegistry_RejectsPack()
+    public async Task AddIconPack_WhenMappingTargetExistsOnlyInRegistry_SkipsMapping()
     {
         // Arrange
         var sut = new IconOptions();
@@ -117,10 +112,9 @@ public partial class IconOptionsTests
         sut.AddIcon("test-dots", ReplacementPack.Icon);
 
         // Act
-        Action act = () => sut.AddIconPack<MappingOnlyPack>();
+        sut.AddIconPack<MappingOnlyPack>();
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
         await Assert.That(sut.GetSemanticIconName(SemanticIconRole.Close)).IsNull();
         await Assert.That(sut.TryGetIcon("test-dots", out var icon)).IsTrue();
         await Assert.That(icon).IsSameReferenceAs(ReplacementPack.Icon);
@@ -129,18 +123,17 @@ public partial class IconOptionsTests
     [Test]
     [Arguments("")]
     [Arguments("bad:")]
-    public async Task AddIconPack_WhenMappingTargetIsMissing_RejectsEntirePack(string prefix)
+    public async Task AddIconPack_WhenMappingTargetIsMissing_AddsIconsAndSkipsMapping(string prefix)
     {
         // Arrange
         var sut = new IconOptions();
         sut.ClearIcons();
 
         // Act
-        Action act = () => sut.AddIconPack<InvalidPack>(pack => pack.Prefix = prefix);
+        sut.AddIconPack<InvalidPack>(pack => pack.Prefix = prefix);
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
-        await Assert.That(sut.GetIconNames()).IsEmpty();
+        await Assert.That(sut.GetIconNames()).IsEquivalentTo([prefix + "new-icon"]);
         await Assert.That(sut.GetSemanticIconName(SemanticIconRole.Close)).IsNull();
     }
 

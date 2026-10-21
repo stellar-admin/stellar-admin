@@ -1,3 +1,4 @@
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
 
@@ -137,7 +138,8 @@ public sealed class ResourceCreateBuilder<TModel>
     /// </remarks>
     public ResourceInlineCreateBuilder UseInlineRow()
     {
-        _configure(options => options.InlineRow ??= new());
+        var source = ConfigurationSource.Capture();
+        _configure(options => options.InlineRow ??= new() { Source = source });
 
         return new(configure => _configure(options => configure(options.InlineRow ??= new())));
     }

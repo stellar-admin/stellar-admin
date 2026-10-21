@@ -366,39 +366,42 @@ public class ResourceManyToManyTests
     [Test]
     [Arguments("none")]
     [Arguments("select")]
-    public async Task Edit_WithSingleValueEditor_FailsToStart(string editor)
+    public async Task Edit_WithSingleValueEditor_LogsProblem(string editor)
     {
         // Arrange
 
         // Act
-        async Task act()
-        {
-            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-                resource.AllowEdit(edit =>
-                    edit.Fields(fields =>
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowEdit(edit =>
+                edit.Fields(fields =>
+                {
+                    var field = fields.Add(product => product.Tags);
+                    if (editor == "select")
                     {
-                        var field = fields.Add(product => product.Tags);
-                        if (editor == "select")
-                        {
-                            field.UseEditor<SelectEditor>(select =>
-                                select.UseItems<CatalogDbContext, Tag, int>(
-                                    tag => tag.Id,
-                                    tag => tag.Name
-                                )
-                            );
-                        }
-                    })
-                )
-            );
-        }
+                        field.UseEditor<SelectEditor>(select =>
+                            select.UseItems<CatalogDbContext, Tag, int>(
+                                tag => tag.Id,
+                                tag => tag.Name
+                            )
+                        );
+                    }
+                })
+            )
+        );
 
         // Assert
-        var exception = await Assert.That(act).Throws<InvalidOperationException>();
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains(
-                "Product.Tags is a many-to-many field, so it needs an editor that selects several items."
-            );
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "because Product.Tags is a many-to-many field, and its editor selects one item."
+                    )
+                )
+            )
+            .IsTrue();
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert.That(options.Edit!.Fields).IsEmpty();
     }
 
     private static void UseCheckboxGroup(ResourceFieldsBuilder<Product> fields) =>

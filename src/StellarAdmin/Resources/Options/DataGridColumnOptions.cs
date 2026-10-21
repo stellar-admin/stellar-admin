@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Humanizer;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Displays;
 
 namespace StellarAdmin.Resources.Options;
@@ -94,6 +95,8 @@ public sealed class DataGridColumnOptions
     /// </value>
     public string? Title { get; internal set; }
 
+    internal ConfigurationSource? Source { get; set; }
+
     internal bool UsesBuiltInRendering { get; set; }
 
     internal DataGridColumnOptions(LambdaExpression fieldExpression, string? fieldName)
@@ -101,4 +104,14 @@ public sealed class DataGridColumnOptions
         FieldExpression = fieldExpression;
         FieldName = fieldName;
     }
+
+    /// <summary>
+    ///     Stops the list from being sorted by the column.
+    /// </summary>
+    /// <remarks>
+    ///     An integration calls it from a post-configuration callback when it can't sort by the
+    ///     column, and reports the problem with
+    ///     <see cref="ResourceOptions{TResource}.ReportProblem" />.
+    /// </remarks>
+    public void DisableSorting() => Sortable = false;
 }

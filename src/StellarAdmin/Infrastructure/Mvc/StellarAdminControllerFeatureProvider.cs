@@ -16,32 +16,19 @@ internal sealed class StellarAdminControllerFeatureProvider
 {
     private readonly Dictionary<TypeInfo, string> _controllers = [];
 
-    public void AddController(Type controllerType, string controllerName)
-    {
-        if (
-            _controllers.Any(entry =>
-                string.Equals(entry.Value, controllerName, StringComparison.OrdinalIgnoreCase)
-                && entry.Key != controllerType.GetTypeInfo()
-            )
-        )
-        {
-            throw new InvalidOperationException(
-                $"Controller name '{controllerName}' is already registered."
-            );
-        }
-
-        if (
-            _controllers.TryGetValue(controllerType.GetTypeInfo(), out var existing)
-            && existing != controllerName
-        )
-        {
-            throw new InvalidOperationException(
-                $"Controller type '{controllerType}' is already registered as '{existing}'."
-            );
-        }
-
+    // Callers check FindName and FindType first, so a conflicting registration never gets here
+    public void AddController(Type controllerType, string controllerName) =>
         _controllers.TryAdd(controllerType.GetTypeInfo(), controllerName);
-    }
+
+    public string? FindName(Type controllerType) =>
+        _controllers.GetValueOrDefault(controllerType.GetTypeInfo());
+
+    public Type? FindType(string controllerName) =>
+        _controllers
+            .FirstOrDefault(entry =>
+                string.Equals(entry.Value, controllerName, StringComparison.OrdinalIgnoreCase)
+            )
+            .Key?.AsType();
 
     public void Apply(ControllerModel controller)
     {

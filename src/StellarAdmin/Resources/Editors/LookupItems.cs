@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Builders;
 
 namespace StellarAdmin.Resources.Editors;
@@ -168,8 +169,10 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
                 .Where(current => current is not null)
                 .Distinct()
                 .ToArray(),
-            _ => throw new InvalidOperationException(
-                $"The lookup on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
+            _ => throw new ConfigurationException(
+                ConfigurationProblemKind.UnsuitableEditor,
+                $"its value is a `{context.Value.GetType().Name}`, but the lookup's items use `{typeof(TValue).Name}`",
+                $"Make the lookup's items use the property's type, or bind the field to a `{typeof(TValue).Name}` property."
             ),
         };
 

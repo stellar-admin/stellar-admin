@@ -2,7 +2,6 @@ using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
@@ -143,16 +142,22 @@ public class ResourceColumnDisplayTests
     }
 
     [Test]
-    public async Task Startup_WithComputedColumnWithoutTitle_FailsValidation()
+    public async Task Startup_WithComputedColumnWithoutTitle_LogsProblem()
     {
         // Arrange
-        var configure = () => CreateAsync(columns => columns.Add(facts => facts.Price * 2));
 
         // Act
-        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+        await using var app = await CreateAsync(columns => columns.Add(facts => facts.Price * 2));
 
         // Assert
-        await Assert.That(exception!.Message).Contains("computes its value, so it needs a Title.");
+        var logs = app.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains("This column isn't shown because it's computed")
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

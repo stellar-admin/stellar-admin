@@ -9,7 +9,7 @@ public class SidebarLinkTargetTests
     [Arguments(" ", "Reports")]
     [Arguments("Index", "")]
     [Arguments("Index", " ")]
-    public async Task Action_WithBlankActionOrController_ThrowsArgumentException(
+    public async Task Action_WithBlankActionOrController_RecordsProblem(
         string action,
         string controller
     )
@@ -17,24 +17,24 @@ public class SidebarLinkTargetTests
         // Arrange
 
         // Act
-        Action act = () => SidebarLinkTarget.Action(action, controller);
+        var result = SidebarLinkTarget.Action(action, controller);
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(result.Problem).IsNotNull();
     }
 
     [Test]
     [Arguments("")]
     [Arguments(" ")]
-    public async Task Action_WithBlankArea_ThrowsArgumentException(string area)
+    public async Task Action_WithBlankArea_RecordsProblem(string area)
     {
         // Arrange
 
         // Act
-        Action act = () => SidebarLinkTarget.Action("Index", "Reports", area);
+        var result = SidebarLinkTarget.Action("Index", "Reports", area);
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(result.Problem).IsNotNull();
     }
 
     [Test]
@@ -52,29 +52,29 @@ public class SidebarLinkTargetTests
     [Test]
     [Arguments("")]
     [Arguments(" ")]
-    public async Task Page_WithBlankArea_ThrowsArgumentException(string area)
+    public async Task Page_WithBlankArea_RecordsProblem(string area)
     {
         // Arrange
 
         // Act
-        Action act = () => SidebarLinkTarget.Page("/Reports/Index", area);
+        var result = SidebarLinkTarget.Page("/Reports/Index", area);
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(result.Problem).IsNotNull();
     }
 
     [Test]
     [Arguments("")]
     [Arguments(" ")]
-    public async Task Page_WithBlankPage_ThrowsArgumentException(string page)
+    public async Task Page_WithBlankPage_RecordsProblem(string page)
     {
         // Arrange
 
         // Act
-        Action act = () => SidebarLinkTarget.Page(page);
+        var result = SidebarLinkTarget.Page(page);
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(result.Problem).IsNotNull();
     }
 
     [Test]
@@ -92,14 +92,14 @@ public class SidebarLinkTargetTests
     [Test]
     [Arguments("")]
     [Arguments(" ")]
-    public async Task Url_WithBlankUrl_ThrowsArgumentException(string url)
+    public async Task Url_WithBlankUrl_RecordsProblem(string url)
     {
         // Arrange
 
         // Act
-        Action act = () => SidebarLinkTarget.Url(url);
+        var result = SidebarLinkTarget.Url(url);
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(result.Problem).IsNotNull();
     }
 }

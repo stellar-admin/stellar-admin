@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Areas.StellarAdmin;
@@ -23,8 +25,10 @@ internal static class FieldEditorRenderer
         {
             explorer =
                 explorer.GetExplorerForProperty(property.Name)
-                ?? throw new InvalidOperationException(
-                    $"{explorer.ModelType.Name} has no property {property.Name} for the field '{field.FieldName}'."
+                ?? throw new ConfigurationException(
+                    ConfigurationProblemKind.InvalidSelector,
+                    $"`{explorer.ModelType.Name}` has no `{property.Name}` property",
+                    $"Select a property of `{explorer.ModelType.Name}` for the field."
                 );
         }
 
@@ -61,5 +65,57 @@ internal static class FieldEditorRenderer
         );
 
         return helper.Editor(string.Empty, templateName, additionalViewData);
+    }
+
+    // Renders a field, leaving it out when its configuration only fails as it renders, and reporting why
+    public static IHtmlContent Guard(
+        IHtmlHelper html,
+        FormFieldOptions field,
+        Func<IHtmlContent> render
+    )
+    {
+        try
+        {
+            return render();
+        }
+        catch (ConfigurationException exception)
+        {
+            Report(html, field, exception);
+
+            return HtmlString.Empty;
+        }
+    }
+
+    public static async Task<IHtmlContent> GuardAsync(
+        IHtmlHelper html,
+        FormFieldOptions field,
+        Func<Task<IHtmlContent>> render
+    )
+    {
+        try
+        {
+            return await render();
+        }
+        catch (ConfigurationException exception)
+        {
+            Report(html, field, exception);
+
+            return HtmlString.Empty;
+        }
+    }
+
+    private static void Report(
+        IHtmlHelper html,
+        FormFieldOptions field,
+        ConfigurationException exception
+    )
+    {
+        var httpContext = html.ViewContext.HttpContext;
+        httpContext
+            .RequestServices.GetRequiredService<ConfigurationProblems>()
+            .Report(
+                exception.ToProblem(field.FieldName, field.Source),
+                httpContext.GetRouteValue("controller") as string
+            );
     }
 }

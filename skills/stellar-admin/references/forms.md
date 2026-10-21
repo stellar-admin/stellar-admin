@@ -86,7 +86,7 @@ resource.AllowCreate(create =>
 ```
 
 - It is off by default. One call covers the create page and, with `UseInlineRow()`, the inline create row ([inline editing](inline-editing.md#save-and-add-another)).
-- `KeepForNext` must name an editable field of the create form; startup fails otherwise.
+- `KeepForNext` must name an editable field of the create form; otherwise it is ignored and a configuration problem is logged.
 - The toast text is `index.CreatedMessage` ([inline editing](inline-editing.md#labels)), and the default label comes from `labels.Create(create => create.AddAnotherLabel = ...)`.
 - The create sheet opened from a lookup has no such button: it closes and selects the created item.
 
@@ -246,4 +246,4 @@ public sealed class DestinationCodesBinder : FieldBinder
 
 - One binder instance serves every request; get services from `context.Services`.
 - `context.AddError(message)` shows an error under the field. Validation attributes on the property run after binding.
-- A create or edit field whose property has no public setter and no binder fails at startup.
+- A create or edit field whose property has no public setter and no binder is left out, and a configuration problem is logged ([configuration problems](configuration-problems.md)).

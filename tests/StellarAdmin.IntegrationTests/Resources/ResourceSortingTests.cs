@@ -1,6 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
@@ -395,71 +395,77 @@ public class ResourceSortingTests
     }
 
     [Test]
-    public async Task Startup_WithSortableComputedColumnWithoutSelector_FailsValidation()
+    public async Task Startup_WithSortableComputedColumnWithoutSelector_LogsProblem()
     {
         // Arrange
-        var configure = () =>
-            StellarAdminTestHost.CreateAsync(
-                CreateState(),
-                resource =>
-                    resource.Index(index =>
-                        index.Columns(columns =>
-                            columns.Add(
-                                product => product.Price * 2,
-                                column =>
-                                {
-                                    column.Title = "Double price";
-                                    column.Sortable();
-                                }
-                            )
-                        )
-                    )
-            );
 
         // Act
-        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+        await using var app = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns =>
+                        columns.Add(
+                            product => product.Price * 2,
+                            column =>
+                            {
+                                column.Title = "Double price";
+                                column.Sortable();
+                            }
+                        )
+                    )
+                )
+        );
 
         // Assert
+        var logs = app.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains(
-                "The index column 'Double price' computes its value, so it can only be sorted by an expression. Use Sortable(selector)."
-            );
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The Double price column isn't sortable because it's computed, so it has no property to sort by."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]
-    public async Task Startup_WithComputedColumnSortedAsAnotherColumn_FailsValidation()
+    public async Task Startup_WithComputedColumnSortedAsAnotherColumn_LogsProblem()
     {
         // Arrange
-        var configure = () =>
-            StellarAdminTestHost.CreateAsync(
-                CreateState(),
-                resource =>
-                    resource.Index(index =>
-                        index.Columns(columns =>
-                        {
-                            columns.Add(product => product.Name, column => column.Sortable());
-                            columns.Add(
-                                product => product.Name.ToUpper(),
-                                column =>
-                                {
-                                    column.Title = "Name";
-                                    column.Sortable(product => product.Name);
-                                }
-                            );
-                        })
-                    )
-            );
 
         // Act
-        var exception = await Assert.That(configure).Throws<OptionsValidationException>();
+        await using var app = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns =>
+                    {
+                        columns.Add(product => product.Name, column => column.Sortable());
+                        columns.Add(
+                            product => product.Name.ToUpper(),
+                            column =>
+                            {
+                                column.Title = "Name";
+                                column.Sortable(product => product.Name);
+                            }
+                        );
+                    })
+                )
+        );
 
         // Assert
+        var logs = app.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(exception!.Message)
-            .Contains(
-                "The index column 'Name' is sorted as 'Name', as another sortable column is."
-            );
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The Name column isn't sortable because another sortable column already sorts as Name."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     private static void ConfigureSorting(ResourceBuilder<Product> resource) =>

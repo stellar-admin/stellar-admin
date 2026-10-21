@@ -1,0 +1,35 @@
+@using Microsoft.Extensions.Hosting
+@using StellarAdmin.Diagnostics
+@model IReadOnlyList<ConfigurationProblem>
+@inject IHostEnvironment HostEnvironment
+
+@* Development's page for a resource that a configuration problem made unavailable; other environments return a plain 404 *@
+@{
+    Layout = StellarAdminLayouts.Default;
+    ViewData["Title"] = "Resource not available";
+}
+
+<div class="p-6">
+    <sa-empty>
+        <sa-empty-header>
+            <sa-empty-media variant="EmptyMediaVariant.Icon">
+                <sa-icon name="circle-alert" />
+            </sa-empty-media>
+            <sa-empty-title>This resource isn't available</sa-empty-title>
+            <sa-empty-description>
+                @foreach (var problem in Model.Where(problem => problem.MakesResourceUnavailable))
+                {
+                    <span class="block">@ConfigurationProblemsSheet.FormatMessage(problem.Message)</span>
+                    <span class="block">Fix: @ConfigurationProblemsSheet.FormatMessage(problem.Fix)</span>
+                    @if (problem.Source is { } source)
+                    {
+                        <span class="block">Configured at <code title="@source.FilePath">@source.Describe(HostEnvironment.ContentRootPath)</code></span>
+                    }
+                }
+            </sa-empty-description>
+        </sa-empty-header>
+        <sa-empty-content>
+            <p class="text-muted-foreground text-sm">Only Development shows this page. Other environments return 404.</p>
+        </sa-empty-content>
+    </sa-empty>
+</div>

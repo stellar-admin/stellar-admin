@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -15,11 +16,13 @@ internal static class FormScopeBuilder
         Func<TBuilder, FormContainerOptions> build
     )
     {
+        var source = ConfigurationSource.Capture();
         var configuration = new List<Action<IFormScope>>();
         var builder = createBuilder(configuration.Add);
         configure(scope =>
         {
             var container = build(builder);
+            container.Source = source;
             foreach (var configureContainer in configuration)
             {
                 configureContainer(container);
@@ -41,5 +44,27 @@ internal static class FormScopeBuilder
         configure(scope => scope.Items.Add(fieldBuilder.Build()));
 
         return fieldBuilder;
+    }
+
+    // A section or details block can show without a heading, so a blank title is reported rather than thrown
+    public static void ReportBlankTitle(
+        Action<Action<IFormScope>> configure,
+        string title,
+        string container
+    )
+    {
+        ArgumentNullException.ThrowIfNull(title);
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            var source = ConfigurationSource.Capture();
+            configure(_ =>
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.InvalidValue,
+                    $"This {container} has no heading because its title is blank.",
+                    $"Give the {container} a title.",
+                    source
+                )
+            );
+        }
     }
 }

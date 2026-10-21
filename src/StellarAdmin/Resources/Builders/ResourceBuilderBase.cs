@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Infrastructure.Authorization;
 using StellarAdmin.Resources.Options;
 
@@ -66,13 +67,14 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// </remarks>
     public ResourceCreateBuilder<TResource> AllowCreate()
     {
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.Create = new ResourceCreateOptions<TResource>();
+            options.Create = new ResourceCreateOptions<TResource> { Source = source };
             options.CreateHandler = null;
         });
 
-        return CreateBuilder<TResource>();
+        return CreateBuilder<TResource>(source);
     }
 
     /// <summary>
@@ -111,16 +113,17 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         where THandler : class, IResourceCreateHandler<TModel>
     {
         Services.TryAddScoped<THandler>();
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.Create = new ResourceCreateOptions<TModel>();
+            options.Create = new ResourceCreateOptions<TModel> { Source = source };
             options.CreateHandler = (services, model, cancellationToken) =>
                 services
                     .GetRequiredService<THandler>()
                     .CreateAsync((TModel)model, cancellationToken);
         });
 
-        return CreateBuilder<TModel>();
+        return CreateBuilder<TModel>(source);
     }
 
     /// <summary>
@@ -158,7 +161,10 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// </remarks>
     public ResourceDeleteBuilder<TResource> AllowDelete()
     {
-        Services.Configure<ResourceOptions<TResource>>(options => options.Delete = new());
+        var source = ConfigurationSource.Capture();
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            options.Delete = new() { Source = source }
+        );
 
         return new(Services);
     }
@@ -194,14 +200,15 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// </remarks>
     public ResourceEditBuilder<TResource> AllowEdit()
     {
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.Edit = new ResourceEditOptions<TResource>();
+            options.Edit = new ResourceEditOptions<TResource> { Source = source };
             options.EditLoader = null;
             options.EditHandler = null;
         });
 
-        return EditBuilder<TResource>();
+        return EditBuilder<TResource>(source);
     }
 
     /// <summary>
@@ -241,9 +248,10 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         where THandler : class, IResourceEditHandler<TModel>
     {
         Services.TryAddScoped<THandler>();
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.Edit = new ResourceEditOptions<TModel>();
+            options.Edit = new ResourceEditOptions<TModel> { Source = source };
             options.EditLoader = async (services, id, cancellationToken) =>
                 await services.GetRequiredService<THandler>().FindAsync(id, cancellationToken);
             options.EditHandler = (services, id, model, cancellationToken) =>
@@ -252,7 +260,7 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                     .UpdateAsync(id, (TModel)model, cancellationToken);
         });
 
-        return EditBuilder<TModel>();
+        return EditBuilder<TModel>(source);
     }
 
     /// <summary>
@@ -290,13 +298,14 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// </remarks>
     public ResourceViewBuilder<TResource> AllowView()
     {
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.View = new ResourceViewOptions<TResource>();
+            options.View = new ResourceViewOptions<TResource> { Source = source };
             options.ViewLoader = null;
         });
 
-        return ViewBuilder<TResource>();
+        return ViewBuilder<TResource>(source);
     }
 
     /// <summary>
@@ -334,14 +343,15 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         where THandler : class, IResourceViewHandler<TModel>
     {
         Services.TryAddScoped<THandler>();
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.View = new ResourceViewOptions<TModel>();
+            options.View = new ResourceViewOptions<TModel> { Source = source };
             options.ViewLoader = async (services, id, cancellationToken) =>
                 await services.GetRequiredService<THandler>().FindAsync(id, cancellationToken);
         });
 
-        return ViewBuilder<TModel>();
+        return ViewBuilder<TModel>(source);
     }
 
     /// <summary>
@@ -464,45 +474,63 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         );
     }
 
-    private ResourceCreateBuilder<TModel> CreateBuilder<TModel>() =>
+    private ResourceCreateBuilder<TModel> CreateBuilder<TModel>(ConfigurationSource? source) =>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>
             {
+                // The create model was selected again since this builder was created
                 if (options.Create is not ResourceCreateOptions<TModel> create)
                 {
-                    throw new InvalidOperationException(
-                        "The create builder's model no longer matches the selected create model."
+                    options.Report(
+                        ConfigurationProblemKind.StaleModelBuilder,
+                        $"This create configuration for `{typeof(TModel).Name}` isn't applied because another create model was selected later.",
+                        "Remove this configuration, or configure the create page with the model it uses.",
+                        source
                     );
+
+                    return;
                 }
 
                 configure(create);
             })
         );
 
-    private ResourceEditBuilder<TModel> EditBuilder<TModel>() =>
+    private ResourceEditBuilder<TModel> EditBuilder<TModel>(ConfigurationSource? source) =>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>
             {
+                // The edit model was selected again since this builder was created
                 if (options.Edit is not ResourceEditOptions<TModel> edit)
                 {
-                    throw new InvalidOperationException(
-                        "The edit builder's model no longer matches the selected edit model."
+                    options.Report(
+                        ConfigurationProblemKind.StaleModelBuilder,
+                        $"This edit configuration for `{typeof(TModel).Name}` isn't applied because another edit model was selected later.",
+                        "Remove this configuration, or configure the edit page with the model it uses.",
+                        source
                     );
+
+                    return;
                 }
 
                 configure(edit);
             })
         );
 
-    private ResourceViewBuilder<TModel> ViewBuilder<TModel>() =>
+    private ResourceViewBuilder<TModel> ViewBuilder<TModel>(ConfigurationSource? source) =>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>
             {
+                // The view model was selected again since this builder was created
                 if (options.View is not ResourceViewOptions<TModel> view)
                 {
-                    throw new InvalidOperationException(
-                        "The view builder's model no longer matches the selected view model."
+                    options.Report(
+                        ConfigurationProblemKind.StaleModelBuilder,
+                        $"This view configuration for `{typeof(TModel).Name}` isn't applied because another view model was selected later.",
+                        "Remove this configuration, or configure the view page with the model it uses.",
+                        source
                     );
+
+                    return;
                 }
 
                 configure(view);

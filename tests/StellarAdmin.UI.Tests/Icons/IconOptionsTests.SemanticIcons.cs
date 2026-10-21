@@ -73,17 +73,17 @@ public partial class IconOptionsTests
     }
 
     [Test]
-    public async Task MapSemanticIcon_WhenIconIsUnregistered_ThrowsArgumentException()
+    public async Task MapSemanticIcon_WhenIconIsUnregistered_KeepsExistingMapping()
     {
         // Arrange
         var sut = new IconOptions();
 
         // Act
-        Action act = () => sut.MapSemanticIcon(SemanticIconRole.Close, "unregistered");
+        sut.MapSemanticIcon(SemanticIconRole.Close, "unregistered");
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
         await Assert.That(sut.GetSemanticIconName(SemanticIconRole.Close)).IsEqualTo("x");
+        await Assert.That(sut.Problems.Single()).Contains("`unregistered`, which isn't registered");
     }
 
     [Test]

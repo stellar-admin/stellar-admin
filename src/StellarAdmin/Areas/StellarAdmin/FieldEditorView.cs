@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Razor;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Editors;
 
 namespace StellarAdmin.Areas.StellarAdmin;
@@ -70,8 +71,10 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
         {
             TEditor editor => editor,
             null => new TEditor(),
-            var other => throw new InvalidOperationException(
-                $"{other.GetType().Name} is not supported by a template for {typeof(TEditor).Name}."
+            var other => throw new ConfigurationException(
+                ConfigurationProblemKind.TemplateMismatch,
+                $"its editor is a `{other.GetType().Name}`, but it renders with the template for `{typeof(TEditor).Name}`",
+                $"Render the field with the template for `{other.GetType().Name}`, or give it a `{typeof(TEditor).Name}`."
             ),
         };
     }

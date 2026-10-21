@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -40,6 +42,8 @@ public sealed class ResourceRowDetailPanelOptions
     public string? Title { get; }
 
     internal ResourceRowDetailLoader? Loader { get; }
+
+    internal ConfigurationSource? Source { get; set; }
 
     internal ResourceRowDetailPanelOptions(
         string partialName,

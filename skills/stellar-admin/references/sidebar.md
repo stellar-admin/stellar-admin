@@ -160,7 +160,7 @@ The logo is one of three kinds, so only one can be set:
 
 - `BrandingLogo.Icon("compass")`: an icon from the app's icon set, in an accent-coloured tile beside the title.
 - `BrandingLogo.Image("~/img/logo.svg")`: a square image beside the title.
-- `BrandingLogo.Wordmark("~/img/wordmark.svg")`: an image that replaces the title and subtitle, as tall as the two lines it replaces and up to the sidebar's width. The title becomes its alt text. It's centered by default. A wordmark with a `Subtitle` throws at startup.
+- `BrandingLogo.Wordmark("~/img/wordmark.svg")`: an image that replaces the title and subtitle, as tall as the two lines it replaces and up to the sidebar's width. The title becomes its alt text. It's centered by default. A wordmark with a `Subtitle` doesn't show the subtitle, and a configuration problem is logged.
 
 `Image` and `Wordmark` take a second path for dark mode: `BrandingLogo.Wordmark("~/img/wordmark.svg", "~/img/wordmark-dark.svg")`. Without it, the same image shows in both modes.
 

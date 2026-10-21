@@ -15,22 +15,11 @@ public sealed class FrameEnvironmentIndicator : EnvironmentIndicator
     ///     One of the enumeration values that specifies the size. The default is
     ///     <see cref="EnvironmentIndicatorTabSize.Medium" />.
     /// </value>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     The value isn't one of the enumeration values.
-    /// </exception>
-    public EnvironmentIndicatorTabSize TabSize
-    {
-        get;
-        set
-        {
-            if (!Enum.IsDefined(value))
-            {
-                throw new ArgumentOutOfRangeException(nameof(value));
-            }
-
-            field = value;
-        }
-    } = EnvironmentIndicatorTabSize.Medium;
+    /// <remarks>
+    ///     A value that isn't one of the enumeration values is a configuration problem, and the
+    ///     default is used.
+    /// </remarks>
+    public EnvironmentIndicatorTabSize TabSize { get; set; } = EnvironmentIndicatorTabSize.Medium;
 
     internal FrameEnvironmentIndicator(string label)
         : base(label) { }

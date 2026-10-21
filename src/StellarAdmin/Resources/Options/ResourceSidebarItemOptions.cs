@@ -5,6 +5,8 @@ namespace StellarAdmin.Resources.Options;
 /// </summary>
 public sealed class ResourceSidebarItemOptions
 {
+    internal const string DefaultGroup = "Resources";
+
     /// <summary>
     ///     Gets the label of the sidebar group the item appears in.
     /// </summary>
@@ -16,10 +18,10 @@ public sealed class ResourceSidebarItemOptions
         get;
         internal set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
             field = value;
         }
-    } = "Resources";
+    } = DefaultGroup;
 
     /// <summary>
     ///     Gets the name of the icon shown before the item's label.
@@ -31,15 +33,7 @@ public sealed class ResourceSidebarItemOptions
     public string? Icon
     {
         get;
-        internal set
-        {
-            if (value is not null)
-            {
-                ArgumentException.ThrowIfNullOrWhiteSpace(value);
-            }
-
-            field = value;
-        }
+        internal set { field = value; }
     }
 
     /// <summary>
@@ -52,15 +46,7 @@ public sealed class ResourceSidebarItemOptions
     public string? Label
     {
         get;
-        internal set
-        {
-            if (value is not null)
-            {
-                ArgumentException.ThrowIfNullOrWhiteSpace(value);
-            }
-
-            field = value;
-        }
+        internal set { field = value; }
     }
 
     /// <summary>

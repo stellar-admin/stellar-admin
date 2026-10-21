@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -221,9 +222,6 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property of the resource.
-    /// </exception>
     public TBuilder DefaultSortBy<TProperty>(Expression<Func<TResource, TProperty>> field) =>
         ConfigureDefaultSort(field, ResourceSortDirection.Ascending);
 
@@ -241,9 +239,6 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property of the resource.
     /// </exception>
     public TBuilder DefaultSortByDescending<TProperty>(
         Expression<Func<TResource, TProperty>> field
@@ -383,13 +378,12 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <param name="panels">A delegate that adds the panels.</param>
     /// <returns>A builder that configures the rows.</returns>
     /// <remarks>
-    ///     Two or more panels are shown as tabs.
+    ///     Two or more panels are shown as tabs. No panels, a panel without a name, or two panels with the same name are configuration
+    ///     problems. A panel without a name, and the later panel with a repeated name, are left
+    ///     out, and without panels rows don't expand.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="panels" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     No panels are added, a panel has no name, or two panels have the same name.
     /// </exception>
     public ResourceRowDetailsBuilder<TResource> EnableRowDetails(
         Action<ResourceRowDetailPanelsBuilder<TResource>> panels
@@ -409,13 +403,12 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <param name="configure">A delegate that configures the rows.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     Two or more panels are shown as tabs.
+    ///     Two or more panels are shown as tabs. No panels, a panel without a name, or two panels with the same name are configuration
+    ///     problems. A panel without a name, and the later panel with a repeated name, are left
+    ///     out, and without panels rows don't expand.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="panels" /> or <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     No panels are added, a panel has no name, or two panels have the same name.
     /// </exception>
     public TBuilder EnableRowDetails(
         Action<ResourceRowDetailPanelsBuilder<TResource>> panels,
@@ -466,18 +459,37 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="partialName" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="partialName" /> is empty or whitespace.
-    /// </exception>
+    /// <remarks>
+    ///     An empty or white space partial name is a configuration problem, and rows don't
+    ///     expand.
+    /// </remarks>
     protected ResourceRowDetailsBuilder<TResource> RegisterRowDetails(
         string partialName,
         ResourceRowDetailLoader? loader
     )
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(partialName);
+        ArgumentNullException.ThrowIfNull(partialName);
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.RowDetails = new() { MutablePanels = { new(partialName, loader) } }
-        );
+        {
+            if (string.IsNullOrWhiteSpace(partialName))
+            {
+                options.Index.RowDetails = null;
+                options.Report(
+                    ConfigurationProblemKind.RowDetailsWithoutPanels,
+                    "Rows don't expand because the row details name a blank partial view.",
+                    "Pass the name of a partial view to `EnableRowDetails`.",
+                    source
+                );
+
+                return;
+            }
+
+            options.Index.RowDetails = new()
+            {
+                MutablePanels = { new(partialName, loader) { Source = source } },
+            };
+        });
 
         return new(Services);
     }
@@ -490,40 +502,87 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="panels" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     No panels are added, a panel has no name, or two panels have the same name.
-    /// </exception>
+    /// <remarks>
+    ///     No panels, a panel without a name, or two panels with the same name are configuration
+    ///     problems. A panel without a name, and the later panel with a repeated name, are left
+    ///     out, and without panels rows don't expand.
+    /// </remarks>
     protected ResourceRowDetailsBuilder<TResource> RegisterRowDetails(
         ResourceRowDetailPanelsBuilder<TResource> panels
     )
     {
         ArgumentNullException.ThrowIfNull(panels);
-        if (panels.Panels.Count == 0)
-        {
-            throw new InvalidOperationException("Add at least one row detail panel.");
-        }
 
+        var registered = new List<ResourceRowDetailPanelOptions>();
+        var problems = new List<ConfigurationProblem>();
         var names = new HashSet<string>(StringComparer.Ordinal);
         foreach (var panel in panels.Panels)
         {
-            if (string.IsNullOrEmpty(panel.Name))
+            if (string.IsNullOrWhiteSpace(panel.PartialName))
             {
-                throw new InvalidOperationException(
-                    $"The row detail panel '{panel.Title}' needs a name. Set Name on the panel."
+                problems.Add(
+                    new(
+                        ConfigurationProblemKind.RowDetailPanelWithoutName,
+                        $"The `{panel.Title}` row detail panel isn't shown because it names a blank partial view.",
+                        "Pass the name of a partial view to the panel."
+                    )
+                    {
+                        Source = panel.Source,
+                    }
                 );
             }
-
-            if (!names.Add(panel.Name))
+            else if (string.IsNullOrWhiteSpace(panel.Name))
             {
-                throw new InvalidOperationException(
-                    $"Row detail panel names must be unique, and '{panel.Name}' is used more than once."
+                problems.Add(
+                    new(
+                        ConfigurationProblemKind.RowDetailPanelWithoutName,
+                        $"The `{panel.Title}` row detail panel isn't shown because it has no name.",
+                        "Set `Name` on the panel."
+                    )
+                    {
+                        Source = panel.Source,
+                    }
                 );
+            }
+            else if (!names.Add(panel.Name))
+            {
+                problems.Add(
+                    new(
+                        ConfigurationProblemKind.RepeatedRowDetailPanel,
+                        $"The `{panel.Title}` row detail panel isn't shown because an earlier panel is also named `{panel.Name}`.",
+                        "Give each row detail panel its own `Name`."
+                    )
+                    {
+                        Source = panel.Source,
+                    }
+                );
+            }
+            else
+            {
+                registered.Add(panel);
             }
         }
 
-        var registered = panels.Panels.ToList();
+        if (registered.Count == 0)
+        {
+            problems.Add(
+                new(
+                    ConfigurationProblemKind.RowDetailsWithoutPanels,
+                    "Rows don't expand because the row details have no panels.",
+                    "Add at least one row detail panel."
+                )
+            );
+        }
+
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
+            options.Problems.AddRange(problems);
+            if (registered.Count == 0)
+            {
+                options.Index.RowDetails = null;
+                return;
+            }
+
             options.Index.RowDetails = new();
             foreach (var panel in registered)
             {
@@ -537,17 +596,26 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     private TBuilder ConfigureDefaultSort(LambdaExpression field, ResourceSortDirection direction)
     {
         ArgumentNullException.ThrowIfNull(field);
+        var source = ConfigurationSource.Capture();
         if (ResourcePropertyPath.GetProperties(field) is not { } properties)
         {
-            throw new ArgumentException(
-                "Select a resource property path for the default sort.",
-                nameof(field)
+            Services.Configure<ResourceOptions<TResource>>(options =>
+                options.Report(
+                    ConfigurationProblemKind.InvalidSelector,
+                    $"The list isn't sorted by `{field}` because it isn't a property path of the resource. The default sort is left unchanged.",
+                    "Sort by a property of the resource, or a path of properties.",
+                    source
+                )
             );
+
+            return (TBuilder)this;
         }
 
         Services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.DefaultSort = new(ResourcePropertyPath.GetName(properties), direction)
-        );
+        {
+            options.Index.DefaultSort = new(ResourcePropertyPath.GetName(properties), direction);
+            options.Index.DefaultSortSource = source;
+        });
 
         return (TBuilder)this;
     }

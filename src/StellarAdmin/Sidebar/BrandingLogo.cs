@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+using StellarAdmin.Diagnostics;
 
 namespace StellarAdmin.Sidebar;
 
@@ -13,6 +13,9 @@ public abstract class BrandingLogo
 {
     private protected BrandingLogo() { }
 
+    // Why the logo can't be shown, when a factory method got a blank path or an undefined layout
+    internal ConfigurationValueProblem? Problem { get; init; }
+
     /// <summary>
     ///     Returns a logo that shows an icon in an accent tile beside the title.
     /// </summary>
@@ -21,14 +24,14 @@ public abstract class BrandingLogo
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="name" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="name" /> is empty or white space.
-    /// </exception>
     public static IconBrandingLogo Icon(string name)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(name);
 
-        return new(name);
+        return new(name)
+        {
+            Problem = ConfigurationValues.FindBlank("BrandingLogo.Icon", (nameof(name), name)),
+        };
     }
 
     /// <summary>
@@ -41,14 +44,14 @@ public abstract class BrandingLogo
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="path" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="path" /> is empty or white space.
-    /// </exception>
     public static ImageBrandingLogo Image(string path)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        ArgumentNullException.ThrowIfNull(path);
 
-        return new(path, null);
+        return new(path, null)
+        {
+            Problem = ConfigurationValues.FindBlank("BrandingLogo.Image", (nameof(path), path)),
+        };
     }
 
     /// <summary>
@@ -65,15 +68,19 @@ public abstract class BrandingLogo
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="path" /> or <paramref name="darkPath" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="path" /> or <paramref name="darkPath" /> is empty or white space.
-    /// </exception>
     public static ImageBrandingLogo Image(string path, string darkPath)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        ArgumentException.ThrowIfNullOrWhiteSpace(darkPath);
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(darkPath);
 
-        return new(path, darkPath);
+        return new(path, darkPath)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "BrandingLogo.Image",
+                (nameof(path), path),
+                (nameof(darkPath), darkPath)
+            ),
+        };
     }
 
     /// <summary>
@@ -86,18 +93,18 @@ public abstract class BrandingLogo
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="path" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="path" /> is empty or white space.
-    /// </exception>
     /// <remarks>
     ///     The wordmark is centered. The title becomes the image's alternative text. A wordmark
     ///     can't be combined with a subtitle.
     /// </remarks>
     public static WordmarkBrandingLogo Wordmark(string path)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        ArgumentNullException.ThrowIfNull(path);
 
-        return new(path, null, WordmarkLayout.Center);
+        return new(path, null, WordmarkLayout.Center)
+        {
+            Problem = ConfigurationValues.FindBlank("BrandingLogo.Wordmark", (nameof(path), path)),
+        };
     }
 
     /// <summary>
@@ -111,22 +118,20 @@ public abstract class BrandingLogo
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="path" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="path" /> is empty or white space.
-    /// </exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="layout" /> isn't a defined value.
-    /// </exception>
     /// <remarks>
     ///     The title becomes the image's alternative text. A wordmark can't be combined with a
     ///     subtitle.
     /// </remarks>
     public static WordmarkBrandingLogo Wordmark(string path, WordmarkLayout layout)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        ThrowIfUndefined(layout);
+        ArgumentNullException.ThrowIfNull(path);
 
-        return new(path, null, layout);
+        return new(path, null, layout)
+        {
+            Problem =
+                ConfigurationValues.FindBlank("BrandingLogo.Wordmark", (nameof(path), path))
+                ?? FindUndefined(layout),
+        };
     }
 
     /// <summary>
@@ -143,19 +148,23 @@ public abstract class BrandingLogo
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="path" /> or <paramref name="darkPath" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="path" /> or <paramref name="darkPath" /> is empty or white space.
-    /// </exception>
     /// <remarks>
     ///     The wordmark is centered. The title becomes the image's alternative text. A wordmark
     ///     can't be combined with a subtitle.
     /// </remarks>
     public static WordmarkBrandingLogo Wordmark(string path, string darkPath)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        ArgumentException.ThrowIfNullOrWhiteSpace(darkPath);
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(darkPath);
 
-        return new(path, darkPath, WordmarkLayout.Center);
+        return new(path, darkPath, WordmarkLayout.Center)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "BrandingLogo.Wordmark",
+                (nameof(path), path),
+                (nameof(darkPath), darkPath)
+            ),
+        };
     }
 
     /// <summary>
@@ -173,33 +182,31 @@ public abstract class BrandingLogo
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="path" /> or <paramref name="darkPath" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="path" /> or <paramref name="darkPath" /> is empty or white space.
-    /// </exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="layout" /> isn't a defined value.
-    /// </exception>
     /// <remarks>
     ///     The title becomes the image's alternative text. A wordmark can't be combined with a
     ///     subtitle.
     /// </remarks>
     public static WordmarkBrandingLogo Wordmark(string path, string darkPath, WordmarkLayout layout)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        ArgumentException.ThrowIfNullOrWhiteSpace(darkPath);
-        ThrowIfUndefined(layout);
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(darkPath);
 
-        return new(path, darkPath, layout);
-    }
-
-    private static void ThrowIfUndefined(
-        WordmarkLayout layout,
-        [CallerArgumentExpression(nameof(layout))] string? paramName = null
-    )
-    {
-        if (!Enum.IsDefined(layout))
+        return new(path, darkPath, layout)
         {
-            throw new ArgumentOutOfRangeException(paramName, layout, null);
-        }
+            Problem =
+                ConfigurationValues.FindBlank(
+                    "BrandingLogo.Wordmark",
+                    (nameof(path), path),
+                    (nameof(darkPath), darkPath)
+                ) ?? FindUndefined(layout),
+        };
     }
+
+    private static ConfigurationValueProblem? FindUndefined(WordmarkLayout layout) =>
+        Enum.IsDefined(layout)
+            ? null
+            : new(
+                $"its layout `{(int)layout}` isn't a `WordmarkLayout` value",
+                "Pass a `WordmarkLayout` value to `BrandingLogo.Wordmark`."
+            );
 }

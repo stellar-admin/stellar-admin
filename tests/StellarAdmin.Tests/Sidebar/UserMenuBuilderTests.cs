@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Sidebar;
 
 namespace StellarAdmin.Tests.Sidebar;
@@ -21,33 +22,48 @@ public class UserMenuBuilderTests
     [Test]
     [Arguments("")]
     [Arguments(" ")]
-    public async Task AddAuthenticationScheme_WithBlankScheme_ThrowsArgumentException(string scheme)
+    public async Task AddAuthenticationScheme_WithBlankScheme_LeavesOutScheme(string scheme)
     {
         // Arrange
         var sut = new ServiceCollection().AddStellarAdmin();
 
         // Act
-        Action act = () =>
-            sut.ConfigureUserMenu(menu =>
-                menu.Logout(logout => logout.AddAuthenticationScheme(scheme))
-            );
+        sut.ConfigureUserMenu(menu =>
+            menu.Logout(logout => logout.AddAuthenticationScheme(scheme))
+        );
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(sut.Options.UserMenu.Logout.AuthenticationSchemes).IsEmpty();
+    }
+
+    [Test]
+    public async Task Add_WithBlankItemText_LeavesOutItem()
+    {
+        // Arrange
+        var sut = new ServiceCollection().AddStellarAdmin();
+
+        // Act
+        sut.ConfigureUserMenu(menu => menu.Add(UserMenuItem.Url(" ", "/profile")));
+
+        // Assert
+        await Assert.That(sut.Options.UserMenu.Items).IsEmpty();
+        await Assert
+            .That(sut.Options.Problems.Single().Kind)
+            .IsEqualTo(ConfigurationProblemKind.InvalidLink);
     }
 
     [Test]
     [Arguments("")]
     [Arguments(" ")]
-    public async Task LogoutPath_WithBlankPath_ThrowsArgumentException(string path)
+    public async Task LogoutPath_WithBlankPath_UsesDefaultPath(string path)
     {
         // Arrange
         var sut = new ServiceCollection().AddStellarAdmin();
 
         // Act
-        Action act = () => sut.ConfigureUserMenu(menu => menu.Logout(logout => logout.Path = path));
+        sut.ConfigureUserMenu(menu => menu.Logout(logout => logout.Path = path));
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(sut.Options.UserMenu.Logout.Path).IsNull();
     }
 }

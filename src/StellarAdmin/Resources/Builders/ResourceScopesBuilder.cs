@@ -21,18 +21,17 @@ public sealed class ResourceScopesBuilder<TResource> : ResourceScopesBuilderBase
     /// <param name="title">The label of the scope's tab.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     Each scope needs a unique identifier, ignoring case.
+    ///     Each scope needs a unique identifier, ignoring case. An empty or white space identifier
+    ///     or title, or a repeated identifier, is a configuration problem, and the scope is left
+    ///     out.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="id" /> or <paramref name="title" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="id" /> or <paramref name="title" /> is empty or whitespace.
-    /// </exception>
     public ResourceScopesBuilder<TResource> Add(string id, string title)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(id);
-        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        ArgumentNullException.ThrowIfNull(id);
+        ArgumentNullException.ThrowIfNull(title);
 
         AddScope(new ResourceScopeOptions { Id = id, Title = title });
 

@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
@@ -167,7 +168,7 @@ public class ResourceRowDetailsTests
     }
 
     [Test]
-    public async Task HandlerDetailsWithoutKey_IndexFailsWithKeyMessage()
+    public async Task HandlerDetailsWithoutKey_LogsProblem()
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
@@ -183,10 +184,15 @@ public class ResourceRowDetailsTests
         using var response = await client.GetAsync("/stellaradmin/products");
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains("require a resource key");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains("which needs a resource key")
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

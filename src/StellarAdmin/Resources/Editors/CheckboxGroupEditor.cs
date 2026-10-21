@@ -30,15 +30,12 @@ public sealed class CheckboxGroupEditor : ChoiceEditor
     /// <inheritdoc />
     public override string TemplateName => "Editors/CheckboxGroup";
 
-    internal FormGridColumnDefinitions? ColumnDefinitions { get; private set; }
+    internal FormGridColumnDefinitions? ColumnDefinitions { get; set; }
 
     /// <summary>
     ///     Arranges the choices in columns, starting at the medium breakpoint.
     /// </summary>
     /// <param name="count">The number of columns, from 1 to 12.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="count" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1. A narrower field uses one column. Breakpoints are measured against the
     ///     field's width.

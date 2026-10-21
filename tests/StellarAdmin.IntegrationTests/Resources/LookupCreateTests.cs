@@ -70,7 +70,7 @@ public class LookupCreateTests
     }
 
     [Test]
-    public async Task EnableCreate_UntypedItems_Throws()
+    public async Task EnableCreate_UntypedItems_LogsProblem()
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
@@ -88,14 +88,19 @@ public class LookupCreateTests
         using var response = await client.GetAsync("/stellaradmin/products/create");
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains("Use EnableCreate<TResource>() to select the resource.");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains("its items have no type to find a resource for")
+                )
+            )
+            .IsTrue();
     }
 
     [Test]
-    public async Task EnableCreate_NoResourceForItems_Throws()
+    public async Task EnableCreate_NoResourceForItems_LogsProblem()
     {
         // Arrange
         await using var sut = await CreateHost(
@@ -109,14 +114,19 @@ public class LookupCreateTests
         using var response = await client.GetAsync("/stellaradmin/products/create");
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains("no resource is registered for Category.");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains("no resource is registered for Category.")
+                )
+            )
+            .IsTrue();
     }
 
     [Test]
-    public async Task EnableCreate_ResourceWithoutCreateForm_Throws()
+    public async Task EnableCreate_ResourceWithoutCreateForm_LogsProblem()
     {
         // Arrange
         await using var sut = await CreateHost(
@@ -134,10 +144,15 @@ public class LookupCreateTests
         using var response = await client.GetAsync("/stellaradmin/products/create");
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains("the categories resource has no create form.");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains("the categories resource has no create form.")
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

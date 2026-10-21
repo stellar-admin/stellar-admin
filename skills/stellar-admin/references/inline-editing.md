@@ -64,7 +64,7 @@ admin.AddEfCoreResource<AppDbContext, Destination>(resource =>
 
 The operation's fields define what the row edits, and every field must match a column. A field matches the column with the same property path. A column showing a different path than the field it edits names the field with `EditsField`, as the Country column above shows `Country.Name` and edits `CountryId`. `EditsField("CountryId")` takes the name instead, for a field of a separate edit or create model (`AllowEdit<TModel, THandler>`).
 
-Startup fails (a 500 on the first panel request) when:
+The resource loses that create or edit, inline row included, and a configuration problem is logged ([configuration problems](configuration-problems.md)) when:
 
 - an inline field matches no column;
 - a `[Required]` property of the create model has no field;

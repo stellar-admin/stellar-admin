@@ -8,13 +8,16 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using StellarAdmin.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
@@ -718,6 +721,40 @@ internal sealed class ResourceController<TResource>(
             "_MultiLookupItems",
             new MultiLookupItemsViewModel(editor, selected, GetFieldLabel(options))
         );
+    }
+
+    // A resource that a configuration problem made unavailable has no pages. Development says why, with a 404 status.
+    [NonAction]
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        if (!_resourceOptions.IsUnavailable)
+        {
+            return;
+        }
+
+        context.Result = HttpContext
+            .RequestServices.GetRequiredService<IHostEnvironment>()
+            .IsDevelopment()
+            ? new ViewResult
+            {
+                ViewName = "/Areas/StellarAdmin/Views/Shared/ResourceUnavailable.cshtml",
+                ViewData = new(ViewData)
+                {
+                    Model = HttpContext
+                        .RequestServices.GetRequiredService<ConfigurationProblems>()
+                        .GetProblems()
+                        .Where(problem =>
+                            string.Equals(
+                                problem.ResourceSlug,
+                                RouteData.Values["controller"] as string,
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                        )
+                        .ToArray(),
+                },
+                StatusCode = StatusCodes.Status404NotFound,
+            }
+            : NotFound();
     }
 
     [HttpGet]
@@ -1476,7 +1513,8 @@ internal sealed class ResourceController<TResource>(
             nameof(MultiLookupSheetEditor),
             options.FieldName,
             items,
-            multi.CreateResourceType
+            multi.CreateResourceType,
+            multi.CreateSource
         );
 
         return controller is null

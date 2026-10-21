@@ -23,11 +23,10 @@ public sealed class EfCoreResourceScopesBuilder<TEntity> : ResourceScopesBuilder
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="id" /> or <paramref name="title" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="id" /> or <paramref name="title" /> is empty or whitespace.
-    /// </exception>
     /// <remarks>
-    ///     Each scope needs a unique identifier, ignoring case.
+    ///     Each scope needs a unique identifier, ignoring case. An empty or white space identifier
+    ///     or title, or a repeated identifier, is a configuration problem, and the scope is left
+    ///     out.
     /// </remarks>
     public EfCoreResourceScopesBuilder<TEntity> Add(string id, string title) =>
         AddScope(id, title, null);
@@ -43,11 +42,10 @@ public sealed class EfCoreResourceScopesBuilder<TEntity> : ResourceScopesBuilder
     ///     <paramref name="id" />, <paramref name="title" /> or <paramref name="predicate" /> is
     ///     <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="id" /> or <paramref name="title" /> is empty or whitespace.
-    /// </exception>
     /// <remarks>
-    ///     Each scope needs a unique identifier, ignoring case.
+    ///     Each scope needs a unique identifier, ignoring case. An empty or white space identifier
+    ///     or title, or a repeated identifier, is a configuration problem, and the scope is left
+    ///     out.
     /// </remarks>
     public EfCoreResourceScopesBuilder<TEntity> Add(
         string id,
@@ -66,8 +64,8 @@ public sealed class EfCoreResourceScopesBuilder<TEntity> : ResourceScopesBuilder
         Expression<Func<TEntity, bool>>? predicate
     )
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(id);
-        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        ArgumentNullException.ThrowIfNull(id);
+        ArgumentNullException.ThrowIfNull(title);
 
         AddScope(
             new EfCoreResourceScopeOptions<TEntity>

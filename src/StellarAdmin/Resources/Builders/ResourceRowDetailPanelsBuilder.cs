@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -106,21 +107,23 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
-    /// </exception>
+    /// <remarks>
+    ///     An empty or white space title or partial name is a configuration problem, and the panel
+    ///     is left out.
+    /// </remarks>
     protected ResourceRowDetailPanelBuilder AddPanel(
         string title,
         string partialName,
         ResourceRowDetailLoader? loader
     )
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(title);
-        ArgumentException.ThrowIfNullOrWhiteSpace(partialName);
+        ArgumentNullException.ThrowIfNull(title);
+        ArgumentNullException.ThrowIfNull(partialName);
 
         var panel = new ResourceRowDetailPanelOptions(partialName, loader, title)
         {
             Name = CreateName(title),
+            Source = ConfigurationSource.Capture(),
         };
         _panels.Add(panel);
 

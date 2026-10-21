@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -23,10 +24,15 @@ public abstract class ResourceScopesBuilderBase<TResource>
     /// </remarks>
     public string? DefaultScope
     {
-        set =>
+        set
+        {
+            var source = ConfigurationSource.Capture();
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Index.Scopes!.DefaultScope = value
-            );
+            {
+                options.Index.Scopes!.DefaultScope = value;
+                options.Index.Scopes.DefaultScopeSource = source;
+            });
+        }
     }
 
     /// <summary>
@@ -52,15 +58,13 @@ public abstract class ResourceScopesBuilderBase<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="scope" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The identifier or title of <paramref name="scope" /> is empty or whitespace.
-    /// </exception>
     protected void AddScope(ResourceScopeOptions scope)
     {
         ArgumentNullException.ThrowIfNull(scope);
-        ArgumentException.ThrowIfNullOrWhiteSpace(scope.Id, nameof(scope));
-        ArgumentException.ThrowIfNullOrWhiteSpace(scope.Title, nameof(scope));
+        ArgumentNullException.ThrowIfNull(scope.Id, nameof(scope));
+        ArgumentNullException.ThrowIfNull(scope.Title, nameof(scope));
 
+        scope.Source = ConfigurationSource.Capture();
         _services.Configure<ResourceOptions<TResource>>(options =>
             options.Index.Scopes!.MutableItems.Add(scope)
         );

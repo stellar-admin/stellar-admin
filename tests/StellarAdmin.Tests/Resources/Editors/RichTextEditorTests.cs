@@ -7,16 +7,16 @@ public class RichTextEditorTests
     [Test]
     [Arguments(0)]
     [Arguments(-1)]
-    public async Task Rows_WhenLessThanOne_ThrowsArgumentOutOfRangeException(int rows)
+    public async Task Rows_WhenLessThanOne_KeepsValue(int rows)
     {
         // Arrange
         var sut = new RichTextEditor();
 
         // Act
-        var act = () => sut.Rows = rows;
+        sut.Rows = rows;
 
         // Assert
-        await Assert.That(act).Throws<ArgumentOutOfRangeException>();
+        await Assert.That(sut.Rows).IsNull();
     }
 
     [Test]

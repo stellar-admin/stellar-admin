@@ -17,9 +17,6 @@ public sealed class SidebarLinkBuilder
     ///     The group label, or <see langword="null" /> to place the link outside any group. The
     ///     default is <see langword="null" />.
     /// </value>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or white space.
-    /// </exception>
     /// <remarks>
     ///     Links and resources with the same group label share a group.
     /// </remarks>
@@ -35,9 +32,6 @@ public sealed class SidebarLinkBuilder
     ///     The name of the icon, or <see langword="null" /> for none. The default is
     ///     <see langword="null" />.
     /// </value>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or white space.
-    /// </exception>
     public string? Icon
     {
         set => _options.Icon = value;

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
@@ -8,10 +9,10 @@ using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Tests.Resources.Options;
 
-public class ValueTextOptionsValidatorTests
+public class ValueTextCheckTests
 {
     [Test]
-    public async Task Validate_WhenColumnShowsCollectionWithoutText_RejectsConfiguration()
+    public async Task Run_WhenColumnShowsCollectionWithoutText_LeavesItOut()
     {
         // Arrange
         using var provider = CreateProvider(resource =>
@@ -21,19 +22,21 @@ public class ValueTextOptionsValidatorTests
         );
 
         // Act
-        Action act = () => _ = GetOptions(provider);
+        var options = GetOptions(provider);
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        var problem = options.Problems.First(candidate =>
+            candidate.Kind == ConfigurationProblemKind.ValueWithoutText
+        );
         await Assert
-            .That(exception!.Message)
+            .That(problem.Message)
             .Contains(
-                "The index column 'Destinations' shows a collection of Destination, which has no text of its own."
+                "The `Destinations` column isn't shown because its value is a collection of `Destination`, which has no text of its own."
             );
     }
 
     [Test]
-    public async Task Validate_WhenColumnShowsReferenceWithoutText_RejectsConfiguration()
+    public async Task Run_WhenColumnShowsReferenceWithoutText_LeavesItOut()
     {
         // Arrange
         using var provider = CreateProvider(resource =>
@@ -41,19 +44,22 @@ public class ValueTextOptionsValidatorTests
         );
 
         // Act
-        Action act = () => _ = GetOptions(provider);
+        var options = GetOptions(provider);
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        var problem = options.Problems.First(candidate =>
+            candidate.Kind == ConfigurationProblemKind.ValueWithoutText
+        );
         await Assert
-            .That(exception!.Message)
+            .That(problem.Message)
             .Contains(
-                "The index column 'Country' shows a Country, which has no text of its own. Show one of its properties instead"
+                "The `Country` column isn't shown because its value is a `Country`, which has no text of its own."
             );
+        await Assert.That(problem.Fix).Contains("Show one of the `Country`'s properties instead");
     }
 
     [Test]
-    public async Task Validate_WhenColumnUsesBuiltInDisplayWithoutText_RejectsConfiguration()
+    public async Task Run_WhenColumnUsesBuiltInDisplayWithoutText_LeavesItOut()
     {
         // Arrange
         using var provider = CreateProvider(resource =>
@@ -68,19 +74,19 @@ public class ValueTextOptionsValidatorTests
         );
 
         // Act
-        Action act = () => _ = GetOptions(provider);
+        var options = GetOptions(provider);
 
         // Assert
-        await Assert.That(act).Throws<OptionsValidationException>();
+        var problem = options.Problems.First(candidate =>
+            candidate.Kind == ConfigurationProblemKind.ValueWithoutText
+        );
     }
 
     [Test]
     [Arguments("view")]
     [Arguments("create")]
     [Arguments("edit")]
-    public async Task Validate_WhenDisplayFieldShowsCollectionWithoutText_RejectsConfiguration(
-        string page
-    )
+    public async Task Run_WhenDisplayFieldShowsCollectionWithoutText_LeavesItOut(string page)
     {
         // Arrange
         using var provider = CreateProvider(resource =>
@@ -114,17 +120,19 @@ public class ValueTextOptionsValidatorTests
         });
 
         // Act
-        Action act = () => _ = GetOptions(provider);
+        var options = GetOptions(provider);
 
         // Assert
-        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        var problem = options.Problems.First(candidate =>
+            candidate.Kind == ConfigurationProblemKind.ValueWithoutText
+        );
         await Assert
-            .That(exception!.Message)
-            .Contains("field 'Destinations' shows a collection of Destination");
+            .That(problem.Message)
+            .Contains("its value is a collection of `Destination`");
     }
 
     [Test]
-    public async Task Validate_WhenValuesHaveTextOrADisplayThatShowsThem_AcceptsConfiguration()
+    public async Task Run_WhenValuesHaveTextOrADisplayThatShowsThem_KeepsIt()
     {
         // Arrange
         using var provider = CreateProvider(resource =>

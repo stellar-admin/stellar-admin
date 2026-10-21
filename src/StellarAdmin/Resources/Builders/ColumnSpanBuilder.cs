@@ -22,15 +22,12 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     /// <param name="span">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1.
     /// </remarks>
     public ColumnSpanBuilder Base(int span)
     {
-        Span = Span with { Base = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
+        Span = Span with { Base = span };
 
         return this;
     }
@@ -51,12 +48,9 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     /// <param name="span">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     public ColumnSpanBuilder Large(int span)
     {
-        Span = Span with { Large = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
+        Span = Span with { Large = span };
 
         return this;
     }
@@ -77,12 +71,9 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     /// <param name="span">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     public ColumnSpanBuilder Medium(int span)
     {
-        Span = Span with { Medium = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
+        Span = Span with { Medium = span };
 
         return this;
     }
@@ -103,12 +94,9 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     /// <param name="span">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     public ColumnSpanBuilder Small(int span)
     {
-        Span = Span with { Small = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
+        Span = Span with { Small = span };
 
         return this;
     }
@@ -134,6 +122,5 @@ public sealed class ColumnSpanBuilder
         return builder.Span;
     }
 
-    internal static FormColumnSpanDefinitions FromSpan(int span) =>
-        new(Base: ResponsiveGrid.ValidateColumns(span, nameof(span)));
+    internal static FormColumnSpanDefinitions FromSpan(int span) => new(Base: span);
 }

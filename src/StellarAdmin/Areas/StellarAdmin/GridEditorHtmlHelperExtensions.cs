@@ -37,6 +37,10 @@ public static class GridEditorHtmlHelperExtensions
         ArgumentNullException.ThrowIfNull(field);
         ArgumentNullException.ThrowIfNull(model);
 
-        return GridEditorRenderer.RenderAsync(html, field, model);
+        return FieldEditorRenderer.GuardAsync(
+            html,
+            field,
+            () => GridEditorRenderer.RenderAsync(html, field, model)
+        );
     }
 }

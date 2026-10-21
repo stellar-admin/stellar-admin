@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using StellarAdmin.Areas.StellarAdmin.Controllers;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Home;
 using StellarAdmin.Infrastructure.Icons;
 using StellarAdmin.Infrastructure.Routing;
@@ -37,6 +39,8 @@ public static class StellarAdminServiceCollectionExtensions
                     typeof(LowercaseParameterTransformer)
             );
             services.AddStellarAdminUI();
+            services.TryAddSingleton<ConfigurationProblems>();
+            services.AddHostedService<ConfigurationProblemsLogger>();
             services.TryAddSingleton<BrandingResolver>();
             services.TryAddSingleton<UserMenuResolver>();
             services.TryAddSingleton<LinkChecker>();

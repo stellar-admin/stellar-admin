@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
 
@@ -11,6 +12,7 @@ namespace StellarAdmin.Resources.Builders;
 public sealed class ResourceDetailsBuilder<TResource>
 {
     private readonly List<ResourceDisplayFieldBuilder> _fields = [];
+    private readonly ConfigurationSource? _source = ConfigurationSource.Capture();
     private readonly string _title;
     private FormGridColumnDefinitions _columns;
     private FormColumnSpanDefinitions _columnSpan;
@@ -76,9 +78,6 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> selects a property path without public getters.
-    /// </exception>
     public ResourceDisplayFieldBuilder Add<TProperty>(Expression<Func<TResource, TProperty>> field)
     {
         var fieldBuilder = ResourceDisplayFieldBuilder.Create(field, nameof(field));
@@ -100,9 +99,6 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> selects a property path without public getters.
-    /// </exception>
     public ResourceDetailsBuilder<TResource> Add<TProperty>(
         Expression<Func<TResource, TProperty>> field,
         Action<ResourceDisplayFieldBuilder> configure
@@ -120,9 +116,6 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// </summary>
     /// <param name="span">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1.
     /// </remarks>
@@ -164,9 +157,6 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// </summary>
     /// <param name="start">The column number, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     By default, the section follows the item before it. The start is ignored where the
     ///     parent has one column or the section would extend past the last column.
@@ -198,9 +188,6 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// </summary>
     /// <param name="count">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="count" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1. A narrower section uses one column.
     /// </remarks>
@@ -241,6 +228,7 @@ public sealed class ResourceDetailsBuilder<TResource>
             Description = _description,
             Layout = _layout,
             Orientation = _orientation,
+            Source = _source,
             Variant = _variant,
         };
         options.MutableFields.AddRange(_fields.Select(field => field.Build()));

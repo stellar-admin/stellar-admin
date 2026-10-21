@@ -1,3 +1,4 @@
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Home;
 using StellarAdmin.Sidebar;
 
@@ -15,9 +16,14 @@ internal sealed class StellarAdminOptions
 
     internal BrandingOptions Branding { get; } = new();
 
+    internal DiagnosticsOptions Diagnostics { get; } = new();
+
     internal EnvironmentIndicator? EnvironmentIndicator { get; set; }
 
     internal HomePageOptions HomePage { get; } = new();
+
+    // Problems found while the app configures the panel, outside any resource's options
+    internal List<ConfigurationProblem> Problems { get; } = [];
 
     internal List<SidebarLinkOptions> SidebarLinks { get; } = [];
 

@@ -30,9 +30,6 @@ public sealed class LogoutBuilder
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or white space.
-    /// </exception>
     /// <remarks>
     ///     The item posts a form with an antiforgery token. The endpoint decides where to go
     ///     afterwards, so the authentication schemes and <see cref="RedirectPath" /> don't apply.
@@ -41,7 +38,7 @@ public sealed class LogoutBuilder
     {
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             _options.Path = value;
         }
@@ -56,9 +53,6 @@ public sealed class LogoutBuilder
     /// <exception cref="ArgumentNullException">
     ///     The value is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     The value is empty or white space.
-    /// </exception>
     /// <remarks>
     ///     A remote scheme such as OpenID Connect returns here from the identity provider.
     /// </remarks>
@@ -66,7 +60,7 @@ public sealed class LogoutBuilder
     {
         set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             _options.RedirectPath = value;
         }
@@ -97,9 +91,6 @@ public sealed class LogoutBuilder
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="scheme" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="scheme" /> is empty or white space.
-    /// </exception>
     /// <remarks>
     ///     The endpoint signs out of the schemes in the order they are added. Without schemes, it
     ///     signs out of the default authenticate scheme. Add local schemes such as cookies first,
@@ -108,7 +99,7 @@ public sealed class LogoutBuilder
     /// </remarks>
     public LogoutBuilder AddAuthenticationScheme(string scheme)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(scheme);
+        ArgumentNullException.ThrowIfNull(scheme);
 
         _options.AuthenticationSchemes.Add(scheme);
 

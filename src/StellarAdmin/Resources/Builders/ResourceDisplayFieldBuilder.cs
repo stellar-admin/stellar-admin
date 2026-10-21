@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
@@ -15,6 +16,7 @@ public sealed class ResourceDisplayFieldBuilder
     private readonly LambdaExpression _field;
     private readonly string? _fieldName;
     private readonly PropertyInfo[] _propertyPath;
+    private readonly ConfigurationSource? _source = ConfigurationSource.Capture();
 
     /// <summary>
     ///     Sets the text shown when the value is empty.
@@ -75,9 +77,6 @@ public sealed class ResourceDisplayFieldBuilder
     /// </summary>
     /// <param name="span">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1.
     /// </remarks>
@@ -121,9 +120,6 @@ public sealed class ResourceDisplayFieldBuilder
     /// </summary>
     /// <param name="start">The column number, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     By default, the field follows the item before it. The start is ignored where the grid
     ///     has one column or the field would extend past the last column.
@@ -180,9 +176,14 @@ public sealed class ResourceDisplayFieldBuilder
                 && !typeof(IFieldDisplayHandler<TDisplay>).IsAssignableFrom(handlerType)
             )
             {
-                throw new InvalidOperationException(
-                    $"{handlerType.Name} must implement IFieldDisplayHandler<{typeof(TDisplay).Name}>."
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.MismatchedHandler,
+                    $"The `{options.FieldName ?? options.Title}` field doesn't use `{typeof(TDisplay).Name}` because its handler `{handlerType.Name}` doesn't implement `IFieldDisplayHandler<{typeof(TDisplay).Name}>`. It keeps its default display.",
+                    $"Implement `IFieldDisplayHandler<{typeof(TDisplay).Name}>` on `{handlerType.Name}`.",
+                    options.Source
                 );
+
+                return;
             }
 
             options.Display = display;
@@ -233,9 +234,20 @@ public sealed class ResourceDisplayFieldBuilder
             return new(field, null, []);
         }
 
+        // Without public getters the value can't be read by property, so the field computes it from the expression
         if (properties.Any(property => property.GetMethod?.IsPublic != true))
         {
-            throw new ArgumentException("Select a property path with public getters.", paramName);
+            var computed = new ResourceDisplayFieldBuilder(field, null, []);
+            computed._configuration.Add(options =>
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.InvalidSelector,
+                    $"This field computes its value from `{field}` because the property it selects has no public getter, so it needs a `Title`.",
+                    "Select a property with a public getter, or give the field a `Title`.",
+                    options.Source
+                )
+            );
+
+            return computed;
         }
 
         return new(field, ResourcePropertyPath.GetName(properties), properties);
@@ -243,7 +255,10 @@ public sealed class ResourceDisplayFieldBuilder
 
     internal FormDisplayFieldOptions Build()
     {
-        var options = new FormDisplayFieldOptions(_field, _fieldName, _propertyPath);
+        var options = new FormDisplayFieldOptions(_field, _fieldName, _propertyPath)
+        {
+            Source = _source,
+        };
         foreach (var configure in _configuration)
         {
             configure(options);

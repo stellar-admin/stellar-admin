@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
@@ -15,6 +16,7 @@ public sealed class ResourceFieldBuilder
     private readonly LambdaExpression _field;
     private readonly string _fieldName;
     private readonly PropertyInfo[] _propertyPath;
+    private readonly ConfigurationSource? _source = ConfigurationSource.Capture();
 
     /// <summary>
     ///     Sets the help text shown with the field.
@@ -54,9 +56,6 @@ public sealed class ResourceFieldBuilder
     /// </summary>
     /// <param name="span">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="span" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1.
     /// </remarks>
@@ -100,9 +99,6 @@ public sealed class ResourceFieldBuilder
     /// </summary>
     /// <param name="start">The column number, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="start" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     By default, the field follows the item before it. The start is ignored where the grid
     ///     has one column or the field would extend past the last column.
@@ -155,9 +151,14 @@ public sealed class ResourceFieldBuilder
                 && !typeof(IFieldEditorHandler<TEditor>).IsAssignableFrom(handlerType)
             )
             {
-                throw new InvalidOperationException(
-                    $"{handlerType.Name} must implement IFieldEditorHandler<{typeof(TEditor).Name}>."
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.MismatchedHandler,
+                    $"The `{options.FieldName}` field doesn't use `{typeof(TEditor).Name}` because its handler `{handlerType.Name}` doesn't implement `IFieldEditorHandler<{typeof(TEditor).Name}>`. It keeps its default editor.",
+                    $"Implement `IFieldEditorHandler<{typeof(TEditor).Name}>` on `{handlerType.Name}`.",
+                    options.Source
                 );
+
+                return;
             }
 
             options.Editor = editor;
@@ -177,7 +178,7 @@ public sealed class ResourceFieldBuilder
 
     internal FormFieldOptions Build()
     {
-        var options = new FormFieldOptions(_field, _fieldName, _propertyPath);
+        var options = new FormFieldOptions(_field, _fieldName, _propertyPath) { Source = _source };
         foreach (var configure in _configuration)
         {
             configure(options);

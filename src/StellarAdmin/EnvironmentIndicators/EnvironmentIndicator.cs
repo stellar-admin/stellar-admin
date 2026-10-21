@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin;
 
 /// <summary>
@@ -34,6 +36,9 @@ public abstract class EnvironmentIndicator
     /// </summary>
     public string Label { get; }
 
+    // Why the indicator can't be shown, when a factory method got a blank label
+    internal ConfigurationValueProblem? Problem { get; init; }
+
     private protected EnvironmentIndicator(string label) => Label = label;
 
     /// <summary>
@@ -44,14 +49,17 @@ public abstract class EnvironmentIndicator
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="label" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="label" /> is empty or white space.
-    /// </exception>
     public static BannerEnvironmentIndicator Banner(string label)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(label);
+        ArgumentNullException.ThrowIfNull(label);
 
-        return new(label);
+        return new(label)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "EnvironmentIndicator.Banner",
+                (nameof(label), label)
+            ),
+        };
     }
 
     /// <summary>
@@ -63,9 +71,6 @@ public abstract class EnvironmentIndicator
     /// <returns>An indicator that shows a banner.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="label" /> or <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="label" /> is empty or white space.
     /// </exception>
     public static BannerEnvironmentIndicator Banner(
         string label,
@@ -89,14 +94,17 @@ public abstract class EnvironmentIndicator
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="label" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="label" /> is empty or white space.
-    /// </exception>
     public static FrameEnvironmentIndicator Frame(string label)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(label);
+        ArgumentNullException.ThrowIfNull(label);
 
-        return new(label);
+        return new(label)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "EnvironmentIndicator.Frame",
+                (nameof(label), label)
+            ),
+        };
     }
 
     /// <summary>
@@ -108,9 +116,6 @@ public abstract class EnvironmentIndicator
     /// <returns>An indicator that shows a frame.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="label" /> or <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="label" /> is empty or white space.
     /// </exception>
     public static FrameEnvironmentIndicator Frame(
         string label,
@@ -134,14 +139,17 @@ public abstract class EnvironmentIndicator
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="label" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="label" /> is empty or white space.
-    /// </exception>
     public static StripeEnvironmentIndicator Stripe(string label)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(label);
+        ArgumentNullException.ThrowIfNull(label);
 
-        return new(label);
+        return new(label)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "EnvironmentIndicator.Stripe",
+                (nameof(label), label)
+            ),
+        };
     }
 
     /// <summary>
@@ -153,9 +161,6 @@ public abstract class EnvironmentIndicator
     /// <returns>An indicator that shows a stripe.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="label" /> or <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="label" /> is empty or white space.
     /// </exception>
     public static StripeEnvironmentIndicator Stripe(
         string label,

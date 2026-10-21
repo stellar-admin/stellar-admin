@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -22,25 +23,31 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property path with public getters.
-    /// </exception>
     /// <remarks>
     ///     The last property needs a public setter unless a <see cref="FieldBinder" /> binds the
-    ///     field, such as the one EF resources use for many-to-many navigations. Otherwise, the app
-    ///     fails to start.
+    ///     field, such as the one EF resources use for many-to-many navigations. A field without
+    ///     either, or an expression that doesn't select a property path with public getters, is a
+    ///     configuration problem, and the field is left out.
     /// </remarks>
     public ResourceFieldBuilder Add<TProperty>(Expression<Func<TResource, TProperty>> field)
     {
         ArgumentNullException.ThrowIfNull(field);
 
+        // A field that can't be read by property can't be bound either, so it is left out
         var properties = ResourcePropertyPath.GetProperties(field);
         if (properties is null || properties.Any(property => property.GetMethod?.IsPublic != true))
         {
-            throw new ArgumentException(
-                "Select a property path with public getters.",
-                nameof(field)
+            var source = ConfigurationSource.Capture();
+            _configure(_ =>
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.InvalidSelector,
+                    $"This field isn't on the form because `{field}` doesn't select a property path with public getters.",
+                    "Select a property of the model, or a path of properties, with public getters.",
+                    source
+                )
             );
+
+            return new(field, field.ToString(), []);
         }
 
         var fieldBuilder = new ResourceFieldBuilder(
@@ -63,9 +70,6 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> doesn't select a property path with public getters.
-    /// </exception>
     public ResourceFieldsBuilder<TResource> Add<TProperty>(
         Expression<Func<TResource, TProperty>> field,
         Action<ResourceFieldBuilder> configure
@@ -86,12 +90,9 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="title" /> is empty or consists only of white space.
-    /// </exception>
     public ResourceDetailsBuilder<TResource> AddDetails(string title)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        FormScopeBuilder.ReportBlankTitle(_configure, title, "details section");
 
         var details = new ResourceDetailsBuilder<TResource>(title);
         _configure(scope => scope.Items.Add(details.Build()));
@@ -107,9 +108,6 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" /> or <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="title" /> is empty or consists only of white space.
     /// </exception>
     public ResourceFieldsBuilder<TResource> AddDetails(
         string title,
@@ -135,9 +133,6 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> selects a property path without public getters.
-    /// </exception>
     /// <remarks>
     ///     The field is never bound, so its property needs no setter.
     /// </remarks>
@@ -160,9 +155,6 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="field" /> selects a property path without public getters.
     /// </exception>
     /// <remarks>
     ///     The field is never bound, so its property needs no setter.
@@ -216,12 +208,9 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" /> is <see langword="null" />.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="title" /> is empty or consists only of white space.
-    /// </exception>
     public ResourceSectionBuilder<TResource> AddSection(string title)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        FormScopeBuilder.ReportBlankTitle(_configure, title, "section");
 
         return AddContainer(
             configure => new ResourceSectionBuilder<TResource>(title, configure),
@@ -237,9 +226,6 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" /> or <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <exception cref="ArgumentException">
-    ///     <paramref name="title" /> is empty or consists only of white space.
     /// </exception>
     public ResourceFieldsBuilder<TResource> AddSection(
         string title,
@@ -269,9 +255,6 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// </summary>
     /// <param name="count">The number of columns, from 1 to 12.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     <paramref name="count" /> is less than 1 or greater than 12.
-    /// </exception>
     /// <remarks>
     ///     The default is 1. A narrower grid uses one column. Breakpoints are measured against
     ///     the width of the form, section or group that holds the fields.

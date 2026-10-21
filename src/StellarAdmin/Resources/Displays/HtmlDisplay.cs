@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
@@ -21,15 +23,19 @@ public sealed class HtmlDisplay : FieldDisplay
     /// <value>
     ///     The number of lines. The default is 2.
     /// </value>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     The value is less than 1.
-    /// </exception>
+    /// <remarks>
+    ///     A value less than 1 is a configuration problem, and the setting keeps its value.
+    /// </remarks>
     public int LineClamp
     {
         get;
         set
         {
-            ArgumentOutOfRangeException.ThrowIfLessThan(value, 1);
+            if (value < 1)
+            {
+                ResourceProblemSink.ReportInvalidNumber(nameof(LineClamp), value, "1 or more");
+                return;
+            }
 
             field = value;
         }

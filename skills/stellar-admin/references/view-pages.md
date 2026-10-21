@@ -35,7 +35,7 @@ resource.AllowView(view =>
 });
 ```
 
-- **Fields are required.** `AllowView()` without `view.Fields(...)` fails every panel request with a 500. Every property must be listed; there is no "all fields" option.
+- **Fields are required.** `AllowView()` without `view.Fields(...)` leaves the resource without a view page and logs a configuration problem ([configuration problems](configuration-problems.md)). Every property must be listed; there is no "all fields" option.
 - Every field is a display field: `fields.Add` returns the display field builder (`Title`, `EmptyText`, `Orientation`, `UseDisplay`, `UseBuiltInRendering`, spans and starts). Rendering and displays are in [fields](fields.md).
 - Layout uses the same `Columns`, `AddSection`, `AddGroup`, spans and starts as forms ([forms](forms.md#layout-columns-sections-and-groups)). Sections take `Description`, `Layout`, `Orientation`, `Columns`, `ColumnSpan` and `ColumnStart`; a section's `Orientation` applies to the fields inside it. View pages have no `AddDetails`; use sections.
 - References (`booking.Customer!.Name`) are loaded with the record for EF Core resources.

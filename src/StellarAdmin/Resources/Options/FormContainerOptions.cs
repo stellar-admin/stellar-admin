@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -24,6 +26,8 @@ public abstract class FormContainerOptions : FormItemOptions, IFormScope
     }
 
     IList<FormItemOptions> IFormScope.Items => MutableItems;
+
+    ConfigurationSource? IFormScope.Source => Source;
 
     private protected FormContainerOptions() { }
 }
