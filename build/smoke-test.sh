@@ -182,6 +182,7 @@ assert_asset() {
 assert_asset /_content/StellarAdmin.UI/stellar-admin.css "--sa-color-"
 assert_asset /_content/StellarAdmin.UI/stellar-admin.theme-variables.json "--sa-accent"
 assert_asset /_content/StellarAdmin.UI/stellar-admin.js "customElements.define"
+assert_asset /_content/StellarAdmin.UI/rich-text-editor.js "sel-rich-text-editor"
 assert_asset /_content/StellarAdmin/stellar-admin-panel.css "sa-resource-form"
 assert_asset /_content/StellarAdmin/htmx.min.js "htmx"
 
