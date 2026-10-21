@@ -1,6 +1,6 @@
 # Rich text editor
 
-Status: on hold (2026-10-20), waiting on [client modules](client-modules.md). Proposed 2026-10-18.
+Status: ready to resume (2026-10-21), now that [client modules](archive/client-modules.md) is done. Proposed 2026-10-18.
 
 An editor for long text that staff can format, such as bold, lists and links. From the Voyager Travel session feedback, where a guide's `Bio` had only a plain text area.
 
@@ -14,14 +14,15 @@ Explore the options first, then propose the approach and public API to Jerrie be
 
 The editor's script (about 440 KB, or 135 KB compressed) must not load on every page, only on pages that render an editor, including editors swapped in by htmx. Decision (2026-10-20): follow web standards and render the script tag with the component.
 
-On hold until [client modules](client-modules.md) is done: it removes Lit and moves the library's script to ES modules, and the editor follows that pattern.
+[Client modules](archive/client-modules.md) removed Lit and TypeScript and bundles the library's plain JavaScript with Rolldown into one ES module. The editor follows that pattern as an on-demand bundle.
 
 - The tag helper renders `<script type="module" src="…">` inside `<sel-rich-text-editor>`, so it survives `hx-select` and out-of-band swaps. Full pages and htmx responses get the same markup; no request-scoped asset registry, response header or htmx extension.
 - The browser loads and runs a module URL once per document, so several editors or repeated swaps load it once. htmx runs swapped-in scripts by default. Custom elements upgrade whenever the definition arrives, and the textarea fallback covers the wait.
-- Ship the bundle as an ES module (the prototype builds an IIFE, which would run again on every swap), and guard `customElements.define` against an existing definition.
+- Ship the bundle as an ES module (the prototype builds an IIFE, which would run again on every swap), and guard `customElements.define` against an existing definition. It's a second entry in `src/StellarAdmin.UI/Client/rolldown.config.js`, built as a self-contained module with no shared chunks.
 - The tag helper renders the script with the internal `ModuleScript` helper, which takes the fingerprinted URL from the page's static asset collection, or the plain URL with the path base when there is none. Every editor then uses the identical URL, since different URLs would load the script twice.
 - The editor's CSS goes in the main stylesheet in `@layer sa.components`, not a lazily loaded `<link>`: a `<link>` is applied again on every swap, and there is no standard load-once for stylesheets. Copy the few ProseKit rules we need and drop `prosekit.css`, whose unlayered rules override ours.
-- Later option: CSS module scripts (`import … with { type: "css" }`) once every browser supports them. An import map was ruled out by [client modules](client-modules.md), because ASP.NET's map needs a `<base href>` tag below the site root and `.WithStaticAssets()` doesn't reach MVC conventional routes.
+- Later option: CSS module scripts (`import … with { type: "css" }`) once every browser supports them. An import map was ruled out by [client modules](archive/client-modules.md), because ASP.NET's map needs a `<base href>` tag below the site root and `.WithStaticAssets()` doesn't reach MVC conventional routes.
+- Verify in the browser: a page without an editor doesn't load the bundle, a page with several editors loads it once, and an editor swapped in by an htmx partial loads it.
 - Rejected alternatives: a server-side registry written out by the layout plus a header, out-of-band swap or htmx `head-support` for partial responses (Django `Media`, Orchard `ResourceManager`); a client autoloader keyed by tag name (Shoelace, Stimulus lazy controllers); or one keyed by a URL on the element (Filament `x-load-src`). Livewire's `@assets` and Astro's component scripts take the same approach as this decision.
 
 ## Follow-ups
