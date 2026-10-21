@@ -1,6 +1,6 @@
 # Configuration problems without startup failures
 
-Status: done on the `configuration-problems` branch (2026-10-21), apart from the website docs. Phases 1 to 4 are committed (6245b5a, 54ef847); phases 5 and 6 are built and verified. Follow-up: document configuration problems and `ConfigureDiagnostics` on the website, in the next website batch.
+Status: completed (2026-10-21) on the `configuration-problems` branch (pull request #4). Follow-ups: document configuration problems and `ConfigureDiagnostics` on the website, in the next website batch, and check the sheet in the theme fixtures, compact density and at phone width.
 
 ## Goal
 
@@ -62,7 +62,7 @@ admin.ConfigureDiagnostics(diagnostics =>
 });
 ```
 
-- `ConfigureDiagnostics` on `StellarAdminBuilder`, with a `DiagnosticsBuilder`. `Configure*` because diagnostics ship by default, and properties because both settings are scalars ([options builders](../conventions/options-builders.md)). "Diagnostics" leaves room for later developer-facing checks.
+- `ConfigureDiagnostics` on `StellarAdminBuilder`, with a `DiagnosticsBuilder`. `Configure*` because diagnostics ship by default, and properties because both settings are scalars ([options builders](../../conventions/options-builders.md)). "Diagnostics" leaves room for later developer-facing checks.
 - `ShowIndicator` follows `ShowSetupChecklist` on `ConfigureHomePage`. Off hides the pill and the sheet. Problems are still logged.
 - Integrations, such as StellarAdmin.EntityFrameworkCore, report problems from a post-configuration callback after repairing the options: `ResourceOptions<TResource>.ReportProblem(EventId eventId, string message, string outcome)`, and `ReportUnavailable(EventId eventId, string message)` for a problem that makes the resource unavailable. Two repair methods support it: `ResourceFormOptions.RemoveField(FormFieldOptions field)` and `DataGridColumnOptions.DisableSorting()`. The EF Core integration logs its problems with event IDs 1080 to 1085.
 - `ThrowOnProblems` applies in every environment. An app that wants it only in tests sets it from its own condition, such as `builder.Environment.IsEnvironment("Testing")`. It throws an `InvalidOperationException` listing every problem, from the startup service.
