@@ -25,6 +25,15 @@ public enum Meal
     Curry,
 }
 
+public enum Region
+{
+    Europe,
+    NorthAmerica,
+
+    [Display(Name = "Asia Pacific")]
+    AsiaPacific,
+}
+
 [Flags]
 public enum Extras
 {
@@ -48,6 +57,8 @@ public sealed class ChoiceFieldsModel
     public Cabin? OptionalCabin { get; set; }
 
     public string? Preference { get; set; }
+
+    public Region Region { get; set; }
 
     [Required]
     public Cabin? RequiredCabin { get; set; }

@@ -50,4 +50,6 @@ public enum ProductFactsStatus
 
     [Display(Name = "On sale")]
     OnSale,
+
+    OutOfStock,
 }

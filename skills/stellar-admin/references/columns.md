@@ -97,7 +97,7 @@ All in `StellarAdmin.Resources.Displays`. The same displays are used by display 
 | `NumberDisplay` | Numeric types; right-aligned in cells | `Format` (`"C"`, `"N2"`, `"0.0"`), else `[DisplayFormat]` |
 | `DateDisplay` | `DateTime`, `DateTimeOffset`, `DateOnly`, `TimeOnly` | `Format` (`"d MMM yyyy"`), else `[DisplayFormat]`, else `d MMM yyyy` / `HH:mm` / `d MMM yyyy, HH:mm`. `[DataType(DataType.Date)]` brings MVC's short date format (`10/14/2026` in en-US), so set `Format` for those |
 | `BooleanDisplay` | `bool` | `Appearance` (`BooleanDisplayAppearance.Icon`, `Text`, `IconAndText`), `TrueText`, `FalseText` |
-| `EnumDisplay` | Non-flags enums | Uses each member's `[Display(Name)]` |
+| `EnumDisplay` | Non-flags enums | Uses each member's `[Display(Name)]`, else its humanized name |
 | `EmailDisplay` | `[EmailAddress]` | A `mailto:` link |
 | `PhoneDisplay` | `[Phone]` | A `tel:` link |
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
@@ -152,7 +152,7 @@ columns.Add(booking => booking.Status, column => column.UseDisplay<BookingStatus
 ```
 
 - The template needs `@using` for the display class's namespace (`Voyager.Admin` here) and for `StellarAdmin.Areas.StellarAdmin`, where `FieldDisplayView<TDisplay>` lives.
-- The template's `Model` is the cell value (as `object?`), `Display` is the configured display, and `FormatValue()` formats the value (enum members by their `[Display(Name)]`).
+- The template's `Model` is the cell value (as `object?`), `Display` is the configured display, and `FormatValue()` formats the value (enum members by their `[Display(Name)]`, else their humanized names).
 - The template needs the `StellarAdmin.UI` tag helpers: put it under `Areas/StellarAdmin/Views/` with an area `_ViewImports.cshtml` ([customization](customization.md#view-imports)), or add `@addTagHelper *, StellarAdmin.UI` to it.
 - To show the same badge on a view page or as a form display field, add the same markup as `DisplayTemplates/BookingStatus.cshtml`; display fields use `DisplayTemplates/`.
 - Alternative: mark the property `[UIHint("BookingStatus")]` and write `GridDisplayTemplates/BookingStatus.cshtml` with `@model BookingStatus`. The hint then applies wherever the property is displayed, and display fields require a `DisplayTemplates/BookingStatus.cshtml` too (a missing one throws).

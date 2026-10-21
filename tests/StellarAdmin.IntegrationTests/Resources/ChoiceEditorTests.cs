@@ -870,7 +870,9 @@ public class ChoiceEditorTests
         await Assert
             .That(
                 logs.ConfigurationProblems.Any(log =>
-                    log.Message.Contains("instead of SelectEditor because SelectEditor has no items")
+                    log.Message.Contains(
+                        "instead of SelectEditor because SelectEditor has no items"
+                    )
                 )
             )
             .IsTrue();
@@ -1061,6 +1063,31 @@ public class ChoiceEditorTests
         await Assert
             .That(group.ClassList.Any(css => css.StartsWith("sa-toggle-chips-check")))
             .IsFalse();
+    }
+
+    [Test]
+    public async Task EnumMembersWithoutDisplayNames_ShowReadableNames()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields.Add(model => model.Region)
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var region = document.RequiredElement("select[name='Entity.Region']");
+        await Assert
+            .That(region.QuerySelectorAll("option").Select(option => option.TextContent.Trim()))
+            .IsEquivalentTo(
+                ["Europe", "North America", "Asia Pacific"],
+                CollectionOrdering.Matching
+            );
+        await Assert
+            .That(OptionValues(region))
+            .IsEquivalentTo(["Europe", "NorthAmerica", "AsiaPacific"], CollectionOrdering.Matching);
     }
 
     private static IEnumerable<string?> OptionValues(AngleSharp.Dom.IElement select) =>

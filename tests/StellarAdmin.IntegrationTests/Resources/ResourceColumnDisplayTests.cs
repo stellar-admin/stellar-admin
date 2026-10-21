@@ -389,6 +389,23 @@ public class ResourceColumnDisplayTests
         await Assert.That(cell.TextContent.Contains("None")).IsFalse();
     }
 
+    [Test]
+    public async Task Index_EnumMemberWithoutDisplayName_ShowsReadableName()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(
+            columns => columns.Add(facts => facts.Status),
+            change: facts => facts.Status = ProductFactsStatus.OutOfStock
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/facts");
+
+        // Assert
+        await Assert.That(Cells(document)[0].TextContent.Trim()).IsEqualTo("Out of Stock");
+    }
+
     private static IElement[] Cells(IDocument document) =>
         document.QuerySelectorAll("tbody tr:first-child td").ToArray();
 

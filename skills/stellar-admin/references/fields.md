@@ -101,7 +101,7 @@ In `StellarAdmin.Resources.Displays`; the same displays render index cells ([col
 | `NumberDisplay` | Numeric types | `Format`, else `[DisplayFormat]` |
 | `DateDisplay` | `DateTime`, `DateTimeOffset`, `DateOnly`, `TimeOnly` | `Format`, else `[DisplayFormat]`, else `d MMM yyyy`, `HH:mm` or `d MMM yyyy, HH:mm`. `[DataType(DataType.Date)]` brings MVC's short date format (`10/14/2026` in en-US), so set `Format` for those |
 | `BooleanDisplay` | `bool` | `Appearance` (`BooleanDisplayAppearance.Icon`, `Text`, `IconAndText`), `TrueText`, `FalseText` |
-| `EnumDisplay` | Non-flags enums | The member's `[Display(Name)]` |
+| `EnumDisplay` | Non-flags enums | The member's `[Display(Name)]`, else its humanized name (`NorthAmerica` shows as "North America") |
 | `EmailDisplay` | `[EmailAddress]` | `mailto:` link |
 | `PhoneDisplay` | `[Phone]` | `tel:` link |
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
@@ -138,7 +138,7 @@ public sealed class StatusBadgeDisplay : FieldDisplay
 details.Add(booking => booking.Status, field => field.UseDisplay<StatusBadgeDisplay>(badge => badge.ShowIcon = true));
 ```
 
-- The template inherits `FieldDisplayView<TDisplay>`: `Model` is the value (`object?`), `Display` the configured settings, `FormatValue(format)` the value formatted with a format string, else `[DisplayFormat]`, with enum members by their `[Display(Name)]`.
+- The template inherits `FieldDisplayView<TDisplay>`: `Model` is the value (`object?`), `Display` the configured settings, `FormatValue(format)` the value formatted with a format string, else `[DisplayFormat]`, with enum members by their `[Display(Name)]`, else their humanized names.
 - Display fields use `DisplayTemplates/{TemplateName}`; index columns use `GridDisplayTemplates/{TemplateName}`. Provide both if the display is used in both places.
 - An empty value normally shows the field's empty text and skips the template. Override `public override bool RendersEmptyValue => true;` when the template shows something of its own for an empty value, such as initials for a missing avatar; the template then receives null and blank values.
 - A display that needs request data (a lookup by an id that has no navigation) also implements `IFieldDisplay<THandler>`. The handler derives from `FieldDisplayHandler<TDisplay>`, takes services in its constructor, and returns data from `PrepareAsync(FieldDisplayContext context, CancellationToken cancellationToken)`; the template reads it as `DisplayData`. Displays with handlers work on forms and view pages, not in index columns.

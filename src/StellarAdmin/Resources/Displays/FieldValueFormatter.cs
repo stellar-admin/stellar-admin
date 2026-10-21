@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace StellarAdmin.Resources.Displays;
 
 // Formats a value as the display templates show it: with the display's format string, then the
-// property's [DisplayFormat], then enum members by their [Display] names, all in the current culture
+// property's [DisplayFormat], then enum members by their labels, all in the current culture
 internal static class FieldValueFormatter
 {
     public static string Format(object? value, ModelMetadata metadata, string? format = null)
@@ -29,7 +29,7 @@ internal static class FieldValueFormatter
             {
                 if (enumValue == numericValue)
                 {
-                    return groupAndName.Name;
+                    return EnumMemberLabel.Get(member.ToString(), groupAndName.Name);
                 }
             }
         }

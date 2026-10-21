@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Diagnostics;
+using StellarAdmin.Resources.Displays;
 
 namespace StellarAdmin.Resources.Editors;
 
@@ -157,7 +158,7 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
                     ?.GetCustomAttribute<DisplayAttribute>()
                     ?.GetDescription();
 
-                return new ChoiceItem(name, pair.Key.Name)
+                return new ChoiceItem(name, EnumMemberLabel.Get(name, pair.Key.Name))
                 {
                     Description = description,
                     Group = string.IsNullOrEmpty(pair.Key.Group)

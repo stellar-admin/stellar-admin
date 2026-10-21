@@ -71,7 +71,7 @@ fields.Add(booking => booking.Notes, field =>
 | `DateTimeOffset` | Text input in round-trip format, keeping the offset |
 | `bool` | Checkbox |
 | `bool?` | Select with Yes, No and Not set |
-| Non-flags enum | Select of its members, using `[Display(Name)]` |
+| Non-flags enum | Select of its members, labelled with `[Display(Name)]`, else the humanized member name (`NorthAmerica` shows as "North America") |
 | Flags enum | Text input; use `CheckboxGroupEditor` or `ToggleGroupEditor` on a collection instead |
 | Foreign key (`int CustomerId`) | **Number input**: configure `SelectEditor` or `LookupSheetEditor` |
 
