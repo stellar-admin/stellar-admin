@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Editors;
@@ -11,7 +10,8 @@ namespace StellarAdmin.EntityFrameworkCore;
 
 internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     TContext db,
-    IOptions<ResourceOptions<TEntity>> options
+    IOptions<ResourceOptions<TEntity>> options,
+    ILogger<EfCoreResourceDataSource<TContext, TEntity>> logger
 ) : IResourceCrudDataSource<TEntity>
     where TContext : DbContext
     where TEntity : class
@@ -48,6 +48,22 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         catch (DbUpdateConcurrencyException)
         {
             return await GetConcurrencyFailureResultAsync(id, cancellationToken);
+        }
+        // The database refused the delete, usually because other records still refer to this one
+        catch (DbUpdateException exception)
+        {
+            db.Entry(entity).State = EntityState.Detached;
+            logger.LogWarning(
+                exception,
+                "The database refused to delete {Entity} {Key}.",
+                typeof(TEntity).Name,
+                id
+            );
+
+            return ResourceOperationResult.ValidationFailed(
+                null,
+                "This record couldn't be deleted. Other records may still refer to it."
+            );
         }
 
         return ResourceOperationResult.Success();

@@ -28,7 +28,7 @@ Copy this list and tick it off:
 - [ ] 4. Chosen resources added, if any
 - [ ] 5. Chosen protection added, if any
 - [ ] 6. Chosen name, logo and theme added, if any
-- [ ] 7. Built, run, and checked in real requests; reported what was configured and what was skipped
+- [ ] 7. Built; reported what was configured and what was skipped
 ```
 
 ## 1. Ask first
@@ -161,9 +161,13 @@ builder.Services.AddStellarAdmin(admin =>
 
 Stylesheets load after the panel's own, in registration order; `admin.AddScript("~/js/admin.js")` adds scripts the same way. The **stellar-admin-theme** skill writes theme files from a description or brand colours.
 
-## 7. Verify in a real request
+## 7. Report
 
-Building is not enough: configuration errors surface on the first request. Run the app and fetch the pages (sign in first if you protected the panel):
+Tell the user what was configured and what was skipped. When the panel has no protection, say plainly that anyone who can reach the app can use it. When no resources were added, say that the stellar-admin skill adds them later.
+
+## What a working install looks like
+
+A successful build doesn't catch every configuration error; some surface on the first request. When the app is running (sign in first if the panel is protected):
 
 1. `/stellaradmin` returns 200 and is styled. In Development it shows a setup checklist of the steps the app hasn't configured yet; that's expected. Raw `<sa-...>` tags in the HTML mean a view is missing its `_ViewImports.cshtml` tag helper registrations (see the stellar-admin skill's customization reference).
 2. The sidebar header shows the app's name.
@@ -171,8 +175,6 @@ Building is not enough: configuration errors surface on the first request. Run t
 4. With protection: an anonymous request gets the challenge, a signed-in user without access is forbidden, an allowed user gets 200, and Log out in the sidebar footer signs them out.
 
 Options validation errors (for example `AllowView` without fields, or a default sort on a column that isn't sortable) fail every panel request with a 500 and name the problem in the log.
-
-Finish by telling the user what was configured and what was skipped. When the panel has no protection, say plainly that anyone who can reach the app can use it. When no resources were added, say that the stellar-admin skill adds them later.
 
 ## Troubleshooting
 

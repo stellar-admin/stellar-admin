@@ -148,7 +148,6 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 - [ ] AllowView with at least one field, if a detail page is wanted
 - [ ] AllowDelete, if wanted
 - [ ] Sidebar group/order/icon (icons on every item in the group, or none), and RequireAuthorization if it differs from the panel's
-- [ ] Run the app and load /stellaradmin/{slug}, create, edit and view in real requests
 ```
 
 ## Namespaces
@@ -192,7 +191,7 @@ These come from agents building real tasks without this skill. Each compiled or 
 - **EF `Contains` is case-sensitive on SQLite** (and on case-sensitive collations). Lower-case both sides in search predicates when that matters: `b.Reference.ToLower().Contains(term.ToLower())`.
 - **Form and view labels come from the property name** (`DepartureDate`) unless `[Display(Name = "Departure date")]` or the field's `Title` is set; index headers are humanized. Set `[Display(Name)]` on the model for consistent labels.
 - **Enum values in Razor attributes are fully qualified**: `variant="BadgeVariant.Destructive"`, `width="PageContainerWidth.Full"`.
-- **Verify in a running app.** The panel works around configuration mistakes instead of failing: in Development a "Configuration problems" pill at the bottom of every admin page lists them, and every environment logs them as warnings from `StellarAdmin.Configuration`. Fix every listed problem, and load each page you changed, since a missing `_ViewImports` fails silently ([configuration problems](references/configuration-problems.md)).
+- **Configuration problems show at runtime, not at build time.** The panel works around configuration mistakes instead of failing: in Development a "Configuration problems" pill at the bottom of every admin page lists them, and every environment logs them as warnings from `StellarAdmin.Configuration`. When they are reported, fix every listed problem; a missing `_ViewImports` fails silently and isn't listed ([configuration problems](references/configuration-problems.md)).
 
 ## Not supported
 
