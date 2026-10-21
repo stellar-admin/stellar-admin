@@ -181,9 +181,7 @@ assert_asset() {
 }
 assert_asset /_content/StellarAdmin.UI/stellar-admin.css "--sa-color-"
 assert_asset /_content/StellarAdmin.UI/stellar-admin.theme-variables.json "--sa-accent"
-assert_asset /_content/StellarAdmin.UI/stellar-admin.js "sel-toaster.js"
-assert_asset /_content/StellarAdmin.UI/js/web-components/sel-toaster.js "customElements.define"
-assert_asset /_content/StellarAdmin.UI/vendor/interestfor.js "interest"
+assert_asset /_content/StellarAdmin.UI/stellar-admin.js "customElements.define"
 assert_asset /_content/StellarAdmin/stellar-admin-panel.css "sa-resource-form"
 assert_asset /_content/StellarAdmin/htmx.min.js "htmx"
 

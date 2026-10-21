@@ -50,20 +50,12 @@ Keep the framework's own line (`Microsoft.AspNetCore.Mvc.TagHelpers`) — the de
 The assets are served from the package as static web assets under `_content/StellarAdmin.UI/`. `stellar-admin.css` carries every component and the default theme:
 
 ```razor
-<base href="~/"/>
-<script type="importmap"></script>
 <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
 <script type="module" src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
 ```
 
 - The **CSS** carries all component styling and the default theme. Missing it → unstyled components. Another theme is an optional file of CSS variables linked after it; see [theming](theming.md).
-- The **JS** module loads the `<sel-*>` web components, the `interestfor` polyfill, and the `window.stellarAdmin` helpers. Missing it → static components still render, but the dropdown menu's keyboard handling, the slider, the OTP input, the sidebar toggle and the table selection stop working. See `javascript.md`.
-- The **import map** gives the browser cacheable, versioned URLs for the modules `stellar-admin.js` imports, so it comes before any module script. The .NET 9 and later templates already have the tag in the layout; keep it rather than adding a second. ASP.NET fills it from the static asset manifest, which takes three things:
-  - **`<base href="~/"/>` before the import map.** ASP.NET writes the map's entries relative to the page, so without it they match nothing on pages below the site root. It also makes every relative URL on the page resolve against the site root, including `href="#section"` links and relative `hx-get`/`hx-post` URLs. Before adding it to an existing layout, look for those and make them absolute or generate them with `asp-page`, `asp-action` or `Url`.
-  - **`app.MapStaticAssets()`, and `.WithStaticAssets()` on the endpoints that render pages**, such as `app.MapRazorPages().WithStaticAssets()`.
-  - **In an MVC app, `app.MapControllers().WithStaticAssets();`** in `Program.cs`. `.WithStaticAssets()` on `MapControllerRoute`, which the templates use, has no effect ([dotnet/aspnetcore#59003](https://github.com/dotnet/aspnetcore/issues/59003)), so controller views otherwise get an empty map.
-
-  Without these the scripts still work, but the browser revalidates each module on every page load. Partials that htmx swaps in need none of it: the map stays in effect for the whole document.
+- The **JS** bundle carries the `<sel-*>` web components, the `interestfor` polyfill, and the `window.stellarAdmin` helpers. Missing it → static components still render, but the dropdown menu's keyboard handling, the slider, the OTP input, the sidebar toggle and the table selection stop working. See `javascript.md`.
 
 Both are **static web assets**, so the app must serve them — the default templates already call `app.MapStaticAssets()` (or `app.UseStaticFiles()` on older templates). If those two URLs 404, that's the missing piece rather than anything StellarAdmin-specific.
 

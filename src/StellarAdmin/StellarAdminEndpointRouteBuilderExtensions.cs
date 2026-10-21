@@ -57,10 +57,11 @@ public static class StellarAdminEndpointRouteBuilderExtensions
             // before MVC runs. Conventions run when the endpoints are built, after configuration is final.
             route.Add(builder => AddAuthorizationMetadata(builder, endpoints.ServiceProvider));
 
-            // The layout's import map lists the fingerprinted URLs of the client modules, read from
-            // the static asset metadata on the page's endpoint. WithStaticAssets() can't add it to
-            // conventional controller routes (dotnet/aspnetcore#59003), so it's added here. Skipped
-            // when the host or a fixed framework already added it.
+            // asp-append-version reads the fingerprinted URLs of the layout's script and stylesheets
+            // from the static asset metadata on the page's endpoint, and without it falls back to a
+            // query string the browser revalidates. WithStaticAssets() can't add it to conventional
+            // controller routes (dotnet/aspnetcore#59003), so it's added here. Skipped when the host
+            // or a fixed framework already added it.
             var staticAssets = new Lazy<ResourceAssetCollection>(() =>
                 ResolveStaticAssets(endpoints)
             );
@@ -69,9 +70,6 @@ public static class StellarAdminEndpointRouteBuilderExtensions
                 if (!builder.Metadata.OfType<ResourceAssetCollection>().Any())
                 {
                     builder.Metadata.Add(staticAssets.Value);
-                    builder.Metadata.Add(
-                        ImportMapDefinition.FromResourceCollection(staticAssets.Value)
-                    );
                 }
             });
 

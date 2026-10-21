@@ -7,8 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@(ViewData["Title"] is string title ? $"{title} - {Branding.Title}" : Branding.Title)</title>
     <meta name="description" content="@Branding.Title">
-    <base href="~/"/>
-    <script type="importmap"></script>
     @await RenderSectionAsync("Styles", required: false)
     <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
     @foreach (var stylesheet in ProOptions.Stylesheets)

@@ -1,16 +1,14 @@
 # JavaScript and interactivity
 
-StellarAdmin leans on the web platform wherever it can, so most components are pure server-rendered HTML and CSS. Where that isn't enough, a single script adds behavior.
+StellarAdmin leans on the web platform wherever it can, so most components are pure server-rendered HTML and CSS. Where that isn't enough, a single bundled script adds behavior.
 
-## The `stellar-admin.js` script
+## The `stellar-admin.js` bundle
 
 ```razor
-<base href="~/"/>
-<script type="importmap"></script>
 <script type="module" src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
 ```
 
-It is an ES module, and the base tag and import map before it give the modules it imports cacheable, versioned URLs (see `setup.md` for what the import map needs). It loads three things:
+It contains three things:
 
 - the **`<sel-*>` web components** that some tag helpers render,
 - the **`interestfor` polyfill**, so hover-triggered tooltips and popovers work in browsers that don't implement it natively,
@@ -36,7 +34,7 @@ All of these render in the **light DOM** — there is no shadow root, so the ser
 
 Where a component can degrade gracefully it does: a `<sa-table selection="true">` table still posts its checked rows without the script, and a `<sa-dialog>` still opens from a plain `command="show-modal"` button.
 
-Custom elements are upgraded when the script runs, which with `defer` is after the document is parsed. If your own code needs to touch one — reading `selectedValues` off a `<sel-table>`, say — wait for it first:
+Custom elements are upgraded when the script runs, which for a module script is after the document is parsed. If your own code needs to touch one — reading `selectedValues` off a `<sel-table>`, say — wait for it first:
 
 ```js
 await customElements.whenDefined("sel-table");

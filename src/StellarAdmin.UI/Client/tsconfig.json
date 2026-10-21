@@ -10,5 +10,5 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true
   },
-  "include": ["../wwwroot/stellar-admin.js", "../wwwroot/js/**/*.js"]
+  "include": ["js/**/*.js"]
 }

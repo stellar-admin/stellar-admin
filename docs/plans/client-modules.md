@@ -1,8 +1,8 @@
 # Client modules
 
-Status: step 1 implemented, awaiting review (2026-10-21).
+Status: step 2 (bundle with Rolldown) done, step 3 comes with the rich text editor (2026-10-21).
 
-Remove Lit and the build from the StellarAdmin.UI web components, rewriting them as plain JavaScript, then ship them and the admin panel's script as ES modules so heavy or rarely used components load only on pages that render them. This comes before the [rich text editor](rich-text-editor.md), whose script loading depends on it.
+Remove Lit and TypeScript from the StellarAdmin.UI web components, rewriting them as plain JavaScript bundled by Rolldown into one ES module, and let large, rarely used components load their own bundle only on pages that render them. This comes before the [rich text editor](rich-text-editor.md), whose script loading depends on it.
 
 ## Current state (2026-10-20)
 
@@ -11,24 +11,19 @@ Remove Lit and the build from the StellarAdmin.UI web components, rewriting them
 - The admin panel's own components are already plain custom elements in one unbundled file, `src/StellarAdmin/Client/js/stellar-admin-panel.js`, which `scripts/copy-js.mjs` copies to `wwwroot` with the vendored `htmx.min.js`: `admin-remote-sheet`, `admin-lookup-picker`, `admin-create-sheet`, `admin-lookup-created`, `admin-lookup-sheet-editor` and `admin-multi-lookup-sheet-editor`. The admin panel layout loads it with a deferred script tag.
 - Pages load the script with `<script defer src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true">`: the admin panel layout, the ComponentPlayground and DocsSamples layouts, the readme, the `stellar-admin-ui` consumer skill (`SKILL.md`, `references/setup.md`, `javascript.md`, `conventions.md`) and the sandbox prototypes.
 
-## Approach: no build
+## Approach: bundle with Rolldown (revised 2026-10-21)
 
-Decision (2026-10-20): follow the web platform and ship client code without a build, as Rails 8 does by default.
+Decision (2026-10-21): author plain JavaScript and bundle it with Rolldown. This replaces the no-build decision of 2026-10-20, which step 1 implemented. No-build suits an app, where it removes a toolchain from the developer's own project. For a library it moves the cost onto every app: our developers never build our JavaScript, so a build in this repository costs them nothing, while shipping unbundled modules cost them 24 requests and about 53 KB (Brotli) on a first visit instead of one file, plus an import map, a `<base href>` tag with its side effects on relative and `#` links, and an MVC workaround to cache those modules.
 
-- Plain ES modules, one `.js` file per component, written directly in `wwwroot` and served as written: no bundler, transpiler, minifier or copy step.
-- Types in JSDoc, checked with `tsc --noEmit --checkJs` in CI and the editor rather than compiled.
-- Vendor `interestfor`, the only remaining npm dependency, into `wwwroot` with a copy script, as the admin panel already does for htmx.
-- ASP.NET compresses static assets with Brotli and gzip at build time. Unminified files are larger before compression, which is accepted.
-- The rich text editor is the one exception: it stays bundled because ProseKit comes from npm.
+- Sources stay plain JavaScript with types in JSDoc, checked with `tsc --checkJs` (`npm run check`, run in CI). No Lit and no TypeScript compile. They move back out of `wwwroot` into `Client/js/` so the unbundled files aren't published as static assets.
+- Rolldown bundles them into one minified ES module, `wwwroot/stellar-admin.js`, with a source map. It holds every current component, the icon picker included, plus the `window.stellarAdmin` helpers and the `interestfor` polyfill imported from its npm package.
+- Developers add one tag: `<script type="module" src="~/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true">`. No import map and no base tag.
+- Only large, rarely used components get their own bundle and load on demand: the [rich text editor](rich-text-editor.md) first, and later candidates such as a map or a spreadsheet-like grid. Each is a self-contained ES module with no shared chunks, which its tag helper loads with the internal `ModuleScript` helper (see step 2's history below), so it needs no import map either.
+- `MapStellarAdmin` keeps adding the static asset metadata to its routes. `asp-append-version` then gives the admin panel's bundle and stylesheet fingerprinted, immutable URLs. Without that metadata it falls back to `?v=` and the browser revalidates the file, which is how consumer pages behave unless their endpoints call `.WithStaticAssets()`.
 
-### Versioned module URLs: the import map
+### Superseded: no build and the import map
 
-Decision (2026-10-20): use the import map ASP.NET generates. `asp-append-version` versions only the URL in the script tag, so the files the entry imports would otherwise be served with `Cache-Control: no-cache` and revalidated with an ETag on every page load. `MapStaticAssets` already publishes a fingerprinted, immutable copy of every RCL file, and `<script type="importmap"></script>` renders a map from each plain URL to its fingerprinted copy, which the browser applies to every module it loads.
-
-- The framework's map only works with two things in place, both found on 2026-10-21. Its keys are relative (`./_content/...`) and resolve against the page, so on a page below the site root they match nothing unless the layout has `<base href="~/" />` before the map. And `.WithStaticAssets()` on `MapControllerRoute` silently does nothing ([dotnet/aspnetcore#59003](https://github.com/dotnet/aspnetcore/issues/59003), fix in [PR #65188](https://github.com/dotnet/aspnetcore/pull/65188), still open), so MVC views get no map unless the app calls `MapControllers().WithStaticAssets()`.
-- Developers: the script tag becomes `<script type="module" src="~/_content/StellarAdmin.UI/stellar-admin.js"></script>`. That is all they need. For immutable caching of the modules on their own pages they add `<base href="~/" />` and `<script type="importmap"></script>` to the layout, plus `MapControllers().WithStaticAssets()` for MVC. The base tag makes relative and `#` links, including relative htmx URLs, resolve against the site root. Without the map the components still work and the browser revalidates each module. Admin panel users do nothing.
-- Us (decision 2026-10-21): the admin panel layout has `<base href="~/" />` and the import map tag (its views use no relative or `#` links). `MapStellarAdmin` adds the static asset metadata to its own routes with a convention that builds the same collection `WithStaticAssets()` would, through the public `StaticAssetsEndpointDataSourceHelper`, and skips routes that already have it, so it steps aside once the framework is fixed. It doesn't touch the host's controllers. The ComponentPlayground and DocsSamples layouts render the import map tag without a base tag, so only their top-level pages use it. htmx partials need nothing: the map belongs to the document, and swapped-in elements upgrade from the registry.
-- A developer with their own hand-written import map merges it with the generated one rather than adding a second.
+The 2026-10-20 approach shipped one ES module per component from `wwwroot`, unminified, and relied on the ASP.NET import map for fingerprinted module URLs. Found on 2026-10-21: the framework's map uses page-relative keys, so it needs `<base href="~/" />` on pages below the site root, and `.WithStaticAssets()` on `MapControllerRoute` does nothing ([dotnet/aspnetcore#59003](https://github.com/dotnet/aspnetcore/issues/59003), fix in [PR #65188](https://github.com/dotnet/aspnetcore/pull/65188), still open). Step 1 and its import map fix implemented this, and step 2 below reverses the parts the bundle makes unnecessary.
 
 ## Step 1: remove Lit, TypeScript and the build
 
@@ -45,19 +40,36 @@ Done on the `client-modules` branch: the 24 TypeScript files converted to JavaSc
 
 Verified: `npm run check`, the oxfmt check, `dotnet build` of the solution, all 1688 .NET tests, the consumer skill validation, and a headless Chromium pass over 19 DocsSamples pages (no errors, every `sel-*` element upgraded, all 25 modules from fingerprinted URLs through the import map, one interaction per component) and the admin panel home page. The browser pass found a conversion bug, now fixed: a multi-line JSDoc after `return` in `toast.js` made the typed toast shortcuts return `undefined`. `allowUnreachableCode: false` now catches that. `build/smoke-test.sh` was updated but not run.
 
-Import map fix (2026-10-21): the MVC and relative-key problems above were found after step 1, and the admin panel now has the base tag and its own metadata convention. Verified: `dotnet build`, all 1688 .NET tests, and a headless Chromium pass over AdminPlayground's `/stellaradmin`, `/stellaradmin/airports`, `/stellaradmin/airports/create` and `/stellaradmin/categories/edit/1`, each loading all 25 modules from fingerprinted URLs with no errors and every `sel-*` element upgraded. The readme, the `stellar-admin-ui` setup and JavaScript references and the product guide now describe the base tag, the static asset calls (including `MapControllers().WithStaticAssets()` for MVC) and what the base tag does to relative and `#` links. Skill validation and the generator drift check pass. The website's UI installation and JavaScript pages say the same (uncommitted in `../website`; lint, type check and production build pass, both pages checked in the dev server).
+Import map fix (2026-10-21): the MVC and relative-key problems above were found after step 1, and the admin panel now has the base tag and its own metadata convention. Verified: `dotnet build`, all 1688 .NET tests, and a headless Chromium pass over AdminPlayground's `/stellaradmin`, `/stellaradmin/airports`, `/stellaradmin/airports/create` and `/stellaradmin/categories/edit/1`, each loading all 25 modules from fingerprinted URLs with no errors and every `sel-*` element upgraded. The readme, the `stellar-admin-ui` setup and JavaScript references and the product guide now describe the base tag, the static asset calls (including `MapControllers().WithStaticAssets()` for MVC) and what the base tag does to relative and `#` links. Skill validation and the generator drift check pass. The website's UI installation and JavaScript pages say the same (lint, type check and production build pass, and both pages were checked in the dev server).
 
-## Step 2: load components only on pages that use them
+## Step 2: bundle with Rolldown
 
-- Measure each module. Candidates to split out of the entry: icon picker, command, questionnaire, carousel, input OTP and possibly slider.
-- An internal helper builds the module URL, and each split-out component's tag helper renders `<script type="module" src="…">` inside the element. The browser loads a module URL once per page, so repeated components are fine.
-- `stellar-admin.js` stays the single entry for the rest and keeps setting `window.stellarAdmin`. Module scripts run at the same point as deferred scripts, so its timing is unchanged.
-- Load `stellar-admin-panel.js` as a module and guard each `customElements.define`. Split out the lookup sheet editors only if measuring shows it pays off.
-- Verify as in step 1, plus a check that a page without a split-out component does not load it.
+- Move `wwwroot/stellar-admin.js` and `wwwroot/js/` back to `Client/js/`, with the entry at `Client/js/stellar-admin.js`, and restore the `wwwroot` ignore rules so only the built outputs live there.
+- Add `rolldown` and `rolldown.config.js`: one entry, ES module output, minified, with a source map, to `wwwroot/stellar-admin.js`. Import `interestfor` from its package and drop `scripts/copy-vendor.mjs` and `wwwroot/vendor/`. Restore the csproj's client build inputs and outputs.
+- Put the icon picker back in the bundle: import it from the entry, remove its `ModuleScript` call and the two script URL tests, and restore its XML remark that the picker layout requires `stellar-admin.js`. `ModuleScript` stays for the rich text editor, whose tag helper tests will cover it.
+- Remove `<script type="importmap"></script>` from the admin panel, ComponentPlayground and DocsSamples layouts, and `<base href="~/"/>` from the admin panel layout. Update the comment on the `MapStellarAdmin` metadata convention to say it serves `asp-append-version`.
+- Docs back to the one module tag, without the base tag, import map and `MapControllers().WithStaticAssets()` text: the readme, the `stellar-admin-ui` setup and JavaScript references, the product guide, and the website's UI installation and JavaScript pages. The sandbox pages and smoke test keep their module tags.
+- Verify: `npm run check`, the oxfmt check, the build, all .NET tests, the skill validation and drift check, `build/smoke-test.sh`, and a headless Chromium pass over the DocsSamples component pages and the admin panel (one request for the bundle, every `sel-*` element upgraded, one interaction per component, no errors).
+
+### Step 2 progress (2026-10-21)
+
+Done: the sources moved to `Client/js/` with the entry at `Client/js/stellar-admin.js`, `rolldown.config.js` builds one minified ES module with a source map (76 KB, 20 KB Brotli, against 92 KB and 28 KB for the Lit IIFE), `interestfor` imported from its package, `copy-vendor.mjs` and `wwwroot/vendor/` removed, the csproj inputs and outputs restored, the icon picker back in the bundle with its `ModuleScript` call and two tests removed, the import map tags and the admin base tag removed, the `MapStellarAdmin` convention adding only the `ResourceAssetCollection` (the import map definition went), and the docs and website pages back to the one module tag. The skill's and website's script timing notes now say module script instead of `defer`.
+
+Verified: `npm run check`, the oxfmt check, `dotnet build` of the solution, all 1688 .NET tests, the skill validation and drift check, `build/smoke-test.sh` against freshly packed packages (the package ships only `stellar-admin.js` and its map), the website's lint, type check and production build (2 existing CSS optimizer warnings), and a headless Chromium pass over 20 DocsSamples component pages and 4 admin panel pages. Every page made one request for the bundle, at its fingerprinted URL in both apps, every `sel-*` element upgraded, and the only error was DocsSamples' missing `favicon.ico`. Interactions checked: carousel, collapsible, command filtering, `dialog()`, dropdown menu, icon picker, slider keyboard, tabs, toast and input OTP.
+
+### Step 2 history: on-demand components (2026-10-21)
+
+Measured (Brotli, quality 11): the unbundled entry and everything it imports came to about 53 KB. The candidates for loading on demand were small: icon picker 4.3 KB, command 5.3 KB with `command-score`, slider 3.8 KB, questionnaire 3.4 KB, carousel 2.3 KB and input OTP 1.9 KB, 21 KB together.
+
+The icon picker was split out as a trial: the internal `ModuleScript` helper renders `<script type="module">` inside the element at the module's fingerprinted URL from the page's static asset collection, or its plain URL with the path base. Verified in headless Chromium: DocsSamples `/IconPicker` loaded the module once for its five pickers, `/Tabs` didn't load it, and on the admin amenities grid it loaded only when an htmx inline row edit swapped in a picker (htmx 4 recreates each `<script>` in swapped content with its attributes, and the browser runs a module URL once). Decision (2026-10-21): components this small belong in the bundle, so the icon picker goes back. The mechanism stays for large, rarely used components, starting with the rich text editor.
+
+## Step 3: on-demand bundles
+
+With the [rich text editor](rich-text-editor.md): a second Rolldown entry builds its self-contained module, its tag helper loads it with `ModuleScript`, and the browser check covers a page without an editor (not loaded), one with several (loaded once) and an htmx partial.
 
 ## Outside this repository
 
-- The website's embed exporter loads the single `stellar-admin.js` IIFE and needs updating for modules.
+- The website's embed exporter loads the single `stellar-admin.js` IIFE. With the bundle it stays a single file, so it needs only the module tag. On-demand bundles will need it to serve their files too.
 - The release notes call out the script tag change as breaking.
 
 ## Afterwards

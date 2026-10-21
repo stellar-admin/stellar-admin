@@ -52,8 +52,6 @@ Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://w
 <html lang="en">
 <head>
     ...
-    <base href="~/"/>
-    <script type="importmap"></script>
     <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
     <script type="module" src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
 </head>
@@ -62,14 +60,6 @@ Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://w
 </body>
 </html>
 ```
-
-The import map gives the browser cacheable, versioned URLs for the modules `stellar-admin.js` imports. ASP.NET fills it from the static asset manifest, which takes three things:
-
-- `<base href="~/"/>` before the import map. ASP.NET writes the map's entries relative to the page, so without the base tag they match nothing on pages below the site root. The base tag also makes every relative URL on the page resolve against the site root, including `href="#section"` links and relative htmx URLs, so write those as absolute paths (`href="/orders#totals"`) or generate them with `asp-page`, `asp-action` or `Url`.
-- `app.MapStaticAssets()`, and `.WithStaticAssets()` on the endpoints that render pages, such as `app.MapRazorPages().WithStaticAssets()`.
-- In an MVC app, `app.MapControllers().WithStaticAssets()`. `.WithStaticAssets()` on `MapControllerRoute`, which the .NET templates use, has no effect ([dotnet/aspnetcore#59003](https://github.com/dotnet/aspnetcore/issues/59003)).
-
-Without these the scripts still work, but the browser revalidates each module on every page load. Content that htmx swaps into the page needs none of this, because the import map stays in effect for the whole document.
 
 > [!TIP]
 > To change the default theme, create a theme file in the [theme builder](https://www.stellaradmin.com/theme-builder) and link it after the stylesheet. The [Theming page](https://www.stellaradmin.com/docs/ui/theming) provides more information on theming. 

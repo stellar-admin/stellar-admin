@@ -2,18 +2,20 @@
   "name": "stellar-admin-ui",
   "type": "module",
   "scripts": {
-    "build": "npm run build:vendor && npm run build:css",
+    "build": "npm run build:js && npm run build:css",
     "build:css": "node ./scripts/build-css.mjs",
-    "build:vendor": "node ./scripts/copy-vendor.mjs",
+    "build:js": "rolldown -c",
+    "build:js:watch": "rolldown -c -w",
     "check": "tsc -p .",
-    "fmt": "cd .. && oxfmt wwwroot/js wwwroot/stellar-admin.js",
-    "fmt:check": "cd .. && oxfmt --check wwwroot/js wwwroot/stellar-admin.js"
+    "fmt": "oxfmt js",
+    "fmt:check": "oxfmt --check js"
   },
   "dependencies": {
     "interestfor": "^1.0.8"
   },
   "devDependencies": {
     "oxfmt": "^0.36.0",
+    "rolldown": "^1.2.14",
     "typescript": "^5.9.3"
   }
 }
