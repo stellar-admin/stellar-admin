@@ -28,6 +28,7 @@ public class FieldDisplayDefaultsTests
     [Arguments(nameof(Model.Rating), typeof(NumberDisplay))]
     [Arguments(nameof(Model.Name), typeof(TextDisplay))]
     [Arguments(nameof(Model.Notes), typeof(TextDisplay))]
+    [Arguments(nameof(Model.Story), typeof(HtmlDisplay))]
     public async Task Resolve_WithKnownType_ReturnsDefaultDisplay(string property, Type expected)
     {
         // Arrange
@@ -178,6 +179,9 @@ public class FieldDisplayDefaultsTests
         public DateOnly Released { get; set; }
 
         public ProductStatus Status { get; set; }
+
+        [DataType(DataType.Html)]
+        public string? Story { get; set; }
 
         public string[] Tags { get; set; } = [];
 

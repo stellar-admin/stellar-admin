@@ -892,16 +892,17 @@ internal sealed class ResourceController<TResource>(
             );
         }
 
-        var services = HttpContext.RequestServices;
-        var value = await editor.StoreImageAsync!(file, services, cancellationToken);
+        var (value, url) = await editor.StoreAsync(
+            file,
+            HttpContext.RequestServices,
+            cancellationToken
+        );
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new InvalidOperationException(
-                $"StoreImage for the image field {fieldName} returned no value."
+                $"StoreImage for the field {fieldName} returned no value."
             );
         }
-
-        var url = await editor.ResolveUrlAsync(value, services, cancellationToken);
 
         return Json(new { value, url }, ImageUploadJsonOptions);
     }
@@ -1403,7 +1404,7 @@ internal sealed class ResourceController<TResource>(
     }
 
     // The editable image field of the create or edit form, which must store uploads
-    private ImageEditor? FindImageField(string? form, string? fieldName)
+    private IImageUploadEditor? FindImageField(string? form, string? fieldName)
     {
         var fields = form?.ToLowerInvariant() switch
         {
@@ -1414,7 +1415,7 @@ internal sealed class ResourceController<TResource>(
 
         return
             fields?.FirstOrDefault(options => options.FieldName == fieldName)
-                is { IsReadOnly: false, Editor: ImageEditor { HasStore: true } editor }
+                is { IsReadOnly: false, Editor: IImageUploadEditor { HasStore: true } editor }
             ? editor
             : null;
     }
@@ -1973,6 +1974,7 @@ internal sealed class ResourceController<TResource>(
         }
 
         ValidateIconFields(model, iconFields, prefix);
+        SanitizeRichTextFields(model, formFields, fields);
         await BindWithBindersAsync(model, boundFields, source, prefix);
 
         return ModelState.IsValid;
@@ -2040,6 +2042,41 @@ internal sealed class ResourceController<TResource>(
             {
                 ModelState.AddModelError(key, "Choose an icon from the list.");
             }
+        }
+    }
+
+    // A rich text field's HTML is sanitized as it's bound, so only safe markup is saved: a field with the rich text
+    // editor, or one whose property is [DataType(DataType.Html)] and has no other editor
+    private void SanitizeRichTextFields(
+        object model,
+        IReadOnlyList<FormFieldOptions> formFields,
+        HashSet<string> fields
+    )
+    {
+        IRichTextSanitizer? sanitizer = null;
+        foreach (var field in formFields)
+        {
+            var property = field.PropertyPath[^1];
+            var richText =
+                field.Editor is RichTextEditor
+                || field.Editor is null
+                    && property.GetCustomAttribute<DataTypeAttribute>()?.DataType == DataType.Html;
+            if (
+                !richText
+                || field.IsReadOnly
+                || field.Binder is not null
+                || !fields.Contains(field.FieldName)
+                || property.PropertyType != typeof(string)
+                || ResourcePropertyPath.GetValue(model, field.PropertyPath.SkipLast(1))
+                    is not { } container
+                || property.GetValue(container) is not string { Length: > 0 } html
+            )
+            {
+                continue;
+            }
+
+            sanitizer ??= HttpContext.RequestServices.GetRequiredService<IRichTextSanitizer>();
+            property.SetValue(container, sanitizer.Sanitize(html));
         }
     }
 

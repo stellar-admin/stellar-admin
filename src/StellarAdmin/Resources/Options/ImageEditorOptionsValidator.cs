@@ -25,6 +25,12 @@ internal sealed class ImageEditorOptionsValidator<TResource>
     {
         foreach (var field in formOptions?.Fields ?? [])
         {
+            if (field is { IsReadOnly: false, Editor: RichTextEditor { HasStore: true } richText })
+            {
+                AddUploadFailures(failures, form, "rich text", field.FieldName, richText);
+                continue;
+            }
+
             if (field is not { IsReadOnly: false, Editor: ImageEditor editor })
             {
                 continue;
@@ -37,19 +43,30 @@ internal sealed class ImageEditorOptionsValidator<TResource>
                 );
             }
 
-            if (editor.MaxFileSize <= 0)
-            {
-                failures.Add(
-                    $"The {form} form's image field '{field.FieldName}' requires a positive MaxFileSize."
-                );
-            }
+            AddUploadFailures(failures, form, "image", field.FieldName, editor);
+        }
+    }
 
-            if (editor.AcceptedTypes is not { Count: > 0 })
-            {
-                failures.Add(
-                    $"The {form} form's image field '{field.FieldName}' requires at least one accepted type."
-                );
-            }
+    private static void AddUploadFailures(
+        List<string> failures,
+        string form,
+        string kind,
+        string fieldName,
+        IImageUploadEditor editor
+    )
+    {
+        if (editor.MaxFileSize <= 0)
+        {
+            failures.Add(
+                $"The {form} form's {kind} field '{fieldName}' requires a positive MaxFileSize."
+            );
+        }
+
+        if (editor.AcceptedTypes is not { Count: > 0 })
+        {
+            failures.Add(
+                $"The {form} form's {kind} field '{fieldName}' requires at least one accepted type."
+            );
         }
     }
 }

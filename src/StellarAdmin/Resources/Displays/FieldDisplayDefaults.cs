@@ -47,6 +47,8 @@ internal static class FieldDisplayDefaults
                 return new LinkDisplay();
             case nameof(DataType.PhoneNumber):
                 return new PhoneDisplay();
+            case nameof(DataType.Html):
+                return new HtmlDisplay();
         }
 
         var type = metadata.UnderlyingOrModelType;

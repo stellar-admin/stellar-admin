@@ -6,6 +6,7 @@ using AdminPlayground.Resources.Departments;
 using AdminPlayground.Resources.Destinations;
 using AdminPlayground.Resources.FieldEditors;
 using AdminPlayground.Resources.FormLayouts;
+using AdminPlayground.Resources.Guides;
 using AdminPlayground.Resources.Products;
 using AdminPlayground.Resources.Roles;
 using AdminPlayground.Resources.Tags;
@@ -79,6 +80,7 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddDepartmentResource();
     admin.AddCustomerResource();
     admin.AddDestinationResource();
+    admin.AddGuideResource();
     admin.AddAmenityResource();
     admin.AddProductResource();
     admin.AddCategoryResource();

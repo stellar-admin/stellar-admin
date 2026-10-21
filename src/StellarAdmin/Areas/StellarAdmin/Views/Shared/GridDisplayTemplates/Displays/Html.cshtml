@@ -1,0 +1,5 @@
+@using StellarAdmin.Resources.Displays
+@inherits FieldDisplayView<HtmlDisplay>
+
+@* A cell shows the text without its formatting *@
+<span class="sa-text-display" data-multiline="true" data-line-clamp="@Display.LineClamp" style="--_line-clamp:@Display.LineClamp">@HtmlText.ToPlainText(Model as string)</span>

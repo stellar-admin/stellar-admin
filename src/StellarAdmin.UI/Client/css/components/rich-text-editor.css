@@ -5,7 +5,7 @@
    .sa-rich-text-editor-note, .sa-rich-text-editor-image, .sa-rich-text-editor-image-handle,
    .sa-rich-text-editor-image-progress, .sa-rich-text-editor-bubble, .sa-rich-text-editor-menu,
    .sa-rich-text-editor-menu-empty, .sa-rich-text-editor-table-handle, .sa-rich-text-editor-table-grip,
-   .sa-rich-text-editor-link-form */
+   .sa-rich-text-editor-link-form, .sa-rich-text */
 
 @layer sa.components {
   .sa-rich-text-editor {
@@ -76,19 +76,12 @@
     }
   }
 
-  .sa-rich-text-editor-content {
-    position: relative;
-    min-height: calc(var(--_rows, 8) * 1lh + 6 * var(--sa-unit));
-    max-height: 32rem;
-    overflow-y: auto;
-    padding: calc(3 * var(--sa-unit)) calc(4 * var(--sa-unit));
+  /* Formatted text, as the rich text editor writes it: use it to show the editor's HTML. */
+  .sa-rich-text {
+    color: var(--sa-color-ink);
     font-size: var(--sa-text-body);
     line-height: var(--sa-leading-body);
-    outline: none;
-    word-wrap: break-word;
-    white-space: break-spaces;
-    font-variant-ligatures: none;
-    font-feature-settings: "liga" 0;
+    overflow-wrap: break-word;
 
     & > * + * {
       margin-top: 0.75em;
@@ -149,9 +142,58 @@
       margin-block: 1.25em;
       border: 0;
       border-top: var(--sa-border-width) solid var(--sa-color-line);
-      &.ProseMirror-selectednode {
-        outline-offset: 4px;
-      }
+    }
+    & ul {
+      padding-inline-start: 1.5em;
+      list-style: disc;
+    }
+    & ol {
+      padding-inline-start: 1.5em;
+      list-style: decimal;
+    }
+    & li + li {
+      margin-top: 0.25em;
+    }
+    & img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--sa-radius-item);
+    }
+    & table {
+      width: 100%;
+      overflow: hidden;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    & th,
+    & td {
+      padding: calc(1.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
+      border: var(--sa-border-width) solid var(--sa-color-line);
+      vertical-align: top;
+      text-align: start;
+    }
+    & th {
+      background: var(--sa-color-surface-subtle);
+      font-weight: 600;
+    }
+  }
+
+  .sa-rich-text-editor-content {
+    position: relative;
+    min-height: calc(var(--_rows, 8) * 1lh + 6 * var(--sa-unit));
+    max-height: 32rem;
+    overflow-y: auto;
+    padding: calc(3 * var(--sa-unit)) calc(4 * var(--sa-unit));
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-body);
+    outline: none;
+    word-wrap: break-word;
+    white-space: break-spaces;
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0;
+
+    & hr.ProseMirror-selectednode {
+      outline-offset: 4px;
     }
     & .ProseMirror-selectednode {
       outline: 2px solid var(--sa-color-accent);
@@ -222,23 +264,9 @@
     & .tableWrapper {
       overflow-x: auto;
     }
-    & table {
-      width: 100%;
-      overflow: hidden;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
     & th,
     & td {
       position: relative;
-      padding: calc(1.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
-      border: var(--sa-border-width) solid var(--sa-color-line);
-      vertical-align: top;
-      text-align: start;
-    }
-    & th {
-      background: var(--sa-color-surface-subtle);
-      font-weight: 600;
     }
     & .selectedCell::after {
       content: "";

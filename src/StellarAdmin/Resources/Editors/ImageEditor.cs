@@ -10,7 +10,7 @@ namespace StellarAdmin.Resources.Editors;
 ///     The form then saves the value that delegate returns. StellarAdmin never deletes images, so
 ///     files that are replaced, removed or never saved stay where they were stored.
 /// </remarks>
-public sealed class ImageEditor : FieldEditor, IFieldEditor<ImageEditorHandler>
+public sealed class ImageEditor : FieldEditor, IFieldEditor<ImageEditorHandler>, IImageUploadEditor
 {
     private readonly ImageUrlResolver _urlResolver = new();
 
@@ -59,6 +59,8 @@ public sealed class ImageEditor : FieldEditor, IFieldEditor<ImageEditorHandler>
     public override string TemplateName => "Editors/Image";
 
     internal bool HasStore => StoreImageAsync is not null;
+
+    bool IImageUploadEditor.HasStore => HasStore;
 
     internal Func<IFormFile, IServiceProvider, CancellationToken, Task<string>>? StoreImageAsync
     {
@@ -116,6 +118,22 @@ public sealed class ImageEditor : FieldEditor, IFieldEditor<ImageEditorHandler>
         ArgumentNullException.ThrowIfNull(store);
 
         StoreImageAsync = store;
+    }
+
+    async Task<(string Value, string? Url)> IImageUploadEditor.StoreAsync(
+        IFormFile file,
+        IServiceProvider services,
+        CancellationToken cancellationToken
+    )
+    {
+        var value = await StoreImageAsync!(file, services, cancellationToken);
+
+        return (
+            value,
+            string.IsNullOrWhiteSpace(value)
+                ? null
+                : await ResolveUrlAsync(value, services, cancellationToken)
+        );
     }
 
     // The URL of a stored value, or null for an empty one

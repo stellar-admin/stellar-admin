@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlSanitizer" />
     <PackageReference Include="Humanizer.Core" />
   </ItemGroup>
 

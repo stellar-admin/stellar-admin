@@ -1,0 +1,12 @@
+@inherits FieldEditorView<RichTextEditor>
+
+@{
+    // Images upload to the resource of the form the field is on; a create form in a sheet is its own resource's
+    var canUpload = !IsReadOnly && Editor.HasStore && Field?.FieldName is not null;
+    var form = ViewData[ViewDataKeys.SheetLevel] is not null ? "create" : ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant();
+    var uploadUrl = canUpload ? Url.Action("UploadImage", new { id = (string?)null, form, field = Field!.FieldName }) : null;
+}
+
+<sa-rich-text-editor class-names="@EditorClassNamesMapper.ForRichTextEditor(Editor)" asp-for="@Model" rows="@Editor.Rows"
+                     placeholder="@Editor.Placeholder" upload-url="@uploadUrl" accept="@string.Join(',', Editor.AcceptedTypes)"
+                     max-file-size="Editor.MaxFileSize" readonly="IsReadOnly" label="@Title" description="@Description" />

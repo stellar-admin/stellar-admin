@@ -1,6 +1,6 @@
 # Rich text editor
 
-Status: in progress (2026-10-21) on the `rich-text-editor` branch. Approach and public API approved 2026-10-21. Proposed 2026-10-18.
+Status: in progress (2026-10-21) on the `rich-text-editor` branch; phases 1 and 2 done. Approach and public API approved 2026-10-21. Proposed 2026-10-18.
 
 An editor for long text that staff can format, such as bold, lists and links. From the Voyager Travel session feedback, where a guide's `Bio` had only a plain text area.
 
@@ -15,6 +15,7 @@ Explore the options first, then propose the approach and public API to Jerrie be
 - Decision 1: the admin panel depends on `HtmlSanitizer` (Ganss.Xss, MIT) and sanitizes the HTML on save and on display by default, with a hook to replace it.
 - Decision 2: every tool is on in the first version (images only with uploads). A tools flags enum waits until an app asks for it.
 - Decision 3: fix toggle tooltips in the library first, as its own change (see Follow-ups).
+- Phase 2 choices: the sanitizer hook is an `IRichTextSanitizer` service an app replaces, so one registration covers saving and displaying; `HtmlDisplay.LineClamp` sets the index excerpt's lines; `.sa-rich-text` is a public class for showing the editor's HTML.
 - Not in the proposal, following the library's conventions: the editor's icons are `SemanticIconRole` members so they follow the icon pack, `RichTextEditorClassNames` has `Control`, `Editor` and `Toolbar`, and `sa-rich-text-editor` takes `readonly` (not `disabled`), as the textarea editor does.
 - Phases, stopping at each boundary: the UI component (tag helper, script, CSS, DocsSamples, tests); the admin panel editor, display and sanitizing; the website docs and consumer skills.
 
@@ -33,6 +34,18 @@ Done on the `rich-text-editor` branch:
 - DocsSamples `/RichTextEditor` (Intro, Model Binding, Images using the image upload demo endpoint, Read Only), tag helper tests, the product guide's client build paragraph, and the regenerated UI skill component reference and index.
 
 Verified: `npm run check`, the oxfmt check, the Release build of the solution (no new warnings), all 1728 .NET tests including 9 new tag helper tests, and the skills generator drift check after regenerating. Headless Chromium 151 on DocsSamples `/RichTextEditor`: the four editors load `rich-text-editor.js` once and mount with no errors, and `/Textarea` doesn't load it; toolbar state follows the cursor, typing updates the textarea and fires `input`, undo, the block menu (label and focus), the bold tooltip with its shortcut, the selection bubble and its link popover, the slash menu filtering to a table, Tab between cells, the table handles and column menu, an image upload with progress ending in the endpoint's URL, an oversized image rejected with a note, read-only (no toolbar, not editable, readonly textarea), the label click, the divider replacing an empty heading, and two editors inserted later through a parsed fragment (as htmx swaps them) mounting without loading the script again, one turning a plain-text value into paragraphs and one keeping a saved image width. Screenshots in dark and light and at 390px wide (no horizontal scroll) were checked by eye. Not checked yet: an htmx swap in the admin panel (phase 2), other themes and density levels, and image resizing by drag.
+
+## Phase 2: the admin panel (2026-10-21)
+
+Done on the `rich-text-editor` branch:
+
+- `RichTextEditor : FieldEditor` (`Placeholder`, `Rows`, `AcceptedTypes`, `MaxFileSize`, `StoreImage` returning the image's URL), with the `Editors/RichText` template. `ImageEditor` and `RichTextEditor` share an internal `IImageUploadEditor`, so the resource's `UploadImage` action serves both, and the startup check of accepted types and file size covers a rich text field with `StoreImage`.
+- `IRichTextSanitizer` (public, `StellarAdmin.Resources`): the default, `RichTextSanitizer`, uses `HtmlSanitizer` 9.2.1039 (Ganss.Xss, MIT, new dependency of `StellarAdmin`) limited to the editor's elements and attributes, with http, https and mailto links and images or relative ones. An app replaces it by registering its own implementation. Forms sanitize a rich text field (the editor, or `[DataType(DataType.Html)]` without another editor) as it is bound, and `HtmlDisplay` sanitizes again when it renders.
+- `HtmlDisplay : FieldDisplay` with `LineClamp` (default 2): view pages and details show the HTML in `.sa-rich-text`; index cells show its text through the internal `HtmlText` (blocks separated by spaces, scripts and styles dropped), clamped. `[DataType(DataType.Html)]` defaults to `HtmlDisplay` and, through the `Html` editor template, to `RichTextEditor`.
+- `.sa-rich-text` in StellarAdmin.UI: the editor's typography (headings, lists, quotes, code, tables, images, links) split out of the editing area's rules, so the editor and the display (or an app's own page) format HTML the same way. The editing area has both classes.
+- AdminPlayground: an in-memory Guides resource (no database) with a `[DataType(Html)]` bio, the rich text editor with images in the playground's upload folder, the excerpt in the index, the formatted bio on the view page, a table, and one plain-text bio from before the field was rich text.
+
+Verified: `npm run check`, the oxfmt check, the Release build (the only new warning repeats the image editor tests' existing nullability warning on a startup assertion), all 1753 .NET tests, including 8 integration tests for the editor (settings and upload URL, the `[DataType(Html)]` default, sanitizing on save for both kinds of field, editor markup kept intact, a replacement sanitizer, uploads, upload without `StoreImage`, the startup check), 2 for `HtmlDisplay`, and unit tests for `HtmlText`, `RichTextEditor`, `HtmlDisplay` and the default display, and the skills drift check. Headless Chromium on AdminPlayground: the index shows the excerpts without loading the editor script; the edit page mounts the editor, turns the plain-text bio into paragraphs and uploads an image through the admin endpoint, and the save lands on the view page with the formatted HTML; a form posted with unsafe HTML saved without `onclick`, the `javascript:` link, `<script>`, `onerror`, the `data:` image, `style`, `class` and `<iframe>`; and two editors swapped into the index page with `htmx.ajax` both mounted with one request for the script. `app.db` is unchanged. Not checked: the editor in a create sheet opened from a lookup, and the editor in an inline row (like the textarea, it has no inline row template).
 
 ## Loading the editor's assets
 

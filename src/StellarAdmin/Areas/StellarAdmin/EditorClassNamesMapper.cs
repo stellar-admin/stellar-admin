@@ -117,6 +117,21 @@ internal static class EditorClassNamesMapper
         return classes;
     }
 
+    public static RichTextEditorClassNames ForRichTextEditor(RichTextEditor editor)
+    {
+        var classes = editor.ClassNames;
+
+        return new RichTextEditorClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Label = classes.Label,
+            Root = classes.Root,
+        };
+    }
+
     public static SelectClassNames ForSelect(FieldEditor? editor)
     {
         var classes = editor?.ClassNames;

@@ -5,6 +5,7 @@ using StellarAdmin.Areas.StellarAdmin.Controllers;
 using StellarAdmin.Home;
 using StellarAdmin.Infrastructure.Icons;
 using StellarAdmin.Infrastructure.Routing;
+using StellarAdmin.Resources;
 using StellarAdmin.Sidebar;
 using StellarAdmin.UI;
 
@@ -41,6 +42,7 @@ public static class StellarAdminServiceCollectionExtensions
             services.TryAddSingleton<LinkChecker>();
             services.TryAddSingleton<SetupStatusResolver>();
             services.TryAddSingleton<IconCatalog>();
+            services.TryAddSingleton<IRichTextSanitizer, RichTextSanitizer>();
             services.TryAddSingleton(new EntityCandidateScanner(services));
 
             var admin = new StellarAdminBuilder(services, GetOrCreateOptions(services));

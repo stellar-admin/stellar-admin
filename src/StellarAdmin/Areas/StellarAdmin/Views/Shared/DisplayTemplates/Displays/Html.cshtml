@@ -1,0 +1,6 @@
+@using StellarAdmin.Resources
+@using StellarAdmin.Resources.Displays
+@inherits FieldDisplayView<HtmlDisplay>
+@inject IRichTextSanitizer Sanitizer
+
+<div class="sa-rich-text">@Html.Raw(Sanitizer.Sanitize(Model as string ?? string.Empty))</div>

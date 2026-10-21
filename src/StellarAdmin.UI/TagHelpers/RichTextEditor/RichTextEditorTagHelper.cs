@@ -197,7 +197,8 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             { "data-slot", "rich-text-editor-content" },
             {
                 "class",
-                JoinCssClasses("sa-rich-text-editor-content", ClassNames?.Editor) ?? string.Empty
+                JoinCssClasses("sa-rich-text-editor-content sa-rich-text", ClassNames?.Editor)
+                    ?? string.Empty
             },
             { "role", "textbox" },
             { "aria-multiline", "true" },
