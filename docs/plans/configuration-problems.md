@@ -204,7 +204,7 @@ Built 2026-10-21:
 - The partial's model is the internal `ConfigurationProblem` list, so unlike `_EnvironmentIndicator.cshtml` an app can't usefully replace it. An app that wants its own presentation turns the indicator off and reads the log. Changed from the plan's "replaceable partial".
 - The styles are in `src/StellarAdmin/Client/css/client.css` (`.sa-configuration-problems*`). The pill centres on the main area for the expanded, offcanvas-collapsed and icon-collapsed sidebar and at phone width, moves in 3px for the frame indicator, and hides while any modal dialog is open (it otherwise sat above the sheet's backdrop).
 - A turned-off resource's routes render `ResourceOff.cshtml` in Development (in the admin layout, with a 404 status and the reason) and a plain 404 elsewhere.
-- AdminPlayground has a deliberately misconfigured set behind `Playground:ShowConfigurationProblems` (false in `appsettings.Development.json`; set it to true or run with `Playground__ShowConfigurationProblems=true`): an Excursions resource with a computed column without a title, an unsortable default sort, a page size missing from the page sizes and create without a handler; an EF resource for an unmapped `ExcursionBooking` at `/stellaradmin/excursion-bookings`; and a sidebar link with a blank page.
+- AdminPlayground is always deliberately misconfigured (a switch was dropped at Jerrie's request, 2026-10-21), so its Development pages always show the indicator: an Excursions resource with a computed column without a title, an unsortable default sort, a page size missing from the page sizes and create without a handler; an EF resource for an unmapped `ExcursionBooking` at `/stellaradmin/excursion-bookings`; and a sidebar link with a blank page.
 
 ## Phase 4 notes
 

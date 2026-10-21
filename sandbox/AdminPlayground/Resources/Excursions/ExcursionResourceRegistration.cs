@@ -5,8 +5,8 @@ using StellarAdmin.Sidebar;
 
 namespace AdminPlayground.Resources.Excursions;
 
-// A deliberately misconfigured resource, so the configuration problems indicator can be checked. Turn it on with
-// Playground:ShowConfigurationProblems in appsettings.Development.json.
+// Deliberately misconfigured, so the playground always has configuration problems for the Development indicator to
+// show
 internal static class ExcursionResourceRegistration
 {
     internal static void AddMisconfiguredExcursionResource(this StellarAdminBuilder admin)

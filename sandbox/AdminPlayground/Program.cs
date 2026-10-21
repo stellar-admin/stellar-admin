@@ -88,10 +88,7 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddTagResource();
     admin.AddFieldEditorGallery();
     admin.AddFormLayoutGallery();
-    if (builder.Configuration.GetValue<bool>("Playground:ShowConfigurationProblems"))
-    {
-        admin.AddMisconfiguredExcursionResource();
-    }
+    admin.AddMisconfiguredExcursionResource();
 
     admin.AddSidebarLink(
         "Sales report",
