@@ -25,7 +25,6 @@ public class EditorCheckTests
         var problem = options.Problems.Single();
         await Assert.That(options.Create!.Fields.Single().Editor).IsNull();
         await Assert.That(problem.Kind).IsEqualTo(ConfigurationProblemKind.UnsuitableEditor);
-        await Assert.That(problem.Effect).IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 
     [Test]
@@ -49,9 +48,6 @@ public class EditorCheckTests
         var radio = (RadioGroupEditor)options.Create!.Fields.Single().Editor!;
         await Assert.That(radio.ClassNames.Content).IsNull();
         await Assert.That(radio.ClassNames.Option.Error).IsNull();
-        await Assert
-            .That(options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 
     [Test]

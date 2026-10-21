@@ -19,22 +19,15 @@ Instead, the admin panel finds each problem, works around it, logs it, and in De
 ## Model
 
 1. **Collect, don't throw.** Every check reports a problem instead of failing. Checks run where the validators run now, after all configuration and post-configuration, and they repair the options so that reading them always succeeds.
-2. **Every problem has an effect.** A fallback that keeps the rest of the panel working:
+2. **Every problem says what happens instead.** A fallback that keeps the rest of the panel working, in plain words: "The list uses the data source's order.", "There's no New button, and the create page returns 404.", "The field is left out." The last resort, for problems with no narrower fallback (an EF entity that isn't mapped, an invalid slug), makes the resource unavailable: it is hidden from the sidebar and the command palette, and its pages return 404 (Development shows the problem instead). Revised 2026-10-21: the first version also labelled each problem Ignored, Adjusted, Turned off or Resource off; Jerrie found the labels meaningless, so they were dropped (see decision 11). The inventory below keeps them as history.
 
-   | Effect | Meaning | Examples |
-   | --- | --- | --- |
-   | Ignored | A setting falls back to its default. | A default sort that names no sortable column: the list uses the data source's order. Invalid scopes: the scopes bar is not shown. |
-   | Adjusted | The panel corrects a setting. | A default page size missing from the page sizes is added to them. |
-   | Turned off | One feature becomes unavailable. | Create without a create handler: the New button is hidden and the create route returns 404. A form field without a public setter is left out of the form. A view page without fields is turned off. |
-   | Resource off | The resource is unavailable. Last resort, for problems with no narrower fallback. | An EF entity that is not mapped, or has no supported primary key. The resource leaves the sidebar and the command palette, and its routes return 404 (Development shows the problem instead). |
-
-3. **Isolation.** A problem, or an unexpected exception while building one resource's options, affects only that resource. Other resources and the host app keep working. A guarded accessor reads resource options for the sidebar, the palette and the controller, and caches a failure as a Resource off problem instead of rethrowing it on each request.
+3. **Isolation.** A problem, or an unexpected exception while building one resource's options, affects only that resource. Other resources and the host app keep working. A guarded accessor reads resource options for the sidebar, the palette and the controller, and caches a failure as a problem that makes the resource unavailable instead of rethrowing it on each request.
 4. **Logged once, everywhere.** A hosted service resolves every registered resource's options at startup, catching everything, and logs each problem once as a warning in the `StellarAdmin.Configuration` category with a stable event ID per kind of problem. Production operators see the problems in their logs. Nothing in startup throws.
 5. **New checks never break apps.** A check added in a later release can only ignore a setting or turn a feature off, with a log entry and the Development indicator, so an upgrade cannot stop an application.
 6. **Development shows them.** See [Presentation](#presentation). Other environments show nothing in the UI.
 7. **Strict mode is opt-in.** With `ThrowOnProblems` set (see [API](#api)), the startup service throws on the first problem instead of logging it, for teams that want tests or CI to fail.
 
-Each problem carries the resource, the effect, a one-sentence statement of what is wrong, what the panel did, how to fix it, and where it was configured (such as `AddResource<Booking>() → Index → DefaultSort(b => b.DepartsOn)`). These types stay internal.
+Each problem carries the resource, a one-sentence statement of what is wrong, what the panel did, how to fix it, and where it was configured (such as `AddResource<Booking>() → Index → DefaultSort(b => b.DepartsOn)`). These types stay internal.
 
 ## Presentation
 
@@ -42,7 +35,7 @@ Chosen by Jerrie on 2026-10-21 from the prototype: style 1 (Ink), bottom centre,
 
 - **Indicator.** A pill fixed at the bottom centre of the main area (centred on the inset, not on the window, so it follows the sidebar width and the collapsed sidebar). It uses the inverse colours (`--sa-color-ink` background, `--sa-color-surface` text), so it reads as a development tool rather than as part of the page in every theme. In dark mode it is light. A warning-coloured count sits on the left, followed by "Configuration problems". It lifts slightly on hover and has a visible focus ring.
 - **Environment indicator.** The pill lives on the bottom edge, and the environment indicator on the top edge, so the two never overlap. With the frame indicator, the pill moves in by the frame's 3px border.
-- **Sheet.** Clicking the pill opens a right-hand sheet (`sa-sheet`), titled "Configuration problems", with the description "The admin panel kept running and worked around these. Fix them before you deploy." Problems are grouped by resource, each group with a link to the resource. Each problem is a bordered item: the statement and an effect badge (Ignored, Adjusted, Turned off, Resource off), what the panel did, the fix, and the configuration location in monospace. The footer says that only Development shows this and that every environment logs each problem once as a warning from `StellarAdmin.Configuration`.
+- **Sheet.** Clicking the pill opens a right-hand sheet (`sa-sheet`), titled "Configuration problems", with the description "The admin panel kept running and worked around these. Fix them before you deploy." Problems are grouped by resource, each group with a link to the resource. Each problem is a bordered item: the statement with the fix, then "Result:" and what the panel does instead. A resource that isn't available is headed "Bookings isn't available". The footer says that only Development shows this and that every environment logs each problem once as a warning from `StellarAdmin.Configuration`.
 - **Rejected.** A top bar, a chip on the environment indicator, in-context alerts with sidebar dots, a header button, and seven other floating styles. A compact panel above the pill was dropped because it adds a click before the details, and the sheet already keeps the page in view.
 - **Rendering.** The admin layout renders a replaceable partial, `/Areas/StellarAdmin/Views/Shared/_ConfigurationProblems.cshtml`, like `_EnvironmentIndicator.cshtml`, only in Development and only when there are problems. The pill and the sheet's item styles go in the panel's stylesheet (`src/StellarAdmin/Client/css/`), written with `sa-*` components and theme variables. The pill is a `button` with `commandfor` and `command="show-modal"`, so it needs no new JavaScript.
 - Host pages that opt into the admin layout (`StellarAdminLayouts.Dashboard`) get the indicator too.
@@ -61,7 +54,7 @@ admin.ConfigureDiagnostics(diagnostics =>
 
 - `ConfigureDiagnostics` on `StellarAdminBuilder`, with a `DiagnosticsBuilder`. `Configure*` because diagnostics ship by default, and properties because both settings are scalars ([options builders](../conventions/options-builders.md)). "Diagnostics" leaves room for later developer-facing checks.
 - `ShowIndicator` follows `ShowSetupChecklist` on `ConfigureHomePage`. Off hides the pill and the sheet. Problems are still logged.
-- Integrations, such as StellarAdmin.EntityFrameworkCore, report problems from a post-configuration callback after repairing the options: `ResourceOptions<TResource>.ReportProblem(EventId eventId, ConfigurationProblemEffect effect, string message, string outcome)`, with the public `ConfigurationProblemEffect` enum (`Ignored`, `Adjusted`, `TurnedOff`, `ResourceOff`). Two repair methods support it: `ResourceFormOptions.RemoveField(FormFieldOptions field)` and `DataGridColumnOptions.DisableSorting()`. The EF Core integration logs its problems with event IDs 1080 to 1085.
+- Integrations, such as StellarAdmin.EntityFrameworkCore, report problems from a post-configuration callback after repairing the options: `ResourceOptions<TResource>.ReportProblem(EventId eventId, string message, string outcome)`, and `ReportUnavailable(EventId eventId, string message)` for a problem that makes the resource unavailable. Two repair methods support it: `ResourceFormOptions.RemoveField(FormFieldOptions field)` and `DataGridColumnOptions.DisableSorting()`. The EF Core integration logs its problems with event IDs 1080 to 1085.
 - `ThrowOnProblems` applies in every environment. An app that wants it only in tests sets it from its own condition, such as `builder.Environment.IsEnvironment("Testing")`. It throws an `InvalidOperationException` listing every problem, from the startup service.
 
 ## Scope
@@ -200,10 +193,10 @@ None.
 
 Built 2026-10-21:
 
-- `_Layout.cshtml` renders `/Areas/StellarAdmin/Views/Shared/_ConfigurationProblems.cshtml` inside the sidebar wrapper (so it reads the sidebar's width) when the environment is Development, `ShowIndicator` is on and there are problems. The partial is the ink pill and an `sa-sheet` (`#configuration-problems`) opened with `commandfor`/`command="show-modal"`, so it needs no JavaScript. The sheet groups problems by resource, with an Open link for resources that are on, and shows each problem's message, effect badge and outcome.
+- `_Layout.cshtml` renders `/Areas/StellarAdmin/Views/Shared/_ConfigurationProblems.cshtml` inside the sidebar wrapper (so it reads the sidebar's width) when the environment is Development, `ShowIndicator` is on and there are problems. The partial is the ink pill and an `sa-sheet` (`#configuration-problems`) opened with `commandfor`/`command="show-modal"`, so it needs no JavaScript. The sheet groups problems by resource, with an Open link for resources that are on, and shows each problem's message and, after "Result:", its outcome.
 - The partial's model is the internal `ConfigurationProblem` list, so unlike `_EnvironmentIndicator.cshtml` an app can't usefully replace it. An app that wants its own presentation turns the indicator off and reads the log. Changed from the plan's "replaceable partial".
 - The styles are in `src/StellarAdmin/Client/css/client.css` (`.sa-configuration-problems*`). The pill centres on the main area for the expanded, offcanvas-collapsed and icon-collapsed sidebar and at phone width, moves in 3px for the frame indicator, and hides while any modal dialog is open (it otherwise sat above the sheet's backdrop).
-- A turned-off resource's routes render `ResourceOff.cshtml` in Development (in the admin layout, with a 404 status and the reason) and a plain 404 elsewhere.
+- An unavailable resource's routes render `ResourceUnavailable.cshtml` in Development (in the admin layout, with a 404 status and the reason) and a plain 404 elsewhere.
 - AdminPlayground is always deliberately misconfigured (a switch was dropped at Jerrie's request, 2026-10-21), so its Development pages always show the indicator: an Excursions resource with a computed column without a title, an unsortable default sort, a page size missing from the page sizes and create without a handler; an EF resource for an unmapped `ExcursionBooking` at `/stellaradmin/excursion-bookings`; and a sidebar link with a blank page.
 
 ## Phase 4 notes
@@ -230,6 +223,7 @@ Jerrie, 2026-10-21:
 8. Request-time configuration errors are in this work, as phase 4.
 9. Integrations report problems through a public API rather than `InternalsVisibleTo` (see [API](#api)).
 10. The indicator lists icon-registration problems too, through the public `IconOptions.Problems` (StellarAdmin.UI logs them; the panel only shows them).
+11. No effect labels: each problem says in plain words what happens instead. The public `ConfigurationProblemEffect` enum is removed; `ReportProblem(eventId, message, outcome)` reports a worked-around problem, and `ReportUnavailable(eventId, message)` reports one that makes the resource unavailable. The "turned off" wording is gone from messages, the sheet and the unavailable page.
 
 ## Verification
 
@@ -240,5 +234,7 @@ Phase 3, 2026-10-21: the solution-wide test command passed 1780/1780, including 
 Phases 5 and 6, 2026-10-21: two more integration tests (an unmapped EF entity turns only its resource off; a turned-off resource returns a plain 404 outside Development), and the solution-wide test command passed 1786/1786. The `stellar-admin` skill has a new `references/configuration-problems.md` and a task-table row, and its statements that a mistake fails at startup or with a 500 now say what the panel does instead; `docs/development.md` and `docs/repos/skills.md` are updated. `npm test` and `npm run check` in `build/skill-validation` passed (8 tests, 4 skills, 92 Markdown files), and `util/SkillsGenerator -- --check` reported no drift.
 
 Phase 4, 2026-10-21: the solution-wide test command passed 1784/1784. Tests that expected a 500 for these mistakes now expect the page and a logged problem; new tests cover the editor check and an editor rendered with another editor's template (left out of the form, reported once, listed in the indicator).
+
+Effect labels removed, 2026-10-21: the solution builds with no errors, and the solution-wide test command passed with 0 failures. Not rechecked in the browser.
 
 Earlier: The prototype was checked in headless Chromium: all eight floating styles in light mode, the ink pill in dark mode with the frame indicator at bottom centre, the bubble expanded, and the panel and sheet open.

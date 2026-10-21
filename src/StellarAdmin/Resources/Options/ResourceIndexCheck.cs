@@ -30,7 +30,6 @@ internal static class ResourceIndexCheck
 
             options.Report(
                 ConfigurationProblemKind.InvalidPageSizes,
-                ConfigurationProblemEffect.Adjusted,
                 $"The page sizes {Format(paging.PageSizes)} must be positive and distinct.",
                 $"The list offers the page sizes {Format(sizes)}."
             );
@@ -41,7 +40,6 @@ internal static class ResourceIndexCheck
         {
             options.Report(
                 ConfigurationProblemKind.InvalidDefaultPageSize,
-                ConfigurationProblemEffect.Adjusted,
                 $"The default page size {pageSize} must be positive.",
                 $"The list shows {sizes[0]} rows per page."
             );
@@ -53,7 +51,6 @@ internal static class ResourceIndexCheck
             sizes.Sort();
             options.Report(
                 ConfigurationProblemKind.InvalidDefaultPageSize,
-                ConfigurationProblemEffect.Adjusted,
                 $"The default page size {pageSize} isn't one of the page sizes.",
                 $"The list adds it to the page sizes: {Format(sizes)}."
             );
@@ -78,7 +75,6 @@ internal static class ResourceIndexCheck
                 scopes.MutableItems.Remove(scope);
                 options.Report(
                     ConfigurationProblemKind.InvalidScope,
-                    ConfigurationProblemEffect.Ignored,
                     string.IsNullOrWhiteSpace(scope.Id)
                         ? $"The scope '{scope.Title}' has a blank identifier. Give it an identifier."
                         : $"The scope '{scope.Id}' has a blank title. Give it a title.",
@@ -90,7 +86,6 @@ internal static class ResourceIndexCheck
                 scopes.MutableItems.Remove(scope);
                 options.Report(
                     ConfigurationProblemKind.RepeatedScope,
-                    ConfigurationProblemEffect.Ignored,
                     $"The scope identifier '{scope.Id}' is used more than once. Give each scope its own identifier.",
                     $"The later scope '{scope.Title}' is left out."
                 );
@@ -105,7 +100,6 @@ internal static class ResourceIndexCheck
             scopes.DefaultScope = null;
             options.Report(
                 ConfigurationProblemKind.UnknownDefaultScope,
-                ConfigurationProblemEffect.Ignored,
                 $"The default scope '{defaultScope}' matches no scope.",
                 "The list has no default scope."
             );
@@ -123,7 +117,6 @@ internal static class ResourceIndexCheck
             index.DefaultSort = null;
             options.Report(
                 ConfigurationProblemKind.UnsortableDefaultSort,
-                ConfigurationProblemEffect.Ignored,
                 $"The default sort '{sort.Field}' must select a configured sortable column.",
                 "The list uses the data source's order."
             );

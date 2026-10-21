@@ -6,11 +6,13 @@ namespace StellarAdmin.Diagnostics;
 // to fix it, the outcome what the panel did instead.
 internal sealed record ConfigurationProblem(
     ConfigurationProblemKind Kind,
-    ConfigurationProblemEffect Effect,
     string Message,
     string Outcome
 )
 {
+    public const string UnavailableOutcome =
+        "The resource is hidden from the sidebar, and its pages return 404.";
+
     // The log event: the kind's, or the one an integration reported the problem with
     public EventId EventId => IntegrationEventId ?? new((int)Kind, Kind.ToString());
 
@@ -22,6 +24,12 @@ internal sealed record ConfigurationProblem(
     // A problem that another package logs, so the admin panel only shows it
     public bool IsLoggedElsewhere { get; init; }
 
+    // A problem that makes the whole resource unavailable: it is hidden from the sidebar and its pages return 404
+    public bool MakesResourceUnavailable { get; init; }
+
     // The slug of the resource, when it has pages to link to
     public string? ResourceSlug { get; init; }
+
+    public static ConfigurationProblem Unavailable(ConfigurationProblemKind kind, string message) =>
+        new(kind, message, UnavailableOutcome) { MakesResourceUnavailable = true };
 }

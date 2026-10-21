@@ -23,9 +23,6 @@ public class StellarAdminBuilderTests
 
         // Assert
         await Assert.That(sut.Options.SidebarLinks.Single().Group).IsNull();
-        await Assert
-            .That(sut.Options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 
     [Test]
@@ -41,9 +38,6 @@ public class StellarAdminBuilderTests
 
         // Assert
         await Assert.That(sut.Options.SidebarLinks.Single().Icon).IsNull();
-        await Assert
-            .That(sut.Options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 
     [Test]
@@ -129,9 +123,6 @@ public class StellarAdminBuilderTests
 
         // Assert
         await Assert.That(sut.Options.EnvironmentIndicator).IsNull();
-        await Assert
-            .That(sut.Options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.TurnedOff);
     }
 
     [Test]
@@ -147,8 +138,5 @@ public class StellarAdminBuilderTests
 
         // Assert
         await Assert.That(sut.Options.EnvironmentIndicator).IsSameReferenceAs(indicator);
-        await Assert
-            .That(sut.Options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 }

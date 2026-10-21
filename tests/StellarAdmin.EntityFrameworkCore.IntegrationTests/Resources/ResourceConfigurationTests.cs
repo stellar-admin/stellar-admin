@@ -14,7 +14,7 @@ namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 public class ResourceConfigurationTests
 {
     [Test]
-    public async Task UnmappedEntity_TurnsOnlyThatResourceOff()
+    public async Task UnmappedEntity_MakesOnlyThatResourceUnavailable()
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(configureAdmin: admin =>

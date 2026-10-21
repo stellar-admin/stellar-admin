@@ -11,7 +11,7 @@ namespace StellarAdmin.Tests;
 public class StellarAdminBuilderExtensionsTests
 {
     [Test]
-    public async Task AddResource_WhenOptionsThrow_TurnsResourceOff()
+    public async Task AddResource_WhenOptionsThrow_MakesResourceUnavailable()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -26,7 +26,7 @@ public class StellarAdminBuilderExtensionsTests
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(options.IsOff).IsTrue();
+        await Assert.That(options.IsUnavailable).IsTrue();
         await Assert
             .That(options.Problems.Single().Message)
             .Contains("InvalidOperationException: Broken");
@@ -153,7 +153,7 @@ public class StellarAdminBuilderExtensionsTests
     [Arguments("order--items")]
     [Arguments("-products")]
     [Arguments("catalog/products")]
-    public async Task AddResource_WithInvalidSlug_TurnsResourceOff(string slug)
+    public async Task AddResource_WithInvalidSlug_MakesResourceUnavailable(string slug)
     {
         // Arrange
         var services = new ServiceCollection();
@@ -166,7 +166,7 @@ public class StellarAdminBuilderExtensionsTests
         var problem = sut.Options.Problems.Single();
         await Assert.That(services.Any(IsRegistration)).IsFalse();
         await Assert.That(problem.Kind).IsEqualTo(ConfigurationProblemKind.InvalidSlug);
-        await Assert.That(problem.Effect).IsEqualTo(ConfigurationProblemEffect.ResourceOff);
+        await Assert.That(problem.MakesResourceUnavailable).IsTrue();
     }
 
     [Test]
@@ -219,7 +219,7 @@ public class StellarAdminBuilderExtensionsTests
     }
 
     [Test]
-    public async Task AddResource_WithSlugOfAnotherResource_TurnsLaterResourceOff()
+    public async Task AddResource_WithSlugOfAnotherResource_MakesLaterResourceUnavailable()
     {
         // Arrange
         var services = new ServiceCollection();

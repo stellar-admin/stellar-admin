@@ -474,7 +474,6 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                 {
                     options.Report(
                         ConfigurationProblemKind.StaleModelBuilder,
-                        ConfigurationProblemEffect.Ignored,
                         $"A create configuration for {typeof(TModel).Name} no longer applies, because another create model was selected later.",
                         "Its settings are skipped."
                     );
@@ -495,7 +494,6 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                 {
                     options.Report(
                         ConfigurationProblemKind.StaleModelBuilder,
-                        ConfigurationProblemEffect.Ignored,
                         $"A edit configuration for {typeof(TModel).Name} no longer applies, because another edit model was selected later.",
                         "Its settings are skipped."
                     );
@@ -516,7 +514,6 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                 {
                     options.Report(
                         ConfigurationProblemKind.StaleModelBuilder,
-                        ConfigurationProblemEffect.Ignored,
                         $"A view configuration for {typeof(TModel).Name} no longer applies, because another view model was selected later.",
                         "Its settings are skipped."
                     );

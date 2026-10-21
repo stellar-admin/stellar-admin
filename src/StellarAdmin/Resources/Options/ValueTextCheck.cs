@@ -29,7 +29,6 @@ internal static class ValueTextCheck
                 options.Index.MutableColumns.Remove(column);
                 options.Report(
                     ConfigurationProblemKind.ValueWithoutText,
-                    ConfigurationProblemEffect.TurnedOff,
                     message,
                     "The column is left out."
                 );
@@ -61,7 +60,6 @@ internal static class ValueTextCheck
                 FormItems.Remove(scope!, field);
                 options.Report(
                     ConfigurationProblemKind.ValueWithoutText,
-                    ConfigurationProblemEffect.TurnedOff,
                     message,
                     "The field is left out."
                 );

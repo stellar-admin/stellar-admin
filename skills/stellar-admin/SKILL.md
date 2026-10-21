@@ -176,7 +176,7 @@ These come from agents building real tasks without this skill. Each compiled or 
 - **`Add(selector, callback)` returns the parent builder, not the field.** `fields.Add(b => b.CustomerId, f => f.Title = "Customer").UseEditor<...>()` doesn't compile. Configure everything inside the callback (`f => { f.Title = "Customer"; f.UseEditor<LookupSheetEditor>(...); }`) or use `fields.Add(b => b.CustomerId).UseEditor<...>()`. The same holds for columns, sections and display fields.
 - **`PageSize` must be in `PageSizes`** (default 10, 25, 50, 100), or the panel adds it and logs a configuration problem. Set both for other sizes.
 - **`Allow*` calls don't chain.** Each returns its own page builder (or the resource builder when given a callback). Call them as separate statements on `resource`.
-- **`AllowView` needs fields.** `AllowView()` without `view.Fields(...)` turns the view page off.
+- **`AllowView` needs fields.** `AllowView()` without `view.Fields(...)` leaves the resource without a view page.
 - **`ChoiceEditor` is abstract.** Use `SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor`, `SegmentedControlEditor` or `ToggleGroupEditor`.
 - **Index cells use `GridDisplayTemplates/`**, not `DisplayTemplates/`. A custom display or `[UIHint]` used in a column needs `GridDisplayTemplates/{TemplateName}.cshtml`; the same display on a form or view page needs `DisplayTemplates/{TemplateName}.cshtml` ([columns](references/columns.md)).
 - **`BadgeDisplay` has one variant for every value.** A badge whose style depends on the value needs a custom display and template.

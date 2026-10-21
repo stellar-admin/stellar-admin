@@ -68,7 +68,6 @@ public sealed class ResourceColumnBuilder<TResource>
             _configuration.Add(options =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidSelector,
-                    ConfigurationProblemEffect.Ignored,
                     $"The index column '{options.FieldName ?? options.Title}' edits '{field}', which isn't a property path.",
                     "The column edits the field with its own property path."
                 )
@@ -106,7 +105,6 @@ public sealed class ResourceColumnBuilder<TResource>
             {
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidValue,
-                    ConfigurationProblemEffect.Ignored,
                     $"The index column '{options.FieldName ?? options.Title}' edits a field with a blank name.",
                     "The column edits the field with its own property path."
                 );
@@ -189,7 +187,6 @@ public sealed class ResourceColumnBuilder<TResource>
             _configuration.Add(options =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.ColumnDisplayWithHandler,
-                    ConfigurationProblemEffect.Ignored,
                     $"The index column '{options.FieldName ?? options.Title}' uses {typeof(TDisplay).Name}, which has a handler. Columns don't support displays with a handler.",
                     "The column uses its default display."
                 )

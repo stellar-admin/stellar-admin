@@ -5,7 +5,7 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.Resources.Options;
 
 // Builds a resource's options without ever throwing. After every Configure and PostConfigure callback, the checks
-// repair what they can and report it. Anything that still throws turns the resource off, so one resource's mistake
+// repair what they can and report it. Anything that still throws makes the resource unavailable, so one resource's mistake
 // can't stop the app or the rest of the admin panel. IOptions caches the result, problems included.
 internal sealed class ResourceOptionsFactory<TResource>(
     IEnumerable<IConfigureOptions<ResourceOptions<TResource>>> setups,
@@ -35,11 +35,11 @@ internal sealed class ResourceOptionsFactory<TResource>(
         {
             ResourceProblemSink.Close(outer);
             var options = new ResourceOptions<TResource>();
-            options.Report(
-                ConfigurationProblemKind.ResourceFailed,
-                ConfigurationProblemEffect.ResourceOff,
-                $"Configuring the resource failed with {exception.GetType().Name}: {exception.Message}",
-                "The resource is turned off: it leaves the sidebar and its pages return 404."
+            options.Problems.Add(
+                ConfigurationProblem.Unavailable(
+                    ConfigurationProblemKind.ResourceFailed,
+                    $"Configuring the resource failed with {exception.GetType().Name}: {exception.Message}"
+                )
             );
 
             return options;

@@ -139,7 +139,6 @@ internal static class GridLayoutCheck
         {
             options.Report(
                 ConfigurationProblemKind.InvalidValue,
-                ConfigurationProblemEffect.Adjusted,
                 $"A {setting} on the {page} is outside 1 to {ResponsiveGrid.MaxColumns}.",
                 $"The {page} uses the nearest number in that range."
             );

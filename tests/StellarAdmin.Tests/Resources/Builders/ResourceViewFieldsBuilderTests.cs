@@ -192,9 +192,6 @@ public class ResourceViewFieldsBuilderTests
 
         // Assert
         await Assert.That(options.View!.Items).HasCount(2);
-        await Assert
-            .That(options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 
     public sealed class Product

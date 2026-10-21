@@ -24,7 +24,6 @@ internal static class FieldBinderCheck
                 FormItems.Remove(formOptions!, field);
                 options.Report(
                     ConfigurationProblemKind.FieldWithoutSetter,
-                    ConfigurationProblemEffect.TurnedOff,
                     $"The {form} form's field '{field.FieldName}' has no public setter. Add one, or bind the field with a FieldBinder.",
                     "The field is left out."
                 );

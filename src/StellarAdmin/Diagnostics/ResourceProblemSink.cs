@@ -9,21 +9,15 @@ internal static class ResourceProblemSink
     [ThreadStatic]
     private static List<ConfigurationProblem>? _problems;
 
-    public static void Report(
-        ConfigurationProblemKind kind,
-        ConfigurationProblemEffect effect,
-        string message,
-        string outcome
-    )
+    public static void Report(ConfigurationProblemKind kind, string message, string outcome)
     {
-        _problems?.Add(new(kind, effect, message, outcome));
+        _problems?.Add(new(kind, message, outcome));
     }
 
     // An editor or display setting set to a number it can't use keeps its current value
     public static void ReportInvalidNumber(string setting, int value, string requirement) =>
         Report(
             ConfigurationProblemKind.InvalidValue,
-            ConfigurationProblemEffect.Ignored,
             $"{setting} is set to {value}, but it must be {requirement}.",
             $"{setting} keeps its default."
         );

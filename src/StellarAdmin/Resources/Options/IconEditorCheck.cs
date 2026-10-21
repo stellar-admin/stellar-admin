@@ -38,7 +38,6 @@ internal static class IconEditorCheck
                     FormItems.Remove(formOptions!, field);
                     options.Report(
                         ConfigurationProblemKind.UnknownIcons,
-                        ConfigurationProblemEffect.TurnedOff,
                         $"The {form} form's icon field '{field.FieldName}' lists icons that aren't registered: {string.Join(", ", unknown)}.",
                         "None of its icons are registered, so the field is left out."
                     );
@@ -48,7 +47,6 @@ internal static class IconEditorCheck
                 editor.Icons = known;
                 options.Report(
                     ConfigurationProblemKind.UnknownIcons,
-                    ConfigurationProblemEffect.Adjusted,
                     $"The {form} form's icon field '{field.FieldName}' lists icons that aren't registered: {string.Join(", ", unknown)}.",
                     "The field offers only its registered icons."
                 );
@@ -59,7 +57,6 @@ internal static class IconEditorCheck
                 editor.Icons = null;
                 options.Report(
                     ConfigurationProblemKind.EmptyIconList,
-                    ConfigurationProblemEffect.Adjusted,
                     $"The {form} form's icon field '{field.FieldName}' has an empty list of icons. Set Icons to null to offer every registered icon.",
                     "The field offers every registered icon."
                 );
@@ -70,7 +67,6 @@ internal static class IconEditorCheck
                 editor.Layout = IconEditorLayout.Auto;
                 options.Report(
                     ConfigurationProblemKind.InlineIconsWithoutList,
-                    ConfigurationProblemEffect.Adjusted,
                     $"The {form} form's icon field '{field.FieldName}' uses the inline layout, which requires a list of icons.",
                     "The field uses the automatic layout."
                 );

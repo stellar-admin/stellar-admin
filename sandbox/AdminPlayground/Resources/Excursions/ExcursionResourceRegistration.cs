@@ -43,13 +43,13 @@ internal static class ExcursionResourceRegistration
                 });
             });
 
-            // The data source can't create: create is turned off
+            // The data source can't create: there is no create page
             resource.AllowCreate(create =>
                 create.Fields(fields => fields.Add(excursion => excursion.Name))
             );
         });
 
-        // The booking isn't an entity of the context: the resource is turned off, and Development shows why at
+        // The booking isn't an entity of the context: the resource is unavailable, and Development shows why at
         // /stellaradmin/excursion-bookings
         admin.AddEfCoreResource<ApplicationDbContext, ExcursionBooking>();
 

@@ -76,7 +76,6 @@ internal sealed class ConfigurationProblems(
         problems.AddRange(
             iconOptions.Value.Problems.Select(problem => new ConfigurationProblem(
                 ConfigurationProblemKind.SkippedIconMapping,
-                ConfigurationProblemEffect.Ignored,
                 problem,
                 "The icon keeps its previous mapping."
             )

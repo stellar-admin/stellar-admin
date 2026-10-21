@@ -38,7 +38,6 @@ internal static class EditorCheck
                 FormItems.Remove(formOptions!, field);
                 options.Report(
                     ConfigurationProblemKind.UnsuitableEditor,
-                    ConfigurationProblemEffect.TurnedOff,
                     message,
                     "The field is left out."
                 );
@@ -49,7 +48,6 @@ internal static class EditorCheck
             field.HandlerType = null;
             options.Report(
                 ConfigurationProblemKind.UnsuitableEditor,
-                ConfigurationProblemEffect.Ignored,
                 message,
                 "The field uses the default editor for its property."
             );
@@ -110,7 +108,6 @@ internal static class EditorCheck
         classNames.Option.Error = null;
         options.Report(
             ConfigurationProblemKind.UnsuitableEditor,
-            ConfigurationProblemEffect.Ignored,
             $"The {form} form's radio field '{fieldName}' sets ClassNames.Content or ClassNames.Option.Error, but radio groups have no outer Content or per-option Error element. Use Option.Content or Error instead.",
             "Those class names aren't used."
         );

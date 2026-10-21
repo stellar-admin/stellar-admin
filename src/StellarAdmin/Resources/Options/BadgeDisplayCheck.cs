@@ -23,7 +23,6 @@ internal static class BadgeDisplayCheck
                 options.Index.MutableColumns.Remove(column);
                 options.Report(
                     ConfigurationProblemKind.MismatchedBadgeText,
-                    ConfigurationProblemEffect.TurnedOff,
                     message,
                     "The column is left out."
                 );
@@ -55,7 +54,6 @@ internal static class BadgeDisplayCheck
                 FormItems.Remove(scope!, field);
                 options.Report(
                     ConfigurationProblemKind.MismatchedBadgeText,
-                    ConfigurationProblemEffect.TurnedOff,
                     message,
                     "The field is left out."
                 );

@@ -1,10 +1,10 @@
 @using StellarAdmin.Diagnostics
 @model IReadOnlyList<ConfigurationProblem>
 
-@* Development's page for a resource whose configuration turned it off; other environments return a plain 404 *@
+@* Development's page for a resource that a configuration problem made unavailable; other environments return a plain 404 *@
 @{
     Layout = StellarAdminLayouts.Default;
-    ViewData["Title"] = "Resource turned off";
+    ViewData["Title"] = "Resource not available";
 }
 
 <div class="p-6">
@@ -13,9 +13,9 @@
             <sa-empty-media variant="EmptyMediaVariant.Icon">
                 <sa-icon name="circle-alert" />
             </sa-empty-media>
-            <sa-empty-title>This resource is turned off</sa-empty-title>
+            <sa-empty-title>This resource isn't available</sa-empty-title>
             <sa-empty-description>
-                @foreach (var problem in Model.Where(problem => problem.Effect == ConfigurationProblemEffect.ResourceOff))
+                @foreach (var problem in Model.Where(problem => problem.MakesResourceUnavailable))
                 {
                     <span class="block">@problem.Message</span>
                 }

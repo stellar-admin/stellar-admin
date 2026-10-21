@@ -57,7 +57,6 @@ internal static class FormScopeBuilder
             configure(_ =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidValue,
-                    ConfigurationProblemEffect.Ignored,
                     $"A {container} has a blank title. Give it a title.",
                     $"The {container} is shown without a heading."
                 )

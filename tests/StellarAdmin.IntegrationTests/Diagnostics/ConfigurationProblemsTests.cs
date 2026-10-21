@@ -12,7 +12,7 @@ namespace StellarAdmin.IntegrationTests.Diagnostics;
 public class ConfigurationProblemsTests
 {
     [Test]
-    public async Task BrokenResource_TurnsOffOnlyThatResource()
+    public async Task BrokenResource_MakesOnlyThatResourceUnavailable()
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
@@ -37,7 +37,7 @@ public class ConfigurationProblemsTests
 
         // Assert
         await Assert.That(broken.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
-        await Assert.That(brokenBody).Contains("This resource is turned off");
+        await Assert.That(brokenBody).Contains("This resource isn't available");
         await Assert.That(brokenBody).Contains("Broken catalog");
         await Assert
             .That(

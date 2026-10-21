@@ -42,7 +42,6 @@ internal static class LookupCreateResource
                 .Report(
                     new(
                         ConfigurationProblemKind.LookupCreateUnavailable,
-                        ConfigurationProblemEffect.TurnedOff,
                         problem,
                         "The lookup has no New button."
                     ),

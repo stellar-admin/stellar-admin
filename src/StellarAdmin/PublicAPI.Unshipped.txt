@@ -382,11 +382,6 @@ StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Fields.get 
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.SectionLayout.get -> StellarAdmin.UI.FormSectionLayout?
 StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel.Title.get -> string!
-StellarAdmin.Diagnostics.ConfigurationProblemEffect
-StellarAdmin.Diagnostics.ConfigurationProblemEffect.Adjusted = 1 -> StellarAdmin.Diagnostics.ConfigurationProblemEffect
-StellarAdmin.Diagnostics.ConfigurationProblemEffect.Ignored = 0 -> StellarAdmin.Diagnostics.ConfigurationProblemEffect
-StellarAdmin.Diagnostics.ConfigurationProblemEffect.ResourceOff = 3 -> StellarAdmin.Diagnostics.ConfigurationProblemEffect
-StellarAdmin.Diagnostics.ConfigurationProblemEffect.TurnedOff = 2 -> StellarAdmin.Diagnostics.ConfigurationProblemEffect
 StellarAdmin.Diagnostics.DiagnosticsBuilder
 StellarAdmin.Diagnostics.DiagnosticsBuilder.ShowIndicator.set -> void
 StellarAdmin.Diagnostics.DiagnosticsBuilder.ThrowOnProblems.set -> void
@@ -1424,7 +1419,8 @@ StellarAdmin.Resources.Options.ResourceOptions<TResource>.Index.get -> StellarAd
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.KeySelector.get -> System.Func<TResource, string!>?
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.PluralLabel.get -> string!
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.PluralLabel.set -> void
-StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, StellarAdmin.Diagnostics.ConfigurationProblemEffect effect, string! message, string! outcome) -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, string! message, string! outcome) -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportUnavailable(Microsoft.Extensions.Logging.EventId eventId, string! message) -> void
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.ResourceOptions() -> void
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.SidebarItem.get -> StellarAdmin.Resources.Options.ResourceSidebarItemOptions!
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.SingularLabel.get -> string!

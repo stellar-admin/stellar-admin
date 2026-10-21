@@ -726,7 +726,7 @@ internal sealed class ResourceController<TResource>(
     [NonAction]
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        if (!_resourceOptions.IsOff)
+        if (!_resourceOptions.IsUnavailable)
         {
             return;
         }
@@ -736,7 +736,7 @@ internal sealed class ResourceController<TResource>(
             .IsDevelopment()
             ? new ViewResult
             {
-                ViewName = "/Areas/StellarAdmin/Views/Shared/ResourceOff.cshtml",
+                ViewName = "/Areas/StellarAdmin/Views/Shared/ResourceUnavailable.cshtml",
                 ViewData = new(ViewData) { Model = _resourceOptions.Problems },
                 StatusCode = StatusCodes.Status404NotFound,
             }

@@ -171,13 +171,6 @@ public partial class ResourceBuilderTests
         await Assert
             .That(string.Join(",", options.Index.Paging.PageSizes))
             .IsEqualTo(expectedSizes);
-        await Assert
-            .That(
-                options.Problems.All(problem =>
-                    problem.Effect == ConfigurationProblemEffect.Adjusted
-                )
-            )
-            .IsTrue();
         await Assert.That(options.Problems).IsNotEmpty();
     }
 
@@ -239,9 +232,6 @@ public partial class ResourceBuilderTests
         await Assert.That(options.Edit).IsNull();
         await Assert.That(options.Delete).IsNull();
         await Assert.That(options.View).IsNull();
-        await Assert
-            .That(options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.TurnedOff);
     }
 
     [Test]

@@ -5,7 +5,7 @@ using StellarAdmin.Diagnostics;
 namespace StellarAdmin.Resources.Options;
 
 // An inline row edits the grid's columns in place and finds its row by the resource key. A row that can't do that
-// is turned off, with its create or edit, since a row with a missing field could save a partial record.
+// is removed, with its create or edit, since a row with a missing field could save a partial record.
 internal static class InlineRowCheck
 {
     public static void Run<TResource>(ResourceOptions<TResource> options)
@@ -15,12 +15,7 @@ internal static class InlineRowCheck
             if (FindProblem(options, "inline edit row", edit) is { } problem)
             {
                 options.Edit = null;
-                options.Report(
-                    problem.Kind,
-                    ConfigurationProblemEffect.TurnedOff,
-                    problem.Message,
-                    "The inline edit row is turned off, so rows can't be edited."
-                );
+                options.Report(problem.Kind, problem.Message, "Rows can't be edited.");
             }
         }
 
@@ -34,12 +29,7 @@ internal static class InlineRowCheck
             )
             {
                 options.Create = null;
-                options.Report(
-                    problem.Kind,
-                    ConfigurationProblemEffect.TurnedOff,
-                    problem.Message,
-                    "The inline create row is turned off, so resources can't be created."
-                );
+                options.Report(problem.Kind, problem.Message, "New rows can't be created.");
             }
         }
     }

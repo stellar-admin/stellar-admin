@@ -45,7 +45,7 @@ public static partial class StellarAdminBuilderExtensions
         /// </exception>
         /// <remarks>
         ///     A slug that isn't valid, or that another resource uses, is a configuration problem,
-        ///     and the resource is turned off. A second slug for a resource that is already added is
+        ///     and the resource is unavailable. A second slug for a resource that is already added is
         ///     ignored.
         /// </remarks>
         public ResourceBuilder<TResource> AddResource<TResource>(string slug)
@@ -64,7 +64,7 @@ public static partial class StellarAdminBuilderExtensions
             if (FindSlugProblem<TResource>(builder, slug) is { } problem)
             {
                 builder.Options.Problems.Add(problem);
-                if (problem.Effect == ConfigurationProblemEffect.ResourceOff)
+                if (problem.MakesResourceUnavailable)
                 {
                     return new(builder.Services);
                 }
@@ -103,7 +103,7 @@ public static partial class StellarAdminBuilderExtensions
                                 sidebarItem.Group,
                                 sidebarItem.Icon,
                                 sidebarItem.Order,
-                                sidebarItem.Visible && !options.IsOff
+                                sidebarItem.Visible && !options.IsUnavailable
                             );
                         },
                         services =>
@@ -169,7 +169,7 @@ public static partial class StellarAdminBuilderExtensions
         /// </exception>
         /// <remarks>
         ///     A slug that isn't valid, or that another resource uses, is a configuration problem,
-        ///     and the resource is turned off. A second slug for a resource that is already added is
+        ///     and the resource is unavailable. A second slug for a resource that is already added is
         ///     ignored.
         /// </remarks>
         public StellarAdminBuilder AddResource<TResource>(
@@ -208,7 +208,7 @@ public static partial class StellarAdminBuilderExtensions
         typeof(TResource).Name.Split('`')[0].Kebaberize().Pluralize();
 
     // A second slug for the same resource is ignored, and the resource keeps its first. An invalid slug, or one
-    // another controller has, turns the resource off.
+    // another controller has, makes the resource unavailable.
     private static ConfigurationProblem? FindSlugProblem<TResource>(
         StellarAdminBuilder builder,
         string slug
@@ -221,7 +221,6 @@ public static partial class StellarAdminBuilderExtensions
         {
             return new(
                 ConfigurationProblemKind.ResourceSlugRepeated,
-                ConfigurationProblemEffect.Ignored,
                 $"The resource is added again under the slug '{slug}', but it already has the slug '{repeated.ControllerName}'. Add each resource once.",
                 $"The resource keeps the slug '{repeated.ControllerName}'."
             )
@@ -232,24 +231,20 @@ public static partial class StellarAdminBuilderExtensions
 
         if (!SlugPattern().IsMatch(slug))
         {
-            return new(
+            return ConfigurationProblem.Unavailable(
                 ConfigurationProblemKind.InvalidSlug,
-                ConfigurationProblemEffect.ResourceOff,
-                $"The slug '{slug}' isn't valid. Use lowercase letters and digits, optionally separated by single hyphens.",
-                "The resource is turned off: it has no pages and isn't in the sidebar."
-            )
+                $"The slug '{slug}' isn't valid. Use lowercase letters and digits, optionally separated by single hyphens."
+            ) with
             {
                 Resource = resource,
             };
         }
 
         return conflict is { } inUse
-            ? new(
+            ? ConfigurationProblem.Unavailable(
                 ConfigurationProblemKind.SlugInUse,
-                ConfigurationProblemEffect.ResourceOff,
-                $"The slug '{slug}' is already used by {DescribeController(inUse.ControllerType)}. Give the resource another slug.",
-                "The resource is turned off: it has no pages and isn't in the sidebar."
-            )
+                $"The slug '{slug}' is already used by {DescribeController(inUse.ControllerType)}. Give the resource another slug."
+            ) with
             {
                 Resource = resource,
             }

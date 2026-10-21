@@ -34,9 +34,6 @@ public class UserMenuBuilderTests
 
         // Assert
         await Assert.That(sut.Options.UserMenu.Logout.AuthenticationSchemes).IsEmpty();
-        await Assert
-            .That(sut.Options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 
     [Test]
@@ -68,8 +65,5 @@ public class UserMenuBuilderTests
 
         // Assert
         await Assert.That(sut.Options.UserMenu.Logout.Path).IsNull();
-        await Assert
-            .That(sut.Options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 }

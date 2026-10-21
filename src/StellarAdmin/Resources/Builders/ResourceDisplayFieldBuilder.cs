@@ -177,7 +177,6 @@ public sealed class ResourceDisplayFieldBuilder
             {
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.MismatchedHandler,
-                    ConfigurationProblemEffect.Ignored,
                     $"The field '{options.FieldName ?? options.Title}' uses {typeof(TDisplay).Name} with the handler {handlerType.Name}, which must implement IFieldDisplayHandler<{typeof(TDisplay).Name}>.",
                     "The field keeps its default display."
                 );
@@ -240,7 +239,6 @@ public sealed class ResourceDisplayFieldBuilder
             computed._configuration.Add(_ =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidSelector,
-                    ConfigurationProblemEffect.Adjusted,
                     $"The field '{field}' selects a property without a public getter.",
                     "The field computes its value from the expression, and needs a Title."
                 )

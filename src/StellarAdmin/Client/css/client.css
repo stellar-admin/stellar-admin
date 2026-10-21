@@ -730,26 +730,19 @@
         font-size: var(--sa-text-sm);
     }
 
-    .sa-configuration-problem-head {
-        display: flex;
-        align-items: start;
-        justify-content: space-between;
-        gap: calc(2 * var(--sa-unit));
-    }
-
     .sa-configuration-problem-message {
+        margin: 0;
         font-weight: 600;
     }
 
     .sa-configuration-problem-outcome {
         margin: 0;
         color: var(--sa-color-ink-muted);
-    }
 
-    .sa-badge.sa-configuration-problem-off {
-        border-color: transparent;
-        background: color-mix(in oklab, var(--sa-color-warning) 22%, var(--sa-color-surface));
-        color: var(--sa-color-ink);
+        & strong {
+            color: var(--sa-color-ink);
+            font-weight: 600;
+        }
     }
 
     .sa-configuration-problems-footnote {

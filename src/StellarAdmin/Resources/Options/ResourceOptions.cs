@@ -131,8 +131,7 @@ public sealed class ResourceOptions<TResource>
         CancellationToken,
         Task<object?>
     >? EditLoader { get; set; }
-    internal bool IsOff =>
-        Problems.Any(problem => problem.Effect == ConfigurationProblemEffect.ResourceOff);
+    internal bool IsUnavailable => Problems.Any(problem => problem.MakesResourceUnavailable);
     internal string? KeyPropertyName { get; set; }
     internal Func<
         IServiceProvider,
@@ -167,7 +166,6 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.InvalidSelector,
-                ConfigurationProblemEffect.Ignored,
                 $"UseKey selects '{property.Name}', which isn't a direct property of {typeof(TResource).Name} with a public getter.",
                 "The key is left unchanged."
             );
@@ -183,43 +181,55 @@ public sealed class ResourceOptions<TResource>
     ///     Reports a problem in the resource's configuration that an integration worked around.
     /// </summary>
     /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
-    /// <param name="effect">
-    ///     One of the enumeration values that specifies what was done about the problem.
-    /// </param>
     /// <param name="message">What is wrong and how to fix it.</param>
-    /// <param name="outcome">What was done instead, such as "The field is left out."</param>
+    /// <param name="outcome">What the admin panel does instead, such as "The form doesn't show the field."</param>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="message" /> or <paramref name="outcome" /> is <see langword="null" />.
     /// </exception>
     /// <remarks>
     ///     Call it from a post-configuration callback after correcting the options, so that they
     ///     can still be used. The problem is logged once when the app starts, and Development
-    ///     shows it. <see cref="ConfigurationProblemEffect.ResourceOff" /> turns the resource off.
+    ///     shows it.
     /// </remarks>
-    public void ReportProblem(
-        EventId eventId,
-        ConfigurationProblemEffect effect,
-        string message,
-        string outcome
-    )
+    public void ReportProblem(EventId eventId, string message, string outcome)
     {
         ArgumentNullException.ThrowIfNull(message);
         ArgumentNullException.ThrowIfNull(outcome);
 
         Problems.Add(
-            new(ConfigurationProblemKind.Integration, effect, message, outcome)
+            new(ConfigurationProblemKind.Integration, message, outcome)
             {
                 IntegrationEventId = eventId,
             }
         );
     }
 
-    internal void Report(
-        ConfigurationProblemKind kind,
-        ConfigurationProblemEffect effect,
-        string message,
-        string outcome
-    ) => Problems.Add(new(kind, effect, message, outcome));
+    /// <summary>
+    ///     Reports a problem in the resource's configuration that makes the resource unavailable.
+    /// </summary>
+    /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
+    /// <param name="message">What is wrong and how to fix it.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="message" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The resource is hidden from the sidebar, and its pages return 404. The problem is
+    ///     logged once when the app starts, and Development shows it.
+    /// </remarks>
+    public void ReportUnavailable(EventId eventId, string message)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+
+        Problems.Add(
+            ConfigurationProblem.Unavailable(ConfigurationProblemKind.Integration, message) with
+            {
+                IntegrationEventId = eventId,
+            }
+        );
+    }
+
+    internal void Report(ConfigurationProblemKind kind, string message, string outcome) =>
+        Problems.Add(new(kind, message, outcome));
 
     // Labels set to blank text fall back to their defaults
     internal void RepairLabels()
@@ -228,7 +238,6 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                ConfigurationProblemEffect.Ignored,
                 "The resource's SingularLabel is blank. Set it to text, or leave it unset.",
                 $"The resource uses the default label '{DefaultSingularLabel}'."
             );
@@ -239,7 +248,6 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                ConfigurationProblemEffect.Ignored,
                 "The resource's sidebar item has a blank Group. Set it to text, or leave it unset.",
                 $"The item appears in the '{ResourceSidebarItemOptions.DefaultGroup}' group."
             );
@@ -250,7 +258,6 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                ConfigurationProblemEffect.Ignored,
                 "The resource's sidebar item has a blank Label. Set it to text, or leave it unset.",
                 "The item shows the resource's plural label."
             );
@@ -261,7 +268,6 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                ConfigurationProblemEffect.Ignored,
                 "The resource's sidebar item has a blank Icon. Set it to an icon name, or leave it unset.",
                 "The item has no icon."
             );
@@ -272,7 +278,6 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                ConfigurationProblemEffect.Ignored,
                 "The resource's PluralLabel is blank. Set it to text, or leave it unset.",
                 $"The resource uses the default plural label '{SingularLabel.Pluralize()}'."
             );

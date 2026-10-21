@@ -27,7 +27,6 @@ internal static class ComputedDisplayFieldCheck
             FormItems.Remove(scope!, field);
             options.Report(
                 ConfigurationProblemKind.ComputedFieldWithoutTitle,
-                ConfigurationProblemEffect.TurnedOff,
                 $"The {page}'s field '{field.FieldExpression}' computes its value, so it needs a Title.",
                 "The field is left out."
             );

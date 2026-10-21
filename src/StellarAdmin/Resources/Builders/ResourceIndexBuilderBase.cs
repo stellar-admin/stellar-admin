@@ -476,7 +476,6 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 options.Index.RowDetails = null;
                 options.Report(
                     ConfigurationProblemKind.RowDetailsWithoutPanels,
-                    ConfigurationProblemEffect.Ignored,
                     "The row details name a blank partial view.",
                     "Rows don't expand."
                 );
@@ -519,7 +518,6 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 problems.Add(
                     new(
                         ConfigurationProblemKind.RowDetailPanelWithoutName,
-                        ConfigurationProblemEffect.TurnedOff,
                         $"The row detail panel '{panel.Title}' names a blank partial view.",
                         "The panel is left out."
                     )
@@ -530,7 +528,6 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 problems.Add(
                     new(
                         ConfigurationProblemKind.RowDetailPanelWithoutName,
-                        ConfigurationProblemEffect.TurnedOff,
                         $"The row detail panel '{panel.Title}' needs a name. Set Name on the panel.",
                         "The panel is left out."
                     )
@@ -541,7 +538,6 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 problems.Add(
                     new(
                         ConfigurationProblemKind.RepeatedRowDetailPanel,
-                        ConfigurationProblemEffect.TurnedOff,
                         $"Row detail panel names must be unique, and '{panel.Name}' is used more than once.",
                         $"The later panel '{panel.Title}' is left out."
                     )
@@ -558,7 +554,6 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
             problems.Add(
                 new(
                     ConfigurationProblemKind.RowDetailsWithoutPanels,
-                    ConfigurationProblemEffect.Ignored,
                     "The row details have no panels. Add at least one row detail panel.",
                     "Rows don't expand."
                 )
@@ -592,7 +587,6 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
             Services.Configure<ResourceOptions<TResource>>(options =>
                 options.Report(
                     ConfigurationProblemKind.InvalidSelector,
-                    ConfigurationProblemEffect.Ignored,
                     $"The default sort selects '{field}', which isn't a resource property path.",
                     "The default sort is left unchanged."
                 )

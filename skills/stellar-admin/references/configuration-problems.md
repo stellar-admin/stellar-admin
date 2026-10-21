@@ -11,22 +11,20 @@ A mistake in the admin panel's configuration never stops the app. The panel work
 
 ## What the panel does
 
-Each problem has one of four effects, from the narrowest to the widest:
+The panel works around each mistake in the narrowest way it can, and says what it did. For example:
 
-| Effect | Meaning | Examples |
-| --- | --- | --- |
-| Ignored | A setting falls back to its default. | A default sort on a column that isn't sortable: the list uses the data source's order. A `KeepForNext` that names no create field. |
-| Adjusted | A setting is corrected. | A `PageSize` missing from `PageSizes` is added to them. A column span of 13 becomes 12. |
-| Turned off | One feature is unavailable. | `AllowCreate` with a data source that can't create: no New button, and the create page returns 404. A field without a public setter is left out of its form. |
-| Resource off | The whole resource is unavailable. | An EF Core entity that isn't mapped in its context, or a slug that isn't valid or that another resource uses. |
+- A default sort on a column that isn't sortable: the list uses the data source's order.
+- A `PageSize` missing from `PageSizes`: it is added to them.
+- `AllowCreate` with a data source that can't create: there's no New button, and the create page returns 404.
+- A field without a public setter: the field is left out of its form.
 
-A turned-off resource leaves the sidebar, the home page and the command palette, and its pages return 404. In Development they show why instead. Other resources and the host app keep working.
+When nothing narrower works, such as an EF Core entity that isn't mapped in its context or a slug that isn't valid or that another resource uses, the resource is unavailable: it is hidden from the sidebar, the home page and the command palette, and its pages return 404. In Development they show why instead. Other resources and the host app keep working.
 
 Only a null argument still throws, at the call that passed it.
 
 ## Finding problems
 
-- In Development, a "Configuration problems" pill at the bottom of each admin page shows how many there are. It opens a sheet that lists them by resource, with what is wrong, how to fix it and what the panel did.
+- In Development, a "Configuration problems" pill at the bottom of each admin page shows how many there are. It opens a sheet that lists them by resource, with what is wrong, how to fix it and what the panel does instead.
 - Every environment logs each problem once, as a warning in the `StellarAdmin.Configuration` category. Most problems are logged at startup. A few can only be found when a page renders, such as a lookup's `EnableCreate` for a resource without a create form; those are logged the first time, and the field is left out or the lookup has no New button.
 - Each kind of problem has its own log event ID, so log filters and alerts can match it.
 
@@ -62,7 +60,6 @@ services.AddOptions<ResourceOptions<Booking>>().PostConfigure(options =>
             options.Create!.RemoveField(field);
             options.ReportProblem(
                 new EventId(5001, "UnsavableField"),
-                ConfigurationProblemEffect.TurnedOff,
                 $"Booking.{field.FieldName} can't be saved.",
                 "The field is left out."
             );
@@ -71,6 +68,7 @@ services.AddOptions<ResourceOptions<Booking>>().PostConfigure(options =>
 });
 ```
 
-- `ConfigurationProblemEffect` is in `StellarAdmin.Diagnostics`; `ResourceOptions<T>`, `ResourceFormOptions.RemoveField` and `DataGridColumnOptions.DisableSorting` are in `StellarAdmin.Resources.Options`.
-- `ConfigurationProblemEffect.ResourceOff` turns the resource off.
+- `ReportProblem` takes what is wrong and how to fix it, then what the panel does instead.
+- `ReportUnavailable(eventId, message)` makes the whole resource unavailable, for a problem with no narrower fallback.
+- `ResourceOptions<T>`, `ResourceFormOptions.RemoveField` and `DataGridColumnOptions.DisableSorting` are in `StellarAdmin.Resources.Options`.
 - Use event IDs of your own. StellarAdmin uses 1000 to 1099.

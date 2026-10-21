@@ -68,9 +68,6 @@ public class ResourceFieldsBuilderTests
 
         // Assert
         await Assert.That(options.Create!.Items).HasCount(1);
-        await Assert
-            .That(options.Problems.Single().Effect)
-            .IsEqualTo(ConfigurationProblemEffect.Ignored);
     }
 
     [Test]
@@ -364,7 +361,6 @@ public class ResourceFieldsBuilderTests
         // Assert
         var problem = options.Problems.Single();
         await Assert.That(problem.Kind).IsEqualTo(ConfigurationProblemKind.InvalidValue);
-        await Assert.That(problem.Effect).IsEqualTo(ConfigurationProblemEffect.Adjusted);
     }
 
     public sealed class Product

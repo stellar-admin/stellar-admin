@@ -6,6 +6,5 @@ namespace StellarAdmin.Diagnostics;
 internal sealed class ConfigurationException(ConfigurationProblemKind kind, string message)
     : InvalidOperationException(message)
 {
-    public ConfigurationProblem ToProblem(string outcome) =>
-        new(kind, ConfigurationProblemEffect.TurnedOff, Message, outcome);
+    public ConfigurationProblem ToProblem(string outcome) => new(kind, Message, outcome);
 }

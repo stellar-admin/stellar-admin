@@ -28,7 +28,6 @@ public class ValueTextCheckTests
         var problem = options.Problems.First(candidate =>
             candidate.Kind == ConfigurationProblemKind.ValueWithoutText
         );
-        await Assert.That(problem.Effect).IsEqualTo(ConfigurationProblemEffect.TurnedOff);
         await Assert
             .That(problem.Message)
             .Contains(
@@ -51,7 +50,6 @@ public class ValueTextCheckTests
         var problem = options.Problems.First(candidate =>
             candidate.Kind == ConfigurationProblemKind.ValueWithoutText
         );
-        await Assert.That(problem.Effect).IsEqualTo(ConfigurationProblemEffect.TurnedOff);
         await Assert
             .That(problem.Message)
             .Contains(
@@ -81,7 +79,6 @@ public class ValueTextCheckTests
         var problem = options.Problems.First(candidate =>
             candidate.Kind == ConfigurationProblemKind.ValueWithoutText
         );
-        await Assert.That(problem.Effect).IsEqualTo(ConfigurationProblemEffect.TurnedOff);
     }
 
     [Test]
@@ -128,7 +125,6 @@ public class ValueTextCheckTests
         var problem = options.Problems.First(candidate =>
             candidate.Kind == ConfigurationProblemKind.ValueWithoutText
         );
-        await Assert.That(problem.Effect).IsEqualTo(ConfigurationProblemEffect.TurnedOff);
         await Assert
             .That(problem.Message)
             .Contains("field 'Destinations' shows a collection of Destination");
