@@ -37,11 +37,13 @@ public abstract class ResourceFieldsBuilder<TResource>
         var properties = ResourcePropertyPath.GetProperties(field);
         if (properties is null || properties.Any(property => property.GetMethod?.IsPublic != true))
         {
+            var source = ConfigurationSource.Capture();
             _configure(_ =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidSelector,
                     $"The form field '{field}' doesn't select a property path with public getters.",
-                    "The field is left out."
+                    "The field is left out.",
+                    source
                 )
             );
 

@@ -39,6 +39,7 @@ public static class GridEditorHtmlHelperExtensions
 
         return FieldEditorRenderer.GuardAsync(
             html,
+            field,
             () => GridEditorRenderer.RenderAsync(html, field, model)
         );
     }

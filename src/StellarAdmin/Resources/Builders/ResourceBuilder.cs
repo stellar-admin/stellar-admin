@@ -80,11 +80,13 @@ public sealed class ResourceBuilder<TResource>
             || property.GetMethod?.IsPublic != true
         )
         {
+            var source = ConfigurationSource.Capture();
             Services.Configure<ResourceOptions<TResource>>(options =>
                 options.Report(
                     ConfigurationProblemKind.InvalidSelector,
                     $"UseKey selects '{key}', which isn't a direct property with a public getter.",
-                    "The key is left unchanged."
+                    "The key is left unchanged.",
+                    source
                 )
             );
 

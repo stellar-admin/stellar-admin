@@ -16,6 +16,7 @@ public sealed class ResourceDisplayFieldBuilder
     private readonly LambdaExpression _field;
     private readonly string? _fieldName;
     private readonly PropertyInfo[] _propertyPath;
+    private readonly ConfigurationSource? _source = ConfigurationSource.Capture();
 
     /// <summary>
     ///     Sets the text shown when the value is empty.
@@ -178,7 +179,8 @@ public sealed class ResourceDisplayFieldBuilder
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.MismatchedHandler,
                     $"The field '{options.FieldName ?? options.Title}' uses {typeof(TDisplay).Name} with the handler {handlerType.Name}, which must implement IFieldDisplayHandler<{typeof(TDisplay).Name}>.",
-                    "The field keeps its default display."
+                    "The field keeps its default display.",
+                    options.Source
                 );
 
                 return;
@@ -236,11 +238,12 @@ public sealed class ResourceDisplayFieldBuilder
         if (properties.Any(property => property.GetMethod?.IsPublic != true))
         {
             var computed = new ResourceDisplayFieldBuilder(field, null, []);
-            computed._configuration.Add(_ =>
+            computed._configuration.Add(options =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidSelector,
                     $"The field '{field}' selects a property without a public getter.",
-                    "The field computes its value from the expression, and needs a Title."
+                    "The field computes its value from the expression, and needs a Title.",
+                    options.Source
                 )
             );
 
@@ -252,7 +255,10 @@ public sealed class ResourceDisplayFieldBuilder
 
     internal FormDisplayFieldOptions Build()
     {
-        var options = new FormDisplayFieldOptions(_field, _fieldName, _propertyPath);
+        var options = new FormDisplayFieldOptions(_field, _fieldName, _propertyPath)
+        {
+            Source = _source,
+        };
         foreach (var configure in _configuration)
         {
             configure(options);

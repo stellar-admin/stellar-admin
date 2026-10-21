@@ -1,3 +1,4 @@
+using StellarAdmin.Diagnostics;
 using StellarAdmin.UI;
 
 namespace StellarAdmin.Resources.Options;
@@ -61,7 +62,11 @@ public abstract class ResourceFormOptions : IFormScope
 
     internal List<FormItemOptions> MutableItems { get; } = [];
 
+    internal ConfigurationSource? Source { get; set; }
+
     IList<FormItemOptions> IFormScope.Items => MutableItems;
+
+    ConfigurationSource? IFormScope.Source => Source;
 
     FormGridColumnDefinitions IFormScope.Columns
     {

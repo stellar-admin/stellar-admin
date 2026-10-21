@@ -67,13 +67,14 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// </remarks>
     public ResourceCreateBuilder<TResource> AllowCreate()
     {
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.Create = new ResourceCreateOptions<TResource>();
+            options.Create = new ResourceCreateOptions<TResource> { Source = source };
             options.CreateHandler = null;
         });
 
-        return CreateBuilder<TResource>();
+        return CreateBuilder<TResource>(source);
     }
 
     /// <summary>
@@ -112,16 +113,17 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         where THandler : class, IResourceCreateHandler<TModel>
     {
         Services.TryAddScoped<THandler>();
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.Create = new ResourceCreateOptions<TModel>();
+            options.Create = new ResourceCreateOptions<TModel> { Source = source };
             options.CreateHandler = (services, model, cancellationToken) =>
                 services
                     .GetRequiredService<THandler>()
                     .CreateAsync((TModel)model, cancellationToken);
         });
 
-        return CreateBuilder<TModel>();
+        return CreateBuilder<TModel>(source);
     }
 
     /// <summary>
@@ -159,7 +161,10 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// </remarks>
     public ResourceDeleteBuilder<TResource> AllowDelete()
     {
-        Services.Configure<ResourceOptions<TResource>>(options => options.Delete = new());
+        var source = ConfigurationSource.Capture();
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            options.Delete = new() { Source = source }
+        );
 
         return new(Services);
     }
@@ -195,14 +200,15 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// </remarks>
     public ResourceEditBuilder<TResource> AllowEdit()
     {
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.Edit = new ResourceEditOptions<TResource>();
+            options.Edit = new ResourceEditOptions<TResource> { Source = source };
             options.EditLoader = null;
             options.EditHandler = null;
         });
 
-        return EditBuilder<TResource>();
+        return EditBuilder<TResource>(source);
     }
 
     /// <summary>
@@ -242,9 +248,10 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         where THandler : class, IResourceEditHandler<TModel>
     {
         Services.TryAddScoped<THandler>();
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.Edit = new ResourceEditOptions<TModel>();
+            options.Edit = new ResourceEditOptions<TModel> { Source = source };
             options.EditLoader = async (services, id, cancellationToken) =>
                 await services.GetRequiredService<THandler>().FindAsync(id, cancellationToken);
             options.EditHandler = (services, id, model, cancellationToken) =>
@@ -253,7 +260,7 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                     .UpdateAsync(id, (TModel)model, cancellationToken);
         });
 
-        return EditBuilder<TModel>();
+        return EditBuilder<TModel>(source);
     }
 
     /// <summary>
@@ -291,13 +298,14 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// </remarks>
     public ResourceViewBuilder<TResource> AllowView()
     {
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.View = new ResourceViewOptions<TResource>();
+            options.View = new ResourceViewOptions<TResource> { Source = source };
             options.ViewLoader = null;
         });
 
-        return ViewBuilder<TResource>();
+        return ViewBuilder<TResource>(source);
     }
 
     /// <summary>
@@ -335,14 +343,15 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         where THandler : class, IResourceViewHandler<TModel>
     {
         Services.TryAddScoped<THandler>();
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.View = new ResourceViewOptions<TModel>();
+            options.View = new ResourceViewOptions<TModel> { Source = source };
             options.ViewLoader = async (services, id, cancellationToken) =>
                 await services.GetRequiredService<THandler>().FindAsync(id, cancellationToken);
         });
 
-        return ViewBuilder<TModel>();
+        return ViewBuilder<TModel>(source);
     }
 
     /// <summary>
@@ -465,7 +474,7 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         );
     }
 
-    private ResourceCreateBuilder<TModel> CreateBuilder<TModel>() =>
+    private ResourceCreateBuilder<TModel> CreateBuilder<TModel>(ConfigurationSource? source) =>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>
             {
@@ -475,7 +484,8 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                     options.Report(
                         ConfigurationProblemKind.StaleModelBuilder,
                         $"A create configuration for {typeof(TModel).Name} no longer applies, because another create model was selected later.",
-                        "Its settings are skipped."
+                        "Its settings are skipped.",
+                        source
                     );
 
                     return;
@@ -485,7 +495,7 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
             })
         );
 
-    private ResourceEditBuilder<TModel> EditBuilder<TModel>() =>
+    private ResourceEditBuilder<TModel> EditBuilder<TModel>(ConfigurationSource? source) =>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>
             {
@@ -495,7 +505,8 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                     options.Report(
                         ConfigurationProblemKind.StaleModelBuilder,
                         $"A edit configuration for {typeof(TModel).Name} no longer applies, because another edit model was selected later.",
-                        "Its settings are skipped."
+                        "Its settings are skipped.",
+                        source
                     );
 
                     return;
@@ -505,7 +516,7 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
             })
         );
 
-    private ResourceViewBuilder<TModel> ViewBuilder<TModel>() =>
+    private ResourceViewBuilder<TModel> ViewBuilder<TModel>(ConfigurationSource? source) =>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>
             {
@@ -515,7 +526,8 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                     options.Report(
                         ConfigurationProblemKind.StaleModelBuilder,
                         $"A view configuration for {typeof(TModel).Name} no longer applies, because another view model was selected later.",
-                        "Its settings are skipped."
+                        "Its settings are skipped.",
+                        source
                     );
 
                     return;

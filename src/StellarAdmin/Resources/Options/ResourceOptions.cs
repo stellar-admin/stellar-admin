@@ -191,17 +191,57 @@ public sealed class ResourceOptions<TResource>
     ///     can still be used. The problem is logged once when the app starts, and Development
     ///     shows it.
     /// </remarks>
-    public void ReportProblem(EventId eventId, string message, string outcome)
-    {
-        ArgumentNullException.ThrowIfNull(message);
-        ArgumentNullException.ThrowIfNull(outcome);
+    public void ReportProblem(EventId eventId, string message, string outcome) =>
+        ReportIntegrationProblem(eventId, message, outcome, null);
 
-        Problems.Add(
-            new(ConfigurationProblemKind.Integration, message, outcome)
-            {
-                IntegrationEventId = eventId,
-            }
-        );
+    /// <summary>
+    ///     Reports a problem with an index column that an integration worked around.
+    /// </summary>
+    /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
+    /// <param name="message">What is wrong and how to fix it.</param>
+    /// <param name="outcome">What the admin panel does instead, such as "The column isn't sortable."</param>
+    /// <param name="column">The column the problem is about.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="message" />, <paramref name="outcome" /> or <paramref name="column" />
+    ///     is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Call it from a post-configuration callback after correcting the options, so that they
+    ///     can still be used. The problem names the line of the app's code that added the column.
+    /// </remarks>
+    public void ReportProblem(
+        EventId eventId,
+        string message,
+        string outcome,
+        DataGridColumnOptions column
+    )
+    {
+        ArgumentNullException.ThrowIfNull(column);
+
+        ReportIntegrationProblem(eventId, message, outcome, column.Source);
+    }
+
+    /// <summary>
+    ///     Reports a problem with a form field or another form item that an integration worked
+    ///     around.
+    /// </summary>
+    /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
+    /// <param name="message">What is wrong and how to fix it.</param>
+    /// <param name="outcome">What the admin panel does instead, such as "The field is left out."</param>
+    /// <param name="item">The field or other form item the problem is about.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="message" />, <paramref name="outcome" /> or <paramref name="item" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Call it from a post-configuration callback after correcting the options, so that they
+    ///     can still be used. The problem names the line of the app's code that added the item.
+    /// </remarks>
+    public void ReportProblem(EventId eventId, string message, string outcome, FormItemOptions item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        ReportIntegrationProblem(eventId, message, outcome, item.Source);
     }
 
     /// <summary>
@@ -224,12 +264,22 @@ public sealed class ResourceOptions<TResource>
             ConfigurationProblem.Unavailable(ConfigurationProblemKind.Integration, message) with
             {
                 IntegrationEventId = eventId,
+                Source = null,
             }
         );
     }
 
-    internal void Report(ConfigurationProblemKind kind, string message, string outcome) =>
-        Problems.Add(new(kind, message, outcome));
+    // A check that runs after the app's code has returned passes where the app configured what it checked
+    internal void Report(
+        ConfigurationProblemKind kind,
+        string message,
+        string outcome,
+        ConfigurationSource? source = null
+    )
+    {
+        var problem = new ConfigurationProblem(kind, message, outcome);
+        Problems.Add(source is null ? problem : problem with { Source = source });
+    }
 
     // Labels set to blank text fall back to their defaults
     internal void RepairLabels()
@@ -283,5 +333,26 @@ public sealed class ResourceOptions<TResource>
             );
             PluralLabel = SingularLabel.Pluralize();
         }
+    }
+
+    // The integration's code isn't where the app configured the resource, so the problem names the item's line, or
+    // the resource's AddResource call
+    private void ReportIntegrationProblem(
+        EventId eventId,
+        string message,
+        string outcome,
+        ConfigurationSource? source
+    )
+    {
+        ArgumentNullException.ThrowIfNull(message);
+        ArgumentNullException.ThrowIfNull(outcome);
+
+        Problems.Add(
+            new(ConfigurationProblemKind.Integration, message, outcome)
+            {
+                IntegrationEventId = eventId,
+                Source = source,
+            }
+        );
     }
 }

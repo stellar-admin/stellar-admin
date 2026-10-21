@@ -122,6 +122,9 @@ public static partial class StellarAdminBuilderExtensions
                                 .GetRequiredService<IOptions<ResourceOptions<TResource>>>()
                                 .Value.Problems
                     )
+                    {
+                        Source = ConfigurationSource.Capture(),
+                    }
                 );
             }
 

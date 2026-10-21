@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -22,10 +23,15 @@ public sealed class ResourcePagingBuilder<TResource>
     /// </remarks>
     public int PageSize
     {
-        set =>
+        set
+        {
+            var source = ConfigurationSource.Capture();
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Index.Paging!.PageSize = value
-            );
+            {
+                options.Index.Paging!.PageSize = value;
+                options.Index.Paging.PageSizeSource = source;
+            });
+        }
     }
 
     /// <summary>
@@ -46,9 +52,12 @@ public sealed class ResourcePagingBuilder<TResource>
         {
             ArgumentNullException.ThrowIfNull(value);
             var sizes = value.ToArray();
+            var source = ConfigurationSource.Capture();
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Index.Paging!.PageSizes = sizes.ToArray()
-            );
+            {
+                options.Index.Paging!.PageSizes = sizes.ToArray();
+                options.Index.Paging.PageSizesSource = source;
+            });
         }
     }
 

@@ -24,7 +24,8 @@ internal static class AddAnotherCheck
             options.Report(
                 ConfigurationProblemKind.UnknownKeptField,
                 $"KeepForNext names '{field}', which isn't an editable field of the create form. Add the field to the create form, or remove the KeepForNext call.",
-                "Save and add another doesn't keep it."
+                "Save and add another doesn't keep it.",
+                addAnother.KeptFieldSources.GetValueOrDefault(field)
             );
         }
     }

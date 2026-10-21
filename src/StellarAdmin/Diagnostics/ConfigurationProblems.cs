@@ -26,7 +26,22 @@ internal sealed class ConfigurationProblems(
     public IReadOnlyList<ConfigurationProblem> GetProblems() =>
         [.. _problems ??= FindProblems(), .. _found.Values];
 
-    public static void Log(ILogger logger, ConfigurationProblem problem) =>
+    public static void Log(ILogger logger, ConfigurationProblem problem)
+    {
+        if (problem.Source is { } source)
+        {
+            logger.LogWarning(
+                problem.EventId,
+                "Configuration problem in {Resource}: {Problem} {Outcome} Configured at {Source}.",
+                problem.Resource ?? "the admin panel",
+                problem.Message,
+                problem.Outcome,
+                source.ToString()
+            );
+
+            return;
+        }
+
         logger.LogWarning(
             problem.EventId,
             "Configuration problem in {Resource}: {Problem} {Outcome}",
@@ -34,6 +49,7 @@ internal sealed class ConfigurationProblems(
             problem.Message,
             problem.Outcome
         );
+    }
 
     // A problem that only shows when a page renders, such as an editor whose template doesn't match it. It is logged
     // the first time, and listed with the others from then on.
@@ -46,6 +62,7 @@ internal sealed class ConfigurationProblems(
         {
             Resource = registration?.ResolveSidebarItem(services).Label ?? problem.Resource,
             ResourceSlug = registration?.ControllerName,
+            Source = problem.Source ?? registration?.Source,
         };
         if (_found.TryAdd((problem.Resource, problem.Message), problem))
         {
@@ -67,6 +84,7 @@ internal sealed class ConfigurationProblems(
                         {
                             Resource = label,
                             ResourceSlug = resource.ControllerName,
+                            Source = problem.Source ?? resource.Source,
                         }
                     )
             );
@@ -82,6 +100,7 @@ internal sealed class ConfigurationProblems(
             {
                 Resource = "Icons",
                 IsLoggedElsewhere = true,
+                Source = null,
             })
         );
 

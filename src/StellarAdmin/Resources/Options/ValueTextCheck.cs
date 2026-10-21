@@ -30,7 +30,8 @@ internal static class ValueTextCheck
                 options.Report(
                     ConfigurationProblemKind.ValueWithoutText,
                     message,
-                    "The column is left out."
+                    "The column is left out.",
+                    column.Source
                 );
             }
         }
@@ -61,7 +62,8 @@ internal static class ValueTextCheck
                 options.Report(
                     ConfigurationProblemKind.ValueWithoutText,
                     message,
-                    "The field is left out."
+                    "The field is left out.",
+                    field.Source
                 );
             }
         }

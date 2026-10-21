@@ -30,6 +30,10 @@ internal sealed record ConfigurationProblem(
     // The slug of the resource, when it has pages to link to
     public string? ResourceSlug { get; init; }
 
+    // Where the app configured what is wrong. By default the app's code that called the admin panel method reporting
+    // the problem; a check that runs later names the configuration it found the problem in.
+    public ConfigurationSource? Source { get; init; } = ConfigurationSource.Capture();
+
     public static ConfigurationProblem Unavailable(ConfigurationProblemKind kind, string message) =>
         new(kind, message, UnavailableOutcome) { MakesResourceUnavailable = true };
 }

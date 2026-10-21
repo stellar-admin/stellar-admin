@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -122,6 +123,7 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
         var panel = new ResourceRowDetailPanelOptions(partialName, loader, title)
         {
             Name = CreateName(title),
+            Source = ConfigurationSource.Capture(),
         };
         _panels.Add(panel);
 

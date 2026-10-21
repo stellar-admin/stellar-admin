@@ -31,7 +31,7 @@ internal static class ImageEditorCheck
                             richText.AcceptedTypes,
                             defaults.AcceptedTypes
                         );
-                        ReportLimits(options, form, "rich text", field.FieldName);
+                        ReportLimits(options, form, "rich text", field);
                     }
 
                     break;
@@ -40,7 +40,8 @@ internal static class ImageEditorCheck
                     options.Report(
                         ConfigurationProblemKind.ImageFieldWithoutStore,
                         $"The {form} form's image field '{field.FieldName}' has nowhere to store uploads. Call StoreImage on its ImageEditor.",
-                        "The field is left out."
+                        "The field is left out.",
+                        field.Source
                     );
                     break;
                 case { IsReadOnly: false, Editor: ImageEditor image }:
@@ -49,7 +50,7 @@ internal static class ImageEditorCheck
                         var defaults = new ImageEditor();
                         image.MaxFileSize = Positive(image.MaxFileSize, defaults.MaxFileSize);
                         image.AcceptedTypes = NonEmpty(image.AcceptedTypes, defaults.AcceptedTypes);
-                        ReportLimits(options, form, "image", field.FieldName);
+                        ReportLimits(options, form, "image", field);
                     }
 
                     break;
@@ -71,11 +72,12 @@ internal static class ImageEditorCheck
         ResourceOptions<TResource> options,
         string form,
         string kind,
-        string fieldName
+        FormFieldOptions field
     ) =>
         options.Report(
             ConfigurationProblemKind.InvalidUploadLimits,
-            $"The {form} form's {kind} field '{fieldName}' requires a positive MaxFileSize and at least one accepted type.",
-            "The field uses the default limit and accepted types where its own are invalid."
+            $"The {form} form's {kind} field '{field.FieldName}' requires a positive MaxFileSize and at least one accepted type.",
+            "The field uses the default limit and accepted types where its own are invalid.",
+            field.Source
         );
 }

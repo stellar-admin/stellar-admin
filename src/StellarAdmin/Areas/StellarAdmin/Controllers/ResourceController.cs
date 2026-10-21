@@ -17,6 +17,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using StellarAdmin.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
@@ -722,7 +723,7 @@ internal sealed class ResourceController<TResource>(
         );
     }
 
-    // A resource whose configuration turned it off has no pages. Development says why, with a 404 status.
+    // A resource that a configuration problem made unavailable has no pages. Development says why, with a 404 status.
     [NonAction]
     public override void OnActionExecuting(ActionExecutingContext context)
     {
@@ -737,7 +738,20 @@ internal sealed class ResourceController<TResource>(
             ? new ViewResult
             {
                 ViewName = "/Areas/StellarAdmin/Views/Shared/ResourceUnavailable.cshtml",
-                ViewData = new(ViewData) { Model = _resourceOptions.Problems },
+                ViewData = new(ViewData)
+                {
+                    Model = HttpContext
+                        .RequestServices.GetRequiredService<ConfigurationProblems>()
+                        .GetProblems()
+                        .Where(problem =>
+                            string.Equals(
+                                problem.ResourceSlug,
+                                RouteData.Values["controller"] as string,
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                        )
+                        .ToArray(),
+                },
                 StatusCode = StatusCodes.Status404NotFound,
             }
             : NotFound();
@@ -1499,7 +1513,8 @@ internal sealed class ResourceController<TResource>(
             nameof(MultiLookupSheetEditor),
             options.FieldName,
             items,
-            multi.CreateResourceType
+            multi.CreateResourceType,
+            multi.CreateSource
         );
 
         return controller is null

@@ -13,6 +13,7 @@ public sealed class ResourceColumnBuilder<TResource>
 {
     private readonly List<Action<DataGridColumnOptions>> _configuration = [];
     private readonly LambdaExpression _field;
+    private readonly ConfigurationSource? _source = ConfigurationSource.Capture();
 
     /// <summary>
     ///     Sets the text a cell shows when its value is empty.
@@ -69,7 +70,8 @@ public sealed class ResourceColumnBuilder<TResource>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidSelector,
                     $"The index column '{options.FieldName ?? options.Title}' edits '{field}', which isn't a property path.",
-                    "The column edits the field with its own property path."
+                    "The column edits the field with its own property path.",
+                    options.Source
                 )
             );
 
@@ -106,7 +108,8 @@ public sealed class ResourceColumnBuilder<TResource>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidValue,
                     $"The index column '{options.FieldName ?? options.Title}' edits a field with a blank name.",
-                    "The column edits the field with its own property path."
+                    "The column edits the field with its own property path.",
+                    options.Source
                 );
 
                 return;
@@ -188,7 +191,8 @@ public sealed class ResourceColumnBuilder<TResource>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.ColumnDisplayWithHandler,
                     $"The index column '{options.FieldName ?? options.Title}' uses {typeof(TDisplay).Name}, which has a handler. Columns don't support displays with a handler.",
-                    "The column uses its default display."
+                    "The column uses its default display.",
+                    options.Source
                 )
             );
 
@@ -243,7 +247,10 @@ public sealed class ResourceColumnBuilder<TResource>
             ResourcePropertyPath.GetProperties(_field) is { } properties
                 ? ResourcePropertyPath.GetName(properties)
                 : null
-        );
+        )
+        {
+            Source = _source,
+        };
         foreach (var configure in _configuration)
         {
             configure(options);

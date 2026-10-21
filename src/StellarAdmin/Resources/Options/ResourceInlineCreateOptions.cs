@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -42,4 +44,6 @@ public sealed class ResourceInlineCreateOptions
     ///     <see cref="InlineCreatePosition.Top" />.
     /// </value>
     public InlineCreatePosition Position { get; internal set; } = InlineCreatePosition.Top;
+
+    internal ConfigurationSource? Source { get; set; }
 }

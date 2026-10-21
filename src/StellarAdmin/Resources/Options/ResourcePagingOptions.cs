@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -26,4 +28,8 @@ public sealed class ResourcePagingOptions
     ///     The sizes must be positive and distinct, and there must be at least one.
     /// </remarks>
     public IReadOnlyList<int> PageSizes { get; internal set; } = [10, 25, 50, 100];
+
+    internal ConfigurationSource? PageSizeSource { get; set; }
+
+    internal ConfigurationSource? PageSizesSource { get; set; }
 }

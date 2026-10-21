@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -18,6 +20,8 @@ public sealed class ResourceScopesOptions
     ///     Gets the scopes, in display order.
     /// </summary>
     public IReadOnlyList<ResourceScopeOptions> Items => MutableItems;
+
+    internal ConfigurationSource? DefaultScopeSource { get; set; }
 
     internal List<ResourceScopeOptions> MutableItems { get; } = [];
 }

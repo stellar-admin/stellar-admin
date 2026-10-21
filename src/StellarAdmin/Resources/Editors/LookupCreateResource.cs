@@ -15,7 +15,8 @@ internal static class LookupCreateResource
         string editorName,
         string fieldName,
         LookupItems items,
-        Type? resourceType
+        Type? resourceType,
+        ConfigurationSource? source
     )
     {
         var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext!;
@@ -44,7 +45,10 @@ internal static class LookupCreateResource
                         ConfigurationProblemKind.LookupCreateUnavailable,
                         problem,
                         "The lookup has no New button."
-                    ),
+                    )
+                    {
+                        Source = source,
+                    },
                     httpContext.GetRouteValue("controller") as string
                 );
 

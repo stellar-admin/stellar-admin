@@ -257,7 +257,8 @@ public static class StellarAdminBuilderExtensions
                 options.ReportProblem(
                     EfCoreConfigurationEvents.UnsupportedManyToManyField,
                     $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field. A many-to-many field requires a CLR navigation property and related entities with one CLR primary-key property.",
-                    "The field is left out."
+                    "The field is left out.",
+                    field
                 );
                 continue;
             }
@@ -274,7 +275,8 @@ public static class StellarAdminBuilderExtensions
                 options.ReportProblem(
                     EfCoreConfigurationEvents.SingleValueManyToManyEditor,
                     $"{typeof(TEntity).Name}.{field.FieldName} is a many-to-many field, so it needs an editor that selects several items. Call UseEditor<CheckboxGroupEditor>, UseEditor<ToggleGroupEditor> or UseEditor<MultiLookupSheetEditor>.",
-                    "The field is left out."
+                    "The field is left out.",
+                    field
                 );
                 continue;
             }
@@ -309,7 +311,8 @@ public static class StellarAdminBuilderExtensions
                 options.ReportProblem(
                     EfCoreConfigurationEvents.SortableCollectionColumn,
                     $"The {typeof(TEntity).Name} column '{column.FieldName}' reads a collection, so it can't be sortable. Remove Sortable(), or sort it by an expression with Sortable(selector).",
-                    "The column isn't sortable."
+                    "The column isn't sortable.",
+                    column
                 );
             }
         }
@@ -338,7 +341,8 @@ public static class StellarAdminBuilderExtensions
                 options.ReportProblem(
                     EfCoreConfigurationEvents.UnsupportedFormField,
                     $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field: it is a key, a concurrency token or a generated value, or has no public setter.",
-                    "The field is left out."
+                    "The field is left out.",
+                    field
                 );
             }
         }

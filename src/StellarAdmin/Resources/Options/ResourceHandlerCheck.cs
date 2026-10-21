@@ -8,7 +8,7 @@ internal static class ResourceHandlerCheck
     public static void Run<TResource>(ResourceOptions<TResource> options)
     {
         if (
-            options.Create is not null
+            options.Create is { } create
             && options.CreateHandler is null
             && !Implements<TResource>(options, typeof(IResourceCreateHandler<TResource>))
         )
@@ -17,12 +17,13 @@ internal static class ResourceHandlerCheck
             options.Report(
                 ConfigurationProblemKind.CreateWithoutHandler,
                 "The create form requires a data source implementing IResourceCreateHandler or an explicit create handler.",
-                "There's no New button, and the create page returns 404."
+                "There's no New button, and the create page returns 404.",
+                create.Source
             );
         }
 
         if (
-            options.Edit is not null
+            options.Edit is { } edit
             && options.EditHandler is null
             && !Implements<TResource>(options, typeof(IResourceEditHandler<TResource>))
         )
@@ -31,12 +32,13 @@ internal static class ResourceHandlerCheck
             options.Report(
                 ConfigurationProblemKind.EditWithoutHandler,
                 "The edit form requires a data source implementing IResourceEditHandler or an explicit edit handler.",
-                "There are no Edit links, and the edit page returns 404."
+                "There are no Edit links, and the edit page returns 404.",
+                edit.Source
             );
         }
 
         if (
-            options.View is not null
+            options.View is { } view
             && options.ViewLoader is null
             && !Implements<TResource>(options, typeof(IResourceViewHandler<TResource>))
         )
@@ -45,12 +47,13 @@ internal static class ResourceHandlerCheck
             options.Report(
                 ConfigurationProblemKind.ViewWithoutHandler,
                 "The view page requires a data source implementing IResourceViewHandler or an explicit view handler.",
-                "There are no View links, and the view page returns 404."
+                "There are no View links, and the view page returns 404.",
+                view.Source
             );
         }
 
         if (
-            options.Delete is not null
+            options.Delete is { } delete
             && !Implements<TResource>(options, typeof(IResourceDeleteHandler<TResource>))
         )
         {
@@ -58,7 +61,8 @@ internal static class ResourceHandlerCheck
             options.Report(
                 ConfigurationProblemKind.DeleteWithoutHandler,
                 "Delete configuration requires a data source implementing IResourceDeleteHandler.",
-                "There are no Delete actions."
+                "There are no Delete actions.",
+                delete.Source
             );
         }
     }
@@ -66,13 +70,14 @@ internal static class ResourceHandlerCheck
     // Runs after the field checks, which can leave a view page without fields
     public static void RunViewFields<TResource>(ResourceOptions<TResource> options)
     {
-        if (options.View is { Fields.Count: 0 })
+        if (options.View is { Fields.Count: 0 } view)
         {
             options.View = null;
             options.Report(
                 ConfigurationProblemKind.ViewWithoutFields,
                 "The view page requires at least one field.",
-                "There are no View links, and the view page returns 404."
+                "There are no View links, and the view page returns 404.",
+                view.Source
             );
         }
     }

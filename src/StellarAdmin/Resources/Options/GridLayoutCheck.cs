@@ -25,7 +25,7 @@ internal static class GridLayoutCheck
             return;
         }
 
-        scope.Columns = Clamp(options, page, "column count", scope.Columns);
+        scope.Columns = Clamp(options, page, "column count", scope.Columns, scope.Source);
         foreach (var item in scope.Items)
         {
             CheckItem(options, page, item);
@@ -38,12 +38,18 @@ internal static class GridLayoutCheck
         FormItemOptions item
     )
     {
-        item.ColumnSpan = Clamp(options, page, "column span", item.ColumnSpan);
-        item.ColumnStart = Clamp(options, page, "column start", item.ColumnStart);
+        item.ColumnSpan = Clamp(options, page, "column span", item.ColumnSpan, item.Source);
+        item.ColumnStart = Clamp(options, page, "column start", item.ColumnStart, item.Source);
         switch (item)
         {
             case FormDetailsOptions details:
-                details.Columns = Clamp(options, page, "column count", details.Columns);
+                details.Columns = Clamp(
+                    options,
+                    page,
+                    "column count",
+                    details.Columns,
+                    details.Source
+                );
                 foreach (var field in details.Fields)
                 {
                     CheckItem(options, page, field);
@@ -57,13 +63,25 @@ internal static class GridLayoutCheck
             {
                 Editor: CheckboxGroupEditor { ColumnDefinitions: { } columns } editor
             }:
-                editor.ColumnDefinitions = Clamp(options, page, "column count", columns);
+                editor.ColumnDefinitions = Clamp(
+                    options,
+                    page,
+                    "column count",
+                    columns,
+                    item.Source
+                );
                 break;
             case FormFieldOptions
             {
                 Editor: RadioGroupEditor { ColumnDefinitions: { } columns } editor
             }:
-                editor.ColumnDefinitions = Clamp(options, page, "column count", columns);
+                editor.ColumnDefinitions = Clamp(
+                    options,
+                    page,
+                    "column count",
+                    columns,
+                    item.Source
+                );
                 break;
         }
     }
@@ -72,7 +90,8 @@ internal static class GridLayoutCheck
         ResourceOptions<TResource> options,
         string page,
         string setting,
-        FormGridColumnDefinitions value
+        FormGridColumnDefinitions value,
+        ConfigurationSource? source
     )
     {
         var clamped = new FormGridColumnDefinitions(
@@ -81,7 +100,7 @@ internal static class GridLayoutCheck
             Clamp(value.Medium, null),
             Clamp(value.Large, null)
         );
-        Report(options, page, setting, value != clamped);
+        Report(options, page, setting, value != clamped, source);
 
         return clamped;
     }
@@ -90,7 +109,8 @@ internal static class GridLayoutCheck
         ResourceOptions<TResource> options,
         string page,
         string setting,
-        FormColumnSpanDefinitions value
+        FormColumnSpanDefinitions value,
+        ConfigurationSource? source
     )
     {
         var clamped = new FormColumnSpanDefinitions(
@@ -99,7 +119,7 @@ internal static class GridLayoutCheck
             Clamp(value.Medium, ResponsiveGrid.FullSpan),
             Clamp(value.Large, ResponsiveGrid.FullSpan)
         );
-        Report(options, page, setting, value != clamped);
+        Report(options, page, setting, value != clamped, source);
 
         return clamped;
     }
@@ -108,7 +128,8 @@ internal static class GridLayoutCheck
         ResourceOptions<TResource> options,
         string page,
         string setting,
-        FormColumnStartDefinitions value
+        FormColumnStartDefinitions value,
+        ConfigurationSource? source
     )
     {
         var clamped = new FormColumnStartDefinitions(
@@ -117,7 +138,7 @@ internal static class GridLayoutCheck
             Clamp(value.Medium, ResponsiveGrid.AutoStart),
             Clamp(value.Large, ResponsiveGrid.AutoStart)
         );
-        Report(options, page, setting, value != clamped);
+        Report(options, page, setting, value != clamped, source);
 
         return clamped;
     }
@@ -132,7 +153,8 @@ internal static class GridLayoutCheck
         ResourceOptions<TResource> options,
         string page,
         string setting,
-        bool clamped
+        bool clamped,
+        ConfigurationSource? source
     )
     {
         if (clamped)
@@ -140,7 +162,8 @@ internal static class GridLayoutCheck
             options.Report(
                 ConfigurationProblemKind.InvalidValue,
                 $"A {setting} on the {page} is outside 1 to {ResponsiveGrid.MaxColumns}.",
-                $"The {page} uses the nearest number in that range."
+                $"The {page} uses the nearest number in that range.",
+                source
             );
         }
     }

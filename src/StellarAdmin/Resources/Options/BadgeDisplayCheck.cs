@@ -24,7 +24,8 @@ internal static class BadgeDisplayCheck
                 options.Report(
                     ConfigurationProblemKind.MismatchedBadgeText,
                     message,
-                    "The column is left out."
+                    "The column is left out.",
+                    column.Source
                 );
             }
         }
@@ -55,7 +56,8 @@ internal static class BadgeDisplayCheck
                 options.Report(
                     ConfigurationProblemKind.MismatchedBadgeText,
                     message,
-                    "The field is left out."
+                    "The field is left out.",
+                    field.Source
                 );
             }
         }

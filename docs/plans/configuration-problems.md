@@ -27,7 +27,17 @@ Instead, the admin panel finds each problem, works around it, logs it, and in De
 6. **Development shows them.** See [Presentation](#presentation). Other environments show nothing in the UI.
 7. **Strict mode is opt-in.** With `ThrowOnProblems` set (see [API](#api)), the startup service throws on the first problem instead of logging it, for teams that want tests or CI to fail.
 
-Each problem carries the resource, a one-sentence statement of what is wrong, what the panel did, how to fix it, and where it was configured (such as `AddResource<Booking>() → Index → DefaultSort(b => b.DepartsOn)`). These types stay internal.
+Each problem carries the resource, a one-sentence statement of what is wrong, what the panel did, how to fix it, and the line of the app's code that configured it (see [Source locations](#source-locations)). These types stay internal.
+
+## Source locations
+
+Added 2026-10-21 at Jerrie's request, so a developer can find the code behind a problem.
+
+- Builder methods record the line of the app's code that called them: the first stack frame outside StellarAdmin, StellarAdmin.UI and StellarAdmin.EntityFrameworkCore, from the app's debug symbols (`ConfigurationSource.Capture`). Only the frame right outside the panel's own code counts, so a deferred callback run by the options framework records nothing rather than the app's `Program.Main`.
+- Options objects keep the line that added them: fields, display fields, sections, groups and details, columns, the create, edit, view and delete pages, inline rows, scopes, row detail panels, and the settings checked later (default sort, default scope, page size and page sizes, kept fields, a lookup's `EnableCreate`). Checks that run after configuration pass that line with the problem.
+- A problem reported while the app's code is on the stack, such as a blank stylesheet path, records its caller. A resource whose configuration throws records the app's line nearest the throw. Any other resource problem falls back to the `AddResource` call. `ReportProblem` and `ReportUnavailable` use that fallback too, since the integration's code isn't where the app configured the resource. Overloads `ReportProblem(eventId, message, outcome, FormItemOptions item)` and `ReportProblem(eventId, message, outcome, DataGridColumnOptions column)` name the item's line instead; EF Core uses them for its field and column problems (decision 12).
+- The sheet shows "Configured at:" with the path relative to the content root (the full path on hover), the unavailable page shows it under each reason, and the log message and the `ThrowOnProblems` exception end with "Configured at {full path}:{line}."
+- Cost, measured in a Release console app 40 frames deep: about 58 µs per capture and about 20 ms for the first, which loads the symbols. Captures run while each resource's options are built at startup.
 
 ## Presentation
 
@@ -224,8 +234,11 @@ Jerrie, 2026-10-21:
 9. Integrations report problems through a public API rather than `InternalsVisibleTo` (see [API](#api)).
 10. The indicator lists icon-registration problems too, through the public `IconOptions.Problems` (StellarAdmin.UI logs them; the panel only shows them).
 11. No effect labels: each problem says in plain words what happens instead. The public `ConfigurationProblemEffect` enum is removed; `ReportProblem(eventId, message, outcome)` reports a worked-around problem, and `ReportUnavailable(eventId, message)` reports one that makes the resource unavailable. The "turned off" wording is gone from messages, the sheet and the unavailable page.
+12. Problems name the line of the app's code that configured them (see [Source locations](#source-locations)), and `ReportProblem` gets public overloads that take the form item or column the problem is about, so EF Core's field and column problems name their lines.
 
 ## Verification
+
+Source locations, 2026-10-21: the solution builds with no new warnings. New tests: `ConfigurationSourceTests` (caller line, exception line, relative and full paths) and integration tests that a default sort, a column, a resource whose configuration throws, and an editor found while rendering name their lines, and that a problem without a line of its own names `AddResource`. The solution-wide test command passed 1794/1794; skill validation and `SkillsGenerator --check` passed. AdminPlayground on port 5208 (stopped afterwards): all six problems log and show the right lines of `ExcursionResourceRegistration.cs`, including the EF resource's `AddEfCoreResource` call, and headless Chromium screenshots of the sheet and the unavailable page show them. After the `ReportProblem` overloads, an EF test checks that a primary key added as a create field names the `fields.Add` line, and the solution-wide test command passed 1794/1794 again.
 
 Phase 2, 2026-10-21, on the branch: the solution builds with no new warnings. Admin panel unit tests 282/282, admin panel integration tests 620/620 (including the new `Diagnostics/ConfigurationProblemsTests`: a broken resource returns 404 and leaves the sidebar while the others work, a problem is logged once with its event ID, `ThrowOnProblems` fails startup listing every problem, and a valid configuration logs nothing), UI unit tests 732/732. EF Core integration tests 121/121 after the EF conversion: an unmapped entity or unsupported key turns the resource off, and unsupported form fields, many-to-many fields with a single-value editor and sortable collection columns are left out or unsorted, each logged. The solution-wide `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1` passed 1774/1774. Tests that expected exceptions now check the repaired options and the reported problem.
 

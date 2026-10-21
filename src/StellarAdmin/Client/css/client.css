@@ -745,6 +745,22 @@
         }
     }
 
+    .sa-configuration-problem-source {
+        margin: 0;
+        color: var(--sa-color-ink-muted);
+        overflow-wrap: anywhere;
+
+        & strong {
+            color: var(--sa-color-ink);
+            font-weight: 600;
+        }
+
+        & code {
+            font-family: var(--sa-font-mono);
+            font-size: var(--sa-text-xs);
+        }
+    }
+
     .sa-configuration-problems-footnote {
         margin: 0;
         color: var(--sa-color-ink-muted);

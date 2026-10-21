@@ -1,4 +1,5 @@
 using System.Net;
+using System.Runtime.CompilerServices;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
@@ -248,28 +249,28 @@ public class ResourceCrudTests
     }
 
     [Test]
-    public async Task PrimaryKeyAsCreateField_LogsProblem()
+    public async Task PrimaryKeyAsCreateField_LogsProblemWithTheFieldsLine()
     {
         // Arrange
+        var line = 0;
 
         // Act
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowCreate(create =>
-                create.Fields(fields => fields.Add(product => product.Number))
+                create.Fields(fields =>
+                {
+                    line = CurrentLine() + 1;
+                    fields.Add(product => product.Number);
+                })
             )
         );
 
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
-        await Assert
-            .That(
-                logs.ConfigurationProblems.Any(log =>
-                    log.Message.Contains(
-                        "Product.Number cannot be used as an EF resource form field"
-                    )
-                )
-            )
-            .IsTrue();
+        var problem = logs.ConfigurationProblems.Single(log =>
+            log.Message.Contains("Product.Number cannot be used as an EF resource form field")
+        );
+        await Assert.That(problem.Message).EndsWith($"Configured at {CurrentFile()}:{line}.");
         var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
         await Assert.That(options.Create!.Fields).IsEmpty();
     }
@@ -368,6 +369,10 @@ public class ResourceCrudTests
         );
         resource.AllowDelete();
     }
+
+    private static string CurrentFile([CallerFilePath] string path = "") => path;
+
+    private static int CurrentLine([CallerLineNumber] int line = 0) => line;
 
     private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
     {

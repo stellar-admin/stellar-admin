@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Humanizer;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Displays;
 
 namespace StellarAdmin.Resources.Options;
@@ -93,6 +94,8 @@ public sealed class DataGridColumnOptions
     ///     The header text, or <see langword="null" /> to use the property's display name.
     /// </value>
     public string? Title { get; internal set; }
+
+    internal ConfigurationSource? Source { get; set; }
 
     internal bool UsesBuiltInRendering { get; set; }
 

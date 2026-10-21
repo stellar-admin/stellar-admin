@@ -30,7 +30,8 @@ public sealed class LookupSheetEditorHandler(LookupSheetEditor editor, IServiceP
                 nameof(LookupSheetEditor),
                 context.FieldName,
                 items,
-                Editor.CreateResourceType
+                Editor.CreateResourceType,
+                Editor.CreateSource
             )
             : null;
 

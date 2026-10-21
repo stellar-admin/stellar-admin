@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -8,6 +10,8 @@ public abstract class FormItemOptions
     internal FormColumnSpanDefinitions ColumnSpan { get; set; }
 
     internal FormColumnStartDefinitions ColumnStart { get; set; }
+
+    internal ConfigurationSource? Source { get; set; }
 
     private protected FormItemOptions() { }
 }

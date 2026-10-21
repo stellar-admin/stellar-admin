@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -43,4 +45,6 @@ public sealed class ResourceDeleteOptions
     ///     <see cref="ResourceDeleteLabelOptions.Title" />. The default is <see langword="null" />.
     /// </value>
     public string? Title { get; internal set; }
+
+    internal ConfigurationSource? Source { get; set; }
 }

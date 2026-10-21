@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -14,4 +16,6 @@ public class ResourceScopeOptions
     ///     Gets the label of the scope's tab.
     /// </summary>
     public required string Title { get; init; }
+
+    internal ConfigurationSource? Source { get; set; }
 }

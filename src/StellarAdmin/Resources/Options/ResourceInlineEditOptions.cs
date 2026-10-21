@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -24,4 +26,6 @@ public sealed class ResourceInlineEditOptions
     ///     <see langword="true" />.
     /// </value>
     public bool DimOtherRows { get; internal set; } = true;
+
+    internal ConfigurationSource? Source { get; set; }
 }

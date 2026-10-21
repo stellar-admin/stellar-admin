@@ -15,7 +15,12 @@ internal static class InlineRowCheck
             if (FindProblem(options, "inline edit row", edit) is { } problem)
             {
                 options.Edit = null;
-                options.Report(problem.Kind, problem.Message, "Rows can't be edited.");
+                options.Report(
+                    problem.Kind,
+                    problem.Message,
+                    "Rows can't be edited.",
+                    edit.InlineRow.Source
+                );
             }
         }
 
@@ -29,7 +34,12 @@ internal static class InlineRowCheck
             )
             {
                 options.Create = null;
-                options.Report(problem.Kind, problem.Message, "New rows can't be created.");
+                options.Report(
+                    problem.Kind,
+                    problem.Message,
+                    "New rows can't be created.",
+                    create.InlineRow.Source
+                );
             }
         }
     }

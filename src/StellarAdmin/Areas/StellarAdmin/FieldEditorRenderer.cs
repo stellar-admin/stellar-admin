@@ -67,7 +67,11 @@ internal static class FieldEditorRenderer
     }
 
     // Renders a field, leaving it out when its configuration only fails as it renders, and reporting why
-    public static IHtmlContent Guard(IHtmlHelper html, Func<IHtmlContent> render)
+    public static IHtmlContent Guard(
+        IHtmlHelper html,
+        FormFieldOptions field,
+        Func<IHtmlContent> render
+    )
     {
         try
         {
@@ -75,7 +79,7 @@ internal static class FieldEditorRenderer
         }
         catch (ConfigurationException exception)
         {
-            Report(html, exception);
+            Report(html, field, exception);
 
             return HtmlString.Empty;
         }
@@ -83,6 +87,7 @@ internal static class FieldEditorRenderer
 
     public static async Task<IHtmlContent> GuardAsync(
         IHtmlHelper html,
+        FormFieldOptions field,
         Func<Task<IHtmlContent>> render
     )
     {
@@ -92,19 +97,23 @@ internal static class FieldEditorRenderer
         }
         catch (ConfigurationException exception)
         {
-            Report(html, exception);
+            Report(html, field, exception);
 
             return HtmlString.Empty;
         }
     }
 
-    private static void Report(IHtmlHelper html, ConfigurationException exception)
+    private static void Report(
+        IHtmlHelper html,
+        FormFieldOptions field,
+        ConfigurationException exception
+    )
     {
         var httpContext = html.ViewContext.HttpContext;
         httpContext
             .RequestServices.GetRequiredService<ConfigurationProblems>()
             .Report(
-                exception.ToProblem("The field is left out of the page."),
+                exception.ToProblem("The field is left out of the page.", field.Source),
                 httpContext.GetRouteValue("controller") as string
             );
     }

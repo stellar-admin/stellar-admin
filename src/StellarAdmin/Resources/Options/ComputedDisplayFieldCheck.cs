@@ -28,7 +28,8 @@ internal static class ComputedDisplayFieldCheck
             options.Report(
                 ConfigurationProblemKind.ComputedFieldWithoutTitle,
                 $"The {page}'s field '{field.FieldExpression}' computes its value, so it needs a Title.",
-                "The field is left out."
+                "The field is left out.",
+                field.Source
             );
         }
     }

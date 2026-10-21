@@ -31,7 +31,8 @@ internal static class ResourceIndexCheck
             options.Report(
                 ConfigurationProblemKind.InvalidPageSizes,
                 $"The page sizes {Format(paging.PageSizes)} must be positive and distinct.",
-                $"The list offers the page sizes {Format(sizes)}."
+                $"The list offers the page sizes {Format(sizes)}.",
+                paging.PageSizesSource
             );
         }
 
@@ -41,7 +42,8 @@ internal static class ResourceIndexCheck
             options.Report(
                 ConfigurationProblemKind.InvalidDefaultPageSize,
                 $"The default page size {pageSize} must be positive.",
-                $"The list shows {sizes[0]} rows per page."
+                $"The list shows {sizes[0]} rows per page.",
+                paging.PageSizeSource
             );
             pageSize = sizes[0];
         }
@@ -52,7 +54,8 @@ internal static class ResourceIndexCheck
             options.Report(
                 ConfigurationProblemKind.InvalidDefaultPageSize,
                 $"The default page size {pageSize} isn't one of the page sizes.",
-                $"The list adds it to the page sizes: {Format(sizes)}."
+                $"The list adds it to the page sizes: {Format(sizes)}.",
+                paging.PageSizeSource ?? paging.PageSizesSource
             );
         }
 
@@ -78,7 +81,8 @@ internal static class ResourceIndexCheck
                     string.IsNullOrWhiteSpace(scope.Id)
                         ? $"The scope '{scope.Title}' has a blank identifier. Give it an identifier."
                         : $"The scope '{scope.Id}' has a blank title. Give it a title.",
-                    "The scope is left out."
+                    "The scope is left out.",
+                    scope.Source
                 );
             }
             else if (!ids.Add(scope.Id))
@@ -87,7 +91,8 @@ internal static class ResourceIndexCheck
                 options.Report(
                     ConfigurationProblemKind.RepeatedScope,
                     $"The scope identifier '{scope.Id}' is used more than once. Give each scope its own identifier.",
-                    $"The later scope '{scope.Title}' is left out."
+                    $"The later scope '{scope.Title}' is left out.",
+                    scope.Source
                 );
             }
         }
@@ -101,7 +106,8 @@ internal static class ResourceIndexCheck
             options.Report(
                 ConfigurationProblemKind.UnknownDefaultScope,
                 $"The default scope '{defaultScope}' matches no scope.",
-                "The list has no default scope."
+                "The list has no default scope.",
+                scopes.DefaultScopeSource
             );
         }
     }
@@ -118,7 +124,8 @@ internal static class ResourceIndexCheck
             options.Report(
                 ConfigurationProblemKind.UnsortableDefaultSort,
                 $"The default sort '{sort.Field}' must select a configured sortable column.",
-                "The list uses the data source's order."
+                "The list uses the data source's order.",
+                index.DefaultSortSource
             );
         }
     }

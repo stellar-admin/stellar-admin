@@ -1,3 +1,4 @@
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Builders;
 
 namespace StellarAdmin.Resources.Editors;
@@ -29,6 +30,8 @@ public sealed class LookupSheetEditor
     internal bool CreateEnabled { get; private set; }
 
     internal Type? CreateResourceType { get; private set; }
+
+    internal ConfigurationSource? CreateSource { get; private set; }
 
     internal LookupFieldOptions FieldOptions { get; } = new();
 
@@ -68,7 +71,11 @@ public sealed class LookupSheetEditor
     ///     resource must have a create page. Only users who can create the resource see the button.
     ///     When the items have no type, use <see cref="EnableCreate{TResource}" /> instead.
     /// </remarks>
-    public void EnableCreate() => CreateEnabled = true;
+    public void EnableCreate()
+    {
+        CreateEnabled = true;
+        CreateSource = ConfigurationSource.Capture();
+    }
 
     /// <summary>
     ///     Shows a button that creates a new item while nothing is selected.
@@ -84,6 +91,7 @@ public sealed class LookupSheetEditor
     {
         CreateEnabled = true;
         CreateResourceType = typeof(TResource);
+        CreateSource = ConfigurationSource.Capture();
     }
 
     /// <summary>

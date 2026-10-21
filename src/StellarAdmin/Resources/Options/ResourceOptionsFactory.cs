@@ -39,7 +39,10 @@ internal sealed class ResourceOptionsFactory<TResource>(
                 ConfigurationProblem.Unavailable(
                     ConfigurationProblemKind.ResourceFailed,
                     $"Configuring the resource failed with {exception.GetType().Name}: {exception.Message}"
-                )
+                ) with
+                {
+                    Source = ConfigurationSource.FromException(exception),
+                }
             );
 
             return options;

@@ -1,3 +1,5 @@
+using StellarAdmin.Diagnostics;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -22,4 +24,7 @@ public sealed class ResourceAddAnotherOptions
     public string? Label { get; internal set; }
 
     internal List<string> KeptFieldNames { get; } = [];
+
+    // Where each kept field was named, by field name
+    internal Dictionary<string, ConfigurationSource?> KeptFieldSources { get; } = [];
 }

@@ -17,7 +17,8 @@ internal static class ComputedColumnCheck
                 options.Report(
                     ConfigurationProblemKind.ComputedColumnWithoutTitle,
                     $"The index column '{column.FieldExpression}' computes its value, so it needs a Title.",
-                    "The column is left out."
+                    "The column is left out.",
+                    column.Source
                 );
             }
             else if (column is { Sortable: true, SortExpression: null })
@@ -26,7 +27,8 @@ internal static class ComputedColumnCheck
                 options.Report(
                     ConfigurationProblemKind.ComputedColumnSortedByName,
                     $"The index column '{column.Title}' computes its value, so it can only be sorted by an expression. Use Sortable(selector).",
-                    "The column isn't sortable."
+                    "The column isn't sortable.",
+                    column.Source
                 );
             }
             else if (
@@ -46,7 +48,8 @@ internal static class ComputedColumnCheck
                 options.Report(
                     ConfigurationProblemKind.RepeatedSortName,
                     $"The index column '{column.Title}' is sorted as '{column.SortField}', as another sortable column is. Give it another title.",
-                    "The column isn't sortable."
+                    "The column isn't sortable.",
+                    column.Source
                 );
             }
         }

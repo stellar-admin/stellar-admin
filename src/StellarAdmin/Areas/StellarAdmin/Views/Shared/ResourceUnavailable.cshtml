@@ -1,5 +1,7 @@
+@using Microsoft.Extensions.Hosting
 @using StellarAdmin.Diagnostics
 @model IReadOnlyList<ConfigurationProblem>
+@inject IHostEnvironment HostEnvironment
 
 @* Development's page for a resource that a configuration problem made unavailable; other environments return a plain 404 *@
 @{
@@ -18,6 +20,10 @@
                 @foreach (var problem in Model.Where(problem => problem.MakesResourceUnavailable))
                 {
                     <span class="block">@problem.Message</span>
+                    @if (problem.Source is { } source)
+                    {
+                        <span class="block">Configured at <code title="@source.FilePath">@source.Describe(HostEnvironment.ContentRootPath)</code></span>
+                    }
                 }
             </sa-empty-description>
         </sa-empty-header>

@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -50,11 +51,13 @@ public sealed class ResourceAddAnotherBuilder<TModel>
         var fieldName = ResourcePropertyPath.GetProperties(property) is { } properties
             ? ResourcePropertyPath.GetName(properties)
             : property.ToString();
+        var source = ConfigurationSource.Capture();
         _configure(options =>
         {
             if (!options.KeptFieldNames.Contains(fieldName))
             {
                 options.KeptFieldNames.Add(fieldName);
+                options.KeptFieldSources[fieldName] = source;
             }
         });
 

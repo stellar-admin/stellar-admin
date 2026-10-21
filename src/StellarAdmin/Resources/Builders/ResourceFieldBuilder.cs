@@ -16,6 +16,7 @@ public sealed class ResourceFieldBuilder
     private readonly LambdaExpression _field;
     private readonly string _fieldName;
     private readonly PropertyInfo[] _propertyPath;
+    private readonly ConfigurationSource? _source = ConfigurationSource.Capture();
 
     /// <summary>
     ///     Sets the help text shown with the field.
@@ -153,7 +154,8 @@ public sealed class ResourceFieldBuilder
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.MismatchedHandler,
                     $"The field '{options.FieldName}' uses {typeof(TEditor).Name} with the handler {handlerType.Name}, which must implement IFieldEditorHandler<{typeof(TEditor).Name}>.",
-                    "The field keeps its default editor."
+                    "The field keeps its default editor.",
+                    options.Source
                 );
 
                 return;
@@ -176,7 +178,7 @@ public sealed class ResourceFieldBuilder
 
     internal FormFieldOptions Build()
     {
-        var options = new FormFieldOptions(_field, _fieldName, _propertyPath);
+        var options = new FormFieldOptions(_field, _fieldName, _propertyPath) { Source = _source };
         foreach (var configure in _configuration)
         {
             configure(options);

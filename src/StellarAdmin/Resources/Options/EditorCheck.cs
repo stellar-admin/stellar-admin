@@ -23,7 +23,7 @@ internal static class EditorCheck
         {
             if (field.Editor is RadioGroupEditor radio)
             {
-                RepairRadioClassNames(options, form, field.FieldName, radio);
+                RepairRadioClassNames(options, form, field, radio);
             }
 
             if (FindProblem(field) is not { } problem)
@@ -39,7 +39,8 @@ internal static class EditorCheck
                 options.Report(
                     ConfigurationProblemKind.UnsuitableEditor,
                     message,
-                    "The field is left out."
+                    "The field is left out.",
+                    field.Source
                 );
                 continue;
             }
@@ -49,7 +50,8 @@ internal static class EditorCheck
             options.Report(
                 ConfigurationProblemKind.UnsuitableEditor,
                 message,
-                "The field uses the default editor for its property."
+                "The field uses the default editor for its property.",
+                field.Source
             );
         }
     }
@@ -94,7 +96,7 @@ internal static class EditorCheck
     private static void RepairRadioClassNames<TResource>(
         ResourceOptions<TResource> options,
         string form,
-        string fieldName,
+        FormFieldOptions field,
         RadioGroupEditor radio
     )
     {
@@ -108,8 +110,9 @@ internal static class EditorCheck
         classNames.Option.Error = null;
         options.Report(
             ConfigurationProblemKind.UnsuitableEditor,
-            $"The {form} form's radio field '{fieldName}' sets ClassNames.Content or ClassNames.Option.Error, but radio groups have no outer Content or per-option Error element. Use Option.Content or Error instead.",
-            "Those class names aren't used."
+            $"The {form} form's radio field '{field.FieldName}' sets ClassNames.Content or ClassNames.Option.Error, but radio groups have no outer Content or per-option Error element. Use Option.Content or Error instead.",
+            "Those class names aren't used.",
+            field.Source
         );
     }
 }

@@ -18,7 +18,8 @@ internal static class RowDetailsCheck
             options.Report(
                 ConfigurationProblemKind.RowDetailsWithoutKey,
                 $"The row detail panel '{panel.Title ?? panel.PartialName}' loads when a row expands, which requires a resource key. Call UseKey on the resource.",
-                "The panel is left out."
+                "The panel is left out.",
+                panel.Source
             );
         }
 

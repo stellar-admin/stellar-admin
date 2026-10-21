@@ -1,5 +1,7 @@
+@using Microsoft.Extensions.Hosting
 @using StellarAdmin.Diagnostics
 @model IReadOnlyList<ConfigurationProblem>
+@inject IHostEnvironment HostEnvironment
 
 @* The configuration problems, which the layout shows in Development: a pill at the bottom of the page that opens a
    sheet listing them, grouped by resource *@
@@ -38,6 +40,10 @@
                     <div class="sa-configuration-problem">
                         <p class="sa-configuration-problem-message">@problem.Message</p>
                         <p class="sa-configuration-problem-outcome"><strong>Result:</strong> @problem.Outcome</p>
+                        @if (problem.Source is { } source)
+                        {
+                            <p class="sa-configuration-problem-source"><strong>Configured at:</strong> <code title="@source.FilePath">@source.Describe(HostEnvironment.ContentRootPath)</code></p>
+                        }
                     </div>
                 }
             </section>

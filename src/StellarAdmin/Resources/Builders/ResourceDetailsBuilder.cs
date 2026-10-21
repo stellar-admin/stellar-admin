@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
 
@@ -11,6 +12,7 @@ namespace StellarAdmin.Resources.Builders;
 public sealed class ResourceDetailsBuilder<TResource>
 {
     private readonly List<ResourceDisplayFieldBuilder> _fields = [];
+    private readonly ConfigurationSource? _source = ConfigurationSource.Capture();
     private readonly string _title;
     private FormGridColumnDefinitions _columns;
     private FormColumnSpanDefinitions _columnSpan;
@@ -226,6 +228,7 @@ public sealed class ResourceDetailsBuilder<TResource>
             Description = _description,
             Layout = _layout,
             Orientation = _orientation,
+            Source = _source,
             Variant = _variant,
         };
         options.MutableFields.AddRange(_fields.Select(field => field.Build()));

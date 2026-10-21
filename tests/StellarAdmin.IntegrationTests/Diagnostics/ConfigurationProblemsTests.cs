@@ -1,4 +1,5 @@
 using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
@@ -86,12 +87,14 @@ public class ConfigurationProblemsTests
     public async Task EditorWithAnotherEditorsTemplate_LeavesFieldOutAndReportsIt()
     {
         // Arrange
+        var line = 0;
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new([]),
             resource =>
                 resource.AllowCreate(create =>
                     create.Fields(fields =>
                     {
+                        line = CurrentLine() + 1;
                         fields.Add(product => product.Name).UseEditor<MismatchedEditor>();
                         fields.Add(product => product.Price);
                     })
@@ -112,6 +115,14 @@ public class ConfigurationProblemsTests
             .Contains("MismatchedEditor is not supported by a template for TextInputEditor.");
         await Assert.That(second.TextContents(".sa-configuration-problem-message")).HasCount(1);
         await Assert.That(logs.ConfigurationProblems).HasCount(1);
+        await Assert
+            .That(
+                first.RequiredElement(".sa-configuration-problem-source code").GetAttribute("title")
+            )
+            .IsEqualTo(CurrentFile());
+        await Assert
+            .That(first.TextContents(".sa-configuration-problem-source code").Single())
+            .EndsWith($":{line}");
     }
 
     [Test]
@@ -240,6 +251,103 @@ public class ConfigurationProblemsTests
     }
 
     [Test]
+    public async Task Problem_NamesTheLineThatConfiguredIt()
+    {
+        // Arrange
+        var line = 0;
+
+        // Act
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            resource =>
+            {
+                line = CurrentLine() + 1;
+                resource.Index(index => index.DefaultSortByDescending(product => product.Price));
+            }
+        );
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(logs.ConfigurationProblems.Single().Message)
+            .EndsWith($"Configured at {CurrentFile()}:{line}.");
+    }
+
+    [Test]
+    public async Task ProblemInAColumn_NamesTheLineThatAddedIt()
+    {
+        // Arrange
+        var line = 0;
+
+        // Act
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns =>
+                    {
+                        line = CurrentLine() + 1;
+                        columns.Add(product => product.Price * 2);
+                    })
+                )
+        );
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        var problem = logs.ConfigurationProblems.Single();
+        await Assert.That(problem.EventId.Name).IsEqualTo("ComputedColumnWithoutTitle");
+        await Assert.That(problem.Message).EndsWith($"Configured at {CurrentFile()}:{line}.");
+    }
+
+    [Test]
+    public async Task ProblemWithoutItsOwnLine_NamesTheLineThatAddedTheResource()
+    {
+        // Arrange
+
+        // Act
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            resource => resource.SingularLabel = " "
+        );
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(logs.ConfigurationProblems.Single().Message)
+            .Contains("StellarAdminTestHost.cs:");
+    }
+
+    [Test]
+    public async Task ResourceThatThrows_NamesTheLineThatThrew()
+    {
+        // Arrange
+        var line = 0;
+
+        // Act
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            configureAdmin: admin =>
+            {
+                admin.AddResource<CustomProduct>(
+                    "catalog",
+                    resource => resource.UseDataSource<CustomProductDataSource>()
+                );
+                admin.Services.Configure<ResourceOptions<CustomProduct>>(_ =>
+                {
+                    line = CurrentLine() + 1;
+                    throw new InvalidOperationException("Broken catalog");
+                });
+            }
+        );
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(logs.ConfigurationProblems.Single().Message)
+            .EndsWith($"Configured at {CurrentFile()}:{line}.");
+    }
+
+    [Test]
     public async Task ThrowOnProblems_FailsStartupWithEveryProblem()
     {
         // Arrange
@@ -279,6 +387,10 @@ public class ConfigurationProblemsTests
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert.That(logs.ConfigurationProblems).IsEmpty();
     }
+
+    private static string CurrentFile([CallerFilePath] string path = "") => path;
+
+    private static int CurrentLine([CallerLineNumber] int line = 0) => line;
 
     private sealed class MismatchedEditor : FieldEditor
     {

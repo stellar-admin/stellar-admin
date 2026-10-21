@@ -16,11 +16,13 @@ internal static class FormScopeBuilder
         Func<TBuilder, FormContainerOptions> build
     )
     {
+        var source = ConfigurationSource.Capture();
         var configuration = new List<Action<IFormScope>>();
         var builder = createBuilder(configuration.Add);
         configure(scope =>
         {
             var container = build(builder);
+            container.Source = source;
             foreach (var configureContainer in configuration)
             {
                 configureContainer(container);
@@ -54,11 +56,13 @@ internal static class FormScopeBuilder
         ArgumentNullException.ThrowIfNull(title);
         if (string.IsNullOrWhiteSpace(title))
         {
+            var source = ConfigurationSource.Capture();
             configure(_ =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidValue,
                     $"A {container} has a blank title. Give it a title.",
-                    $"The {container} is shown without a heading."
+                    $"The {container} is shown without a heading.",
+                    source
                 )
             );
         }

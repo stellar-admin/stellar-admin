@@ -39,7 +39,8 @@ internal static class IconEditorCheck
                     options.Report(
                         ConfigurationProblemKind.UnknownIcons,
                         $"The {form} form's icon field '{field.FieldName}' lists icons that aren't registered: {string.Join(", ", unknown)}.",
-                        "None of its icons are registered, so the field is left out."
+                        "None of its icons are registered, so the field is left out.",
+                        field.Source
                     );
                     continue;
                 }
@@ -48,7 +49,8 @@ internal static class IconEditorCheck
                 options.Report(
                     ConfigurationProblemKind.UnknownIcons,
                     $"The {form} form's icon field '{field.FieldName}' lists icons that aren't registered: {string.Join(", ", unknown)}.",
-                    "The field offers only its registered icons."
+                    "The field offers only its registered icons.",
+                    field.Source
                 );
             }
 
@@ -58,7 +60,8 @@ internal static class IconEditorCheck
                 options.Report(
                     ConfigurationProblemKind.EmptyIconList,
                     $"The {form} form's icon field '{field.FieldName}' has an empty list of icons. Set Icons to null to offer every registered icon.",
-                    "The field offers every registered icon."
+                    "The field offers every registered icon.",
+                    field.Source
                 );
             }
 
@@ -68,7 +71,8 @@ internal static class IconEditorCheck
                 options.Report(
                     ConfigurationProblemKind.InlineIconsWithoutList,
                     $"The {form} form's icon field '{field.FieldName}' uses the inline layout, which requires a list of icons.",
-                    "The field uses the automatic layout."
+                    "The field uses the automatic layout.",
+                    field.Source
                 );
             }
         }

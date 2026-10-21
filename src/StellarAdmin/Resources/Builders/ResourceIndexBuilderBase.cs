@@ -469,6 +469,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     )
     {
         ArgumentNullException.ThrowIfNull(partialName);
+        var source = ConfigurationSource.Capture();
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
             if (string.IsNullOrWhiteSpace(partialName))
@@ -477,13 +478,17 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 options.Report(
                     ConfigurationProblemKind.RowDetailsWithoutPanels,
                     "The row details name a blank partial view.",
-                    "Rows don't expand."
+                    "Rows don't expand.",
+                    source
                 );
 
                 return;
             }
 
-            options.Index.RowDetails = new() { MutablePanels = { new(partialName, loader) } };
+            options.Index.RowDetails = new()
+            {
+                MutablePanels = { new(partialName, loader) { Source = source } },
+            };
         });
 
         return new(Services);
@@ -521,6 +526,9 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                         $"The row detail panel '{panel.Title}' names a blank partial view.",
                         "The panel is left out."
                     )
+                    {
+                        Source = panel.Source,
+                    }
                 );
             }
             else if (string.IsNullOrWhiteSpace(panel.Name))
@@ -531,6 +539,9 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                         $"The row detail panel '{panel.Title}' needs a name. Set Name on the panel.",
                         "The panel is left out."
                     )
+                    {
+                        Source = panel.Source,
+                    }
                 );
             }
             else if (!names.Add(panel.Name))
@@ -541,6 +552,9 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                         $"Row detail panel names must be unique, and '{panel.Name}' is used more than once.",
                         $"The later panel '{panel.Title}' is left out."
                     )
+                    {
+                        Source = panel.Source,
+                    }
                 );
             }
             else
@@ -582,13 +596,15 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     private TBuilder ConfigureDefaultSort(LambdaExpression field, ResourceSortDirection direction)
     {
         ArgumentNullException.ThrowIfNull(field);
+        var source = ConfigurationSource.Capture();
         if (ResourcePropertyPath.GetProperties(field) is not { } properties)
         {
             Services.Configure<ResourceOptions<TResource>>(options =>
                 options.Report(
                     ConfigurationProblemKind.InvalidSelector,
                     $"The default sort selects '{field}', which isn't a resource property path.",
-                    "The default sort is left unchanged."
+                    "The default sort is left unchanged.",
+                    source
                 )
             );
 
@@ -596,8 +612,10 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
         }
 
         Services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.DefaultSort = new(ResourcePropertyPath.GetName(properties), direction)
-        );
+        {
+            options.Index.DefaultSort = new(ResourcePropertyPath.GetName(properties), direction);
+            options.Index.DefaultSortSource = source;
+        });
 
         return (TBuilder)this;
     }

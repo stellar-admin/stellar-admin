@@ -9,9 +9,17 @@ internal static class ResourceProblemSink
     [ThreadStatic]
     private static List<ConfigurationProblem>? _problems;
 
-    public static void Report(ConfigurationProblemKind kind, string message, string outcome)
+    // A builder reports from a deferred callback, after the app's code has returned, so it passes where that code
+    // configured the item
+    public static void Report(
+        ConfigurationProblemKind kind,
+        string message,
+        string outcome,
+        ConfigurationSource? source = null
+    )
     {
-        _problems?.Add(new(kind, message, outcome));
+        var problem = new ConfigurationProblem(kind, message, outcome);
+        _problems?.Add(source is null ? problem : problem with { Source = source });
     }
 
     // An editor or display setting set to a number it can't use keeps its current value

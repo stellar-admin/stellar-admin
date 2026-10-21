@@ -6,5 +6,7 @@ namespace StellarAdmin.Diagnostics;
 internal sealed class ConfigurationException(ConfigurationProblemKind kind, string message)
     : InvalidOperationException(message)
 {
-    public ConfigurationProblem ToProblem(string outcome) => new(kind, Message, outcome);
+    // The field's configuration is where the app made the mistake, not the page that found it
+    public ConfigurationProblem ToProblem(string outcome, ConfigurationSource? source) =>
+        new(kind, Message, outcome) { Source = source };
 }
