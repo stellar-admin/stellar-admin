@@ -2045,7 +2045,7 @@ internal sealed class ResourceController<TResource>(
             return [];
         }
 
-        var context = new ValidationContext(container)
+        var context = new ValidationContext(container, HttpContext.RequestServices, items: null)
         {
             DisplayName =
                 field.Title

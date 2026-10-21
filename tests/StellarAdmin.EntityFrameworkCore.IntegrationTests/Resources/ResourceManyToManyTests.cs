@@ -222,6 +222,33 @@ public class ResourceManyToManyTests
     }
 
     [Test]
+    public async Task EditPost_ValidationAttributeUsingServices_ShowsTheErrorWithoutSaving()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource => resource.AllowEdit(edit => edit.Fields(UseCheckboxGroup)),
+            configureAdmin: admin => admin.Services.AddSingleton(new ReservedTags(3))
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        values.Add(new("Entity.Tags", "3"));
+
+        // Act
+        using var response = await client.PostAsync(
+            "/stellaradmin/products/edit/2",
+            new FormUrlEncodedContent(values)
+        );
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(document.QuerySelector("[data-valmsg-for='Entity.Tags']")!.TextContent)
+            .Contains("can't include a reserved tag");
+        await Assert.That(await ReadTagIds(sut, 2)).IsEquivalentTo([1, 2]);
+    }
+
+    [Test]
     public async Task MultiLookupSelection_ConvertsTheKeysToTheRelatedKeyType()
     {
         // Arrange

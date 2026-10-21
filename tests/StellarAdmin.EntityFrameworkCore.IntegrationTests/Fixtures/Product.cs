@@ -16,6 +16,7 @@ public sealed class Product
     public string Name { get; set; } = "";
 
     [MaxLength(2)]
+    [NotReservedTags]
     public List<Tag> Tags { get; } = [];
 
     [Range(1, 1000)]
