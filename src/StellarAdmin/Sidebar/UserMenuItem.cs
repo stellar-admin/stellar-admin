@@ -13,7 +13,7 @@ public abstract class UserMenuItem
     private protected UserMenuItem() { }
 
     // Why the value can't be used, when a factory method got a blank value
-    internal string? Problem { get; init; }
+    internal ConfigurationValueProblem? Problem { get; init; }
 
     /// <summary>
     ///     Returns an item that links to an MVC controller action.
@@ -35,6 +35,7 @@ public abstract class UserMenuItem
         return new(text, action, controller, null)
         {
             Problem = ConfigurationValues.FindBlank(
+                "UserMenuItem.Action",
                 (nameof(text), text),
                 (nameof(action), action),
                 (nameof(controller), controller)
@@ -69,6 +70,7 @@ public abstract class UserMenuItem
         return new(text, action, controller, area)
         {
             Problem = ConfigurationValues.FindBlank(
+                "UserMenuItem.Action",
                 (nameof(text), text),
                 (nameof(action), action),
                 (nameof(controller), controller),
@@ -149,7 +151,11 @@ public abstract class UserMenuItem
 
         return new(text, page, null)
         {
-            Problem = ConfigurationValues.FindBlank((nameof(text), text), (nameof(page), page)),
+            Problem = ConfigurationValues.FindBlank(
+                "UserMenuItem.Page",
+                (nameof(text), text),
+                (nameof(page), page)
+            ),
         };
     }
 
@@ -202,6 +208,7 @@ public abstract class UserMenuItem
         return new(text, page, area)
         {
             Problem = ConfigurationValues.FindBlank(
+                "UserMenuItem.Page",
                 (nameof(text), text),
                 (nameof(page), page),
                 (nameof(area), area)
@@ -264,7 +271,11 @@ public abstract class UserMenuItem
 
         return new(text, url)
         {
-            Problem = ConfigurationValues.FindBlank((nameof(text), text), (nameof(url), url)),
+            Problem = ConfigurationValues.FindBlank(
+                "UserMenuItem.Url",
+                (nameof(text), text),
+                (nameof(url), url)
+            ),
         };
     }
 

@@ -32,7 +32,7 @@ public class ResourceConfigurationTests
         await Assert.That(products.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
             .That(logs.ConfigurationProblems.Single().Message)
-            .Contains("Supplier is not mapped in CatalogDbContext.");
+            .Contains("because CatalogDbContext has no Supplier entity.");
     }
 
     [Test]

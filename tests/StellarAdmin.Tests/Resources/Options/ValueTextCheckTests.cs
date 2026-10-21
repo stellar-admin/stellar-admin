@@ -31,7 +31,7 @@ public class ValueTextCheckTests
         await Assert
             .That(problem.Message)
             .Contains(
-                "The index column 'Destinations' shows a collection of Destination, which has no text of its own."
+                "The `Destinations` column isn't shown because its value is a collection of `Destination`, which has no text of its own."
             );
     }
 
@@ -53,8 +53,9 @@ public class ValueTextCheckTests
         await Assert
             .That(problem.Message)
             .Contains(
-                "The index column 'Country' shows a Country, which has no text of its own. Show one of its properties instead"
+                "The `Country` column isn't shown because its value is a `Country`, which has no text of its own."
             );
+        await Assert.That(problem.Fix).Contains("Show one of the `Country`'s properties instead");
     }
 
     [Test]
@@ -127,7 +128,7 @@ public class ValueTextCheckTests
         );
         await Assert
             .That(problem.Message)
-            .Contains("field 'Destinations' shows a collection of Destination");
+            .Contains("its value is a collection of `Destination`");
     }
 
     [Test]

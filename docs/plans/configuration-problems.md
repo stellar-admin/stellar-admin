@@ -219,6 +219,16 @@ Built 2026-10-21:
 - Problems found while a page renders are added to `ConfigurationProblems`, logged the first time and listed in the indicator from then on, including on the page that found them, since the layout renders after the body.
 - Not changed: request-time argument checks in `ResourceOperationResult` and `FieldBindingContext`, errors from an app's own handlers and data sources (such as `StoreImage` returning no value), and the EF Core data errors (null parent values, null choice values, missing related entities).
 
+## Levels and the annotated sheet
+
+Built 2026-10-21, from the prototype `sandbox/html/config-problems-sheet.html` (option I) that Jerrie approved.
+
+- **Levels.** Each problem is an error (the whole resource is unavailable), a warning (something configured doesn't happen) or info (it happens, and the panel adjusted something next to it). The only info problem is a `PageSize` missing from `PageSizes`. The log uses the matching level: Error, Warning or Information.
+- **Wording.** Every message says what the developer notices, "because" the cause, and what happens instead; a separate fix says what to change. Backticks mark code; the sheet renders it as code, and the log and the `ThrowOnProblems` exception strip the backticks and end with "Fix: …". The "Result:" line and `Outcome` are gone.
+- **Sheet.** One block per source file, read from disk in Development: the path (folders muted), a count per level, and each problem's line with one line either side, merged where they touch and separated by ⋯, coloured by its most severe problem. Each problem sits under its line as a note with the message (its level spoken first to screen readers) and the fix behind a wrench. Problems without a line, or in a file that can't be read, follow: the latter show their line numbers without code, the former are grouped by resource. No Open link and no resource headings.
+- **Pill.** A count chip per level, most severe first, in the level's colour. With only info problems it reads "Configuration info", as does the sheet title.
+- **API.** `ReportProblem(eventId, message, fix[, column | item])` reports a warning, the new `ReportInfo` with the same overloads reports info, and `ReportUnavailable(eventId, message, fix)` an error. All unreleased, so the old `outcome` overloads were replaced.
+
 ## Decisions
 
 Jerrie, 2026-10-21:
@@ -235,8 +245,11 @@ Jerrie, 2026-10-21:
 10. The indicator lists icon-registration problems too, through the public `IconOptions.Problems` (StellarAdmin.UI logs them; the panel only shows them).
 11. No effect labels: each problem says in plain words what happens instead. The public `ConfigurationProblemEffect` enum is removed; `ReportProblem(eventId, message, outcome)` reports a worked-around problem, and `ReportUnavailable(eventId, message)` reports one that makes the resource unavailable. The "turned off" wording is gone from messages, the sheet and the unavailable page.
 12. Problems name the line of the app's code that configured them (see [Source locations](#source-locations)), and `ReportProblem` gets public overloads that take the form item or column the problem is about, so EF Core's field and column problems name their lines.
+13. Problems have three levels (error, warning, info) and the sheet shows them under their lines in the source file (see [Levels and the annotated sheet](#levels-and-the-annotated-sheet)). The page size missing from `PageSizes` is info, since it still applies.
 
 ## Verification
+
+Levels and the annotated sheet, 2026-10-21: the solution builds with no new warnings, and the solution-wide test command passed 1809/1809 (new: `ConfigurationProblemsSheetTests`, the info and error log levels, the page size's level, the annotated sheet and the "Configuration info" pill). Headless Chromium screenshots of AdminPlayground on port 5208 (stopped afterwards): the pill with 1 error, 4 warnings and 1 info, and the sheet in light and dark, scrolled to the top and the bottom. Not yet checked: theme fixtures, compact density, phone width.
 
 Source locations, 2026-10-21: the solution builds with no new warnings. New tests: `ConfigurationSourceTests` (caller line, exception line, relative and full paths) and integration tests that a default sort, a column, a resource whose configuration throws, and an editor found while rendering name their lines, and that a problem without a line of its own names `AddResource`. The solution-wide test command passed 1794/1794; skill validation and `SkillsGenerator --check` passed. AdminPlayground on port 5208 (stopped afterwards): all six problems log and show the right lines of `ExcursionResourceRegistration.cs`, including the EF resource's `AddEfCoreResource` call, and headless Chromium screenshots of the sheet and the unavailable page show them. After the `ReportProblem` overloads, an EF test checks that a primary key added as a create field names the `fields.Add` line, and the solution-wide test command passed 1794/1794 again.
 

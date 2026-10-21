@@ -29,7 +29,7 @@ public class StellarAdminBuilderExtensionsTests
         await Assert.That(options.IsUnavailable).IsTrue();
         await Assert
             .That(options.Problems.Single().Message)
-            .Contains("InvalidOperationException: Broken");
+            .Contains("throws `InvalidOperationException`: Broken");
     }
 
     [Test]

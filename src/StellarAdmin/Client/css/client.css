@@ -611,7 +611,7 @@
     }
 
     /* The configuration problems indicator: an ink pill fixed at the bottom centre of the main area, clear of the
-       sidebar and of the environment frame's border. Warning, not danger: the app's users are unaffected. */
+       sidebar and of the environment frame's border. It counts each level, most severe first. */
     .sa-configuration-problems {
         --_inset: calc(4 * var(--sa-unit));
         --_sidebar: var(--sidebar-width);
@@ -674,91 +674,274 @@
         }
     }
 
+    /* A count per level, most severe first, each in its level's colour */
+    .sa-configuration-problems-counts {
+        display: inline-flex;
+        gap: calc(1 * var(--sa-unit));
+    }
+
     .sa-configuration-problems-count {
-        display: inline-grid;
-        place-items: center;
+        --_level: var(--sa-color-warning);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
         min-width: 20px;
         height: 20px;
         padding-inline: 6px;
         border-radius: 999px;
-        background: var(--sa-color-warning);
-        color: oklch(from var(--sa-color-warning) clamp(0.15, (0.66 - l) * 1000, 1) 0 0);
+        background: var(--_level);
+        color: oklch(from var(--_level) clamp(0.15, (0.66 - l) * 1000, 1) 0 0);
         font-size: var(--sa-text-xs);
         font-weight: 700;
         font-variant-numeric: tabular-nums;
-    }
 
-    .sa-configuration-problems-list {
-        display: grid;
-        gap: calc(5 * var(--sa-unit));
-        padding: 0 calc(4 * var(--sa-unit)) calc(4 * var(--sa-unit));
-        overflow-y: auto;
-    }
+        & svg {
+            width: 12px;
+            height: 12px;
+            stroke-width: 2.5;
+        }
 
-    .sa-configuration-problems-group {
-        display: grid;
-        gap: calc(2 * var(--sa-unit));
-    }
+        &[data-level="error"] {
+            --_level: var(--sa-color-danger);
+        }
 
-    .sa-configuration-problems-group-title {
-        display: flex;
-        align-items: center;
-        gap: calc(2 * var(--sa-unit));
-        margin: 0;
-        color: var(--sa-color-ink-muted);
-        font-size: var(--sa-text-xs);
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-
-        & a {
-            margin-inline-start: auto;
-            color: var(--sa-color-ink-muted);
-            font-weight: 500;
-            letter-spacing: 0;
-            text-transform: none;
+        &[data-level="info"] {
+            --_level: var(--sa-color-info);
         }
     }
 
-    .sa-configuration-problem {
+    .sa-configuration-problems-list {
+        flex: 1;
+        min-height: 0;
         display: grid;
-        gap: calc(1.5 * var(--sa-unit));
-        padding: calc(3 * var(--sa-unit));
+        grid-template-columns: minmax(0, 1fr);
+        grid-auto-rows: max-content;
+        align-content: start;
+        gap: calc(4 * var(--sa-unit));
+        padding: 0 var(--sa-space-container) var(--sa-space-container);
+        overflow-y: auto;
+    }
+
+    /* A file that configured problems: the lines around each problem, with the problems under their lines */
+    .sa-configuration-problems-file {
+        overflow: hidden;
         border: var(--sa-border-width) solid var(--sa-color-line);
         border-radius: var(--sa-radius-box);
         background: var(--sa-color-surface);
+        font-family: var(--sa-font-mono);
+        font-size: var(--sa-text-xs);
+        font-variant-ligatures: none;
+    }
+
+    .sa-configuration-problems-file-head {
+        display: flex;
+        align-items: center;
+        gap: calc(2 * var(--sa-unit));
+        padding: calc(2 * var(--sa-unit)) calc(1 * var(--sa-unit)) calc(2 * var(--sa-unit)) calc(3 * var(--sa-unit));
+        border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+        background: var(--sa-color-surface-subtle);
+    }
+
+    /* The file name in ink, the folders muted and shortened first */
+    .sa-configuration-problems-location {
+        display: flex;
+        align-items: center;
+        gap: calc(1.5 * var(--sa-unit));
+        min-width: 0;
+        margin: 0;
+        color: var(--sa-color-ink-muted);
+        font-family: var(--sa-font-mono);
+        font-size: var(--sa-text-xs);
+        font-weight: 400;
+
+        & svg {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    .sa-configuration-problems-path {
+        display: flex;
+        min-width: 0;
+        white-space: nowrap;
+    }
+
+    .sa-configuration-problems-directory {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        direction: rtl;
+        text-align: left;
+    }
+
+    .sa-configuration-problems-file-name,
+    .sa-configuration-problems-resource {
+        color: var(--sa-color-ink);
+    }
+
+    .sa-configuration-problems-resource {
+        font-family: var(--sa-font-sans);
         font-size: var(--sa-text-sm);
+        font-weight: 500;
+    }
+
+    .sa-configuration-problems-badges {
+        display: flex;
+        gap: calc(1 * var(--sa-unit));
+        margin-inline-start: auto;
+    }
+
+    .sa-configuration-problems-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: calc(1 * var(--sa-unit));
+        height: calc(5 * var(--sa-unit));
+        padding-inline: calc(2 * var(--sa-unit));
+        border-radius: var(--sa-radius-round);
+        background: color-mix(in oklab, var(--sa-color-warning) 16%, transparent);
+        color: var(--sa-color-ink);
+        font-family: var(--sa-font-sans);
+        font-size: var(--sa-text-xs);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+
+        & svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        &[data-level="error"] {
+            background: var(--sa-color-danger-soft);
+            color: var(--sa-color-danger-text);
+        }
+
+        &[data-level="info"] {
+            background: color-mix(in oklab, var(--sa-color-info) 16%, transparent);
+        }
+    }
+
+    .sa-configuration-problems-lines {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        line-height: 1.7;
+    }
+
+    .sa-configuration-problems-number {
+        padding-inline: calc(3 * var(--sa-unit)) calc(2 * var(--sa-unit));
+        color: var(--sa-color-ink-placeholder);
+        text-align: right;
+        user-select: none;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .sa-configuration-problems-code {
+        padding-inline-end: calc(3 * var(--sa-unit));
+        color: var(--sa-color-ink);
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .sa-configuration-problems-comment {
+        color: var(--sa-color-ink-placeholder);
+        font-style: italic;
+    }
+
+    .sa-configuration-problems-string {
+        color: var(--sa-color-accent-text);
+    }
+
+    .sa-configuration-problems-gap {
+        grid-column: 1 / -1;
+        padding: calc(1 * var(--sa-unit)) calc(3 * var(--sa-unit));
+        border-block: var(--sa-border-width) solid var(--sa-color-line);
+        background: var(--sa-color-surface-subtle);
+        color: var(--sa-color-ink-placeholder);
+    }
+
+    /* A line that configured a problem, in its most severe problem's colour */
+    :is(.sa-configuration-problems-number, .sa-configuration-problems-code)[data-level] {
+        --_level: var(--sa-color-warning);
+        background: color-mix(in oklab, var(--_level) 14%, transparent);
+
+        &[data-level="error"] {
+            --_level: var(--sa-color-danger);
+        }
+
+        &[data-level="info"] {
+            --_level: var(--sa-color-info);
+        }
+    }
+
+    .sa-configuration-problems-number[data-level] {
+        box-shadow: inset 2px 0 0 var(--_level);
+        color: var(--sa-color-ink);
+        font-weight: 600;
+    }
+
+    /* A problem under its line: what is wrong, then the fix. The stripe gives its level. */
+    .sa-configuration-problem {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: calc(1 * var(--sa-unit));
+        margin: calc(1 * var(--sa-unit)) calc(3 * var(--sa-unit)) calc(2.5 * var(--sa-unit));
+        padding: calc(2.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
+        border: var(--sa-border-width) solid var(--sa-color-line);
+        border-inline-start: 3px solid var(--sa-color-warning);
+        border-radius: var(--sa-radius-item);
+        background: var(--sa-color-surface-raised);
+        box-shadow: var(--sa-shadow-control);
+        font-family: var(--sa-font-sans);
+        font-size: var(--sa-text-sm);
+        line-height: 1.5;
+        white-space: normal;
+
+        &[data-level="error"] {
+            border-inline-start-color: var(--sa-color-danger);
+        }
+
+        &[data-level="info"] {
+            border-inline-start-color: var(--sa-color-info);
+        }
+
+        /* Problems without a line sit straight in their resource's block */
+        .sa-configuration-problems-file > & {
+            margin-block-start: calc(2.5 * var(--sa-unit));
+        }
     }
 
     .sa-configuration-problem-message {
         margin: 0;
-        font-weight: 600;
+        color: var(--sa-color-ink);
     }
 
-    .sa-configuration-problem-outcome {
+    .sa-configuration-problem-fix {
+        display: flex;
+        gap: calc(1.5 * var(--sa-unit));
         margin: 0;
-        color: var(--sa-color-ink-muted);
+        color: var(--sa-color-ink);
+        font-weight: 500;
 
-        & strong {
-            color: var(--sa-color-ink);
-            font-weight: 600;
+        & svg {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            margin-top: 3px;
+            color: var(--sa-color-success);
         }
     }
 
-    .sa-configuration-problem-source {
-        margin: 0;
-        color: var(--sa-color-ink-muted);
+    /* Code named in a message, such as a type or a lambda */
+    :is(.sa-configuration-problem-message, .sa-configuration-problem-fix) code {
+        padding: 0.05em 0.35em;
+        border-radius: var(--sa-radius-tag);
+        background: var(--sa-color-tint);
+        font-family: var(--sa-font-mono);
+        font-size: 0.875em;
+        font-variant-ligatures: none;
         overflow-wrap: anywhere;
-
-        & strong {
-            color: var(--sa-color-ink);
-            font-weight: 600;
-        }
-
-        & code {
-            font-family: var(--sa-font-mono);
-            font-size: var(--sa-text-xs);
-        }
     }
 
     .sa-configuration-problems-footnote {

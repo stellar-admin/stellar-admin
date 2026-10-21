@@ -13,7 +13,7 @@ public abstract class SidebarLinkTarget
     private protected SidebarLinkTarget() { }
 
     // Why the value can't be used, when a factory method got a blank value
-    internal string? Problem { get; init; }
+    internal ConfigurationValueProblem? Problem { get; init; }
 
     /// <summary>
     ///     Returns a target for an MVC controller action outside any area.
@@ -32,6 +32,7 @@ public abstract class SidebarLinkTarget
         return new ActionTarget(action, controller, null)
         {
             Problem = ConfigurationValues.FindBlank(
+                "SidebarLinkTarget.Action",
                 (nameof(action), action),
                 (nameof(controller), controller)
             ),
@@ -58,6 +59,7 @@ public abstract class SidebarLinkTarget
         return new ActionTarget(action, controller, area)
         {
             Problem = ConfigurationValues.FindBlank(
+                "SidebarLinkTarget.Action",
                 (nameof(action), action),
                 (nameof(controller), controller),
                 (nameof(area), area)
@@ -79,7 +81,7 @@ public abstract class SidebarLinkTarget
 
         return new PageTarget(page, null)
         {
-            Problem = ConfigurationValues.FindBlank((nameof(page), page)),
+            Problem = ConfigurationValues.FindBlank("SidebarLinkTarget.Page", (nameof(page), page)),
         };
     }
 
@@ -99,7 +101,11 @@ public abstract class SidebarLinkTarget
 
         return new PageTarget(page, area)
         {
-            Problem = ConfigurationValues.FindBlank((nameof(page), page), (nameof(area), area)),
+            Problem = ConfigurationValues.FindBlank(
+                "SidebarLinkTarget.Page",
+                (nameof(page), page),
+                (nameof(area), area)
+            ),
         };
     }
 
@@ -115,7 +121,10 @@ public abstract class SidebarLinkTarget
     {
         ArgumentNullException.ThrowIfNull(url);
 
-        return new UrlTarget(url) { Problem = ConfigurationValues.FindBlank((nameof(url), url)) };
+        return new UrlTarget(url)
+        {
+            Problem = ConfigurationValues.FindBlank("SidebarLinkTarget.Url", (nameof(url), url)),
+        };
     }
 
     internal abstract SidebarLinkItemBase CreateItem(SidebarLinkOptions link);

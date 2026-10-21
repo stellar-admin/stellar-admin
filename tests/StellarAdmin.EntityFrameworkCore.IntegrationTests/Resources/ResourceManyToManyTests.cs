@@ -395,7 +395,7 @@ public class ResourceManyToManyTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "Product.Tags is a many-to-many field, so it needs an editor that selects several items."
+                        "because Product.Tags is a many-to-many field, and its editor selects one item."
                     )
                 )
             )

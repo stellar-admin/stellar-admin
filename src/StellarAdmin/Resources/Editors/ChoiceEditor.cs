@@ -230,7 +230,8 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
 
         throw new ConfigurationException(
             ConfigurationProblemKind.UnsuitableEditor,
-            $"{GetType().Name} on {metadata.PropertyName} requires UseItems unless the property is a non-flags enum or a Boolean."
+            $"`{GetType().Name}` has no items, and `{metadata.PropertyName}` isn't a non-flags enum or a Boolean to take them from",
+            $"Give the `{GetType().Name}` items with `UseItems`."
         );
     }
 }

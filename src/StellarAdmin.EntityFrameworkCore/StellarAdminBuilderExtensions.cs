@@ -183,7 +183,8 @@ public static class StellarAdminBuilderExtensions
                     {
                         options.ReportUnavailable(
                             EfCoreConfigurationEvents.EntityNotMapped,
-                            $"{typeof(TEntity).Name} is not mapped in {typeof(TContext).Name}. Add it to the context's model."
+                            $"{options.PluralLabel} is hidden, and its pages return 404, because `{typeof(TContext).Name}` has no `{typeof(TEntity).Name}` entity.",
+                            $"Add a `DbSet<{typeof(TEntity).Name}>` to `{typeof(TContext).Name}`."
                         );
 
                         return;
@@ -203,7 +204,8 @@ public static class StellarAdminBuilderExtensions
                     {
                         options.ReportUnavailable(
                             EfCoreConfigurationEvents.UnsupportedPrimaryKey,
-                            $"{typeof(TEntity).Name} has no supported primary key. EF resources require one public CLR primary-key property of type int, long, Guid, or string."
+                            $"{options.PluralLabel} is hidden, and its pages return 404, because `{typeof(TEntity).Name}` has no primary key the admin panel supports.",
+                            $"Give `{typeof(TEntity).Name}` one primary-key property with a public getter, of type `int`, `long`, `Guid` or `string`."
                         );
 
                         return;
@@ -256,8 +258,8 @@ public static class StellarAdminBuilderExtensions
                 form.RemoveField(field);
                 options.ReportProblem(
                     EfCoreConfigurationEvents.UnsupportedManyToManyField,
-                    $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field. A many-to-many field requires a CLR navigation property and related entities with one CLR primary-key property.",
-                    "The field is left out.",
+                    $"The `{field.FieldName}` field isn't on the {FormName(options, form)} form because `{typeof(TEntity).Name}.{field.FieldName}` is a many-to-many field without a navigation property, or its related entities don't have one primary-key property.",
+                    $"Give `{typeof(TEntity).Name}` a navigation property for `{field.FieldName}`, and its related entities one primary-key property.",
                     field
                 );
                 continue;
@@ -274,8 +276,8 @@ public static class StellarAdminBuilderExtensions
                 form.RemoveField(field);
                 options.ReportProblem(
                     EfCoreConfigurationEvents.SingleValueManyToManyEditor,
-                    $"{typeof(TEntity).Name}.{field.FieldName} is a many-to-many field, so it needs an editor that selects several items. Call UseEditor<CheckboxGroupEditor>, UseEditor<ToggleGroupEditor> or UseEditor<MultiLookupSheetEditor>.",
-                    "The field is left out.",
+                    $"The `{field.FieldName}` field isn't on the {FormName(options, form)} form because `{typeof(TEntity).Name}.{field.FieldName}` is a many-to-many field, and its editor selects one item.",
+                    "Call `UseEditor<CheckboxGroupEditor>`, `UseEditor<ToggleGroupEditor>` or `UseEditor<MultiLookupSheetEditor>` on the field.",
                     field
                 );
                 continue;
@@ -310,8 +312,8 @@ public static class StellarAdminBuilderExtensions
                 column.DisableSorting();
                 options.ReportProblem(
                     EfCoreConfigurationEvents.SortableCollectionColumn,
-                    $"The {typeof(TEntity).Name} column '{column.FieldName}' reads a collection, so it can't be sortable. Remove Sortable(), or sort it by an expression with Sortable(selector).",
-                    "The column isn't sortable.",
+                    $"The `{column.FieldName}` column isn't sortable because it reads a collection.",
+                    "Remove `Sortable()`, or sort the column by an expression with `Sortable(selector)`.",
                     column
                 );
             }
@@ -330,21 +332,46 @@ public static class StellarAdminBuilderExtensions
         )
         {
             var property = EfCoreFormFieldMetadata.FindProperty(entity, field.FieldName);
-            if (
-                property?.PropertyInfo is not { SetMethod.IsPublic: true }
-                || property.IsPrimaryKey()
-                || property.IsConcurrencyToken
-                || property.ValueGenerated != ValueGenerated.Never
-            )
+            var name = $"`{typeof(TEntity).Name}.{field.FieldName}`";
+            var problem = property switch
+            {
+                null => (
+                    $"{name} isn't a property that EF Core maps",
+                    "Remove the field from the form."
+                ),
+                _ when property.IsPrimaryKey() => (
+                    $"{name} is the primary key",
+                    "Remove the field from the form."
+                ),
+                { IsConcurrencyToken: true } => (
+                    $"{name} is a concurrency token",
+                    "Remove the field from the form."
+                ),
+                _ when property.ValueGenerated != ValueGenerated.Never => (
+                    $"the database generates {name}",
+                    "Remove the field from the form."
+                ),
+                { PropertyInfo: not { SetMethod.IsPublic: true } } => (
+                    $"{name} has no public setter",
+                    $"Add a public setter to {name}, or remove the field from the form."
+                ),
+                _ => ((string Cause, string Fix)?)null,
+            };
+            if (problem is var (cause, fix))
             {
                 form.RemoveField(field);
                 options.ReportProblem(
                     EfCoreConfigurationEvents.UnsupportedFormField,
-                    $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field: it is a key, a concurrency token or a generated value, or has no public setter.",
-                    "The field is left out.",
+                    $"The `{field.FieldName}` field isn't on the {FormName(options, form)} form because {cause}.",
+                    fix,
                     field
                 );
             }
         }
     }
+
+    private static string FormName<TEntity>(
+        ResourceOptions<TEntity> options,
+        ResourceFormOptions form
+    ) => form == options.Create ? "create" : "edit";
 }

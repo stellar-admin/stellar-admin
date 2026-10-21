@@ -389,7 +389,7 @@ public class ResourceViewPageTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "The view page's field 'product => (product.Price * 2)' computes its value, so it needs a Title."
+                        "This field isn't on the view page because it's computed"
                     )
                 )
             )

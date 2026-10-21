@@ -41,8 +41,8 @@ public abstract class ResourceFieldsBuilder<TResource>
             _configure(_ =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidSelector,
-                    $"The form field '{field}' doesn't select a property path with public getters.",
-                    "The field is left out.",
+                    $"This field isn't on the form because `{field}` doesn't select a property path with public getters.",
+                    "Select a property of the model, or a path of properties, with public getters.",
                     source
                 )
             );

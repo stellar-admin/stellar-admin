@@ -175,6 +175,34 @@ public partial class ResourceBuilderTests
     }
 
     [Test]
+    [Arguments(0, false)]
+    [Arguments(15, true)]
+    public async Task EnablePaging_WithInvalidPageSize_ReportsItsLevel(int pageSize, bool isInfo)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddResource<Product>();
+        sut.Index(index =>
+            index.EnablePaging(paging =>
+            {
+                paging.PageSize = pageSize;
+                paging.PageSizes = [10, 25];
+            })
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var problem = options.Problems.Single();
+        await Assert.That(problem.Kind).IsEqualTo(ConfigurationProblemKind.InvalidDefaultPageSize);
+        await Assert
+            .That(problem.Level)
+            .IsEqualTo(isInfo ? ConfigurationProblemLevel.Info : ConfigurationProblemLevel.Warning);
+    }
+
+    [Test]
     public async Task UseDataSource_WhenAlreadyRegistered_PreservesApplicationLifetime()
     {
         // Arrange

@@ -14,7 +14,7 @@ public abstract class BrandingLogo
     private protected BrandingLogo() { }
 
     // Why the logo can't be shown, when a factory method got a blank path or an undefined layout
-    internal string? Problem { get; init; }
+    internal ConfigurationValueProblem? Problem { get; init; }
 
     /// <summary>
     ///     Returns a logo that shows an icon in an accent tile beside the title.
@@ -28,7 +28,10 @@ public abstract class BrandingLogo
     {
         ArgumentNullException.ThrowIfNull(name);
 
-        return new(name) { Problem = ConfigurationValues.FindBlank((nameof(name), name)) };
+        return new(name)
+        {
+            Problem = ConfigurationValues.FindBlank("BrandingLogo.Icon", (nameof(name), name)),
+        };
     }
 
     /// <summary>
@@ -45,7 +48,10 @@ public abstract class BrandingLogo
     {
         ArgumentNullException.ThrowIfNull(path);
 
-        return new(path, null) { Problem = ConfigurationValues.FindBlank((nameof(path), path)) };
+        return new(path, null)
+        {
+            Problem = ConfigurationValues.FindBlank("BrandingLogo.Image", (nameof(path), path)),
+        };
     }
 
     /// <summary>
@@ -70,6 +76,7 @@ public abstract class BrandingLogo
         return new(path, darkPath)
         {
             Problem = ConfigurationValues.FindBlank(
+                "BrandingLogo.Image",
                 (nameof(path), path),
                 (nameof(darkPath), darkPath)
             ),
@@ -96,7 +103,7 @@ public abstract class BrandingLogo
 
         return new(path, null, WordmarkLayout.Center)
         {
-            Problem = ConfigurationValues.FindBlank((nameof(path), path)),
+            Problem = ConfigurationValues.FindBlank("BrandingLogo.Wordmark", (nameof(path), path)),
         };
     }
 
@@ -121,7 +128,9 @@ public abstract class BrandingLogo
 
         return new(path, null, layout)
         {
-            Problem = ConfigurationValues.FindBlank((nameof(path), path)) ?? FindUndefined(layout),
+            Problem =
+                ConfigurationValues.FindBlank("BrandingLogo.Wordmark", (nameof(path), path))
+                ?? FindUndefined(layout),
         };
     }
 
@@ -151,6 +160,7 @@ public abstract class BrandingLogo
         return new(path, darkPath, WordmarkLayout.Center)
         {
             Problem = ConfigurationValues.FindBlank(
+                "BrandingLogo.Wordmark",
                 (nameof(path), path),
                 (nameof(darkPath), darkPath)
             ),
@@ -184,11 +194,19 @@ public abstract class BrandingLogo
         return new(path, darkPath, layout)
         {
             Problem =
-                ConfigurationValues.FindBlank((nameof(path), path), (nameof(darkPath), darkPath))
-                ?? FindUndefined(layout),
+                ConfigurationValues.FindBlank(
+                    "BrandingLogo.Wordmark",
+                    (nameof(path), path),
+                    (nameof(darkPath), darkPath)
+                ) ?? FindUndefined(layout),
         };
     }
 
-    private static string? FindUndefined(WordmarkLayout layout) =>
-        Enum.IsDefined(layout) ? null : $"Its layout {(int)layout} isn't a WordmarkLayout value.";
+    private static ConfigurationValueProblem? FindUndefined(WordmarkLayout layout) =>
+        Enum.IsDefined(layout)
+            ? null
+            : new(
+                $"its layout `{(int)layout}` isn't a `WordmarkLayout` value",
+                "Pass a `WordmarkLayout` value to `BrandingLogo.Wordmark`."
+            );
 }

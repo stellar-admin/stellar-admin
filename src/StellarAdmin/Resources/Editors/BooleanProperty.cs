@@ -11,7 +11,8 @@ internal static class BooleanProperty
         {
             throw new ConfigurationException(
                 ConfigurationProblemKind.UnsuitableEditor,
-                $"{editor.GetType().Name} on {metadata.PropertyName} requires a non-nullable Boolean property. Use SelectEditor, RadioGroupEditor or SegmentedControlEditor for a nullable Boolean."
+                $"`{editor.GetType().Name}` needs a non-nullable Boolean property, and `{metadata.PropertyName}` isn't one",
+                "Bind the field to a non-nullable Boolean property, or use `SelectEditor`, `RadioGroupEditor` or `SegmentedControlEditor` for a nullable Boolean."
             );
         }
     }

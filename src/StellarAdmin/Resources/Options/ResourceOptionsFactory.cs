@@ -38,7 +38,8 @@ internal sealed class ResourceOptionsFactory<TResource>(
             options.Problems.Add(
                 ConfigurationProblem.Unavailable(
                     ConfigurationProblemKind.ResourceFailed,
-                    $"Configuring the resource failed with {exception.GetType().Name}: {exception.Message}"
+                    $"The `{typeof(TResource).Name.Split('`')[0]}` resource is hidden, and its pages return 404, because its configuration throws `{exception.GetType().Name}`: {exception.Message}",
+                    "Fix the configuration code that throws."
                 ) with
                 {
                     Source = ConfigurationSource.FromException(exception),

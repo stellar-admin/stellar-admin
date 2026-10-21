@@ -13,11 +13,11 @@ internal sealed class RecordingLoggerProvider : ILoggerProvider
 
     public IReadOnlyList<RecordedLog> Logs => [.. _logs];
 
-    // The configuration problems logged as warnings, in the order they were logged
+    // The configuration problems, at every level, in the order they were logged
     public IReadOnlyList<RecordedLog> ConfigurationProblems =>
         [
             .. _logs.Where(log =>
-                log.Category == ConfigurationCategory && log.Level == LogLevel.Warning
+                log.Category == ConfigurationCategory && log.Level >= LogLevel.Information
             ),
         ];
 

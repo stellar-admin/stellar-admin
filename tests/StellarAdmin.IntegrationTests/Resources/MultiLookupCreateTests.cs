@@ -155,7 +155,7 @@ public class MultiLookupCreateTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "MultiLookupSheetEditor on CategoryIds enables create, but no resource is registered for Category."
+                        "The MultiLookupSheetEditor on CategoryIds has no New button because no resource is registered for Category."
                     )
                 )
             )

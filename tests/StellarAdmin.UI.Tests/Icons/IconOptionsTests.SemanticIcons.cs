@@ -83,7 +83,7 @@ public partial class IconOptionsTests
 
         // Assert
         await Assert.That(sut.GetSemanticIconName(SemanticIconRole.Close)).IsEqualTo("x");
-        await Assert.That(sut.Problems.Single()).Contains("'unregistered', which isn't registered");
+        await Assert.That(sut.Problems.Single()).Contains("`unregistered`, which isn't registered");
     }
 
     [Test]

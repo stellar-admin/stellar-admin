@@ -14,7 +14,7 @@ A mistake in the admin panel's configuration never stops the app. The panel work
 The panel works around each mistake in the narrowest way it can, and says what it did. For example:
 
 - A default sort on a column that isn't sortable: the list uses the data source's order.
-- A `PageSize` missing from `PageSizes`: it is added to them.
+- A `PageSize` missing from `PageSizes`: it is added to them. This is info rather than a warning, since the page size still applies.
 - `AllowCreate` with a data source that can't create: there's no New button, and the create page returns 404.
 - A field without a public setter: the field is left out of its form.
 
@@ -24,10 +24,11 @@ Only a null argument still throws, at the call that passed it.
 
 ## Finding problems
 
-- In Development, a "Configuration problems" pill at the bottom of each admin page shows how many there are. It opens a sheet that lists them by resource, with what is wrong, how to fix it and what the panel does instead.
-- Every environment logs each problem once, as a warning in the `StellarAdmin.Configuration` category. Most problems are logged at startup. A few can only be found when a page renders, such as a lookup's `EnableCreate` for a resource without a create form; those are logged the first time, and the field is left out or the lookup has no New button.
+- Each problem has a level. An error makes a whole resource unavailable. A warning means something that was configured doesn't happen. Info means it happens, and the panel adjusted something next to it.
+- In Development, a pill at the bottom of each admin page counts the problems of each level. It opens a sheet that shows the lines of the app's code that configured them, such as the `fields.Add` call of a field that is left out, with each problem under its line: what you notice, why, what happens instead, and how to fix it. A problem with no line, such as one from a build without debug symbols, is listed under its resource after the files.
+- Every environment logs each problem once in the `StellarAdmin.Configuration` category, at its level (error, warning or information), with the full path and line of the code that configured it. Most problems are logged at startup. A few can only be found when a page renders, such as a lookup's `EnableCreate` for a resource without a create form; those are logged the first time, and the field is left out or the lookup has no New button.
 - Each kind of problem has its own log event ID, so log filters and alerts can match it.
-- Each problem names the line of the app's code that configured what is wrong, such as the `fields.Add` call of a field that is left out, as "Configured at Admin/Products.cs:42" in the sheet and with the full path in the log. A problem with no line of its own, such as a blank label set on the resource, names the `AddResource` call. The line comes from the app's debug symbols, so a build without them shows none.
+- A problem with no line of its own, such as a blank label set on the resource, names the `AddResource` call. The line comes from the app's debug symbols, so a build without them shows none.
 
 A page that looks incomplete (a missing field, column, button or sidebar item) usually has a problem listed in the pill.
 
@@ -61,8 +62,8 @@ services.AddOptions<ResourceOptions<Booking>>().PostConfigure(options =>
             options.Create!.RemoveField(field);
             options.ReportProblem(
                 new EventId(5001, "UnsavableField"),
-                $"Booking.{field.FieldName} can't be saved.",
-                "The field is left out.",
+                $"The `{field.FieldName}` field isn't on the form because `Booking.{field.FieldName}` can't be saved.",
+                $"Make `Booking.{field.FieldName}` saveable, or remove the field.",
                 field
             );
         }
@@ -70,7 +71,8 @@ services.AddOptions<ResourceOptions<Booking>>().PostConfigure(options =>
 });
 ```
 
-- `ReportProblem` takes what is wrong and how to fix it, then what the panel does instead. Pass the field (any `FormItemOptions`) or the `DataGridColumnOptions` column the problem is about, and the problem names the line that added it; without one, it names the resource's `AddResource` call.
-- `ReportUnavailable(eventId, message)` makes the whole resource unavailable, for a problem with no narrower fallback.
+- `ReportProblem` reports a warning. It takes the message (what you notice, why, and what the panel does instead) and then the fix. Backticks mark code in both. Pass the field (any `FormItemOptions`) or the `DataGridColumnOptions` column the problem is about, and the problem names the line that added it; without one, it names the resource's `AddResource` call.
+- `ReportInfo` takes the same arguments, for an adjustment that keeps what was configured.
+- `ReportUnavailable(eventId, message, fix)` reports an error that makes the whole resource unavailable, for a problem with no narrower fallback.
 - `ResourceOptions<T>`, `ResourceFormOptions.RemoveField` and `DataGridColumnOptions.DisableSorting` are in `StellarAdmin.Resources.Options`.
 - Use event IDs of your own. StellarAdmin uses 1000 to 1099.

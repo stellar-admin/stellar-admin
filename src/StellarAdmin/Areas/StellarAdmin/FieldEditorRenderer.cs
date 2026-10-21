@@ -27,7 +27,8 @@ internal static class FieldEditorRenderer
                 explorer.GetExplorerForProperty(property.Name)
                 ?? throw new ConfigurationException(
                     ConfigurationProblemKind.InvalidSelector,
-                    $"{explorer.ModelType.Name} has no property {property.Name} for the field '{field.FieldName}'."
+                    $"`{explorer.ModelType.Name}` has no `{property.Name}` property",
+                    $"Select a property of `{explorer.ModelType.Name}` for the field."
                 );
         }
 
@@ -113,7 +114,7 @@ internal static class FieldEditorRenderer
         httpContext
             .RequestServices.GetRequiredService<ConfigurationProblems>()
             .Report(
-                exception.ToProblem("The field is left out of the page.", field.Source),
+                exception.ToProblem(field.FieldName, field.Source),
                 httpContext.GetRouteValue("controller") as string
             );
     }

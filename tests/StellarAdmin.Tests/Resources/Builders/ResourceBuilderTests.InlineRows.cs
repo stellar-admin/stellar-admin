@@ -35,7 +35,7 @@ public partial class ResourceBuilderTests
         // Assert
         await Assert
             .That(options.Problems.Single().Message)
-            .Contains("'CountryId' match no index column");
+            .Contains("has fields with no index column: `CountryId`");
         await Assert.That(options.Create?.InlineRow).IsNull();
         await Assert.That(options.Edit?.InlineRow).IsNull();
     }
@@ -97,7 +97,7 @@ public partial class ResourceBuilderTests
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
 
         // Assert
-        await Assert.That(options.Problems.Single().Message).Contains("required properties 'Name'");
+        await Assert.That(options.Problems.Single().Message).Contains("required properties `Name`");
         await Assert.That(options.Create?.InlineRow).IsNull();
         await Assert.That(options.Edit?.InlineRow).IsNull();
     }
@@ -125,7 +125,7 @@ public partial class ResourceBuilderTests
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
 
         // Assert
-        await Assert.That(options.Problems.Single().Message).Contains("requires a resource key");
+        await Assert.That(options.Problems.Single().Message).Contains("needs a resource key");
         await Assert.That(options.Create?.InlineRow).IsNull();
         await Assert.That(options.Edit?.InlineRow).IsNull();
     }

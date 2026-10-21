@@ -24,11 +24,14 @@ internal static class FieldBinderCheck
                 FormItems.Remove(formOptions!, field);
                 options.Report(
                     ConfigurationProblemKind.FieldWithoutSetter,
-                    $"The {form} form's field '{field.FieldName}' has no public setter. Add one, or bind the field with a FieldBinder.",
-                    "The field is left out.",
+                    $"The `{field.FieldName}` field isn't on the {form} form because `{Property(field)}` has no public setter.",
+                    $"Add a public setter to `{Property(field)}`, or bind the field with a `FieldBinder`.",
                     field.Source
                 );
             }
         }
     }
+
+    private static string Property(FormFieldOptions field) =>
+        $"{field.PropertyPath[^1].DeclaringType?.Name}.{field.PropertyPath[^1].Name}";
 }

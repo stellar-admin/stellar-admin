@@ -19,7 +19,8 @@
             <sa-empty-description>
                 @foreach (var problem in Model.Where(problem => problem.MakesResourceUnavailable))
                 {
-                    <span class="block">@problem.Message</span>
+                    <span class="block">@ConfigurationProblemsSheet.FormatMessage(problem.Message)</span>
+                    <span class="block">Fix: @ConfigurationProblemsSheet.FormatMessage(problem.Fix)</span>
                     @if (problem.Source is { } source)
                     {
                         <span class="block">Configured at <code title="@source.FilePath">@source.Describe(HostEnvironment.ContentRootPath)</code></span>

@@ -5,7 +5,7 @@ namespace StellarAdmin.Diagnostics;
 /// </summary>
 /// <remarks>
 ///     The admin panel works around a configuration problem instead of stopping the app, and
-///     logs it once as a warning in the <c>StellarAdmin.Configuration</c> category.
+///     logs it once in the <c>StellarAdmin.Configuration</c> category.
 /// </remarks>
 public sealed class DiagnosticsBuilder
 {

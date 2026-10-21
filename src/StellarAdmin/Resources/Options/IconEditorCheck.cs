@@ -38,8 +38,8 @@ internal static class IconEditorCheck
                     FormItems.Remove(formOptions!, field);
                     options.Report(
                         ConfigurationProblemKind.UnknownIcons,
-                        $"The {form} form's icon field '{field.FieldName}' lists icons that aren't registered: {string.Join(", ", unknown)}.",
-                        "None of its icons are registered, so the field is left out.",
+                        $"The `{field.FieldName}` field isn't on the {form} form because none of its icons are registered: {Format(unknown)}.",
+                        $"Register {Format(unknown)}, or list registered icons in the field's `Icons`.",
                         field.Source
                     );
                     continue;
@@ -48,8 +48,8 @@ internal static class IconEditorCheck
                 editor.Icons = known;
                 options.Report(
                     ConfigurationProblemKind.UnknownIcons,
-                    $"The {form} form's icon field '{field.FieldName}' lists icons that aren't registered: {string.Join(", ", unknown)}.",
-                    "The field offers only its registered icons.",
+                    $"The `{field.FieldName}` field on the {form} form doesn't offer {Format(unknown)} because they aren't registered. It offers its other icons.",
+                    $"Register {Format(unknown)}, or remove them from the field's `Icons`.",
                     field.Source
                 );
             }
@@ -59,8 +59,8 @@ internal static class IconEditorCheck
                 editor.Icons = null;
                 options.Report(
                     ConfigurationProblemKind.EmptyIconList,
-                    $"The {form} form's icon field '{field.FieldName}' has an empty list of icons. Set Icons to null to offer every registered icon.",
-                    "The field offers every registered icon.",
+                    $"The `{field.FieldName}` field on the {form} form offers every registered icon because its `Icons` list is empty.",
+                    "List the icons the field offers, or set `Icons` to `null` to offer every registered icon.",
                     field.Source
                 );
             }
@@ -70,11 +70,14 @@ internal static class IconEditorCheck
                 editor.Layout = IconEditorLayout.Auto;
                 options.Report(
                     ConfigurationProblemKind.InlineIconsWithoutList,
-                    $"The {form} form's icon field '{field.FieldName}' uses the inline layout, which requires a list of icons.",
-                    "The field uses the automatic layout.",
+                    $"The `{field.FieldName}` field on the {form} form doesn't use the inline layout because it has no list of icons. It uses the automatic layout instead.",
+                    "List the field's icons in `Icons`, or use another layout.",
                     field.Source
                 );
             }
         }
     }
+
+    private static string Format(IEnumerable<string> icons) =>
+        string.Join(", ", icons.Select(icon => $"`{icon}`"));
 }

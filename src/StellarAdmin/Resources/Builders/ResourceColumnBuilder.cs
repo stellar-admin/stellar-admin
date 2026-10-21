@@ -69,8 +69,8 @@ public sealed class ResourceColumnBuilder<TResource>
             _configuration.Add(options =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidSelector,
-                    $"The index column '{options.FieldName ?? options.Title}' edits '{field}', which isn't a property path.",
-                    "The column edits the field with its own property path.",
+                    $"The `{options.FieldName ?? options.Title}` column doesn't edit `{field}` because it isn't a property path. It edits the field with its own property path instead.",
+                    "Pass `EditsField` a property path of the resource.",
                     options.Source
                 )
             );
@@ -107,8 +107,8 @@ public sealed class ResourceColumnBuilder<TResource>
             {
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.InvalidValue,
-                    $"The index column '{options.FieldName ?? options.Title}' edits a field with a blank name.",
-                    "The column edits the field with its own property path.",
+                    $"The `{options.FieldName ?? options.Title}` column edits the field with its own property path because the field name it was given is blank.",
+                    "Pass `EditsField` the name of a field.",
                     options.Source
                 );
 
@@ -190,8 +190,8 @@ public sealed class ResourceColumnBuilder<TResource>
             _configuration.Add(options =>
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.ColumnDisplayWithHandler,
-                    $"The index column '{options.FieldName ?? options.Title}' uses {typeof(TDisplay).Name}, which has a handler. Columns don't support displays with a handler.",
-                    "The column uses its default display.",
+                    $"The `{options.FieldName ?? options.Title}` column doesn't use `{typeof(TDisplay).Name}` because it has a handler, which columns don't support. It uses its default display.",
+                    "Use a display without a handler for the column.",
                     options.Source
                 )
             );

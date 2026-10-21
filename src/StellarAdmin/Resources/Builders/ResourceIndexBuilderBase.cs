@@ -477,8 +477,8 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 options.Index.RowDetails = null;
                 options.Report(
                     ConfigurationProblemKind.RowDetailsWithoutPanels,
-                    "The row details name a blank partial view.",
-                    "Rows don't expand.",
+                    "Rows don't expand because the row details name a blank partial view.",
+                    "Pass the name of a partial view to `EnableRowDetails`.",
                     source
                 );
 
@@ -523,8 +523,8 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 problems.Add(
                     new(
                         ConfigurationProblemKind.RowDetailPanelWithoutName,
-                        $"The row detail panel '{panel.Title}' names a blank partial view.",
-                        "The panel is left out."
+                        $"The `{panel.Title}` row detail panel isn't shown because it names a blank partial view.",
+                        "Pass the name of a partial view to the panel."
                     )
                     {
                         Source = panel.Source,
@@ -536,8 +536,8 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 problems.Add(
                     new(
                         ConfigurationProblemKind.RowDetailPanelWithoutName,
-                        $"The row detail panel '{panel.Title}' needs a name. Set Name on the panel.",
-                        "The panel is left out."
+                        $"The `{panel.Title}` row detail panel isn't shown because it has no name.",
+                        "Set `Name` on the panel."
                     )
                     {
                         Source = panel.Source,
@@ -549,8 +549,8 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 problems.Add(
                     new(
                         ConfigurationProblemKind.RepeatedRowDetailPanel,
-                        $"Row detail panel names must be unique, and '{panel.Name}' is used more than once.",
-                        $"The later panel '{panel.Title}' is left out."
+                        $"The `{panel.Title}` row detail panel isn't shown because an earlier panel is also named `{panel.Name}`.",
+                        "Give each row detail panel its own `Name`."
                     )
                     {
                         Source = panel.Source,
@@ -568,8 +568,8 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
             problems.Add(
                 new(
                     ConfigurationProblemKind.RowDetailsWithoutPanels,
-                    "The row details have no panels. Add at least one row detail panel.",
-                    "Rows don't expand."
+                    "Rows don't expand because the row details have no panels.",
+                    "Add at least one row detail panel."
                 )
             );
         }
@@ -602,8 +602,8 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
             Services.Configure<ResourceOptions<TResource>>(options =>
                 options.Report(
                     ConfigurationProblemKind.InvalidSelector,
-                    $"The default sort selects '{field}', which isn't a resource property path.",
-                    "The default sort is left unchanged.",
+                    $"The list isn't sorted by `{field}` because it isn't a property path of the resource. The default sort is left unchanged.",
+                    "Sort by a property of the resource, or a path of properties.",
                     source
                 )
             );

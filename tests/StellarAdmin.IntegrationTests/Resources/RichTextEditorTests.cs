@@ -239,7 +239,7 @@ public class RichTextEditorTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "The edit form's rich text field 'Story' requires a positive MaxFileSize and at least one accepted type."
+                        "uses the default MaxFileSize or AcceptedTypes because its own aren't valid."
                     )
                 )
             )

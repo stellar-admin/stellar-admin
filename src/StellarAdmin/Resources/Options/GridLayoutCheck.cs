@@ -161,8 +161,8 @@ internal static class GridLayoutCheck
         {
             options.Report(
                 ConfigurationProblemKind.InvalidValue,
-                $"A {setting} on the {page} is outside 1 to {ResponsiveGrid.MaxColumns}.",
-                $"The {page} uses the nearest number in that range.",
+                $"The {page} uses the nearest number from 1 to {ResponsiveGrid.MaxColumns} because a {setting} is outside that range.",
+                $"Set the {setting} to a number from 1 to {ResponsiveGrid.MaxColumns}.",
                 source
             );
         }

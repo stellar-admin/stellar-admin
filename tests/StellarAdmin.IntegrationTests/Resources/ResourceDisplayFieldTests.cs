@@ -171,7 +171,7 @@ public class ResourceDisplayFieldTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "The edit form's field 'Name' shows String badges, but its UseText reads Int32."
+                        "because it shows String badges, and its UseText reads Int32."
                     )
                 )
             )

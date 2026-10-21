@@ -28,26 +28,32 @@ internal sealed class ConfigurationProblems(
 
     public static void Log(ILogger logger, ConfigurationProblem problem)
     {
+        var level = problem.Level switch
+        {
+            ConfigurationProblemLevel.Error => LogLevel.Error,
+            ConfigurationProblemLevel.Info => LogLevel.Information,
+            _ => LogLevel.Warning,
+        };
         if (problem.Source is { } source)
         {
-            logger.LogWarning(
+            logger.Log(
+                level,
                 problem.EventId,
-                "Configuration problem in {Resource}: {Problem} {Outcome} Configured at {Source}.",
+                "Configuration problem in {Resource}: {Problem} Configured at {Source}.",
                 problem.Resource ?? "the admin panel",
-                problem.Message,
-                problem.Outcome,
+                problem.Describe(),
                 source.ToString()
             );
 
             return;
         }
 
-        logger.LogWarning(
+        logger.Log(
+            level,
             problem.EventId,
-            "Configuration problem in {Resource}: {Problem} {Outcome}",
+            "Configuration problem in {Resource}: {Problem}",
             problem.Resource ?? "the admin panel",
-            problem.Message,
-            problem.Outcome
+            problem.Describe()
         );
     }
 
@@ -90,12 +96,12 @@ internal sealed class ConfigurationProblems(
             );
         }
 
-        // StellarAdmin.UI logs the icon problems itself
+        // StellarAdmin.UI logs the icon problems itself, as one string that ends with the fix
         problems.AddRange(
             iconOptions.Value.Problems.Select(problem => new ConfigurationProblem(
                 ConfigurationProblemKind.SkippedIconMapping,
-                problem,
-                "The icon keeps its previous mapping."
+                problem[..(problem.LastIndexOf(". ", StringComparison.Ordinal) + 1)],
+                problem[(problem.LastIndexOf(". ", StringComparison.Ordinal) + 2)..]
             )
             {
                 Resource = "Icons",

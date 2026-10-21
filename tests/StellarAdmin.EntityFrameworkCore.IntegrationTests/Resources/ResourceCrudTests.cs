@@ -268,7 +268,7 @@ public class ResourceCrudTests
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         var problem = logs.ConfigurationProblems.Single(log =>
-            log.Message.Contains("Product.Number cannot be used as an EF resource form field")
+            log.Message.Contains("Product.Number is the primary key")
         );
         await Assert.That(problem.Message).EndsWith($"Configured at {CurrentFile()}:{line}.");
         var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
@@ -293,7 +293,7 @@ public class ResourceCrudTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "Product.Version cannot be used as an EF resource form field"
+                        "Product.Version is a concurrency token"
                     )
                 )
             )
@@ -320,7 +320,7 @@ public class ResourceCrudTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "Product.GeneratedCode cannot be used as an EF resource form field"
+                        "the database generates Product.GeneratedCode"
                     )
                 )
             )

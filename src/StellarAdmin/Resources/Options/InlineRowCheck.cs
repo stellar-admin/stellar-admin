@@ -12,13 +12,13 @@ internal static class InlineRowCheck
     {
         if (options.Edit is { InlineRow: not null } edit)
         {
-            if (FindProblem(options, "inline edit row", edit) is { } problem)
+            if (FindProblem(options, edit) is { } problem)
             {
                 options.Edit = null;
                 options.Report(
                     problem.Kind,
-                    problem.Message,
-                    "Rows can't be edited.",
+                    $"Rows can't be edited because the inline edit row {problem.Reason}.",
+                    problem.Fix,
                     edit.InlineRow.Source
                 );
             }
@@ -28,7 +28,7 @@ internal static class InlineRowCheck
         {
             if (
                 (
-                    FindProblem(options, "inline create row", create) ?? FindMissingRequired(create)
+                    FindProblem(options, create) ?? FindMissingRequired(create)
                 ) is
                 { } problem
             )
@@ -36,17 +36,16 @@ internal static class InlineRowCheck
                 options.Create = null;
                 options.Report(
                     problem.Kind,
-                    problem.Message,
-                    "New rows can't be created.",
+                    $"New rows can't be created because the inline create row {problem.Reason}.",
+                    problem.Fix,
                     create.InlineRow.Source
                 );
             }
         }
     }
 
-    private static (ConfigurationProblemKind Kind, string Message)? FindProblem<TResource>(
+    private static (ConfigurationProblemKind Kind, string Reason, string Fix)? FindProblem<TResource>(
         ResourceOptions<TResource> options,
-        string row,
         ResourceFormOptions form
     )
     {
@@ -54,7 +53,8 @@ internal static class InlineRowCheck
         {
             return (
                 ConfigurationProblemKind.InlineRowsWithoutKey,
-                $"The {row} requires a resource key. Call UseKey on the resource."
+                "needs a resource key to find its row",
+                "Call `UseKey` on the resource."
             );
         }
 
@@ -71,11 +71,12 @@ internal static class InlineRowCheck
             ? null
             : (
                 ConfigurationProblemKind.InlineRowFieldWithoutColumn,
-                $"The {row}'s fields {string.Join(", ", unmatched.Select(field => $"'{field}'"))} match no index column. Add a column for each, or name it with EditsField on the column that shows it."
+                $"has fields with no index column: {string.Join(", ", unmatched.Select(field => $"`{field}`"))}",
+                "Add a column for each field, or name the field with `EditsField` on the column that shows it."
             );
     }
 
-    private static (ConfigurationProblemKind Kind, string Message)? FindMissingRequired(
+    private static (ConfigurationProblemKind Kind, string Reason, string Fix)? FindMissingRequired(
         ResourceCreateOptions create
     )
     {
@@ -96,7 +97,8 @@ internal static class InlineRowCheck
             ? null
             : (
                 ConfigurationProblemKind.InlineCreateMissingRequired,
-                $"The inline create row has no field for the required properties {string.Join(", ", missing.Select(name => $"'{name}'"))} of {create.ModelType.Name}. Add the fields and columns for them."
+                $"has no field for the required properties {string.Join(", ", missing.Select(name => $"`{name}`"))} of `{create.ModelType.Name}`",
+                "Add fields and columns for the required properties."
             );
     }
 }

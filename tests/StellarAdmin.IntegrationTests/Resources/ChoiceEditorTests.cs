@@ -870,7 +870,7 @@ public class ChoiceEditorTests
         await Assert
             .That(
                 logs.ConfigurationProblems.Any(log =>
-                    log.Message.Contains("'Seat' uses SelectEditor, which requires UseItems")
+                    log.Message.Contains("instead of SelectEditor because SelectEditor has no items")
                 )
             )
             .IsTrue();

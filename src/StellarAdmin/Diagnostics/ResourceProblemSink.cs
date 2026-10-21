@@ -14,11 +14,11 @@ internal static class ResourceProblemSink
     public static void Report(
         ConfigurationProblemKind kind,
         string message,
-        string outcome,
+        string fix,
         ConfigurationSource? source = null
     )
     {
-        var problem = new ConfigurationProblem(kind, message, outcome);
+        var problem = new ConfigurationProblem(kind, message, fix);
         _problems?.Add(source is null ? problem : problem with { Source = source });
     }
 
@@ -26,8 +26,8 @@ internal static class ResourceProblemSink
     public static void ReportInvalidNumber(string setting, int value, string requirement) =>
         Report(
             ConfigurationProblemKind.InvalidValue,
-            $"{setting} is set to {value}, but it must be {requirement}.",
-            $"{setting} keeps its default."
+            $"`{setting}` keeps its default because `{value}` isn't {requirement}.",
+            $"Set `{setting}` to {requirement}."
         );
 
     // Starts collecting for one resource, and returns the sink of an outer build to restore, if any

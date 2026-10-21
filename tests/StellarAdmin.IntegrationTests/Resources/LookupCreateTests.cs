@@ -93,7 +93,7 @@ public class LookupCreateTests
         await Assert
             .That(
                 logs.ConfigurationProblems.Any(log =>
-                    log.Message.Contains("Use EnableCreate<TResource>() to select the resource.")
+                    log.Message.Contains("its items have no type to find a resource for")
                 )
             )
             .IsTrue();

@@ -423,7 +423,7 @@ public class ResourceSortingTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "The index column 'Double price' computes its value, so it can only be sorted by an expression. Use Sortable(selector)."
+                        "The Double price column isn't sortable because it's computed, so it has no property to sort by."
                     )
                 )
             )
@@ -461,7 +461,7 @@ public class ResourceSortingTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "The index column 'Name' is sorted as 'Name', as another sortable column is."
+                        "The Name column isn't sortable because another sortable column already sorts as Name."
                     )
                 )
             )

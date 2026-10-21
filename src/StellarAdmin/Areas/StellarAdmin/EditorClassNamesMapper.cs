@@ -12,7 +12,8 @@ internal static class EditorClassNamesMapper
         {
             throw new ConfigurationException(
                 ConfigurationProblemKind.TemplateMismatch,
-                $"{editor.GetType().Name} is not supported by a checkbox group editor."
+                $"its editor is a `{editor.GetType().Name}`, but it renders with the checkbox group template",
+                "Render the field with its editor's own template, or give it a `CheckboxGroupEditor`."
             );
         }
 
@@ -98,7 +99,8 @@ internal static class EditorClassNamesMapper
         {
             throw new ConfigurationException(
                 ConfigurationProblemKind.TemplateMismatch,
-                $"{editor.GetType().Name} is not supported by a radio editor."
+                $"its editor is a `{editor.GetType().Name}`, but it renders with the radio group template",
+                "Render the field with its editor's own template, or give it a `RadioGroupEditor`."
             );
         }
 
@@ -114,7 +116,8 @@ internal static class EditorClassNamesMapper
         {
             throw new ConfigurationException(
                 ConfigurationProblemKind.TemplateMismatch,
-                "Radio editors have no outer Content or per-option Error element. Use Option.Content or Error instead."
+                "its class names set `Content` or `Option.Error`, which a radio group doesn't have",
+                "Set `Option.Content` or `Error` instead."
             );
         }
 

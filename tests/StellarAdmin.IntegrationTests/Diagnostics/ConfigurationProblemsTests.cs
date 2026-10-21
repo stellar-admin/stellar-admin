@@ -1,7 +1,9 @@
+using System.Globalization;
 using System.Net;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Editors;
@@ -48,9 +50,9 @@ public class ConfigurationProblemsTests
             )
             .IsEquivalentTo(["Products"]);
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
-        await Assert
-            .That(logs.ConfigurationProblems.Single().Message)
-            .Contains("InvalidOperationException: Broken catalog");
+        var problem = logs.ConfigurationProblems.Single();
+        await Assert.That(problem.Message).Contains("InvalidOperationException: Broken catalog");
+        await Assert.That(problem.Level).IsEqualTo(LogLevel.Error);
     }
 
     [Test]
@@ -112,17 +114,19 @@ public class ConfigurationProblemsTests
         await Assert.That(first.QuerySelector("[name='Entity.Price']")).IsNotNull();
         await Assert
             .That(first.TextContents(".sa-configuration-problem-message").Single())
-            .Contains("MismatchedEditor is not supported by a template for TextInputEditor.");
+            .Contains(
+                "its editor is a MismatchedEditor, but it renders with the template for TextInputEditor"
+            );
         await Assert.That(second.TextContents(".sa-configuration-problem-message")).HasCount(1);
         await Assert.That(logs.ConfigurationProblems).HasCount(1);
         await Assert
             .That(
-                first.RequiredElement(".sa-configuration-problem-source code").GetAttribute("title")
+                first.RequiredElement(".sa-configuration-problems-location").GetAttribute("title")
             )
             .IsEqualTo(CurrentFile());
         await Assert
-            .That(first.TextContents(".sa-configuration-problem-source code").Single())
-            .EndsWith($":{line}");
+            .That(first.TextContents(".sa-configuration-problems-number[data-level]"))
+            .IsEquivalentTo([line.ToString(CultureInfo.InvariantCulture)]);
     }
 
     [Test]
@@ -145,7 +149,7 @@ public class ConfigurationProblemsTests
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         var problem = logs.ConfigurationProblems.Single();
         await Assert.That(problem.EventId.Id).IsEqualTo(1090);
-        await Assert.That(problem.Message).Contains("'missing', which isn't registered");
+        await Assert.That(problem.Message).Contains("`missing`, which isn't registered");
     }
 
     [Test]
@@ -183,13 +187,23 @@ public class ConfigurationProblemsTests
     }
 
     [Test]
-    public async Task Indicator_ListsProblemsByResource()
+    public async Task Indicator_ShowsEachProblemUnderTheLineThatConfiguredIt()
     {
         // Arrange
+        var sortLine = 0;
+        var stylesheetLine = 0;
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new([new(1, "Notebook", 12.50m)]),
-            resource => resource.Index(index => index.DefaultSortBy(product => product.Name)),
-            admin => admin.AddStylesheet(" ")
+            resource =>
+            {
+                sortLine = CurrentLine() + 1;
+                resource.Index(index => index.DefaultSortBy(product => product.Name));
+            },
+            admin =>
+            {
+                stylesheetLine = CurrentLine() + 1;
+                admin.AddStylesheet(" ");
+            }
         );
         using var client = sut.GetTestClient();
 
@@ -198,18 +212,87 @@ public class ConfigurationProblemsTests
 
         // Assert
         await Assert
-            .That(document.QuerySelector(".sa-configuration-problems-count")!.TextContent.Trim())
+            .That(document.RequiredElement(".sa-configuration-problems-count").TextContent.Trim())
             .IsEqualTo("2");
-        await Assert
-            .That(document.TextContents(".sa-configuration-problems-group-title > span"))
-            .IsEquivalentTo(["Admin panel", "Products"]);
         await Assert
             .That(
                 document
-                    .RequiredElement(".sa-configuration-problems-group-title > a")
-                    .GetAttribute("href")
+                    .RequiredElement(".sa-configuration-problems-count")
+                    .GetAttribute("data-level")
             )
-            .IsEqualTo("/stellaradmin/products");
+            .IsEqualTo("warning");
+        await Assert
+            .That(document.TextContents(".sa-configuration-problems-file-name"))
+            .IsEquivalentTo([Path.GetFileName(CurrentFile())]);
+        await Assert
+            .That(document.TextContents(".sa-configuration-problems-number[data-level]"))
+            .IsEquivalentTo(
+                [
+                    stylesheetLine.ToString(CultureInfo.InvariantCulture),
+                    sortLine.ToString(CultureInfo.InvariantCulture),
+                ]
+            );
+        await Assert.That(document.QuerySelectorAll(".sa-configuration-problem")).HasCount(2);
+        await Assert
+            .That(document.TextContents(".sa-configuration-problem-fix"))
+            .Contains("Pass the path of a stylesheet to AddStylesheet.");
+    }
+
+    [Test]
+    public async Task Indicator_ListsProblemsWithoutALineUnderTheirResource()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            configureAdmin: admin =>
+                admin.ConfigureUI(ui =>
+                    ui.Services.Configure<IconOptions>(icons =>
+                        icons.MapSemanticIcon(SemanticIconRole.Close, "missing")
+                    )
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        await Assert.That(document.QuerySelector(".sa-configuration-problems-file-name")).IsNull();
+        await Assert
+            .That(document.TextContents(".sa-configuration-problems-resource"))
+            .IsEquivalentTo(["Icons"]);
+        await Assert.That(document.QuerySelectorAll(".sa-configuration-problem")).HasCount(1);
+    }
+
+    [Test]
+    public async Task Indicator_WithOnlyInfo_ReadsConfigurationInfo()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(1, "Notebook", 12.50m)]),
+            resource =>
+                resource.Index(index =>
+                    index.EnablePaging(paging =>
+                    {
+                        paging.PageSize = 15;
+                        paging.PageSizes = [10, 25];
+                    })
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var trigger = document.RequiredElement(".sa-configuration-problems-trigger");
+        await Assert
+            .That(trigger.RequiredElement(".sa-configuration-problems-count").GetAttribute("data-level"))
+            .IsEqualTo("info");
+        await Assert.That(trigger.TextContent).Contains("Configuration info");
+        await Assert
+            .That(document.RequiredElement("#configuration-problems-title").TextContent.Trim())
+            .IsEqualTo("Configuration info");
     }
 
     [Test]
@@ -247,7 +330,36 @@ public class ConfigurationProblemsTests
         await Assert.That(second.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert.That(problem.EventId.Id).IsEqualTo(1015);
         await Assert.That(problem.EventId.Name).IsEqualTo("UnsortableDefaultSort");
-        await Assert.That(problem.Message).Contains("The list uses the data source's order.");
+        await Assert.That(problem.Message).Contains("It uses the data source's order instead.");
+        await Assert.That(problem.Level).IsEqualTo(LogLevel.Warning);
+    }
+
+    [Test]
+    public async Task InfoProblem_IsLoggedAsInformation()
+    {
+        // Arrange
+
+        // Act
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            resource =>
+                resource.Index(index =>
+                    index.EnablePaging(paging =>
+                    {
+                        paging.PageSize = 15;
+                        paging.PageSizes = [10, 25];
+                    })
+                )
+        );
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        var problem = logs.ConfigurationProblems.Single();
+        await Assert.That(problem.EventId.Name).IsEqualTo("InvalidDefaultPageSize");
+        await Assert.That(problem.Level).IsEqualTo(LogLevel.Information);
+        await Assert
+            .That(problem.Message)
+            .Contains("The page size 15 isn't one of the PageSizes, so the list adds it to them.");
     }
 
     [Test]
@@ -372,7 +484,7 @@ public class ConfigurationProblemsTests
             .That(exception!.Message)
             .Contains("The admin panel's configuration has 2 problems:");
         await Assert.That(exception.Message).Contains("AddStylesheet is called with a blank path.");
-        await Assert.That(exception.Message).Contains("The default sort 'Name'");
+        await Assert.That(exception.Message).Contains("The list isn't sorted by Name");
     }
 
     [Test]

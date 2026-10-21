@@ -127,7 +127,7 @@ public sealed class IconOptions
             if (name is null || !incomingIconNames.Contains(name))
             {
                 _problems.Add(
-                    $"{typeof(TIconPack).Name} maps the {role} role to the icon '{name}', which it doesn't supply. The mapping is skipped."
+                    $"The `{role}` role keeps its previous icon because `{typeof(TIconPack).Name}` maps it to `{name}`, which the pack doesn't supply. Map the role to an icon that `{typeof(TIconPack).Name}` supplies."
                 );
                 continue;
             }
@@ -195,7 +195,7 @@ public sealed class IconOptions
         if (!_icons.ContainsKey(name))
         {
             _problems.Add(
-                $"MapSemanticIcon maps the {role} role to the icon '{name}', which isn't registered. The mapping is skipped."
+                $"The `{role}` role keeps its previous icon because `MapSemanticIcon` maps it to `{name}`, which isn't registered. Register `{name}`, or map the role to an icon that's registered."
             );
 
             return;

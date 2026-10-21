@@ -28,7 +28,7 @@ public partial class ResourceBuilderTests
         // Assert
         await Assert
             .That(options.Problems.Single().Message)
-            .Contains("KeepForNext names 'CountryId', which isn't an editable field");
+            .Contains("doesn't keep `CountryId` because it isn't an editable field");
         await Assert.That(options.Create!.AddAnother!.KeptFields).IsEmpty();
     }
 }

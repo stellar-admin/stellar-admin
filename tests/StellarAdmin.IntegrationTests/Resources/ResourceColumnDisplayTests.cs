@@ -154,7 +154,7 @@ public class ResourceColumnDisplayTests
         await Assert
             .That(
                 logs.ConfigurationProblems.Any(log =>
-                    log.Message.Contains("computes its value, so it needs a Title.")
+                    log.Message.Contains("This column isn't shown because it's computed")
                 )
             )
             .IsTrue();

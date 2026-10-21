@@ -136,7 +136,7 @@ public class ResourceColumnTests
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(logs.ConfigurationProblems.Any(log => log.Message.Contains("can't be sortable")))
+            .That(logs.ConfigurationProblems.Any(log => log.Message.Contains("The Tags column isn't sortable because it reads a collection.")))
             .IsTrue();
     }
 
@@ -192,7 +192,7 @@ public class ResourceColumnTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "The index column 'Tags' shows a collection of Tag, which has no text of its own. Show it with UseDisplay<BadgeDisplay>(badge => badge.UseText<Tag>(item => ...))."
+                        "The Tags column isn't shown because its value is a collection of Tag, which has no text of its own. Fix: Show it with UseDisplay<BadgeDisplay>(badge => badge.UseText<Tag>(item => ...))."
                     )
                 )
             )
@@ -225,7 +225,7 @@ public class ResourceColumnTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "The index column 'Tags' shows Tag badges, but its UseText reads Product."
+                        "because it shows Tag badges, and its UseText reads Product."
                     )
                 )
             )

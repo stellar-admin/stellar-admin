@@ -563,7 +563,7 @@ public class LookupSheetEditorTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "'CategoryId' uses LookupSheetEditor, which requires UseItems."
+                        "instead of LookupSheetEditor because LookupSheetEditor has no items"
                     )
                 )
             )

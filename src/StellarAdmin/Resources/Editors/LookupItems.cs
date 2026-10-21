@@ -171,7 +171,8 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
                 .ToArray(),
             _ => throw new ConfigurationException(
                 ConfigurationProblemKind.UnsuitableEditor,
-                $"The lookup on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
+                $"its value is a `{context.Value.GetType().Name}`, but the lookup's items use `{typeof(TValue).Name}`",
+                $"Make the lookup's items use the property's type, or bind the field to a `{typeof(TValue).Name}` property."
             ),
         };
 

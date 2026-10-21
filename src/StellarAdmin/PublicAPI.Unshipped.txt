@@ -1419,10 +1419,6 @@ StellarAdmin.Resources.Options.ResourceOptions<TResource>.Index.get -> StellarAd
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.KeySelector.get -> System.Func<TResource, string!>?
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.PluralLabel.get -> string!
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.PluralLabel.set -> void
-StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, string! message, string! outcome) -> void
-StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, string! message, string! outcome, StellarAdmin.Resources.Options.DataGridColumnOptions! column) -> void
-StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, string! message, string! outcome, StellarAdmin.Resources.Options.FormItemOptions! item) -> void
-StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportUnavailable(Microsoft.Extensions.Logging.EventId eventId, string! message) -> void
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.ResourceOptions() -> void
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.SidebarItem.get -> StellarAdmin.Resources.Options.ResourceSidebarItemOptions!
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.SingularLabel.get -> string!
@@ -1763,3 +1759,10 @@ static StellarAdmin.EnvironmentIndicator.Frame(string! label) -> StellarAdmin.Fr
 static StellarAdmin.EnvironmentIndicator.Frame(string! label, System.Action<StellarAdmin.FrameEnvironmentIndicator!>! configure) -> StellarAdmin.FrameEnvironmentIndicator!
 static StellarAdmin.EnvironmentIndicator.Stripe(string! label) -> StellarAdmin.StripeEnvironmentIndicator!
 static StellarAdmin.EnvironmentIndicator.Stripe(string! label, System.Action<StellarAdmin.StripeEnvironmentIndicator!>! configure) -> StellarAdmin.StripeEnvironmentIndicator!
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportInfo(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix) -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportInfo(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix, StellarAdmin.Resources.Options.DataGridColumnOptions! column) -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportInfo(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix, StellarAdmin.Resources.Options.FormItemOptions! item) -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix) -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix, StellarAdmin.Resources.Options.DataGridColumnOptions! column) -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix, StellarAdmin.Resources.Options.FormItemOptions! item) -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportUnavailable(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix) -> void

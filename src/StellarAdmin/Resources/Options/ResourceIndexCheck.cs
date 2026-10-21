@@ -30,8 +30,8 @@ internal static class ResourceIndexCheck
 
             options.Report(
                 ConfigurationProblemKind.InvalidPageSizes,
-                $"The page sizes {Format(paging.PageSizes)} must be positive and distinct.",
-                $"The list offers the page sizes {Format(sizes)}.",
+                $"The list offers the page sizes {Format(sizes)} because the `PageSizes` {Format(paging.PageSizes)} aren't all positive and distinct.",
+                "Set `PageSizes` to distinct numbers greater than 0.",
                 paging.PageSizesSource
             );
         }
@@ -41,8 +41,8 @@ internal static class ResourceIndexCheck
         {
             options.Report(
                 ConfigurationProblemKind.InvalidDefaultPageSize,
-                $"The default page size {pageSize} must be positive.",
-                $"The list shows {sizes[0]} rows per page.",
+                $"The list shows {sizes[0]} rows per page because the page size `{pageSize}` isn't greater than 0.",
+                "Set `PageSize` to one of the `PageSizes`.",
                 paging.PageSizeSource
             );
             pageSize = sizes[0];
@@ -51,12 +51,16 @@ internal static class ResourceIndexCheck
         {
             sizes.Add(pageSize);
             sizes.Sort();
-            options.Report(
+            var problem = new ConfigurationProblem(
                 ConfigurationProblemKind.InvalidDefaultPageSize,
-                $"The default page size {pageSize} isn't one of the page sizes.",
-                $"The list adds it to the page sizes: {Format(sizes)}.",
-                paging.PageSizeSource ?? paging.PageSizesSource
-            );
+                $"The page size `{pageSize}` isn't one of the `PageSizes`, so the list adds it to them.",
+                $"Add `{pageSize}` to `PageSizes`, or set `PageSize` to one of them."
+            )
+            {
+                Level = ConfigurationProblemLevel.Info,
+            };
+            var source = paging.PageSizeSource ?? paging.PageSizesSource;
+            options.Problems.Add(source is null ? problem : problem with { Source = source });
         }
 
         paging.PageSizes = sizes;
@@ -79,9 +83,11 @@ internal static class ResourceIndexCheck
                 options.Report(
                     ConfigurationProblemKind.InvalidScope,
                     string.IsNullOrWhiteSpace(scope.Id)
-                        ? $"The scope '{scope.Title}' has a blank identifier. Give it an identifier."
-                        : $"The scope '{scope.Id}' has a blank title. Give it a title.",
-                    "The scope is left out.",
+                        ? $"The scope `{scope.Title}` isn't in the list's scopes because its identifier is blank."
+                        : $"The scope `{scope.Id}` isn't in the list's scopes because its title is blank.",
+                    string.IsNullOrWhiteSpace(scope.Id)
+                        ? "Give the scope an identifier."
+                        : "Give the scope a title.",
                     scope.Source
                 );
             }
@@ -90,8 +96,8 @@ internal static class ResourceIndexCheck
                 scopes.MutableItems.Remove(scope);
                 options.Report(
                     ConfigurationProblemKind.RepeatedScope,
-                    $"The scope identifier '{scope.Id}' is used more than once. Give each scope its own identifier.",
-                    $"The later scope '{scope.Title}' is left out.",
+                    $"The scope `{scope.Title}` isn't in the list's scopes because an earlier scope already uses the identifier `{scope.Id}`.",
+                    "Give each scope its own identifier.",
                     scope.Source
                 );
             }
@@ -105,8 +111,8 @@ internal static class ResourceIndexCheck
             scopes.DefaultScope = null;
             options.Report(
                 ConfigurationProblemKind.UnknownDefaultScope,
-                $"The default scope '{defaultScope}' matches no scope.",
-                "The list has no default scope.",
+                $"The list has no default scope because no scope has the identifier `{defaultScope}`.",
+                "Set the default scope to the identifier of one of the scopes.",
                 scopes.DefaultScopeSource
             );
         }
@@ -121,10 +127,15 @@ internal static class ResourceIndexCheck
         )
         {
             index.DefaultSort = null;
+            var hasColumn = index.Columns.Any(column => column.SortField == sort.Field);
             options.Report(
                 ConfigurationProblemKind.UnsortableDefaultSort,
-                $"The default sort '{sort.Field}' must select a configured sortable column.",
-                "The list uses the data source's order.",
+                hasColumn
+                    ? $"The list isn't sorted by `{sort.Field}` because its column isn't sortable. It uses the data source's order instead."
+                    : $"The list isn't sorted by `{sort.Field}` because it has no column for it. It uses the data source's order instead.",
+                hasColumn
+                    ? $"Make the `{sort.Field}` column sortable, or sort by another column."
+                    : $"Add a sortable `{sort.Field}` column, or sort by another column.",
                 index.DefaultSortSource
             );
         }

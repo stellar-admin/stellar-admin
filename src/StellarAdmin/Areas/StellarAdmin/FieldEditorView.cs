@@ -73,7 +73,8 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
             null => new TEditor(),
             var other => throw new ConfigurationException(
                 ConfigurationProblemKind.TemplateMismatch,
-                $"{other.GetType().Name} is not supported by a template for {typeof(TEditor).Name}."
+                $"its editor is a `{other.GetType().Name}`, but it renders with the template for `{typeof(TEditor).Name}`",
+                $"Render the field with the template for `{other.GetType().Name}`, or give it a `{typeof(TEditor).Name}`."
             ),
         };
     }

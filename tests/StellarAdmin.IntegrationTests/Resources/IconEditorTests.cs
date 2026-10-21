@@ -244,17 +244,17 @@ public class IconEditorTests
     [Arguments(
         new[] { "wifi", "spa-flower" },
         IconEditorLayout.Auto,
-        "The edit form's icon field 'Icon' lists icons that aren't registered: spa-flower."
+        "The Icon field on the edit form doesn't offer spa-flower because they aren't registered."
     )]
     [Arguments(
         new string[0],
         IconEditorLayout.Auto,
-        "The edit form's icon field 'Icon' has an empty list of icons."
+        "The Icon field on the edit form offers every registered icon because its Icons list is empty."
     )]
     [Arguments(
         null,
         IconEditorLayout.Inline,
-        "The edit form's icon field 'Icon' uses the inline layout, which requires a list of icons."
+        "The Icon field on the edit form doesn't use the inline layout because it has no list of icons."
     )]
     public async Task Startup_WithInvalidIconEditor_LogsProblem(
         string[]? icons,

@@ -384,7 +384,7 @@ public class MultiLookupSheetEditorTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "'CategoryIds' uses MultiLookupSheetEditor, which requires UseItems."
+                        "instead of MultiLookupSheetEditor because MultiLookupSheetEditor has no items"
                     )
                 )
             )

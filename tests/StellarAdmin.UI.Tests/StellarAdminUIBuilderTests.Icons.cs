@@ -84,7 +84,7 @@ public partial class StellarAdminUIBuilderTests
         // Assert
         var log = logs.Logs.Single(log => log.Category == "StellarAdmin.Configuration");
         await Assert.That(log.Level).IsEqualTo(LogLevel.Warning);
-        await Assert.That(log.Message).Contains("The mapping is skipped.");
+        await Assert.That(log.Message).Contains("keeps its previous icon");
     }
 
     [Test]

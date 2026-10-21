@@ -26,51 +26,63 @@ internal static class EditorCheck
                 RepairRadioClassNames(options, form, field, radio);
             }
 
-            if (FindProblem(field) is not { } problem)
+            if (FindProblem(field) is not var (reason, fix))
             {
                 continue;
             }
 
-            var message =
-                $"The {form} form's field '{field.FieldName}' uses {field.Editor!.GetType().Name}, {problem}";
             if (field.Binder is not null)
             {
                 FormItems.Remove(formOptions!, field);
                 options.Report(
                     ConfigurationProblemKind.UnsuitableEditor,
-                    message,
-                    "The field is left out.",
+                    $"The `{field.FieldName}` field isn't on the {form} form because {reason}.",
+                    fix,
                     field.Source
                 );
                 continue;
             }
 
+            var editor = field.Editor!.GetType().Name;
             field.Editor = null;
             field.HandlerType = null;
             options.Report(
                 ConfigurationProblemKind.UnsuitableEditor,
-                message,
-                "The field uses the default editor for its property.",
+                $"The `{field.FieldName}` field on the {form} form uses its property's default editor instead of `{editor}` because {reason}.",
+                fix,
                 field.Source
             );
         }
     }
 
-    private static string? FindProblem(FormFieldOptions field)
+    // Why the editor can't work with the field's property, and how to fix it
+    private static (string Reason, string Fix)? FindProblem(FormFieldOptions field)
     {
         var propertyType = field.PropertyPath[^1].PropertyType;
+        var editor = field.Editor?.GetType().Name;
         switch (field.Editor)
         {
             case CheckboxEditor or ToggleEditor when propertyType != typeof(bool):
-                return $"which requires a non-nullable Boolean property, but the property is {propertyType.Name}. Use SelectEditor, RadioGroupEditor or SegmentedControlEditor for a nullable Boolean.";
+                return (
+                    $"`{editor}` needs a non-nullable Boolean property, and `{field.FieldName}` is `{TypeName(propertyType)}`",
+                    propertyType == typeof(bool?)
+                        ? "Use `SelectEditor`, `RadioGroupEditor` or `SegmentedControlEditor` for a nullable Boolean."
+                        : $"Use an editor that suits a `{TypeName(propertyType)}` property."
+                );
             case ChoiceEditor { ItemsLoader: null } when !HasPropertyChoices(propertyType):
-                return "which requires UseItems unless the property is a non-flags enum or a Boolean.";
+                return (
+                    $"`{editor}` has no items, and only takes them from a non-flags enum or Boolean property",
+                    "Pass the editor's items to `UseItems`."
+                );
             case ILookupSheetEditor { Items: null }:
-                return "which requires UseItems.";
+                return ($"`{editor}` has no items", "Pass the editor's items to `UseItems`.");
             default:
                 return null;
         }
     }
+
+    private static string TypeName(Type type) =>
+        Nullable.GetUnderlyingType(type) is { } underlying ? $"{underlying.Name}?" : type.Name;
 
     // A collection property takes its choices from the element type
     private static bool HasPropertyChoices(Type propertyType)
@@ -110,8 +122,8 @@ internal static class EditorCheck
         classNames.Option.Error = null;
         options.Report(
             ConfigurationProblemKind.UnsuitableEditor,
-            $"The {form} form's radio field '{field.FieldName}' sets ClassNames.Content or ClassNames.Option.Error, but radio groups have no outer Content or per-option Error element. Use Option.Content or Error instead.",
-            "Those class names aren't used.",
+            $"The `{field.FieldName}` field on the {form} form doesn't use its `ClassNames.Content` or `ClassNames.Option.Error` because a radio group has no outer content element and no error element per option.",
+            "Use `ClassNames.Option.Content` or `ClassNames.Error` instead.",
             field.Source
         );
     }

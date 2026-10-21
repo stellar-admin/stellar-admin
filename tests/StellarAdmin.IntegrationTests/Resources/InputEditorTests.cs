@@ -173,7 +173,7 @@ public class InputEditorTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        $"'OptionalInsured' uses {editorType.Name}, which requires a non-nullable Boolean"
+                        $"instead of {editorType.Name} because {editorType.Name} needs a non-nullable Boolean property"
                     )
                 )
             )

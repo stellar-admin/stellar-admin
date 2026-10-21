@@ -38,6 +38,6 @@ internal sealed class ConfigurationProblemsLogger(
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     private static string Describe(ConfigurationProblem problem) =>
-        $"{problem.Resource ?? "Admin panel"}: {problem.Message} {problem.Outcome}"
+        $"{problem.Resource ?? "Admin panel"}: {problem.Describe()}"
         + (problem.Source is { } source ? $" Configured at {source}." : "");
 }

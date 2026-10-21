@@ -19,18 +19,18 @@ internal static class ValueTextCheck
         {
             if (
                 FindProblem(
-                    $"index column '{column.FieldName ?? column.FieldExpression.ToString()}'",
+                    $"The `{column.FieldName ?? column.FieldExpression.ToString()}` column isn't shown",
                     column.Display,
                     column.FieldExpression
                 ) is
-                { } message
+                var (message, fix)
             )
             {
                 options.Index.MutableColumns.Remove(column);
                 options.Report(
                     ConfigurationProblemKind.ValueWithoutText,
                     message,
-                    "The column is left out.",
+                    fix,
                     column.Source
                 );
             }
@@ -51,26 +51,27 @@ internal static class ValueTextCheck
         {
             if (
                 FindProblem(
-                    $"{page}'s field '{field.FieldName ?? field.Title ?? field.FieldExpression.ToString()}'",
+                    $"The `{field.FieldName ?? field.Title ?? field.FieldExpression.ToString()}` field isn't on the {page}",
                     field.Display,
                     field.FieldExpression
                 ) is
-                { } message
+                var (message, fix)
             )
             {
                 FormItems.Remove(scope!, field);
                 options.Report(
                     ConfigurationProblemKind.ValueWithoutText,
                     message,
-                    "The field is left out.",
+                    fix,
                     field.Source
                 );
             }
         }
     }
 
-    private static string? FindProblem(
-        string field,
+    // The message, which starts with what the developer notices, and the fix
+    private static (string Message, string Fix)? FindProblem(
+        string notice,
         FieldDisplay? display,
         LambdaExpression expression
     )
@@ -94,9 +95,17 @@ internal static class ValueTextCheck
             return null;
         }
 
+        var badge = $"`UseDisplay<BadgeDisplay>(badge => badge.UseText<{type.Name}>(item => ...))`";
+
         return itemType is null
-            ? $"The {field} shows a {type.Name}, which has no text of its own. Show one of its properties instead, or use UseDisplay<BadgeDisplay>(badge => badge.UseText<{type.Name}>(item => ...))."
-            : $"The {field} shows a collection of {type.Name}, which has no text of its own. Show it with UseDisplay<BadgeDisplay>(badge => badge.UseText<{type.Name}>(item => ...)).";
+            ? (
+                $"{notice} because its value is a `{type.Name}`, which has no text of its own.",
+                $"Show one of the `{type.Name}`'s properties instead, or use {badge}."
+            )
+            : (
+                $"{notice} because its value is a collection of `{type.Name}`, which has no text of its own.",
+                $"Show it with {badge}."
+            );
     }
 
     // The item type of a collection other than a string, or null for any other value

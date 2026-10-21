@@ -153,8 +153,8 @@ public sealed class ResourceFieldBuilder
             {
                 ResourceProblemSink.Report(
                     ConfigurationProblemKind.MismatchedHandler,
-                    $"The field '{options.FieldName}' uses {typeof(TEditor).Name} with the handler {handlerType.Name}, which must implement IFieldEditorHandler<{typeof(TEditor).Name}>.",
-                    "The field keeps its default editor.",
+                    $"The `{options.FieldName}` field doesn't use `{typeof(TEditor).Name}` because its handler `{handlerType.Name}` doesn't implement `IFieldEditorHandler<{typeof(TEditor).Name}>`. It keeps its default editor.",
+                    $"Implement `IFieldEditorHandler<{typeof(TEditor).Name}>` on `{handlerType.Name}`.",
                     options.Source
                 );
 

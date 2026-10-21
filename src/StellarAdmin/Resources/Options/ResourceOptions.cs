@@ -166,8 +166,8 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.InvalidSelector,
-                $"UseKey selects '{property.Name}', which isn't a direct property of {typeof(TResource).Name} with a public getter.",
-                "The key is left unchanged."
+                $"The key isn't changed because `UseKey` selects `{property.Name}`, which isn't a direct property of `{typeof(TResource).Name}` with a public getter.",
+                $"Pass `UseKey` a property of `{typeof(TResource).Name}` with a public getter."
             );
             return;
         }
@@ -178,47 +178,106 @@ public sealed class ResourceOptions<TResource>
     }
 
     /// <summary>
-    ///     Reports a problem in the resource's configuration that an integration worked around.
+    ///     Reports an adjustment that an integration made next to what the app configured.
     /// </summary>
     /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
-    /// <param name="message">What is wrong and how to fix it.</param>
-    /// <param name="outcome">What the admin panel does instead, such as "The form doesn't show the field."</param>
+    /// <param name="message">What the developer notices, why, and what the admin panel does instead.</param>
+    /// <param name="fix">How to fix the configuration.</param>
     /// <exception cref="ArgumentNullException">
-    ///     <paramref name="message" /> or <paramref name="outcome" /> is <see langword="null" />.
+    ///     <paramref name="message" /> or <paramref name="fix" /> is <see langword="null" />.
     /// </exception>
     /// <remarks>
     ///     Call it from a post-configuration callback after correcting the options, so that they
-    ///     can still be used. The problem is logged once when the app starts, and Development
-    ///     shows it.
+    ///     can still be used. Backticks mark code in <paramref name="message" /> and
+    ///     <paramref name="fix" />. The problem is logged once when the app starts, and
+    ///     Development shows it.
     /// </remarks>
-    public void ReportProblem(EventId eventId, string message, string outcome) =>
-        ReportIntegrationProblem(eventId, message, outcome, null);
+    public void ReportInfo(EventId eventId, string message, string fix) =>
+        ReportIntegrationProblem(eventId, message, fix, null, ConfigurationProblemLevel.Info);
 
     /// <summary>
-    ///     Reports a problem with an index column that an integration worked around.
+    ///     Reports an adjustment that an integration made next to an index column.
     /// </summary>
     /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
-    /// <param name="message">What is wrong and how to fix it.</param>
-    /// <param name="outcome">What the admin panel does instead, such as "The column isn't sortable."</param>
+    /// <param name="message">What the developer notices, why, and what the admin panel does instead.</param>
+    /// <param name="fix">How to fix the configuration.</param>
     /// <param name="column">The column the problem is about.</param>
     /// <exception cref="ArgumentNullException">
-    ///     <paramref name="message" />, <paramref name="outcome" /> or <paramref name="column" />
-    ///     is <see langword="null" />.
+    ///     <paramref name="message" />, <paramref name="fix" /> or <paramref name="column" /> is
+    ///     <see langword="null" />.
     /// </exception>
     /// <remarks>
     ///     Call it from a post-configuration callback after correcting the options, so that they
     ///     can still be used. The problem names the line of the app's code that added the column.
     /// </remarks>
-    public void ReportProblem(
-        EventId eventId,
-        string message,
-        string outcome,
-        DataGridColumnOptions column
-    )
+    public void ReportInfo(EventId eventId, string message, string fix, DataGridColumnOptions column)
     {
         ArgumentNullException.ThrowIfNull(column);
 
-        ReportIntegrationProblem(eventId, message, outcome, column.Source);
+        ReportIntegrationProblem(eventId, message, fix, column.Source, ConfigurationProblemLevel.Info);
+    }
+
+    /// <summary>
+    ///     Reports an adjustment that an integration made next to a form field or another form
+    ///     item.
+    /// </summary>
+    /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
+    /// <param name="message">What the developer notices, why, and what the admin panel does instead.</param>
+    /// <param name="fix">How to fix the configuration.</param>
+    /// <param name="item">The field or other form item the problem is about.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="message" />, <paramref name="fix" /> or <paramref name="item" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Call it from a post-configuration callback after correcting the options, so that they
+    ///     can still be used. The problem names the line of the app's code that added the item.
+    /// </remarks>
+    public void ReportInfo(EventId eventId, string message, string fix, FormItemOptions item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        ReportIntegrationProblem(eventId, message, fix, item.Source, ConfigurationProblemLevel.Info);
+    }
+
+    /// <summary>
+    ///     Reports a problem in the resource's configuration that an integration worked around.
+    /// </summary>
+    /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
+    /// <param name="message">What the developer notices, why, and what the admin panel does instead.</param>
+    /// <param name="fix">How to fix the configuration.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="message" /> or <paramref name="fix" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Call it from a post-configuration callback after correcting the options, so that they
+    ///     can still be used. Backticks mark code in <paramref name="message" /> and
+    ///     <paramref name="fix" />. The problem is logged once when the app starts, and
+    ///     Development shows it.
+    /// </remarks>
+    public void ReportProblem(EventId eventId, string message, string fix) =>
+        ReportIntegrationProblem(eventId, message, fix, null, ConfigurationProblemLevel.Warning);
+
+    /// <summary>
+    ///     Reports a problem with an index column that an integration worked around.
+    /// </summary>
+    /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
+    /// <param name="message">What the developer notices, why, and what the admin panel does instead.</param>
+    /// <param name="fix">How to fix the configuration.</param>
+    /// <param name="column">The column the problem is about.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="message" />, <paramref name="fix" /> or <paramref name="column" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Call it from a post-configuration callback after correcting the options, so that they
+    ///     can still be used. The problem names the line of the app's code that added the column.
+    /// </remarks>
+    public void ReportProblem(EventId eventId, string message, string fix, DataGridColumnOptions column)
+    {
+        ArgumentNullException.ThrowIfNull(column);
+
+        ReportIntegrationProblem(eventId, message, fix, column.Source, ConfigurationProblemLevel.Warning);
     }
 
     /// <summary>
@@ -226,42 +285,45 @@ public sealed class ResourceOptions<TResource>
     ///     around.
     /// </summary>
     /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
-    /// <param name="message">What is wrong and how to fix it.</param>
-    /// <param name="outcome">What the admin panel does instead, such as "The field is left out."</param>
+    /// <param name="message">What the developer notices, why, and what the admin panel does instead.</param>
+    /// <param name="fix">How to fix the configuration.</param>
     /// <param name="item">The field or other form item the problem is about.</param>
     /// <exception cref="ArgumentNullException">
-    ///     <paramref name="message" />, <paramref name="outcome" /> or <paramref name="item" /> is
+    ///     <paramref name="message" />, <paramref name="fix" /> or <paramref name="item" /> is
     ///     <see langword="null" />.
     /// </exception>
     /// <remarks>
     ///     Call it from a post-configuration callback after correcting the options, so that they
     ///     can still be used. The problem names the line of the app's code that added the item.
     /// </remarks>
-    public void ReportProblem(EventId eventId, string message, string outcome, FormItemOptions item)
+    public void ReportProblem(EventId eventId, string message, string fix, FormItemOptions item)
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        ReportIntegrationProblem(eventId, message, outcome, item.Source);
+        ReportIntegrationProblem(eventId, message, fix, item.Source, ConfigurationProblemLevel.Warning);
     }
 
     /// <summary>
     ///     Reports a problem in the resource's configuration that makes the resource unavailable.
     /// </summary>
     /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
-    /// <param name="message">What is wrong and how to fix it.</param>
+    /// <param name="message">What the developer notices and why.</param>
+    /// <param name="fix">How to fix the configuration.</param>
     /// <exception cref="ArgumentNullException">
-    ///     <paramref name="message" /> is <see langword="null" />.
+    ///     <paramref name="message" /> or <paramref name="fix" /> is <see langword="null" />.
     /// </exception>
     /// <remarks>
-    ///     The resource is hidden from the sidebar, and its pages return 404. The problem is
-    ///     logged once when the app starts, and Development shows it.
+    ///     The resource is hidden from the sidebar, and its pages return 404. Backticks mark code
+    ///     in <paramref name="message" /> and <paramref name="fix" />. The problem is logged once
+    ///     when the app starts, and Development shows it.
     /// </remarks>
-    public void ReportUnavailable(EventId eventId, string message)
+    public void ReportUnavailable(EventId eventId, string message, string fix)
     {
         ArgumentNullException.ThrowIfNull(message);
+        ArgumentNullException.ThrowIfNull(fix);
 
         Problems.Add(
-            ConfigurationProblem.Unavailable(ConfigurationProblemKind.Integration, message) with
+            ConfigurationProblem.Unavailable(ConfigurationProblemKind.Integration, message, fix) with
             {
                 IntegrationEventId = eventId,
                 Source = null,
@@ -273,11 +335,11 @@ public sealed class ResourceOptions<TResource>
     internal void Report(
         ConfigurationProblemKind kind,
         string message,
-        string outcome,
+        string fix,
         ConfigurationSource? source = null
     )
     {
-        var problem = new ConfigurationProblem(kind, message, outcome);
+        var problem = new ConfigurationProblem(kind, message, fix);
         Problems.Add(source is null ? problem : problem with { Source = source });
     }
 
@@ -288,8 +350,8 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                "The resource's SingularLabel is blank. Set it to text, or leave it unset.",
-                $"The resource uses the default label '{DefaultSingularLabel}'."
+                $"The resource uses the default label `{DefaultSingularLabel}` because its `SingularLabel` is blank.",
+                "Set `SingularLabel` to text, or leave it unset."
             );
             SingularLabel = DefaultSingularLabel;
         }
@@ -298,8 +360,8 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                "The resource's sidebar item has a blank Group. Set it to text, or leave it unset.",
-                $"The item appears in the '{ResourceSidebarItemOptions.DefaultGroup}' group."
+                $"The resource is in the `{ResourceSidebarItemOptions.DefaultGroup}` sidebar group because its sidebar item's `Group` is blank.",
+                "Set the sidebar item's `Group` to text, or leave it unset."
             );
             SidebarItem.Group = ResourceSidebarItemOptions.DefaultGroup;
         }
@@ -308,8 +370,8 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                "The resource's sidebar item has a blank Label. Set it to text, or leave it unset.",
-                "The item shows the resource's plural label."
+                "The resource's sidebar item shows its plural label because the item's `Label` is blank.",
+                "Set the sidebar item's `Label` to text, or leave it unset."
             );
             SidebarItem.Label = null;
         }
@@ -318,8 +380,8 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                "The resource's sidebar item has a blank Icon. Set it to an icon name, or leave it unset.",
-                "The item has no icon."
+                "The resource's sidebar item has no icon because its `Icon` is blank.",
+                "Set the sidebar item's `Icon` to the name of an icon, or leave it unset."
             );
             SidebarItem.Icon = null;
         }
@@ -328,8 +390,8 @@ public sealed class ResourceOptions<TResource>
         {
             Report(
                 ConfigurationProblemKind.BlankLabel,
-                "The resource's PluralLabel is blank. Set it to text, or leave it unset.",
-                $"The resource uses the default plural label '{SingularLabel.Pluralize()}'."
+                $"The resource uses the default plural label `{SingularLabel.Pluralize()}` because its `PluralLabel` is blank.",
+                "Set `PluralLabel` to text, or leave it unset."
             );
             PluralLabel = SingularLabel.Pluralize();
         }
@@ -340,17 +402,19 @@ public sealed class ResourceOptions<TResource>
     private void ReportIntegrationProblem(
         EventId eventId,
         string message,
-        string outcome,
-        ConfigurationSource? source
+        string fix,
+        ConfigurationSource? source,
+        ConfigurationProblemLevel level
     )
     {
         ArgumentNullException.ThrowIfNull(message);
-        ArgumentNullException.ThrowIfNull(outcome);
+        ArgumentNullException.ThrowIfNull(fix);
 
         Problems.Add(
-            new(ConfigurationProblemKind.Integration, message, outcome)
+            new(ConfigurationProblemKind.Integration, message, fix)
             {
                 IntegrationEventId = eventId,
+                Level = level,
                 Source = source,
             }
         );

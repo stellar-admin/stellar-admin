@@ -37,7 +37,7 @@ public abstract class EnvironmentIndicator
     public string Label { get; }
 
     // Why the indicator can't be shown, when a factory method got a blank label
-    internal string? Problem { get; init; }
+    internal ConfigurationValueProblem? Problem { get; init; }
 
     private protected EnvironmentIndicator(string label) => Label = label;
 
@@ -53,7 +53,13 @@ public abstract class EnvironmentIndicator
     {
         ArgumentNullException.ThrowIfNull(label);
 
-        return new(label) { Problem = ConfigurationValues.FindBlank((nameof(label), label)) };
+        return new(label)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "EnvironmentIndicator.Banner",
+                (nameof(label), label)
+            ),
+        };
     }
 
     /// <summary>
@@ -92,7 +98,13 @@ public abstract class EnvironmentIndicator
     {
         ArgumentNullException.ThrowIfNull(label);
 
-        return new(label) { Problem = ConfigurationValues.FindBlank((nameof(label), label)) };
+        return new(label)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "EnvironmentIndicator.Frame",
+                (nameof(label), label)
+            ),
+        };
     }
 
     /// <summary>
@@ -131,7 +143,13 @@ public abstract class EnvironmentIndicator
     {
         ArgumentNullException.ThrowIfNull(label);
 
-        return new(label) { Problem = ConfigurationValues.FindBlank((nameof(label), label)) };
+        return new(label)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "EnvironmentIndicator.Stripe",
+                (nameof(label), label)
+            ),
+        };
     }
 
     /// <summary>

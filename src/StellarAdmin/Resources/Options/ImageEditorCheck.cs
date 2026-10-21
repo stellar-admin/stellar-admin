@@ -39,8 +39,8 @@ internal static class ImageEditorCheck
                     FormItems.Remove(formOptions!, field);
                     options.Report(
                         ConfigurationProblemKind.ImageFieldWithoutStore,
-                        $"The {form} form's image field '{field.FieldName}' has nowhere to store uploads. Call StoreImage on its ImageEditor.",
-                        "The field is left out.",
+                        $"The `{field.FieldName}` field isn't on the {form} form because its image editor has nowhere to store uploads.",
+                        "Call `StoreImage` on its `ImageEditor`.",
                         field.Source
                     );
                     break;
@@ -76,8 +76,8 @@ internal static class ImageEditorCheck
     ) =>
         options.Report(
             ConfigurationProblemKind.InvalidUploadLimits,
-            $"The {form} form's {kind} field '{field.FieldName}' requires a positive MaxFileSize and at least one accepted type.",
-            "The field uses the default limit and accepted types where its own are invalid.",
+            $"The `{field.FieldName}` {kind} field on the {form} form uses the default `MaxFileSize` or `AcceptedTypes` because its own aren't valid.",
+            "Set `MaxFileSize` to a number greater than 0, and list at least one type in `AcceptedTypes`.",
             field.Source
         );
 }

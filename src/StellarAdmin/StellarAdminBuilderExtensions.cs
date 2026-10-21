@@ -224,8 +224,8 @@ public static partial class StellarAdminBuilderExtensions
         {
             return new(
                 ConfigurationProblemKind.ResourceSlugRepeated,
-                $"The resource is added again under the slug '{slug}', but it already has the slug '{repeated.ControllerName}'. Add each resource once.",
-                $"The resource keeps the slug '{repeated.ControllerName}'."
+                $"The slug `{slug}` isn't used because the resource is already added with the slug `{repeated.ControllerName}`, which it keeps.",
+                "Add each resource once."
             )
             {
                 Resource = resource,
@@ -236,7 +236,8 @@ public static partial class StellarAdminBuilderExtensions
         {
             return ConfigurationProblem.Unavailable(
                 ConfigurationProblemKind.InvalidSlug,
-                $"The slug '{slug}' isn't valid. Use lowercase letters and digits, optionally separated by single hyphens."
+                $"The `{resource}` resource is hidden, and its pages return 404, because its slug `{slug}` isn't valid.",
+                "Use lowercase letters and digits in the slug, optionally separated by single hyphens."
             ) with
             {
                 Resource = resource,
@@ -246,7 +247,8 @@ public static partial class StellarAdminBuilderExtensions
         return conflict is { } inUse
             ? ConfigurationProblem.Unavailable(
                 ConfigurationProblemKind.SlugInUse,
-                $"The slug '{slug}' is already used by {DescribeController(inUse.ControllerType)}. Give the resource another slug."
+                $"The `{resource}` resource is hidden, and its pages return 404, because {DescribeController(inUse.ControllerType)} already uses the slug `{slug}`.",
+                "Give the resource another slug."
             ) with
             {
                 Resource = resource,
@@ -257,8 +259,8 @@ public static partial class StellarAdminBuilderExtensions
     private static string DescribeController(Type controllerType) =>
         controllerType.IsGenericType
         && controllerType.GetGenericTypeDefinition() == typeof(ResourceController<>)
-            ? $"the {controllerType.GetGenericArguments()[0].Name.Split('`')[0]} resource"
-            : controllerType.Name;
+            ? $"the `{controllerType.GetGenericArguments()[0].Name.Split('`')[0]}` resource"
+            : $"`{controllerType.Name}`";
 
     [GeneratedRegex("^[a-z0-9]+(?:-[a-z0-9]+)*$")]
     private static partial Regex SlugPattern();

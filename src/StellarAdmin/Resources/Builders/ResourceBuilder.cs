@@ -84,8 +84,8 @@ public sealed class ResourceBuilder<TResource>
             Services.Configure<ResourceOptions<TResource>>(options =>
                 options.Report(
                     ConfigurationProblemKind.InvalidSelector,
-                    $"UseKey selects '{key}', which isn't a direct property with a public getter.",
-                    "The key is left unchanged.",
+                    $"The resource's key isn't `{key}` because it isn't a direct property with a public getter. The key is left unchanged.",
+                    "Pass `UseKey` a direct property of the resource with a public getter.",
                     source
                 )
             );

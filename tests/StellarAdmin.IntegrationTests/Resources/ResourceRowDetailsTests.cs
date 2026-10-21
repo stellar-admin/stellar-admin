@@ -189,7 +189,7 @@ public class ResourceRowDetailsTests
         await Assert
             .That(
                 logs.ConfigurationProblems.Any(log =>
-                    log.Message.Contains("requires a resource key")
+                    log.Message.Contains("which needs a resource key")
                 )
             )
             .IsTrue();

@@ -483,8 +483,8 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                 {
                     options.Report(
                         ConfigurationProblemKind.StaleModelBuilder,
-                        $"A create configuration for {typeof(TModel).Name} no longer applies, because another create model was selected later.",
-                        "Its settings are skipped.",
+                        $"This create configuration for `{typeof(TModel).Name}` isn't applied because another create model was selected later.",
+                        "Remove this configuration, or configure the create page with the model it uses.",
                         source
                     );
 
@@ -504,8 +504,8 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                 {
                     options.Report(
                         ConfigurationProblemKind.StaleModelBuilder,
-                        $"A edit configuration for {typeof(TModel).Name} no longer applies, because another edit model was selected later.",
-                        "Its settings are skipped.",
+                        $"This edit configuration for `{typeof(TModel).Name}` isn't applied because another edit model was selected later.",
+                        "Remove this configuration, or configure the edit page with the model it uses.",
                         source
                     );
 
@@ -525,8 +525,8 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                 {
                     options.Report(
                         ConfigurationProblemKind.StaleModelBuilder,
-                        $"A view configuration for {typeof(TModel).Name} no longer applies, because another view model was selected later.",
-                        "Its settings are skipped.",
+                        $"This view configuration for `{typeof(TModel).Name}` isn't applied because another view model was selected later.",
+                        "Remove this configuration, or configure the view page with the model it uses.",
                         source
                     );
 

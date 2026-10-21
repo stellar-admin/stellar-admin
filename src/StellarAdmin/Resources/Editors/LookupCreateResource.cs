@@ -26,13 +26,22 @@ internal static class LookupCreateResource
             : services
                 .GetServices<ResourceRegistration>()
                 .FirstOrDefault(registration => registration.ResourceType == type);
-        var problem =
+        (string Cause, string Fix)? problem =
             type is null
-                ? $"{editorName} on {fieldName} enables create, but its items have no type. Use EnableCreate<TResource>() to select the resource."
+                ? (
+                    "its items have no type to find a resource for",
+                    "Select the resource with `EnableCreate<TResource>()`."
+                )
             : resource is null
-                ? $"{editorName} on {fieldName} enables create, but no resource is registered for {type.Name}."
+                ? (
+                    $"no resource is registered for `{type.Name}`",
+                    $"Add a resource for `{type.Name}`, or remove `EnableCreate`."
+                )
             : !resource.ResolveCanCreate(services)
-                ? $"{editorName} on {fieldName} enables create, but the {resource.ControllerName} resource has no create form."
+                ? (
+                    $"the `{resource.ControllerName}` resource has no create form",
+                    $"Allow create on the `{resource.ControllerName}` resource, or remove `EnableCreate`."
+                )
             : null;
 
         // Other resources aren't known while a resource's options are built, so this is found when the lookup renders
@@ -43,8 +52,8 @@ internal static class LookupCreateResource
                 .Report(
                     new(
                         ConfigurationProblemKind.LookupCreateUnavailable,
-                        problem,
-                        "The lookup has no New button."
+                        $"The `{editorName}` on `{fieldName}` has no New button because {problem.Value.Cause}.",
+                        problem.Value.Fix
                     )
                     {
                         Source = source,

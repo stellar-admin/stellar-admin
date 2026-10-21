@@ -16,8 +16,8 @@ internal static class ResourceHandlerCheck
             options.Create = null;
             options.Report(
                 ConfigurationProblemKind.CreateWithoutHandler,
-                "The create form requires a data source implementing IResourceCreateHandler or an explicit create handler.",
-                "There's no New button, and the create page returns 404.",
+                $"{options.PluralLabel} can't be created because {DataSource(options)} can't create them. There's no New button, and the create page returns 404.",
+                ImplementFix(options, "IResourceCreateHandler"),
                 create.Source
             );
         }
@@ -31,8 +31,8 @@ internal static class ResourceHandlerCheck
             options.Edit = null;
             options.Report(
                 ConfigurationProblemKind.EditWithoutHandler,
-                "The edit form requires a data source implementing IResourceEditHandler or an explicit edit handler.",
-                "There are no Edit links, and the edit page returns 404.",
+                $"{options.PluralLabel} can't be edited because {DataSource(options)} can't edit them. There are no Edit links, and the edit page returns 404.",
+                ImplementFix(options, "IResourceEditHandler"),
                 edit.Source
             );
         }
@@ -46,8 +46,8 @@ internal static class ResourceHandlerCheck
             options.View = null;
             options.Report(
                 ConfigurationProblemKind.ViewWithoutHandler,
-                "The view page requires a data source implementing IResourceViewHandler or an explicit view handler.",
-                "There are no View links, and the view page returns 404.",
+                $"{options.PluralLabel} can't be viewed because {DataSource(options)} can't load one. There are no View links, and the view page returns 404.",
+                ImplementFix(options, "IResourceViewHandler"),
                 view.Source
             );
         }
@@ -60,8 +60,8 @@ internal static class ResourceHandlerCheck
             options.Delete = null;
             options.Report(
                 ConfigurationProblemKind.DeleteWithoutHandler,
-                "Delete configuration requires a data source implementing IResourceDeleteHandler.",
-                "There are no Delete actions.",
+                $"{options.PluralLabel} can't be deleted because {DataSource(options)} can't delete them. There are no Delete actions.",
+                ImplementFix(options, "IResourceDeleteHandler"),
                 delete.Source
             );
         }
@@ -75,12 +75,21 @@ internal static class ResourceHandlerCheck
             options.View = null;
             options.Report(
                 ConfigurationProblemKind.ViewWithoutFields,
-                "The view page requires at least one field.",
-                "There are no View links, and the view page returns 404.",
+                "The view page isn't shown because it has no fields. There are no View links, and the view page returns 404.",
+                "Add a field to the view page, or remove the view page.",
                 view.Source
             );
         }
     }
+
+    // The data source's type, or a description when the resource has none
+    private static string DataSource<TResource>(ResourceOptions<TResource> options) =>
+        options.DataSourceType is { } type ? $"`{type.Name}`" : "the resource's data source";
+
+    private static string ImplementFix<TResource>(ResourceOptions<TResource> options, string handler) =>
+        options.DataSourceType is { } type
+            ? $"Implement `{handler}` on `{type.Name}`."
+            : $"Use a data source that implements `{handler}`.";
 
     private static bool Implements<TResource>(ResourceOptions<TResource> options, Type handler) =>
         options.DataSourceType is { } type && handler.IsAssignableFrom(type);

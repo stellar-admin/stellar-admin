@@ -44,7 +44,7 @@ public abstract class EnvironmentColor
         new ThemeEnvironmentColor(EnvironmentThemeColor.Warning);
 
     // Why the colour can't be used, when a factory method got a blank colour
-    internal string? Problem { get; init; }
+    internal ConfigurationValueProblem? Problem { get; init; }
 
     private protected EnvironmentColor() { }
 
@@ -60,7 +60,13 @@ public abstract class EnvironmentColor
     {
         ArgumentNullException.ThrowIfNull(color);
 
-        return new(color, null) { Problem = ConfigurationValues.FindBlank((nameof(color), color)) };
+        return new(color, null)
+        {
+            Problem = ConfigurationValues.FindBlank(
+                "EnvironmentColor.Custom",
+                (nameof(color), color)
+            ),
+        };
     }
 
     /// <summary>
@@ -80,6 +86,7 @@ public abstract class EnvironmentColor
         return new(color, darkColor)
         {
             Problem = ConfigurationValues.FindBlank(
+                "EnvironmentColor.Custom",
                 (nameof(color), color),
                 (nameof(darkColor), darkColor)
             ),

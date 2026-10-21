@@ -122,7 +122,7 @@ public class ResourceViewTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "The view page's field 'Tags' shows a collection of Tag, which has no text of its own."
+                        "because its value is a collection of Tag, which has no text of its own."
                     )
                 )
             )

@@ -13,18 +13,18 @@ internal static class BadgeDisplayCheck
         {
             if (
                 FindProblem(
-                    $"index column '{column.FieldName ?? column.FieldExpression.ToString()}'",
+                    $"The `{column.FieldName ?? column.FieldExpression.ToString()}` column isn't shown",
                     column.Display,
                     column.FieldExpression.ReturnType
                 ) is
-                { } message
+                var (message, fix)
             )
             {
                 options.Index.MutableColumns.Remove(column);
                 options.Report(
                     ConfigurationProblemKind.MismatchedBadgeText,
                     message,
-                    "The column is left out.",
+                    fix,
                     column.Source
                 );
             }
@@ -45,25 +45,30 @@ internal static class BadgeDisplayCheck
         {
             if (
                 FindProblem(
-                    $"{page}'s field '{field.FieldName ?? field.Title ?? field.FieldExpression.ToString()}'",
+                    $"The `{field.FieldName ?? field.Title ?? field.FieldExpression.ToString()}` field isn't on the {page}",
                     field.Display,
                     field.FieldExpression.ReturnType
                 ) is
-                { } message
+                var (message, fix)
             )
             {
                 FormItems.Remove(scope!, field);
                 options.Report(
                     ConfigurationProblemKind.MismatchedBadgeText,
                     message,
-                    "The field is left out.",
+                    fix,
                     field.Source
                 );
             }
         }
     }
 
-    private static string? FindProblem(string field, FieldDisplay? display, Type valueType)
+    // The message, which starts with what the developer notices, and the fix
+    private static (string Message, string Fix)? FindProblem(
+        string notice,
+        FieldDisplay? display,
+        Type valueType
+    )
     {
         if (display is not BadgeDisplay { TextItemType: { } textItemType })
         {
@@ -74,7 +79,10 @@ internal static class BadgeDisplayCheck
 
         return textItemType.IsAssignableFrom(itemType)
             ? null
-            : $"The {field} shows {itemType.Name} badges, but its UseText reads {textItemType.Name}. Call UseText<{itemType.Name}>.";
+            : (
+                $"{notice} because it shows `{itemType.Name}` badges, and its `UseText` reads `{textItemType.Name}`.",
+                $"Call `UseText<{itemType.Name}>`."
+            );
     }
 
     // The type of the value, or of each item when the value is a collection, as the badge

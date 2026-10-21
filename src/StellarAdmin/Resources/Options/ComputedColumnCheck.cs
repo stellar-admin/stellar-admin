@@ -16,8 +16,8 @@ internal static class ComputedColumnCheck
                 index.MutableColumns.Remove(column);
                 options.Report(
                     ConfigurationProblemKind.ComputedColumnWithoutTitle,
-                    $"The index column '{column.FieldExpression}' computes its value, so it needs a Title.",
-                    "The column is left out.",
+                    "This column isn't shown because it's computed, so it has no property name to use as its title.",
+                    "Give the column a `Title`.",
                     column.Source
                 );
             }
@@ -26,8 +26,8 @@ internal static class ComputedColumnCheck
                 column.Sortable = false;
                 options.Report(
                     ConfigurationProblemKind.ComputedColumnSortedByName,
-                    $"The index column '{column.Title}' computes its value, so it can only be sorted by an expression. Use Sortable(selector).",
-                    "The column isn't sortable.",
+                    $"The `{column.Title}` column isn't sortable because it's computed, so it has no property to sort by.",
+                    "Pass the value to sort by to `Sortable(selector)`.",
                     column.Source
                 );
             }
@@ -47,8 +47,8 @@ internal static class ComputedColumnCheck
                 column.Sortable = false;
                 options.Report(
                     ConfigurationProblemKind.RepeatedSortName,
-                    $"The index column '{column.Title}' is sorted as '{column.SortField}', as another sortable column is. Give it another title.",
-                    "The column isn't sortable.",
+                    $"The `{column.Title}` column isn't sortable because another sortable column already sorts as `{column.SortField}`.",
+                    "Give the column another title.",
                     column.Source
                 );
             }

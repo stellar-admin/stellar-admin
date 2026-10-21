@@ -101,8 +101,8 @@ public sealed class StellarAdminBuilder
             _options.Problems.Add(
                 new(
                     ConfigurationProblemKind.InvalidValue,
-                    $"AddController gives {controllerType.Name} a blank name.",
-                    "The controller isn't added."
+                    $"`{controllerType.Name}` isn't added because `AddController` gives it a blank name.",
+                    "Pass a name to `AddController`."
                 )
             );
         }
@@ -111,8 +111,8 @@ public sealed class StellarAdminBuilder
             _options.Problems.Add(
                 new(
                     ConfigurationProblemKind.SlugInUse,
-                    $"AddController adds {controllerType.Name} as '{controllerName}', but it is already added as '{existingName}'.",
-                    $"The controller keeps the name '{existingName}'."
+                    $"`{controllerType.Name}` isn't added as `{controllerName}` because it's already added as `{existingName}`. It keeps the name `{existingName}`.",
+                    $"Add `{controllerType.Name}` under one name."
                 )
             );
         }
@@ -121,8 +121,8 @@ public sealed class StellarAdminBuilder
             _options.Problems.Add(
                 new(
                     ConfigurationProblemKind.SlugInUse,
-                    $"AddController adds {controllerType.Name} as '{controllerName}', but {existingType.Name} already has that name.",
-                    $"{controllerType.Name} isn't added."
+                    $"`{controllerType.Name}` isn't added because `{existingType.Name}` already has the name `{controllerName}`.",
+                    $"Give `{controllerType.Name}` another name."
                 )
             );
         }
@@ -202,8 +202,8 @@ public sealed class StellarAdminBuilder
         {
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                "AddScript is called with a blank path.",
-                "No script is added."
+                "No script is added because `AddScript` is called with a blank path.",
+                "Pass the path of a script to `AddScript`."
             );
 
             return this;
@@ -263,15 +263,23 @@ public sealed class StellarAdminBuilder
 
         var link = new SidebarLinkOptions(label, target);
         configure(new SidebarLinkBuilder(link));
-        if (
-            (string.IsNullOrWhiteSpace(label) ? "Its label is blank." : target.Problem) is
-            { } problem
-        )
+        if (string.IsNullOrWhiteSpace(label))
         {
             Report(
                 ConfigurationProblemKind.InvalidLink,
-                $"The sidebar link '{label}' can't be shown. {problem}",
-                "The link is left out."
+                "A sidebar link isn't in the sidebar because its label is blank.",
+                "Pass a label to `AddSidebarLink`."
+            );
+
+            return this;
+        }
+
+        if (target.Problem is { } problem)
+        {
+            Report(
+                ConfigurationProblemKind.InvalidLink,
+                $"`{label}` isn't in the sidebar because {problem.Cause}.",
+                problem.Fix
             );
 
             return this;
@@ -282,8 +290,8 @@ public sealed class StellarAdminBuilder
             link.Group = null;
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                $"The sidebar link '{label}' has a blank group.",
-                "The link is in the default group."
+                $"`{label}` is in the default group because its group is blank.",
+                "Set the link's `Group` to the label of a group, or leave it unset."
             );
         }
 
@@ -292,8 +300,8 @@ public sealed class StellarAdminBuilder
             link.Icon = null;
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                $"The sidebar link '{label}' has a blank icon.",
-                "The link has no icon."
+                $"`{label}` has no icon because its icon is blank.",
+                "Set the link's `Icon` to the name of an icon, or leave it unset."
             );
         }
 
@@ -328,8 +336,8 @@ public sealed class StellarAdminBuilder
         {
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                "AddStylesheet is called with a blank path.",
-                "No stylesheet is added."
+                "No stylesheet is added because `AddStylesheet` is called with a blank path.",
+                "Pass the path of a stylesheet to `AddStylesheet`."
             );
 
             return this;
@@ -370,8 +378,8 @@ public sealed class StellarAdminBuilder
             _options.Problems.Add(
                 new(
                     ConfigurationProblemKind.WordmarkWithSubtitle,
-                    "A wordmark logo replaces the title and can't be combined with a subtitle. Remove the subtitle, or use another logo.",
-                    "The subtitle isn't shown."
+                    "The subtitle isn't shown because a wordmark logo replaces the title and subtitle.",
+                    "Remove the subtitle, or use another logo."
                 )
             );
         }
@@ -453,8 +461,8 @@ public sealed class StellarAdminBuilder
         {
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                "ConfigureSidebarGroup is called with a blank label.",
-                "Its settings apply to no group."
+                "The settings of `ConfigureSidebarGroup` apply to no group because its label is blank.",
+                "Pass the label of a sidebar group to `ConfigureSidebarGroup`."
             );
 
             return this;
@@ -533,8 +541,8 @@ public sealed class StellarAdminBuilder
         {
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                $"The environment indicator can't be shown. {problem}",
-                "No environment indicator is shown."
+                $"No environment indicator is shown because {problem.Cause}.",
+                problem.Fix
             );
 
             return this;
@@ -545,8 +553,8 @@ public sealed class StellarAdminBuilder
             indicator.Color = EnvironmentColor.Neutral;
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                $"The environment indicator's colour can't be used. {colorProblem}",
-                "The indicator uses the neutral colour."
+                $"The environment indicator uses the neutral colour because {colorProblem.Cause}.",
+                colorProblem.Fix
             );
         }
 
@@ -559,8 +567,8 @@ public sealed class StellarAdminBuilder
         {
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                "The environment indicator's TabSize isn't an EnvironmentIndicatorTabSize value.",
-                "The indicator uses the medium tab."
+                "The environment indicator uses the medium tab because its `TabSize` isn't an `EnvironmentIndicatorTabSize` value.",
+                "Set `TabSize` to an `EnvironmentIndicatorTabSize` value."
             );
         }
 
@@ -654,8 +662,8 @@ public sealed class StellarAdminBuilder
             branding.Title = null;
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                "The branding Title is blank.",
-                "The sidebar shows the default title."
+                "The sidebar shows the default title because the branding `Title` is blank.",
+                "Set `Title` to text, or leave it unset."
             );
         }
 
@@ -664,8 +672,8 @@ public sealed class StellarAdminBuilder
             branding.Href = null;
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                "The branding Href is blank.",
-                "The sidebar header links to the home page."
+                "The sidebar header links to the home page because the branding `Href` is blank.",
+                "Set `Href` to a URL, or leave it unset."
             );
         }
 
@@ -674,8 +682,8 @@ public sealed class StellarAdminBuilder
             branding.Logo = null;
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                $"The branding logo can't be shown. {problem}",
-                "The sidebar shows no logo."
+                $"The sidebar shows no logo because {problem.Cause}.",
+                problem.Fix
             );
         }
     }
@@ -688,8 +696,8 @@ public sealed class StellarAdminBuilder
             menu.Items.Remove(item);
             Report(
                 ConfigurationProblemKind.InvalidLink,
-                $"A user menu item can't be shown. {item.Problem}",
-                "The item is left out."
+                $"A user menu item isn't shown because {item.Problem!.Cause}.",
+                item.Problem.Fix
             );
         }
 
@@ -706,8 +714,8 @@ public sealed class StellarAdminBuilder
             logout.Path = null;
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                "The log out Path is blank.",
-                "Log out uses the admin panel's own log out."
+                "Log out uses the admin panel's own log out because its `Path` is blank.",
+                "Set the log out `Path` to a path, or leave it unset."
             );
         }
 
@@ -716,8 +724,8 @@ public sealed class StellarAdminBuilder
             logout.RedirectPath = null;
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                "The log out RedirectPath is blank.",
-                "Log out redirects to the default path."
+                "Log out redirects to the default path because its `RedirectPath` is blank.",
+                "Set the log out `RedirectPath` to a path, or leave it unset."
             );
         }
 
@@ -725,8 +733,8 @@ public sealed class StellarAdminBuilder
         {
             Report(
                 ConfigurationProblemKind.InvalidValue,
-                "A log out authentication scheme is blank.",
-                "Log out signs out of the other schemes."
+                "Log out signs out of its other authentication schemes because one of them is blank.",
+                "Pass the name of an authentication scheme to `AddAuthenticationScheme`."
             );
         }
     }
@@ -740,13 +748,13 @@ public sealed class StellarAdminBuilder
 
         Report(
             ConfigurationProblemKind.InvalidValue,
-            $"The user menu's {setting} is blank.",
-            "The user menu uses the default claim."
+            $"The user menu uses the default claim because its `{setting}` is blank.",
+            $"Set `{setting}` to a claim type, or leave it unset."
         );
 
         return null;
     }
 
-    private void Report(ConfigurationProblemKind kind, string message, string outcome) =>
-        _options.Problems.Add(new(kind, message, outcome));
+    private void Report(ConfigurationProblemKind kind, string message, string fix) =>
+        _options.Problems.Add(new(kind, message, fix));
 }

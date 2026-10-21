@@ -41,18 +41,16 @@ internal sealed record ConfigurationSource(string FilePath, int Line)
             .FirstOrDefault(source => source is not null);
 
     // The path relative to the app's content root when the file is under it, for a shorter label
-    public string Describe(string? contentRoot)
-    {
-        var path =
-            contentRoot is not null
-            && Path.GetRelativePath(contentRoot, FilePath) is var relative
-            && !relative.StartsWith("..", StringComparison.Ordinal)
-            && !Path.IsPathRooted(relative)
-                ? relative
-                : FilePath;
+    public string Describe(string? contentRoot) => $"{GetDisplayPath(contentRoot)}:{Line}";
 
-        return $"{path}:{Line}";
-    }
+    // The file's path relative to the app's content root when the file is under it, otherwise its full path
+    public string GetDisplayPath(string? contentRoot) =>
+        contentRoot is not null
+        && Path.GetRelativePath(contentRoot, FilePath) is var relative
+        && !relative.StartsWith("..", StringComparison.Ordinal)
+        && !Path.IsPathRooted(relative)
+            ? relative
+            : FilePath;
 
     public override string ToString() => $"{FilePath}:{Line}";
 

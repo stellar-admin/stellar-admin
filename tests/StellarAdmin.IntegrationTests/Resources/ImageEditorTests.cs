@@ -360,7 +360,7 @@ public class ImageEditorTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains(
-                        "The edit form's image field 'Photo' has nowhere to store uploads."
+                        "The Photo field isn't on the edit form because its image editor has nowhere to store uploads."
                     )
                 )
             )
