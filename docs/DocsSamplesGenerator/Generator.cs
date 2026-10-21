@@ -59,8 +59,8 @@ internal sealed partial class Generator
             </script>
         """;
 
-    // Injected into the exported image upload demos, which have no server to upload to. It answers
-    // the demo upload handler's requests in the browser: progress over a second or so, then the
+    // Injected into the exported image upload and rich text image demos, which have no server to
+    // upload to. It answers the demo upload handler's requests in the browser: progress over a second or so, then the
     // picked file's name as the value and an object URL for it, as the samples' handler would.
     private const string DemoUploadScript = """
             <script>
@@ -400,8 +400,14 @@ internal sealed partial class Generator
         var response = await client.GetAsync($"/DocsStatic/?name={partialName}&layout={layout}");
         response.EnsureSuccessStatusCode();
 
-        var content = FixDemoContent(await response.Content.ReadAsStringAsync());
-        if (partialName.StartsWith("ImageUpload/", StringComparison.Ordinal))
+        var rendered = await response.Content.ReadAsStringAsync();
+        await DownloadModuleScriptsAsync(client, rendered);
+
+        var content = FixDemoContent(rendered);
+        if (
+            partialName.StartsWith("ImageUpload/", StringComparison.Ordinal)
+            || partialName == "RichTextEditor/_Images"
+        )
         {
             content = content.Replace("<head>", "<head>\n" + DemoUploadScript);
         }
@@ -436,6 +442,23 @@ internal sealed partial class Generator
             ),
             content
         );
+    }
+
+    // A component that loads its own bundle, such as the rich text editor, renders its module script
+    // in the demo; the index page that the other assets come from doesn't reference it
+    private static async Task DownloadModuleScriptsAsync(HttpClient client, string content)
+    {
+        foreach (Match match in ModuleScriptRegex().Matches(content))
+        {
+            var path = Path.Combine(DownloadedAssetsOutputFolder, match.Groups["filename"].Value);
+            if (File.Exists(path))
+                continue;
+
+            var response = await client.GetAsync(match.Groups["url"].Value);
+            response.EnsureSuccessStatusCode();
+
+            await File.WriteAllBytesAsync(path, await response.Content.ReadAsByteArrayAsync());
+        }
     }
 
     private static string FixDemoContent(string input)
@@ -487,6 +510,12 @@ internal sealed partial class Generator
         "en-US"
     )]
     private static partial Regex DemoAssetRegex();
+
+    [GeneratedRegex(
+        @"<script(?=[^>]*\btype=""module"")[^>]*\bsrc=""(?<url>/_content/[^""]*/(?<filename>[^""/]+\.js))""",
+        RegexOptions.IgnoreCase
+    )]
+    private static partial Regex ModuleScriptRegex();
 
     [GeneratedRegex(
         @"[ \t]*<script[^>]*src=""/js/appearance(?:\.[a-z0-9]+)?\.js[^""]*""[^>]*></script>\r?\n?",
@@ -862,6 +891,10 @@ internal sealed partial class Generator
         new("Radio/_ManualValidationImplicit"),
         new("Radio/_ModelBinding"),
         new("Radio/_Validation"),
+        new("RichTextEditor/_Images"),
+        new("RichTextEditor/_Intro"),
+        new("RichTextEditor/_ModelBinding"),
+        new("RichTextEditor/_ReadOnly"),
         new("RadioGroup/_Intro"),
         new("RadioGroup/_ChoiceCards"),
         new("RadioGroup/_Items"),

@@ -1,6 +1,6 @@
 # Rich text editor
 
-Status: in progress (2026-10-21) on the `rich-text-editor` branch; phases 1 and 2 done. Approach and public API approved 2026-10-21. Proposed 2026-10-18.
+Status: completed (2026-10-21) on the `rich-text-editor` branch, not yet merged. Proposed 2026-10-18.
 
 An editor for long text that staff can format, such as bold, lists and links. From the Voyager Travel session feedback, where a guide's `Bio` had only a plain text area.
 
@@ -47,22 +47,39 @@ Done on the `rich-text-editor` branch:
 
 Verified: `npm run check`, the oxfmt check, the Release build (the only new warning repeats the image editor tests' existing nullability warning on a startup assertion), all 1753 .NET tests, including 8 integration tests for the editor (settings and upload URL, the `[DataType(Html)]` default, sanitizing on save for both kinds of field, editor markup kept intact, a replacement sanitizer, uploads, upload without `StoreImage`, the startup check), 2 for `HtmlDisplay`, and unit tests for `HtmlText`, `RichTextEditor`, `HtmlDisplay` and the default display, and the skills drift check. Headless Chromium on AdminPlayground: the index shows the excerpts without loading the editor script; the edit page mounts the editor, turns the plain-text bio into paragraphs and uploads an image through the admin endpoint, and the save lands on the view page with the formatted HTML; a form posted with unsafe HTML saved without `onclick`, the `javascript:` link, `<script>`, `onerror`, the `data:` image, `style`, `class` and `<iframe>`; and two editors swapped into the index page with `htmx.ajax` both mounted with one request for the script. `app.db` is unchanged. Not checked: the editor in a create sheet opened from a lookup, and the editor in an inline row (like the textarea, it has no inline row template).
 
+## Phase 3: documentation (2026-10-21)
+
+Done:
+
+- The stellar-admin skill: `RichTextEditor` in `editors.md` (which-editor and inferred tables, settings, a Rich text section with sanitizing, images and the inline row limit), `HtmlDisplay` in `columns.md` and `fields.md`, the task table in `SKILL.md`, and rich text among the editors without an inline row template. The stellar-admin-ui skill: the component reference's hand-written region (value, own script, sanitizing with the allowed markup, `.sa-rich-text`, the upload protocol) and the on-demand bundle in `javascript.md`.
+- `docs/DocsSamplesGenerator` downloads the module script a demo renders (the index page it takes the other assets from doesn't reference the editor's), and gives `RichTextEditor/_Images` the in-browser upload stub the image upload demos use. `DocsStatic` supplies the model binding demo's model.
+- The website (`5429a339` on its `master`): the Rich Text Editor page with its four exported demos and `rich-text-editor.js`, the JavaScript page (the editor's element and on-demand bundles, `interestfor` on other elements) and the Tooltip page (limitations, toggles). The demos and inline example assets were regenerated for the new bundle fingerprints; the rest of the export diff is the usual random ids and tokens.
+
+Verified: the skill validation (8 tests and the check of 4 skills), the generator drift check, and the website's lint, type check and production build (its 2 existing CSS optimizer warnings). Headless Chromium on the website's dev server: the page renders its four demos with no errors, each demo loads `stellar-admin.js` and `rich-text-editor.js` and mounts its editor (read-only not editable), the Images demo's upload ends with the image in the value, and the Tooltip elements demo's input tooltip opens on hover.
+
+## Follow-ups
+
+- Not checked: the editor in a create sheet opened from a lookup, other themes and density levels, and resizing an image by drag.
+- Admin panel website docs don't exist yet; `RichTextEditor` and `HtmlDisplay` are documented in the stellar-admin skill only.
+- A tools flags enum to turn off toolbar features, when an app asks for one (decision 2).
+- The sanitizer leaves an `<img>` without `src` when it removes an unsafe one; harmless, but it could drop the element.
+
 ## Loading the editor's assets
 
 The editor's script (about 440 KB, or 135 KB compressed) must not load on every page, only on pages that render an editor, including editors swapped in by htmx. Decision (2026-10-20): follow web standards and render the script tag with the component.
 
-[Client modules](archive/client-modules.md) removed Lit and TypeScript and bundles the library's plain JavaScript with Rolldown into one ES module. The editor follows that pattern as an on-demand bundle.
+[Client modules](client-modules.md) removed Lit and TypeScript and bundles the library's plain JavaScript with Rolldown into one ES module. The editor follows that pattern as an on-demand bundle.
 
 - The tag helper renders `<script type="module" src="…">` inside `<sel-rich-text-editor>`, so it survives `hx-select` and out-of-band swaps. Full pages and htmx responses get the same markup; no request-scoped asset registry, response header or htmx extension.
 - The browser loads and runs a module URL once per document, so several editors or repeated swaps load it once. htmx runs swapped-in scripts by default. Custom elements upgrade whenever the definition arrives, and the textarea fallback covers the wait.
 - Ship the bundle as an ES module (the prototype builds an IIFE, which would run again on every swap), and guard `customElements.define` against an existing definition. It's a second entry in `src/StellarAdmin.UI/Client/rolldown.config.js`, built as a self-contained module with no shared chunks.
 - The tag helper renders the script with the internal `ModuleScript` helper, which takes the fingerprinted URL from the page's static asset collection, or the plain URL with the path base when there is none. Every editor then uses the identical URL, since different URLs would load the script twice.
 - The editor's CSS goes in the main stylesheet in `@layer sa.components`, not a lazily loaded `<link>`: a `<link>` is applied again on every swap, and there is no standard load-once for stylesheets. Copy the few ProseKit rules we need and drop `prosekit.css`, whose unlayered rules override ours.
-- Later option: CSS module scripts (`import … with { type: "css" }`) once every browser supports them. An import map was ruled out by [client modules](archive/client-modules.md), because ASP.NET's map needs a `<base href>` tag below the site root and `.WithStaticAssets()` doesn't reach MVC conventional routes.
+- Later option: CSS module scripts (`import … with { type: "css" }`) once every browser supports them. An import map was ruled out by [client modules](client-modules.md), because ASP.NET's map needs a `<base href>` tag below the site root and `.WithStaticAssets()` doesn't reach MVC conventional routes.
 - Verify in the browser: a page without an editor doesn't load the bundle, a page with several editors loads it once, and an editor swapped in by an htmx partial loads it.
 - Rejected alternatives: a server-side registry written out by the layout plus a header, out-of-band swap or htmx `head-support` for partial responses (Django `Media`, Orchard `ResourceManager`); a client autoloader keyed by tag name (Shoelace, Stimulus lazy controllers); or one keyed by a URL on the element (Filament `x-load-src`). Livewire's `@assets` and Astro's component scripts take the same approach as this decision.
 
-## Follow-ups
+## Earlier follow-ups
 
 - **Done (2026-10-21): tooltips on toggles don't open natively.** `sa-toggle` renders a `<label>` around a hidden checkbox, and browsers with native `interestfor` (Chromium 151 here) honour it only on buttons and links, so the polyfill stands down and a toggle's tooltip never opens. The prototype opens them from the editor element (`#setUpToggleTooltips` in `editor.ts`). This needs a library fix: either library script that does the same for every toggle with `interestfor`, or toolbar toggles rendered as `<button aria-pressed>`. Also check the Tooltip docs' "Elements" example: an `<input>` has no native `interestfor` either, so its input, select and checkbox tooltips probably don't open.
   Fixed in the library: `Client/js/interest-fallback.js`, in the main bundle, handles `interestfor` on any element the browser doesn't (anything without `interestForElement`) when native support exists, with the `interest-delay-start` and `interest-delay-end` delays and the `interest` and `loseinterest` events. A control inside a label, such as a toggle's hidden checkbox, takes its hover from the label and anchors the tooltip to it. Verified in headless Chromium 151 on DocsSamples `/Tooltip`: the input, checkbox and select tooltips open on hover and close on leave (the button one still opens natively), and an injected `sa-toggle` opens its tooltip after the delay, above and centred on the label, closes it on leave and on click (the click still toggles), and opens it on keyboard focus and closes it on blur. `npm run check` passes. The skill's JavaScript reference and the product guide mention it. Not done: the website's JavaScript and Tooltip pages, which say only that the polyfill is bundled.

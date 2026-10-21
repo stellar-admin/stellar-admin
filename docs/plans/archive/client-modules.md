@@ -1,8 +1,8 @@
 # Client modules
 
-Status: completed (2026-10-21). Steps 1 and 2 are done, and step 3 moved to the [rich text editor](../rich-text-editor.md) plan.
+Status: completed (2026-10-21). Steps 1 and 2 are done, and step 3 moved to the [rich text editor](rich-text-editor.md) plan.
 
-Remove Lit and TypeScript from the StellarAdmin.UI web components, rewriting them as plain JavaScript bundled by Rolldown into one ES module, and let large, rarely used components load their own bundle only on pages that render them. This comes before the [rich text editor](../rich-text-editor.md), whose script loading depends on it.
+Remove Lit and TypeScript from the StellarAdmin.UI web components, rewriting them as plain JavaScript bundled by Rolldown into one ES module, and let large, rarely used components load their own bundle only on pages that render them. This comes before the [rich text editor](rich-text-editor.md), whose script loading depends on it.
 
 ## Current state (2026-10-20)
 
@@ -18,7 +18,7 @@ Decision (2026-10-21): author plain JavaScript and bundle it with Rolldown. This
 - Sources stay plain JavaScript with types in JSDoc, checked with `tsc --checkJs` (`npm run check`, run in CI). No Lit and no TypeScript compile. They move back out of `wwwroot` into `Client/js/` so the unbundled files aren't published as static assets.
 - Rolldown bundles them into one minified ES module, `wwwroot/stellar-admin.js`, with a source map. It holds every current component, the icon picker included, plus the `window.stellarAdmin` helpers and the `interestfor` polyfill imported from its npm package.
 - Developers add one tag: `<script type="module" src="~/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true">`. No import map and no base tag.
-- Only large, rarely used components get their own bundle and load on demand: the [rich text editor](../rich-text-editor.md) first, and later candidates such as a map or a spreadsheet-like grid. Each is a self-contained ES module with no shared chunks, which its tag helper loads with the internal `ModuleScript` helper (see step 2's history below), so it needs no import map either.
+- Only large, rarely used components get their own bundle and load on demand: the [rich text editor](rich-text-editor.md) first, and later candidates such as a map or a spreadsheet-like grid. Each is a self-contained ES module with no shared chunks, which its tag helper loads with the internal `ModuleScript` helper (see step 2's history below), so it needs no import map either.
 - `MapStellarAdmin` keeps adding the static asset metadata to its routes. `asp-append-version` then gives the admin panel's bundle and stylesheet fingerprinted, immutable URLs. Without that metadata it falls back to `?v=` and the browser revalidates the file, which is how consumer pages behave unless their endpoints call `.WithStaticAssets()`.
 
 ### Superseded: no build and the import map
@@ -65,7 +65,7 @@ The icon picker was split out as a trial: the internal `ModuleScript` helper ren
 
 ## Step 3: on-demand bundles
 
-Moved to the [rich text editor](../rich-text-editor.md) plan (2026-10-21): a second Rolldown entry builds its self-contained module, its tag helper loads it with `ModuleScript`, and the browser check covers a page without an editor (not loaded), one with several (loaded once) and an htmx partial.
+Moved to the [rich text editor](rich-text-editor.md) plan (2026-10-21): a second Rolldown entry builds its self-contained module, its tag helper loads it with `ModuleScript`, and the browser check covers a page without an editor (not loaded), one with several (loaded once) and an htmx partial.
 
 ## Outside this repository
 
@@ -74,4 +74,4 @@ Moved to the [rich text editor](../rich-text-editor.md) plan (2026-10-21): a sec
 
 ## Afterwards
 
-Resume the [rich text editor](../rich-text-editor.md) on top of this.
+Resume the [rich text editor](rich-text-editor.md) on top of this.

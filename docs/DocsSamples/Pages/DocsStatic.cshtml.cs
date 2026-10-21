@@ -69,6 +69,7 @@ public class DocsStatic : PageModel
             "Questionnaire/_Validation" => new Questionnaire.Index.ValidationModel(),
             "Radio/_ModelBinding" => new Radio.Index.ModelBindingModel(),
             "RadioGroup/_ModelBinding" => new RadioGroup.Index.OrderModel(),
+            "RichTextEditor/_ModelBinding" => new RichTextEditor.Index.GuideModel(),
             "RadioGroup/_Validation" => new RadioGroup.Index.ValidationModel(),
             "Radio/_Validation" => new Radio.Index.ValidationModel(),
             "SegmentedControl/_Validation" => new SegmentedControl.Index.BookingModel
