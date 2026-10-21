@@ -7,6 +7,7 @@ Add to or replace generated pages with Razor views in the app, change labels for
 - [View imports](#view-imports)
 - [Overriding a page](#overriding-a-page)
 - [Home page](#home-page)
+- [Environment indicator](#environment-indicator)
 - [Add content to a generated page](#add-content-to-a-generated-page)
 - [Page tag helpers and slots](#page-tag-helpers-and-slots)
 - [Global labels](#global-labels)
@@ -59,6 +60,44 @@ builder.Services.AddStellarAdmin(admin =>
 ```
 
 To replace the home page in every environment, add `Areas/StellarAdmin/Views/Home/Index.cshtml` to the app. Its model is internal, so don't declare `@model`; inject services or use a view component for the page's data. It needs the [view imports](#view-imports) like any other override.
+
+## Environment indicator
+
+Show which environment the app runs in on every panel page: a stripe, a frame or a banner across the top of the window. There is one indicator; call `EnableEnvironmentIndicator` only in the environments that should show it, however the app determines its environment. Not calling it shows nothing.
+
+```csharp
+var environment = builder.Configuration["Deployment:Environment"];
+
+builder.Services.AddStellarAdmin(admin =>
+{
+    if (environment == "live")
+    {
+        admin.EnableEnvironmentIndicator(EnvironmentIndicator.Banner("Live", banner =>
+        {
+            banner.Color = EnvironmentColor.Danger;
+            banner.Description = "Changes affect live customers";
+        }));
+    }
+    else if (environment == "test")
+    {
+        admin.EnableEnvironmentIndicator(EnvironmentIndicator.Stripe("Testing", stripe =>
+        {
+            stripe.Color = EnvironmentColor.Warning;
+            stripe.TabSize = EnvironmentIndicatorTabSize.Large;
+        }));
+    }
+});
+```
+
+| Factory | Shows | Settings |
+| --- | --- | --- |
+| `EnvironmentIndicator.Stripe(label)` | A thin bar across the top, with the label on a tab | `Color`, `TabSize` |
+| `EnvironmentIndicator.Frame(label)` | A border around the window, with the label on a tab at the top | `Color`, `TabSize` |
+| `EnvironmentIndicator.Banner(label)` | A bar across the top with the label and an optional `Description`; the page and sidebar move down | `Color`, `Description` |
+
+- `Color` is `EnvironmentColor.Neutral` (the default), `Info`, `Success`, `Warning` or `Danger`, which follow the theme and dark mode, or `EnvironmentColor.Custom("#7c3aed")` and `EnvironmentColor.Custom("#7c3aed", "#c4b5fd")` with a second colour for dark mode. The text colour is chosen automatically.
+- `TabSize` is `EnvironmentIndicatorTabSize.Small`, `Medium` (the default), `Large` or `ExtraLarge`.
+- The types are in the `StellarAdmin` namespace. Pages outside the panel, such as the app's sign-in pages, don't get the indicator; add `<sa-environment-stripe>`, `<sa-environment-frame>` or `<sa-environment-banner>` from StellarAdmin.UI to their layout.
 
 ## Add content to a generated page
 
@@ -154,6 +193,7 @@ Add a view at the same path to replace the panel's markup everywhere:
 | A built-in editor | `Areas/StellarAdmin/Views/Shared/EditorTemplates/Editors/{Name}.cshtml` (`TextInput`, `Select`, `RadioGroup`, ...) |
 | A built-in display, in forms and view pages | `Areas/StellarAdmin/Views/Shared/DisplayTemplates/Displays/{Name}.cshtml` |
 | A built-in display, in index cells | `Areas/StellarAdmin/Views/Shared/GridDisplayTemplates/Displays/{Name}.cshtml` |
+| The environment indicator | `Areas/StellarAdmin/Views/Shared/_EnvironmentIndicator.cshtml` (model: `EnvironmentIndicator`) |
 | A row details partial | `Areas/StellarAdmin/Views/{slug}/_Name.cshtml` or `Shared/` |
 
 Start from the behaviour you need rather than copying internals; the built-in templates use internal view data that may change between versions. The sidebar's view is not a supported extension point.

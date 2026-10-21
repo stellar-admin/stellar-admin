@@ -28,6 +28,7 @@
   "Dialog": ["Dialog/_Intro", "Dialog/_ReturnValue"],
   "DropdownMenu": ["DropdownMenu/_Intro", "DropdownMenu/_CheckboxItems", "DropdownMenu/_Submenu"],
   "Empty": ["Empty/_Intro", "Empty/_WithIcon"],
+  "EnvironmentIndicator": ["EnvironmentIndicator/_Intro", "EnvironmentIndicator/_Frame", "EnvironmentIndicator/_Banner", "EnvironmentIndicator/_CustomColor", "EnvironmentIndicator/_TabSize"],
   "Field": ["Field/_Intro", "Field/_Implicit"],
   "Grid": ["Grid/_Intro", "Grid/_Spans", "Grid/_Starts", "Grid/_DisplayFields", "Grid/_GridItems"],
   "Icon": ["Icon/_Intro", "Icon/_Custom"],

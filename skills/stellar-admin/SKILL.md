@@ -33,6 +33,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
 | Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
 | Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
+| Show the environment (live, staging, local) on every page | `EnableEnvironmentIndicator`, `EnvironmentIndicator.Stripe`/`Frame`/`Banner`, `EnvironmentColor` | [customization](references/customization.md#environment-indicator) |
 | Sign-in, roles, per-resource and per-link access | `RequireAuthorization` | [authorization](references/authorization.md) |
 | Replace or extend a generated page, the home page and its setup checklist, global labels, template overrides | `Areas/StellarAdmin/Views/{slug}/Index.cshtml`, `sa-index-page`, `ConfigureHomePage`, `ConfigureResourceLabels` | [customization](references/customization.md) |
 
@@ -153,7 +154,7 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 
 | Namespace | Package | Contains |
 | --- | --- | --- |
-| `StellarAdmin` | StellarAdmin | `AddStellarAdmin`, `MapStellarAdmin`, `StellarAdminLayouts` |
+| `StellarAdmin` | StellarAdmin | `AddStellarAdmin`, `MapStellarAdmin`, `StellarAdminLayouts`, `EnvironmentIndicator`, `EnvironmentColor` |
 | `StellarAdmin.EntityFrameworkCore` | StellarAdmin.EntityFrameworkCore | `AddEfCoreResource`, and the EF `UseItems` overloads on editors |
 | `StellarAdmin.Resources.Editors` | StellarAdmin | Editors, `ChoiceItem`, `ItemMedia`, `ILookupSource` |
 | `StellarAdmin.Resources.Displays` | StellarAdmin | Displays such as `NumberDisplay`, `BadgeDisplay`, `FieldDisplay` |

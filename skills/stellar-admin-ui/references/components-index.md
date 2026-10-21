@@ -25,6 +25,7 @@
 | [Dialog](components/dialog.md) | `<sa-dialog>`, `<sa-dialog-description>`, `<sa-dialog-footer>`, … | Renders a modal window over the page. |
 | [DropdownMenu](components/dropdown-menu.md) | `<sa-dropdown-menu>`, `<sa-dropdown-menu-checkbox-item>`, `<sa-dropdown-menu-content>`, … | Renders a dropdown menu, which pairs a trigger with its content. |
 | [Empty](components/empty.md) | `<sa-empty>`, `<sa-empty-content>`, `<sa-empty-description>`, … | Renders an empty state, which tells the user there is no content to show. |
+| [EnvironmentIndicator](components/environment-indicator.md) | `<sa-environment-frame>`, `<sa-environment-banner>`, `<sa-environment-stripe>` | Renders a border around the window, with a tab on the top edge that names the environment the application runs in. |
 | [Field](components/field.md) | `<sa-field>`, `<sa-field-content>`, `<sa-field-description>`, … | Renders a field that groups a form control with its label, description and error message. |
 | [FormSection](components/form-section.md) | `<sa-form-section>` | Renders a group of form content under a heading with an optional description. |
 | [Grid](components/grid.md) | `<sa-grid>`, `<sa-grid-item>` | Lays out fields and other content in responsive columns. |

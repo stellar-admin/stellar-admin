@@ -98,6 +98,7 @@ internal static class DemoNavigation
             "Feedback",
             [
                 new DemoItem("Alert", "/Alert/Index"),
+                new DemoItem("Environment Indicator", "/EnvironmentIndicator/Index"),
                 new DemoItem("Progress", "/Progress/Index"),
                 new DemoItem("Skeleton", "/Skeleton/Index"),
                 new DemoItem("Spinner", "/Spinner/Index"),
