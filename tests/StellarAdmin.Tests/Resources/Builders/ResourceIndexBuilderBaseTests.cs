@@ -55,6 +55,7 @@ public class ResourceIndexBuilderBaseTests
         // Arrange
         var services = new ServiceCollection();
         var resource = services.AddStellarAdmin().AddResource<Product>();
+        resource.UseKey(product => product.Id);
 
         // Act
         resource.Index(index =>

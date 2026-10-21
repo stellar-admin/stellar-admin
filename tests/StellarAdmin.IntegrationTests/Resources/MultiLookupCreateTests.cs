@@ -133,7 +133,7 @@ public class MultiLookupCreateTests
     }
 
     [Test]
-    public async Task LookupSheet_NoResourceForItems_Throws()
+    public async Task LookupSheet_NoResourceForItems_LogsProblem()
     {
         // Arrange
         await using var sut = await CreateHost(
@@ -149,12 +149,17 @@ public class MultiLookupCreateTests
         using var response = await client.GetAsync(LookupSheetUrl);
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains(
-                "MultiLookupSheetEditor on CategoryIds enables create, but no resource is registered for Category."
-            );
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "MultiLookupSheetEditor on CategoryIds enables create, but no resource is registered for Category."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

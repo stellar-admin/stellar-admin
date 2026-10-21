@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
@@ -852,7 +853,7 @@ public class ChoiceEditorTests
     }
 
     [Test]
-    public async Task ChoiceEditor_WithoutItemsOnStringProperty_FailsRendering()
+    public async Task ChoiceEditor_WithoutItemsOnStringProperty_LogsProblem()
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
@@ -864,10 +865,15 @@ public class ChoiceEditorTests
         using var response = await client.GetAsync("/stellaradmin/products/create");
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains("SelectEditor on Seat requires UseItems");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains("'Seat' uses SelectEditor, which requires UseItems")
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

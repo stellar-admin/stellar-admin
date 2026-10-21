@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 
 namespace StellarAdmin.Resources.Editors;
 
@@ -227,7 +228,8 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
             return [new("true", "Yes"), new("false", "No")];
         }
 
-        throw new InvalidOperationException(
+        throw new ConfigurationException(
+            ConfigurationProblemKind.UnsuitableEditor,
             $"{GetType().Name} on {metadata.PropertyName} requires UseItems unless the property is a non-flags enum or a Boolean."
         );
     }

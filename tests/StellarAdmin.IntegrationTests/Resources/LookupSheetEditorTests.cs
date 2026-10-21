@@ -544,7 +544,7 @@ public class LookupSheetEditorTests
     }
 
     [Test]
-    public async Task WithoutItems_FailsRendering()
+    public async Task WithoutItems_LogsProblem()
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
@@ -557,10 +557,17 @@ public class LookupSheetEditorTests
         using var response = await client.GetAsync("/stellaradmin/products/create");
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains("LookupSheetEditor on CategoryId requires UseItems.");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "'CategoryId' uses LookupSheetEditor, which requires UseItems."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

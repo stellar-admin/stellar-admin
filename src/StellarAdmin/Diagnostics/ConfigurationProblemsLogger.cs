@@ -29,13 +29,7 @@ internal sealed class ConfigurationProblemsLogger(
         var logger = loggerFactory.CreateLogger(Category);
         foreach (var problem in found.Where(problem => !problem.IsLoggedElsewhere))
         {
-            logger.LogWarning(
-                problem.EventId,
-                "Configuration problem in {Resource}: {Problem} {Outcome}",
-                problem.Resource ?? "the admin panel",
-                problem.Message,
-                problem.Outcome
-            );
+            ConfigurationProblems.Log(logger, problem);
         }
 
         return Task.CompletedTask;

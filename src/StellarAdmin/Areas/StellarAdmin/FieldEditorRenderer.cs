@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Areas.StellarAdmin;
@@ -23,7 +25,8 @@ internal static class FieldEditorRenderer
         {
             explorer =
                 explorer.GetExplorerForProperty(property.Name)
-                ?? throw new InvalidOperationException(
+                ?? throw new ConfigurationException(
+                    ConfigurationProblemKind.InvalidSelector,
                     $"{explorer.ModelType.Name} has no property {property.Name} for the field '{field.FieldName}'."
                 );
         }
@@ -61,5 +64,48 @@ internal static class FieldEditorRenderer
         );
 
         return helper.Editor(string.Empty, templateName, additionalViewData);
+    }
+
+    // Renders a field, leaving it out when its configuration only fails as it renders, and reporting why
+    public static IHtmlContent Guard(IHtmlHelper html, Func<IHtmlContent> render)
+    {
+        try
+        {
+            return render();
+        }
+        catch (ConfigurationException exception)
+        {
+            Report(html, exception);
+
+            return HtmlString.Empty;
+        }
+    }
+
+    public static async Task<IHtmlContent> GuardAsync(
+        IHtmlHelper html,
+        Func<Task<IHtmlContent>> render
+    )
+    {
+        try
+        {
+            return await render();
+        }
+        catch (ConfigurationException exception)
+        {
+            Report(html, exception);
+
+            return HtmlString.Empty;
+        }
+    }
+
+    private static void Report(IHtmlHelper html, ConfigurationException exception)
+    {
+        var httpContext = html.ViewContext.HttpContext;
+        httpContext
+            .RequestServices.GetRequiredService<ConfigurationProblems>()
+            .Report(
+                exception.ToProblem("The field is left out of the page."),
+                httpContext.GetRouteValue("controller") as string
+            );
     }
 }

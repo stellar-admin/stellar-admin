@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
+using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI.Icons;
 
@@ -49,6 +50,38 @@ public class ConfigurationProblemsTests
         await Assert
             .That(logs.ConfigurationProblems.Single().Message)
             .Contains("InvalidOperationException: Broken catalog");
+    }
+
+    [Test]
+    public async Task EditorWithAnotherEditorsTemplate_LeavesFieldOutAndReportsIt()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            resource =>
+                resource.AllowCreate(create =>
+                    create.Fields(fields =>
+                    {
+                        fields.Add(product => product.Name).UseEditor<MismatchedEditor>();
+                        fields.Add(product => product.Price);
+                    })
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var first = await client.GetDocumentAsync("/stellaradmin/products/create");
+        var second = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(first.QuerySelector("[name='Entity.Name']")).IsNull();
+        await Assert.That(first.QuerySelector("[name='Entity.Price']")).IsNotNull();
+        await Assert
+            .That(first.TextContents(".sa-configuration-problem-message").Single())
+            .Contains("MismatchedEditor is not supported by a template for TextInputEditor.");
+        await Assert.That(second.TextContents(".sa-configuration-problem-message")).HasCount(1);
+        await Assert.That(logs.ConfigurationProblems).HasCount(1);
     }
 
     [Test]
@@ -215,5 +248,10 @@ public class ConfigurationProblemsTests
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert.That(logs.ConfigurationProblems).IsEmpty();
+    }
+
+    private sealed class MismatchedEditor : FieldEditor
+    {
+        public override string TemplateName => "Editors/TextInput";
     }
 }

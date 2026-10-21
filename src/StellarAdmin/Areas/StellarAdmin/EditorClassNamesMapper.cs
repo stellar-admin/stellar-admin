@@ -1,3 +1,4 @@
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.UI;
 
@@ -9,7 +10,8 @@ internal static class EditorClassNamesMapper
     {
         if (editor is not null && editor is not CheckboxGroupEditor)
         {
-            throw new InvalidOperationException(
+            throw new ConfigurationException(
+                ConfigurationProblemKind.TemplateMismatch,
                 $"{editor.GetType().Name} is not supported by a checkbox group editor."
             );
         }
@@ -94,7 +96,8 @@ internal static class EditorClassNamesMapper
     {
         if (editor is not null && editor is not RadioGroupEditor)
         {
-            throw new InvalidOperationException(
+            throw new ConfigurationException(
+                ConfigurationProblemKind.TemplateMismatch,
                 $"{editor.GetType().Name} is not supported by a radio editor."
             );
         }
@@ -109,7 +112,8 @@ internal static class EditorClassNamesMapper
 
         if (classes.Content is not null || classes.Option.Error is not null)
         {
-            throw new InvalidOperationException(
+            throw new ConfigurationException(
+                ConfigurationProblemKind.TemplateMismatch,
                 "Radio editors have no outer Content or per-option Error element. Use Option.Content or Error instead."
             );
         }

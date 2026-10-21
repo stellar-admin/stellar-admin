@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
@@ -145,7 +146,7 @@ public class InputEditorTests
     [Test]
     [Arguments(typeof(CheckboxEditor))]
     [Arguments(typeof(ToggleEditor))]
-    public async Task UseEditor_BooleanEditorOnNullableBoolean_FailsRendering(Type editorType)
+    public async Task UseEditor_BooleanEditorOnNullableBoolean_LogsProblem(Type editorType)
     {
         // Arrange
         await using var sut = await CreateInputFieldsHost(fields =>
@@ -166,10 +167,17 @@ public class InputEditorTests
         using var response = await client.GetAsync("/stellaradmin/products/create");
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains($"{editorType.Name} on OptionalInsured requires a non-nullable Boolean");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        $"'OptionalInsured' uses {editorType.Name}, which requires a non-nullable Boolean"
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]

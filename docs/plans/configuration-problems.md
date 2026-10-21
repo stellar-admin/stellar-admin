@@ -1,6 +1,6 @@
 # Configuration problems without startup failures
 
-Status: in progress on the `configuration-problems` branch (2026-10-21). Phase 1, the [inventory](#inventory), is reviewed. Phases 2 (the model) and 3 (the presentation) are built and verified, and the AdminPlayground part of phase 5 is done early. Phase 4, request-time errors, is next. The prototype is `sandbox/html/config-problems.html`. The presentation and the public API are settled (see [Decisions](#decisions)).
+Status: in progress on the `configuration-problems` branch (2026-10-21). Phase 1, the [inventory](#inventory), is reviewed. Phases 1 to 3 are committed (6245b5a). Phase 4, request-time errors, is built and verified, and the AdminPlayground part of phase 5 is done. What remains: the rest of phase 5 (most of its integration tests already exist) and phase 6, the consumer guidance. The prototype is `sandbox/html/config-problems.html`. The presentation and the public API are settled (see [Decisions](#decisions)).
 
 ## Goal
 
@@ -206,6 +206,16 @@ Built 2026-10-21:
 - A turned-off resource's routes render `ResourceOff.cshtml` in Development (in the admin layout, with a 404 status and the reason) and a plain 404 elsewhere.
 - AdminPlayground has a deliberately misconfigured set behind `Playground:ShowConfigurationProblems` (false in `appsettings.Development.json`; set it to true or run with `Playground__ShowConfigurationProblems=true`): an Excursions resource with a computed column without a title, an unsortable default sort, a page size missing from the page sizes and create without a handler; an EF resource for an unmapped `ExcursionBooking` at `/stellaradmin/excursion-bookings`; and a sidebar link with a blank page.
 
+## Phase 4 notes
+
+Built 2026-10-21:
+
+- Startup checks, in `EditorCheck` and `RowDetailsCheck`: a checkbox or toggle editor on a property that isn't a non-nullable Boolean, a choice editor without items on a property that isn't a non-flags enum or a Boolean, and a lookup without `UseItems` fall back to the property's default editor (Ignored), or leave the field out when a binder binds it. Radio class names for elements a radio group doesn't have are cleared. Row detail panels that load on demand are left out when the resource has no key.
+- A lookup whose `EnableCreate` has no resource to use (untyped items, no resource for the item type, or one without a create form) is found when the lookup renders, since other resources aren't known while a resource's options are built: the lookup gets no New button, and the problem is reported then.
+- The throws that can still only happen while a page renders (an editor whose template is another editor's, a field path the model lacks, a lookup value of another type than its items, and the editor checks above as a fallback) throw the internal `ConfigurationException`. Form fields and grid cells render through `FieldEditorRenderer.Guard`, which catches it, leaves the field out and reports the problem. Other exceptions, such as an app's handler failing, still fail the request.
+- Problems found while a page renders are added to `ConfigurationProblems`, logged the first time and listed in the indicator from then on, including on the page that found them, since the layout renders after the body.
+- Not changed: request-time argument checks in `ResourceOperationResult` and `FieldBindingContext`, errors from an app's own handlers and data sources (such as `StoreImage` returning no value), and the EF Core data errors (null parent values, null choice values, missing related entities).
+
 ## Decisions
 
 Jerrie, 2026-10-21:
@@ -226,5 +236,7 @@ Jerrie, 2026-10-21:
 Phase 2, 2026-10-21, on the branch: the solution builds with no new warnings. Admin panel unit tests 282/282, admin panel integration tests 620/620 (including the new `Diagnostics/ConfigurationProblemsTests`: a broken resource returns 404 and leaves the sidebar while the others work, a problem is logged once with its event ID, `ThrowOnProblems` fails startup listing every problem, and a valid configuration logs nothing), UI unit tests 732/732. EF Core integration tests 121/121 after the EF conversion: an unmapped entity or unsupported key turns the resource off, and unsupported form fields, many-to-many fields with a single-value editor and sortable collection columns are left out or unsorted, each logged. The solution-wide `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1` passed 1774/1774. Tests that expected exceptions now check the repaired options and the reported problem.
 
 Phase 3, 2026-10-21: the solution-wide test command passed 1780/1780, including integration tests that the indicator renders only in Development with `ShowIndicator` on, lists problems by resource with Open links, renders nothing for a valid configuration, and that a turned-off resource shows its reason in Development. Headless Chromium screenshots of AdminPlayground with the misconfigured set (port 5208, stopped afterwards): light and dark, the sheet open in both, the frame and banner indicators, the collapsed sidebar, 390px phone width, the ops, soft and ledger theme fixtures, and the turned-off resource page. One fix from them: the pill showed above the sheet's backdrop, so it now hides while a modal is open.
+
+Phase 4, 2026-10-21: the solution-wide test command passed 1784/1784. Tests that expected a 500 for these mistakes now expect the page and a logged problem; new tests cover the editor check and an editor rendered with another editor's template (left out of the form, reported once, listed in the indicator).
 
 Earlier: The prototype was checked in headless Chromium: all eight floating styles in light mode, the ink pill in dark mode with the frame indicator at bottom centre, the bubble expanded, and the panel and sheet open.

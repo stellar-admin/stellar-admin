@@ -59,9 +59,11 @@ internal sealed class ResourceOptionsFactory<TResource>(
         FieldBinderCheck.Run(options);
         ImageEditorCheck.Run(options);
         IconEditorCheck.Run(options, icons);
+        EditorCheck.Run(options);
         GridLayoutCheck.Run(options);
         ResourceHandlerCheck.RunViewFields(options);
         InlineRowCheck.Run(options);
+        RowDetailsCheck.Run(options);
         AddAnotherCheck.Run(options);
         ResourceIndexCheck.Run(options);
     }

@@ -39,8 +39,9 @@
                     },
                 };
 
-                // A field with a binder edits the binder's value in place of its property's
-                @(field.Binder is null
+                // A field with a binder edits the binder's value in place of its property's. A field whose configuration
+                // only fails as it renders is left out.
+                @FieldEditorRenderer.Guard(Html, () => field.Binder is null
                     ? Html.Editor(field.FieldName, templateName, fieldViewData)
                     : FieldEditorRenderer.RenderFormEditor(Html, field, Model!, templateName, fieldViewData))
             }

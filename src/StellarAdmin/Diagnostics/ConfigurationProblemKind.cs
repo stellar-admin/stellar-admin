@@ -47,9 +47,14 @@ internal enum ConfigurationProblemKind
     InvalidValue = 1055,
     StaleModelBuilder = 1056,
 
+    UnsuitableEditor = 1057,
+    TemplateMismatch = 1058,
+    LookupCreateUnavailable = 1059,
+
     RowDetailsWithoutPanels = 1060,
     RowDetailPanelWithoutName = 1061,
     RepeatedRowDetailPanel = 1062,
+    RowDetailsWithoutKey = 1063,
 
     WordmarkWithSubtitle = 1070,
     InvalidLink = 1071,

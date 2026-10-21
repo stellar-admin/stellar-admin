@@ -365,7 +365,7 @@ public class MultiLookupSheetEditorTests
     }
 
     [Test]
-    public async Task WithoutItems_FailsRendering()
+    public async Task WithoutItems_LogsProblem()
     {
         // Arrange
         await using var sut = await CreateHost(
@@ -378,10 +378,17 @@ public class MultiLookupSheetEditorTests
         using var response = await client.GetAsync(EditUrl);
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains("MultiLookupSheetEditor on CategoryIds requires UseItems.");
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "'CategoryIds' uses MultiLookupSheetEditor, which requires UseItems."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     [Test]
