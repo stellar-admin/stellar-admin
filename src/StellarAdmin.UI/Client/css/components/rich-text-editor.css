@@ -1,0 +1,472 @@
+/* Rich text editor: a toolbar over a ProseMirror content area, drawn like the textarea, with the
+   selection bubble, slash menu, table handles and image node view. ProseKit's own stylesheet isn't
+   used: the structural rules it needs are here, in the layer, so themes and our rules win.
+   Replaces: .sa-rich-text-editor, .sa-rich-text-editor-toolbar, .sa-rich-text-editor-content,
+   .sa-rich-text-editor-note, .sa-rich-text-editor-image, .sa-rich-text-editor-image-handle,
+   .sa-rich-text-editor-image-progress, .sa-rich-text-editor-bubble, .sa-rich-text-editor-menu,
+   .sa-rich-text-editor-menu-empty, .sa-rich-text-editor-table-handle, .sa-rich-text-editor-table-grip,
+   .sa-rich-text-editor-link-form */
+
+@layer sa.components {
+  .sa-rich-text-editor {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
+    border-radius: var(--sa-radius-box);
+    background: var(--sa-color-field);
+    background-clip: padding-box;
+    box-shadow: var(--sa-shadow-control);
+    color: var(--sa-color-ink);
+    transition:
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    &:hover:not(:focus-within) {
+      border-color: var(--sa-color-line-control-hover);
+    }
+    &:has(> [data-slot="rich-text-editor-content"]:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-shadow-control), var(--sa-focus-shadow-field);
+    }
+    &:has(> textarea:is([aria-invalid="true"], .input-validation-error)) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--sa-shadow-control), var(--sa-invalid-shadow);
+      &:has(> [data-slot="rich-text-editor-content"]:focus-visible) {
+        box-shadow: var(--sa-shadow-control), var(--sa-invalid-focus-shadow);
+      }
+    }
+
+    /* Until the script has loaded, the textarea is the field: the HTML as text, still posted. */
+    &:not(:defined) {
+      border: 0;
+      background: none;
+      box-shadow: none;
+      & > :not(textarea) {
+        display: none;
+      }
+    }
+    &:defined > textarea {
+      display: none;
+    }
+  }
+
+  .sa-rich-text-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(0.5 * var(--sa-unit));
+    padding: var(--sa-unit);
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+    background: var(--sa-color-surface-subtle);
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+
+    & > .sa-separator-vertical {
+      align-self: stretch;
+      height: auto;
+      margin: var(--sa-unit) calc(0.5 * var(--sa-unit));
+    }
+    & [data-slot="rich-text-editor-block-label"] {
+      min-width: 5.5rem;
+      text-align: start;
+    }
+    & [data-slot="rich-text-editor-block-menu"] {
+      min-width: 12rem;
+    }
+  }
+
+  .sa-rich-text-editor-content {
+    position: relative;
+    min-height: calc(var(--_rows, 8) * 1lh + 6 * var(--sa-unit));
+    max-height: 32rem;
+    overflow-y: auto;
+    padding: calc(3 * var(--sa-unit)) calc(4 * var(--sa-unit));
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-body);
+    outline: none;
+    word-wrap: break-word;
+    white-space: break-spaces;
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0;
+
+    & > * + * {
+      margin-top: 0.75em;
+    }
+    & > :first-child {
+      margin-top: 0;
+    }
+    & h1,
+    & h2,
+    & h3 {
+      font-family: var(--sa-font-heading);
+      font-weight: var(--sa-weight-heading);
+      line-height: 1.25;
+    }
+    & h1 {
+      margin-top: 1em;
+      font-size: 1.6em;
+    }
+    & h2 {
+      margin-top: 1em;
+      font-size: 1.3em;
+    }
+    & h3 {
+      margin-top: 1em;
+      font-size: 1.1em;
+    }
+    & a {
+      color: var(--sa-color-accent-text);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    & code {
+      padding: 0.1em 0.3em;
+      border-radius: var(--sa-radius-tag);
+      background: var(--sa-color-surface-sunken);
+      font-family: var(--sa-font-mono);
+      font-size: 0.875em;
+    }
+    & pre {
+      padding: calc(3 * var(--sa-unit));
+      border-radius: var(--sa-radius-item);
+      background: var(--sa-color-surface-sunken);
+      font-family: var(--sa-font-mono);
+      font-size: 0.875em;
+      white-space: pre-wrap;
+      & code {
+        padding: 0;
+        background: none;
+        font-size: inherit;
+      }
+    }
+    & blockquote {
+      padding-inline-start: calc(3 * var(--sa-unit));
+      border-inline-start: 3px solid var(--sa-color-line-control);
+      color: var(--sa-color-ink-muted);
+    }
+    & hr {
+      margin-block: 1.25em;
+      border: 0;
+      border-top: var(--sa-border-width) solid var(--sa-color-line);
+      &.ProseMirror-selectednode {
+        outline-offset: 4px;
+      }
+    }
+    & .ProseMirror-selectednode {
+      outline: 2px solid var(--sa-color-accent);
+    }
+    & [draggable][contenteditable="false"] {
+      user-select: text;
+    }
+    & img.ProseMirror-separator {
+      display: inline;
+      margin: 0;
+      border: none;
+    }
+
+    /* The placeholder of an empty document */
+    & .prosekit-placeholder::before {
+      content: attr(data-placeholder);
+      position: absolute;
+      height: 0;
+      color: var(--sa-color-ink-placeholder);
+      pointer-events: none;
+    }
+
+    /* Lists are ProseKit's flat lists while editing: a marker beside each item's content. */
+    & .prosemirror-flat-list {
+      position: relative;
+      margin-inline-start: 0.25em;
+      padding: 0;
+      list-style: none;
+      & + .prosemirror-flat-list {
+        margin-top: 0.25em;
+      }
+      & > .list-marker {
+        position: absolute;
+        inset-inline-start: 0;
+        width: 1lh;
+        height: 1lh;
+        text-align: center;
+      }
+      & > .list-content {
+        margin-inline-start: 1lh;
+      }
+      &[data-list-kind="bullet"] > .list-marker {
+        background-color: currentColor;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3C/svg%3E")
+          center / contain no-repeat;
+      }
+      &[data-list-kind="ordered"] {
+        counter-increment: sa-rich-text-list;
+        & > * {
+          contain: style;
+        }
+        &::before {
+          content: counter(sa-rich-text-list, decimal) ". ";
+          position: absolute;
+          inset-inline-end: calc(100% - 1lh);
+          font-variant-numeric: tabular-nums;
+        }
+        &[data-list-order] {
+          counter-set: sa-rich-text-list var(--prosemirror-flat-list-order);
+        }
+      }
+      &[data-list-kind="ordered"]:first-child,
+      :not(&[data-list-kind="ordered"]) + &[data-list-kind="ordered"] {
+        counter-reset: sa-rich-text-list;
+      }
+    }
+
+    & .tableWrapper {
+      overflow-x: auto;
+    }
+    & table {
+      width: 100%;
+      overflow: hidden;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    & th,
+    & td {
+      position: relative;
+      padding: calc(1.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
+      border: var(--sa-border-width) solid var(--sa-color-line);
+      vertical-align: top;
+      text-align: start;
+    }
+    & th {
+      background: var(--sa-color-surface-subtle);
+      font-weight: 600;
+    }
+    & .selectedCell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: color-mix(in oklab, var(--sa-color-accent) 12%, transparent);
+      pointer-events: none;
+    }
+    & .column-resize-handle {
+      position: absolute;
+      top: 0;
+      right: -2px;
+      bottom: 0;
+      z-index: 20;
+      width: 3px;
+      background: var(--sa-color-accent);
+      pointer-events: none;
+    }
+    &.resize-cursor {
+      cursor: col-resize;
+    }
+
+    & .ProseMirror-gapcursor {
+      position: relative;
+      display: none;
+      pointer-events: none;
+      &::after {
+        content: "";
+        position: absolute;
+        top: -2px;
+        display: block;
+        width: 20px;
+        border-top: 1px solid;
+        animation: sa-rich-text-caret 1.1s steps(2, start) infinite;
+      }
+    }
+    &.ProseMirror-focused .ProseMirror-gapcursor {
+      display: block;
+    }
+  }
+  .ProseMirror-hideselection {
+    caret-color: transparent;
+    & ::selection {
+      background: none;
+    }
+  }
+
+  .sa-rich-text-editor-note {
+    padding: var(--sa-unit) calc(4 * var(--sa-unit));
+    border-top: var(--sa-border-width) solid var(--sa-color-line);
+    color: var(--sa-color-danger-text);
+    font-size: var(--sa-text-sm);
+  }
+
+  .sa-rich-text-editor-image {
+    position: relative;
+    display: inline-flex;
+    max-width: 100%;
+    vertical-align: bottom;
+
+    & img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--sa-radius-item);
+    }
+    &[data-selected] img {
+      outline: 2px solid var(--sa-color-accent);
+      outline-offset: 2px;
+    }
+  }
+  .sa-rich-text-editor-image-handle {
+    position: absolute;
+    inset-block-end: calc(1.5 * var(--sa-unit));
+    inset-inline-end: calc(1.5 * var(--sa-unit));
+    width: calc(3 * var(--sa-unit));
+    height: calc(3 * var(--sa-unit));
+    border: 2px solid var(--sa-color-surface);
+    border-radius: var(--sa-radius-round);
+    background: var(--sa-color-accent);
+    cursor: nwse-resize;
+    opacity: 0;
+    transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
+
+    .sa-rich-text-editor-image:is(:hover, [data-selected], [data-resizing]) & {
+      opacity: 1;
+    }
+  }
+  .sa-rich-text-editor-image-progress {
+    position: absolute;
+    inset-block-end: calc(2 * var(--sa-unit));
+    inset-inline-start: calc(2 * var(--sa-unit));
+    padding: calc(0.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+    border-radius: var(--sa-radius-round);
+    background: var(--sa-color-scrim);
+    color: white;
+    font-size: var(--sa-text-xs);
+  }
+
+  /* ProseKit's popups: it positions them and sets data-state while they're open. */
+  :is(
+    prosekit-autocomplete-root,
+    prosekit-table-handle-root,
+    prosekit-table-handle-column-menu-root,
+    prosekit-table-handle-row-menu-root
+  ) {
+    display: contents;
+  }
+  :is(
+    prosekit-autocomplete-positioner,
+    prosekit-menu-positioner,
+    prosekit-inline-popover-positioner,
+    prosekit-table-handle-column-positioner,
+    prosekit-table-handle-row-positioner
+  ) {
+    z-index: 50;
+    &:not([data-state]) {
+      display: none;
+    }
+  }
+
+  /* The selection bubble's controls are toggles. */
+  .sa-rich-text-editor-bubble {
+    display: flex;
+    align-items: center;
+    gap: calc(0.5 * var(--sa-unit));
+    padding: calc(0.5 * var(--sa-unit));
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-overlay);
+    background: var(--sa-color-surface-raised);
+    box-shadow: var(--sa-shadow-overlay);
+
+    &:not([data-state="open"]) {
+      display: none;
+    }
+    & > .sa-separator-vertical {
+      align-self: stretch;
+      height: auto;
+      margin: var(--sa-unit) calc(0.5 * var(--sa-unit));
+    }
+  }
+
+  /* The slash menu and the table handle menus, drawn as dropdown menus with their item rows. */
+  .sa-rich-text-editor-menu {
+    --_highlight-bg: var(--sa-color-highlight);
+    --_highlight-fg: var(--sa-color-on-highlight);
+    display: flex;
+    flex-direction: column;
+    min-width: 15rem;
+    max-height: 20rem;
+    overflow-y: auto;
+    padding: var(--sa-space-overlay);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-overlay);
+    background: var(--sa-color-surface-raised);
+    box-shadow: var(--sa-shadow-overlay);
+    color: var(--sa-color-ink);
+
+    &:not([data-state="open"]),
+    & [hidden] {
+      display: none;
+    }
+    & .sa-dropdown-menu-item {
+      cursor: pointer;
+    }
+  }
+  .sa-rich-text-editor-menu-empty {
+    padding: var(--sa-space-item-y) var(--sa-space-item-x);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-body);
+  }
+
+  /* Table handles: a grip on the hovered column's top edge and the hovered row's start edge. */
+  .sa-rich-text-editor-table-handle {
+    display: flex;
+    &[data-axis="column"] {
+      transform: translateY(50%);
+    }
+    &[data-axis="row"] {
+      transform: translateX(50%);
+    }
+  }
+  .sa-rich-text-editor-table-grip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
+    border-radius: var(--sa-radius-tag);
+    background: var(--sa-color-surface-raised);
+    box-shadow: var(--sa-shadow-control);
+    color: var(--sa-color-ink-muted);
+    cursor: grab;
+    transition:
+      background-color var(--sa-motion-fast) var(--sa-motion-ease),
+      color var(--sa-motion-fast) var(--sa-motion-ease);
+
+    & svg {
+      width: calc(3.5 * var(--sa-unit));
+      height: calc(3.5 * var(--sa-unit));
+    }
+    &:hover,
+    &[data-state="open"],
+    &[aria-expanded="true"] {
+      border-color: var(--sa-color-accent);
+      background: var(--sa-color-accent);
+      color: var(--sa-color-on-accent);
+    }
+    [data-axis="column"] & {
+      width: calc(6 * var(--sa-unit));
+      height: calc(4 * var(--sa-unit));
+    }
+    [data-axis="row"] & {
+      width: calc(4 * var(--sa-unit));
+      height: calc(6 * var(--sa-unit));
+    }
+  }
+  prosekit-table-handle-drop-indicator {
+    background: var(--sa-color-accent);
+  }
+
+  .sa-rich-text-editor-link-form {
+    display: flex;
+    gap: var(--sa-unit);
+  }
+}
+
+@keyframes sa-rich-text-caret {
+  to {
+    visibility: hidden;
+  }
+}

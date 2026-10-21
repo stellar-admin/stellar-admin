@@ -199,4 +199,159 @@ public enum SemanticIconRole
     ///     A finished checklist item.
     /// </summary>
     ChecklistDone,
+
+    /// <summary>
+    ///     An action that undoes the last change in a rich text editor.
+    /// </summary>
+    RichTextUndo,
+
+    /// <summary>
+    ///     An action that redoes the last undone change in a rich text editor.
+    /// </summary>
+    RichTextRedo,
+
+    /// <summary>
+    ///     Bold text in a rich text editor.
+    /// </summary>
+    RichTextBold,
+
+    /// <summary>
+    ///     Italic text in a rich text editor.
+    /// </summary>
+    RichTextItalic,
+
+    /// <summary>
+    ///     Underlined text in a rich text editor.
+    /// </summary>
+    RichTextUnderline,
+
+    /// <summary>
+    ///     Struck-through text in a rich text editor.
+    /// </summary>
+    RichTextStrikethrough,
+
+    /// <summary>
+    ///     Inline code in a rich text editor.
+    /// </summary>
+    RichTextCode,
+
+    /// <summary>
+    ///     A bulleted list in a rich text editor.
+    /// </summary>
+    RichTextBulletedList,
+
+    /// <summary>
+    ///     A numbered list in a rich text editor.
+    /// </summary>
+    RichTextNumberedList,
+
+    /// <summary>
+    ///     A quote in a rich text editor.
+    /// </summary>
+    RichTextQuote,
+
+    /// <summary>
+    ///     A code block in a rich text editor.
+    /// </summary>
+    RichTextCodeBlock,
+
+    /// <summary>
+    ///     A link in a rich text editor.
+    /// </summary>
+    RichTextLink,
+
+    /// <summary>
+    ///     An action that removes a link in a rich text editor.
+    /// </summary>
+    RichTextUnlink,
+
+    /// <summary>
+    ///     An action that inserts an image in a rich text editor.
+    /// </summary>
+    RichTextImage,
+
+    /// <summary>
+    ///     An action that inserts a table in a rich text editor.
+    /// </summary>
+    RichTextTable,
+
+    /// <summary>
+    ///     An action that inserts a divider in a rich text editor.
+    /// </summary>
+    RichTextDivider,
+
+    /// <summary>
+    ///     Plain paragraph text in a rich text editor.
+    /// </summary>
+    RichTextParagraph,
+
+    /// <summary>
+    ///     A first-level heading in a rich text editor.
+    /// </summary>
+    RichTextHeading1,
+
+    /// <summary>
+    ///     A second-level heading in a rich text editor.
+    /// </summary>
+    RichTextHeading2,
+
+    /// <summary>
+    ///     A third-level heading in a rich text editor.
+    /// </summary>
+    RichTextHeading3,
+
+    /// <summary>
+    ///     The handle that selects, moves and opens the menu of a table column in a rich text editor.
+    /// </summary>
+    RichTextColumnHandle,
+
+    /// <summary>
+    ///     The handle that selects, moves and opens the menu of a table row in a rich text editor.
+    /// </summary>
+    RichTextRowHandle,
+
+    /// <summary>
+    ///     An action that inserts a table column before the current one in a rich text editor.
+    /// </summary>
+    RichTextInsertColumnBefore,
+
+    /// <summary>
+    ///     An action that inserts a table column after the current one in a rich text editor.
+    /// </summary>
+    RichTextInsertColumnAfter,
+
+    /// <summary>
+    ///     An action that inserts a table row above the current one in a rich text editor.
+    /// </summary>
+    RichTextInsertRowAbove,
+
+    /// <summary>
+    ///     An action that inserts a table row below the current one in a rich text editor.
+    /// </summary>
+    RichTextInsertRowBelow,
+
+    /// <summary>
+    ///     A table's header column in a rich text editor.
+    /// </summary>
+    RichTextHeaderColumn,
+
+    /// <summary>
+    ///     A table's header row in a rich text editor.
+    /// </summary>
+    RichTextHeaderRow,
+
+    /// <summary>
+    ///     An action that merges table cells in a rich text editor.
+    /// </summary>
+    RichTextMergeCells,
+
+    /// <summary>
+    ///     An action that splits a merged table cell in a rich text editor.
+    /// </summary>
+    RichTextSplitCell,
+
+    /// <summary>
+    ///     An action that clears the contents of table cells in a rich text editor.
+    /// </summary>
+    RichTextClearCells,
 }

@@ -1328,6 +1328,37 @@ StellarAdmin.UI.Icons.SemanticIconRole.CarouselNext = 2 -> StellarAdmin.UI.Icons
 StellarAdmin.UI.Icons.SemanticIconRole.CarouselPrevious = 3 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.CheckboxSelected = 4 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.ChecklistDone = 38 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextUndo = 39 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextRedo = 40 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextBold = 41 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextItalic = 42 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextUnderline = 43 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextStrikethrough = 44 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextCode = 45 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextBulletedList = 46 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextNumberedList = 47 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextQuote = 48 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextCodeBlock = 49 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextLink = 50 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextUnlink = 51 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextImage = 52 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextTable = 53 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextDivider = 54 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextParagraph = 55 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextHeading1 = 56 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextHeading2 = 57 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextHeading3 = 58 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextColumnHandle = 59 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextRowHandle = 60 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextInsertColumnBefore = 61 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextInsertColumnAfter = 62 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextInsertRowAbove = 63 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextInsertRowBelow = 64 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextHeaderColumn = 65 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextHeaderRow = 66 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextMergeCells = 67 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextSplitCell = 68 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.RichTextClearCells = 69 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.ChecklistInProgress = 37 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.ChecklistTodo = 36 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.ChoiceSelected = 5 -> StellarAdmin.UI.Icons.SemanticIconRole
@@ -2491,3 +2522,27 @@ virtual StellarAdmin.UI.FieldInputBaseTagHelper.FieldClasses.get -> StellarAdmin
 virtual StellarAdmin.UI.StellarAdminTagHelperBase.OnInit(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context) -> void
 ~override StellarAdmin.UI.GridTiers.Equals(object obj) -> bool
 ~override StellarAdmin.UI.GridTiers.ToString() -> string
+StellarAdmin.UI.RichTextEditorClassNames
+StellarAdmin.UI.RichTextEditorClassNames.Control.get -> string?
+StellarAdmin.UI.RichTextEditorClassNames.Control.set -> void
+StellarAdmin.UI.RichTextEditorClassNames.Editor.get -> string?
+StellarAdmin.UI.RichTextEditorClassNames.Editor.set -> void
+StellarAdmin.UI.RichTextEditorClassNames.RichTextEditorClassNames() -> void
+StellarAdmin.UI.RichTextEditorClassNames.Toolbar.get -> string?
+StellarAdmin.UI.RichTextEditorClassNames.Toolbar.set -> void
+StellarAdmin.UI.RichTextEditorTagHelper
+StellarAdmin.UI.RichTextEditorTagHelper.Accept.get -> string?
+StellarAdmin.UI.RichTextEditorTagHelper.Accept.set -> void
+StellarAdmin.UI.RichTextEditorTagHelper.MaxFileSize.get -> long?
+StellarAdmin.UI.RichTextEditorTagHelper.MaxFileSize.set -> void
+StellarAdmin.UI.RichTextEditorTagHelper.Placeholder.get -> string?
+StellarAdmin.UI.RichTextEditorTagHelper.Placeholder.set -> void
+StellarAdmin.UI.RichTextEditorTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.RichTextEditorTagHelper.ReadOnly.set -> void
+StellarAdmin.UI.RichTextEditorTagHelper.RichTextEditorTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator, Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.Icons.IconOptions!>! iconOptions) -> void
+StellarAdmin.UI.RichTextEditorTagHelper.Rows.get -> int?
+StellarAdmin.UI.RichTextEditorTagHelper.Rows.set -> void
+StellarAdmin.UI.RichTextEditorTagHelper.UploadUrl.get -> string?
+StellarAdmin.UI.RichTextEditorTagHelper.UploadUrl.set -> void
+StellarAdmin.UI.RichTextEditorTagHelper.Value.get -> string?
+StellarAdmin.UI.RichTextEditorTagHelper.Value.set -> void

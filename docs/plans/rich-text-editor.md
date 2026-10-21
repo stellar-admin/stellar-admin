@@ -15,11 +15,24 @@ Explore the options first, then propose the approach and public API to Jerrie be
 - Decision 1: the admin panel depends on `HtmlSanitizer` (Ganss.Xss, MIT) and sanitizes the HTML on save and on display by default, with a hook to replace it.
 - Decision 2: every tool is on in the first version (images only with uploads). A tools flags enum waits until an app asks for it.
 - Decision 3: fix toggle tooltips in the library first, as its own change (see Follow-ups).
+- Not in the proposal, following the library's conventions: the editor's icons are `SemanticIconRole` members so they follow the icon pack, `RichTextEditorClassNames` has `Control`, `Editor` and `Toolbar`, and `sa-rich-text-editor` takes `readonly` (not `disabled`), as the textarea editor does.
 - Phases, stopping at each boundary: the UI component (tag helper, script, CSS, DocsSamples, tests); the admin panel editor, display and sanitizing; the website docs and consumer skills.
 
 ## Prototype (2026-10-20)
 
 `sandbox/html/rich-text-editor.html` (source in `sandbox/html/rich-text-editor/`): ProseKit with a toolbar of StellarAdmin components, a selection bubble, simulated image uploads with resizing, and the HTML posted through a hidden textarea.
+
+## Phase 1: the UI component (2026-10-21)
+
+Done on the `rich-text-editor` branch:
+
+- `sa-rich-text-editor` (`RichTextEditorTagHelper`, `RichTextEditorClassNames` with `Control`, `Editor` and `Toolbar`) with `accept`, `max-file-size`, `placeholder`, `readonly`, `rows`, `upload-url` and `value`, on the field base. The label names the editing area and the textarea with `aria-labelledby` (no `for`), and the description and error connect to both. Read-only renders no toolbar, menus or upload settings.
+- 31 `SemanticIconRole` members for the editor's icons (`RichTextUndo` to `RichTextClearCells`, appended), mapped in the Lucide and Tabler outline packs. The filled Tabler pack has no filled formatting icons, so it leaves them on the default Lucide mapping.
+- The script, plain JavaScript in `Client/js/rich-text-editor/` (`rich-text-editor.js`, `commands.js`, `images.js`), built by a second Rolldown build to `wwwroot/rich-text-editor.js` (454 KB, 118 KB Brotli), loaded with `ModuleScript`. Beyond the prototype: a value without tags becomes paragraphs (text from before a field became rich text), resized image sizes are restored from the saved HTML (ProseKit reads the rendered size, which a parsed value doesn't have), a divider inserted from an empty block replaces it, an empty document posts an empty value, the textarea fires `input` on changes, uploads are checked against `accept` and `max-file-size` with a note under the editor and a failed upload's image is removed, a click on the label focuses the editor, and Ctrl shows as ⌘ on Apple platforms.
+- The CSS in `Client/css/components/rich-text-editor.css`, with ProseKit's structural rules (flat lists, tables, placeholder, gap cursor, popups) in the layer instead of `prosekit.css`. The invalid state matches the textarea's.
+- DocsSamples `/RichTextEditor` (Intro, Model Binding, Images using the image upload demo endpoint, Read Only), tag helper tests, the product guide's client build paragraph, and the regenerated UI skill component reference and index.
+
+Verified: `npm run check`, the oxfmt check, the Release build of the solution (no new warnings), all 1728 .NET tests including 9 new tag helper tests, and the skills generator drift check after regenerating. Headless Chromium 151 on DocsSamples `/RichTextEditor`: the four editors load `rich-text-editor.js` once and mount with no errors, and `/Textarea` doesn't load it; toolbar state follows the cursor, typing updates the textarea and fires `input`, undo, the block menu (label and focus), the bold tooltip with its shortcut, the selection bubble and its link popover, the slash menu filtering to a table, Tab between cells, the table handles and column menu, an image upload with progress ending in the endpoint's URL, an oversized image rejected with a note, read-only (no toolbar, not editable, readonly textarea), the label click, the divider replacing an empty heading, and two editors inserted later through a parsed fragment (as htmx swaps them) mounting without loading the script again, one turning a plain-text value into paragraphs and one keeping a saved image width. Screenshots in dark and light and at 390px wide (no horizontal scroll) were checked by eye. Not checked yet: an htmx swap in the admin panel (phase 2), other themes and density levels, and image resizing by drag.
 
 ## Loading the editor's assets
 

@@ -48,6 +48,7 @@ internal static class DemoNavigation
                 new DemoItem("Questionnaire", "/Questionnaire/Index"),
                 new DemoItem("Radio", "/Radio/Index"),
                 new DemoItem("Radio Group", "/RadioGroup/Index"),
+                new DemoItem("Rich Text Editor", "/RichTextEditor/Index"),
                 new DemoItem("Select", "/Select/Index"),
                 new DemoItem("Slider", "/Slider/Index"),
                 new DemoItem("Switch", "/Switch/Index"),

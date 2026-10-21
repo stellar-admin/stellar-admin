@@ -67,6 +67,7 @@
   <Target Name="ClientItems">
     <ItemGroup>
       <ClientOutput Include="wwwroot/stellar-admin.js" />
+      <ClientOutput Include="wwwroot/rich-text-editor.js" />
       <ClientOutput Include="wwwroot/stellar-admin.css" />
       <ClientOutput Include="wwwroot/stellar-admin.tailwind.css" />
       <ClientOutput Include="wwwroot/stellar-admin.theme-variables.json" />

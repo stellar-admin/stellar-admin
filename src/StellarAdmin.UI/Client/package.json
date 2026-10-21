@@ -11,7 +11,9 @@
     "fmt:check": "oxfmt --check js"
   },
   "dependencies": {
-    "interestfor": "^1.0.8"
+    "interestfor": "^1.0.8",
+    "prosekit": "^0.22.4",
+    "prosemirror-tables": "^1.8.5"
   },
   "devDependencies": {
     "oxfmt": "^0.36.0",

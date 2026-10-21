@@ -1,0 +1,17 @@
+@page
+@model DocsSamples.Pages.RichTextEditor.Index
+
+<docs-example-wrapper>
+    <docs-example title="Intro">
+        <partial name="_Intro"/>
+    </docs-example>
+    <docs-example title="Model Binding">
+        <partial name="_ModelBinding" for="Model.Guide"/>
+    </docs-example>
+    <docs-example title="Images">
+        <partial name="_Images"/>
+    </docs-example>
+    <docs-example title="Read Only">
+        <partial name="_ReadOnly"/>
+    </docs-example>
+</docs-example-wrapper>

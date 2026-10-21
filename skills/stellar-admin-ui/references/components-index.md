@@ -47,6 +47,7 @@
 | [Progress](components/progress.md) | `<sa-progress>`, `<sa-progress-label>`, `<sa-progress-value>` | Renders a progress bar that shows how far a task has progressed. |
 | [Questionnaire](components/questionnaire.md) | `<sa-questionnaire>`, `<sa-questionnaire-actions>`, `<sa-questionnaire-choice>`, … | Renders a container for one or more questionnaire items. |
 | [RadioGroup](components/radio-group.md) | `<sa-radio-group>`, `<sa-radio-group-item>`, `<sa-radio-group-item-media>` | Renders a group of radio buttons that posts a single value. |
+| [RichTextEditor](components/rich-text-editor.md) | `<sa-rich-text-editor>` | Renders an editor for formatted text, such as headings, lists, links, tables and images, whose value is HTML. |
 | [SegmentedControl](components/segmented-control.md) | `<sa-segmented-control>`, `<sa-segmented-control-item>` | Renders a group of radio buttons as a segmented control. |
 | [Select](components/select.md) | `<sa-select>` | Renders a styled native `<select>` for choosing an option. |
 | [Separator](components/separator.md) | `<sa-separator>` | Renders a thin line between sections of content. |
