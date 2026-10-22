@@ -29,6 +29,7 @@ resource.AllowCreate(create => create.Fields(fields =>
 - A field selects a direct property with a public getter and setter. An EF Core many-to-many navigation is the exception: it needs no setter ([relationships](relationships.md#many-to-many-with-multilookupsheeteditor)). Paths through references (`b => b.Customer.Name`) are only for display fields.
 - The input comes from the property's type and data annotations unless `UseEditor<TEditor>()` chooses one ([editors](editors.md)).
 - Label: `field.Title`, else `[Display(Name)]`, else the raw property name (`DepartureDate`). Add `[Display(Name = "Departure date")]` to the model, or set `Title`, for readable labels.
+- Prefer `[Display(Name)]` for a readable name: validation messages use it too ("The Departure date field is required."). `Title` changes only the label, so the messages of most fields keep the raw property name.
 - Help text: `field.Description`, else `[Display(Description)]`.
 - `fields.Add(selector)` returns the field builder; `fields.Add(selector, field => ...)` returns the fields builder. `fields.Clear()` removes earlier fields.
 - On edit, the key property is never bound, even if configured.
