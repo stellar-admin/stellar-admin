@@ -67,4 +67,7 @@ public sealed class ReferencedResource
 
         return new(typeof(TResource), items.Filters.ToArray(), ConfigurationSource.Capture());
     }
+
+    internal static ReferencedResource Create(Type resourceType, ConfigurationSource? source) =>
+        new(resourceType, [], source);
 }

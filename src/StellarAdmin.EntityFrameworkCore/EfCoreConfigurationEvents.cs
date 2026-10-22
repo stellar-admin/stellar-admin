@@ -20,4 +20,5 @@ internal static class EfCoreConfigurationEvents
         nameof(SortableCollectionColumn)
     );
     public static readonly EventId UnsupportedFormField = new(1085, nameof(UnsupportedFormField));
+    public static readonly EventId UntranslatableTitle = new(1086, nameof(UntranslatableTitle));
 }

@@ -9,7 +9,7 @@ using StellarAdmin.Resources.Editors;
 namespace StellarAdmin.EntityFrameworkCore;
 
 internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
-    : LookupItems,
+    : ResourceReferenceItems,
         IEfCoreLookupReference
     where TContext : DbContext
     where TEntity : class
@@ -78,7 +78,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         {
             return
             [
-                new ChoiceItem(FormatValue(current), _title(reference))
+                new ChoiceItem(FormatValue(current), FormatTitle(_title(reference), current))
                 {
                     Description = _description?.Invoke(reference),
                     Media = CreateMedia(_media?.Invoke(reference)),
@@ -124,30 +124,26 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
             .Prepend(navigation.Name);
     }
 
+    public override async Task<IReadOnlyList<ChoiceItem>> ListAsync(
+        IServiceProvider services,
+        object? model,
+        CancellationToken cancellationToken
+    )
+    {
+        var rows = await Query(services, model, null)
+            .Select(_projection)
+            .ToListAsync(cancellationToken);
+
+        return rows.Select(CreateItem).ToArray();
+    }
+
     public override async Task<LookupResults> SearchAsync(
         IServiceProvider services,
         LookupQuery query,
         CancellationToken cancellationToken
     )
     {
-        IQueryable<TEntity> entities = services
-            .GetRequiredService<TContext>()
-            .Set<TEntity>()
-            .AsNoTracking();
-        foreach (var formFilter in _options.FormFilters)
-        {
-            entities = entities.Where(formFilter(query.Model));
-        }
-
-        if (!string.IsNullOrEmpty(query.Term))
-        {
-            entities = entities.Where(Matches(query.Term));
-        }
-
-        var ordered =
-            _options.OrderQuery?.Invoke(entities) ?? entities.OrderBy(_options.TitleExpression);
-        var rows = await ordered
-            .ThenBy(_options.ValueExpression)
+        var rows = await Query(services, query.Model, query.Term)
             .Skip(query.Skip)
             .Take(query.Take + 1)
             .Select(_projection)
@@ -237,7 +233,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         Convert.ToString(value, CultureInfo.CurrentCulture) ?? "";
 
     private ChoiceItem CreateItem(LookupProjection row) =>
-        new(FormatValue(row.Value), row.Title ?? "")
+        new(FormatValue(row.Value), FormatTitle(row.Title, row.Value))
         {
             Description = row.Description,
             Media = CreateMedia(row.Media),
@@ -279,12 +275,30 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         return foreignKeys is [var single] ? single.DependentToPrincipal : null;
     }
 
-    private Expression<Func<TEntity, bool>> Matches(string term)
+    private string FormatTitle(string? title, TValue value) =>
+        string.IsNullOrEmpty(title) && _options.TitlesFallBackToValue
+            ? Convert.ToString(value, CultureInfo.InvariantCulture) ?? ""
+            : title ?? "";
+
+    private Expression<Func<TEntity, bool>>? Matches(string term)
     {
         // A captured term is sent as a query parameter rather than inlined
         var lowered = term.ToLowerInvariant();
         Expression<Func<string>> parameter = () => lowered;
         var entity = Expression.Parameter(typeof(TEntity), "entity");
+        if (_options.SearchExpressions.Count == 0)
+        {
+            if (_options.SearchPredicate is { } predicate)
+            {
+                return predicate(term);
+            }
+
+            if (!_options.CanQueryTitle)
+            {
+                return null;
+            }
+        }
+
         LambdaExpression[] selectors =
             _options.SearchExpressions.Count > 0
                 ? [.. _options.SearchExpressions]
@@ -301,6 +315,34 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
             .Aggregate(Expression.OrElse);
 
         return Expression.Lambda<Func<TEntity, bool>>(body, entity);
+    }
+
+    // The items the form's filters keep, matching a search term, in order
+    private IOrderedQueryable<TEntity> Query(IServiceProvider services, object? model, string? term)
+    {
+        IQueryable<TEntity> entities = services
+            .GetRequiredService<TContext>()
+            .Set<TEntity>()
+            .AsNoTracking();
+        foreach (var formFilter in _options.FormFilters)
+        {
+            entities = entities.Where(formFilter(model));
+        }
+
+        if (!string.IsNullOrEmpty(term) && Matches(term) is { } matches)
+        {
+            entities = entities.Where(matches);
+        }
+
+        var ordered =
+            _options.OrderQuery?.Invoke(entities)
+            ?? (
+                _options.CanQueryTitle
+                    ? entities.OrderBy(_options.TitleExpression)
+                    : entities.OrderBy(_options.ValueExpression)
+            );
+
+        return ordered.ThenBy(_options.ValueExpression);
     }
 
     private Expression<Func<TEntity, bool>> ValueIn(IReadOnlyList<TValue> values)

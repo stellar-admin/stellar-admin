@@ -87,6 +87,37 @@ public sealed class FormFieldOptions : FormItemOptions
     }
 
     /// <summary>
+    ///     Takes the items of the field's editor from a resource, when the editor is a choice or
+    ///     lookup editor without items.
+    /// </summary>
+    /// <param name="resourceType">The type of the resource.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="resourceType" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Integrations call it from a post-configuration callback for a field whose related records
+    ///     they know, such as from a foreign key. An editor with items keeps them.
+    /// </remarks>
+    public void InferResource(Type resourceType)
+    {
+        ArgumentNullException.ThrowIfNull(resourceType);
+
+        var resource = ReferencedResource.Create(resourceType, Source);
+        switch (Editor)
+        {
+            case ChoiceEditor { ItemsLoader: null } choice:
+                choice.UseResource(resource);
+                break;
+            case LookupSheetEditor { Items: null, Resource: null } lookup:
+                lookup.UseResource(resource);
+                break;
+            case MultiLookupSheetEditor { Items: null, Resource: null } lookup:
+                lookup.UseResource(resource);
+                break;
+        }
+    }
+
+    /// <summary>
     ///     Sets the binder that reads and binds the field in place of its property.
     /// </summary>
     /// <param name="binder">The binder.</param>

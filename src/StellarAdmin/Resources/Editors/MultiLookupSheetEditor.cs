@@ -269,9 +269,12 @@ public sealed class MultiLookupSheetEditor
     /// <remarks>
     ///     See <see cref="UseResource{TResource}()" />.
     /// </remarks>
-    public void UseResource<TResource>(Action<ResourceItemsBuilder<TResource>> configure)
+    public void UseResource<TResource>(Action<ResourceItemsBuilder<TResource>> configure) =>
+        UseResource(ReferencedResource.For(configure));
+
+    internal void UseResource(ReferencedResource resource)
     {
-        Resource = ReferencedResource.For(configure);
+        Resource = resource;
         Items = null;
     }
 }

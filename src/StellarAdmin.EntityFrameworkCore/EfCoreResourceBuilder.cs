@@ -34,4 +34,26 @@ public sealed class EfCoreResourceBuilder<TContext, TEntity>
 
         return this;
     }
+
+    /// <summary>
+    ///     Configures how the resource's records look, and which may be picked, when another record
+    ///     refers to them, such as in a lookup.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the records' look.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Each record is named by its title, which <c>UseTitle</c> sets.
+    /// </remarks>
+    public EfCoreResourceBuilder<TContext, TEntity> Reference(
+        Action<EfCoreResourceReferenceBuilder<TEntity>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(new(Services));
+
+        return this;
+    }
 }

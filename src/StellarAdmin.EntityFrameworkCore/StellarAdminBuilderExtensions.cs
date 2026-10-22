@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
@@ -173,8 +174,8 @@ public static class StellarAdminBuilderExtensions
         resource.UseDataSource<EfCoreResourceDataSource<TContext, TEntity>>();
         builder
             .Services.AddOptions<ResourceOptions<TEntity>>()
-            .PostConfigure<IServiceScopeFactory>(
-                (options, scopeFactory) =>
+            .PostConfigure<IServiceScopeFactory, IOptions<EfCoreResourceReferenceOptions<TEntity>>>(
+                (options, scopeFactory, reference) =>
                 {
                     // Options are cached. Use a separate scope to read metadata without retaining a DbContext.
                     using var scope = scopeFactory.CreateScope();
@@ -213,16 +214,19 @@ public static class StellarAdminBuilderExtensions
 
                     options.UseKey(property);
                     DisableCollectionSorting(options, entity);
+                    EfCoreResourceReference.Configure(options, reference.Value, db, property);
 
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
                     {
                         UseManyToManyBinders<TContext, TEntity>(options, entity, create);
                         RemoveUnsupportedFormFields(options, entity, create);
+                        InferReferencedResources(entity, create);
                     }
                     if (options.Edit is { } edit && edit.ModelType == typeof(TEntity))
                     {
                         UseManyToManyBinders<TContext, TEntity>(options, entity, edit);
                         RemoveUnsupportedFormFields(options, entity, edit);
+                        InferReferencedResources(entity, edit);
                     }
                 }
             );
@@ -289,6 +293,33 @@ public static class StellarAdminBuilderExtensions
                 key.PropertyType
             );
             field.UseBinder((FieldBinder)Activator.CreateInstance(binderType, property, key)!);
+        }
+    }
+
+    // A choice or lookup editor without items on a foreign key or many-to-many field takes them from the related
+    // entity's resource
+    private static void InferReferencedResources(IEntityType entity, ResourceFormOptions form)
+    {
+        foreach (var field in form.Fields.Where(field => field.PropertyPath.Count == 1))
+        {
+            var related =
+                entity.FindSkipNavigation(field.FieldName)?.TargetEntityType
+                ?? (
+                    entity
+                        .FindProperty(field.FieldName)
+                        ?.GetContainingForeignKeys()
+                        .Where(foreignKey => foreignKey.Properties.Count == 1)
+                        .Select(foreignKey => foreignKey.PrincipalEntityType)
+                        .Distinct()
+                        .ToArray()
+                        is [var principal]
+                        ? principal
+                        : null
+                );
+            if (related is { HasSharedClrType: false })
+            {
+                field.InferResource(related.ClrType);
+            }
         }
     }
 

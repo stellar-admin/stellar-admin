@@ -11,6 +11,7 @@ namespace StellarAdmin.EntityFrameworkCore;
 internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     TContext db,
     IOptions<ResourceOptions<TEntity>> options,
+    ResourceReferences references,
     ILogger<EfCoreResourceDataSource<TContext, TEntity>> logger
 ) : IResourceCrudDataSource<TEntity>
     where TContext : DbContext
@@ -245,7 +246,12 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             var edit = _resourceOptions.Edit;
             var view = _resourceOptions.View;
             var lookupIncludes = (edit?.Fields ?? []).SelectMany(field =>
-                field.Editor is LookupSheetEditor { Items: IEfCoreLookupReference reference }
+                field.Editor is LookupSheetEditor lookup
+                && (
+                    lookup.Items
+                    ?? (lookup.Resource is { } resource ? references.GetItems(resource) : null)
+                )
+                    is IEfCoreLookupReference reference
                     ? reference.FindIncludePaths(entityType, field.FieldName)
                     : []
             );

@@ -184,14 +184,14 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     /// <remarks>
     ///     See <see cref="UseResource{TResource}()" />.
     /// </remarks>
-    public void UseResource<TResource>(Action<ResourceItemsBuilder<TResource>> configure)
-    {
-        var resource = ReferencedResource.For(configure);
+    public void UseResource<TResource>(Action<ResourceItemsBuilder<TResource>> configure) =>
+        UseResource(ReferencedResource.For(configure));
+
+    internal void UseResource(ReferencedResource resource) =>
         ItemsLoader = async (model, services, cancellationToken) =>
             services.GetRequiredService<ResourceReferences>().GetItems(resource) is { } items
                 ? await items.ListAsync(services, model, cancellationToken)
                 : [];
-    }
 
     internal IReadOnlyList<ChoiceItem> ResolveChoices(
         object? editorData,
