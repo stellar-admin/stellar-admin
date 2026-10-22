@@ -11,5 +11,5 @@
 @* A collection shows a badge for each item *@
 @foreach (var item in items)
 {
-    <sa-badge variant="@Display.Variant">@(Display.Text is { } text && item is not null ? text(item) : FieldValueFormatter.Format(item, itemMetadata))</sa-badge>
+    <sa-badge variant="@Display.Variant">@(Display.Text is { } text && item is not null ? text(item) : FormatValue(item, itemMetadata))</sa-badge>
 }

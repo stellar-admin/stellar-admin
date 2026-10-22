@@ -8,12 +8,16 @@ using StellarAdmin.Resources.Displays;
 namespace StellarAdmin.Resources.Options;
 
 // The built-in displays show a value, or each item of a collection, as its ToString(), which is the
-// type name for a class that doesn't override it, such as a related entity. A badge display's text,
-// a custom display or a [UIHint] template can show such values. Without one, the column or field is
+// type name for a class that doesn't override it, such as a related entity. A record of a registered
+// resource shows its title, and a collection of them shows it in badges. A badge display's text, a
+// custom display or a [UIHint] template can show other values. Without one, the column or field is
 // left out.
 internal static class ValueTextCheck
 {
-    public static void Run<TResource>(ResourceOptions<TResource> options)
+    public static void Run<TResource>(
+        ResourceOptions<TResource> options,
+        IReadOnlySet<Type> resourceTypes
+    )
     {
         foreach (var column in options.Index.Columns.ToArray())
         {
@@ -21,9 +25,10 @@ internal static class ValueTextCheck
                 FindProblem(
                     $"The `{column.FieldName ?? column.FieldExpression.ToString()}` column isn't shown",
                     column.Display,
-                    column.FieldExpression
-                ) is
-                var (message, fix)
+                    column.FieldExpression,
+                    resourceTypes
+                )
+                is var (message, fix)
             )
             {
                 options.Index.MutableColumns.Remove(column);
@@ -36,15 +41,16 @@ internal static class ValueTextCheck
             }
         }
 
-        CheckFields(options, "view page", options.View);
-        CheckFields(options, "create form", options.Create);
-        CheckFields(options, "edit form", options.Edit);
+        CheckFields(options, "view page", options.View, resourceTypes);
+        CheckFields(options, "create form", options.Create, resourceTypes);
+        CheckFields(options, "edit form", options.Edit, resourceTypes);
     }
 
     private static void CheckFields<TResource>(
         ResourceOptions<TResource> options,
         string page,
-        IFormScope? scope
+        IFormScope? scope,
+        IReadOnlySet<Type> resourceTypes
     )
     {
         foreach (var field in FormItems.DisplayFields(scope))
@@ -53,9 +59,10 @@ internal static class ValueTextCheck
                 FindProblem(
                     $"The `{field.FieldName ?? field.Title ?? field.FieldExpression.ToString()}` field isn't on the {page}",
                     field.Display,
-                    field.FieldExpression
-                ) is
-                var (message, fix)
+                    field.FieldExpression,
+                    resourceTypes
+                )
+                is var (message, fix)
             )
             {
                 FormItems.Remove(scope!, field);
@@ -73,7 +80,8 @@ internal static class ValueTextCheck
     private static (string Message, string Fix)? FindProblem(
         string notice,
         FieldDisplay? display,
-        LambdaExpression expression
+        LambdaExpression expression,
+        IReadOnlySet<Type> resourceTypes
     )
     {
         var valueType = expression.ReturnType;
@@ -86,6 +94,7 @@ internal static class ValueTextCheck
             || type == typeof(object)
             || HasText(type)
             || display is BadgeDisplay { Text: not null }
+            || resourceTypes.Contains(type) && (itemType is null || display is BadgeDisplay)
             || display is not null && display.GetType().Assembly != typeof(FieldDisplay).Assembly
             || display is null
                 && ResourcePropertyPath.GetProperties(expression) is [.., var property]
@@ -98,10 +107,15 @@ internal static class ValueTextCheck
         var badge = $"`UseDisplay<BadgeDisplay>(badge => badge.UseText<{type.Name}>(item => ...))`";
 
         return itemType is null
-            ? (
-                $"{notice} because its value is a `{type.Name}`, which has no text of its own.",
-                $"Show one of the `{type.Name}`'s properties instead, or use {badge}."
-            )
+                ? (
+                    $"{notice} because its value is a `{type.Name}`, which has no text of its own.",
+                    $"Show one of the `{type.Name}`'s properties instead, or use {badge}."
+                )
+            : resourceTypes.Contains(type)
+                ? (
+                    $"{notice} because its value is a collection of `{type.Name}`, whose titles show only in badges.",
+                    "Call `UseDisplay<BadgeDisplay>()`."
+                )
             : (
                 $"{notice} because its value is a collection of `{type.Name}`, which has no text of its own.",
                 $"Show it with {badge}."

@@ -1,4 +1,6 @@
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using StellarAdmin.Resources.Options;
 
@@ -77,8 +79,19 @@ internal static class FieldDisplayDefaults
             return new NumberDisplay();
         }
 
-        return type == typeof(string) ? new TextDisplay() : null;
+        return type == typeof(string) || IsRecord(type) ? new TextDisplay() : null;
     }
+
+    // A related record, such as a product's category: a class without text of its own, which shows its resource's title
+    private static bool IsRecord(Type type) =>
+        type.IsClass
+        && type != typeof(object)
+        && !typeof(IEnumerable).IsAssignableFrom(type)
+        && type.GetMethod(
+            nameof(ToString),
+            BindingFlags.Public | BindingFlags.Instance,
+            []
+        )?.DeclaringType == typeof(object);
 
     private static bool IsNumber(Type type) =>
         Type.GetTypeCode(type)

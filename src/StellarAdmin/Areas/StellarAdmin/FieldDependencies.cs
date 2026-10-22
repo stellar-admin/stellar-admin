@@ -39,16 +39,6 @@ internal static class FieldDependencies
             .ToArray();
     }
 
-    public static string GetLabel(FormFieldOptions field, IModelMetadataProvider metadataProvider)
-    {
-        var property = field.PropertyPath[^1];
-
-        return field.Title
-            ?? metadataProvider
-                .GetMetadataForProperty(property.DeclaringType!, property.Name)
-                .GetDisplayName();
-    }
-
     // The text of the disabled field while one of its parents has no value, or null when they all have one
     public static string? GetWaitingText(
         FormFieldOptions field,
@@ -61,7 +51,8 @@ internal static class FieldDependencies
         {
             if (dependency.Parent is { } parent && IsEmpty(parent.GetValue(model, services)))
             {
-                return dependency.EmptyText ?? $"Select {GetLabel(parent, metadataProvider)} first";
+                return dependency.EmptyText
+                    ?? $"Select {FieldLabels.Get(parent, services, metadataProvider)} first";
             }
         }
 

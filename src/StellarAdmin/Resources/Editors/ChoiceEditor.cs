@@ -51,11 +51,22 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
         IServiceProvider,
         CancellationToken,
         Task<IReadOnlyList<ChoiceItem>>
-    >? ItemsLoader { get; private set; }
+    >? ItemsLoader
+    {
+        get;
+        private set
+        {
+            field = value;
+            Resource = null;
+        }
+    }
 
     // A select shows its first choice as selected when none is, so it keeps the empty choice while a required value
     // is unset or matches no choice, such as the 0 of a new entity's foreign key
     internal virtual bool KeepsEmptyChoiceWhileUnset => false;
+
+    // The resource the items come from, or null when the editor has its own
+    internal ReferencedResource? Resource { get; private set; }
 
     /// <summary>
     ///     Sets a registered provider that supplies the choices for each request.
@@ -187,11 +198,14 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     public void UseResource<TResource>(Action<ResourceItemsBuilder<TResource>> configure) =>
         UseResource(ReferencedResource.For(configure));
 
-    internal void UseResource(ReferencedResource resource) =>
+    internal void UseResource(ReferencedResource resource)
+    {
         ItemsLoader = async (model, services, cancellationToken) =>
             services.GetRequiredService<ResourceReferences>().GetItems(resource) is { } items
                 ? await items.ListAsync(services, model, cancellationToken)
                 : [];
+        Resource = resource;
+    }
 
     internal IReadOnlyList<ChoiceItem> ResolveChoices(
         object? editorData,

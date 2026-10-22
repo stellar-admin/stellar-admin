@@ -213,7 +213,7 @@ public static class StellarAdminBuilderExtensions
                     }
 
                     options.UseKey(property);
-                    DisableCollectionSorting(options, entity);
+                    DisableEntitySorting(options, entity);
                     EfCoreResourceReference.Configure(options, reference.Value, db, property);
 
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
@@ -323,8 +323,9 @@ public static class StellarAdminBuilderExtensions
         }
     }
 
-    // A collection has no single value to order rows by, unless the column sorts by an expression of its own
-    private static void DisableCollectionSorting<TEntity>(
+    // A collection or a related record has no single value to order rows by, unless the column sorts by an expression
+    // of its own
+    private static void DisableEntitySorting<TEntity>(
         ResourceOptions<TEntity> options,
         IEntityType entity
     )
@@ -335,16 +336,28 @@ public static class StellarAdminBuilderExtensions
             )
         )
         {
-            if (
-                EfCorePropertyPaths.GetPropertyPath(column.FieldExpression) is { } path
-                && !EfCorePropertyPaths.CanInclude(entity, path)
-            )
+            if (EfCorePropertyPaths.GetPropertyPath(column.FieldExpression) is not { } path)
+            {
+                continue;
+            }
+
+            if (!EfCorePropertyPaths.CanInclude(entity, path))
             {
                 column.DisableSorting();
                 options.ReportProblem(
                     EfCoreConfigurationEvents.SortableCollectionColumn,
                     $"The `{column.FieldName}` column isn't sortable because it reads a collection.",
                     "Remove `Sortable()`, or sort the column by an expression with `Sortable(selector)`.",
+                    column
+                );
+            }
+            else if (EfCorePropertyPaths.EndsAtNavigation(entity, path))
+            {
+                column.DisableSorting();
+                options.ReportProblem(
+                    EfCoreConfigurationEvents.SortableNavigationColumn,
+                    $"The `{column.FieldName}` column isn't sortable because it shows a related record.",
+                    "Sort the column by one of the record's properties with `Sortable(selector)`.",
                     column
                 );
             }

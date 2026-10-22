@@ -51,7 +51,7 @@ fields.Add(booking => booking.Notes, field =>
 | Several values from a short list (collection property) | `CheckboxGroupEditor` or `ToggleGroupEditor` |
 | Whole number in a range | `SliderEditor` |
 | Verification or PIN code | `OneTimeCodeEditor` |
-| Foreign key with few related rows | `SelectEditor` + EF `UseItems` ([relationships](relationships.md)) |
+| Foreign key with few related rows | `SelectEditor`, with items from the related resource ([relationships](relationships.md)) |
 | Foreign key with many related rows, searchable, create new | `LookupSheetEditor` ([relationships](relationships.md)) |
 | Several keys from a long list (many-to-many) | `MultiLookupSheetEditor` ([relationships](relationships.md)) |
 | Image stored as a file name, key or URL | `ImageEditor` ([images](#images)) |
@@ -114,10 +114,11 @@ fields.Add(booking => booking.Travellers).UseEditor<SliderEditor>(slider =>
 
 Choice editors (`SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor`, `SegmentedControlEditor`, `ToggleGroupEditor`) get their choices from:
 
-1. `UseItems(...)` when called.
-2. Otherwise, a non-flags enum's members, with `[Display(Name, Description, GroupName)]` for the text, description and group.
-3. Otherwise, Yes and No for a Boolean.
-4. A collection property uses its element type the same way. Any other type requires `UseItems`.
+1. `UseItems(...)` or `UseResource<T>()` when called.
+2. On an EF Core entity form, a foreign key's or many-to-many navigation's related resource ([relationships](relationships.md#the-related-resource)).
+3. Otherwise, a non-flags enum's members, with `[Display(Name, Description, GroupName)]` for the text, description and group.
+4. Otherwise, Yes and No for a Boolean.
+5. A collection property uses its element type the same way. Any other type requires `UseItems` or `UseResource`.
 
 | `UseItems` overload | Use |
 | --- | --- |
@@ -126,7 +127,8 @@ Choice editors (`SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor`, `Segm
 | `UseItems<TProvider>()` | A registered service implementing `IChoiceItemsProvider` (`GetItemsAsync(cancellationToken)`) |
 | `UseItems((services, cancellationToken) => ...)` | An inline async loader returning `IReadOnlyList<ChoiceItem>` |
 | `UseItems((TForm form, services, cancellationToken) => ...)` | An inline loader that reads other fields of the form, with `DependsOn` ([relationships](relationships.md#items-that-depend-on-another-field)) |
-| `UseItems<TContext, TEntity, TValue>(value, title, items => ...)` | Rows of an EF Core entity set (namespace `StellarAdmin.EntityFrameworkCore`; [relationships](relationships.md)) |
+| `UseResource<TResource>()` | The records of a registered resource, named by their titles ([relationships](relationships.md#the-related-resource)) |
+| `UseItems<TContext, TEntity, TValue>(value, title, items => ...)` | Rows of an EF Core entity set that isn't a resource (namespace `StellarAdmin.EntityFrameworkCore`; [relationships](relationships.md#related-types-that-arent-resources)) |
 
 For an enum, describe the choices on the members instead of listing them:
 

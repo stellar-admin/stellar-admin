@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
+using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
 using TUnit.Assertions.Enums;
 
@@ -130,6 +131,13 @@ public class ResourceRelatedResourceTests
         await Assert
             .That(checkboxes.Select(checkbox => checkbox.GetAttribute("value")))
             .IsEquivalentTo(["3", "1", "2"], CollectionOrdering.Matching);
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-slot='field-label']")
+                    .Select(label => label.TextContent.Trim())
+            )
+            .Contains("Tags");
         await Assert
             .That(
                 checkboxes
@@ -328,6 +336,119 @@ public class ResourceRelatedResourceTests
                 )
             )
             .IsTrue();
+    }
+
+    [Test]
+    public async Task ForeignKeySelect_WithoutTitle_IsLabelledByCategoryResource()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.AllowCreate(create =>
+                    create.Fields(fields =>
+                        fields.Add(product => product.CategoryId).UseEditor<SelectEditor>()
+                    )
+                ),
+            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Category>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await GetDocument(client, "/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(document.QuerySelector("label[for='Entity_CategoryId']")?.TextContent.Trim())
+            .IsEqualTo("Category");
+    }
+
+    [Test]
+    public async Task Index_NavigationColumn_ShowsCategoryTitles()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns => columns.Add(product => product.Category))
+                ),
+            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Category>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await GetDocument(client, "/stellaradmin/products");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("tbody > tr")
+                    .Select(row => row.QuerySelectorAll("td")[3].TextContent.Trim())
+            )
+            .IsEquivalentTo(
+                ["Office", "Technology", "Technology", "Beverage"],
+                CollectionOrdering.Matching
+            );
+    }
+
+    [Test]
+    public async Task Index_SortableNavigationColumn_IsNotSortableAndLogsProblem()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns =>
+                        columns.Add(product => product.Category, column => column.Sortable())
+                    )
+                ),
+            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Category>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await GetDocument(client, "/stellaradmin/products");
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(document.QuerySelectorAll("tbody > tr").Length).IsEqualTo(4);
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The Category column isn't sortable because it shows a related record."
+                    )
+                )
+            )
+            .IsTrue();
+    }
+
+    [Test]
+    public async Task View_ManyToManyBadges_ShowTagTitles()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.AllowView(view =>
+                    view.Fields(fields =>
+                        fields.Add(product => product.Tags).UseDisplay<BadgeDisplay>()
+                    )
+                ),
+            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Tag>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await GetDocument(client, "/stellaradmin/products/view/2");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-slot='badge']")
+                    .Select(badge => badge.TextContent.Trim())
+            )
+            .IsEquivalentTo(["Sale", "Seasonal"]);
     }
 
     private static Task<Microsoft.AspNetCore.Builder.WebApplication> CreateLookupHost(

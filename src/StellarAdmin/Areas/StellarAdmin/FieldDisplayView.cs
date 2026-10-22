@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
 
 namespace StellarAdmin.Areas.StellarAdmin;
@@ -44,8 +47,17 @@ public abstract class FieldDisplayView<TDisplay> : RazorPage<object?>
     /// </returns>
     /// <remarks>
     ///     Without a format string or <c>[DisplayFormat]</c>, enum members show their
-    ///     <c>[Display]</c> names.
+    ///     <c>[Display]</c> names. A record of a registered resource shows its title.
     /// </remarks>
     public string FormatValue(string? format = null) =>
-        FieldValueFormatter.Format(Model, ViewData.ModelMetadata, format);
+        FormatValue(Model, ViewData.ModelMetadata, format);
+
+    // A value, or an item of a collection: a record of a registered resource shows its title
+    internal string FormatValue(object? value, ModelMetadata metadata, string? format = null) =>
+        format is null
+        && value is not null
+        && Context.RequestServices.GetRequiredService<ResourceReferences>().FormatTitle(value)
+            is { } title
+            ? title
+            : FieldValueFormatter.Format(value, metadata, format);
 }

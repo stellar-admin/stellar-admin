@@ -27,14 +27,14 @@ resource.AllowEdit(edit => edit.Fields(fields =>
         section.AddDisplayField(booking => booking.CreatedAt, field => field.Title = "Created");
         section.Add(booking => booking.Status);
     });
-    fields.AddDisplayField(booking => booking.Customer!.Name).Title = "Customer";
+    fields.AddDisplayField(booking => booking.Customer);
     fields.AddDisplayField(booking => booking.Total).UseDisplay<NumberDisplay>(number => number.Format = "C");
 }));
 ```
 
 - `AddDisplayField` works wherever `Add` does: the form, a section or a group, and it takes the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart`.
 - Display field builder: `Title`, `EmptyText`, `Orientation` (`DisplayFieldOrientation.Vertical` or `Horizontal`), `UseDisplay<TDisplay>(...)`, `UseBuiltInRendering()`.
-- Display fields can read through references (`booking => booking.Customer!.Name`). EF Core resources load them with the record; custom data sources and models must load them.
+- Display fields can read through references (`booking => booking.Customer!.Email`). A related record of a registered resource (`booking => booking.Customer`) shows its title. EF Core resources load them with the record; custom data sources and models must load them.
 - The property needs only a getter. A posted value is ignored.
 - On create, values come from the new model (the factory's values), so unset values show the empty text.
 - With a custom model (`AllowEdit<TModel, THandler>`), the property must be on `TModel`.
@@ -86,7 +86,7 @@ In order of precedence:
 2. The display field's own text rendering after `UseBuiltInRendering()`.
 3. The template named by `[UIHint("Name")]`: `DisplayTemplates/Name.cshtml`, with the value as its model. A missing template throws.
 4. The default display for the property's data type, then its CLR type.
-5. Text rendering, which joins collections with commas and applies `[DisplayFormat]`. An entity, a collection of entities, or any other class that doesn't override `ToString()` is left out with it or with no display, and a configuration problem is logged; show a property of the entity, or use `BadgeDisplay` with `UseText<TItem>` ([relationships](relationships.md#showing-related-values)).
+5. Text rendering, which joins collections with commas and applies `[DisplayFormat]`. A related record of a registered resource shows its title, and a collection of them needs `BadgeDisplay`. Any other entity, collection of entities or class that doesn't override `ToString()` is left out with it or with no display, and a configuration problem is logged; show a property of the entity, or use `BadgeDisplay` with `UseText<TItem>` ([relationships](relationships.md#showing-related-values)).
 
 An empty value shows `EmptyText`, else `[DisplayFormat(NullDisplayText)]`, else a dash, unless the display renders empty values itself (`ImageDisplay` shows "No image").
 
@@ -105,7 +105,7 @@ In `StellarAdmin.Resources.Displays`; the same displays render index cells ([col
 | `EmailDisplay` | `[EmailAddress]` | `mailto:` link |
 | `PhoneDisplay` | `[Phone]` | `tel:` link |
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
-| `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant`), the same for every value; collections show one badge per item, and `UseText<TItem>(item => text)` sets each badge's text ([relationships](relationships.md#showing-related-values)) |
+| `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant`), the same for every value; collections show one badge per item; a related record of a registered resource shows its title, and `UseText<TItem>(item => text)` sets each badge's text for other types ([relationships](relationships.md#showing-related-values)) |
 | `ImageDisplay` | Never a default | The image as a figure, from a stored file name or URL: `ResolveUrl(...)`, `Size` (maximum height, default `Medium`, 15rem), `AspectRatio` (default `Original`), `Fit`, `Interaction` (default `Lightbox`); see [columns](columns.md#built-in-displays-in-cells) |
 | `IconDisplay` | Never a default | The icon a stored name refers to, with its name beside it; `ShowName = false` shows the name on hover only. A name that isn't a registered icon shows a dashed box |
 

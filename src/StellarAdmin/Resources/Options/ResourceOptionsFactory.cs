@@ -11,7 +11,8 @@ internal sealed class ResourceOptionsFactory<TResource>(
     IEnumerable<IConfigureOptions<ResourceOptions<TResource>>> setups,
     IEnumerable<IPostConfigureOptions<ResourceOptions<TResource>>> postConfigures,
     IEnumerable<IValidateOptions<ResourceOptions<TResource>>> validations,
-    IOptions<IconOptions> iconOptions
+    IOptions<IconOptions> iconOptions,
+    IEnumerable<ResourceRegistration> registrations
 ) : IOptionsFactory<ResourceOptions<TResource>>
 {
     private readonly OptionsFactory<ResourceOptions<TResource>> _factory = new(
@@ -27,7 +28,11 @@ internal sealed class ResourceOptionsFactory<TResource>(
         {
             var options = _factory.Create(name);
             options.Problems.InsertRange(0, ResourceProblemSink.Close(outer));
-            Check(options, iconOptions.Value);
+            Check(
+                options,
+                iconOptions.Value,
+                registrations.Select(registration => registration.ResourceType).ToHashSet()
+            );
 
             return options;
         }
@@ -52,11 +57,15 @@ internal sealed class ResourceOptionsFactory<TResource>(
 
     // Whole pages and actions first, so their fields aren't checked for nothing; then columns and fields; then
     // what depends on the remaining columns and fields
-    internal static void Check(ResourceOptions<TResource> options, IconOptions icons)
+    internal static void Check(
+        ResourceOptions<TResource> options,
+        IconOptions icons,
+        IReadOnlySet<Type> resourceTypes
+    )
     {
         options.RepairLabels();
         ResourceHandlerCheck.Run(options);
-        ValueTextCheck.Run(options);
+        ValueTextCheck.Run(options, resourceTypes);
         BadgeDisplayCheck.Run(options);
         ComputedColumnCheck.Run(options);
         ComputedDisplayFieldCheck.Run(options);

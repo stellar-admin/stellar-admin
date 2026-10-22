@@ -21,4 +21,8 @@ internal static class EfCoreConfigurationEvents
     );
     public static readonly EventId UnsupportedFormField = new(1085, nameof(UnsupportedFormField));
     public static readonly EventId UntranslatableTitle = new(1086, nameof(UntranslatableTitle));
+    public static readonly EventId SortableNavigationColumn = new(
+        1087,
+        nameof(SortableNavigationColumn)
+    );
 }

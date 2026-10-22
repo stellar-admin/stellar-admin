@@ -18,6 +18,13 @@ internal static class CategoryResourceRegistration
                 item.Icon = "tags";
                 item.Order = 15;
             });
+            // Fields that refer to a category show its name, its title by convention, with a description and an
+            // avatar. Categories have no image, so the avatar shows the name's initials
+            resource.Reference(reference =>
+                reference
+                    .UseDescription(category => "Category #" + category.Id.ToString())
+                    .UseAvatar(category => null)
+            );
             resource.Index(index =>
             {
                 index.Columns(columns =>

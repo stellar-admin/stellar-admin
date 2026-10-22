@@ -29,8 +29,8 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Images: thumbnails in the grid, photos on the view page, uploads | `ImageDisplay`, `ImageEditor`, `ResolveUrl`, `StoreImage` | [editors](references/editors.md#images), [columns](references/columns.md#built-in-displays-in-cells) |
 | Icons: a field that stores an icon's name, chosen from a picker | `IconEditor`, `IconDisplay` | [editors](references/editors.md#icons) |
 | Formatted text (HTML) with headings, lists, links, tables and images, sanitized | `RichTextEditor`, `HtmlDisplay`, `[DataType(DataType.Html)]`, `IRichTextSanitizer` | [editors](references/editors.md#rich-text) |
-| Foreign keys, lookups, many-to-many, create-from-lookup, related records in columns | `SelectEditor`/`LookupSheetEditor` + EF `UseItems`, `MultiLookupSheetEditor`, `EnableCreate`, `BadgeDisplay.UseText` | [relationships](references/relationships.md) |
-| Items that depend on another field: cities of the selected country, cascading selects and lookups | `DependsOn`, EF `Where<TForm>`, `UseItems((TForm form, ...) => ...)`, `ILookupSource<TEntity, TValue, TArgument>` | [relationships](references/relationships.md#items-that-depend-on-another-field) |
+| Foreign keys, lookups, many-to-many, create-from-lookup, related records in columns | `UseTitle`, `Reference`, `SelectEditor`/`LookupSheetEditor`, `UseResource<T>`, `MultiLookupSheetEditor`, `EnableCreate`, `BadgeDisplay` | [relationships](references/relationships.md) |
+| Items that depend on another field: cities of the selected country, cascading selects and lookups | `DependsOn`, `UseResource<T>(items => items.Where<TForm>(...))`, EF `Where<TForm>`, `UseItems((TForm form, ...) => ...)`, `ILookupSource<TEntity, TValue, TArgument>` | [relationships](references/relationships.md#items-that-depend-on-another-field) |
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
 | Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
 | Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
@@ -51,6 +51,18 @@ builder.Services.AddStellarAdmin(admin =>
 {
     admin.RequireAuthorization();
 
+    // Customers name themselves by Name, by convention; booking lookups show the email too
+    admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
+    {
+        resource.Reference(reference => reference.UseDescription(customer => customer.Email));
+        resource.Index(index => index.Columns(columns => columns.Add(customer => customer.Name)));
+        resource.AllowCreate(create => create.Fields(fields =>
+        {
+            fields.Add(customer => customer.Name);
+            fields.Add(customer => customer.Email);
+        }));
+    });
+
     admin.AddEfCoreResource<VoyagerDbContext, Booking>(resource =>
     {
         resource.SidebarItem(item => { item.Group = "Sales"; item.Order = 1; });
@@ -60,7 +72,7 @@ builder.Services.AddStellarAdmin(admin =>
             index.Columns(columns =>
             {
                 columns.Add(booking => booking.Reference);
-                columns.Add(booking => booking.Customer!.Name, column => column.Title = "Customer");
+                columns.Add(booking => booking.Customer);   // the customer's title
                 columns.Add(booking => booking.DepartureDate, column => column.Sortable());
                 columns.Add(booking => booking.Total, column =>
                 {
@@ -84,11 +96,8 @@ builder.Services.AddStellarAdmin(admin =>
             create.UseFactory(() => new Booking { DepartureDate = DateOnly.FromDateTime(DateTime.Today) });
             create.Fields(fields =>
             {
-                fields.Add(booking => booking.CustomerId).UseEditor<LookupSheetEditor>(lookup =>
-                {
-                    lookup.UseItems<VoyagerDbContext, Customer, int>(customer => customer.Id, customer => customer.Name);
-                    lookup.EnableCreate();
-                });
+                // The foreign key takes its items, and its "Customer" label, from the Customer resource
+                fields.Add(booking => booking.CustomerId).UseEditor<LookupSheetEditor>(lookup => lookup.EnableCreate());
                 fields.Add(booking => booking.Destination);
                 fields.Add(booking => booking.DepartureDate);
             });
@@ -144,7 +153,7 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 - [ ] AddEfCoreResource<TContext, TEntity> (context first), or AddResource<T> + UseDataSource + UseKey
 - [ ] Index columns (they start empty), with Title where the property name reads badly
 - [ ] Search/scopes/sort/paging as needed (EF: predicates in EnableSearch and scopes.Add)
-- [ ] AllowCreate/AllowEdit with Fields; foreign keys get SelectEditor or LookupSheetEditor + UseItems
+- [ ] AllowCreate/AllowEdit with Fields; foreign keys get SelectEditor or LookupSheetEditor, with the related type registered as a resource (or UseItems)
 - [ ] UseFactory for defaults (dates, generated references) instead of hidden fields
 - [ ] AllowView with at least one field, if a detail page is wanted
 - [ ] AllowDelete, if wanted
@@ -156,7 +165,7 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 | Namespace | Package | Contains |
 | --- | --- | --- |
 | `StellarAdmin` | StellarAdmin | `AddStellarAdmin`, `MapStellarAdmin`, `StellarAdminLayouts`, `EnvironmentIndicator`, `EnvironmentColor` |
-| `StellarAdmin.EntityFrameworkCore` | StellarAdmin.EntityFrameworkCore | `AddEfCoreResource`, and the EF `UseItems` overloads on editors |
+| `StellarAdmin.EntityFrameworkCore` | StellarAdmin.EntityFrameworkCore | `AddEfCoreResource`, and the EF `UseItems` overloads on editors for types that aren't resources |
 | `StellarAdmin.Resources.Editors` | StellarAdmin | Editors, `ChoiceItem`, `ItemMedia`, `ILookupSource` |
 | `StellarAdmin.Resources.Displays` | StellarAdmin | Displays such as `NumberDisplay`, `BadgeDisplay`, `FieldDisplay` |
 | `StellarAdmin.Resources.Builders` | StellarAdmin | Builder types, for helper methods such as `void BookingFields(ResourceFieldsBuilder<Booking> fields)` |
@@ -171,7 +180,7 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 These come from agents building real tasks without this skill. Each compiled or looked plausible and was wrong.
 
 - **Never hand-write create, edit or list pages** (Razor Pages, controllers, `AddController` into the admin area). Use `AllowCreate`/`AllowEdit` with fields and editors; override a generated page only to add to it.
-- **A foreign key needs a choice editor.** `fields.Add(b => b.CustomerId)` alone renders a number box. Use `SelectEditor` or `LookupSheetEditor` with EF `UseItems<TContext, TEntity, TValue>(value, title)` ([relationships](references/relationships.md)).
+- **A foreign key needs a choice editor.** `fields.Add(b => b.CustomerId)` alone renders a number box. Use `SelectEditor` or `LookupSheetEditor`; on an EF Core entity form it takes its items from the related entity's resource, so register `Customer` as a resource. A form model names it with `UseResource<Customer>()`. Use EF `UseItems<TContext, TEntity, TValue>(value, title)` only for a related type that isn't a resource ([relationships](references/relationships.md)).
 - **Long text needs a textarea or rich text editor.** A `string` without `[DataType]` renders a single-line input. Use `TextareaEditor` for long plain text and `RichTextEditor` for values that hold HTML, which the seed data or the app's `Html.Raw` views show ([editors](references/editors.md#which-editor)).
 - **EF search and scopes take predicates.** `index.EnableSearch(term => entity => ...)` requires the predicate factory. Scopes filter through the third argument: `scopes.Add("pending", "Pending", b => b.Status == BookingStatus.Pending)`. The id is only the URL value; putting filter text in it filters nothing.
 - **`Add(selector, callback)` returns the parent builder, not the field.** `fields.Add(b => b.CustomerId, f => f.Title = "Customer").UseEditor<...>()` doesn't compile. Configure everything inside the callback (`f => { f.Title = "Customer"; f.UseEditor<LookupSheetEditor>(...); }`) or use `fields.Add(b => b.CustomerId).UseEditor<...>()`. The same holds for columns, sections and display fields.
@@ -181,7 +190,7 @@ These come from agents building real tasks without this skill. Each compiled or 
 - **`ChoiceEditor` is abstract.** Use `SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor`, `SegmentedControlEditor` or `ToggleGroupEditor`.
 - **Index cells use `GridDisplayTemplates/`**, not `DisplayTemplates/`. A custom display or `[UIHint]` used in a column needs `GridDisplayTemplates/{TemplateName}.cshtml`; the same display on a form or view page needs `DisplayTemplates/{TemplateName}.cshtml` ([columns](references/columns.md)).
 - **`BadgeDisplay` has one variant for every value.** A badge whose style depends on the value needs a custom display and template.
-- **A collection of entities needs `UseText`.** A column or display field on a navigation such as `tour => tour.Destinations` is left out unless it uses `BadgeDisplay` with `badge.UseText<Destination>(destination => destination.Name)`, since each entity would show its type name. A single related entity (`tour => tour.Guide`) is left out the same way; show one of its properties (`tour => tour.Guide!.Name`) ([relationships](references/relationships.md#showing-related-values)).
+- **A collection of entities needs `BadgeDisplay`.** A column or display field on a navigation such as `tour => tour.Destinations` is left out unless it uses `BadgeDisplay`, which names each record by its resource's title. A related entity (`tour => tour.Guide`) shows its title. When the related type isn't a registered resource, both are left out, since each entity would show its type name: use `badge.UseText<Destination>(destination => destination.Name)`, or show one of its properties (`tour => tour.Guide!.Name`) ([relationships](references/relationships.md#showing-related-values)).
 - **App views in the admin area need their own `_ViewImports.cshtml`.** Create `Areas/StellarAdmin/Views/_ViewImports.cshtml` with `@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers`, `@addTagHelper *, StellarAdmin.UI` and `@addTagHelper *, StellarAdmin`. Without it `<sa-index-page>` renders as literal text and the page looks empty, with no error.
 - **Override models are in `StellarAdmin.Areas.StellarAdmin.ViewModels`.** A resource's own index view uses `ResourceIndexPageViewModel<T>`. A shared index view overridden for every resource uses `IResourceIndexPageViewModel`.
 - **Style admin and host pages with `sa-*` components**, not Tailwind utilities: the shipped CSS contains only the classes its components use, so `p-4`, `text-gray-700` and similar render unstyled. Use `sa-page-container`, `sa-page-header`, `sa-card`, `sa-table`, `sa-alert` and friends (stellar-admin-ui skill).
@@ -191,7 +200,7 @@ These come from agents building real tasks without this skill. Each compiled or 
 - **Read-only form fields are display fields.** Use `AddDisplayField`/`AddDetails`; there is no `ReadOnly()` builder method ([fields](references/fields.md)).
 - **New `DateOnly`/`DateTime` fields default to 0001-01-01**, and generated values (references, codes) don't come from hidden fields: set both in `create.UseFactory(() => new Booking { ... })`.
 - **EF `Contains` is case-sensitive on SQLite** (and on case-sensitive collations). Lower-case both sides in search predicates when that matters: `b.Reference.ToLower().Contains(term.ToLower())`.
-- **Form and view labels come from the property name** (`DepartureDate`) unless `[Display(Name = "Departure date")]` or the field's `Title` is set; index headers are humanized. Set `[Display(Name)]` on the model for consistent labels.
+- **Form and view labels come from the property name** (`DepartureDate`) unless `[Display(Name = "Departure date")]` or the field's `Title` is set; index headers are humanized. Set `[Display(Name)]` on the model for consistent labels. A foreign key whose editor takes its items from a resource is labelled with that resource's singular label ("Customer").
 - **Enum values in Razor attributes are fully qualified**: `variant="BadgeVariant.Destructive"`, `width="PageContainerWidth.Full"`.
 - **Configuration problems are reported, not thrown.** The panel works around configuration mistakes instead of failing: in Development a "Configuration problems" pill at the bottom of every admin page lists them, and every environment logs them as warnings from `StellarAdmin.Configuration`. When they are reported, fix every listed problem; a missing `_ViewImports` fails silently and isn't listed ([configuration problems](references/configuration-problems.md)).
 

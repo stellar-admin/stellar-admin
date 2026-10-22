@@ -65,7 +65,11 @@ internal static class FieldEditorRenderer
                 FieldName = field.FieldName,
                 IsBound = field.Binder is not null,
                 IsReadOnly = field.IsReadOnly,
-                Title = field.Title,
+                Title = FieldLabels.Find(
+                    field,
+                    html.ViewContext.HttpContext.RequestServices,
+                    html.MetadataProvider
+                ),
                 WaitingText = FieldDependencies.GetWaitingText(
                     field,
                     model,

@@ -22,7 +22,7 @@ resource.AllowView(view =>
         });
         fields.AddSection("Customer", section =>
         {
-            section.Add(booking => booking.Customer!.Name, field => field.Title = "Name");
+            section.Add(booking => booking.Customer);   // the customer's title
             section.Add(booking => booking.Customer!.Email, field => field.Title = "Email");
             section.Add(booking => booking.Notes, field => field.EmptyText = "No notes");
         });
@@ -38,7 +38,7 @@ resource.AllowView(view =>
 - **Fields are required.** `AllowView()` without `view.Fields(...)` leaves the resource without a view page and logs a configuration problem ([configuration problems](configuration-problems.md)). Every property must be listed; there is no "all fields" option.
 - Every field is a display field: `fields.Add` returns the display field builder (`Title`, `EmptyText`, `Orientation`, `UseDisplay`, `UseBuiltInRendering`, spans and starts). Rendering and displays are in [fields](fields.md).
 - Layout uses the same `Columns`, `AddSection`, `AddGroup`, spans and starts as forms ([forms](forms.md#layout-columns-sections-and-groups)). Sections take `Description`, `Layout`, `Orientation`, `Columns`, `ColumnSpan` and `ColumnStart`; a section's `Orientation` applies to the fields inside it. View pages have no `AddDetails`; use sections.
-- References (`booking.Customer!.Name`) are loaded with the record for EF Core resources.
+- References (`booking.Customer!.Email`) are loaded with the record for EF Core resources. A related record of a registered resource (`booking => booking.Customer`) shows its title, and a collection of them shows in badges with `UseDisplay<BadgeDisplay>()` ([relationships](relationships.md#showing-related-values)).
 - A custom display used here needs `DisplayTemplates/{TemplateName}.cshtml` (index cells use `GridDisplayTemplates/`).
 - The header shows Back, Delete (with `AllowDelete`) and Edit (with `AllowEdit`).
 - `view.Title` defaults to `View {singular label}`; the row action label is `index.ViewLabel`.

@@ -116,7 +116,8 @@ public sealed class GalleryAirportLookupSource(GalleryAirportStore store)
     }
 }
 
-// Lists the airports for the airport resource, which the gallery's EnableCreate field creates airports with
+// Lists the airports for the airport resource, which the gallery's EnableCreate field creates airports with. The hub
+// lookup takes its items from the resource, so the source finds airports by key, searches and pages them.
 public sealed class GalleryAirportDataSource(GalleryAirportStore store)
     : IResourceDataSource<GalleryAirport>
 {
@@ -125,9 +126,21 @@ public sealed class GalleryAirportDataSource(GalleryAirportStore store)
         CancellationToken cancellationToken
     )
     {
-        var airports = store.ToArray().OrderBy(airport => airport.City).ToArray();
+        var matches = store
+            .ToArray()
+            .Where(airport => request.Keys is not { } keys || keys.Contains(airport.Code))
+            .Where(airport =>
+                string.IsNullOrEmpty(request.Search)
+                || airport.City.Contains(request.Search, StringComparison.CurrentCultureIgnoreCase)
+                || airport.Code.Contains(request.Search, StringComparison.OrdinalIgnoreCase)
+            )
+            .OrderBy(airport => airport.City, StringComparer.CurrentCulture)
+            .ToArray();
+        var page = request.Paging is { } paging
+            ? matches.Skip((paging.Page - 1) * paging.PageSize).Take(paging.PageSize).ToArray()
+            : matches;
 
-        return Task.FromResult(new ResourceListResult<GalleryAirport>(airports, airports.Length));
+        return Task.FromResult(new ResourceListResult<GalleryAirport>(page, matches.Length));
     }
 }
 

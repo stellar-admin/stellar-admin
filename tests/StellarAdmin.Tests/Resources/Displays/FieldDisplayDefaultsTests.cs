@@ -45,7 +45,6 @@ public class FieldDisplayDefaultsTests
     [Arguments(nameof(Model.Reference))]
     [Arguments(nameof(Model.Tags))]
     [Arguments(nameof(Model.Days))]
-    [Arguments(nameof(Model.Address))]
     public async Task Resolve_WithOtherType_ReturnsNull(string property)
     {
         // Arrange
@@ -56,6 +55,19 @@ public class FieldDisplayDefaultsTests
 
         // Assert
         await Assert.That(display).IsNull();
+    }
+
+    [Test]
+    public async Task Resolve_WithClassWithoutText_ReturnsTextDisplay()
+    {
+        // Arrange
+        var metadata = GetMetadata(nameof(Model.Address));
+
+        // Act
+        var display = FieldDisplayDefaults.Resolve(metadata);
+
+        // Assert
+        await Assert.That(display).IsTypeOf<TextDisplay>();
     }
 
     [Test]

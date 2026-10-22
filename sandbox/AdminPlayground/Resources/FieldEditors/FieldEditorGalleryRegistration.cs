@@ -102,6 +102,11 @@ internal static class FieldEditorGalleryRegistration
                     item.Order = 26;
                 });
                 resource.UseDataSource<GalleryAirportDataSource>();
+                resource.UseKey(airport => airport.Code);
+                resource.UseTitle(airport => airport.City);
+                resource.Reference(reference =>
+                    reference.UseDescription(airport => airport.Country)
+                );
                 resource.Index(index =>
                     index.Columns(columns =>
                     {
@@ -121,15 +126,7 @@ internal static class FieldEditorGalleryRegistration
                                 .Add(model => model.HubCode)
                                 .UseEditor<LookupSheetEditor>(lookup =>
                                 {
-                                    lookup.UseItems<
-                                        GalleryAirportLookupSource,
-                                        GalleryAirport,
-                                        string
-                                    >(
-                                        airport => airport.Code,
-                                        airport => airport.City,
-                                        items => items.UseDescription(airport => airport.Country)
-                                    );
+                                    lookup.UseResource<GalleryAirport>();
                                     lookup.EnableCreate();
                                 });
                         })

@@ -1657,15 +1657,8 @@ internal sealed class ResourceController<TResource>(
             )
             .ToHashSet(StringComparer.Ordinal);
 
-    private string GetFieldLabel(FormFieldOptions options)
-    {
-        var property = options.PropertyPath[^1];
-
-        return options.Title
-            ?? MetadataProvider
-                .GetMetadataForProperty(property.DeclaringType!, property.Name)
-                .GetDisplayName();
-    }
+    private string GetFieldLabel(FormFieldOptions options) =>
+        FieldLabels.Get(options, HttpContext.RequestServices, MetadataProvider);
 
     // A multi-select lookup's create form opens one level above the form that contains the field
     private async Task<string?> GetLookupCreateUrlAsync(
@@ -2241,11 +2234,7 @@ internal sealed class ResourceController<TResource>(
 
         var context = new ValidationContext(container, HttpContext.RequestServices, items: null)
         {
-            DisplayName =
-                field.Title
-                ?? MetadataProvider
-                    .GetMetadataForProperty(property.DeclaringType!, property.Name)
-                    .GetDisplayName(),
+            DisplayName = FieldLabels.Get(field, HttpContext.RequestServices, MetadataProvider),
             MemberName = property.Name,
         };
         var value = property.GetValue(container);

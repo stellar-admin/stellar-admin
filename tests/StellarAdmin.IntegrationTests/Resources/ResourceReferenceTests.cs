@@ -40,6 +40,28 @@ public class ResourceReferenceTests
     }
 
     [Test]
+    public async Task Select_UseResourceWithoutTitle_IsLabelledByResourceLabel()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.SupplierId)
+                    .UseEditor<SelectEditor>(select => select.UseResource<Supplier>()),
+            configureSuppliers: supplier => supplier.SingularLabel = "preferred supplier"
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(document.RequiredElement("label[for='Entity_SupplierId']").TextContent.Trim())
+            .IsEqualTo("Preferred supplier");
+    }
+
+    [Test]
     public async Task Lookup_UseResource_ShowsSelectedTitleAndReferenceDescription()
     {
         // Arrange

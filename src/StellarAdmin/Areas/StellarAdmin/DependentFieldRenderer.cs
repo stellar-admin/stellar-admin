@@ -47,7 +47,11 @@ internal static class DependentFieldRenderer
             {
                 Name = templateInfo.GetFullHtmlFieldName(dependency.ParentFieldName),
                 Field = dependency.ParentFieldName,
-                Label = FieldDependencies.GetLabel(dependency.Parent!, html.MetadataProvider),
+                Label = FieldLabels.Get(
+                    dependency.Parent!,
+                    viewContext.HttpContext.RequestServices,
+                    html.MetadataProvider
+                ),
             });
 
         var element = new TagBuilder("admin-dependent-field");

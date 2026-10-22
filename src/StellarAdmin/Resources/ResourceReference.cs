@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq.Expressions;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
@@ -13,12 +14,14 @@ internal sealed class ResourceReference
 
     private ResourceReference(
         string? unavailableCause,
+        string label,
         bool appliesFilters,
         Func<IReadOnlyList<LambdaExpression>, ResourceReferenceItems>? createItems,
         Func<object, string>? formatTitle
     )
     {
         UnavailableCause = unavailableCause;
+        Label = label;
         AppliesFilters = appliesFilters;
         _createItems = createItems;
         _formatTitle = formatTitle;
@@ -27,20 +30,26 @@ internal sealed class ResourceReference
     // Whether the items apply the filters a field gives them; a data source can't
     public bool AppliesFilters { get; }
 
+    // The resource's singular label, capitalized, which labels the fields that refer to it
+    public string Label { get; }
+
     // Why fields can't refer to the resource, completing "because ..."
     public string? UnavailableCause { get; }
 
     public static ResourceReference Create<TResource>(ResourceOptions<TResource> options)
     {
         var name = typeof(TResource).Name.Split('`')[0];
+        var label = options.SingularLabel is [var first, .. var rest]
+            ? char.ToUpper(first, CultureInfo.CurrentCulture) + rest
+            : options.SingularLabel;
         if (options.IsUnavailable)
         {
-            return new($"the `{name}` resource is unavailable", false, null, null);
+            return new($"the `{name}` resource is unavailable", label, false, null, null);
         }
 
         if (options.KeySelector is not { } key)
         {
-            return new($"the `{name}` resource has no key", false, null, null);
+            return new($"the `{name}` resource has no key", label, false, null, null);
         }
 
         // A record without a title is named by its key
@@ -50,6 +59,7 @@ internal sealed class ResourceReference
 
         return new(
             null,
+            label,
             options.ReferenceItemsFactory is not null,
             options.ReferenceItemsFactory
                 ?? (_ => new DataSourceReferenceItems<TResource>(options, FormatTitle)),

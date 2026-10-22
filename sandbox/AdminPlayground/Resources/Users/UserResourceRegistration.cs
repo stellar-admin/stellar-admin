@@ -71,16 +71,7 @@ internal static class UserResourceRegistration
                                     {
                                         field.UseEditor<SelectEditor>(options =>
                                         {
-                                            options.UseItems<
-                                                ApplicationDbContext,
-                                                Department,
-                                                Guid
-                                            >(
-                                                department => department.Id,
-                                                department => department.Name,
-                                                items =>
-                                                    items.OrderBy(department => department.Name)
-                                            );
+                                            options.UseResource<Department>();
                                             options.EmptyChoiceText = "Not specified";
                                         });
                                     }
@@ -116,15 +107,7 @@ internal static class UserResourceRegistration
                                     {
                                         field.UseEditor<CheckboxGroupEditor>(options =>
                                         {
-                                            options.UseItems<
-                                                ApplicationDbContext,
-                                                ApplicationRole,
-                                                string
-                                            >(
-                                                role => role.Id,
-                                                role => role.Name!,
-                                                items => items.OrderBy(role => role.Name)
-                                            );
+                                            options.UseResource<ApplicationRole>();
                                             options.Columns(2);
                                         });
                                     }
@@ -170,16 +153,7 @@ internal static class UserResourceRegistration
                                     {
                                         field.UseEditor<SelectEditor>(options =>
                                         {
-                                            options.UseItems<
-                                                ApplicationDbContext,
-                                                Department,
-                                                Guid
-                                            >(
-                                                department => department.Id,
-                                                department => department.Name,
-                                                items =>
-                                                    items.OrderBy(department => department.Name)
-                                            );
+                                            options.UseResource<Department>();
                                             options.EmptyChoiceText = "Not specified";
                                         });
                                     }
@@ -215,15 +189,7 @@ internal static class UserResourceRegistration
                                     {
                                         field.UseEditor<CheckboxGroupEditor>(options =>
                                         {
-                                            options.UseItems<
-                                                ApplicationDbContext,
-                                                ApplicationRole,
-                                                string
-                                            >(
-                                                role => role.Id,
-                                                role => role.Name!,
-                                                items => items.OrderBy(role => role.Name)
-                                            );
+                                            options.UseResource<ApplicationRole>();
                                             options.Columns(2);
                                         });
                                     }

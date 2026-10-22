@@ -24,14 +24,9 @@ internal static class ProductResourceRegistration
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
-                    fields.Add(
-                        product => product.CategoryId,
-                        field =>
-                        {
-                            field.Title = "Category";
-                            field.UseEditor<LookupSheetEditor>(UseCategories);
-                        }
-                    );
+                    fields
+                        .Add(product => product.CategoryId)
+                        .UseEditor<LookupSheetEditor>(UseCategories);
                     fields.Add(product => product.Tags).UseEditor<MultiLookupSheetEditor>(UseTags);
                 })
             );
@@ -41,14 +36,9 @@ internal static class ProductResourceRegistration
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
-                    fields.Add(
-                        product => product.CategoryId,
-                        field =>
-                        {
-                            field.Title = "Category";
-                            field.UseEditor<LookupSheetEditor>(UseCategories);
-                        }
-                    );
+                    fields
+                        .Add(product => product.CategoryId)
+                        .UseEditor<LookupSheetEditor>(UseCategories);
                     fields.AddDisplayField(
                         product => string.Join(", ", product.Tags.Select(t => t.Name)),
                         field => field.Title = "Tags (2)"
@@ -59,10 +49,6 @@ internal static class ProductResourceRegistration
                         {
                             checkboxes.Appearance = CheckboxGroupAppearance.Cards;
                             checkboxes.Columns(2);
-                            checkboxes.UseItems<ApplicationDbContext, Tag, int>(
-                                tag => tag.Id,
-                                tag => tag.Name
-                            );
                         });
                 })
             );
@@ -75,19 +61,12 @@ internal static class ProductResourceRegistration
                         {
                             section.Columns(2);
                             section.Add(product => product.Name);
-                            section.Add(
-                                product => product.Category!.Name,
-                                field => field.Title = "Category"
-                            );
+                            section.Add(product => product.Category);
                             section.Add(
                                 product => string.Join(", ", product.Tags.Select(t => t.Name)),
                                 field => field.Title = "Tags (2)"
                             );
-                            section
-                                .Add(product => product.Tags)
-                                .UseDisplay<BadgeDisplay>(badge =>
-                                    badge.UseText<Tag>(tag => tag.Name)
-                                );
+                            section.Add(product => product.Tags).UseDisplay<BadgeDisplay>();
                         }
                     );
                     fields.AddSection(
@@ -148,12 +127,8 @@ internal static class ProductResourceRegistration
                     columns.Add(product => product.Id);
                     columns.Add(product => product.Details.Sku, column => column.Sortable());
                     columns.Add(
-                        product => product.Category!.Name,
-                        column =>
-                        {
-                            column.Title = "Category";
-                            column.Sortable();
-                        }
+                        product => product.Category,
+                        column => column.Sortable(product => product.Category!.Name)
                     );
                     columns.Add(
                         product => product.Name,
@@ -168,13 +143,7 @@ internal static class ProductResourceRegistration
                             column.UseDisplay<NumberDisplay>(number => number.Format = "0.00");
                         }
                     );
-                    // columns.Add(
-                    //     product => product.Tags,
-                    //     column =>
-                    //         column.UseDisplay<BadgeDisplay>(badge =>
-                    //             badge.UseText<Tag>(tag => tag.Name)
-                    //         )
-                    // );
+                    // columns.Add(product => product.Tags, column => column.UseDisplay<BadgeDisplay>());
                     columns.Add(
                         product => string.Join(",", product.Tags.Select(t => t.Name)),
                         column =>
@@ -188,7 +157,8 @@ internal static class ProductResourceRegistration
         });
     }
 
-    // New opens the category resource's create form, and selects the category it creates
+    // The items come from the category resource, which the foreign key names. New opens its create form, and selects
+    // the category it creates
     private static void UseCategories(LookupSheetEditor lookup)
     {
         lookup.Sheet(sheet =>
@@ -196,19 +166,11 @@ internal static class ProductResourceRegistration
             sheet.Title = "Select category";
             sheet.SearchPlaceholder = "Search categories...";
         });
-        lookup.UseItems<ApplicationDbContext, Category, int>(
-            category => category.Id,
-            category => category.Name,
-            items =>
-                items
-                    .UseDescription(category => "Category #" + category.Id.ToString())
-                    // Categories have no image, so the avatar shows the name's initials
-                    .UseAvatar(category => null)
-        );
         lookup.EnableCreate();
     }
 
-    // New opens the tag resource's create form, and adds the tag it creates to the selection
+    // The items come from the tag resource, which the many-to-many navigation names. New opens its create form, and
+    // adds the tag it creates to the selection
     private static void UseTags(MultiLookupSheetEditor lookup)
     {
         lookup.Sheet(sheet =>
@@ -216,7 +178,6 @@ internal static class ProductResourceRegistration
             sheet.Title = "Select tags";
             sheet.SearchPlaceholder = "Search tags...";
         });
-        lookup.UseItems<ApplicationDbContext, Tag, int>(tag => tag.Id, tag => tag.Name);
         lookup.Field(field => field.Layout = MultiLookupSheetEditorLayout.Chips);
         lookup.EnableCreate();
     }

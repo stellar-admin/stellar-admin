@@ -48,9 +48,11 @@ columns.Add(booking => booking.Customer!.Name, column => column.Title = "Custome
 
 Use the null-forgiving `!` on nullable navigations; a null reference shows the empty text. Set a `Title`, because the default comes from the last property (`Name`). Sorting by such a column works in EF Core (`column.Sortable()`).
 
-A column on a collection or many-to-many navigation (`tour => tour.Destinations`) is loaded with the page too. Show it with `BadgeDisplay` and `UseText<TItem>`; without them the column is left out and a configuration problem is logged, since each item would show the entity's type name. It can't be `Sortable()` without a sort expression ([relationships](relationships.md#showing-related-values)).
+A column on the navigation itself (`booking => booking.Customer`) shows the related record's title when its type is a registered resource, with the navigation's name as its header. Sort it by one of the record's properties: `column.Sortable(booking => booking.Customer!.Name)`. A related type that isn't a resource is left out, and a configuration problem is logged, since it would show its type name.
 
-Selecting a foreign key (`booking => booking.CustomerId`) shows the number; select the navigation's property instead.
+A column on a collection or many-to-many navigation (`tour => tour.Destinations`) is loaded with the page too. Show it with `BadgeDisplay`, which names each related record by its title, or by `UseText<TItem>` for a type that isn't a resource; otherwise the column is left out and a configuration problem is logged. It can't be `Sortable()` without a sort expression ([relationships](relationships.md#showing-related-values)).
+
+Selecting a foreign key (`booking => booking.CustomerId`) shows the number; select the navigation instead.
 
 ## Computed values
 
@@ -101,7 +103,7 @@ All in `StellarAdmin.Resources.Displays`. The same displays are used by display 
 | `EmailDisplay` | `[EmailAddress]` | A `mailto:` link |
 | `PhoneDisplay` | `[Phone]` | A `tel:` link |
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
-| `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant` from `StellarAdmin.UI`, default `Secondary`), the same for every value; collections show one badge per item. `UseText<TItem>(item => text)` sets each badge's text, such as a related entity's name ([relationships](relationships.md#showing-related-values)) |
+| `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant` from `StellarAdmin.UI`, default `Secondary`), the same for every value; collections show one badge per item. A related record of a registered resource shows its title; `UseText<TItem>(item => text)` sets each badge's text for other types ([relationships](relationships.md#showing-related-values)) |
 | `ImageDisplay` | Never a default | A thumbnail from a stored file name or URL: `ResolveUrl(value => url)` or `ResolveUrl(async (value, services, ct) => url)` (without it the value is the URL), `Size` (`ImageDisplaySize`, default `Small`, 32px), `AspectRatio` (`ImageAspectRatio` from `StellarAdmin.UI`, default `Square`), `Fit` (`ImageFit.Cover`, `Contain`), `Interaction` (`ImageDisplayInteraction.Lightbox`, `Preview`, `None`). An empty value shows a placeholder tile, an image that fails to load a broken-image tile |
 | `IconDisplay` | Never a default | The icon a stored name refers to, with the name on hover; `ShowName = true` shows it beside the icon. A name that isn't a registered icon shows a dashed box |
 

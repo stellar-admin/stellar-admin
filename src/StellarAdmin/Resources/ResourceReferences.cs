@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -17,6 +18,7 @@ namespace StellarAdmin.Resources;
 public sealed class ResourceReferences
 {
     private readonly ConditionalWeakTable<ReferencedResource, Resolved> _items = new();
+    private readonly ConcurrentDictionary<Type, ResourceReference?> _references = new();
     private readonly IServiceProvider _services;
 
     internal ResourceReferences(IServiceProvider services) => _services = services;
@@ -43,14 +45,55 @@ public sealed class ResourceReferences
         return _items.GetValue(resource, Resolve).Items;
     }
 
+    /// <summary>
+    ///     Returns a record's title, which names it wherever another record refers to it.
+    /// </summary>
+    /// <param name="record">The record.</param>
+    /// <returns>
+    ///     The title, or <see langword="null" /> when no resource is registered for the record's
+    ///     type, or the resource can't be referred to.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="record" /> is <see langword="null" />.
+    /// </exception>
+    public string? FormatTitle(object record)
+    {
+        ArgumentNullException.ThrowIfNull(record);
+
+        var type = record.GetType();
+        if (type.IsValueType || type == typeof(string))
+        {
+            return null;
+        }
+
+        // A proxy, such as one EF Core creates for lazy loading, derives from the resource's type
+        var reference = Find(type) ?? (type.BaseType is { } baseType ? Find(baseType) : null);
+
+        return reference is { UnavailableCause: null } ? reference.FormatTitle(record) : null;
+    }
+
+    // The label of the fields that refer to the resource, or null when it can't be referred to
+    internal string? GetLabel(ReferencedResource resource) =>
+        Find(resource.ResourceType) is { UnavailableCause: null } reference
+            ? reference.Label
+            : null;
+
+    // The reference of the resource registered for a type, found once its options can be built
+    private ResourceReference? Find(Type type) =>
+        _references.GetOrAdd(
+            type,
+            resourceType =>
+                _services
+                    .GetServices<ResourceRegistration>()
+                    .FirstOrDefault(registration => registration.ResourceType == resourceType)
+                    ?.ResolveReference(_services)
+        );
+
     // The resource is found once its options can be built, and a field's items are created once, with its filters
     private Resolved Resolve(ReferencedResource resource)
     {
         var name = resource.ResourceType.Name.Split('`')[0];
-        var reference = _services
-            .GetServices<ResourceRegistration>()
-            .FirstOrDefault(registration => registration.ResourceType == resource.ResourceType)
-            ?.ResolveReference(_services);
+        var reference = Find(resource.ResourceType);
         var cause = reference is null
             ? $"no resource is registered for `{name}`"
             : reference.UnavailableCause;

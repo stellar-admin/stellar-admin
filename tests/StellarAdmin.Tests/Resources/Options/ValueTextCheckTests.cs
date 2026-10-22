@@ -126,9 +126,7 @@ public class ValueTextCheckTests
         var problem = options.Problems.First(candidate =>
             candidate.Kind == ConfigurationProblemKind.ValueWithoutText
         );
-        await Assert
-            .That(problem.Message)
-            .Contains("its value is a collection of `Destination`");
+        await Assert.That(problem.Message).Contains("its value is a collection of `Destination`");
     }
 
     [Test]
@@ -169,13 +167,98 @@ public class ValueTextCheckTests
         await Assert.That(options.Index.Columns.Count).IsEqualTo(7);
     }
 
-    private static ServiceProvider CreateProvider(Action<ResourceBuilder<Tour>> configure)
+    [Test]
+    public async Task Run_WhenColumnShowsResourceRecord_KeepsIt()
+    {
+        // Arrange
+        using var provider = CreateProvider(
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns => columns.Add(tour => tour.Country))
+                ),
+            admin => admin.AddResource<Country>()
+        );
+
+        // Act
+        var options = GetOptions(provider);
+
+        // Assert
+        await Assert
+            .That(
+                options.Problems.Any(problem =>
+                    problem.Kind == ConfigurationProblemKind.ValueWithoutText
+                )
+            )
+            .IsFalse();
+        await Assert.That(options.Index.Columns.Count).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Run_WhenColumnShowsResourceRecordsInBadges_KeepsIt()
+    {
+        // Arrange
+        using var provider = CreateProvider(
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns =>
+                        columns.Add(
+                            tour => tour.Destinations,
+                            column => column.UseDisplay<BadgeDisplay>()
+                        )
+                    )
+                ),
+            admin => admin.AddResource<Destination>()
+        );
+
+        // Act
+        var options = GetOptions(provider);
+
+        // Assert
+        await Assert.That(options.Index.Columns.Count).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Run_WhenColumnShowsResourceRecordsWithoutBadges_LeavesItOut()
+    {
+        // Arrange
+        using var provider = CreateProvider(
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns => columns.Add(tour => tour.Destinations))
+                ),
+            admin => admin.AddResource<Destination>()
+        );
+
+        // Act
+        var options = GetOptions(provider);
+
+        // Assert
+        var problem = options.Problems.First(candidate =>
+            candidate.Kind == ConfigurationProblemKind.ValueWithoutText
+        );
+        await Assert
+            .That(problem.Message)
+            .Contains(
+                "The `Destinations` column isn't shown because its value is a collection of `Destination`, whose titles show only in badges."
+            );
+        await Assert.That(problem.Fix).IsEqualTo("Call `UseDisplay<BadgeDisplay>()`.");
+    }
+
+    private static ServiceProvider CreateProvider(Action<ResourceBuilder<Tour>> configure) =>
+        CreateProvider(configure, _ => { });
+
+    private static ServiceProvider CreateProvider(
+        Action<ResourceBuilder<Tour>> configure,
+        Action<StellarAdminBuilder> configureAdmin
+    )
     {
         var services = new ServiceCollection();
-        var resource = services.AddStellarAdmin().AddResource<Tour>();
+        var admin = services.AddStellarAdmin();
+        var resource = admin.AddResource<Tour>();
         resource.UseDataSource<TourDataSource>();
         resource.UseKey(tour => tour.Id);
         configure(resource);
+        configureAdmin(admin);
 
         return services.BuildServiceProvider();
     }

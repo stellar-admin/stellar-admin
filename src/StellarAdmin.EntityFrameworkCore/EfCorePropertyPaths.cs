@@ -30,6 +30,31 @@ internal static class EfCorePropertyPaths
         return true;
     }
 
+    // Whether a property path such as p => p.Category ends at a reference navigation, which has no single value
+    public static bool EndsAtNavigation(
+        IEntityType entityType,
+        IReadOnlyList<PropertyInfo> propertyPath
+    )
+    {
+        IEntityType current = entityType;
+        for (var index = 0; index < propertyPath.Count; index++)
+        {
+            if (current.FindNavigation(propertyPath[index].Name) is not { } navigation)
+            {
+                return false;
+            }
+
+            if (index == propertyPath.Count - 1)
+            {
+                return true;
+            }
+
+            current = navigation.TargetEntityType;
+        }
+
+        return false;
+    }
+
     // The properties a lambda such as p => p.Category.Name reads, or null when it is not a property path
     public static PropertyInfo[]? GetPropertyPath(LambdaExpression expression) =>
         ReadPropertyPath(expression.Body, expression.Parameters[0]);

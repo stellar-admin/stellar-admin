@@ -6,6 +6,7 @@ A resource is one entity type exposed in the admin panel, with its own index pag
 
 - [EF Core resources](#ef-core-resources)
 - [Slugs and labels](#slugs-and-labels)
+- [Record title and references](#record-title-and-references)
 - [Enabling pages](#enabling-pages)
 - [Delete](#delete)
 - [Custom data sources](#custom-data-sources)
@@ -42,7 +43,7 @@ admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
 
 - The key comes from EF metadata: a single public `int`, `long`, `Guid` or `string` property. EF resources have no `UseKey` or `UseDataSource`.
 - Queries honour global query filters, count before paging and add primary-key ordering so pages are stable.
-- References on a column's or display field's path (`booking => booking.Customer!.Name`) are loaded in the same query; no `Include` is needed.
+- References on a column's or display field's path (`booking => booking.Customer!.Name`, or `booking => booking.Customer` for the customer's title) are loaded in the same query; no `Include` is needed.
 - Create builds the entity with its parameterless constructor or `create.UseFactory(...)`, binds the configured fields and saves. Edit loads the entity, copies only the configured editable fields onto the tracked entity and saves.
 - Form fields must be mapped scalar properties that are not keys, generated values or concurrency tokens, or many-to-many navigations whose join table has no entity type ([relationships](relationships.md#many-to-many-with-multilookupsheeteditor)). Other collections and navigations need a custom model and handler ([forms](forms.md#custom-create-and-edit-models)).
 - A concurrency conflict on save shows a general error (or not found if the record was deleted). A delete the database refuses, such as one that other records still refer to, shows a general error and logs the exception as a warning; the record stays. Other database errors on save, such as a unique index violation, show a general error (see [delete](#delete)).
@@ -58,6 +59,19 @@ admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
 | Sidebar label | Plural label | `resource.SidebarItem(item => item.Label = "...")` |
 
 Slugs are lowercase letters and digits separated by single hyphens and must be unique. Setting only `SingularLabel` also changes the inferred plural; an explicit `PluralLabel` always wins. Page titles and button labels ("Create booking", "Edit booking") derive from the labels; change their patterns for every resource with `ConfigureResourceLabels` ([customization](customization.md#global-labels)).
+
+## Record title and references
+
+A record's title names it wherever another record refers to it: in lookups and choices, in columns and display fields that show it, and in badges.
+
+```csharp
+resource.UseTitle(customer => customer.Name);
+resource.Reference(reference => reference.UseDescription(customer => customer.Email));
+```
+
+- Without `UseTitle`, the title is the `string` property the class's `[DisplayColumn]` names, then a `string` property called `Name` or `Title`, then the key.
+- `Reference(...)` sets how records look when a field picks them: `UseDescription`, and one of `UseIcon`, `UseAvatar`, `UseImage` or `UseCode`. EF Core resources add `SearchOn`, `OrderBy` and `Where` ([relationships](relationships.md#the-related-resource)).
+- A field that refers to the resource is labelled with its singular label.
 
 ## Enabling pages
 

@@ -75,7 +75,7 @@ internal static class GridEditorRenderer
             FieldName = field.FieldName,
             IsBound = field.Binder is not null,
             IsReadOnly = field.IsReadOnly,
-            Title = field.Title,
+            Title = FieldLabels.Find(field, services, html.MetadataProvider),
             WaitingText = waitingText,
         };
 

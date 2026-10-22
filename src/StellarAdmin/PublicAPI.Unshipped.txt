@@ -1819,3 +1819,4 @@ StellarAdmin.Resources.ResourceReferences.GetItems(StellarAdmin.Resources.Editor
 static StellarAdmin.Resources.Editors.ReferencedResource.For<TResource>() -> StellarAdmin.Resources.Editors.ReferencedResource!
 static StellarAdmin.Resources.Editors.ReferencedResource.For<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Editors.ReferencedResource!
 StellarAdmin.Resources.Options.FormFieldOptions.InferResource(System.Type! resourceType) -> void
+StellarAdmin.Resources.ResourceReferences.FormatTitle(object! record) -> string?
