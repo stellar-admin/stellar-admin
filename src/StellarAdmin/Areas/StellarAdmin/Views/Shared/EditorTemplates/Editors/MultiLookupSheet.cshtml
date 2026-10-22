@@ -4,7 +4,8 @@
 @inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
 
 @{
-    var items = ((MultiLookupSheetEditorData?)EditorData)?.Items ?? [];
+    var data = (MultiLookupSheetEditorData?)EditorData;
+    var items = data?.Items ?? [];
     var classes = EditorClassNamesMapper.ForInput(Editor);
     var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
     var options = Editor.FieldOptions;
@@ -38,7 +39,7 @@
     var invalidRing = isInvalid ? "border-destructive ring-destructive/20 ring-[3px]" : "";
     var emptyClass = $"w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm {(isInvalid ? "border-destructive text-destructive" : "text-muted-foreground")}";
     var emptyButtonClass = "hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors";
-    var hasMedia = options.ShowMedia && Editor.Items?.MediaType is not null;
+    var hasMedia = options.ShowMedia && data?.HasMedia == true;
 
     ItemMediaViewModel? Media(ChoiceItem item, ItemMediaPlacement placement) =>
         options.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Title, placement, Editor.ClassNames.Media) : null;

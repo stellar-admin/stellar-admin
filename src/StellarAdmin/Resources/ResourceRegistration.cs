@@ -11,7 +11,8 @@ internal sealed record ResourceRegistration(
     Func<IServiceProvider, ResourceSidebarItem> ResolveSidebarItem,
     Func<IServiceProvider, IReadOnlyList<object>> ResolveAuthorizationMetadata,
     Func<IServiceProvider, bool> ResolveCanCreate,
-    Func<IServiceProvider, IReadOnlyList<ConfigurationProblem>> ResolveProblems
+    Func<IServiceProvider, IReadOnlyList<ConfigurationProblem>> ResolveProblems,
+    Func<IServiceProvider, ResourceReference> ResolveReference
 )
 {
     // Where the app added the resource, for its problems that have no more specific place

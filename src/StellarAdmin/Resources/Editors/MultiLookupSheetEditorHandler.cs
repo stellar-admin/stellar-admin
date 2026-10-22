@@ -19,14 +19,15 @@ public sealed class MultiLookupSheetEditorHandler(
         CancellationToken cancellationToken
     )
     {
-        var items =
-            Editor.Items
-            ?? throw new InvalidOperationException(
-                $"MultiLookupSheetEditor on {context.FieldName} requires UseItems."
-            );
+        // A resource that can't be referred to has been reported, and leaves the lookup without items
+        if (((ILookupSheetEditor)Editor).ResolveItems(services) is not { } items)
+        {
+            return new MultiLookupSheetEditorData([], false);
+        }
 
         return new MultiLookupSheetEditorData(
-            await items.FindAsync(services, context, cancellationToken)
+            await items.FindAsync(services, context, cancellationToken),
+            items.MediaType is not null
         );
     }
 }

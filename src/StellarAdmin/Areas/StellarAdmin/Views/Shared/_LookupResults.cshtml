@@ -3,7 +3,7 @@
 
 @{
     var editor = Model.Editor;
-    var placement = editor.Items!.HasDescription ? ItemMediaPlacement.LookupLarge : ItemMediaPlacement.Lookup;
+    var placement = Model.ItemSource.HasDescription ? ItemMediaPlacement.LookupLarge : ItemMediaPlacement.Lookup;
     var labels = LabelOptions.Value;
 }
 
@@ -68,7 +68,7 @@ else if (Model.IsEmpty)
         {
             <template data-lookup="selection">
                 <partial name="_LookupSelection"
-                         model="new LookupSelectionViewModel(item, single.Layout, single.FieldOptions.ShowMedia, false, single.ClassNames.Media)" />
+                         model="new LookupSelectionViewModel(item, single.GetLayout(Model.ItemSource), single.FieldOptions.ShowMedia, false, single.ClassNames.Media)" />
             </template>
         }
     </sa-command-item>

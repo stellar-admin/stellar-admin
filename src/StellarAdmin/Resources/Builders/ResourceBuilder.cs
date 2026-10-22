@@ -35,6 +35,29 @@ public sealed class ResourceBuilder<TResource>
     }
 
     /// <summary>
+    ///     Configures how the resource's records look when another record refers to them, such as
+    ///     in a lookup.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the records' look.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Each record is named by its title, which <c>UseTitle</c> sets.
+    /// </remarks>
+    public ResourceBuilder<TResource> Reference(
+        Action<ResourceReferenceBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(Services));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Sets the data source that loads and saves the resource.
     /// </summary>
     /// <typeparam name="TDataSource">The type of the data source.</typeparam>

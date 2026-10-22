@@ -1780,3 +1780,41 @@ StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportUnavailable(Micr
 StellarAdmin.Resources.Builders.FieldDependencyBuilder.EmptyText.set -> void
 StellarAdmin.Resources.Editors.LookupQuery.Model.get -> object?
 StellarAdmin.Resources.Editors.LookupQuery.Model.init -> void
+StellarAdmin.Resources.Builders.ResourceBuilder<TResource>.Reference(System.Action<StellarAdmin.Resources.Builders.ResourceReferenceBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.UseTitle(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! title) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>.Where<TModel>(System.Linq.Expressions.Expression<System.Func<TResource, TModel, bool>!>! filter) -> StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceReferenceBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>
+StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.ResourceReferenceBuilderBase(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.UseAvatar(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! imageUrl) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.UseCode(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! code) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.UseDescription(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! description) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.UseIcon(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! iconName) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.UseImage(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! imageUrl) -> TBuilder!
+StellarAdmin.Resources.Editors.ChoiceEditor.UseResource<TResource>() -> void
+StellarAdmin.Resources.Editors.ChoiceEditor.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.UseResource<TResource>() -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseResource<TResource>() -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.ResourceReferenceItems
+StellarAdmin.Resources.Editors.ResourceReferenceItems.ResourceReferenceItems() -> void
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.Reference.get -> StellarAdmin.Resources.Options.ResourceReferenceOptions<TResource>!
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.Title.get -> System.Linq.Expressions.Expression<System.Func<TResource, string?>!>?
+StellarAdmin.Resources.Options.ResourceOptions<TResource>.UseReferenceItems(System.Func<System.Collections.Generic.IReadOnlyList<System.Linq.Expressions.LambdaExpression!>!, StellarAdmin.Resources.Editors.ResourceReferenceItems!>! createItems) -> void
+StellarAdmin.Resources.Options.ResourceReferenceOptions<TResource>
+StellarAdmin.Resources.Options.ResourceReferenceOptions<TResource>.Description.get -> System.Linq.Expressions.Expression<System.Func<TResource, string?>!>?
+StellarAdmin.Resources.Options.ResourceReferenceOptions<TResource>.Media.get -> System.Linq.Expressions.Expression<System.Func<TResource, string?>!>?
+StellarAdmin.Resources.Options.ResourceReferenceOptions<TResource>.MediaType.get -> System.Type?
+abstract StellarAdmin.Resources.Editors.ResourceReferenceItems.ListAsync(System.IServiceProvider! services, object? model, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!
+StellarAdmin.Resources.Editors.LookupSheetEditor.Resource.get -> StellarAdmin.Resources.Editors.ReferencedResource?
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.Resource.get -> StellarAdmin.Resources.Editors.ReferencedResource?
+StellarAdmin.Resources.Editors.ReferencedResource
+StellarAdmin.Resources.Editors.ReferencedResource.Filters.get -> System.Collections.Generic.IReadOnlyList<System.Linq.Expressions.LambdaExpression!>!
+StellarAdmin.Resources.Editors.ReferencedResource.ResourceType.get -> System.Type!
+StellarAdmin.Resources.ResourceReferences
+StellarAdmin.Resources.ResourceReferences.GetItems(StellarAdmin.Resources.Editors.ReferencedResource! resource) -> StellarAdmin.Resources.Editors.ResourceReferenceItems?
+static StellarAdmin.Resources.Editors.ReferencedResource.For<TResource>() -> StellarAdmin.Resources.Editors.ReferencedResource!
+static StellarAdmin.Resources.Editors.ReferencedResource.For<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Editors.ReferencedResource!

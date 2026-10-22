@@ -5,6 +5,7 @@ namespace StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
 
 internal sealed record LookupResultsViewModel(
     ILookupSheetEditor Editor,
+    LookupItems ItemSource,
     IReadOnlyList<ChoiceItem> Items,
     string? MoreUrl,
     IReadOnlyCollection<string> Selected,

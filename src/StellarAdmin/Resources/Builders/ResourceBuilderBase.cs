@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -463,6 +464,29 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         ArgumentNullException.ThrowIfNull(configure);
 
         configure(new(Services));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Sets the expression that selects a record's title, which names the record wherever
+    ///     another record refers to it, such as in a lookup.
+    /// </summary>
+    /// <param name="title">An expression that selects a record's title.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="title" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     By default, the title is the <see langword="string" /> property the resource's
+    ///     <c>[DisplayColumn]</c> names, then its <c>Name</c> or <c>Title</c> property, then its
+    ///     key. A record whose title is empty is named by its key.
+    /// </remarks>
+    public TBuilder UseTitle(Expression<Func<TResource, string?>> title)
+    {
+        ArgumentNullException.ThrowIfNull(title);
+
+        Services.Configure<ResourceOptions<TResource>>(options => options.TitleExpression = title);
 
         return (TBuilder)this;
     }

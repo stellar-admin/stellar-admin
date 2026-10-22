@@ -1,0 +1,7 @@
+@using StellarAdmin.IntegrationTests.Fixtures
+@using StellarAdmin.Resources.Editors
+@inherits StellarAdmin.Areas.StellarAdmin.FieldEditorView<SupplierChipsEditor>
+@foreach (var item in (IReadOnlyList<ChoiceItem>?)EditorData ?? [])
+{
+    <span data-supplier-chip="@item.Value">@item.Title</span>
+}

@@ -40,6 +40,7 @@ public static class StellarAdminServiceCollectionExtensions
             );
             services.AddStellarAdminUI();
             services.TryAddSingleton<ConfigurationProblems>();
+            services.TryAddSingleton(provider => new ResourceReferences(provider));
             services.AddHostedService<ConfigurationProblemsLogger>();
             services.TryAddSingleton<BrandingResolver>();
             services.TryAddSingleton<UserMenuResolver>();

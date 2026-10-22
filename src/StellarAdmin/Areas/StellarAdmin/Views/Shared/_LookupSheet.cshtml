@@ -3,12 +3,13 @@
 
 @{
     var editor = Model.Editor;
+    var items = Model.ItemSource;
     var labels = LabelOptions.Value;
     var multiple = editor is MultiLookupSheetEditor;
 
     // The loading rows take the shape of the results' media: the Card size with a description, otherwise the Input size
     var skeletonMediaClass = editor.SheetOptions.ShowMedia
-        ? (editor.Items!.MediaType, editor.Items.HasDescription) switch
+        ? (items.MediaType, items.HasDescription) switch
         {
             ({ } type, true) when type == typeof(ItemMedia.Code) => "size-7 rounded-md",
             ({ } type, false) when type == typeof(ItemMedia.Code) => "h-5 w-8 rounded-sm",
@@ -34,7 +35,7 @@
                 }
                 <div class="flex flex-1 flex-col gap-1.5">
                     <sa-skeleton class="h-3.5 w-2/5" />
-                    @if (editor.Items!.HasDescription)
+                    @if (items.HasDescription)
                     {
                         <sa-skeleton class="h-3 w-3/5" />
                     }

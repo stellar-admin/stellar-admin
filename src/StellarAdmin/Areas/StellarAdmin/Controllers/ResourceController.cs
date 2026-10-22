@@ -589,7 +589,7 @@ internal sealed class ResourceController<TResource>(
         if (
             !ModelState.IsValid
             || query.Skip < 0
-            || FindLookupField(query) is not ({ } options, { Items: { } items } editor)
+            || FindLookupField(query) is not ({ } options, { } editor, { } items)
         )
         {
             return NotFound();
@@ -607,6 +607,7 @@ internal sealed class ResourceController<TResource>(
                 query,
                 options,
                 editor,
+                items,
                 term,
                 labels,
                 cancellationToken
@@ -619,6 +620,7 @@ internal sealed class ResourceController<TResource>(
                 "_LookupResults",
                 new LookupResultsViewModel(
                     editor,
+                    items,
                     [],
                     null,
                     query.Selected,
@@ -675,6 +677,7 @@ internal sealed class ResourceController<TResource>(
             "_LookupResults",
             new LookupResultsViewModel(
                 editor,
+                items,
                 results.Items,
                 moreUrl,
                 query.Selected,
@@ -683,7 +686,7 @@ internal sealed class ResourceController<TResource>(
                 isEmpty,
                 false,
                 labels,
-                isEmpty ? await GetLookupCreateUrlAsync(options, editor, query) : null
+                isEmpty ? await GetLookupCreateUrlAsync(options, editor, items, query) : null
             )
         );
     }
@@ -698,9 +701,7 @@ internal sealed class ResourceController<TResource>(
         if (
             !ModelState.IsValid
             || string.IsNullOrEmpty(value)
-            || FindLookupField(query)
-                is not
-                ({ } options, LookupSheetEditor { Items: { } items } editor)
+            || FindLookupField(query) is not ({ } options, LookupSheetEditor editor, { } items)
             || !TryConvertKey(GetValueType(options, query), value, out var current)
         )
         {
@@ -726,7 +727,7 @@ internal sealed class ResourceController<TResource>(
                 Convert.ToString(current, CultureInfo.CurrentCulture) ?? "",
                 new LookupSelectionViewModel(
                     item,
-                    editor.Layout,
+                    editor.GetLayout(items),
                     editor.FieldOptions.ShowMedia,
                     false,
                     editor.ClassNames.Media
@@ -741,7 +742,7 @@ internal sealed class ResourceController<TResource>(
         if (
             !ModelState.IsValid
             || string.IsNullOrEmpty(query.For)
-            || FindLookupField(query) is not ({ } options, { Items: not null } editor)
+            || FindLookupField(query) is not ({ } options, { } editor, { } items)
         )
         {
             return NotFound();
@@ -767,11 +768,12 @@ internal sealed class ResourceController<TResource>(
             "_LookupSheet",
             new LookupSheetViewModel(
                 editor,
+                items,
                 query.For,
                 editor.SheetOptions.Title ?? label,
                 resultsUrl,
                 new LookupLabelContext(label, editor.SheetOptions.MinimumSearchLength, null),
-                await GetLookupCreateUrlAsync(options, editor, query)
+                await GetLookupCreateUrlAsync(options, editor, items, query)
             )
         );
     }
@@ -784,9 +786,7 @@ internal sealed class ResourceController<TResource>(
     {
         if (
             !ModelState.IsValid
-            || FindLookupField(query)
-                is not
-                ({ } options, MultiLookupSheetEditor { Items: { } items } editor)
+            || FindLookupField(query) is not ({ } options, MultiLookupSheetEditor editor, { } items)
             || !TryConvertSelected(GetValueType(options, query), query.Selected, out var values)
         )
         {
@@ -1634,12 +1634,16 @@ internal sealed class ResourceController<TResource>(
             _ => null,
         };
 
-    private (FormFieldOptions, ILookupSheetEditor)? FindLookupField(ResourceLookupQuery query)
+    // The lookup field and its items; a field whose resource can't be referred to has none, and was reported
+    private (FormFieldOptions, ILookupSheetEditor, LookupItems)? FindLookupField(
+        ResourceLookupQuery query
+    )
     {
         return
             FindForm(query.Form)?.Fields.FirstOrDefault(options => options.FieldName == query.Field)
                 is { IsReadOnly: false, Editor: ILookupSheetEditor editor } options
-            ? (options, editor)
+            && editor.ResolveItems(HttpContext.RequestServices) is { } items
+            ? (options, editor, items)
             : null;
     }
 
@@ -1667,11 +1671,12 @@ internal sealed class ResourceController<TResource>(
     private async Task<string?> GetLookupCreateUrlAsync(
         FormFieldOptions options,
         ILookupSheetEditor editor,
+        LookupItems items,
         ResourceLookupQuery query
     )
     {
         if (
-            editor is not MultiLookupSheetEditor { CreateEnabled: true, Items: { } items } multi
+            editor is not MultiLookupSheetEditor { CreateEnabled: true } multi
             || string.IsNullOrEmpty(query.For)
         )
         {
@@ -2018,6 +2023,7 @@ internal sealed class ResourceController<TResource>(
         ResourceLookupQuery query,
         FormFieldOptions options,
         ILookupSheetEditor editor,
+        LookupItems items,
         string? term,
         LookupLabelContext labels,
         CancellationToken cancellationToken
@@ -2031,7 +2037,7 @@ internal sealed class ResourceController<TResource>(
             return NotFound();
         }
 
-        var selected = await editor.Items!.FindAsync(
+        var selected = await items.FindAsync(
             HttpContext.RequestServices,
             new FieldEditorContext(
                 options.FieldName,
@@ -2054,6 +2060,7 @@ internal sealed class ResourceController<TResource>(
             "_LookupResults",
             new LookupResultsViewModel(
                 editor,
+                items,
                 matches,
                 null,
                 query.Selected,

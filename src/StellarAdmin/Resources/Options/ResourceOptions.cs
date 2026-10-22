@@ -1,8 +1,10 @@
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Reflection;
 using Humanizer;
 using Microsoft.Extensions.Logging;
 using StellarAdmin.Diagnostics;
+using StellarAdmin.Resources.Editors;
 
 namespace StellarAdmin.Resources.Options;
 
@@ -76,6 +78,12 @@ public sealed class ResourceOptions<TResource>
     }
 
     /// <summary>
+    ///     Gets how the resource's records look when another record refers to them, such as in a
+    ///     lookup.
+    /// </summary>
+    public ResourceReferenceOptions<TResource> Reference { get; } = new();
+
+    /// <summary>
     ///     Gets the configuration of the resource's sidebar item.
     /// </summary>
     public ResourceSidebarItemOptions SidebarItem { get; } = new();
@@ -104,6 +112,18 @@ public sealed class ResourceOptions<TResource>
     } = DefaultSingularLabel;
 
     /// <summary>
+    ///     Gets the expression that selects a record's title, which names the record wherever
+    ///     another record refers to it.
+    /// </summary>
+    /// <value>
+    ///     The expression <c>UseTitle</c> sets. Without it, the <see langword="string" /> property
+    ///     the resource's <c>[DisplayColumn]</c> names, then its <c>Name</c> or <c>Title</c>
+    ///     property, then its key; <see langword="null" /> when the resource has none of these.
+    /// </value>
+    public Expression<Func<TResource, string?>>? Title =>
+        TitleExpression ?? ResourceTitle.FindConvention<TResource>(KeyPropertyName);
+
+    /// <summary>
     ///     Gets the configuration of the view page.
     /// </summary>
     /// <value>
@@ -111,6 +131,8 @@ public sealed class ResourceOptions<TResource>
     /// </value>
     public ResourceViewOptions? View { get; internal set; }
 
+    // How fields on other resources' forms refer to this resource, created once its options are built
+    internal ResourceReference AsReference => field ??= ResourceReference.Create(this);
     internal Func<
         IServiceProvider,
         object,
@@ -133,6 +155,11 @@ public sealed class ResourceOptions<TResource>
     >? EditLoader { get; set; }
     internal bool IsUnavailable => Problems.Any(problem => problem.MakesResourceUnavailable);
     internal string? KeyPropertyName { get; set; }
+    internal Func<
+        IReadOnlyList<LambdaExpression>,
+        ResourceReferenceItems
+    >? ReferenceItemsFactory { get; set; }
+    internal Expression<Func<TResource, string?>>? TitleExpression { get; set; }
     internal Func<
         IServiceProvider,
         string,
@@ -178,6 +205,29 @@ public sealed class ResourceOptions<TResource>
     }
 
     /// <summary>
+    ///     Sets how an integration creates the items of fields that refer to the resource.
+    /// </summary>
+    /// <param name="createItems">
+    ///     A delegate that creates a field's items from its filters. Each filter is an expression
+    ///     that takes a record and the field's form, and returns whether the record is an item.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="createItems" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     By default, the items load through the resource's data source, which doesn't apply
+    ///     filters.
+    /// </remarks>
+    public void UseReferenceItems(
+        Func<IReadOnlyList<LambdaExpression>, ResourceReferenceItems> createItems
+    )
+    {
+        ArgumentNullException.ThrowIfNull(createItems);
+
+        ReferenceItemsFactory = createItems;
+    }
+
+    /// <summary>
     ///     Reports an adjustment that an integration made next to what the app configured.
     /// </summary>
     /// <param name="eventId">The ID of the log event, which identifies the kind of problem.</param>
@@ -210,11 +260,22 @@ public sealed class ResourceOptions<TResource>
     ///     Call it from a post-configuration callback after correcting the options, so that they
     ///     can still be used. The problem names the line of the app's code that added the column.
     /// </remarks>
-    public void ReportInfo(EventId eventId, string message, string fix, DataGridColumnOptions column)
+    public void ReportInfo(
+        EventId eventId,
+        string message,
+        string fix,
+        DataGridColumnOptions column
+    )
     {
         ArgumentNullException.ThrowIfNull(column);
 
-        ReportIntegrationProblem(eventId, message, fix, column.Source, ConfigurationProblemLevel.Info);
+        ReportIntegrationProblem(
+            eventId,
+            message,
+            fix,
+            column.Source,
+            ConfigurationProblemLevel.Info
+        );
     }
 
     /// <summary>
@@ -237,7 +298,13 @@ public sealed class ResourceOptions<TResource>
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        ReportIntegrationProblem(eventId, message, fix, item.Source, ConfigurationProblemLevel.Info);
+        ReportIntegrationProblem(
+            eventId,
+            message,
+            fix,
+            item.Source,
+            ConfigurationProblemLevel.Info
+        );
     }
 
     /// <summary>
@@ -273,11 +340,22 @@ public sealed class ResourceOptions<TResource>
     ///     Call it from a post-configuration callback after correcting the options, so that they
     ///     can still be used. The problem names the line of the app's code that added the column.
     /// </remarks>
-    public void ReportProblem(EventId eventId, string message, string fix, DataGridColumnOptions column)
+    public void ReportProblem(
+        EventId eventId,
+        string message,
+        string fix,
+        DataGridColumnOptions column
+    )
     {
         ArgumentNullException.ThrowIfNull(column);
 
-        ReportIntegrationProblem(eventId, message, fix, column.Source, ConfigurationProblemLevel.Warning);
+        ReportIntegrationProblem(
+            eventId,
+            message,
+            fix,
+            column.Source,
+            ConfigurationProblemLevel.Warning
+        );
     }
 
     /// <summary>
@@ -300,7 +378,13 @@ public sealed class ResourceOptions<TResource>
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        ReportIntegrationProblem(eventId, message, fix, item.Source, ConfigurationProblemLevel.Warning);
+        ReportIntegrationProblem(
+            eventId,
+            message,
+            fix,
+            item.Source,
+            ConfigurationProblemLevel.Warning
+        );
     }
 
     /// <summary>
@@ -323,7 +407,11 @@ public sealed class ResourceOptions<TResource>
         ArgumentNullException.ThrowIfNull(fix);
 
         Problems.Add(
-            ConfigurationProblem.Unavailable(ConfigurationProblemKind.Integration, message, fix) with
+            ConfigurationProblem.Unavailable(
+                ConfigurationProblemKind.Integration,
+                message,
+                fix
+            ) with
             {
                 IntegrationEventId = eventId,
                 Source = null,

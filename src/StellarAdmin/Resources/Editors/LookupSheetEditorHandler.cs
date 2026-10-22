@@ -17,11 +17,11 @@ public sealed class LookupSheetEditorHandler(LookupSheetEditor editor, IServiceP
         CancellationToken cancellationToken
     )
     {
-        var items =
-            Editor.Items
-            ?? throw new InvalidOperationException(
-                $"LookupSheetEditor on {context.FieldName} requires UseItems."
-            );
+        // A resource that can't be referred to has been reported, and leaves the lookup without items
+        if (((ILookupSheetEditor)Editor).ResolveItems(services) is not { } items)
+        {
+            return new LookupSheetEditorData(null, Editor.GetLayout(null), null);
+        }
 
         var item = (await items.FindAsync(services, context, cancellationToken)).FirstOrDefault();
         var createController = Editor.CreateEnabled
@@ -35,6 +35,6 @@ public sealed class LookupSheetEditorHandler(LookupSheetEditor editor, IServiceP
             )
             : null;
 
-        return new LookupSheetEditorData(item, createController);
+        return new LookupSheetEditorData(item, Editor.GetLayout(items), createController);
     }
 }

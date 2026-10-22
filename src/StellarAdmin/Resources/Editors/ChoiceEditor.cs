@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Diagnostics;
+using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
 
 namespace StellarAdmin.Resources.Editors;
@@ -158,6 +159,38 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
 
         ItemsLoader = (model, services, cancellationToken) =>
             itemsLoader(FormModel.Cast<TModel>(model, GetType()), services, cancellationToken);
+    }
+
+    /// <summary>
+    ///     Takes the items from a resource: its records, named by their titles.
+    /// </summary>
+    /// <typeparam name="TResource">The type of the resource.</typeparam>
+    /// <remarks>
+    ///     Each item's value is the record's key. The resource's <c>Reference</c> settings add a
+    ///     description and media, and an EF Core resource's settings order and filter the items.
+    ///     When no resource is registered for <typeparamref name="TResource" />, the editor has no
+    ///     items.
+    /// </remarks>
+    public void UseResource<TResource>() => UseResource<TResource>(_ => { });
+
+    /// <summary>
+    ///     Takes the items from a resource, and configures them for this field.
+    /// </summary>
+    /// <typeparam name="TResource">The type of the resource.</typeparam>
+    /// <param name="configure">A delegate that configures the items.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     See <see cref="UseResource{TResource}()" />.
+    /// </remarks>
+    public void UseResource<TResource>(Action<ResourceItemsBuilder<TResource>> configure)
+    {
+        var resource = ReferencedResource.For(configure);
+        ItemsLoader = async (model, services, cancellationToken) =>
+            services.GetRequiredService<ResourceReferences>().GetItems(resource) is { } items
+                ? await items.ListAsync(services, model, cancellationToken)
+                : [];
     }
 
     internal IReadOnlyList<ChoiceItem> ResolveChoices(

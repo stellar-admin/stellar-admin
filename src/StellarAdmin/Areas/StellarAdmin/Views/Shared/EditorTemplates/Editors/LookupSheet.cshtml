@@ -6,13 +6,14 @@
 @{
     var data = (LookupSheetEditorData?)EditorData;
     var item = data?.Item;
+    var layout = data?.Layout ?? Editor.GetLayout(Editor.Items);
     var classes = EditorClassNamesMapper.ForInput(Editor);
     var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
     var canLookUp = !IsReadOnly && Field?.FieldName is not null;
     var allowClear = canLookUp && (Editor.FieldOptions.AllowClear ?? !ViewData.ModelMetadata.IsRequired);
-    var isCard = Editor.Layout == LookupSheetEditorLayout.Card;
+    var isCard = layout == LookupSheetEditorLayout.Card;
     var isInvalid = ViewData.ModelState.GetFieldValidationState(Html.NameForModel()) == ModelValidationState.Invalid;
-    var selection = new LookupSelectionViewModel(item, Editor.Layout, Editor.FieldOptions.ShowMedia, !canLookUp, Editor.ClassNames.Media);
+    var selection = new LookupSelectionViewModel(item, layout, Editor.FieldOptions.ShowMedia, !canLookUp, Editor.ClassNames.Media);
     var labels = LabelOptions.Value;
     var labelContext = new LookupLabelContext(label, Editor.SheetOptions.MinimumSearchLength, null);
     // While a field its items depend on has no value, the lookup is disabled and says why, and its value is cleared

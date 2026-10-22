@@ -74,8 +74,11 @@ internal static class EditorCheck
                     $"`{editor}` has no items, and only takes them from a non-flags enum or Boolean property",
                     "Pass the editor's items to `UseItems`."
                 );
-            case ILookupSheetEditor { Items: null }:
-                return ($"`{editor}` has no items", "Pass the editor's items to `UseItems`.");
+            case ILookupSheetEditor { Items: null, Resource: null }:
+                return (
+                    $"`{editor}` has no items",
+                    "Pass the editor's items to `UseItems`, or take them from a resource with `UseResource`."
+                );
             default:
                 return null;
         }

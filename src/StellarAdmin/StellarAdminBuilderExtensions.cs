@@ -120,7 +120,11 @@ public static partial class StellarAdminBuilderExtensions
                         services =>
                             services
                                 .GetRequiredService<IOptions<ResourceOptions<TResource>>>()
-                                .Value.Problems
+                                .Value.Problems,
+                        services =>
+                            services
+                                .GetRequiredService<IOptions<ResourceOptions<TResource>>>()
+                                .Value.AsReference
                     )
                     {
                         Source = ConfigurationSource.Capture(),

@@ -20,9 +20,18 @@ public sealed class LookupSheetEditor
     ///     Gets the items the editor looks up.
     /// </summary>
     /// <value>
-    ///     The items, or <see langword="null" /> until <c>UseItems</c> is called.
+    ///     The items, or <see langword="null" /> until <c>UseItems</c> is called, and when the
+    ///     editor takes its items from a resource.
     /// </value>
     public LookupItems? Items { get; private set; }
+
+    /// <summary>
+    ///     Gets the resource the editor takes its items from.
+    /// </summary>
+    /// <value>
+    ///     The resource, or <see langword="null" /> until <c>UseResource</c> is called.
+    /// </value>
+    public ReferencedResource? Resource { get; private set; }
 
     /// <inheritdoc />
     public override string TemplateName => "Editors/LookupSheet";
@@ -34,14 +43,6 @@ public sealed class LookupSheetEditor
     internal ConfigurationSource? CreateSource { get; private set; }
 
     internal LookupFieldOptions FieldOptions { get; } = new();
-
-    internal LookupSheetEditorLayout Layout =>
-        FieldOptions.Layout
-        ?? (
-            Items?.HasDescription == true
-                ? LookupSheetEditorLayout.Card
-                : LookupSheetEditorLayout.Input
-        );
 
     internal LookupSheetOptions SheetOptions { get; } = new();
 
@@ -120,6 +121,7 @@ public sealed class LookupSheetEditor
         ArgumentNullException.ThrowIfNull(items);
 
         Items = items;
+        Resource = null;
     }
 
     /// <summary>
@@ -166,7 +168,7 @@ public sealed class LookupSheetEditor
         Action<LookupItemsBuilder<TEntity>> configure
     )
         where TSource : class, ILookupSource<TEntity, TValue> =>
-        Items = LookupItems.Create<TSource, TEntity, TValue>(value, title, configure);
+        UseItems(LookupItems.Create<TSource, TEntity, TValue>(value, title, configure));
 
     /// <summary>
     ///     Sets a registered source that supplies the items for each request, searching them with a
@@ -230,11 +232,51 @@ public sealed class LookupSheetEditor
         Action<LookupItemsBuilder<TEntity>> configure
     )
         where TSource : class, ILookupSource<TEntity, TValue, TArgument> =>
-        Items = LookupItems.Create<TSource, TEntity, TValue, TArgument, TModel>(
-            value,
-            title,
-            argument,
-            configure,
-            GetType()
+        UseItems(
+            LookupItems.Create<TSource, TEntity, TValue, TArgument, TModel>(
+                value,
+                title,
+                argument,
+                configure,
+                GetType()
+            )
+        );
+
+    /// <summary>
+    ///     Takes the items from a resource: its records, named by their titles.
+    /// </summary>
+    /// <typeparam name="TResource">The type of the resource.</typeparam>
+    /// <remarks>
+    ///     Each item's value is the record's key. The resource's <c>Reference</c> settings add a
+    ///     description and media, and an EF Core resource's settings search, order and filter the
+    ///     items. When no resource is registered for <typeparamref name="TResource" />, the editor
+    ///     has no items.
+    /// </remarks>
+    public void UseResource<TResource>() => UseResource<TResource>(_ => { });
+
+    /// <summary>
+    ///     Takes the items from a resource, and configures them for this field.
+    /// </summary>
+    /// <typeparam name="TResource">The type of the resource.</typeparam>
+    /// <param name="configure">A delegate that configures the items.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     See <see cref="UseResource{TResource}()" />.
+    /// </remarks>
+    public void UseResource<TResource>(Action<ResourceItemsBuilder<TResource>> configure)
+    {
+        Resource = ReferencedResource.For(configure);
+        Items = null;
+    }
+
+    // Items with a description show their selection as a card, unless the field sets its layout
+    internal LookupSheetEditorLayout GetLayout(LookupItems? items) =>
+        FieldOptions.Layout
+        ?? (
+            items?.HasDescription == true
+                ? LookupSheetEditorLayout.Card
+                : LookupSheetEditorLayout.Input
         );
 }

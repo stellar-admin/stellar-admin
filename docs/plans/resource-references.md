@@ -88,7 +88,7 @@ Configuration problems, logged and worked around:
 
 - **Core options.** `ResourceOptions<TResource>` gains the title expression and the reference settings. The EF Core package reaches core only through public API (there is no `InternalsVisibleTo`), so the hook it needs is public integration surface, kept minimal, like `ResourceOptions.ReportProblem`.
 - **Registration.** `ResourceRegistration` gains a factory that builds a reference for its resource: lookup items, choice items and a title formatter for a record. The core default works through `IResourceDataSource<TResource>.ListAsync`. The EF Core resource replaces it in its PostConfigure with one built on `EfCoreLookupItems` and the `EfCoreChoiceItemsLoader` projection, using the primary key, the title expression and the reference settings.
-- **Field side.** A `ResourceLookupItems` (a `LookupItems` subclass) and a choice items loader that find the registration by type per request and delegate to its reference, carrying the per-field `Where`.
+- **Field side.** Editors store a `ReferencedResource` (the type and the per-field `Where`) and get the items from the `ResourceReferences` service when their form renders. See [Progress](#progress).
 - **Inference.** In `ConfigureEfCoreResource`'s PostConfigure, next to `UseManyToManyBinders`, for entity forms (create and edit with `ModelType == TEntity`): fields with a choice or lookup editor and no items get resource items for the principal or target type. Many-to-many binders keep their existing checks.
 - **Labels.** The foreign-key label default is resolved at render from the related registration, below any explicit title or `[Display(Name)]`.
 - **Displays.** Column and display field rendering formats a value whose type is a registered resource with its title, and `BadgeDisplay` without `UseText` uses the item type's title. EF Core includes the navigation a column or display field selects (check `FindDisplayIncludePaths` covers a bare navigation).
@@ -126,6 +126,16 @@ Checkpoint with Jerrie after step 2 (the core API in use) and after step 5 (the 
 
 - Later: page headings, breadcrumbs and delete confirmations that use the record title. Linking a related record in a column to its view page.
 
+## Progress
+
+Steps 1 and 2 done (2026-10-22), reworked the same day from push to pull at Jerrie's request, uncommitted.
+
+- `UseTitle` on every resource builder, `Reference(...)` on the core resource builder (`ResourceReferenceBuilderBase` shared with the coming EF Core builder), and `UseResource<T>()` with `ResourceItemsBuilder<T>.Where<TModel>` on `ChoiceEditor`, `LookupSheetEditor` and `MultiLookupSheetEditor`.
+- Pull, not push (Jerrie, 2026-10-22). Configuration records only which resource a field refers to: `ReferencedResource.For<T>()`, the type and the field's filters, which lookups expose as `Resource`. Editors ask the public `ResourceReferences` service for the items when their form renders (`GetItems(resource)`, cached per field). The lookup handlers and the sheet, search and selection endpoints resolve the items once per request and pass them to the templates, which no longer read `editor.Items`. A custom editor uses the same two pieces, with no interface or binding step. The first version bound a proxy to the app's services from the options factory through an internal `IResourceItemsEditor`, which would have shut out custom editors.
+- Integration surface for step 3: `ResourceOptions.Title` (resolved, conventions included), `ResourceOptions.Reference`, `ResourceOptions.UseReferenceItems(...)` and the abstract `ResourceReferenceItems` (a `LookupItems` with `ListAsync` for choice editors).
+- Problems are reported when the form renders, at the `UseResource` line: no registered resource, an unavailable resource or one without a key (the field has no items), and a per-field `Where` on a data-source resource (the filter is ignored).
+- `UseTitle` takes `Expression<Func<TResource, string?>>`, so nullable properties need no `!`. An empty title falls back to the key.
+
 ## Verification
 
-Not started.
+- 2026-10-22, steps 1 and 2 after the pull rework: `ResourceReferenceTests` (12 tests: select and lookup items, search with paging and default sort, multi-lookup, `UseTitle`, `[DisplayColumn]` and key titles, a missing resource, a resource without a key, an ignored `Where`, authorization, and a custom editor using `ResourceReferences`) pass. The admin panel integration (663), unit (305) and EF Core integration (126) suites pass.

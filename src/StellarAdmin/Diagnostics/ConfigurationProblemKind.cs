@@ -58,6 +58,9 @@ internal enum ConfigurationProblemKind
     RepeatedRowDetailPanel = 1062,
     RowDetailsWithoutKey = 1063,
 
+    ReferenceUnavailable = 1064,
+    ReferenceFilterIgnored = 1065,
+
     WordmarkWithSubtitle = 1070,
     InvalidLink = 1071,
 
