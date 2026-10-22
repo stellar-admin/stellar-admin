@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
@@ -172,6 +173,14 @@ public static class StellarAdminBuilderExtensions
         where TEntity : class
     {
         resource.UseDataSource<EfCoreResourceDataSource<TContext, TEntity>>();
+        builder.Services.TryAddSingleton<EfCoreResourceTitles>();
+        builder.Services.AddSingleton(
+            new EfCoreResourceTitle(
+                typeof(TEntity),
+                services =>
+                    services.GetRequiredService<IOptions<ResourceOptions<TEntity>>>().Value.Title
+            )
+        );
         builder
             .Services.AddOptions<ResourceOptions<TEntity>>()
             .PostConfigure<IServiceScopeFactory, IOptions<EfCoreResourceReferenceOptions<TEntity>>>(

@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Resources;
@@ -12,6 +13,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     TContext db,
     IOptions<ResourceOptions<TEntity>> options,
     ResourceReferences references,
+    EfCoreResourceTitles titles,
     ILogger<EfCoreResourceDataSource<TContext, TEntity>> logger
 ) : IResourceCrudDataSource<TEntity>
     where TContext : DbContext
@@ -104,12 +106,13 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
 
         // Columns read through the references on their paths, such as Category for p => p.Category.Name,
         // and load the collections they show, such as Tags for p => p.Tags. A column that computes its
-        // value loads what each path it reads needs.
+        // value loads what each path it reads needs, and one that shows related records loads what their
+        // title reads, such as Category.Parent.
         var entityType = db.Model.FindEntityType(typeof(TEntity))!;
         query = Include(
             query,
             _resourceOptions.Index.Columns.SelectMany(column =>
-                EfCorePropertyPaths.FindDisplayIncludePaths(entityType, column.FieldExpression)
+                FindDisplayIncludePaths(entityType, column.FieldExpression)
             )
         );
 
@@ -239,7 +242,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         // Lookup editors display the selected item from the reference loaded with the entity, with
         // the references its text reads through, many-to-many fields show the related entities' keys,
         // and display fields read through the references on their paths and load the collections they
-        // show, or those their computed values read. The edit and view pages load through the same method, so the entity carries the
+        // show, or those their computed values read, and what the title of related records they show reads. The edit and view pages load through the same method, so the entity carries the
         // navigations either page needs
         if (includeLookups)
         {
@@ -267,10 +270,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
                     .Concat(collections)
                     .Concat(
                         displayFields.SelectMany(field =>
-                            EfCorePropertyPaths.FindDisplayIncludePaths(
-                                entityType,
-                                field.FieldExpression
-                            )
+                            FindDisplayIncludePaths(entityType, field.FieldExpression)
                         )
                     )
             );
@@ -278,6 +278,20 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
 
         return query.SingleOrDefaultAsync(predicate, cancellationToken);
     }
+
+    private IEnumerable<string> FindDisplayIncludePaths(
+        IEntityType entityType,
+        LambdaExpression expression
+    ) =>
+        EfCorePropertyPaths
+            .FindDisplayIncludePaths(entityType, expression)
+            .Concat(
+                EfCorePropertyPaths.FindTitleIncludePaths(
+                    entityType,
+                    expression,
+                    titles.FindIncludePaths
+                )
+            );
 
     private static IQueryable<TEntity> Include(
         IQueryable<TEntity> query,

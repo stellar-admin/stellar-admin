@@ -1,6 +1,6 @@
 # Configuration simplification
 
-Status: in progress (2026-10-22). Branch `configuration-simplification`. Stage B is planned in [resource-references](resource-references.md). Stages A and C to G are research only; each gets its own plan, and Jerrie's approval, before work starts. All stages ship on this one branch.
+Status: in progress (2026-10-23). Branch `configuration-simplification`. Stage B is done (2026-10-23): [resource-references](archive/resource-references.md). Stages A and C to G are research only; each gets its own plan, and Jerrie's approval, before work starts. All stages ship on this one branch.
 
 ## Goal
 
@@ -21,7 +21,7 @@ Counted in the playground, samples and tests: 81 explicit two-argument calls (`A
 
 | Stage | Change | Status |
 | --- | --- | --- |
-| B | Related records come from their own resource | Planned: [resource-references](resource-references.md) |
+| B | Related records come from their own resource | Done: [resource-references](archive/resource-references.md) |
 | C | EF Core conventions pick an editor for foreign keys | Research |
 | E | The DbContext is found, not named | Research |
 | A | Fields keep their types; each editor gets its own method | Research |
@@ -136,4 +136,4 @@ admin.AddResourcesFromAssembly(typeof(Program).Assembly);
 ## Decisions (Jerrie)
 
 - 2026-10-22: One branch, `configuration-simplification`, for all stages, delivered stage by stage.
-- 2026-10-22: Stage B is planned first. Its decisions are in [resource-references](resource-references.md#decisions-jerrie-2026-10-22).
+- 2026-10-22: Stage B is planned first. Its decisions are in [resource-references](archive/resource-references.md#decisions-jerrie-2026-10-22).

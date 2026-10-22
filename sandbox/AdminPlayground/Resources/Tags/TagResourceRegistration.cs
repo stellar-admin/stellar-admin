@@ -1,6 +1,7 @@
 using AdminPlayground.Data;
 using StellarAdmin;
 using StellarAdmin.EntityFrameworkCore;
+using StellarAdmin.Resources.Displays;
 
 namespace AdminPlayground.Resources.Tags;
 
@@ -19,7 +20,12 @@ internal static class TagResourceRegistration
             });
             resource.Index(index =>
             {
-                index.Columns(columns => columns.Add(tag => tag.Name, column => column.Sortable()));
+                index.Columns(columns =>
+                {
+                    columns.Add(tag => tag.Name, column => column.Sortable());
+                    // Each product is named by its title, which reads its category, so the index loads that too
+                    columns.Add(tag => tag.Products, column => column.UseDisplay<BadgeDisplay>());
+                });
                 index.DefaultSortBy(tag => tag.Name);
                 index.EnableSearch(
                     term => tag => tag.Name.Contains(term),

@@ -12,6 +12,11 @@ internal static class ProductResourceRegistration
     {
         admin.AddEfCoreResource<ApplicationDbContext, Product>(resource =>
         {
+            resource.UseTitle(product =>
+                product.Category != null
+                    ? product.Category.Name + " / " + product.Name
+                    : product.Name
+            );
             resource.SidebarItem(item =>
             {
                 item.Group = "Commerce";

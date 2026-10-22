@@ -130,6 +130,42 @@ internal static class EfCorePropertyPaths
             .OfType<string>();
     }
 
+    // The include paths a display that shows related records, such as p => p.Category or p => p.Tags, needs to name
+    // them by their title: the paths the title reads, below the navigation, such as Category.Parent
+    public static IEnumerable<string> FindTitleIncludePaths(
+        IEntityType entityType,
+        LambdaExpression expression,
+        Func<IEntityType, IReadOnlyList<string>> findTitleIncludePaths
+    )
+    {
+        if (
+            GetPropertyPath(expression) is not { Length: > 0 } propertyPath
+            || FindDisplayIncludePath(entityType, propertyPath) is not { } path
+        )
+        {
+            return [];
+        }
+
+        IEntityType current = entityType;
+        foreach (var property in propertyPath)
+        {
+            if (current.FindNavigation(property.Name) is { } navigation)
+            {
+                current = navigation.TargetEntityType;
+            }
+            else if (current.FindSkipNavigation(property.Name) is { } skipNavigation)
+            {
+                current = skipNavigation.TargetEntityType;
+            }
+            else
+            {
+                return [];
+            }
+        }
+
+        return findTitleIncludePaths(current).Select(titlePath => $"{path}.{titlePath}");
+    }
+
     public static string? FindReferencePath(
         IEntityType entityType,
         IReadOnlyList<PropertyInfo> propertyPath

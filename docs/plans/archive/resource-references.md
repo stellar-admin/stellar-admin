@@ -1,6 +1,6 @@
 # Resource references
 
-Status: approved (2026-10-22), in progress. Stage B of [configuration simplification](configuration-simplification.md), on the `configuration-simplification` branch.
+Status: completed (2026-10-23). Stage B of [configuration simplification](../configuration-simplification.md), committed in `0027612`, `d2c0f42` and `0019744` on the `configuration-simplification` branch, which isn't merged yet. Follow-ups are under [Open](#open).
 
 ## Goal
 
@@ -16,7 +16,7 @@ Related records come from their own resource. A resource says once how it looks 
 
 ## API
 
-The resource describes itself once. `UseTitle` sits next to `UseKey` because the title identifies the record everywhere, not only in lookups (the later page headings use it too). `Reference` is a bare noun, as the [options builder conventions](../conventions/options-builders.md) ask for a structural drill-down below the root (`Index`, `SidebarItem`).
+The resource describes itself once. `UseTitle` sits next to `UseKey` because the title identifies the record everywhere, not only in lookups (the later page headings use it too). `Reference` is a bare noun, as the [options builder conventions](../../conventions/options-builders.md) ask for a structural drill-down below the root (`Index`, `SidebarItem`).
 
 ```csharp
 admin.AddEfCoreResource<ApplicationDbContext, Category>(resource =>
@@ -115,7 +115,7 @@ Checkpoint with Jerrie after step 2 (the core API in use) and after step 5 (the 
 
 - Admin panel integration tests (`tests/StellarAdmin.IntegrationTests/Resources`): a custom-data-source resource as a reference for a select, a lookup (find, search, paging) and a multi-lookup. Title conventions, `UseTitle`, description and media. A missing or unavailable resource, and a per-field `Where` on a custom source, each report their problem. Picking works for a user the related resource's authorization rejects.
 - EF Core integration tests (`tests/StellarAdmin.EntityFrameworkCore.IntegrationTests/Resources`): foreign-key and many-to-many inference on create, edit and inline rows. `SearchOn`, `OrderBy`, `Where` and their fallbacks. Per-field `Where` with `DependsOn`. Global query filters. `EnableCreate` with an inferred type. Foreign-key labels, navigation columns, display fields and badges.
-- Unit tests only for invalid configuration, per the [admin panel test strategy](../conventions/unit-testing.md#admin-panel-test-strategy).
+- Unit tests only for invalid configuration, per the [admin panel test strategy](../../conventions/unit-testing.md#admin-panel-test-strategy).
 
 ## Documentation
 
@@ -125,10 +125,12 @@ Checkpoint with Jerrie after step 2 (the core API in use) and after step 5 (the 
 ## Open
 
 - Later: page headings, breadcrumbs and delete confirmations that use the record title. Linking a related record in a column to its view page.
+- Undecided: a public interface so custom editors get foreign-key inference; today they name their resource with `UseResource`.
+- Not rerun: the skill evaluation tasks in `build/skill-evals/admin-panel/`.
 
 ## Progress
 
-Steps 1 and 2 done (2026-10-22), reworked the same day from push to pull at Jerrie's request, committed in `0027612`. Step 3 done (2026-10-22), committed in `d2c0f42`. Steps 4 and 5 done (2026-10-23), uncommitted.
+Steps 1 and 2 done (2026-10-22), reworked the same day from push to pull at Jerrie's request, committed in `0027612`. Step 3 done (2026-10-22), committed in `d2c0f42`. Steps 4 and 5 done (2026-10-23), committed in `0019744`. Step 6 done (2026-10-23).
 
 - `UseTitle` on every resource builder, `Reference(...)` on the core resource builder (`ResourceReferenceBuilderBase` shared with the coming EF Core builder), and `UseResource<T>()` with `ResourceItemsBuilder<T>.Where<TModel>` on `ChoiceEditor`, `LookupSheetEditor` and `MultiLookupSheetEditor`.
 - Pull, not push (Jerrie, 2026-10-22). Configuration records only which resource a field refers to: `ReferencedResource.For<T>()`, the type and the field's filters, which lookups expose as `Resource`. Editors ask the public `ResourceReferences` service for the items when their form renders (`GetItems(resource)`, cached per field). The lookup handlers and the sheet, search and selection endpoints resolve the items once per request and pass them to the templates, which no longer read `editor.Items`. A custom editor uses the same two pieces, with no interface or binding step. The first version bound a proxy to the app's services from the options factory through an internal `IResourceItemsEditor`, which would have shut out custom editors.
@@ -146,10 +148,12 @@ Steps 1 and 2 done (2026-10-22), reworked the same day from push to pull at Jerr
 - Step 5 samples: Users take Department and Roles with `UseResource<T>()`. Products infer Category and Tags from the foreign key and many-to-many navigation, with the category's description and avatar on the Category resource's `Reference(...)`; the Category column and view field show the navigation, and the Tags badges lose `UseText<Tag>`. The airport resource's own Hub lookup uses `UseResource<GalleryAirport>()`, with `UseKey`, `UseTitle` and a description, and its data source now honours keys, search and paging.
 - Deviation: `GalleryAirportLookupSource` stays. The lookup gallery shows a different description and media on each field, which is what per-field `UseItems` is for; one resource has one look.
 - Consumer references: `relationships.md` leads with the related resource (title, `Reference`, inference, `UseResource`, labels) and keeps `UseItems` and `ILookupSource` for types that aren't resources. `resources.md` gains a record title section; `columns.md`, `fields.md`, `view-pages.md`, `editors.md` and `SKILL.md` (task table, complete example, checklist, common mistakes) follow. The skill evaluation tasks in `build/skill-evals/admin-panel/` weren't rerun.
-- Known gap: a title that reads through another navigation, such as `UseTitle(c => c.Parent!.Name + " / " + c.Name)`, isn't loaded with a column or display field that shows the record, so formatting it fails. Lookups load it. Left for later.
+- A title that reads through another navigation, such as `UseTitle(c => c.Parent != null ? c.Parent.Name + " / " + c.Name : c.Name)`, was first loaded only by lookups: a column or display field that showed the record didn't load `Parent`, so it showed the wrong text, or failed the page with `c.Parent!.Name`. Fixed after step 6 (2026-10-23, Jerrie's go-ahead): each EF Core resource registers its title with the EF Core package's internal `EfCoreResourceTitles`, and a column or display field that shows related records also includes the navigations their title reads, such as `Category.Parent`. A title that dereferences a navigation that is null in the database, such as `c.Parent!.Name` on a category without a parent, still fails in memory, as it would in any other C# code.
 
 ## Verification
 
+- 2026-10-23, after step 6: two more `ResourceRelatedResourceTests` (an index column and a view field showing a category whose title reads its parent) pass, and fail with the title includes turned off. All 1,865 tests pass in Release, and the admin playground builds.
+- 2026-10-23, step 6: the solution builds in Release with no new warnings (the remaining ones predate the branch, or follow the test suites' existing nullable `IsEquivalentTo` pattern), and CSharpier reports the branch's 61 changed C# files formatted. `dotnet test --solution StellarAdmin.slnx --configuration Release` passes all 1,863 tests in the five test projects. `dotnet run --project util/SkillsGenerator -- --check` reports no drift, and the skill validation (8 tests, 4 skills and 92 Markdown files) passes. No new browser check; the step 5 smoke run stands.
 - 2026-10-23, step 5: the playground builds, and a smoke run on port 5207 rendered the products index (Category column titles), edit (lookup labelled "Category" with its description), view (tag badges) and the airport Hub lookup search; `app.db` was unchanged. `dotnet run --project util/SkillsGenerator` and its `--check` (no drift), and the skill validation (8 tests, 4 skills and 92 Markdown files) pass. One more EF Core test (a sortable navigation column) and a label assertion pass: admin panel integration (664), unit (308) and EF Core integration (140).
 - 2026-10-23, step 4: three more `ResourceRelatedResourceTests` (foreign-key label, navigation column titles, many-to-many badges), a core label test with a custom singular label, and three `ValueTextCheckTests` pass. The admin panel integration (664), unit (308) and EF Core integration (139) suites pass, and the admin playground builds.
 - 2026-10-22, step 3: `ResourceRelatedResourceTests` (10 tests: foreign-key select and lookup inference with the selection included on edit, `EnableCreate` with an inferred type, many-to-many checkbox group inference, a missing related resource, `SearchOn`/`OrderBy`/`Where`, the index search and default sort fallbacks, a per-field `Where` on a self-reference, a global query filter, and an untranslatable title) pass. The admin panel integration (663), unit (305) and EF Core integration (136) suites pass, and the admin playground builds.

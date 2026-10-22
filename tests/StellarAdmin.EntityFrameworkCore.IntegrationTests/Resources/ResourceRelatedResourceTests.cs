@@ -392,6 +392,67 @@ public class ResourceRelatedResourceTests
     }
 
     [Test]
+    public async Task Index_NavigationColumnWithTitleThroughNavigation_ShowsFullTitles()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.Index(index =>
+                    index.Columns(columns => columns.Add(product => product.Category))
+                ),
+            configureAdmin: admin =>
+                admin.AddEfCoreResource<CatalogDbContext, Category>(category =>
+                    category.UseTitle(item =>
+                        item.Parent != null ? item.Parent.Name + " / " + item.Name : item.Name
+                    )
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await GetDocument(client, "/stellaradmin/products");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("tbody > tr")
+                    .Select(row => row.QuerySelectorAll("td")[3].TextContent.Trim())
+            )
+            .IsEquivalentTo(
+                ["Office", "Office / Technology", "Office / Technology", "Beverage"],
+                CollectionOrdering.Matching
+            );
+    }
+
+    [Test]
+    public async Task View_NavigationFieldWithTitleThroughNavigation_ShowsFullTitle()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.AllowView(view =>
+                    view.Fields(fields => fields.Add(product => product.Category))
+                ),
+            configureAdmin: admin =>
+                admin.AddEfCoreResource<CatalogDbContext, Category>(category =>
+                    category.UseTitle(item =>
+                        item.Parent != null ? item.Parent.Name + " / " + item.Name : item.Name
+                    )
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await GetDocument(client, "/stellaradmin/products/view/2");
+
+        // Assert
+        await Assert
+            .That(document.QuerySelector("[data-slot='display-field-value']")?.TextContent.Trim())
+            .IsEqualTo("Office / Technology");
+    }
+
+    [Test]
     public async Task Index_SortableNavigationColumn_IsNotSortableAndLogsProblem()
     {
         // Arrange
