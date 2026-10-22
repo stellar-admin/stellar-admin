@@ -45,18 +45,9 @@ public sealed class ResourceReferences
         return _items.GetValue(resource, Resolve).Items;
     }
 
-    /// <summary>
-    ///     Returns a record's title, which names it wherever another record refers to it.
-    /// </summary>
-    /// <param name="record">The record.</param>
-    /// <returns>
-    ///     The title, or <see langword="null" /> when no resource is registered for the record's
-    ///     type, or the resource can't be referred to.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="record" /> is <see langword="null" />.
-    /// </exception>
-    public string? FormatTitle(object record)
+    // A record's title, which names it wherever another record refers to it, or null when no resource is registered
+    // for its type or the resource can't be referred to
+    internal string? FormatTitle(object record)
     {
         ArgumentNullException.ThrowIfNull(record);
 
