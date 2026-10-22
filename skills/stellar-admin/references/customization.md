@@ -29,7 +29,7 @@ The panel's own `_ViewImports.cshtml` is compiled into the package and doesn't a
 @addTagHelper *, StellarAdmin
 ```
 
-Without it, `<sa-index-page>` and other tags are emitted as literal text: the page builds and returns 200 but shows nothing where the tag was. Check the HTML for raw `<sa-` tags after adding a view. The panel's `_ViewStart.cshtml` still applies, so overrides get the admin layout automatically.
+Without it, `<sa-index-page>` and other tags are emitted as literal text: the page builds and returns 200 but shows nothing where the tag was. Raw `<sa-` tags in the page's HTML are the sign of it. The panel's `_ViewStart.cshtml` still applies, so overrides get the admin layout automatically.
 
 ## Overriding a page
 

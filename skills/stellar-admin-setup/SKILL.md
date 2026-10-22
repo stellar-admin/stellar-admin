@@ -1,6 +1,6 @@
 ---
 name: stellar-admin-setup
-description: "Install the StellarAdmin admin panel into an ASP.NET Core app: NuGet packages, AddStellarAdmin, MapStellarAdmin and middleware order, and checking that it renders. Asks before adding resources, sign-in protection, branding or a theme. Use when adding StellarAdmin to a project or when /stellaradmin returns 404, renders unstyled or shows raw tags. Building resources, forms, columns and the sidebar after installation is the stellar-admin skill."
+description: "Install the StellarAdmin admin panel into an ASP.NET Core app: NuGet packages, AddStellarAdmin, MapStellarAdmin and middleware order, and what a working install looks like. Asks before adding resources, sign-in protection, branding or a theme. Use when adding StellarAdmin to a project or when /stellaradmin returns 404, renders unstyled or shows raw tags. Building resources, forms, columns and the sidebar after installation is the stellar-admin skill."
 metadata:
   author: StellarAdmin
 ---
@@ -166,7 +166,7 @@ Tell the user what was configured and what was skipped. When the panel has no pr
 
 ## What a working install looks like
 
-A successful build doesn't catch every configuration error; some surface on the first request. When the app is running (sign in first if the panel is protected):
+Some configuration errors only show once a page is requested. On a working install, signed in if the panel is protected:
 
 1. `/stellaradmin` returns 200 and is styled. In Development it shows a setup checklist of the steps the app hasn't configured yet; that's expected. Raw `<sa-...>` tags in the HTML mean a view is missing its `_ViewImports.cshtml` tag helper registrations (see the stellar-admin skill's customization reference).
 2. The sidebar header shows the app's name.
