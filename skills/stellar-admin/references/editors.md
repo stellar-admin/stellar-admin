@@ -125,6 +125,7 @@ Choice editors (`SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor`, `Segm
 | `UseItems(IEnumerable<SelectListItem>)` | Existing select list items |
 | `UseItems<TProvider>()` | A registered service implementing `IChoiceItemsProvider` (`GetItemsAsync(cancellationToken)`) |
 | `UseItems((services, cancellationToken) => ...)` | An inline async loader returning `IReadOnlyList<ChoiceItem>` |
+| `UseItems((TForm form, services, cancellationToken) => ...)` | An inline loader that reads other fields of the form, with `DependsOn` ([relationships](relationships.md#items-that-depend-on-another-field)) |
 | `UseItems<TContext, TEntity, TValue>(value, title, items => ...)` | Rows of an EF Core entity set (namespace `StellarAdmin.EntityFrameworkCore`; [relationships](relationships.md)) |
 
 For an enum, describe the choices on the members instead of listing them:

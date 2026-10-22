@@ -10,6 +10,7 @@ How to edit and show related records: a foreign key picked from a list, a search
 - [Lookup sheet settings](#lookup-sheet-settings)
 - [Many-to-many with MultiLookupSheetEditor](#many-to-many-with-multilookupsheeteditor)
 - [Lookups without EF Core](#lookups-without-ef-core)
+- [Items that depend on another field](#items-that-depend-on-another-field)
 - [Showing related values](#showing-related-values)
 
 A foreign-key field without an editor renders a number input. Always give it one of the editors below.
@@ -146,6 +147,66 @@ public sealed class AirportLookupSource(AirportClient client) : ILookupSource<Ai
 ```
 
 The non-EF items builder has `UseDescription`, `UseCode`, `UseAvatar`, `UseImage` and `UseIcon` (each returns nothing, so call one per statement). With a custom source, `EnableCreate()` needs `EnableCreate<TResource>()` when the item type isn't a registered resource.
+
+## Items that depend on another field
+
+`DependsOn` makes a field's items depend on another field of the same form, such as the cities of the selected country. It works with every choice editor, `LookupSheetEditor` and `MultiLookupSheetEditor`, on create and edit pages, create sheets and inline rows. Call it once per field the items depend on; dependencies chain (country → city → neighbourhoods).
+
+```csharp
+fields.Add(trip => trip.CountryId).UseEditor<SelectEditor>(select =>
+    select.UseItems<VoyagerDbContext, Country, int>(country => country.Id, country => country.Name));
+
+fields.Add(trip => trip.CityId)
+    .DependsOn(trip => trip.CountryId)
+    .UseEditor<SelectEditor>(select =>
+        select.UseItems<VoyagerDbContext, City, int>(
+            city => city.Id,
+            city => city.Name,
+            items => items.Where<Trip>((city, trip) => city.CountryId == trip.CountryId)));
+```
+
+- When the country changes, the city field reloads its items and its value is cleared. While the country is empty, the city field is disabled and shows "Select Country first"; set other text with `.DependsOn(trip => trip.CountryId, country => country.EmptyText = "Choose a country to see its cities")`.
+- The form a filter or loader receives holds only the fields named in `DependsOn` (and the key on an edit page); every other property has its default value. A filter that reads `trip.Region` needs `.DependsOn(trip => trip.Region)` too.
+- EF `Where<TForm>` is available on the choice and lookup items builders, with the form's type as the type argument.
+- The lookup sheet names its filter ("Filtered by Country: Japan").
+- Saving doesn't check that the city belongs to the country; validate that in the app (a custom handler, or `IValidatableObject` on the model) when it matters.
+- A `DependsOn` field that isn't an editable field of the same form, or that makes a cycle, is ignored and reported as a configuration problem.
+
+Choice editors without EF Core take a loader whose first parameter is the form:
+
+```csharp
+fields.Add(trip => trip.NeighbourhoodIds)
+    .DependsOn(trip => trip.CityId)
+    .UseEditor<ToggleGroupEditor>(group =>
+        group.UseItems((Trip trip, IServiceProvider services, CancellationToken cancellationToken) =>
+            services.GetRequiredService<CityGuide>().NeighbourhoodsAsync(trip.CityId!.Value, cancellationToken)));
+```
+
+A lookup without EF Core uses a source implementing `ILookupSource<TEntity, TValue, TArgument>`, whose search receives an argument the field takes from the form. The form's type is the fifth type argument:
+
+```csharp
+builder.Services.AddScoped<CountryAirportSource>();
+
+fields.Add(trip => trip.ArrivalAirport)
+    .DependsOn(trip => trip.CountryId)
+    .UseEditor<LookupSheetEditor>(lookup =>
+        lookup.UseItems<CountryAirportSource, Airport, string, int, Trip>(
+            airport => airport.Code,
+            airport => airport.Name,
+            trip => trip.CountryId!.Value,
+            items => items.UseCode(airport => airport.Code)));
+
+public sealed class CountryAirportSource(AirportClient client) : ILookupSource<Airport, string, int>
+{
+    // Not filtered: the selected airports load whatever the country
+    public Task<IReadOnlyCollection<Airport>> FindAsync(IReadOnlyCollection<string> values, CancellationToken cancellationToken) => client.FindAsync(values, cancellationToken);
+
+    public Task<LookupPage<Airport>> SearchAsync(int countryId, LookupQuery query, CancellationToken cancellationToken) =>
+        client.SearchAsync(countryId, query.Term, query.Skip, query.Take, cancellationToken);
+}
+```
+
+A search that needs several values takes a record of them as its argument, such as `ILookupSource<Hotel, int, HotelFilter>` with `trip => new HotelFilter(trip.CityId!.Value, trip.StarRating)`.
 
 ## Showing related values
 

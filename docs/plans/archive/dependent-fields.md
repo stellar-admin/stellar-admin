@@ -1,6 +1,6 @@
 # Dependent fields
 
-Status: in progress (2026-10-22). Implemented and verified, awaiting review; website docs and the consumer skill reference remain. Branch: `dependent-fields`.
+Status: completed (2026-10-22). Implemented in `815949c` on the `dependent-fields` branch, with the Trips sample, tests and the consumer skill reference. The admin panel has no website docs yet, so there is no website page to update. Follow-ups are under [Open](#open).
 
 ## Goal
 
@@ -69,13 +69,13 @@ New public surface:
 2. UI prototype in `sandbox/html/` showing the select, lookup and multi-lookup (and a choice group) in their empty-parent, loading and refreshed states, in a form and an inline grid row.
 3. Public API proposal for review: `DependsOn` and its options, the form context on item loaders, the EF Core filter. Agreed 2026-10-22, see [API](#api-agreed-2026-10-22-revised-the-same-day).
 4. Implementation: refresh endpoint, client wiring, disabled states in the form and grid editor templates, lookup sheet requests. Done (2026-10-22), see [Implementation](#implementation).
-5. Tests, a country/city sample in AdminPlayground, website docs and the consumer skill reference. Tests and the Trips sample were added with step 4, to verify it; website docs and the consumer skill reference remain.
+5. Tests, a country/city sample in AdminPlayground and the consumer skill reference. Done (2026-10-22): tests and the Trips sample came with step 4; the stellar-admin skill's relationships reference has an "Items that depend on another field" section, with a row in the editors' `UseItems` table and the task table. The admin panel has no website docs yet.
 
 StellarAdmin.UI is expected to stay unchanged: the templates compose `sa-*` components, most of which support `Disabled`. A component whose disabled state is missing or unstyled would need a small library fix.
 
 ## Implementation
 
-Built 2026-10-22, uncommitted until reviewed:
+Built 2026-10-22, committed in `815949c`:
 
 - `DependsOn` stores the parents on the field; `DependencyCheck` resolves them on the same form and reports a parent that isn't an editable field of it (`UnknownParentField`) or that closes a cycle (`DependencyCycle`), dropping that dependency.
 - A field is disabled while a parent is empty: null, blank text, an empty collection, or the default of a number, date or ID (a new record's `0`); a Boolean or an enum always counts as set. Its items aren't loaded meanwhile. The hint is the first empty parent's `EmptyText`, or "Select {label} first".
@@ -85,13 +85,16 @@ Built 2026-10-22, uncommitted until reviewed:
 - `ChoiceEditor.UseItems<TModel>`: the loader gets the form's model; a form of another type is a configuration problem for the field. The EF Core choice loader now uses it, to apply `Where`.
 - Generated texts ("Select Country first", "Filtered by Country: Japan") are English, in the templates and the script, not in `ResourceLabelOptions`.
 
-Deviation from the agreed API: `lookup.UseItems<CitySource, City, int, int>(..., (Trip trip) => ...)` doesn't compile, because C# infers no type argument once any is named, so the form's type is a fifth type argument, `UseItems<CitySource, City, int, int, Trip>`. Needs Jerrie's OK.
+Deviation from the agreed API: `lookup.UseItems<CitySource, City, int, int>(..., (Trip trip) => ...)` doesn't compile, because C# infers no type argument once any is named, so the form's type is a fifth type argument, `UseItems<CitySource, City, int, int, Trip>`. Kept for this round (Jerrie, 2026-10-22); see [Open](#open).
 
 ## Open
 
-- Come back to before the plan closes (Jerrie, 2026-10-22): drop the fifth type argument of the value-based lookup `UseItems` if possible. The field builder knows the form's type (`ResourceFieldBuilder<TResource>`), but `UseEditor<TEditor>(Action<TEditor>)` passes only the non-generic editor, so the lookup's `UseItems` can't infer it. Fixing it means carrying the type into the editor's configuration, which is new public API.
+Follow-ups, unscheduled:
 
-- Field change callbacks (`OnChange`) that update other fields' values on the server could reuse the same refresh endpoint. Whether to design for it now is undecided.
+- Type arguments the configuration already knows. The value-based lookup takes five (`UseItems<CitySource, City, int, int, Trip>`), and the same problem runs through the builder chain (Jerrie, 2026-10-22): `UseItems<TSource, TEntity, TValue>` restates the source's interface, the EF `UseItems<TContext, TEntity, TValue>` restates the field's type, `Where<TModel>` and `ReferenceFrom<TModel>` restate the form, `BadgeDisplay.UseText<TItem>` restates the column's element type, and `AllowEdit<TModel, THandler>` (likewise `AllowCreate`, `AllowView`, `EnableRowDetails`) restates the handler's interface. Two causes: C# infers nothing from constraints (C# 14 extension blocks don't help, C# 15 adds nothing here, and partial type inference is only a proposal), and `UseEditor<TEditor>(Action<TEditor>)`/`UseDisplay` drop the field's form and property types. Ideas discussed, none agreed: typed per-editor methods on the field builder (`UseLookupSheet(lookup => ...)` with a `LookupSheetEditor<TModel, TProperty>`), lookup sources and handlers resolved from DI by entity or model, and a lookup filter delegate instead of value-based sources (one source per entity rather than per argument). Items stay on the editor, not the field (Jerrie). D9 in the [public API review](public-api-review.md) rules out typed-lambda inference and set selectors.
+- Field change callbacks (`OnChange`) that update other fields' values on the server could reuse the same refresh endpoint. Deferred (Jerrie, 2026-10-22).
+- The generated texts ("Select Country first", "Filtered by Country: Japan") stay English in the templates and the script, not in `ResourceLabelOptions` (Jerrie, 2026-10-22).
+- In a narrow inline grid column, the disabled select's text is cut off ("Select Country f"), as any long select text is.
 
 ## Prototype
 
@@ -103,6 +106,7 @@ The existing disabled styles of the native select, buttons, input groups, toggle
 
 ## Verification
 
+- Close-out (2026-10-22): the skill's dependent-items snippets compile against the library in a scratch project; the skill validation (`npm test`, `npm run check` in `build/skill-validation`) and `SkillsGenerator --check` pass. The Trips sample in AdminPlayground was captured in headless Chromium over CDP in the default, Ops, Soft and Ledger themes, light and dark, at 1280 px, and in the default theme at 390 px, light and dark: a new inline row with no country (disabled city and airport) and with a country, the edit page loaded, the refreshing overlay (refresh request held), refreshed with dependents cleared and the message boxes, and the airport sheet with its filter subtitle. No theme, dark mode or phone-width problems were found beyond the truncated inline text noted under Open.
 - Step 4 (2026-10-22): the solution builds with no new warnings. StellarAdmin.Tests (305), StellarAdmin.IntegrationTests (651), StellarAdmin.EntityFrameworkCore.IntegrationTests (126), StellarAdmin.UI.Tests (732) and StellarAdmin.UI.IntegrationTests (19) pass, including the new `DependencyCheckTests`, `DependentFieldTests` and `ResourceDependentItemsTests`. The Trips sample was checked in headless Chromium over CDP: the edit page cascade (country → city, airport, neighbourhoods, pickup points), the refreshing state on every transitive dependent, the airport sheet filtered to the country with its subtitle, clearing the country, saving, and a new inline row's cascade and filtered sheet. The skeleton overlay was captured by holding the refreshing state. Default theme, light mode, desktop width only.
 - Step 1 (2026-10-22): the solution builds with the same warnings as before; StellarAdmin.Tests (301), StellarAdmin.IntegrationTests (641) and StellarAdmin.EntityFrameworkCore.IntegrationTests (124) pass.
 - Prototype checked in headless Chromium over CDP (2026-10-22): country change in the form (refreshing, then cleared with notes, grandchildren disabled), the arrival airport sheet filtered to Japan, clearing the country, and a new grid row choosing a country and then a city from the sheet. Default theme, light mode only; other themes, dark mode and phone width not yet checked.

@@ -30,6 +30,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Icons: a field that stores an icon's name, chosen from a picker | `IconEditor`, `IconDisplay` | [editors](references/editors.md#icons) |
 | Formatted text (HTML) with headings, lists, links, tables and images, sanitized | `RichTextEditor`, `HtmlDisplay`, `[DataType(DataType.Html)]`, `IRichTextSanitizer` | [editors](references/editors.md#rich-text) |
 | Foreign keys, lookups, many-to-many, create-from-lookup, related records in columns | `SelectEditor`/`LookupSheetEditor` + EF `UseItems`, `MultiLookupSheetEditor`, `EnableCreate`, `BadgeDisplay.UseText` | [relationships](references/relationships.md) |
+| Items that depend on another field: cities of the selected country, cascading selects and lookups | `DependsOn`, EF `Where<TForm>`, `UseItems((TForm form, ...) => ...)`, `ILookupSource<TEntity, TValue, TArgument>` | [relationships](references/relationships.md#items-that-depend-on-another-field) |
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
 | Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
 | Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
