@@ -8,6 +8,8 @@ The audit checks source, configuration, samples, generated website artifacts and
 
 | Record | Status | Current assessment |
 | --- | --- | --- |
+| [configuration-simplification](configuration-simplification.md) | in progress | Cleaner admin panel configuration, with no call needing more than one type argument. Research on why so many are needed and stages A to G (typed field builders, resource references, EF Core conventions, lookup sources, found DbContext, handlers, resource classes), delivered on the `configuration-simplification` branch. |
+| [resource-references](resource-references.md) | in progress | Stage B: related records come from their own resource. `UseTitle` and `Reference` on resources, `UseResource<T>` on choice and lookup editors, foreign-key inference on EF Core resources, and the record title in labels, columns and badges. |
 | [admin-panel-backlog](admin-panel-backlog.md) | backlog | Admin panel features comparable frameworks offer and StellarAdmin lacks (custom and bulk actions, filters, form tabs, dashboards, file uploads and others). Unscheduled; an item becomes a plan when picked up. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [row-detail-expand-when](row-detail-expand-when.md) | deferred | Per-row expand rules for row details. Deferred until an application needs them; the plan records the smallest route (an admin panel `ExpandWhen` bool backed by a grid marker element) and the reviewed reason-tooltip variant. Prototype in `sandbox/html/row-details-expand-when.html`. |
