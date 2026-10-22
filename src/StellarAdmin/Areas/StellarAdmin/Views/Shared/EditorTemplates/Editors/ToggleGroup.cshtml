@@ -1,5 +1,12 @@
 @inherits FieldEditorView<ToggleGroupEditor>
 
+@* While a field its choices depend on has no value, the group shows why in place of its choices *@
+@if (WaitingText is { } waitingText)
+{
+    <partial name="_WaitingChoiceGroup" model="new WaitingChoiceGroupViewModel(Html.IdForModel(), Html.NameForModel(), Title ?? ViewData.ModelMetadata.GetDisplayName(), Description ?? ViewData.ModelMetadata.Description, waitingText, ViewData.ModelMetadata.ElementMetadata is not null)" />
+    return;
+}
+
 @{
     var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata, Model);
     var multiple = ViewData.ModelMetadata.ElementMetadata is not null;

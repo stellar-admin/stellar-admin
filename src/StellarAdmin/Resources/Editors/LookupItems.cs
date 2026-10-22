@@ -83,12 +83,7 @@ public abstract class LookupItems
     )
         where TSource : class, ILookupSource<TEntity, TValue>
     {
-        ArgumentNullException.ThrowIfNull(value);
-        ArgumentNullException.ThrowIfNull(title);
-        ArgumentNullException.ThrowIfNull(configure);
-
-        var items = new LookupItemsBuilder<TEntity>();
-        configure(items);
+        var items = Build(value, title, configure);
 
         return new LookupItems<TSource, TEntity, TValue>(
             value,
@@ -98,16 +93,56 @@ public abstract class LookupItems
             items.MediaType
         );
     }
+
+    internal static LookupItems Create<TSource, TEntity, TValue, TArgument, TModel>(
+        Func<TEntity, TValue> value,
+        Func<TEntity, string> title,
+        Func<TModel, TArgument> argument,
+        Action<LookupItemsBuilder<TEntity>> configure,
+        Type editorType
+    )
+        where TSource : class, ILookupSource<TEntity, TValue, TArgument>
+    {
+        ArgumentNullException.ThrowIfNull(argument);
+
+        var items = Build(value, title, configure);
+
+        return new LookupItems<TSource, TEntity, TValue, TArgument, TModel>(
+            value,
+            title,
+            argument,
+            items.Description,
+            items.Media,
+            items.MediaType,
+            editorType
+        );
+    }
+
+    private static LookupItemsBuilder<TEntity> Build<TEntity, TValue>(
+        Func<TEntity, TValue> value,
+        Func<TEntity, string> title,
+        Action<LookupItemsBuilder<TEntity>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(title);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var items = new LookupItemsBuilder<TEntity>();
+        configure(items);
+
+        return items;
+    }
 }
 
-internal sealed class LookupItems<TSource, TEntity, TValue>(
+// Items from a registered source, found by their values and searched by the source
+internal abstract class SourceLookupItems<TEntity, TValue>(
     Func<TEntity, TValue> value,
     Func<TEntity, string> title,
     Func<TEntity, string?>? description,
     Func<TEntity, ItemMedia?>? media,
     Type? mediaType
 ) : LookupItems
-    where TSource : class, ILookupSource<TEntity, TValue>
 {
     public override bool HasDescription => description is not null;
 
@@ -127,9 +162,7 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
             return [];
         }
 
-        var entities = await services
-            .GetRequiredService<TSource>()
-            .FindAsync(values, cancellationToken);
+        var entities = await FindEntitiesAsync(services, values, cancellationToken);
 
         // A value the source no longer has is still displayed, so the selection stays visible
         return values
@@ -153,12 +186,22 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
         CancellationToken cancellationToken
     )
     {
-        var page = await services
-            .GetRequiredService<TSource>()
-            .SearchAsync(query, cancellationToken);
+        var page = await SearchEntitiesAsync(services, query, cancellationToken);
 
         return new LookupResults(page.Items.Select(CreateItem).ToArray(), page.HasMore);
     }
+
+    protected abstract Task<IReadOnlyCollection<TEntity>> FindEntitiesAsync(
+        IServiceProvider services,
+        IReadOnlyCollection<TValue> values,
+        CancellationToken cancellationToken
+    );
+
+    protected abstract Task<LookupPage<TEntity>> SearchEntitiesAsync(
+        IServiceProvider services,
+        LookupQuery query,
+        CancellationToken cancellationToken
+    );
 
     private static IReadOnlyList<TValue> ReadValues(FieldEditorContext context) =>
         context.Value switch
@@ -186,4 +229,66 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
             Description = description?.Invoke(entity),
             Media = media?.Invoke(entity),
         };
+}
+
+internal sealed class LookupItems<TSource, TEntity, TValue>(
+    Func<TEntity, TValue> value,
+    Func<TEntity, string> title,
+    Func<TEntity, string?>? description,
+    Func<TEntity, ItemMedia?>? media,
+    Type? mediaType
+) : SourceLookupItems<TEntity, TValue>(value, title, description, media, mediaType)
+    where TSource : class, ILookupSource<TEntity, TValue>
+{
+    protected override Task<IReadOnlyCollection<TEntity>> FindEntitiesAsync(
+        IServiceProvider services,
+        IReadOnlyCollection<TValue> values,
+        CancellationToken cancellationToken
+    ) => services.GetRequiredService<TSource>().FindAsync(values, cancellationToken);
+
+    protected override Task<LookupPage<TEntity>> SearchEntitiesAsync(
+        IServiceProvider services,
+        LookupQuery query,
+        CancellationToken cancellationToken
+    ) => services.GetRequiredService<TSource>().SearchAsync(query, cancellationToken);
+}
+
+// Items searched with a value the field takes from its form
+internal sealed class LookupItems<TSource, TEntity, TValue, TArgument, TModel>(
+    Func<TEntity, TValue> value,
+    Func<TEntity, string> title,
+    Func<TModel, TArgument> argument,
+    Func<TEntity, string?>? description,
+    Func<TEntity, ItemMedia?>? media,
+    Type? mediaType,
+    Type editorType
+) : SourceLookupItems<TEntity, TValue>(value, title, description, media, mediaType)
+    where TSource : class, ILookupSource<TEntity, TValue, TArgument>
+{
+    protected override Task<IReadOnlyCollection<TEntity>> FindEntitiesAsync(
+        IServiceProvider services,
+        IReadOnlyCollection<TValue> values,
+        CancellationToken cancellationToken
+    ) => services.GetRequiredService<TSource>().FindAsync(values, cancellationToken);
+
+    protected override Task<LookupPage<TEntity>> SearchEntitiesAsync(
+        IServiceProvider services,
+        LookupQuery query,
+        CancellationToken cancellationToken
+    )
+    {
+        var model =
+            query.Model
+            ?? throw new InvalidOperationException(
+                "The lookup's items are searched with a value from the form, but the search has no form."
+            );
+
+        return services
+            .GetRequiredService<TSource>()
+            .SearchAsync(
+                argument(FormModel.Cast<TModel>(model, editorType)),
+                query,
+                cancellationToken
+            );
+    }
 }

@@ -70,6 +70,9 @@ public sealed class FormFieldOptions : FormItemOptions
     /// </value>
     public string? Title { get; internal set; }
 
+    // The fields whose values the field's items depend on, in the order they were declared
+    internal List<FieldDependency> Dependencies { get; } = [];
+
     internal Type? HandlerType { get; set; }
 
     internal FormFieldOptions(

@@ -43,11 +43,14 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     /// </value>
     public string EmptyChoiceText { get; set; } = "Not set";
 
-    internal Func<IServiceProvider, CancellationToken, Task<IReadOnlyList<ChoiceItem>>>? ItemsLoader
-    {
-        get;
-        private set;
-    }
+    // Loads the choices with the form the field is on, which holds only the field's parents when the field depends on
+    // other fields
+    internal Func<
+        object,
+        IServiceProvider,
+        CancellationToken,
+        Task<IReadOnlyList<ChoiceItem>>
+    >? ItemsLoader { get; private set; }
 
     // A select shows its first choice as selected when none is, so it keeps the empty choice while a required value
     // is unset or matches no choice, such as the 0 of a new entity's foreign key
@@ -63,7 +66,7 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     public void UseItems<TProvider>()
         where TProvider : class, IChoiceItemsProvider
     {
-        ItemsLoader = (services, cancellationToken) =>
+        ItemsLoader = (_, services, cancellationToken) =>
             services.GetRequiredService<TProvider>().GetItemsAsync(cancellationToken);
     }
 
@@ -79,7 +82,7 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
         ArgumentNullException.ThrowIfNull(items);
 
         var snapshot = items.ToArray();
-        ItemsLoader = (_, _) => Task.FromResult<IReadOnlyList<ChoiceItem>>(snapshot);
+        ItemsLoader = (_, _, _) => Task.FromResult<IReadOnlyList<ChoiceItem>>(snapshot);
     }
 
     /// <summary>
@@ -123,7 +126,38 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     {
         ArgumentNullException.ThrowIfNull(itemsLoader);
 
-        ItemsLoader = itemsLoader;
+        ItemsLoader = (_, services, cancellationToken) => itemsLoader(services, cancellationToken);
+    }
+
+    /// <summary>
+    ///     Sets a delegate that loads the choices for each request from the form's values.
+    /// </summary>
+    /// <typeparam name="TModel">The type of the form's model.</typeparam>
+    /// <param name="itemsLoader">
+    ///     A delegate that loads the choices from the form's model with the request's services.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="itemsLoader" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     When the field depends on other fields, the model holds only their values, and the key
+    ///     on the edit form; the delegate isn't called while any of them has no value. A form whose
+    ///     model isn't a <typeparamref name="TModel" /> is a configuration problem, and the field is
+    ///     left out of it.
+    /// </remarks>
+    public void UseItems<TModel>(
+        Func<
+            TModel,
+            IServiceProvider,
+            CancellationToken,
+            Task<IReadOnlyList<ChoiceItem>>
+        > itemsLoader
+    )
+    {
+        ArgumentNullException.ThrowIfNull(itemsLoader);
+
+        ItemsLoader = (model, services, cancellationToken) =>
+            itemsLoader(FormModel.Cast<TModel>(model, GetType()), services, cancellationToken);
     }
 
     internal IReadOnlyList<ChoiceItem> ResolveChoices(

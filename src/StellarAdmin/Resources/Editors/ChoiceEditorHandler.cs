@@ -14,6 +14,6 @@ public sealed class ChoiceEditorHandler(ChoiceEditor editor, IServiceProvider se
         CancellationToken cancellationToken
     ) =>
         Editor.ItemsLoader is { } itemsLoader
-            ? await itemsLoader(services, cancellationToken)
+            ? await itemsLoader(context.Model, services, cancellationToken)
             : null;
 }

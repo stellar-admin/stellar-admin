@@ -13,18 +13,27 @@
     var selection = new LookupSelectionViewModel(item, LookupSheetEditorLayout.Input, Editor.FieldOptions.ShowMedia, !canLookUp, Editor.ClassNames.Media);
     var labels = LabelOptions.Value;
     var labelContext = new LookupLabelContext(label, Editor.SheetOptions.MinimumSearchLength, null);
-    var chooseText = Editor.FieldOptions.EmptyText ?? labels.Lookup.ChooseLabel(labelContext);
+    // While a field its items depend on has no value, the lookup is disabled and says why, and its value is cleared
+    var waiting = WaitingText is not null;
+    var chooseText = WaitingText ?? Editor.FieldOptions.EmptyText ?? labels.Lookup.ChooseLabel(labelContext);
 
     // The selection and the empty buttons are both rendered, and the script shows one; the hidden input carries the posted value
     var id = Html.IdForModel();
     var form = ViewData[ViewDataKeys.LookupForm] as string ?? ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant();
     var sheetUrl = canLookUp
-        ? Url.Action("LookupSheet", new { id = (string?)null, form, field = Field!.FieldName, @for = id })
+        ? Url.Action("LookupSheet", new { id = form == "edit" ? ViewContext.RouteData.Values["id"] : null, form, field = Field!.FieldName, @for = id })
         : null;
 }
 
 <admin-lookup-sheet-editor class="contents">
-    <input type="hidden" asp-for="@Model" data-lookup="value" />
+    @if (waiting)
+    {
+        <input type="hidden" id="@id" name="@Html.NameForModel()" value="" data-lookup="value" />
+    }
+    else
+    {
+        <input type="hidden" asp-for="@Model" data-lookup="value" />
+    }
 
     @if (!canLookUp)
     {
@@ -44,7 +53,7 @@
         </div>
         <div data-lookup="empty" hidden="@(item is not null)">
             <sa-button type="button" id="@($"{id}-choose")" variant="ButtonVariant.Outline" size="ButtonSize.Small" class="sa-cell-editor sa-lookup-trigger"
-                       data-empty aria-invalid="@(isInvalid ? "true" : null)" aria-describedby="@CellErrorId" data-sheet-open="@sheetUrl" data-lookup="open">
+                       data-empty aria-invalid="@(isInvalid ? "true" : null)" aria-describedby="@CellErrorId" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@(waiting ? "disabled" : null)">
                 <span class="truncate">@chooseText</span>
                 <sa-icon name="search" />
             </sa-button>

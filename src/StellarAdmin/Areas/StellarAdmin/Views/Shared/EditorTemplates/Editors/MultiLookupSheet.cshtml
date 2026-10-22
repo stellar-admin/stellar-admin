@@ -13,7 +13,9 @@
     var isInvalid = ViewData.ModelState.GetFieldValidationState(Html.NameForModel()) == ModelValidationState.Invalid;
     var labels = LabelOptions.Value;
     var labelContext = new LookupLabelContext(label, Editor.SheetOptions.MinimumSearchLength, null);
-    var chooseText = options.EmptyText ?? labels.Lookup.ChooseLabel(labelContext);
+    // While a field its items depend on has no value, the lookup is disabled and says why, and its values are cleared
+    var waiting = WaitingText is not null;
+    var chooseText = WaitingText ?? options.EmptyText ?? labels.Lookup.ChooseLabel(labelContext);
     var addText = labels.Lookup.AddLabel(labelContext);
 
     var id = Html.IdForModel();
@@ -22,12 +24,12 @@
     var errorId = $"{id}-error";
     var describedBy = string.Join(' ', new[] { descriptionId, errorId }.OfType<string>());
     // The sheet opens as the next level of the stack, and its create form above that; a create form in a sheet looks up
-    // from its own resource
+    // from its own resource. An edit form's sheet loads its items with the record's key
     var sheetLevel = ViewData[ViewDataKeys.SheetLevel] as int?;
-    var form = sheetLevel is not null ? "create" : ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant();
+    var form = sheetLevel is not null ? "create" : ViewData[ViewDataKeys.LookupForm] as string ?? ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant();
     var canLookUp = Field?.FieldName is not null;
     var sheetUrl = canLookUp
-        ? Url.Action("LookupSheet", new { id = (string?)null, form, field = Field!.FieldName, @for = id, level = sheetLevel })
+        ? Url.Action("LookupSheet", new { id = form == "edit" ? ViewContext.RouteData.Values["id"] : null, form, field = Field!.FieldName, @for = id, level = sheetLevel })
         : null;
     var selectionUrl = canLookUp
         ? Url.Action("MultiLookupSelection", new { id = (string?)null, form, field = Field!.FieldName })
@@ -109,7 +111,7 @@
                     <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(items.Count > 0)">
                         <sa-input-group class="@($"h-12 {emptyClass} flex-1 {classes.Control}")">
                             <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
-                                    aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open">
+                                    aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@waiting">
                                 <sa-icon name="search" class="size-4 shrink-0" />
                                 <span class="truncate">@chooseText</span>
                             </button>
@@ -133,7 +135,7 @@
                     @* Empty, the box stays an input: the hint and the chevrons, like a select *@
                     <sa-input-group id="@($"{id}-empty")" data-lookup="empty" hidden="@(items.Count > 0)"
                                     class="@($"h-9 min-w-0 items-stretch p-0 {invalidRing} {classes.Control}")">
-                        <button type="button" id="@($"{id}-choose")" data-slot="input-group-control" aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open"
+                        <button type="button" id="@($"{id}-choose")" data-slot="input-group-control" aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@waiting"
                                 aria-invalid="@(isInvalid ? "true" : null)"
                                 class="text-muted-foreground flex min-w-0 flex-1 items-center justify-between gap-2 px-3 text-sm outline-none">
                             <span class="truncate">@chooseText</span>
@@ -162,7 +164,7 @@
                     <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(items.Count > 0)">
                         <sa-input-group class="@($"{emptyClass} flex-1 {classes.Control}")">
                             <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
-                                    aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open">
+                                    aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@waiting">
                                 <sa-icon name="search" class="size-4 shrink-0" />
                                 <span class="truncate">@chooseText</span>
                             </button>

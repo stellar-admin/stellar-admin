@@ -11,6 +11,7 @@ using AdminPlayground.Resources.Guides;
 using AdminPlayground.Resources.Products;
 using AdminPlayground.Resources.Roles;
 using AdminPlayground.Resources.Tags;
+using AdminPlayground.Resources.Trips;
 using AdminPlayground.Resources.Users;
 using Microsoft.EntityFrameworkCore;
 using StellarAdmin;
@@ -81,6 +82,7 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddDepartmentResource();
     admin.AddCustomerResource();
     admin.AddDestinationResource();
+    admin.AddTripResource();
     admin.AddGuideResource();
     admin.AddAmenityResource();
     admin.AddProductResource();

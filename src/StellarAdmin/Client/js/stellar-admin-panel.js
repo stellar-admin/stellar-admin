@@ -12,6 +12,7 @@
 class AdminRemoteSheet extends HTMLElement {
   static #count = 0;
   #opener = null;
+  #url = null;
 
   // Each level replaces the template's id with its own, so its close button and content have unique targets
   static open(opener) {
@@ -32,6 +33,7 @@ class AdminRemoteSheet extends HTMLElement {
 
     document.body.append(sheet);
     sheet.#opener = opener;
+    sheet.#url = dependentSheetUrl(opener);
     sheet.querySelector("dialog").showModal();
     AdminRemoteSheet.#restack();
     sheet.#load();
@@ -148,7 +150,7 @@ class AdminRemoteSheet extends HTMLElement {
   // The opener can sit where it inherits htmx attributes, such as a row of the index grid, so the load sets its own
   // swap and drops any inherited selection and history
   #load() {
-    htmx.ajax("GET", this.#opener.dataset.sheetOpen, {
+    htmx.ajax("GET", this.#url, {
       source: this.#opener,
       target: this.#content,
       swap: "innerHTML",
@@ -710,8 +712,10 @@ class AdminLookupPicker extends HTMLElement {
     );
   }
 
-  // A multi-select editor sends one change when the sheet closes, if its values changed
+  // A multi-select editor sends one change when the sheet closes, if its values changed. A lookup whose items depend
+  // on other fields names their values under the title
   connectedCallback() {
+    showDependentFilter(this, this.#editor);
     if (!this.#multiple) {
       return;
     }
@@ -1166,3 +1170,241 @@ class AdminMultiLookupSheetEditor extends HTMLElement {
 }
 
 customElements.define("admin-multi-lookup-sheet-editor", AdminMultiLookupSheetEditor);
+
+// Fields whose items depend on other fields. admin-dependent-field names its field, the inputs and labels of the fields it
+// depends on, and the URL that renders it again. When one of those fields changes, the fields that depend on it,
+// directly or through other dependents, keep their controls under a skeleton while the server renders them again with
+// their values cleared, and each replaces its element. The request sends only the values of the fields they depend on;
+// a newer change of the same field cancels it, and a failed one leaves the fields as they were.
+class AdminDependentField extends HTMLElement {
+  get parents() {
+    try {
+      return JSON.parse(this.getAttribute("parents") ?? "[]");
+    } catch {
+      return [];
+    }
+  }
+}
+
+customElements.define("admin-dependent-field", AdminDependentField);
+
+const dependentRefreshes = new WeakMap();
+
+// The fields of the form, or of the grid row, that an element is in
+function dependentScope(element) {
+  return element.closest("tr[data-editing], form") ?? document;
+}
+
+// The values an input name posts in a scope, as the form would post them
+function postedValues(scope, name) {
+  const values = [];
+  for (const input of scope.querySelectorAll(`[name="${CSS.escape(name)}"]`)) {
+    if (
+      input.disabled ||
+      !("value" in input) ||
+      input.matches("button, [type='button'], [type='submit']")
+    ) {
+      continue;
+    }
+
+    if (input instanceof HTMLSelectElement) {
+      values.push(...[...input.selectedOptions].map((option) => option.value));
+    } else if (!(input.type === "checkbox" || input.type === "radio") || input.checked) {
+      values.push(input.value);
+    }
+  }
+
+  return values;
+}
+
+// The values of the fields a field depends on, as Model.Field, which the server binds to the form's model
+function appendParentValues(scope, fields, append) {
+  const seen = new Set();
+  for (const field of fields) {
+    for (const parent of field.parents) {
+      if (!seen.has(parent.name)) {
+        seen.add(parent.name);
+        for (const value of postedValues(scope, parent.name)) {
+          append(`Model.${parent.field}`, value);
+        }
+      }
+    }
+  }
+}
+
+// A lookup's sheet loads its items with the values of the fields they depend on
+function dependentSheetUrl(opener) {
+  const url = opener.dataset.sheetOpen;
+  const field = opener.closest("admin-dependent-field");
+  if (!field) {
+    return url;
+  }
+
+  const resolved = new URL(url, document.baseURI);
+  appendParentValues(dependentScope(field), [field], (name, value) =>
+    resolved.searchParams.append(name, value),
+  );
+  return resolved.pathname + resolved.search;
+}
+
+// The text a field shows for its value: a select's chosen option, a lookup's selection, or the labels of the checked
+// choices
+function displayedValue(scope, name) {
+  const titles = [];
+  for (const input of scope.querySelectorAll(`[name="${CSS.escape(name)}"]`)) {
+    if (input.disabled) {
+      continue;
+    }
+
+    if (input instanceof HTMLSelectElement) {
+      titles.push(
+        ...[...input.selectedOptions]
+          .filter((option) => option.value)
+          .map((option) => option.text.trim()),
+      );
+    } else if (input.matches("[data-lookup='value']")) {
+      const title = input
+        .closest("admin-lookup-sheet-editor")
+        ?.querySelector("[data-lookup='selected'] [data-lookup='title']");
+      if (input.value && title) {
+        titles.push(title.textContent.trim());
+      }
+    } else if (input.matches("admin-multi-lookup-sheet-editor")) {
+      const items = [...input.querySelectorAll("[data-lookup='items'] [data-lookup='item']")];
+      const shown = items.length > 0 ? items : [...input.querySelectorAll("[data-lookup='items']")];
+      titles.push(
+        ...shown.map((item) =>
+          (item.querySelector("[data-lookup='title']") ?? item).textContent
+            .trim()
+            .replace(/\s+/g, " "),
+        ),
+      );
+    } else if (input.type === "checkbox" || input.type === "radio") {
+      if (input.checked && input.value) {
+        titles.push(
+          (input.labels?.[0] ?? input.closest("label"))?.textContent.trim() ?? input.value,
+        );
+      }
+    } else if (input.type !== "hidden" && input.value) {
+      titles.push(input.value);
+    }
+  }
+
+  return titles.filter(Boolean).join(", ");
+}
+
+// Under a lookup sheet's title: "Filtered by Country: Japan, Star rating: 4"
+function showDependentFilter(picker, editor) {
+  const field = editor?.closest("admin-dependent-field");
+  const description = picker
+    .closest("[data-sheet='content']")
+    ?.querySelector("[data-lookup='filter']");
+  if (!field || !description) {
+    return;
+  }
+
+  const scope = dependentScope(field);
+  const values = field.parents
+    .map((parent) => [parent.label, displayedValue(scope, parent.name)])
+    .filter(([, value]) => value)
+    .map(([label, value]) => `${label}: ${value}`);
+  if (values.length > 0) {
+    description.textContent = `${description.dataset.prefix} ${values.join(", ")}`;
+    description.hidden = false;
+  }
+}
+
+async function refreshDependents(scope, name) {
+  const fields = [...scope.querySelectorAll("admin-dependent-field")];
+  const direct = fields.filter((field) => field.parents.some((parent) => parent.name === name));
+  if (direct.length === 0) {
+    return;
+  }
+
+  // The fields that depend on the changed field, and on those in turn
+  const names = new Set([name]);
+  const affected = new Set();
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const field of fields) {
+      if (!affected.has(field) && field.parents.some((parent) => names.has(parent.name))) {
+        affected.add(field);
+        names.add(field.getAttribute("name"));
+        grew = true;
+      }
+    }
+  }
+
+  let requests = dependentRefreshes.get(scope);
+  if (!requests) {
+    requests = new Map();
+    dependentRefreshes.set(scope, requests);
+  }
+
+  requests.get(name)?.abort();
+  const request = new AbortController();
+  requests.set(name, request);
+  for (const field of affected) {
+    field.setAttribute("data-dependent", "refreshing");
+  }
+
+  const body = new FormData();
+  body.set("changed", direct[0].parents.find((parent) => parent.name === name).field);
+  const token =
+    (scope === document ? document : scope).querySelector(
+      "input[name='__RequestVerificationToken']",
+    ) ?? document.querySelector("input[name='__RequestVerificationToken']");
+  if (token) {
+    body.set(token.name, token.value);
+  }
+  appendParentValues(scope, fields, (key, value) => body.append(key, value));
+
+  try {
+    const response = await fetch(direct[0].getAttribute("refresh-url"), {
+      method: "POST",
+      body,
+      signal: request.signal,
+    });
+    if (!response.ok) {
+      throw new Error(`The fields couldn't be refreshed (${response.status}).`);
+    }
+
+    const parsed = document.createElement("template");
+    parsed.innerHTML = await response.text();
+    for (const replacement of parsed.content.querySelectorAll("admin-dependent-field")) {
+      const current = [...affected].find(
+        (field) => field.getAttribute("name") === replacement.getAttribute("name"),
+      );
+      if (current?.isConnected) {
+        current.replaceWith(replacement);
+        window.htmx?.process?.(replacement);
+      }
+    }
+  } catch (error) {
+    if (error.name === "AbortError") {
+      return;
+    }
+
+    window.stellarAdmin?.toast?.warning(
+      "The fields that depend on this one couldn't be updated. Try again.",
+    );
+  } finally {
+    if (requests.get(name) === request) {
+      requests.delete(name);
+      for (const field of affected) {
+        field.removeAttribute("data-dependent");
+      }
+    }
+  }
+}
+
+// A change of a field that others depend on, whether a native input or an editor that names its field, such as the
+// multi-select lookup
+document.addEventListener("change", (event) => {
+  const target = event.target;
+  const name = target instanceof Element ? (target.getAttribute("name") ?? "") : "";
+  if (name) {
+    refreshDependents(dependentScope(target), name);
+  }
+});

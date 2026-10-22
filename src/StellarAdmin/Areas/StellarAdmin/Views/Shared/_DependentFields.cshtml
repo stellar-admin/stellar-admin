@@ -1,0 +1,17 @@
+@inherits FormFieldsBaseView<object>
+@{
+    // The fields that depend on a changed field, each in the admin-dependent-field the script replaces with it
+    var fields = (IReadOnlyList<FormFieldOptions>)ViewData[ViewDataKeys.DependentFields]!;
+    var inGrid = ViewData[ViewDataKeys.DependentFieldsInGrid] as bool? == true;
+}
+@foreach (var field in fields)
+{
+    @if (inGrid)
+    {
+        @await Html.GridEditorAsync(field, Model!)
+    }
+    else
+    {
+        @FieldEditorRenderer.RenderFormField(Html, field, Model!)
+    }
+}

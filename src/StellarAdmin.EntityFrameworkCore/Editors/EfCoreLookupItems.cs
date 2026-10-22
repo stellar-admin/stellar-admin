@@ -134,6 +134,11 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
             .GetRequiredService<TContext>()
             .Set<TEntity>()
             .AsNoTracking();
+        foreach (var formFilter in _options.FormFilters)
+        {
+            entities = entities.Where(formFilter(query.Model));
+        }
+
         if (!string.IsNullOrEmpty(query.Term))
         {
             entities = entities.Where(Matches(query.Term));

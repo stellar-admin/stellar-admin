@@ -21,6 +21,7 @@ StellarAdmin.EntityFrameworkCore.EfCoreChoiceItemsBuilder<TEntity, TValue>.UseDe
 StellarAdmin.EntityFrameworkCore.EfCoreChoiceItemsBuilder<TEntity, TValue>.UseGroup(System.Linq.Expressions.Expression<System.Func<TEntity!, string?>!>! group) -> StellarAdmin.EntityFrameworkCore.EfCoreChoiceItemsBuilder<TEntity!, TValue>!
 StellarAdmin.EntityFrameworkCore.EfCoreChoiceItemsBuilder<TEntity, TValue>.UseIcon(System.Linq.Expressions.Expression<System.Func<TEntity!, string?>!>! iconName) -> StellarAdmin.EntityFrameworkCore.EfCoreChoiceItemsBuilder<TEntity!, TValue>!
 StellarAdmin.EntityFrameworkCore.EfCoreChoiceItemsBuilder<TEntity, TValue>.UseImage(System.Linq.Expressions.Expression<System.Func<TEntity!, string?>!>! imageUrl) -> StellarAdmin.EntityFrameworkCore.EfCoreChoiceItemsBuilder<TEntity!, TValue>!
+StellarAdmin.EntityFrameworkCore.EfCoreChoiceItemsBuilder<TEntity, TValue>.Where<TModel>(System.Linq.Expressions.Expression<System.Func<TEntity!, TModel, bool>!>! filter) -> StellarAdmin.EntityFrameworkCore.EfCoreChoiceItemsBuilder<TEntity!, TValue>!
 StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity, TValue>
 StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity, TValue>.OrderBy<TSort>(System.Linq.Expressions.Expression<System.Func<TEntity!, TSort>!>! selector) -> StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity!, TValue>!
 StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity, TValue>.ReferenceFrom<TModel>(System.Linq.Expressions.Expression<System.Func<TModel, TEntity?>!>! navigation) -> StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity!, TValue>!
@@ -30,6 +31,7 @@ StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity, TValue>.UseCo
 StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity, TValue>.UseDescription(System.Linq.Expressions.Expression<System.Func<TEntity!, string?>!>! description) -> StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity!, TValue>!
 StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity, TValue>.UseIcon(System.Linq.Expressions.Expression<System.Func<TEntity!, string?>!>! iconName) -> StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity!, TValue>!
 StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity, TValue>.UseImage(System.Linq.Expressions.Expression<System.Func<TEntity!, string?>!>! imageUrl) -> StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity!, TValue>!
+StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity, TValue>.Where<TModel>(System.Linq.Expressions.Expression<System.Func<TEntity!, TModel, bool>!>! filter) -> StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity!, TValue>!
 StellarAdmin.EntityFrameworkCore.EfCoreResourceBuilder<TContext, TEntity>
 StellarAdmin.EntityFrameworkCore.EfCoreResourceBuilder<TContext, TEntity>.Index(System.Action<StellarAdmin.EntityFrameworkCore.EfCoreResourceIndexBuilder<TContext!, TEntity!>!>! configure) -> StellarAdmin.EntityFrameworkCore.EfCoreResourceBuilder<TContext!, TEntity!>!
 StellarAdmin.EntityFrameworkCore.EfCoreResourceIndexBuilder<TContext, TEntity>

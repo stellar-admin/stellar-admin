@@ -1,8 +1,15 @@
 @inherits FieldEditorView<SelectEditor>
 
 @{
-    var items = ChoiceSelectListItems.Create(Editor.ResolveChoices(EditorData, ViewData.ModelMetadata, Model));
+    // While a field its choices depend on has no value, the select is disabled and its only choice says why. A disabled
+    // select doesn't post, so the hidden input clears the value it had
+    var waiting = WaitingText is not null;
+    var items = ChoiceSelectListItems.Create(waiting ? [new ChoiceItem("", WaitingText!)] : Editor.ResolveChoices(EditorData, ViewData.ModelMetadata, Model));
 }
 
+@if (waiting)
+{
+    <input type="hidden" name="@Html.NameForModel()" value="" />
+}
 <sa-select class-names="@EditorClassNamesMapper.ForSelect(Editor)" asp-for="@Model" asp-items="@items"
-           label="@Title" description="@Description" disabled="@IsReadOnly" />
+           label="@Title" description="@Description" disabled="@(IsReadOnly || waiting)" />

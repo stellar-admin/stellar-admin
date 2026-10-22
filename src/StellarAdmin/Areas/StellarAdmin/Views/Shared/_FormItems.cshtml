@@ -1,7 +1,5 @@
 @inherits FormFieldsBaseView<object>
 @{
-    var editorData = ViewData[ViewDataKeys.EditorData] as IReadOnlyDictionary<string, object?>;
-    var editorTemplates = ViewData[ViewDataKeys.EditorTemplates] as IReadOnlyDictionary<string, string>;
     var columns = (ViewData[ViewDataKeys.FormColumns] as FormGridColumnDefinitions? ?? default).Resolve();
     var orientation = ViewData[ViewDataKeys.FormOrientation] as FieldOrientation?;
     // A view section's orientation also applies to the display fields in it
@@ -24,26 +22,7 @@
         <sa-grid-item style="@placementStyle">
             @if (item is FormFieldOptions field)
             {
-                var templateName = editorTemplates?.GetValueOrDefault(field.FieldName);
-                var fieldViewData = new Dictionary<string, object>
-                {
-                    [ViewDataKeys.FormFieldProperties] = new FormFieldProperties
-                    {
-                        Description = field.Description,
-                        EditorData = editorData?.GetValueOrDefault(field.FieldName),
-                        Editor = field.Editor,
-                        FieldName = field.FieldName,
-                        IsBound = field.Binder is not null,
-                        IsReadOnly = field.IsReadOnly,
-                        Title = field.Title,
-                    },
-                };
-
-                // A field with a binder edits the binder's value in place of its property's. A field whose configuration
-                // only fails as it renders is left out.
-                @FieldEditorRenderer.Guard(Html, field, () => field.Binder is null
-                    ? Html.Editor(field.FieldName, templateName, fieldViewData)
-                    : FieldEditorRenderer.RenderFormEditor(Html, field, Model!, templateName, fieldViewData))
+                @FieldEditorRenderer.RenderFormField(Html, field, Model!)
             }
             else if (item is FormDisplayFieldOptions displayField)
             {

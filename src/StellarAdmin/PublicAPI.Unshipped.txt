@@ -565,6 +565,8 @@ StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Description.set 
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Title.set -> void
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseEditor<TEditor>() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseEditor<TEditor>(System.Action<TEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.DependsOn<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.DependsOn<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.FieldDependencyBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
@@ -722,6 +724,7 @@ StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.ColumnStart(S
 StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.Description.set -> void
 StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.Layout.set -> void
 StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.Orientation.set -> void
+StellarAdmin.Resources.Builders.FieldDependencyBuilder
 StellarAdmin.Resources.Displays.BadgeDisplay
 StellarAdmin.Resources.Displays.BadgeDisplay.BadgeDisplay() -> void
 StellarAdmin.Resources.Displays.BadgeDisplay.Variant.get -> StellarAdmin.UI.BadgeVariant
@@ -825,6 +828,7 @@ StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(System.Collections.Generic.
 StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(System.Collections.Generic.IEnumerable<StellarAdmin.Resources.Editors.ChoiceItem!>! items) -> void
 StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(System.Func<System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
 StellarAdmin.Resources.Editors.ChoiceEditor.UseItems<TProvider>() -> void
+StellarAdmin.Resources.Editors.ChoiceEditor.UseItems<TModel>(System.Func<TModel, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
 StellarAdmin.Resources.Editors.ChoiceEditorClassNames
 StellarAdmin.Resources.Editors.ChoiceEditorClassNames.ChoiceEditorClassNames() -> void
 StellarAdmin.Resources.Editors.ChoiceEditorClassNames.Media.get -> string?
@@ -1006,6 +1010,8 @@ StellarAdmin.Resources.Editors.LookupSheetEditor.Sheet(System.Action<StellarAdmi
 StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems(StellarAdmin.Resources.Editors.LookupItems! items) -> void
 StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title) -> void
 StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue, TArgument, TModel>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Func<TModel, TArgument>! argument) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue, TArgument, TModel>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Func<TModel, TArgument>! argument, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
 StellarAdmin.Resources.Editors.LookupSheetEditorClassNames
 StellarAdmin.Resources.Editors.LookupSheetEditorClassNames.LookupSheetEditorClassNames() -> void
 StellarAdmin.Resources.Editors.LookupSheetEditorClassNames.Media.get -> string?
@@ -1045,6 +1051,8 @@ StellarAdmin.Resources.Editors.MultiLookupSheetEditor.Sheet(System.Action<Stella
 StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems(StellarAdmin.Resources.Editors.LookupItems! items) -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title) -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue, TArgument, TModel>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Func<TModel, TArgument>! argument) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue, TArgument, TModel>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Func<TModel, TArgument>! argument, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames
 StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames.Media.get -> string?
 StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames.Media.set -> void
@@ -1721,6 +1729,9 @@ StellarAdmin.Resources.Editors.RichTextEditor.RichTextEditor() -> void
 StellarAdmin.Resources.Editors.RichTextEditor.Rows.get -> int?
 StellarAdmin.Resources.Editors.RichTextEditor.Rows.set -> void
 StellarAdmin.Resources.Editors.RichTextEditor.StoreImage(System.Func<Microsoft.AspNetCore.Http.IFormFile!, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<string!>!>! store) -> void
+StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue, TArgument>
+StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue, TArgument>.FindAsync(System.Collections.Generic.IReadOnlyCollection<TValue>! values, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyCollection<TEntity>!>!
+StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue, TArgument>.SearchAsync(TArgument argument, StellarAdmin.Resources.Editors.LookupQuery! query, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.Editors.LookupPage<TEntity>!>!
 StellarAdmin.Resources.IRichTextSanitizer
 StellarAdmin.Resources.IRichTextSanitizer.Sanitize(string! html) -> string!
 StellarAdmin.BannerEnvironmentIndicator
@@ -1766,3 +1777,6 @@ StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsof
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix, StellarAdmin.Resources.Options.DataGridColumnOptions! column) -> void
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportProblem(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix, StellarAdmin.Resources.Options.FormItemOptions! item) -> void
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.ReportUnavailable(Microsoft.Extensions.Logging.EventId eventId, string! message, string! fix) -> void
+StellarAdmin.Resources.Builders.FieldDependencyBuilder.EmptyText.set -> void
+StellarAdmin.Resources.Editors.LookupQuery.Model.get -> object?
+StellarAdmin.Resources.Editors.LookupQuery.Model.init -> void

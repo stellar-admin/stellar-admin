@@ -16,6 +16,11 @@ public static class ViewDataKeys
     /// </summary>
     public const string FieldDisplayData = "StellarAdminFieldDisplayData";
 
+    // The fields a refresh renders again when a field they depend on changes, and whether they render in a grid row
+    internal const string DependentFields = "StellarAdminDependentFields";
+
+    internal const string DependentFieldsInGrid = "StellarAdminDependentFieldsInGrid";
+
     internal const string DisplayData = "StellarAdminDisplayData";
 
     internal const string EditorData = "StellarAdminEditorData";

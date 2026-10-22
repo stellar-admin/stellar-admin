@@ -28,6 +28,8 @@ internal enum ConfigurationProblemKind
     InlineCreateMissingRequired = 1031,
     InlineRowFieldWithoutColumn = 1032,
     UnknownKeptField = 1033,
+    UnknownParentField = 1034,
+    DependencyCycle = 1035,
 
     ImageFieldWithoutStore = 1040,
     InvalidUploadLimits = 1041,

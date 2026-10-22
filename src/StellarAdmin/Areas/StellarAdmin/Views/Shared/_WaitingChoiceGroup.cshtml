@@ -1,0 +1,19 @@
+@model WaitingChoiceGroupViewModel
+
+<sa-field>
+    <sa-field-label id="@($"{Model.Id}-label")">@Model.Label</sa-field-label>
+    @if (Model.Multiple)
+    {
+        <input type="hidden" name="@($"__sa_checkbox_group.{Model.Name}")" value="true" />
+    }
+    else
+    {
+        <input type="hidden" name="@Model.Name" value="" />
+    }
+    <div id="@Model.Id" class="sa-dependent-empty" role="group" aria-labelledby="@($"{Model.Id}-label")"
+         aria-describedby="@(Model.Description is null ? null : $"{Model.Id}-description")" aria-disabled="true">@Model.Text</div>
+    @if (Model.Description is not null)
+    {
+        <sa-field-description id="@($"{Model.Id}-description")">@Model.Description</sa-field-description>
+    }
+</sa-field>

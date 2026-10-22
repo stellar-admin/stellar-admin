@@ -530,8 +530,8 @@ public class MultiLookupSheetEditorTests
                     .Select(button => button.GetAttribute("data-sheet-open"))
             )
             .IsEquivalentTo([
-                "/stellaradmin/products/lookupsheet?form=edit&field=CategoryIds&for=Entity_CategoryIds",
-                "/stellaradmin/products/lookupsheet?form=edit&field=CategoryIds&for=Entity_CategoryIds",
+                "/stellaradmin/products/lookupsheet/7?form=edit&field=CategoryIds&for=Entity_CategoryIds",
+                "/stellaradmin/products/lookupsheet/7?form=edit&field=CategoryIds&for=Entity_CategoryIds",
             ]);
     }
 

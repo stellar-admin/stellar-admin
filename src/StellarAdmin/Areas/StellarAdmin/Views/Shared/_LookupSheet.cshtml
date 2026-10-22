@@ -49,6 +49,8 @@
 <admin-lookup-picker class="contents" for="@Model.For" multiple="@multiple">
     <sa-sheet-header>
         <sa-sheet-title>@Model.Title</sa-sheet-title>
+        @* When the items depend on other fields, the picker names the fields' values, such as "Filtered by Country: Japan" *@
+        <sa-sheet-description data-lookup="filter" data-prefix="Filtered by" hidden></sa-sheet-description>
     </sa-sheet-header>
 
     <sa-command filter="CommandFilter.None" class="@($"min-h-0 flex-1 bg-transparent px-6 {(multiple ? "pb-3" : "pb-6")}")">

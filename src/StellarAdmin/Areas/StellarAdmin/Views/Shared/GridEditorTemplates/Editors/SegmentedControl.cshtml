@@ -1,5 +1,14 @@
 @inherits FieldEditorView<SegmentedControlEditor>
 
+@* While a field its choices depend on has no value, the cell shows why in place of its choices *@
+@if (WaitingText is { } waitingText)
+{
+    <input type="hidden" name="@Html.NameForModel()" value="" />
+    <span class="sa-dependent-empty sa-cell-editor" role="group" aria-label="@(Title ?? ViewData.ModelMetadata.GetDisplayName())"
+          aria-describedby="@CellErrorId" aria-disabled="true">@waitingText</span>
+    return;
+}
+
 @{
     var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata, Model);
     var emptySelected = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);

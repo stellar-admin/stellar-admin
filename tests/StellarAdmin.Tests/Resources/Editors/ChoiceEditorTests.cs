@@ -23,7 +23,7 @@ public class ChoiceEditorTests
             },
             new SelectListItem("Rome", "rome", true) { Group = europe },
         ]);
-        var items = await sut.ItemsLoader!(null!, CancellationToken.None);
+        var items = await sut.ItemsLoader!(null!, null!, CancellationToken.None);
 
         // Assert
         await Assert
@@ -51,7 +51,7 @@ public class ChoiceEditorTests
         // Act
         sut.UseItems(choices);
         choices.Add(new("rome", "Rome"));
-        var items = await sut.ItemsLoader!(null!, CancellationToken.None);
+        var items = await sut.ItemsLoader!(null!, null!, CancellationToken.None);
 
         // Assert
         await Assert.That(items).IsEquivalentTo([new ChoiceItem("lisbon", "Lisbon")]);

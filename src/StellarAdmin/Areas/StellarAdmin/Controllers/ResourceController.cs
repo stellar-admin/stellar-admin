@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -40,6 +41,9 @@ internal sealed class ResourceController<TResource>(
 {
     // The view page's action, whose method cannot be named View alongside the controller's View helpers
     private const string ViewActionName = "View";
+
+    // The values of the fields a field depends on are sent as Model.Field, apart from the lookup's own query values
+    private const string DependencyPrefix = "Model";
 
     // An inline row's fields are named rows[key].Field, with the key "new" for a new row
     private const string InlineRowsPrefix = "rows";
@@ -356,6 +360,50 @@ internal sealed class ResourceController<TResource>(
         );
     }
 
+    // When a field changes, the fields that depend on it, directly or through other dependents, as the form or the
+    // grid row renders them. The form posts its parents' values; the dependents' own values are cleared.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Dependents(
+        [FromRoute] string? id,
+        [FromQuery] string? form,
+        [FromQuery] string? prefix,
+        [FromQuery] int? level,
+        [FromQuery] string? layout,
+        [FromForm] string? changed,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            FindForm(form) is not { } formOptions
+            || prefix is null
+            || string.IsNullOrEmpty(changed)
+            || FieldDependencies.FindDependents(formOptions.Fields, changed)
+                is not { Length: > 0 } dependents
+        )
+        {
+            return NotFound();
+        }
+
+        var model = CreateFormModel(form!, id);
+        await BindParentsAsync(model, formOptions, dependents);
+        var editors = await PrepareEditorsAsync(dependents, model, cancellationToken);
+
+        ViewData.TemplateInfo.HtmlFieldPrefix = prefix;
+        ViewData[ViewDataKeys.DependentFields] = dependents;
+        ViewData[ViewDataKeys.DependentFieldsInGrid] = layout == "grid";
+        ViewData[ViewDataKeys.EditorData] = editors.Data;
+        ViewData[ViewDataKeys.EditorTemplates] = editors.Templates;
+        ViewData[ViewDataKeys.FormFields] = formOptions.Fields;
+        ViewData[ViewDataKeys.LookupForm] = form!.ToLowerInvariant();
+        if (level > 0)
+        {
+            ViewData[ViewDataKeys.SheetLevel] = level;
+        }
+
+        return PartialView("_DependentFields", model);
+    }
+
     [HttpGet]
     public async Task<IActionResult> Edit(
         [FromRoute] string id,
@@ -583,22 +631,39 @@ internal sealed class ResourceController<TResource>(
             );
         }
 
+        // The items load with the values of the fields they depend on, and only once those all have one
+        var model = await CreateLookupModelAsync(options, query);
+        if (
+            FieldDependencies.GetWaitingText(
+                options,
+                model,
+                HttpContext.RequestServices,
+                MetadataProvider
+            )
+            is not null
+        )
+        {
+            return NotFound();
+        }
+
         var results = await items.SearchAsync(
             HttpContext.RequestServices,
-            new LookupQuery(term, query.Skip, editor.SheetOptions.PageSize),
+            new LookupQuery(term, query.Skip, editor.SheetOptions.PageSize) { Model = model },
             cancellationToken
         );
         var moreUrl = results.HasMore
-            ? Url.Action(
-                nameof(Lookup),
-                new
-                {
-                    id = (string?)null,
-                    form = query.Form,
-                    field = query.Field,
-                    term,
-                    skip = query.Skip + results.Items.Count,
-                }
+            ? WithParentValues(
+                Url.Action(
+                    nameof(Lookup),
+                    new
+                    {
+                        id = RouteData.Values["id"],
+                        form = query.Form,
+                        field = query.Field,
+                        term,
+                        skip = query.Skip + results.Items.Count,
+                    }
+                )!
             )
             : null;
 
@@ -645,7 +710,11 @@ internal sealed class ResourceController<TResource>(
         var item = (
             await items.FindAsync(
                 HttpContext.RequestServices,
-                new FieldEditorContext(options.FieldName, CreateLookupModel(query), current),
+                new FieldEditorContext(
+                    options.FieldName,
+                    CreateFormModel(query.Form!, RouteData.Values["id"] as string),
+                    current
+                ),
                 cancellationToken
             )
         ).FirstOrDefault();
@@ -678,18 +747,21 @@ internal sealed class ResourceController<TResource>(
             return NotFound();
         }
 
+        // Searches send the values of the fields the items depend on, as the sheet's request did
         var label = GetFieldLabel(options);
-        var resultsUrl = Url.Action(
-            nameof(Lookup),
-            new
-            {
-                id = (string?)null,
-                form = query.Form,
-                field = query.Field,
-                @for = editor is MultiLookupSheetEditor ? query.For : null,
-                level = query.Level > 0 ? query.Level : (int?)null,
-            }
-        )!;
+        var resultsUrl = WithParentValues(
+            Url.Action(
+                nameof(Lookup),
+                new
+                {
+                    id = RouteData.Values["id"],
+                    form = query.Form,
+                    field = query.Field,
+                    @for = editor is MultiLookupSheetEditor ? query.For : null,
+                    level = query.Level > 0 ? query.Level : (int?)null,
+                }
+            )!
+        );
 
         return PartialView(
             "_LookupSheet",
@@ -723,7 +795,11 @@ internal sealed class ResourceController<TResource>(
 
         var selected = await items.FindAsync(
             HttpContext.RequestServices,
-            new FieldEditorContext(options.FieldName, CreateLookupModel(query), values),
+            new FieldEditorContext(
+                options.FieldName,
+                CreateFormModel(query.Form!, RouteData.Values["id"] as string),
+                values
+            ),
             cancellationToken
         );
 
@@ -1319,11 +1395,93 @@ internal sealed class ResourceController<TResource>(
     private ResourceLabelContext CreateLabelContext() =>
         new(_resourceOptions.SingularLabel, _resourceOptions.PluralLabel);
 
-    // Lookup items are found without the form's model, so a model that has never been bound stands in for it
-    private object CreateLookupModel(ResourceLookupQuery query) =>
-        query.Form!.Equals("create", StringComparison.OrdinalIgnoreCase)
-            ? _resourceOptions.Create!.CreateModel()
-            : RuntimeHelpers.GetUninitializedObject(_resourceOptions.Edit!.ModelType);
+    // A form's model for loading a field's items without the whole form: a new create model, or an edit model with
+    // only its key, from the route. A model that has never been bound stands in for an edit model it can't create.
+    private object CreateFormModel(string form, string? id)
+    {
+        if (form.Equals("create", StringComparison.OrdinalIgnoreCase))
+        {
+            return _resourceOptions.Create!.CreateModel();
+        }
+
+        var modelType = _resourceOptions.Edit!.ModelType;
+        var model = modelType.GetConstructor(Type.EmptyTypes) is not null
+            ? Activator.CreateInstance(modelType)!
+            : RuntimeHelpers.GetUninitializedObject(modelType);
+        if (
+            id is not null
+            && modelType == typeof(TResource)
+            && _resourceOptions.KeyPropertyName is { } keyName
+            && modelType.GetProperty(keyName) is { CanWrite: true } key
+            && TryConvertKey(key.PropertyType, id, out var value)
+        )
+        {
+            key.SetValue(model, value);
+        }
+
+        return model;
+    }
+
+    // A lookup's form model, with the values of the fields its items depend on, which the sheet's requests send
+    private async Task<object> CreateLookupModelAsync(
+        FormFieldOptions options,
+        ResourceLookupQuery query
+    )
+    {
+        var model = CreateFormModel(query.Form!, RouteData.Values["id"] as string);
+        await BindParentsAsync(model, FindForm(query.Form)!, [options]);
+
+        return model;
+    }
+
+    // Binds the values of the fields the dependents depend on, from the values posted or sent with the Model prefix.
+    // The dependents' own values aren't bound, since a change of a field they depend on clears them. A value that doesn't
+    // bind is left out, and nothing reports it.
+    private async Task BindParentsAsync(
+        object model,
+        ResourceFormOptions form,
+        IReadOnlyCollection<FormFieldOptions> dependents
+    )
+    {
+        var dependentNames = dependents
+            .Select(field => field.FieldName)
+            .ToHashSet(StringComparer.Ordinal);
+        var parents = dependents
+            .SelectMany(field => field.Dependencies)
+            .Select(dependency => dependency.Parent)
+            .OfType<FormFieldOptions>()
+            .Where(parent => !dependentNames.Contains(parent.FieldName))
+            .Distinct()
+            .ToArray();
+        var source = await CompositeValueProvider.CreateAsync(ControllerContext);
+        var fields = parents
+            .Where(parent => parent.Binder is null)
+            .Select(parent => parent.FieldName)
+            .ToHashSet(StringComparer.Ordinal);
+        if (fields.Count > 0)
+        {
+            var propertyNames = fields
+                .SelectMany(field => field.Split('.'))
+                .ToHashSet(StringComparer.Ordinal);
+            await TryUpdateModelAsync(
+                model,
+                form is ResourceEditOptions edit
+                    ? edit.ModelType
+                    : ((ResourceCreateOptions)form).ModelType,
+                DependencyPrefix,
+                new ConfiguredFieldValueProvider(source, fields, DependencyPrefix),
+                metadata => propertyNames.Contains(metadata.PropertyName ?? "")
+            );
+        }
+
+        await BindWithBindersAsync(
+            model,
+            parents.Where(parent => parent.Binder is not null),
+            source,
+            DependencyPrefix
+        );
+        ModelState.Clear();
+    }
 
     private async Task<ResourceFormPageViewModel> CreateFormModelAsync(
         object resource,
@@ -1467,17 +1625,19 @@ internal sealed class ResourceController<TResource>(
             : null;
     }
 
-    private (FormFieldOptions, ILookupSheetEditor)? FindLookupField(ResourceLookupQuery query)
-    {
-        var fields = query.Form?.ToLowerInvariant() switch
+    // The create or edit form a request names; the edit form needs the key that loads it
+    private ResourceFormOptions? FindForm(string? form) =>
+        form?.ToLowerInvariant() switch
         {
-            "create" => _resourceOptions.Create?.Fields,
-            "edit" when _resourceOptions.KeySelector is not null => _resourceOptions.Edit?.Fields,
+            "create" => _resourceOptions.Create,
+            "edit" when _resourceOptions.KeySelector is not null => _resourceOptions.Edit,
             _ => null,
         };
 
+    private (FormFieldOptions, ILookupSheetEditor)? FindLookupField(ResourceLookupQuery query)
+    {
         return
-            fields?.FirstOrDefault(options => options.FieldName == query.Field)
+            FindForm(query.Form)?.Fields.FirstOrDefault(options => options.FieldName == query.Field)
                 is { IsReadOnly: false, Editor: ILookupSheetEditor editor } options
             ? (options, editor)
             : null;
@@ -1562,7 +1722,12 @@ internal sealed class ResourceController<TResource>(
     private Type? GetValueType(FormFieldOptions options, ResourceLookupQuery query) =>
         options.Binder is null
             ? options.PropertyPath[^1].PropertyType
-            : options.GetValue(CreateLookupModel(query), HttpContext.RequestServices)?.GetType();
+            : options
+                .GetValue(
+                    CreateFormModel(query.Form!, RouteData.Values["id"] as string),
+                    HttpContext.RequestServices
+                )
+                ?.GetType();
 
     private async Task<IReadOnlyDictionary<FormDisplayFieldOptions, object?>> PrepareDisplaysAsync(
         IEnumerable<FormDisplayFieldOptions> fields,
@@ -1607,7 +1772,18 @@ internal sealed class ResourceController<TResource>(
                 templates[field.FieldName] = editor.TemplateName;
             }
 
-            if (field.HandlerType is { } handlerType)
+            // A field waiting for a field its items depend on has no items to load. A configuration mistake found while
+            // preparing is reported as the field renders.
+            if (
+                field.HandlerType is { } handlerType
+                && FieldDependencies.GetWaitingText(
+                    field,
+                    model,
+                    HttpContext.RequestServices,
+                    MetadataProvider
+                )
+                    is null
+            )
             {
                 var handler = (IFieldEditorHandler)
                     ActivatorUtilities.CreateInstance(
@@ -1620,7 +1796,14 @@ internal sealed class ResourceController<TResource>(
                     model,
                     field.GetValue(model, HttpContext.RequestServices)
                 );
-                data[field.FieldName] = await handler.PrepareAsync(context, cancellationToken);
+                try
+                {
+                    data[field.FieldName] = await handler.PrepareAsync(context, cancellationToken);
+                }
+                catch (ConfigurationException exception)
+                {
+                    data[field.FieldName] = exception;
+                }
             }
         }
 
@@ -1850,7 +2033,11 @@ internal sealed class ResourceController<TResource>(
 
         var selected = await editor.Items!.FindAsync(
             HttpContext.RequestServices,
-            new FieldEditorContext(options.FieldName, CreateLookupModel(query), values),
+            new FieldEditorContext(
+                options.FieldName,
+                CreateFormModel(query.Form!, RouteData.Values["id"] as string),
+                values
+            ),
             cancellationToken
         );
         var matches = term is null
@@ -2229,6 +2416,19 @@ internal sealed class ResourceController<TResource>(
             return ResourceOperationResult.ValidationFailed(null, message);
         }
     }
+
+    // A lookup URL with the values of the fields the lookup's items depend on, from the current request
+    private string WithParentValues(string url) =>
+        QueryHelpers.AddQueryString(
+            url,
+            Request
+                .Query.Where(entry =>
+                    entry.Key.StartsWith(DependencyPrefix + ".", StringComparison.OrdinalIgnoreCase)
+                )
+                .SelectMany(entry =>
+                    entry.Value.Select(value => KeyValuePair.Create(entry.Key, value))
+                )
+        );
 
     private sealed class ConfiguredFieldValueProvider(
         IValueProvider source,

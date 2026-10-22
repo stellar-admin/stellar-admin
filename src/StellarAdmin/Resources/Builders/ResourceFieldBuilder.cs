@@ -129,6 +129,80 @@ public sealed class ResourceFieldBuilder<TResource>
     }
 
     /// <summary>
+    ///     Makes the field's items depend on another field's value.
+    /// </summary>
+    /// <typeparam name="TProperty">The type of the other field's property.</typeparam>
+    /// <param name="field">An expression that selects the other field's property.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     <para>
+    ///         When the other field changes, the field loads its items again and its value is
+    ///         cleared. While the other field has no value, the field is disabled. Call this once
+    ///         for each field the items depend on.
+    ///     </para>
+    ///     <para>
+    ///         The form the items load with holds only the values of the fields declared here,
+    ///         and the key on the edit form; any other property has its default value. The other
+    ///         field must be an editable field of the same form, or the dependency is a
+    ///         configuration problem and is ignored.
+    ///     </para>
+    /// </remarks>
+    public ResourceFieldBuilder<TResource> DependsOn<TProperty>(
+        Expression<Func<TResource, TProperty>> field
+    ) => DependsOn(field, _ => { });
+
+    /// <summary>
+    ///     Makes the field's items depend on another field's value, and configures the dependency.
+    /// </summary>
+    /// <typeparam name="TProperty">The type of the other field's property.</typeparam>
+    /// <param name="field">An expression that selects the other field's property.</param>
+    /// <param name="configure">A delegate that configures the dependency.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     See <see cref="DependsOn{TProperty}(Expression{Func{TResource, TProperty}})" />.
+    /// </remarks>
+    public ResourceFieldBuilder<TResource> DependsOn<TProperty>(
+        Expression<Func<TResource, TProperty>> field,
+        Action<FieldDependencyBuilder> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(field);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var source = ConfigurationSource.Capture();
+        var properties = ResourcePropertyPath.GetProperties(field);
+        _configuration.Add(options =>
+        {
+            if (properties is null)
+            {
+                ResourceProblemSink.Report(
+                    ConfigurationProblemKind.InvalidSelector,
+                    $"The `{options.FieldName}` field doesn't depend on `{field}` because it doesn't select a property path.",
+                    "Select a property of the model, or a path of properties.",
+                    source
+                );
+
+                return;
+            }
+
+            var dependency = new FieldDependency(ResourcePropertyPath.GetName(properties))
+            {
+                Source = source,
+            };
+            configure(new FieldDependencyBuilder(dependency));
+            options.Dependencies.Add(dependency);
+        });
+
+        return this;
+    }
+
+    /// <summary>
     ///     Edits the field with an editor and configures it.
     /// </summary>
     /// <typeparam name="TEditor">The type of the editor.</typeparam>

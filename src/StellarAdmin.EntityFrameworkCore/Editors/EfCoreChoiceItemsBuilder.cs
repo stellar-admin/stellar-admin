@@ -188,4 +188,32 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
 
         return this;
     }
+
+    /// <summary>
+    ///     Filters the choices by the form's values.
+    /// </summary>
+    /// <typeparam name="TModel">The type of the form's model.</typeparam>
+    /// <param name="filter">
+    ///     An expression that returns whether an entity is a choice, from the entity and the form's
+    ///     model.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="filter" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Declare each field the filter reads with <c>DependsOn</c>: the form holds only those
+    ///     fields' values, and the key on the edit form. Calling this more than once keeps the
+    ///     choices that match every filter.
+    /// </remarks>
+    public EfCoreChoiceItemsBuilder<TEntity, TValue> Where<TModel>(
+        Expression<Func<TEntity, TModel, bool>> filter
+    )
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        _options.FormFilters.Add(EfCoreFormFilter.Create(filter));
+
+        return this;
+    }
 }

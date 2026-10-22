@@ -235,4 +235,32 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
 
         return this;
     }
+
+    /// <summary>
+    ///     Filters the items by the form's values.
+    /// </summary>
+    /// <typeparam name="TModel">The type of the form's model.</typeparam>
+    /// <param name="filter">
+    ///     An expression that returns whether an entity is an item, from the entity and the form's
+    ///     model.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="filter" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Declare each field the filter reads with <c>DependsOn</c>: the form holds only those
+    ///     fields' values, and the key on the edit form. The filter applies to searches, not to
+    ///     the selected items. Calling this more than once keeps the items that match every filter.
+    /// </remarks>
+    public EfCoreLookupItemsBuilder<TEntity, TValue> Where<TModel>(
+        Expression<Func<TEntity, TModel, bool>> filter
+    )
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        _options.FormFilters.Add(EfCoreFormFilter.Create(filter));
+
+        return this;
+    }
 }

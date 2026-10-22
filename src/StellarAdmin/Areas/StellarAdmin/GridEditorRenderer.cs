@@ -33,8 +33,15 @@ internal static class GridEditorRenderer
             services
         );
 
+        // A field waiting for a field its items depend on has no items to load
+        var waitingText = FieldDependencies.GetWaitingText(
+            field,
+            model,
+            services,
+            html.MetadataProvider
+        );
         object? editorData = null;
-        if (field.HandlerType is { } handlerType)
+        if (field.HandlerType is { } handlerType && waitingText is null)
         {
             var handler = (IFieldEditorHandler)
                 ActivatorUtilities.CreateInstance(services, handlerType, field.Editor);
@@ -69,6 +76,7 @@ internal static class GridEditorRenderer
             IsBound = field.Binder is not null,
             IsReadOnly = field.IsReadOnly,
             Title = field.Title,
+            WaitingText = waitingText,
         };
 
         var content = new HtmlContentBuilder();
@@ -87,7 +95,7 @@ internal static class GridEditorRenderer
 
         shown.Add(viewData.TemplateInfo.HtmlFieldPrefix);
 
-        return content;
+        return DependentFieldRenderer.Wrap(html, field, content, grid: true);
     }
 
     // The id of the error under a cell's editor, while the field has one

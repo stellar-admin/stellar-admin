@@ -65,6 +65,9 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
     /// </summary>
     public string? Title => Field?.Title;
 
+    // The text the field shows, disabled, while a field its items depend on has no value
+    internal string? WaitingText => Field?.WaitingText;
+
     private TEditor ResolveEditor()
     {
         return Field?.Editor switch

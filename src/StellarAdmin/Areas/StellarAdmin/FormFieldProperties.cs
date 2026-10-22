@@ -45,4 +45,7 @@ public sealed record FormFieldProperties
 
     // A field with a binder edits without its property's setter
     internal bool IsBound { get; init; }
+
+    // The text a field shows, disabled, while a field its items depend on has no value; null once they all have one
+    internal string? WaitingText { get; init; }
 }

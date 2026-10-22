@@ -18,12 +18,18 @@ internal static class EfCoreChoiceItemsLoader
         var projection = CreateProjection(itemOptions);
         var orderQuery = itemOptions.OrderQuery;
         var media = itemOptions.Media;
+        var formFilters = itemOptions.FormFilters.ToArray();
 
-        editor.UseItems(
-            async (services, cancellationToken) =>
+        editor.UseItems<object>(
+            async (model, services, cancellationToken) =>
             {
                 var db = services.GetRequiredService<TContext>();
                 IQueryable<TEntity> query = db.Set<TEntity>().AsNoTracking();
+                foreach (var formFilter in formFilters)
+                {
+                    query = query.Where(formFilter(model));
+                }
+
                 if (orderQuery is not null)
                 {
                     query = orderQuery(query);

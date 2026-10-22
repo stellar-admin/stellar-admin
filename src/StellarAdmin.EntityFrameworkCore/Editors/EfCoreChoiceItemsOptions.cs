@@ -7,6 +7,8 @@ internal sealed class EfCoreChoiceItemsOptions<TEntity, TValue>
 {
     internal Expression<Func<TEntity, string?>>? DescriptionExpression { get; set; }
 
+    internal List<Func<object?, Expression<Func<TEntity, bool>>>> FormFilters { get; } = [];
+
     internal Expression<Func<TEntity, string?>>? GroupExpression { get; set; }
 
     internal EfCoreItemMedia<TEntity>? Media { get; set; }

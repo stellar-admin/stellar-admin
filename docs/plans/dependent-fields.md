@@ -1,6 +1,6 @@
 # Dependent fields
 
-Status: proposed (2026-10-22). API exploration and a UI prototype come before any code. Branch: `dependent-fields`.
+Status: in progress (2026-10-22). Implemented and verified, awaiting review; website docs and the consumer skill reference remain. Branch: `dependent-fields`.
 
 ## Goal
 
@@ -47,7 +47,8 @@ public sealed class CitySource(CityCatalog catalog) : ILookupSource<City, int, i
     public Task<IReadOnlyCollection<City>> FindAsync(IReadOnlyCollection<int> values, CancellationToken ct) => ...;
     public Task<LookupPage<City>> SearchAsync(int countryId, LookupQuery query, CancellationToken ct) => ...;
 }
-lookup.UseItems<CitySource, City, int, int>(c => c.Id, c => c.Name, (Trip trip) => trip.CountryId!.Value);
+// The form's type is a fifth type argument: C# can't infer it once the others are named (see Implementation)
+lookup.UseItems<CitySource, City, int, int, Trip>(c => c.Id, c => c.Name, trip => trip.CountryId!.Value);
 ```
 
 - `DependsOn` may be called more than once for several parents, and parents chain (country → city → neighbourhoods). Inline rows use the same fields, so they cascade too.
@@ -59,7 +60,7 @@ lookup.UseItems<CitySource, City, int, int>(c => c.Id, c => c.Name, (Trip trip) 
 
 New public surface:
 
-- StellarAdmin: `ResourceFieldBuilder<TResource>` (step 1); `DependsOn(field)` and `DependsOn(field, configure)`; `FieldDependencyBuilder` (`EmptyText`); `ChoiceEditor.UseItems<TModel>(loader)`; `ILookupSource<TEntity, TValue, TArgument>` with `UseItems<TSource, TEntity, TValue, TArgument>(value, title, argument)` (and a `configure` overload) on the lookup and multi-lookup editors; `LookupQuery.Model`.
+- StellarAdmin: `ResourceFieldBuilder<TResource>` (step 1); `DependsOn(field)` and `DependsOn(field, configure)`; `FieldDependencyBuilder` (`EmptyText`); `ChoiceEditor.UseItems<TModel>(loader)`; `ILookupSource<TEntity, TValue, TArgument>` with `UseItems<TSource, TEntity, TValue, TArgument, TModel>(value, title, argument)` (and a `configure` overload) on the lookup and multi-lookup editors; `LookupQuery.Model`.
 - StellarAdmin.EntityFrameworkCore: `Where<TModel>((entity, form) => ...)` on `EfCoreChoiceItemsBuilder` and `EfCoreLookupItemsBuilder`.
 
 ## Steps
@@ -67,12 +68,28 @@ New public surface:
 1. `ResourceFieldBuilder<TResource>`, with tests, samples and consumer references updated. Done (2026-10-22): no sample, test, consumer reference or website page names the type, so only the builder, `ResourceFieldsBuilder<TResource>.Add` and the public API file changed.
 2. UI prototype in `sandbox/html/` showing the select, lookup and multi-lookup (and a choice group) in their empty-parent, loading and refreshed states, in a form and an inline grid row.
 3. Public API proposal for review: `DependsOn` and its options, the form context on item loaders, the EF Core filter. Agreed 2026-10-22, see [API](#api-agreed-2026-10-22-revised-the-same-day).
-4. Implementation: refresh endpoint, client wiring, disabled states in the form and grid editor templates, lookup sheet requests.
-5. Tests, a country/city sample in AdminPlayground, website docs and the consumer skill reference.
+4. Implementation: refresh endpoint, client wiring, disabled states in the form and grid editor templates, lookup sheet requests. Done (2026-10-22), see [Implementation](#implementation).
+5. Tests, a country/city sample in AdminPlayground, website docs and the consumer skill reference. Tests and the Trips sample were added with step 4, to verify it; website docs and the consumer skill reference remain.
 
 StellarAdmin.UI is expected to stay unchanged: the templates compose `sa-*` components, most of which support `Disabled`. A component whose disabled state is missing or unstyled would need a small library fix.
 
+## Implementation
+
+Built 2026-10-22, uncommitted until reviewed:
+
+- `DependsOn` stores the parents on the field; `DependencyCheck` resolves them on the same form and reports a parent that isn't an editable field of it (`UnknownParentField`) or that closes a cycle (`DependencyCycle`), dropping that dependency.
+- A field is disabled while a parent is empty: null, blank text, an empty collection, or the default of a number, date or ID (a new record's `0`); a Boolean or an enum always counts as set. Its items aren't loaded meanwhile. The hint is the first empty parent's `EmptyText`, or "Select {label} first".
+- A disabled field posts an empty value (a hidden input, or the collection marker), so a save after the parent changed clears it rather than keeping the old value.
+- Dependents render in `admin-dependent-field`, which names the field, its parents' input names, field names and labels, and its refresh URL (`Dependents`, a POST with the form, key, field prefix, sheet level and grid layout). The script posts every parent value in the form or grid row as `Model.Field`; the server binds only the parents of the affected fields to a fresh model and renders them, and each element is replaced.
+- Lookup sheet and search URLs carry the same `Model.Field` values; an edit form's lookup URLs now include the record's key. A search whose parents are empty returns 404.
+- `ChoiceEditor.UseItems<TModel>`: the loader gets the form's model; a form of another type is a configuration problem for the field. The EF Core choice loader now uses it, to apply `Where`.
+- Generated texts ("Select Country first", "Filtered by Country: Japan") are English, in the templates and the script, not in `ResourceLabelOptions`.
+
+Deviation from the agreed API: `lookup.UseItems<CitySource, City, int, int>(..., (Trip trip) => ...)` doesn't compile, because C# infers no type argument once any is named, so the form's type is a fifth type argument, `UseItems<CitySource, City, int, int, Trip>`. Needs Jerrie's OK.
+
 ## Open
+
+- Come back to before the plan closes (Jerrie, 2026-10-22): drop the fifth type argument of the value-based lookup `UseItems` if possible. The field builder knows the form's type (`ResourceFieldBuilder<TResource>`), but `UseEditor<TEditor>(Action<TEditor>)` passes only the non-generic editor, so the lookup's `UseItems` can't infer it. Fixing it means carrying the type into the editor's configuration, which is new public API.
 
 - Field change callbacks (`OnChange`) that update other fields' values on the server could reuse the same refresh endpoint. Whether to design for it now is undecided.
 
@@ -86,5 +103,6 @@ The existing disabled styles of the native select, buttons, input groups, toggle
 
 ## Verification
 
+- Step 4 (2026-10-22): the solution builds with no new warnings. StellarAdmin.Tests (305), StellarAdmin.IntegrationTests (651), StellarAdmin.EntityFrameworkCore.IntegrationTests (126), StellarAdmin.UI.Tests (732) and StellarAdmin.UI.IntegrationTests (19) pass, including the new `DependencyCheckTests`, `DependentFieldTests` and `ResourceDependentItemsTests`. The Trips sample was checked in headless Chromium over CDP: the edit page cascade (country → city, airport, neighbourhoods, pickup points), the refreshing state on every transitive dependent, the airport sheet filtered to the country with its subtitle, clearing the country, saving, and a new inline row's cascade and filtered sheet. The skeleton overlay was captured by holding the refreshing state. Default theme, light mode, desktop width only.
 - Step 1 (2026-10-22): the solution builds with the same warnings as before; StellarAdmin.Tests (301), StellarAdmin.IntegrationTests (641) and StellarAdmin.EntityFrameworkCore.IntegrationTests (124) pass.
 - Prototype checked in headless Chromium over CDP (2026-10-22): country change in the form (refreshing, then cleared with notes, grandchildren disabled), the arrival airport sheet filtered to Japan, clearing the country, and a new grid row choosing a country and then a city from the sheet. Default theme, light mode only; other themes, dark mode and phone width not yet checked.
