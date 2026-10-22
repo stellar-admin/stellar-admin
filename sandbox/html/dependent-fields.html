@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dependent fields</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Figtree:wght@400..700&display=swap"
+    />
+
+    <!--
+      Real built library and admin panel assets. The editors reproduce the markup the admin panel emits
+      (EditorTemplates/Editors and GridEditorTemplates/Editors, captured from AdminPlayground's field editor
+      gallery and the destinations inline row on 2026-10-22). The script renders that markup so a "server
+      refresh" can re-render a field, as the real refresh endpoint would; the round trip is simulated.
+    -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css" />
+    <!-- Theme fixture, swapped from the control bar; empty for the default theme. -->
+    <link id="theme-css" rel="stylesheet" />
+    <script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <style>
+      /* ---------------------------------------------------------------------------------------- */
+      /* Page chrome (prototype only)                                                              */
+      /* ---------------------------------------------------------------------------------------- */
+      :root { --sa-font-sans: "Inter", sans-serif; }
+      body {
+        margin: 0;
+        background: var(--sa-color-canvas);
+        color: var(--sa-color-ink);
+        font-family: var(--sa-font-sans);
+      }
+      .proto-page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 260px; }
+      .proto-page > h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+      .proto-intro { margin: 0 0 8px; color: var(--sa-color-ink-muted); font-size: 14px; max-width: 95ch; }
+      .proto-nav { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 32px; font-size: 14px; }
+      .proto-nav a { color: var(--sa-color-ink-muted); }
+      .proto-section { margin-bottom: 72px; scroll-margin-top: 16px; }
+      .proto-section-head h2 { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
+      .proto-section-head p { margin: 0 0 6px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 100ch; }
+      .proto-section-head code { font-size: 12px; }
+      .proto-options {
+        display: grid; grid-template-columns: max-content 1fr; gap: 8px 12px; align-items: start;
+        margin: 0 0 24px; padding: 12px; font-size: 13px; color: var(--sa-color-ink-muted);
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container);
+        background: var(--sa-color-surface-subtle);
+      }
+      .proto-options > span { padding-top: 3px; font-weight: 500; color: var(--sa-color-ink); }
+      .proto-options .group { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+      .proto-options button, .proto-controls button {
+        font: inherit; font-size: 13px; padding: 2px 8px; cursor: pointer; color: var(--sa-color-ink);
+        background: var(--sa-color-surface); border: var(--sa-border-width) solid var(--sa-color-line);
+        border-radius: var(--sa-radius-control-sm);
+      }
+      .proto-options button[aria-pressed="true"], .proto-controls button[aria-pressed="true"] {
+        background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); border-color: transparent;
+      }
+      .proto-controls {
+        position: fixed; right: 16px; bottom: 16px; z-index: 50;
+        display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center;
+        padding: 12px; font-size: 13px;
+        background: var(--sa-color-surface-raised); color: var(--sa-color-ink);
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container);
+        box-shadow: var(--sa-shadow-overlay);
+      }
+      .proto-controls .group { display: flex; gap: 4px; flex-wrap: wrap; }
+      .proto-frame {
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container);
+        background: var(--sa-color-canvas); padding: 24px;
+      }
+      .proto-frame .sa-page-container { padding: 0; }
+      .proto-log {
+        margin-top: 10px; font: 12px/1.5 ui-monospace, monospace; color: var(--sa-color-ink-muted);
+        min-height: 3em; white-space: pre-wrap;
+      }
+      .proto-matrix { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+      .proto-matrix th { text-align: left; font-weight: 600; padding: 8px 10px; color: var(--sa-color-ink-muted); vertical-align: bottom; }
+      .proto-matrix th:first-child { width: 150px; }
+      .proto-matrix td { padding: 12px 10px; vertical-align: top; border-top: var(--sa-border-width) solid var(--sa-color-line); }
+      .proto-matrix td:first-child { color: var(--sa-color-ink-muted); padding-top: 18px; }
+      .proto-matrix .grid-cell { display: block; max-width: 220px; }
+      /* The matrix freezes the cleared highlight at its start so the styles can be compared */
+      .proto-matrix [data-dependent-cleared], .proto-matrix [data-dependent-cleared] *, .proto-matrix .sa-dependent-badge { animation-play-state: paused !important; }
+      .proto-api { margin-top: 12px; font-size: 12px; }
+      .proto-api pre {
+        margin: 6px 0 0; padding: 10px 12px; overflow-x: auto;
+        background: var(--sa-color-surface-sunken); border-radius: var(--sa-radius-control);
+      }
+
+      /* ---------------------------------------------------------------------------------------- */
+      /* Candidate: dependent field states (would go in the admin panel stylesheet)                */
+      /* ---------------------------------------------------------------------------------------- */
+      @layer sa.components {
+        /* Refreshing, option "dim": the field stays in place, dimmed, with a spinner after its label */
+        [data-dependent="refreshing"][data-refresh-style="dim"] {
+          & :is(.sa-native-select-wrapper, admin-lookup-sheet-editor > *, admin-multi-lookup-sheet-editor > *,
+                [data-slot="toggle-group"], [data-slot="checkbox-group"], .sa-cell-editor) {
+            opacity: 0.55;
+            pointer-events: none;
+            transition: opacity 120ms;
+          }
+        }
+        .sa-dependent-spinner {
+          display: inline-block; width: 0.875rem; height: 0.875rem; margin-inline-start: 0.375rem;
+          vertical-align: -2px; color: var(--sa-color-ink-muted);
+        }
+
+        /* Cleared, option "highlight": a brief effect on the field whose value was cleared, in one of
+           several styles (data-dependent-cleared names the style) */
+        /* ring: a fading focus-style ring around the control */
+        @keyframes sa-dependent-cleared-ring {
+          from { box-shadow: 0 0 0 var(--sa-focus-ring-width, 3px) var(--sa-focus-ring-color); }
+          to { box-shadow: 0 0 0 var(--sa-focus-ring-width, 3px) transparent; }
+        }
+        [data-dependent-cleared="ring"] :is(.sa-native-select, [data-lookup="empty"] > .sa-input-group, [data-lookup="empty"].sa-input-group, [data-slot="toggle-group"], [data-slot="checkbox-group"], .sa-cell-editor) {
+          animation: sa-dependent-cleared-ring 1.6s ease-out;
+          border-radius: var(--sa-radius-control);
+        }
+
+        /* wash: the control's background starts in the highlight wash and fades back */
+        @keyframes sa-dependent-cleared-wash {
+          from { background-color: var(--sa-color-highlight); }
+        }
+        [data-dependent-cleared="wash"] :is(.sa-native-select, [data-lookup="empty"] > .sa-input-group, [data-lookup="empty"].sa-input-group, .sa-cell-editor, [data-slot="toggle-group"] > *, [data-slot="checkbox-group"] .sa-checkbox) {
+          animation: sa-dependent-cleared-wash 2s ease-in;
+        }
+
+        /* border: the control's border starts in the warning colour and fades back */
+        @keyframes sa-dependent-cleared-border {
+          from { border-color: var(--sa-color-warning); }
+        }
+        [data-dependent-cleared="border"] :is(.sa-native-select, [data-lookup="empty"] > .sa-input-group, [data-lookup="empty"].sa-input-group, .sa-cell-editor, [data-slot="toggle-group"] > *, [data-slot="checkbox-group"] .sa-checkbox) {
+          animation: sa-dependent-cleared-border 2s ease-in;
+        }
+
+        /* fade: the whole field (label and control) gets a warm wash that fades, the classic yellow fade */
+        @keyframes sa-dependent-cleared-fade {
+          from { background-color: color-mix(in oklab, var(--sa-color-warning) 22%, transparent); }
+          to { background-color: transparent; }
+        }
+        .sa-field[data-dependent-cleared="fade"] {
+          animation: sa-dependent-cleared-fade 2.2s ease-in;
+          border-radius: var(--sa-radius-control);
+        }
+        .sa-field[data-dependent-cleared="fade"] { margin: calc(-1.5 * var(--sa-unit, 0.25rem)); padding: calc(1.5 * var(--sa-unit, 0.25rem)); }
+
+        /* badge: a "Cleared" badge by the label that shows for a few seconds, then fades out */
+        @keyframes sa-dependent-cleared-badge {
+          0%, 75% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        .sa-dependent-badge {
+          margin-inline-start: 0.5rem; vertical-align: 1px;
+          animation: sa-dependent-cleared-badge 3.5s ease-in forwards;
+        }
+
+        /* Cleared, option "note": a muted line under the control until the field changes */
+        .sa-dependent-note {
+          display: flex; align-items: center; gap: 0.375rem;
+          font-size: 0.8125rem; color: var(--sa-color-ink-muted);
+          & svg { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+        }
+
+        /* A choice group without items: a message box the size of a control, option "message" */
+        .sa-dependent-empty {
+          display: flex; align-items: center; min-height: 2.25rem; padding: 0 0.75rem;
+          font-size: 0.875rem; color: var(--sa-color-ink-muted);
+          border: var(--sa-border-width) dashed var(--sa-color-line-control);
+          border-radius: var(--sa-radius-control);
+          background: var(--sa-color-field-disabled);
+        }
+
+        /* Disabled multi-lookup "Choose" control; the single lookup's dashed group is already handled by input-group */
+        admin-multi-lookup-sheet-editor [data-lookup="empty"]:has(:disabled) .text-muted-foreground { cursor: not-allowed; }
+        [data-lookup="open"]:disabled { cursor: not-allowed; }
+        /* Refreshing, option "skeleton": the control stays in place (still showing its old items) and a
+           skeleton overlays it, so the skeleton has the control's exact size in every editor, theme and density */
+        @keyframes sa-dependent-skeleton-pulse {
+          50% { background-color: color-mix(in oklab, var(--sa-color-surface), var(--sa-color-ink) 4%); }
+        }
+        [data-dependent="refreshing"][data-refresh-style="skeleton"] :where(
+          .sa-native-select-wrapper,
+          admin-lookup-sheet-editor > :not([hidden], input):not(:has(> .sa-cell-editor)),
+          admin-lookup-sheet-editor > :not([hidden]) > button.sa-cell-editor,
+          admin-multi-lookup-sheet-editor > :not([hidden], [data-lookup="values"]),
+          [data-slot="toggle-group"], [data-slot="checkbox-group"]
+        ) {
+          position: relative;
+          pointer-events: none;
+          &::after {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            z-index: 1;
+            border-radius: var(--sa-radius-control);
+            background-color: color-mix(in oklab, var(--sa-color-surface), var(--sa-color-ink) 8%);
+            animation: sa-dependent-skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+        }
+        /* Controls that can grow taller than one line take the box radius, so pill themes don't make ellipses.
+           Groups have no border of their own, so the skeleton reaches past their items' corners. */
+        [data-dependent="refreshing"][data-refresh-style="skeleton"] :is([data-slot="toggle-group"], [data-slot="checkbox-group"])::after {
+          inset: calc(-1.5 * var(--sa-unit, 0.25rem));
+        }
+        [data-dependent="refreshing"][data-refresh-style="skeleton"] :is(
+          [data-slot="toggle-group"], [data-slot="checkbox-group"],
+          admin-multi-lookup-sheet-editor > *, admin-lookup-sheet-editor > :has(.sa-item, .h-12)
+        )::after {
+          border-radius: var(--sa-radius-box);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [data-dependent="refreshing"][data-refresh-style="skeleton"] *::after { animation: none; }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="proto-page">
+      <h1>Dependent fields</h1>
+      <p class="proto-intro">
+        A field whose items depend on another field's value: a trip's city, airport and guides depend on its
+        country, and its neighbourhoods and pickup points depend on its city. Changing a parent asks the server to
+        re-render the dependent fields (simulated here), which clears values the new items don't contain. While a
+        parent is empty its dependents are disabled. Every editor uses its existing markup and disabled styles;
+        the open questions are about the hints around them.
+      </p>
+      <nav class="proto-nav">
+        <a href="#options">Open questions</a>
+        <a href="#form">Create form</a>
+        <a href="#grid">Inline grid row</a>
+        <a href="#matrix">Every editor, every state</a>
+      </nav>
+
+      <section class="proto-section" id="options">
+        <div class="proto-section-head">
+          <h2>Open questions</h2>
+          <p>Each choice applies to the form, the grid and the matrix below. Defaults are my recommendation.</p>
+        </div>
+        <div class="proto-options" id="options-bar">
+          <span>1. Disabled hint</span>
+          <div class="group" data-option="hint">
+            <button data-value="own">Own empty text</button>
+            <button data-value="placeholder">Hint as the empty text</button>
+            <button data-value="description">Own empty text + hint below</button>
+          </div>
+          <span>2. Choice group, no parent</span>
+          <div class="group" data-option="group">
+            <button data-value="message">Message box in place of the items</button>
+            <button data-value="hidden">Hide the field</button>
+            <button data-value="label">Label only</button>
+          </div>
+          <span>3. While refreshing</span>
+          <div class="group" data-option="refresh">
+            <button data-value="none">Nothing; swap when ready</button>
+            <button data-value="dim">Dim + spinner by the label</button>
+            <button data-value="skeleton">Skeleton over the control</button>
+          </div>
+          <span>4. Value cleared</span>
+          <div class="group" data-option="cleared">
+            <button data-value="silent">Silent</button>
+            <button data-value="highlight">Brief highlight</button>
+            <button data-value="note">Note under the field</button>
+          </div>
+          <span>4a. Highlight style</span>
+          <div class="group" data-option="flash">
+            <button data-value="ring">Ring</button>
+            <button data-value="wash">Control wash</button>
+            <button data-value="border">Border colour</button>
+            <button data-value="fade">Field fade</button>
+            <button data-value="badge">"Cleared" badge</button>
+          </div>
+          <span>5. Lookup sheet</span>
+          <div class="group" data-option="sheet">
+            <button data-value="plain">Title only</button>
+            <button data-value="context">Says what it's filtered by</button>
+          </div>
+          <span>Messages</span>
+          <div class="group" data-option="messages">
+            <button data-value="generated">Generated</button>
+            <button data-value="app">Supplied by the app</button>
+          </div>
+          <span>Round trip</span>
+          <div class="group" data-option="latency">
+            <button data-value="120">120 ms</button>
+            <button data-value="600">600 ms</button>
+            <button data-value="1500">1.5 s</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="proto-section" id="form">
+        <div class="proto-section-head">
+          <h2>Create form</h2>
+          <p>
+            Country is a select. City (select), overnight stop (lookup, input layout), arrival airport (lookup, card
+            layout) and guides (multi-lookup, chips) depend on it; neighbourhoods (toggle group) and pickup points
+            (checkbox group) depend on the city, so changing the country clears and disables them too.
+          </p>
+        </div>
+        <div class="proto-frame">
+          <div class="sa-page-container sa-page-container-width-large sa-resource-form" data-form-layout="split" data-slot="page-container" data-width="large">
+            <header class="sa-page-header sa-resource-form-header" data-slot="page-header">
+              <h1 data-slot="page-header-title" class="sa-page-header-title">Add new trip</h1>
+            </header>
+            <form method="post" data-resource-form id="trip-form" onsubmit="return false">
+              <section data-slot="form-section" data-layout="split" aria-labelledby="sec-route" class="sa-form-section">
+                <div class="sa-form-section-inner">
+                  <div class="sa-form-section-header" data-slot="form-section-header">
+                    <h2 class="sa-form-section-title" data-slot="form-section-title" id="sec-route">Route</h2>
+                  </div>
+                  <div class="sa-form-section-content" data-slot="form-section-content">
+                    <div data-slot="grid" class="sa-grid">
+                      <div class="sa-grid-content" data-slot="grid-content" data-columns="single" id="form-fields"></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </form>
+          </div>
+        </div>
+        <div class="proto-log" id="form-log"></div>
+        <div class="proto-api">
+          Configuration this form would come from (proposal, not final):
+          <pre>fields.Add(t => t.Country).UseEditor&lt;SelectEditor&gt;(UseCountries);
+fields.Add(t => t.City)
+    .DependsOn(t => t.Country)
+    .UseEditor&lt;SelectEditor&gt;(select => select.UseItems&lt;CityChoices&gt;());   // CityChoices reads form.Country
+fields.Add(t => t.ArrivalAirport).UseEditor&lt;LookupSheetEditor&gt;(lookup =>
+    lookup.UseItems&lt;Db, Airport, string&gt;(a => a.Code, a => a.Name, items => items
+        .Where((Airport airport, Trip form) => airport.CountryCode == form.Country)));   // dependency inferred
+fields.Add(t => t.Neighbourhoods).DependsOn(t => t.City).UseEditor&lt;ToggleGroupEditor&gt;(...);</pre>
+        </div>
+      </section>
+
+      <section class="proto-section" id="grid">
+        <div class="proto-section-head">
+          <h2>Inline grid row</h2>
+          <p>
+            The same cascade in edit rows: country (select cell) → city (lookup cell) and guide (select cell). The
+            refresh includes the row's own inputs (<code>hx-include="closest tr"</code>, as Save does) and swaps the
+            dependent cells. The second row is a new row, so its dependents start disabled.
+          </p>
+        </div>
+        <div class="sa-data-grid sa-card sa-resource-index-grid" data-inline-dim="edit" data-slot="data-grid">
+          <sel-table data-editing="" data-slot="table-interactivity">
+            <div class="sa-table-container" data-slot="table-container">
+              <table class="sa-table" data-slot="table">
+                <thead class="sa-table-header" data-slot="table-header">
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <th class="sa-table-head" data-slot="table-head">Name</th>
+                    <th class="sa-table-head" data-slot="table-head">Country</th>
+                    <th class="sa-table-head" data-slot="table-head">City</th>
+                    <th class="sa-table-head" data-slot="table-head">Guide</th>
+                    <th class="sa-table-head w-px whitespace-nowrap sa-inline-row-actions" data-slot="table-head"></th>
+                  </tr>
+                </thead>
+                <tbody class="sa-table-body" data-slot="table-body" id="grid-body"></tbody>
+              </table>
+            </div>
+          </sel-table>
+        </div>
+      </section>
+
+      <section class="proto-section" id="matrix">
+        <div class="proto-section-head">
+          <h2>Every editor, every state</h2>
+          <p>Static renders with the current choices, for side-by-side comparison. Refreshing shows the chosen style; "nothing" looks like the field before the change.</p>
+        </div>
+        <table class="proto-matrix">
+          <thead>
+            <tr><th>Editor</th><th>Parent empty</th><th>Refreshing</th><th>Refreshed, value cleared</th><th>Value chosen</th></tr>
+          </thead>
+          <tbody id="matrix-body"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- The admin layout's shared sheet, as captured; the picker content is rendered by the script. -->
+    <admin-remote-sheet class="contents">
+      <sel-dialog><dialog id="admin-sheet" class="sa-sheet-content sa-sheet-stack-level" data-slot="sheet-content" data-side="right"><button type="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close" commandfor="admin-sheet" command="close" data-slot="button"><svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span class="sr-only">Close</span></button><div class="sa-sheet-body">
+        <div id="admin-sheet-content" class="contents" data-sheet="content"></div>
+      </div></dialog></sel-dialog>
+    </admin-remote-sheet>
+
+    <aside class="proto-controls" aria-label="Prototype controls">
+      <span>Theme</span>
+      <div class="group" data-control="theme">
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="ops" aria-pressed="false">Ops</button>
+        <button data-value="soft" aria-pressed="false">Soft</button>
+        <button data-value="ledger" aria-pressed="false">Ledger</button>
+      </div>
+      <span>Mode</span>
+      <div class="group" data-control="mode">
+        <button data-value="light" aria-pressed="true">Light</button>
+        <button data-value="dark" aria-pressed="false">Dark</button>
+      </div>
+      <span>Density</span>
+      <div class="group" data-control="density">
+        <button data-value="compact" aria-pressed="false">Compact</button>
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="comfortable" aria-pressed="false">Comfortable</button>
+      </div>
+    </aside>
+
+    <script>
+      // ------------------------------------------------------------------------------------------
+      // Data (Voyager Travel)
+      // ------------------------------------------------------------------------------------------
+      const COUNTRIES = [
+        { value: "PT", title: "Portugal" },
+        { value: "JP", title: "Japan" },
+        { value: "ZA", title: "South Africa" },
+        { value: "PE", title: "Peru" },
+      ];
+      const CITIES = {
+        PT: ["Lisbon", "Porto", "Faro"],
+        JP: ["Tokyo", "Kyoto", "Osaka"],
+        ZA: ["Cape Town", "Johannesburg", "Durban"],
+        PE: ["Lima", "Cusco", "Arequipa"],
+      };
+      const AIRPORTS = {
+        PT: [["LIS", "Lisbon Humberto Delgado", "Lisbon"], ["OPO", "Porto Francisco Sá Carneiro", "Porto"], ["FAO", "Faro", "Faro"]],
+        JP: [["NRT", "Tokyo Narita", "Tokyo"], ["HND", "Tokyo Haneda", "Tokyo"], ["KIX", "Osaka Kansai", "Osaka"], ["ITM", "Osaka Itami", "Osaka"]],
+        ZA: [["CPT", "Cape Town International", "Cape Town"], ["JNB", "O. R. Tambo", "Johannesburg"], ["DUR", "King Shaka", "Durban"]],
+        PE: [["LIM", "Jorge Chávez", "Lima"], ["CUZ", "Alejandro Velasco Astete", "Cusco"], ["AQP", "Rodríguez Ballón", "Arequipa"]],
+      };
+      const GUIDES = {
+        PT: ["Inês Duarte", "Tiago Moreira", "Beatriz Lopes"],
+        JP: ["Haruka Sato", "Kenji Mori", "Aiko Tanaka"],
+        ZA: ["Thandi Nkosi", "Pieter van Wyk", "Lindiwe Dlamini"],
+        PE: ["Rosa Quispe", "Mateo Huamán", "Lucía Paredes"],
+      };
+      const NEIGHBOURHOODS = {
+        Lisbon: ["Alfama", "Baixa", "Belém", "Chiado"], Porto: ["Ribeira", "Foz do Douro", "Boavista"], Faro: ["Cidade Velha", "Praia de Faro"],
+        Tokyo: ["Shibuya", "Asakusa", "Shinjuku", "Ginza"], Kyoto: ["Gion", "Arashiyama", "Higashiyama"], Osaka: ["Namba", "Umeda", "Tennoji"],
+        "Cape Town": ["Bo-Kaap", "Camps Bay", "Sea Point", "Woodstock"], Johannesburg: ["Maboneng", "Melville", "Soweto"], Durban: ["Umhlanga", "Florida Road"],
+        Lima: ["Miraflores", "Barranco", "San Isidro"], Cusco: ["San Blas", "Centro Histórico"], Arequipa: ["Yanahuara", "Cercado"],
+      };
+      const pickupsFor = (city) => [`${city} airport arrivals`, `${city} central station`, "Hotel lobby"].map((t, i) => ({ value: `${city}-${i}`, title: t }));
+      const slug = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w]+/g, "-");
+
+      // ------------------------------------------------------------------------------------------
+      // Fields: each one's editor, label, parent and the items for a parent value (the "server")
+      // ------------------------------------------------------------------------------------------
+      const FORM_FIELDS = [
+        { name: "Country", label: "Country", editor: "select", required: true, items: () => COUNTRIES },
+        { name: "City", label: "City", editor: "select", parent: "Country", items: (c) => CITIES[c].map((t) => ({ value: t, title: t })), app: { hint: "Choose a country first" } },
+        { name: "OvernightStop", label: "Overnight stop", editor: "lookup", parent: "Country", items: (c) => CITIES[c].map((t) => ({ value: t, title: t })), app: { hint: "Choose a country first", sheet: (p) => `Showing cities in ${p}.` } },
+        { name: "ArrivalAirport", label: "Arrival airport", editor: "lookup-card", parent: "Country", items: (c) => AIRPORTS[c].map(([code, name, city]) => ({ value: code, title: name, code, description: `${code} · ${city}` })), app: { hint: "Choose a country first", sheet: (p) => `Showing airports in ${p}.` } },
+        { name: "Guides", label: "Guides", editor: "multi-lookup", parent: "Country", items: (c) => GUIDES[c].map((t) => ({ value: slug(t), title: t })), app: { hint: "Choose a country first", sheet: (p) => `Showing guides who work in ${p}.` } },
+        { name: "Neighbourhoods", label: "Neighbourhoods", editor: "toggle-group", parent: "City", items: (c) => NEIGHBOURHOODS[c].map((t) => ({ value: slug(t), title: t })), app: { hint: "Choose a city to see its neighbourhoods" } },
+        { name: "PickupPoints", label: "Pickup points", editor: "checkbox-group", parent: "City", items: pickupsFor, app: { hint: "Choose a city to see where we can pick travellers up" } },
+      ];
+      const PARENT_LABEL = { Country: "Country", City: "City" };
+
+      // The messages around a dependent field. Generated ones use only the parent's label (as the app
+      // wrote it) and the parent's selected title; app-supplied ones come from DependsOn's options.
+      const MSG = {
+        hint: (d) => (opt.messages === "app" && d.app?.hint) || `Select ${PARENT_LABEL[d.parent]} first`,
+        sheet: (d, parentTitle) => (opt.messages === "app" && d.app?.sheet?.(parentTitle)) || `Filtered by ${PARENT_LABEL[d.parent]}: ${parentTitle}`,
+      };
+
+      // ------------------------------------------------------------------------------------------
+      // Options
+      // ------------------------------------------------------------------------------------------
+      const opt = { hint: "placeholder", group: "message", refresh: "skeleton", cleared: "silent", flash: "border", sheet: "context", messages: "generated", latency: "600" };
+
+      // ------------------------------------------------------------------------------------------
+      // Icons, as the tag helpers emit them
+      // ------------------------------------------------------------------------------------------
+      const svg = (paths, cls = "") => `<svg${cls ? ` class="${cls}"` : ""} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+      const ICON = {
+        chevronDown: (c) => svg(`<path d="m6 9 6 6 6-6"></path>`, c),
+        chevronsUpDown: (c) => svg(`<path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path>`, c),
+        search: (c) => svg(`<path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle>`, c),
+        x: (c) => svg(`<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>`, c),
+        plus: (c) => svg(`<path d="M5 12h14"></path><path d="M12 5v14"></path>`, c),
+        check: (c) => svg(`<path d="M20 6 9 17l-5-5"></path>`, c),
+        info: (c) => svg(`<circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path>`, c),
+        spinner: () => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sa-spinner sa-dependent-spinner" role="status" aria-label="Loading"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>`,
+      };
+      const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+
+      // ------------------------------------------------------------------------------------------
+      // Form editor renderers (EditorTemplates/Editors/*). `f` is the field model:
+      // { def, id, name, value, items, state: "ready" | "disabled" | "refreshing", cleared, parentTitle }
+      // ------------------------------------------------------------------------------------------
+      function chooseText(f) {
+        const own = f.def.editor.startsWith("lookup") || f.def.editor === "multi-lookup" ? `Choose ${f.def.label.toLowerCase()}` : "Not set";
+        if (f.state === "disabled" && opt.hint === "placeholder") return MSG.hint(f.def);
+        return own;
+      }
+
+      function belowControl(f) {
+        let html = "";
+        if (f.state === "disabled" && opt.hint === "description" && !isGroup(f.def)) {
+          html += `<p class="sa-field-description" data-slot="field-description">${esc(MSG.hint(f.def))}.</p>`;
+        }
+        if (f.cleared && opt.cleared === "note" && f.state === "ready") {
+          html += `<p class="sa-dependent-note" data-slot="field-description">${ICON.info()}${esc(f.cleared)}</p>`;
+        }
+        return html;
+      }
+
+      const isGroup = (def) => def.editor === "toggle-group" || def.editor === "checkbox-group";
+
+      function labelHtml(f, forAttr = true) {
+        const spin = (f.state === "refreshing" && opt.refresh === "dim" ? ICON.spinner() : "") +
+          (flashing(f) && opt.flash === "badge" ? `<span data-slot="badge" class="sa-badge sa-badge-variant-secondary sa-dependent-badge">Cleared</span>` : "");
+        return forAttr
+          ? `<label class="sa-label sa-field-label" data-slot="field-label" for="${f.id}">${esc(f.def.label)}${spin}</label>`
+          : `<label id="${f.id}-label" data-slot="field-label" class="sa-label sa-field-label">${esc(f.def.label)}${spin}</label>`;
+      }
+
+      function fieldWrap(f, inner) {
+        const attrs = [
+          `class="sa-field sa-field-orientation-vertical"`, `data-orientation="vertical"`, `data-slot="field"`,
+          f.def.parent ? `data-dependent="${f.state}" data-refresh-style="${opt.refresh}"` : "",
+          flashing(f) && opt.flash !== "badge" ? `data-dependent-cleared="${opt.flash}"` : "",
+        ].join(" ");
+        return `<div ${attrs}>${inner}<div id="${f.id}-error" class="sa-field-error field-validation-valid" role="alert" data-slot="field-error"></div></div>`;
+      }
+
+      const flashing = (f) => f.cleared && opt.cleared === "highlight" && f.state === "ready" && f.flash;
+
+      function renderSelect(f) {
+        const options = [`<option value="">${esc(chooseText(f))}</option>`]
+          .concat(f.items.map((i) => `<option value="${esc(i.value)}"${i.value === f.value ? " selected" : ""}>${esc(i.title)}</option>`))
+          .join("\n");
+        const disabled = f.state === "disabled" ? " disabled" : "";
+        return fieldWrap(f,
+          labelHtml(f) +
+          `<div data-slot="native-select-wrapper" data-size="default" class="sa-native-select-wrapper"><select data-slot="native-select" data-size="default" class="sa-native-select" id="${f.id}" name="${f.name}" data-field="${f.def.name}"${disabled}>${options}</select>${ICON.chevronDown("sa-native-select-icon")}</div>` +
+          belowControl(f));
+      }
+
+      function renderLookup(f) {
+        const card = f.def.editor === "lookup-card";
+        const item = f.items.find((i) => i.value === f.value) || null;
+        const disabled = f.state === "disabled" ? " disabled" : "";
+        const open = `data-lookup="open" data-open-field="${f.def.name}"`;
+        let selected;
+        if (card) {
+          selected = `<div id="${f.id}-selected" data-lookup="selected"${item ? "" : ` hidden="hidden"`} class="sa-item sa-item-size-xs sa-item-variant-outline flex-nowrap" role="group" aria-labelledby="${f.id}-label" data-slot="item" data-variant="outline" data-size="xs">
+              <div data-lookup="media" data-slot="item-media" data-variant="default" class="sa-item-media sa-item-media-variant-default">${item ? `<code>${esc(item.code)}</code>` : ""}</div>
+              <div data-lookup="text" class="sa-item-content min-w-0 gap-0" data-slot="item-content">
+                <div class="sa-item-title w-full text-sm" data-slot="item-title"><span class="truncate" data-lookup="title">${item ? esc(item.title) : ""}</span></div>
+                <p class="sa-item-description truncate text-xs" data-slot="item-description">${item ? esc(item.description) : ""}</p>
+              </div>
+              <div class="sa-item-actions gap-0.5" data-slot="item-actions">
+                <button type="button" ${open} data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-xs">Change<span class="sr-only"> ${esc(f.def.label)}</span></button>
+                <button type="button" data-lookup="clear" data-clear-field="${f.def.name}" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-xs">${ICON.x()}<span class="sr-only">Clear ${esc(f.def.label)}</span></button>
+              </div>
+            </div>`;
+        } else {
+          selected = `<div id="${f.id}-selected" data-lookup="selected"${item ? "" : ` hidden="hidden"`} class="sa-button-group sa-button-group-orientation-horizontal w-full" aria-labelledby="${f.id}-label" role="group" data-slot="button-group" data-orientation="horizontal">
+              <button type="button" class="sa-button sa-button-variant-outline sa-button-size-default min-w-0 flex-1 justify-start font-normal" ${open} data-slot="button">
+                <span class="sr-only">Change ${esc(f.def.label)}, </span>
+                <span class="flex min-w-0 items-center" data-lookup="text"><span class="truncate" data-lookup="title">${item ? esc(item.title) : ""}</span></span>
+                ${ICON.chevronsUpDown("text-muted-foreground ml-auto size-4 shrink-0")}
+              </button>
+              <button type="button" data-lookup="clear" data-clear-field="${f.def.name}" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-icon">${ICON.x()}<span class="sr-only">Clear ${esc(f.def.label)}</span></button>
+            </div>`;
+        }
+        const empty = `<div id="${f.id}-empty" data-lookup="empty" class="flex gap-2"${item ? ` hidden="hidden"` : ""}>
+            <div class="sa-input-group w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm ${card ? "h-12" : ""} text-muted-foreground flex-1" role="group" data-slot="input-group">
+              <button type="button" class="hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors" data-slot="input-group-control" ${open}${disabled}>
+                ${ICON.search("size-4 shrink-0")}<span class="truncate">${esc(chooseText(f))}</span>
+              </button>
+            </div>
+          </div>`;
+        return fieldWrap(f,
+          labelHtml(f, false) +
+          `<admin-lookup-sheet-editor class="contents"><input type="hidden" data-lookup="value" id="${f.id}" name="${f.name}" value="${esc(f.value ?? "")}" />${selected}${empty}</admin-lookup-sheet-editor>` +
+          belowControl(f));
+      }
+
+      function renderMultiLookup(f) {
+        const values = f.value || [];
+        const chosen = values.map((v) => f.items.find((i) => i.value === v)).filter(Boolean);
+        const disabled = f.state === "disabled" ? " disabled" : "";
+        const open = `data-lookup="open" data-open-field="${f.def.name}"`;
+        const chips = chosen.map((i) => `<span data-lookup="item" data-value="${esc(i.value)}" data-slot="chip" class="sa-chip">${esc(i.title)}<button aria-label="Remove ${esc(i.title)}" data-lookup="remove" data-remove-field="${f.def.name}" data-remove-value="${esc(i.value)}" type="button" data-slot="chip-remove" class="sa-button sa-button-variant-ghost sa-button-size-icon-xs sa-chip-remove">${ICON.x("size-4")}</button></span>`).join("");
+        return fieldWrap(f,
+          labelHtml(f, false) +
+          `<admin-multi-lookup-sheet-editor id="${f.id}" class="contents" name="${f.name}">
+            <div data-lookup="values" hidden>${values.map((v) => `<input type="hidden" name="${f.name}" value="${esc(v)}" />`).join("")}</div>
+            <div id="${f.id}-selected" data-lookup="selected"${chosen.length ? "" : ` hidden="hidden"`} aria-labelledby="${f.id}-label" data-slot="chip-group" data-appearance="input" class="sa-chip-group">
+              <span class="contents" data-lookup="items">${chips}</span>
+              <button type="button" class="sa-button sa-button-variant-ghost sa-button-size-xs text-muted-foreground hover:text-foreground min-w-0" ${open} data-slot="button">${ICON.plus()}<span class="truncate">Add ${esc(f.def.label.toLowerCase())}</span></button>
+            </div>
+            <div id="${f.id}-empty" data-lookup="empty" class="sa-input-group h-9 min-w-0 items-stretch p-0" role="group" data-slot="input-group"${chosen.length ? ` hidden="hidden"` : ""}>
+              <button type="button" data-slot="input-group-control" ${open}${disabled} class="text-muted-foreground flex min-w-0 flex-1 items-center justify-between gap-2 px-3 text-sm outline-none">
+                <span class="truncate">${esc(chooseText(f))}</span>${ICON.plus("size-4 shrink-0")}
+              </button>
+            </div>
+          </admin-multi-lookup-sheet-editor>` +
+          belowControl(f));
+      }
+
+      function groupWithoutItems(f) {
+        if (opt.group === "hidden") return null;
+        if (opt.group === "label") return fieldWrap(f, labelHtml(f, false) + belowControl(f));
+        return fieldWrap(f, labelHtml(f, false) + `<div class="sa-dependent-empty" aria-labelledby="${f.id}-label">${esc(MSG.hint(f.def))}.</div>` + belowControl(f));
+      }
+
+      function renderToggleGroup(f) {
+        if (f.state === "disabled") return groupWithoutItems(f);
+        const values = f.value || [];
+        const items = f.items.map((i) => `<label data-slot="toggle-group-item" data-variant="outline" data-size="default" data-spacing="2" class="sa-toggle sa-toggle-variant-outline sa-toggle-size-default sa-toggle-group-item"><input type="checkbox" data-slot="toggle-group-item-input" name="${f.name}" value="${esc(i.value)}" data-field="${f.def.name}" class="sr-only"${values.includes(i.value) ? " checked" : ""}>${ICON.check("sa-toggle-chip-check")}${esc(i.title)}</label>`).join("");
+        return fieldWrap(f,
+          labelHtml(f, false) +
+          `<div class="sa-toggle-group sa-toggle-group-wrap sa-toggle-chips sa-toggle-chips-check-replace" role="group" aria-labelledby="${f.id}-label" data-slot="toggle-group" data-variant="outline" data-size="default" data-spacing="2" data-orientation="horizontal" style="--gap: 2">${items}</div>` +
+          belowControl(f));
+      }
+
+      function renderCheckboxGroup(f) {
+        if (f.state === "disabled") return groupWithoutItems(f);
+        const values = f.value || [];
+        const items = f.items.map((i, n) => `<div class="sa-field sa-field-orientation-horizontal" data-orientation="horizontal" data-slot="field"><span class="sa-input-control-wrapper"><input type="checkbox" name="${f.name}" id="${f.id}-${n}" value="${esc(i.value)}" data-field="${f.def.name}" data-slot="input" class="sa-checkbox"${values.includes(i.value) ? " checked" : ""}><span class="sa-checkbox-indicator">${ICON.check("sa-checkbox-indicator-icon")}</span></span><label class="sa-field-label" data-slot="field-label" for="${f.id}-${n}">${esc(i.title)}</label></div>`).join("");
+        return fieldWrap(f,
+          labelHtml(f, false) +
+          `<div data-slot="checkbox-group" role="group" class="sa-field-group" aria-labelledby="${f.id}-label">${items}</div>` +
+          belowControl(f));
+      }
+
+      const RENDER = {
+        select: renderSelect, lookup: renderLookup, "lookup-card": renderLookup,
+        "multi-lookup": renderMultiLookup, "toggle-group": renderToggleGroup, "checkbox-group": renderCheckboxGroup,
+      };
+
+      // ------------------------------------------------------------------------------------------
+      // Grid cell renderers (GridEditorTemplates/Editors/*)
+      // ------------------------------------------------------------------------------------------
+      function cellSelect(f) {
+        const options = [`<option value="">${esc(chooseText(f))}</option>`]
+          .concat(f.items.map((i) => `<option value="${esc(i.value)}"${i.value === f.value ? " selected" : ""}>${esc(i.title)}</option>`)).join("");
+        return `<div data-slot="native-select-wrapper" data-size="sm" class="sa-native-select-wrapper sa-cell-editor"><select data-slot="native-select" data-size="sm" class="sa-native-select" aria-label="${esc(f.def.label)}" name="${f.name}" data-field="${f.def.name}"${f.state === "disabled" ? " disabled" : ""}>${options}</select>${ICON.chevronDown("sa-native-select-icon")}</div>`;
+      }
+
+      function cellLookup(f) {
+        const item = f.items.find((i) => i.value === f.value) || null;
+        const open = `data-lookup="open" data-open-field="${f.def.name}"`;
+        return `<admin-lookup-sheet-editor class="contents"><input type="hidden" name="${f.name}" value="${esc(f.value ?? "")}" data-lookup="value" />
+          <div data-lookup="selected"${item ? "" : " hidden"}><button type="button" class="sa-button sa-button-variant-outline sa-button-size-sm sa-cell-editor sa-lookup-trigger" ${open} data-slot="button"><span class="sr-only">Change ${esc(f.def.label)}, </span><span class="flex min-w-0 items-center" data-lookup="text"><span class="truncate" data-lookup="title">${item ? esc(item.title) : ""}</span></span>${ICON.chevronsUpDown()}</button></div>
+          <div data-lookup="empty"${item ? " hidden" : ""}><button type="button" class="sa-button sa-button-variant-outline sa-button-size-sm sa-cell-editor sa-lookup-trigger" data-empty ${open} data-slot="button"${f.state === "disabled" ? " disabled" : ""}><span class="truncate">${esc(chooseText(f))}</span>${ICON.search()}</button></div>
+        </admin-lookup-sheet-editor>`;
+      }
+
+      // A cell has no room for a description or note: the hint goes in the tooltip-like title, and the
+      // dim/highlight states apply to the cell wrapper. With no label and the control filling the cell, the badge and fade highlights fall back to the wash.
+      function cellWrap(f, inner) {
+        const attrs = [
+          f.def.parent ? `data-dependent="${f.state}" data-refresh-style="${opt.refresh}"` : "",
+          flashing(f) ? `data-dependent-cleared="${opt.flash === "badge" || opt.flash === "fade" ? "wash" : opt.flash}"` : "",
+          f.state === "disabled" && opt.hint === "description" ? `title="${esc(MSG.hint(f.def))}"` : "",
+          f.cleared && opt.cleared === "note" && f.state === "ready" ? `title="${esc(f.cleared)}"` : "",
+        ].join(" ");
+        return `<span class="grid-cell" ${attrs} style="display:block">${inner}</span>`;
+      }
+
+      // ------------------------------------------------------------------------------------------
+      // The dependency engine: what the refresh endpoint and the client wiring would do together
+      // ------------------------------------------------------------------------------------------
+      function createScope({ fields, values, idPrefix, namePrefix, mount, log }) {
+        const scope = { fields, values, status: {}, cleared: {}, flash: {}, pending: {}, mount, log };
+        const def = (name) => fields.find((d) => d.name === name);
+        const children = (name) => fields.filter((d) => d.parent === name);
+        const parentValue = (d) => (d.parent ? values[d.parent] : null);
+
+        scope.model = (d) => {
+          const pv = parentValue(d);
+          const state = scope.status[d.name] ?? (d.parent && !pv ? "disabled" : "ready");
+          // While refreshing, the field keeps showing what it had (the old items) until the swap
+          const itemsFor = scope.pending[d.name] !== undefined ? scope.pending[d.name] : pv;
+          return {
+            def: d, id: `${idPrefix}${d.name}`, name: `${namePrefix}${d.name}`, value: values[d.name],
+            items: d.parent ? (itemsFor ? d.items(itemsFor) : []) : d.items(), state,
+            cleared: scope.cleared[d.name], flash: scope.flash[d.name],
+          };
+        };
+
+        scope.write = (msg) => { if (log) log.textContent = `${msg}\n${log.textContent}`.split("\n").slice(0, 6).join("\n"); };
+
+        // A parent changed: dependents go to "refreshing" (still showing their old items), then the
+        // server's re-render swaps in the new items and clears values the new items lack
+        scope.change = (name, value) => {
+          const old = values[name];
+          values[name] = value;
+          delete scope.cleared[name];
+          const deps = children(name);
+          if (!deps.length) { scope.render(); return; }
+          scope.write(`POST refresh  changed=${name}  fields=${deps.map((d) => d.name).join(",")}  (${old || "∅"} → ${value || "∅"})`);
+          deps.forEach((d) => { scope.status[d.name] = "refreshing"; scope.pending[d.name] = old; });
+          scope.render();
+          const latency = Number(opt.latency);
+          clearTimeout(scope.timer);
+          scope.timer = setTimeout(() => {
+            const settle = (d) => {
+              delete scope.status[d.name];
+              delete scope.pending[d.name];
+              const pv = parentValue(d);
+              const items = pv ? d.items(pv) : [];
+              const cur = values[d.name];
+              const parentTitle = (def(d.parent).items(parentValue(def(d.parent))) || []).find((i) => i.value === pv)?.title ?? pv;
+              let lost = [];
+              if (Array.isArray(cur)) {
+                const kept = cur.filter((v) => items.some((i) => i.value === v));
+                lost = cur.filter((v) => !kept.includes(v));
+                values[d.name] = kept;
+              } else if (cur && !items.some((i) => i.value === cur)) {
+                lost = [cur];
+                values[d.name] = null;
+              }
+              if (lost.length && pv) {
+                const oldItems = old && d.parent === name ? d.items(old) : [];
+                const titles = lost.map((v) => oldItems.find((i) => i.value === v)?.title ?? v).join(", ");
+                scope.cleared[d.name] = `Cleared ${titles}: not in ${parentTitle}.`;
+                scope.flash[d.name] = true;
+                setTimeout(() => { delete scope.flash[d.name]; }, 3600);
+              } else {
+                delete scope.cleared[d.name];
+              }
+              // The cascade continues: a cleared value empties its own dependents
+              children(d.name).forEach((g) => {
+                const before = values[g.name];
+                if ((Array.isArray(before) && before.length) || (!Array.isArray(before) && before)) {
+                  values[g.name] = Array.isArray(before) ? [] : null;
+                }
+                delete scope.cleared[g.name];
+                if (values[d.name]) settle(g);
+              });
+            };
+            deps.forEach(settle);
+            scope.write(`  ← swapped ${deps.map((d) => d.name).join(", ")} after ${latency} ms`);
+            scope.render();
+          }, latency);
+        };
+
+        scope.setValue = (name, value) => {
+          delete scope.cleared[name];
+          if (children(name).length) scope.change(name, value);
+          else { values[name] = value; scope.render(); }
+        };
+        return scope;
+      }
+
+      // ------------------------------------------------------------------------------------------
+      // Form
+      // ------------------------------------------------------------------------------------------
+      const formScope = createScope({
+        fields: FORM_FIELDS,
+        values: { Country: "PT", City: "Lisbon", OvernightStop: "Porto", ArrivalAirport: "LIS", Guides: ["ines-duarte"], Neighbourhoods: ["alfama", "belem"], PickupPoints: ["Lisbon-2"] },
+        idPrefix: "Entity_", namePrefix: "Entity.",
+        mount: document.getElementById("form-fields"),
+        log: document.getElementById("form-log"),
+      });
+      formScope.render = () => {
+        const html = FORM_FIELDS.map((d) => {
+          const out = RENDER[d.editor](formScope.model(d));
+          return out === null ? "" : `<div data-slot="grid-item" class="sa-grid-item">${out}</div>`;
+        }).join("");
+        formScope.mount.innerHTML = html;
+      };
+
+      // ------------------------------------------------------------------------------------------
+      // Grid rows: each edit row is its own scope, as hx-include="closest tr" makes it
+      // ------------------------------------------------------------------------------------------
+      const GRID_FIELDS = [
+        { name: "Country", label: "Country", editor: "select", items: () => COUNTRIES },
+        { name: "City", label: "City", editor: "lookup", parent: "Country", items: (c) => CITIES[c].map((t) => ({ value: t, title: t })), app: { hint: "Choose a country first", sheet: (p) => `Showing cities in ${p}.` } },
+        { name: "Guide", label: "Guide", editor: "select", parent: "Country", items: (c) => GUIDES[c].map((t) => ({ value: slug(t), title: t })), app: { hint: "Choose a country first" } },
+      ];
+      const gridBody = document.getElementById("grid-body");
+      const displayRow = (name, country, city, guide) => `<tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell"><span class="sa-text-display">${name}</span></td><td class="sa-table-cell"><span class="sa-text-display">${country}</span></td><td class="sa-table-cell"><span class="sa-text-display">${city}</span></td><td class="sa-table-cell"><span class="sa-text-display">${guide}</span></td><td class="sa-table-cell w-px whitespace-nowrap sa-inline-row-actions"></td></tr>`;
+      const rowScopes = [
+        { key: "2", name: "Kyoto temples", values: { Country: "JP", City: "Kyoto", Guide: "kenji-mori" } },
+        { key: "new", name: "", values: { Country: null, City: null, Guide: null } },
+      ].map((r) => {
+        const scope = createScope({ fields: GRID_FIELDS, values: r.values, idPrefix: `rows_${r.key}__`, namePrefix: `rows[${r.key}].`, mount: null, log: null });
+        scope.row = r;
+        return scope;
+      });
+      const renderGrid = () => {
+        const rows = rowScopes.map((s) => {
+          const cells = GRID_FIELDS.map((d) => {
+            const f = s.model(d);
+            const inner = d.editor === "select" ? cellSelect(f) : cellLookup(f);
+            return `<td class="sa-table-cell" data-slot="table-cell">${cellWrap(f, inner)}</td>`;
+          }).join("");
+          return `<tr class="sa-table-row" data-editing="" data-key="${s.row.key}" data-slot="table-row">
+            <td class="sa-table-cell" data-slot="table-cell"><input class="sa-input sa-cell-editor" type="text" aria-label="Name" value="${esc(s.row.name)}" placeholder="Name" data-slot="input"></td>
+            ${cells}
+            <td class="sa-table-cell w-px whitespace-nowrap sa-inline-row-actions" data-slot="table-cell">
+              <button type="button" aria-label="Save" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-icon-sm">${ICON.check()}</button>
+              <button type="button" aria-label="Cancel" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-icon-sm">${ICON.x()}</button>
+            </td></tr>`;
+        });
+        gridBody.innerHTML =
+          displayRow("Lisbon food walk", "Portugal", "Lisbon", "Inês Duarte") + rows[0] +
+          displayRow("Table Mountain day", "South Africa", "Cape Town", "Thandi Nkosi") + rows[1];
+      };
+      rowScopes.forEach((s) => (s.render = renderGrid));
+
+      // ------------------------------------------------------------------------------------------
+      // Lookup sheet (the picker content the LookupSheet action returns)
+      // ------------------------------------------------------------------------------------------
+      const dialog = document.getElementById("admin-sheet");
+      const sheetContent = document.getElementById("admin-sheet-content");
+      let sheetTarget = null;
+
+      function openSheet(scope, fieldName) {
+        const d = scope.fields.find((x) => x.name === fieldName);
+        const f = scope.model(d);
+        const multi = d.editor === "multi-lookup";
+        const parentDef = scope.fields.find((x) => x.name === d.parent);
+        const parentTitle = parentDef ? parentDef.items().find((i) => i.value === scope.values[d.parent])?.title : null;
+        sheetTarget = { scope, d, multi, picked: new Set(multi ? f.value || [] : []) };
+        const description = opt.sheet === "context" && parentTitle
+          ? `<p data-slot="sheet-description" class="sa-sheet-description">${esc(MSG.sheet(d, parentTitle))}</p>` : "";
+        const items = f.items.map((i) => `<div data-lookup="item" role="option" aria-selected="${multi ? sheetTarget.picked.has(i.value) : i.value === f.value}" tabindex="-1" data-slot="command-item" data-value="${esc(i.value)}" class="sa-command-item">
+            ${i.code ? `<code class="text-xs">${esc(i.code)}</code>` : ""}
+            <div class="flex min-w-0 flex-col"><span class="truncate" data-lookup="item-title">${esc(i.title)}</span>${i.description ? `<span class="text-muted-foreground truncate text-xs">${esc(i.description)}</span>` : ""}</div>
+            ${ICON.check("ml-auto size-4" + "")}
+          </div>`).join("");
+        sheetContent.innerHTML = `<admin-lookup-picker class="contents">
+            <div data-slot="sheet-header" class="sa-sheet-header"><h2 data-slot="sheet-title" class="sa-sheet-title">Choose ${esc(d.label.toLowerCase())}</h2>${description}</div>
+            <sel-command class="sa-command min-h-0 flex-1 bg-transparent px-6 pb-6" data-slot="command">
+              <div class="sa-command-input-wrapper" data-slot="command-input-wrapper"><div class="sa-input-group sa-command-input-group" data-slot="input-group" role="group"><input name="term" aria-label="Search" type="text" data-slot="command-input" class="sa-command-input" placeholder="Search..."><div class="sa-input-group-addon sa-input-group-addon-align-start" data-align="start" data-slot="input-group-addon" role="group">${ICON.search()}</div></div></div>
+              <div class="sa-command-list mt-3 max-h-none flex-1" role="listbox" data-slot="command-list"><div data-lookup="results">${items}</div></div>
+            </sel-command>
+            ${multi ? `<div data-slot="sheet-footer" class="sa-sheet-footer"><button type="button" data-sheet-done data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default">Done</button></div>` : ""}
+          </admin-lookup-picker>`;
+        // sel-command moves aria-selected with the active item, so the check follows the picked values
+        sheetContent.querySelectorAll("[data-lookup=item]").forEach((el) => {
+          const picked = multi ? sheetTarget.picked.has(el.dataset.value) : el.dataset.value === f.value;
+          el.querySelector("svg").style.visibility = picked ? "visible" : "hidden";
+        });
+        if (!dialog.open) dialog.showModal();
+      }
+
+      sheetContent.addEventListener("click", (e) => {
+        if (!sheetTarget) return;
+        const item = e.target.closest("[data-lookup=item]");
+        const { scope, d, multi, picked } = sheetTarget;
+        if (item) {
+          const v = item.dataset.value;
+          if (multi) {
+            picked.has(v) ? picked.delete(v) : picked.add(v);
+            item.querySelector("svg").style.visibility = picked.has(v) ? "visible" : "hidden";
+          } else {
+            dialog.close();
+            scope.setValue(d.name, v);
+          }
+        } else if (e.target.closest("[data-sheet-done]")) {
+          dialog.close();
+          scope.setValue(d.name, [...picked]);
+        }
+      });
+
+      // ------------------------------------------------------------------------------------------
+      // Events for the form and the grid
+      // ------------------------------------------------------------------------------------------
+      function wire(container, scopeFor) {
+        container.addEventListener("change", (e) => {
+          const el = e.target;
+          const name = el.dataset.field;
+          if (!name) return;
+          const scope = scopeFor(el);
+          const d = scope.fields.find((x) => x.name === name);
+          if (el.type === "checkbox") {
+            const set = new Set(scope.values[name] || []);
+            el.checked ? set.add(el.value) : set.delete(el.value);
+            scope.setValue(name, [...set]);
+          } else {
+            scope.setValue(name, el.value || null);
+          }
+        });
+        container.addEventListener("click", (e) => {
+          const open = e.target.closest("[data-open-field]");
+          if (open && !open.disabled) return openSheet(scopeFor(open), open.dataset.openField);
+          const clear = e.target.closest("[data-clear-field]");
+          if (clear) return scopeFor(clear).setValue(clear.dataset.clearField, null);
+          const remove = e.target.closest("[data-remove-field]");
+          if (remove) {
+            const scope = scopeFor(remove);
+            const name = remove.dataset.removeField;
+            scope.setValue(name, (scope.values[name] || []).filter((v) => v !== remove.dataset.removeValue));
+          }
+        });
+      }
+      wire(document.getElementById("form-fields"), () => formScope);
+      wire(gridBody, (el) => rowScopes.find((s) => s.row.key === el.closest("tr").dataset.key));
+
+      // ------------------------------------------------------------------------------------------
+      // Matrix: each editor in each state, rendered statically
+      // ------------------------------------------------------------------------------------------
+      function renderMatrix() {
+        const body = document.getElementById("matrix-body");
+        const sample = {
+          select: ["JP", "Kyoto", "Lisbon"], lookup: ["JP", "Kyoto", "Lisbon"], "lookup-card": ["JP", "NRT", "LIS"],
+          "multi-lookup": ["JP", ["kenji-mori"], ["ines-duarte"]], "toggle-group": ["Kyoto", ["gion"], ["alfama"]], "checkbox-group": ["Kyoto", ["Kyoto-0"], ["Lisbon-0"]],
+        };
+        const rows = [];
+        const states = (d, cell) => {
+          const [pv, chosen, old] = sample[d.editor];
+          const oldParent = d.parent === "City" ? "Lisbon" : "PT";
+          const base = { def: d, id: `m_${d.name}_${cell ? "c" : "f"}`, name: `m.${d.name}` };
+          const items = (p) => d.items(p);
+          const oldTitle = Array.isArray(old) ? items(oldParent).find((i) => i.value === old[0])?.title : items(oldParent).find((i) => i.value === old)?.title;
+          const pTitle = d.parent === "City" ? pv : COUNTRIES.find((c) => c.value === pv).title;
+          return [
+            { ...base, state: "disabled", items: [], value: Array.isArray(old) ? [] : null },
+            { ...base, state: "refreshing", items: items(oldParent), value: old },
+            { ...base, state: "ready", items: items(pv), value: Array.isArray(old) ? [] : null, cleared: `Cleared ${oldTitle}: not in ${pTitle}.`, flash: true },
+            { ...base, state: "ready", items: items(pv), value: chosen },
+          ];
+        };
+        FORM_FIELDS.filter((d) => d.parent).forEach((d) => {
+          const cells = states(d).map((f) => RENDER[d.editor](f) ?? `<span class="text-muted-foreground text-sm">(hidden)</span>`);
+          rows.push(`<tr><td>${d.label}<br><code style="font-size:11px">${d.editor}</code></td>${cells.map((c) => `<td>${c}</td>`).join("")}</tr>`);
+        });
+        GRID_FIELDS.filter((d) => d.parent).forEach((d) => {
+          const fake = { ...d, editor: d.editor === "lookup" ? "lookup" : "select" };
+          const [pv, chosen, old] = d.name === "City" ? ["JP", "Kyoto", "Lisbon"] : ["JP", "kenji-mori", "ines-duarte"];
+          const base = { def: fake, id: `g_${d.name}`, name: `g.${d.name}` };
+          const list = [
+            { ...base, state: "disabled", items: [], value: null },
+            { ...base, state: "refreshing", items: d.items("PT"), value: old },
+            { ...base, state: "ready", items: d.items(pv), value: null, cleared: `Cleared: not in Japan.`, flash: true },
+            { ...base, state: "ready", items: d.items(pv), value: chosen },
+          ];
+          const cells = list.map((f) => cellWrap(f, d.editor === "select" ? cellSelect(f) : cellLookup(f)));
+          rows.push(`<tr><td>${d.label} (grid cell)<br><code style="font-size:11px">${d.editor}</code></td>${cells.map((c) => `<td>${c}</td>`).join("")}</tr>`);
+        });
+        body.innerHTML = rows.join("");
+      }
+
+      // ------------------------------------------------------------------------------------------
+      // Options bar
+      // ------------------------------------------------------------------------------------------
+      function renderAll() {
+        document.querySelectorAll("#options-bar [data-option]").forEach((g) =>
+          g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(opt[g.dataset.option] === b.dataset.value))),
+        );
+        formScope.render();
+        renderGrid();
+        renderMatrix();
+      }
+      document.getElementById("options-bar").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        opt[b.closest("[data-option]").dataset.option] = b.dataset.value;
+        renderAll();
+      });
+
+      // ------------------------------------------------------------------------------------------
+      // Control bar
+      // ------------------------------------------------------------------------------------------
+      const view = { theme: "default", mode: "light", density: "default" };
+      function applyView() {
+        document.getElementById("theme-css").href = view.theme === "default" ? "data:text/css," : `../../util/theme-check/presets/${view.theme}.css`;
+        document.documentElement.classList.toggle("dark", view.mode === "dark");
+        const page = document.querySelector(".proto-page");
+        if (view.density === "default") page.removeAttribute("data-sa-density");
+        else page.setAttribute("data-sa-density", view.density);
+        document.querySelectorAll(".proto-controls [data-control]").forEach((g) =>
+          g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(view[g.dataset.control] === b.dataset.value))),
+        );
+      }
+      document.querySelector(".proto-controls").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        view[b.closest("[data-control]").dataset.control] = b.dataset.value;
+        applyView();
+      });
+      applyView();
+      renderAll();
+    </script>
+  </body>
+</html>
