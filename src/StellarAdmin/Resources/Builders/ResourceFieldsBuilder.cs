@@ -29,7 +29,9 @@ public abstract class ResourceFieldsBuilder<TResource>
     ///     either, or an expression that doesn't select a property path with public getters, is a
     ///     configuration problem, and the field is left out.
     /// </remarks>
-    public ResourceFieldBuilder Add<TProperty>(Expression<Func<TResource, TProperty>> field)
+    public ResourceFieldBuilder<TResource> Add<TProperty>(
+        Expression<Func<TResource, TProperty>> field
+    )
     {
         ArgumentNullException.ThrowIfNull(field);
 
@@ -50,7 +52,7 @@ public abstract class ResourceFieldsBuilder<TResource>
             return new(field, field.ToString(), []);
         }
 
-        var fieldBuilder = new ResourceFieldBuilder(
+        var fieldBuilder = new ResourceFieldBuilder<TResource>(
             field,
             ResourcePropertyPath.GetName(properties),
             properties
@@ -72,7 +74,7 @@ public abstract class ResourceFieldsBuilder<TResource>
     /// </exception>
     public ResourceFieldsBuilder<TResource> Add<TProperty>(
         Expression<Func<TResource, TProperty>> field,
-        Action<ResourceFieldBuilder> configure
+        Action<ResourceFieldBuilder<TResource>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);

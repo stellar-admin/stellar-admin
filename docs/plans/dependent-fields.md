@@ -64,7 +64,7 @@ New public surface:
 
 ## Steps
 
-1. `ResourceFieldBuilder<TResource>`, with tests, samples and consumer references updated.
+1. `ResourceFieldBuilder<TResource>`, with tests, samples and consumer references updated. Done (2026-10-22): no sample, test, consumer reference or website page names the type, so only the builder, `ResourceFieldsBuilder<TResource>.Add` and the public API file changed.
 2. UI prototype in `sandbox/html/` showing the select, lookup and multi-lookup (and a choice group) in their empty-parent, loading and refreshed states, in a form and an inline grid row.
 3. Public API proposal for review: `DependsOn` and its options, the form context on item loaders, the EF Core filter. Agreed 2026-10-22, see [API](#api-agreed-2026-10-22-revised-the-same-day).
 4. Implementation: refresh endpoint, client wiring, disabled states in the form and grid editor templates, lookup sheet requests.
@@ -86,4 +86,5 @@ The existing disabled styles of the native select, buttons, input groups, toggle
 
 ## Verification
 
+- Step 1 (2026-10-22): the solution builds with the same warnings as before; StellarAdmin.Tests (301), StellarAdmin.IntegrationTests (641) and StellarAdmin.EntityFrameworkCore.IntegrationTests (124) pass.
 - Prototype checked in headless Chromium over CDP (2026-10-22): country change in the form (refreshing, then cleared with notes, grandchildren disabled), the arrival airport sheet filtered to Japan, clearing the country, and a new grid row choosing a country and then a city from the sheet. Default theme, light mode only; other themes, dark mode and phone width not yet checked.

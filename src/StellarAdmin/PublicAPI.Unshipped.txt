@@ -555,19 +555,19 @@ StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.UseInlineRow(System.
 StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder
 StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder.SubmitLabel.set -> void
 StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder.Title.set -> void
-StellarAdmin.Resources.Builders.ResourceFieldBuilder
-StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnSpan(int span) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
-StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnSpan(System.Action<StellarAdmin.Resources.Builders.ColumnSpanBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
-StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnSpanFull() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
-StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
-StellarAdmin.Resources.Builders.ResourceFieldBuilder.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
-StellarAdmin.Resources.Builders.ResourceFieldBuilder.Description.set -> void
-StellarAdmin.Resources.Builders.ResourceFieldBuilder.Title.set -> void
-StellarAdmin.Resources.Builders.ResourceFieldBuilder.UseEditor<TEditor>() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
-StellarAdmin.Resources.Builders.ResourceFieldBuilder.UseEditor<TEditor>(System.Action<TEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnSpan(int span) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnSpan(System.Action<StellarAdmin.Resources.Builders.ColumnSpanBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnSpanFull() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Description.set -> void
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseEditor<TEditor>() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseEditor<TEditor>(System.Action<TEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>
-StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder!
-StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceFieldBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddDetails(string! title) -> StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddDetails(string! title, System.Action<StellarAdmin.Resources.Builders.ResourceDetailsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.AddDisplayField<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!

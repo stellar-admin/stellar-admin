@@ -10,7 +10,8 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures a form field.
 /// </summary>
-public sealed class ResourceFieldBuilder
+/// <typeparam name="TResource">The type of the resource the form edits.</typeparam>
+public sealed class ResourceFieldBuilder<TResource>
 {
     private readonly List<Action<FormFieldOptions>> _configuration = [];
     private readonly LambdaExpression _field;
@@ -59,7 +60,7 @@ public sealed class ResourceFieldBuilder
     /// <remarks>
     ///     The default is 1.
     /// </remarks>
-    public ResourceFieldBuilder ColumnSpan(int span)
+    public ResourceFieldBuilder<TResource> ColumnSpan(int span)
     {
         var columnSpan = ColumnSpanBuilder.FromSpan(span);
         _configuration.Add(options => options.ColumnSpan = columnSpan);
@@ -75,7 +76,7 @@ public sealed class ResourceFieldBuilder
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceFieldBuilder ColumnSpan(Action<ColumnSpanBuilder> configure)
+    public ResourceFieldBuilder<TResource> ColumnSpan(Action<ColumnSpanBuilder> configure)
     {
         var columnSpan = ColumnSpanBuilder.Build(configure);
         _configuration.Add(options => options.ColumnSpan = columnSpan);
@@ -87,7 +88,7 @@ public sealed class ResourceFieldBuilder
     ///     Makes the field span all columns.
     /// </summary>
     /// <returns>The builder, so that calls can be chained.</returns>
-    public ResourceFieldBuilder ColumnSpanFull()
+    public ResourceFieldBuilder<TResource> ColumnSpanFull()
     {
         _configuration.Add(options => options.ColumnSpan = new(Base: ResponsiveGrid.FullSpan));
 
@@ -103,7 +104,7 @@ public sealed class ResourceFieldBuilder
     ///     By default, the field follows the item before it. The start is ignored where the grid
     ///     has one column or the field would extend past the last column.
     /// </remarks>
-    public ResourceFieldBuilder ColumnStart(int start)
+    public ResourceFieldBuilder<TResource> ColumnStart(int start)
     {
         var columnStart = ColumnStartBuilder.FromStart(start);
         _configuration.Add(options => options.ColumnStart = columnStart);
@@ -119,7 +120,7 @@ public sealed class ResourceFieldBuilder
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceFieldBuilder ColumnStart(Action<ColumnStartBuilder> configure)
+    public ResourceFieldBuilder<TResource> ColumnStart(Action<ColumnStartBuilder> configure)
     {
         var columnStart = ColumnStartBuilder.Build(configure);
         _configuration.Add(options => options.ColumnStart = columnStart);
@@ -136,7 +137,7 @@ public sealed class ResourceFieldBuilder
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceFieldBuilder UseEditor<TEditor>(Action<TEditor> configure)
+    public ResourceFieldBuilder<TResource> UseEditor<TEditor>(Action<TEditor> configure)
         where TEditor : FieldEditor, new()
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -173,7 +174,7 @@ public sealed class ResourceFieldBuilder
     /// </summary>
     /// <typeparam name="TEditor">The type of the editor.</typeparam>
     /// <returns>The builder, so that calls can be chained.</returns>
-    public ResourceFieldBuilder UseEditor<TEditor>()
+    public ResourceFieldBuilder<TResource> UseEditor<TEditor>()
         where TEditor : FieldEditor, new() => UseEditor<TEditor>(_ => { });
 
     internal FormFieldOptions Build()
