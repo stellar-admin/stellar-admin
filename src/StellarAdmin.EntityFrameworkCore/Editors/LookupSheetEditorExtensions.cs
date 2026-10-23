@@ -14,9 +14,6 @@ public static class LookupSheetEditorExtensions
         /// <summary>
         ///     Looks up the items in an entity set.
         /// </summary>
-        /// <typeparam name="TContext">
-        ///     The type of the database context that holds the entities.
-        /// </typeparam>
         /// <typeparam name="TEntity">The type of the entities.</typeparam>
         /// <typeparam name="TValue">The type of the value that identifies an entity.</typeparam>
         /// <param name="value">An expression that selects an entity's value.</param>
@@ -25,23 +22,18 @@ public static class LookupSheetEditorExtensions
         ///     <paramref name="value" /> or <paramref name="title" /> is <see langword="null" />.
         /// </exception>
         /// <remarks>
-        ///     The items load for each request from the <typeparamref name="TContext" /> registered
-        ///     as a service.
+        ///     The items load for each request from the registered database context whose model maps
+        ///     <typeparamref name="TEntity" />, unless <c>UseDbContext</c> picks one.
         /// </remarks>
-        public void UseItems<TContext, TEntity, TValue>(
+        public void UseItems<TEntity, TValue>(
             Expression<Func<TEntity, TValue>> value,
             Expression<Func<TEntity, string>> title
         )
-            where TContext : DbContext
-            where TEntity : class =>
-            editor.UseItems<TContext, TEntity, TValue>(value, title, _ => { });
+            where TEntity : class => editor.UseItems<TEntity, TValue>(value, title, _ => { });
 
         /// <summary>
         ///     Looks up the items in an entity set, and configures how they're searched and shown.
         /// </summary>
-        /// <typeparam name="TContext">
-        ///     The type of the database context that holds the entities.
-        /// </typeparam>
         /// <typeparam name="TEntity">The type of the entities.</typeparam>
         /// <typeparam name="TValue">The type of the value that identifies an entity.</typeparam>
         /// <param name="value">An expression that selects an entity's value.</param>
@@ -52,15 +44,14 @@ public static class LookupSheetEditorExtensions
         ///     <paramref name="configure" /> is <see langword="null" />.
         /// </exception>
         /// <remarks>
-        ///     The items load for each request from the <typeparamref name="TContext" /> registered
-        ///     as a service.
+        ///     The items load for each request from the registered database context whose model maps
+        ///     <typeparamref name="TEntity" />, unless <c>UseDbContext</c> picks one.
         /// </remarks>
-        public void UseItems<TContext, TEntity, TValue>(
+        public void UseItems<TEntity, TValue>(
             Expression<Func<TEntity, TValue>> value,
             Expression<Func<TEntity, string>> title,
             Action<EfCoreLookupItemsBuilder<TEntity, TValue>> configure
         )
-            where TContext : DbContext
             where TEntity : class
         {
             ArgumentNullException.ThrowIfNull(editor);
@@ -71,7 +62,7 @@ public static class LookupSheetEditorExtensions
             var itemOptions = new EfCoreLookupItemsOptions<TEntity, TValue>(value, title);
             configure(new EfCoreLookupItemsBuilder<TEntity, TValue>(itemOptions));
 
-            editor.UseItems(new EfCoreLookupItems<TContext, TEntity, TValue>(itemOptions));
+            editor.UseItems(new EfCoreLookupItems<TEntity, TValue>(itemOptions));
         }
     }
 }

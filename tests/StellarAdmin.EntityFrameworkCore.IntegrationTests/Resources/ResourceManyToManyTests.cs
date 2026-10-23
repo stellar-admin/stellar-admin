@@ -403,10 +403,7 @@ public class ResourceManyToManyTests
                     fields
                         .Add(product => product.Tags)
                         .UseEditor<SelectEditor>(select =>
-                            select.UseItems<CatalogDbContext, Tag, int>(
-                                tag => tag.Id,
-                                tag => tag.Name
-                            )
+                            select.UseItems<Tag, int>(tag => tag.Id, tag => tag.Name)
                         )
                 )
             )
@@ -436,7 +433,7 @@ public class ResourceManyToManyTests
                 resource.AllowEdit(edit =>
                     edit.Fields(fields => fields.Add(product => product.Tags))
                 ),
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Tag>()
+            configureAdmin: admin => admin.AddEfCoreResource<Tag>()
         );
         using var client = sut.GetTestClient();
 
@@ -465,7 +462,7 @@ public class ResourceManyToManyTests
                 resource.AllowEdit(edit =>
                     edit.Fields(fields => fields.Add(product => product.Tags))
                 ),
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Tag>()
+            configureAdmin: admin => admin.AddEfCoreResource<Tag>()
         );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
@@ -530,7 +527,7 @@ public class ResourceManyToManyTests
                     edit.UseInlineRow();
                 });
             },
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Tag>()
+            configureAdmin: admin => admin.AddEfCoreResource<Tag>()
         );
 
         // Assert
@@ -554,21 +551,21 @@ public class ResourceManyToManyTests
         fields
             .Add(product => product.Tags)
             .UseEditor<CheckboxGroupEditor>(editor =>
-                editor.UseItems<CatalogDbContext, Tag, int>(tag => tag.Id, tag => tag.Name)
+                editor.UseItems<Tag, int>(tag => tag.Id, tag => tag.Name)
             );
 
     private static void UseToggleGroup(ResourceFieldsBuilder<Product> fields) =>
         fields
             .Add(product => product.Tags)
             .UseEditor<ToggleGroupEditor>(editor =>
-                editor.UseItems<CatalogDbContext, Tag, int>(tag => tag.Id, tag => tag.Name)
+                editor.UseItems<Tag, int>(tag => tag.Id, tag => tag.Name)
             );
 
     private static void UseMultiLookupSheet(ResourceFieldsBuilder<Product> fields) =>
         fields
             .Add(product => product.Tags)
             .UseEditor<MultiLookupSheetEditor>(editor =>
-                editor.UseItems<CatalogDbContext, Tag, int>(tag => tag.Id, tag => tag.Name)
+                editor.UseItems<Tag, int>(tag => tag.Id, tag => tag.Name)
             );
 
     private sealed class TagEditor : FieldEditor

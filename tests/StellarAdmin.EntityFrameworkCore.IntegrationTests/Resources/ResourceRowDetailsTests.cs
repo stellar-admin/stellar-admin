@@ -93,9 +93,7 @@ public class ResourceRowDetailsTests
             .Contains("<p data-test=\"pricing\">Apple, 20, Technology</p>");
     }
 
-    private static void ConfigureProjectedDetails(
-        EfCoreResourceBuilder<CatalogDbContext, Product> resource
-    ) =>
+    private static void ConfigureProjectedDetails(EfCoreResourceBuilder<Product> resource) =>
         resource.Index(index =>
             index.EnableRowDetails(
                 "_ProductPricing",

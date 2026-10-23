@@ -9,11 +9,9 @@ namespace StellarAdmin.EntityFrameworkCore;
 /// <summary>
 ///     Configures the index page of a resource that EF Core loads.
 /// </summary>
-/// <typeparam name="TContext">The type of the database context that holds the entities.</typeparam>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
-public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
-    : ResourceIndexBuilderBase<TEntity, EfCoreResourceIndexBuilder<TContext, TEntity>>
-    where TContext : DbContext
+public sealed class EfCoreResourceIndexBuilder<TEntity>
+    : ResourceIndexBuilderBase<TEntity, EfCoreResourceIndexBuilder<TEntity>>
     where TEntity : class
 {
     internal EfCoreResourceIndexBuilder(IServiceCollection services)
@@ -34,11 +32,11 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
     ///     Two or more panels are shown as tabs.
     /// </remarks>
     public ResourceRowDetailsBuilder<TEntity> EnableRowDetails(
-        Action<EfCoreRowDetailPanelsBuilder<TContext, TEntity>> panels
+        Action<EfCoreRowDetailPanelsBuilder<TEntity>> panels
     )
     {
         ArgumentNullException.ThrowIfNull(panels);
-        var builder = new EfCoreRowDetailPanelsBuilder<TContext, TEntity>(Services);
+        var builder = new EfCoreRowDetailPanelsBuilder<TEntity>(Services);
         panels(builder);
 
         return RegisterRowDetails(builder);
@@ -68,10 +66,7 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
     {
         ArgumentNullException.ThrowIfNull(select);
 
-        return RegisterRowDetails(
-            partialName,
-            new EfCoreRowDetailLoader<TContext, TEntity, TModel>(select)
-        );
+        return RegisterRowDetails(partialName, new EfCoreRowDetailLoader<TEntity, TModel>(select));
     }
 
     /// <summary>
@@ -92,7 +87,7 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
     /// <exception cref="ArgumentException">
     ///     <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public EfCoreResourceIndexBuilder<TContext, TEntity> EnableRowDetails<TModel>(
+    public EfCoreResourceIndexBuilder<TEntity> EnableRowDetails<TModel>(
         string partialName,
         Expression<Func<TEntity, TModel>> select,
         Action<ResourceRowDetailsBuilder<TEntity>> configure
@@ -119,8 +114,8 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
     /// <remarks>
     ///     Two or more panels are shown as tabs.
     /// </remarks>
-    public EfCoreResourceIndexBuilder<TContext, TEntity> EnableRowDetails(
-        Action<EfCoreRowDetailPanelsBuilder<TContext, TEntity>> panels,
+    public EfCoreResourceIndexBuilder<TEntity> EnableRowDetails(
+        Action<EfCoreRowDetailPanelsBuilder<TEntity>> panels,
         Action<ResourceRowDetailsBuilder<TEntity>> configure
     )
     {
@@ -144,7 +139,7 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public EfCoreResourceIndexBuilder<TContext, TEntity> EnableScopes(
+    public EfCoreResourceIndexBuilder<TEntity> EnableScopes(
         Action<EfCoreResourceScopesBuilder<TEntity>> configure
     )
     {
@@ -186,7 +181,7 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
     ///     <paramref name="predicate" /> or <paramref name="configure" /> is
     ///     <see langword="null" />.
     /// </exception>
-    public EfCoreResourceIndexBuilder<TContext, TEntity> EnableSearch(
+    public EfCoreResourceIndexBuilder<TEntity> EnableSearch(
         Func<string, Expression<Func<TEntity, bool>>> predicate,
         Action<ResourceSearchBuilder<TEntity>> configure
     )

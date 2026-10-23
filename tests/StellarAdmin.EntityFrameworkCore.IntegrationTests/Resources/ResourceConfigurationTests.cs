@@ -18,7 +18,7 @@ public class ResourceConfigurationTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(configureAdmin: admin =>
-            admin.AddEfCoreResource<CatalogDbContext, Supplier>()
+            admin.AddEfCoreResource<Supplier>()
         );
         using var client = sut.GetTestClient();
 
@@ -32,7 +32,7 @@ public class ResourceConfigurationTests
         await Assert.That(products.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
             .That(logs.ConfigurationProblems.Single().Message)
-            .Contains("because CatalogDbContext has no Supplier entity.");
+            .Contains("because no registered DbContext has a Supplier entity.");
     }
 
     [Test]
@@ -44,7 +44,7 @@ public class ResourceConfigurationTests
             options.UseSqlite("Data Source=:memory:")
         );
         services.AddStellarAdmin(admin =>
-            admin.AddEfCoreResource<CatalogDbContext, Product>(resource =>
+            admin.AddEfCoreResource<Product>(resource =>
                 resource.Index(index =>
                     index.EnableSearch(
                         term => product => product.Name.Contains(term),

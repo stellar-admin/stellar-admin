@@ -28,7 +28,7 @@ public class ResourceRelatedResourceTests
                         fields.Add(product => product.CategoryId).UseEditor<SelectEditor>()
                     )
                 ),
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Category>()
+            configureAdmin: admin => admin.AddEfCoreResource<Category>()
         );
         using var client = sut.GetTestClient();
 
@@ -55,7 +55,7 @@ public class ResourceRelatedResourceTests
                 ),
             commands,
             admin =>
-                admin.AddEfCoreResource<CatalogDbContext, Category>(category =>
+                admin.AddEfCoreResource<Category>(category =>
                     category.Reference(reference =>
                         reference.UseDescription(item => "Category #" + item.Id)
                     )
@@ -92,9 +92,7 @@ public class ResourceRelatedResourceTests
                     )
                 ),
             configureAdmin: admin =>
-                admin.AddEfCoreResource<CatalogDbContext, Category>(category =>
-                    category.AllowCreate()
-                )
+                admin.AddEfCoreResource<Category>(category => category.AllowCreate())
         );
         using var client = sut.GetTestClient();
 
@@ -120,7 +118,7 @@ public class ResourceRelatedResourceTests
                         fields.Add(product => product.Tags).UseEditor<CheckboxGroupEditor>()
                     )
                 ),
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Tag>()
+            configureAdmin: admin => admin.AddEfCoreResource<Tag>()
         );
         using var client = sut.GetTestClient();
 
@@ -185,7 +183,7 @@ public class ResourceRelatedResourceTests
                 resource.AllowEdit(edit =>
                     edit.Fields(fields => fields.Add(product => product.CategoryId))
                 ),
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Category>()
+            configureAdmin: admin => admin.AddEfCoreResource<Category>()
         );
         using var client = sut.GetTestClient();
 
@@ -306,7 +304,7 @@ public class ResourceRelatedResourceTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(configureAdmin: admin =>
-            admin.AddEfCoreResource<CatalogDbContext, Category>(category =>
+            admin.AddEfCoreResource<Category>(category =>
                 category.AllowEdit(edit =>
                     edit.Fields(fields =>
                         fields
@@ -339,7 +337,7 @@ public class ResourceRelatedResourceTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(configureAdmin: admin =>
-            admin.AddEfCoreResource<CatalogDbContext, Category>(category =>
+            admin.AddEfCoreResource<Category>(category =>
                 category.AllowCreate<FeatureProductModel, FeatureProductHandler>(create =>
                     create.Fields(fields =>
                         fields
@@ -372,7 +370,7 @@ public class ResourceRelatedResourceTests
                     )
                 ),
             configureAdmin: admin =>
-                admin.AddEfCoreResource<CatalogDbContext, Category>(category =>
+                admin.AddEfCoreResource<Category>(category =>
                     category.UseTitle(item => Shout(item.Name))
                 )
         );
@@ -414,7 +412,7 @@ public class ResourceRelatedResourceTests
                         fields.Add(product => product.CategoryId).UseEditor<SelectEditor>()
                     )
                 ),
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Category>()
+            configureAdmin: admin => admin.AddEfCoreResource<Category>()
         );
         using var client = sut.GetTestClient();
 
@@ -436,7 +434,7 @@ public class ResourceRelatedResourceTests
                 resource.Index(index =>
                     index.Columns(columns => columns.Add(product => product.Category))
                 ),
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Category>()
+            configureAdmin: admin => admin.AddEfCoreResource<Category>()
         );
         using var client = sut.GetTestClient();
 
@@ -466,7 +464,7 @@ public class ResourceRelatedResourceTests
                     index.Columns(columns => columns.Add(product => product.Category))
                 ),
             configureAdmin: admin =>
-                admin.AddEfCoreResource<CatalogDbContext, Category>(category =>
+                admin.AddEfCoreResource<Category>(category =>
                     category.UseTitle(item =>
                         item.Parent != null ? item.Parent.Name + " / " + item.Name : item.Name
                     )
@@ -500,7 +498,7 @@ public class ResourceRelatedResourceTests
                     view.Fields(fields => fields.Add(product => product.Category))
                 ),
             configureAdmin: admin =>
-                admin.AddEfCoreResource<CatalogDbContext, Category>(category =>
+                admin.AddEfCoreResource<Category>(category =>
                     category.UseTitle(item =>
                         item.Parent != null ? item.Parent.Name + " / " + item.Name : item.Name
                     )
@@ -528,7 +526,7 @@ public class ResourceRelatedResourceTests
                         columns.Add(product => product.Category, column => column.Sortable())
                     )
                 ),
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Category>()
+            configureAdmin: admin => admin.AddEfCoreResource<Category>()
         );
         using var client = sut.GetTestClient();
 
@@ -560,7 +558,7 @@ public class ResourceRelatedResourceTests
                         fields.Add(product => product.Tags).UseDisplay<BadgeDisplay>()
                     )
                 ),
-            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Tag>()
+            configureAdmin: admin => admin.AddEfCoreResource<Tag>()
         );
         using var client = sut.GetTestClient();
 
@@ -578,7 +576,7 @@ public class ResourceRelatedResourceTests
     }
 
     private static Task<Microsoft.AspNetCore.Builder.WebApplication> CreateLookupHost(
-        Action<EfCoreResourceBuilder<CatalogDbContext, Category>> configureCategories
+        Action<EfCoreResourceBuilder<Category>> configureCategories
     ) =>
         EfCoreTestHost.CreateAsync(
             resource =>
@@ -587,8 +585,7 @@ public class ResourceRelatedResourceTests
                         fields.Add(product => product.CategoryId).UseEditor<LookupSheetEditor>()
                     )
                 ),
-            configureAdmin: admin =>
-                admin.AddEfCoreResource<CatalogDbContext, Category>(configureCategories)
+            configureAdmin: admin => admin.AddEfCoreResource<Category>(configureCategories)
         );
 
     private static async Task<IDocument> GetDocument(HttpClient client, string url)

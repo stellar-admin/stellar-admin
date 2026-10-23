@@ -6,10 +6,9 @@ using StellarAdmin.Resources;
 namespace StellarAdmin.EntityFrameworkCore;
 
 // Projects the entity with the resource ID; null when the ID is not a valid key or the entity does not exist
-internal sealed class EfCoreRowDetailLoader<TContext, TEntity, TModel>(
+internal sealed class EfCoreRowDetailLoader<TEntity, TModel>(
     Expression<Func<TEntity, TModel>> select
 ) : ResourceRowDetailLoader
-    where TContext : DbContext
     where TEntity : class
 {
     public override async Task<object?> LoadAsync(
@@ -18,7 +17,7 @@ internal sealed class EfCoreRowDetailLoader<TContext, TEntity, TModel>(
         CancellationToken cancellationToken
     )
     {
-        var db = services.GetRequiredService<TContext>();
+        var db = services.GetRequiredService<EfCoreContexts>().Get<TEntity>(services);
         if (!EfCoreResourceKey.TryCreatePredicate<TEntity>(db, key, out var predicate))
         {
             return null;

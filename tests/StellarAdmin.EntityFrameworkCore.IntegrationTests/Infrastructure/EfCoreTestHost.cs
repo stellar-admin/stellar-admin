@@ -14,9 +14,10 @@ namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 internal static class EfCoreTestHost
 {
     public static async Task<WebApplication> CreateAsync(
-        Action<EfCoreResourceBuilder<CatalogDbContext, Product>>? configure = null,
+        Action<EfCoreResourceBuilder<Product>>? configure = null,
         ConcurrentQueue<string>? commands = null,
-        Action<StellarAdminBuilder>? configureAdmin = null
+        Action<StellarAdminBuilder>? configureAdmin = null,
+        Action<IServiceCollection>? configureServices = null
     )
     {
         var builder = WebApplication.CreateBuilder(
@@ -48,7 +49,7 @@ internal static class EfCoreTestHost
         );
         builder.Services.AddStellarAdmin(admin =>
         {
-            admin.AddEfCoreResource<CatalogDbContext, Product>(resource =>
+            admin.AddEfCoreResource<Product>(resource =>
             {
                 resource.Index(index =>
                     index.Columns(columns =>
@@ -62,6 +63,7 @@ internal static class EfCoreTestHost
             });
             configureAdmin?.Invoke(admin);
         });
+        configureServices?.Invoke(builder.Services);
 
         var app = builder.Build();
         using (var scope = app.Services.CreateScope())

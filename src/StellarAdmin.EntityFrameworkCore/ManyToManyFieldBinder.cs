@@ -9,11 +9,11 @@ namespace StellarAdmin.EntityFrameworkCore;
 
 // Binds a many-to-many navigation as the keys of its related entities. The related entities a form adds are
 // loaded through the request's context, so they're tracked when the data source saves the entity.
-internal sealed class ManyToManyFieldBinder<TContext, TRelated, TKey>(
+internal sealed class ManyToManyFieldBinder<TRelated, TKey>(
+    Type contextType,
     PropertyInfo navigation,
     PropertyInfo key
 ) : FieldBinder, IManyToManyFieldBinder
-    where TContext : DbContext
     where TRelated : class
     where TKey : notnull
 {
@@ -55,8 +55,7 @@ internal sealed class ManyToManyFieldBinder<TContext, TRelated, TKey>(
         var loaded =
             added.Count == 0
                 ? []
-                : await context
-                    .Services.GetRequiredService<TContext>()
+                : await ((DbContext)context.Services.GetRequiredService(contextType))
                     .Set<TRelated>()
                     .Where(related => added.Contains(EF.Property<TKey>(related, key.Name)))
                     .ToListAsync(cancellationToken);

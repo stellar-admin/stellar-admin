@@ -23,7 +23,7 @@ Counted in the playground, samples and tests: 81 explicit two-argument calls (`A
 | --- | --- | --- |
 | B | Related records come from their own resource | Done: [resource-references](archive/resource-references.md) |
 | C | EF Core conventions pick an editor for foreign keys | Done: [foreign-key-editors](archive/foreign-key-editors.md) |
-| E | The DbContext is found, not named | Research |
+| E | The DbContext is found, not named | Planned: [dbcontext-discovery](dbcontext-discovery.md) |
 | A | Fields keep their types; each editor gets its own method | Research |
 | D | Lookup sources that aren't resources own their value and title | Research |
 | F | Handlers name their model once | Research |

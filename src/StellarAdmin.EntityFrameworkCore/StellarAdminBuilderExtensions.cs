@@ -19,9 +19,6 @@ public static class StellarAdminBuilderExtensions
     /// <summary>
     ///     Adds a resource that EF Core loads and saves.
     /// </summary>
-    /// <typeparam name="TContext">
-    ///     The type of the database context that holds the entities.
-    /// </typeparam>
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <param name="builder">The builder to add the resource to.</param>
     /// <returns>A builder that configures the resource.</returns>
@@ -31,29 +28,26 @@ public static class StellarAdminBuilderExtensions
     /// <remarks>
     ///     The URL slug of the resource is the kebab-case plural of the entity type's name, such as
     ///     <c>order-items</c> for <c>OrderItem</c>. <typeparamref name="TEntity" /> must be mapped
-    ///     in <typeparamref name="TContext" />, with a single public primary key property of type
-    ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />.
+    ///     by one registered database context, or by the one <c>UseDbContext</c> picks, with a
+    ///     single public primary key property of type <see cref="int" />, <see cref="long" />,
+    ///     <see cref="Guid" /> or <see cref="string" />.
     ///     Fields of a form that binds the entity must be settable properties that aren't keys,
     ///     concurrency tokens or generated values, or many-to-many navigations without a join
     ///     entity type, which bind as the keys of the related entities. Otherwise, the resource is unavailable or the field is left out, and the problem is logged.
     /// </remarks>
-    public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
+    public static EfCoreResourceBuilder<TEntity> AddEfCoreResource<TEntity>(
         this StellarAdminBuilder builder
     )
-        where TContext : DbContext
         where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        return ConfigureEfCoreResource<TContext, TEntity>(builder, builder.AddResource<TEntity>());
+        return ConfigureEfCoreResource<TEntity>(builder, builder.AddResource<TEntity>());
     }
 
     /// <summary>
     ///     Adds a resource that EF Core loads and saves under a URL slug.
     /// </summary>
-    /// <typeparam name="TContext">
-    ///     The type of the database context that holds the entities.
-    /// </typeparam>
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <param name="builder">The builder to add the resource to.</param>
     /// <param name="slug">
@@ -65,35 +59,28 @@ public static class StellarAdminBuilderExtensions
     ///     <paramref name="builder" /> or <paramref name="slug" /> is <see langword="null" />.
     /// </exception>
     /// <remarks>
-    ///     <typeparamref name="TEntity" /> must be mapped in <typeparamref name="TContext" />, with
-    ///     a single public primary key property of type <see cref="int" />, <see cref="long" />,
-    ///     <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
+    ///     <typeparamref name="TEntity" /> must be mapped by one registered database context, or
+    ///     by the one <c>UseDbContext</c> picks, with a single public primary key property of type
+    ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
     ///     must be settable properties that aren't keys, concurrency tokens or generated values,
     ///     or many-to-many navigations without a join entity type, which bind as the keys of the
     ///     related entities. Otherwise, the resource is unavailable or the field is left out, and the problem is logged. A slug that isn't valid, or that another resource
     ///     uses, also makes the resource unavailable.
     /// </remarks>
-    public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
+    public static EfCoreResourceBuilder<TEntity> AddEfCoreResource<TEntity>(
         this StellarAdminBuilder builder,
         string slug
     )
-        where TContext : DbContext
         where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        return ConfigureEfCoreResource<TContext, TEntity>(
-            builder,
-            builder.AddResource<TEntity>(slug)
-        );
+        return ConfigureEfCoreResource<TEntity>(builder, builder.AddResource<TEntity>(slug));
     }
 
     /// <summary>
     ///     Adds and configures a resource that EF Core loads and saves.
     /// </summary>
-    /// <typeparam name="TContext">
-    ///     The type of the database context that holds the entities.
-    /// </typeparam>
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <param name="builder">The builder to add the resource to.</param>
     /// <param name="configure">A delegate that configures the resource.</param>
@@ -105,21 +92,21 @@ public static class StellarAdminBuilderExtensions
     /// <remarks>
     ///     The URL slug of the resource is the kebab-case plural of the entity type's name, such as
     ///     <c>order-items</c> for <c>OrderItem</c>. <typeparamref name="TEntity" /> must be mapped
-    ///     in <typeparamref name="TContext" />, with a single public primary key property of type
-    ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />.
+    ///     by one registered database context, or by the one <c>UseDbContext</c> picks, with a
+    ///     single public primary key property of type <see cref="int" />, <see cref="long" />,
+    ///     <see cref="Guid" /> or <see cref="string" />.
     ///     Fields of a form that binds the entity must be settable properties that aren't keys,
     ///     concurrency tokens or generated values, or many-to-many navigations without a join
     ///     entity type, which bind as the keys of the related entities. Otherwise, the resource is unavailable or the field is left out, and the problem is logged.
     /// </remarks>
-    public static StellarAdminBuilder AddEfCoreResource<TContext, TEntity>(
+    public static StellarAdminBuilder AddEfCoreResource<TEntity>(
         this StellarAdminBuilder builder,
-        Action<EfCoreResourceBuilder<TContext, TEntity>> configure
+        Action<EfCoreResourceBuilder<TEntity>> configure
     )
-        where TContext : DbContext
         where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(configure);
-        configure(builder.AddEfCoreResource<TContext, TEntity>());
+        configure(builder.AddEfCoreResource<TEntity>());
 
         return builder;
     }
@@ -127,9 +114,6 @@ public static class StellarAdminBuilderExtensions
     /// <summary>
     ///     Adds and configures a resource that EF Core loads and saves under a URL slug.
     /// </summary>
-    /// <typeparam name="TContext">
-    ///     The type of the database context that holds the entities.
-    /// </typeparam>
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <param name="builder">The builder to add the resource to.</param>
     /// <param name="slug">
@@ -143,36 +127,35 @@ public static class StellarAdminBuilderExtensions
     ///     is <see langword="null" />.
     /// </exception>
     /// <remarks>
-    ///     <typeparamref name="TEntity" /> must be mapped in <typeparamref name="TContext" />, with
-    ///     a single public primary key property of type <see cref="int" />, <see cref="long" />,
-    ///     <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
+    ///     <typeparamref name="TEntity" /> must be mapped by one registered database context, or
+    ///     by the one <c>UseDbContext</c> picks, with a single public primary key property of type
+    ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
     ///     must be settable properties that aren't keys, concurrency tokens or generated values,
     ///     or many-to-many navigations without a join entity type, which bind as the keys of the
     ///     related entities. Otherwise, the resource is unavailable or the field is left out, and the problem is logged. A slug that isn't valid, or that another resource
     ///     uses, also makes the resource unavailable.
     /// </remarks>
-    public static StellarAdminBuilder AddEfCoreResource<TContext, TEntity>(
+    public static StellarAdminBuilder AddEfCoreResource<TEntity>(
         this StellarAdminBuilder builder,
         string slug,
-        Action<EfCoreResourceBuilder<TContext, TEntity>> configure
+        Action<EfCoreResourceBuilder<TEntity>> configure
     )
-        where TContext : DbContext
         where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(configure);
-        configure(builder.AddEfCoreResource<TContext, TEntity>(slug));
+        configure(builder.AddEfCoreResource<TEntity>(slug));
 
         return builder;
     }
 
-    private static EfCoreResourceBuilder<TContext, TEntity> ConfigureEfCoreResource<
-        TContext,
-        TEntity
-    >(this StellarAdminBuilder builder, ResourceBuilder<TEntity> resource)
-        where TContext : DbContext
+    private static EfCoreResourceBuilder<TEntity> ConfigureEfCoreResource<TEntity>(
+        this StellarAdminBuilder builder,
+        ResourceBuilder<TEntity> resource
+    )
         where TEntity : class
     {
-        resource.UseDataSource<EfCoreResourceDataSource<TContext, TEntity>>();
+        resource.UseDataSource<EfCoreResourceDataSource<TEntity>>();
+        builder.Services.TryAddSingleton<EfCoreContexts>();
         builder.Services.TryAddSingleton<EfCoreResourceTitles>();
         builder.Services.AddSingleton(
             new EfCoreResourceTitle(
@@ -183,18 +166,46 @@ public static class StellarAdminBuilderExtensions
         );
         builder
             .Services.AddOptions<ResourceOptions<TEntity>>()
-            .PostConfigure<IServiceScopeFactory, IOptions<EfCoreResourceReferenceOptions<TEntity>>>(
-                (options, scopeFactory, reference) =>
+            .PostConfigure<
+                IServiceScopeFactory,
+                EfCoreContexts,
+                IOptions<EfCoreResourceOptions<TEntity>>,
+                IOptions<EfCoreResourceReferenceOptions<TEntity>>
+            >(
+                (options, scopeFactory, contexts, efCore, reference) =>
                 {
+                    var name = typeof(TEntity).Name;
+                    var contextType = efCore.Value.ContextType;
+                    if (contextType is null)
+                    {
+                        var matches = contexts.Find(typeof(TEntity));
+                        if (matches is not [var match])
+                        {
+                            options.ReportUnavailable(
+                                matches.Count > 1
+                                    ? EfCoreConfigurationEvents.AmbiguousDbContext
+                                    : EfCoreConfigurationEvents.EntityNotMapped,
+                                $"{options.PluralLabel} is hidden, and its pages return 404, because {contexts.DescribeMissing(typeof(TEntity), matches)}.",
+                                matches.Count > 1
+                                    ? $"Call `UseDbContext<{matches[0].Name}>()` on the resource to pick a context."
+                                    : $"Add a `DbSet<{name}>` to a DbContext registered with `AddDbContext`."
+                            );
+
+                            return;
+                        }
+
+                        contextType = match;
+                    }
+
                     // Options are cached. Use a separate scope to read metadata without retaining a DbContext.
                     using var scope = scopeFactory.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<TContext>();
+                    var db = (DbContext)scope.ServiceProvider.GetRequiredService(contextType);
                     if (db.Model.FindEntityType(typeof(TEntity)) is not { } entity)
                     {
                         options.ReportUnavailable(
                             EfCoreConfigurationEvents.EntityNotMapped,
-                            $"{options.PluralLabel} is hidden, and its pages return 404, because `{typeof(TContext).Name}` has no `{typeof(TEntity).Name}` entity.",
-                            $"Add a `DbSet<{typeof(TEntity).Name}>` to `{typeof(TContext).Name}`."
+                            $"{options.PluralLabel} is hidden, and its pages return 404, because `{contextType.Name}` has no `{name}` entity.",
+                            $"Add a `DbSet<{name}>` to `{contextType.Name}`, or pick another context with `UseDbContext`."
                         );
 
                         return;
@@ -223,18 +234,24 @@ public static class StellarAdminBuilderExtensions
 
                     options.UseKey(property);
                     DisableEntitySorting(options, entity);
-                    EfCoreResourceReference.Configure(options, reference.Value, db, property);
+                    EfCoreResourceReference.Configure(
+                        options,
+                        reference.Value,
+                        db,
+                        contextType,
+                        property
+                    );
 
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
                     {
                         InferReferencedResources(entity, create);
-                        UseManyToManyBinders<TContext, TEntity>(options, entity, create);
+                        UseManyToManyBinders(options, entity, create, contextType);
                         RemoveUnsupportedFormFields(options, entity, create);
                     }
                     if (options.Edit is { } edit && edit.ModelType == typeof(TEntity))
                     {
                         InferReferencedResources(entity, edit);
-                        UseManyToManyBinders<TContext, TEntity>(options, entity, edit);
+                        UseManyToManyBinders(options, entity, edit, contextType);
                         RemoveUnsupportedFormFields(options, entity, edit);
                     }
                 }
@@ -246,12 +263,12 @@ public static class StellarAdminBuilderExtensions
     // A many-to-many navigation without an entity type for its join table binds as the keys of its related entities.
     // A navigation that can't be bound, or an editor that selects one item, leaves the field out. A field with no
     // editor gets a multi-lookup sheet once its related entity's resource is found.
-    private static void UseManyToManyBinders<TContext, TEntity>(
+    private static void UseManyToManyBinders<TEntity>(
         ResourceOptions<TEntity> options,
         IEntityType entity,
-        ResourceFormOptions form
+        ResourceFormOptions form,
+        Type contextType
     )
-        where TContext : DbContext
     {
         foreach (var field in form.Fields)
         {
@@ -297,12 +314,13 @@ public static class StellarAdminBuilderExtensions
                 continue;
             }
 
-            var binderType = typeof(ManyToManyFieldBinder<,,>).MakeGenericType(
-                typeof(TContext),
+            var binderType = typeof(ManyToManyFieldBinder<,>).MakeGenericType(
                 navigation.TargetEntityType.ClrType,
                 key.PropertyType
             );
-            field.UseBinder((FieldBinder)Activator.CreateInstance(binderType, property, key)!);
+            field.UseBinder(
+                (FieldBinder)Activator.CreateInstance(binderType, contextType, property, key)!
+            );
         }
     }
 

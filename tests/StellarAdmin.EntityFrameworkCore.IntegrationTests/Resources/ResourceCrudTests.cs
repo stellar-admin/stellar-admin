@@ -292,9 +292,7 @@ public class ResourceCrudTests
         await Assert
             .That(
                 logs.ConfigurationProblems.Any(log =>
-                    log.Message.Contains(
-                        "Product.Version is a concurrency token"
-                    )
+                    log.Message.Contains("Product.Version is a concurrency token")
                 )
             )
             .IsTrue();
@@ -319,9 +317,7 @@ public class ResourceCrudTests
         await Assert
             .That(
                 logs.ConfigurationProblems.Any(log =>
-                    log.Message.Contains(
-                        "the database generates Product.GeneratedCode"
-                    )
+                    log.Message.Contains("the database generates Product.GeneratedCode")
                 )
             )
             .IsTrue();
@@ -333,15 +329,14 @@ public class ResourceCrudTests
     public async Task Delete_ReferencedEntity_ShowsErrorAndKeepsEntity()
     {
         // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(
-            configureAdmin: admin =>
-                admin.AddEfCoreResource<CatalogDbContext, Category>(resource =>
-                {
-                    resource.Index(index =>
-                        index.Columns(columns => columns.Add(category => category.Name))
-                    );
-                    resource.AllowDelete();
-                })
+        await using var sut = await EfCoreTestHost.CreateAsync(configureAdmin: admin =>
+            admin.AddEfCoreResource<Category>(resource =>
+            {
+                resource.Index(index =>
+                    index.Columns(columns => columns.Add(category => category.Name))
+                );
+                resource.AllowDelete();
+            })
         );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/categories");
@@ -360,9 +355,7 @@ public class ResourceCrudTests
             .Contains("This record couldn't be deleted. Other records may still refer to it.");
         using var scope = sut.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-        await Assert
-            .That(await db.Set<Category>().AnyAsync(category => category.Id == 1))
-            .IsTrue();
+        await Assert.That(await db.Set<Category>().AnyAsync(category => category.Id == 1)).IsTrue();
     }
 
     [Test]
@@ -387,7 +380,7 @@ public class ResourceCrudTests
             .IsTrue();
     }
 
-    private static void ConfigureCrud(EfCoreResourceBuilder<CatalogDbContext, Product> resource)
+    private static void ConfigureCrud(EfCoreResourceBuilder<Product> resource)
     {
         resource.AllowCreate(create =>
             create.Fields(fields =>

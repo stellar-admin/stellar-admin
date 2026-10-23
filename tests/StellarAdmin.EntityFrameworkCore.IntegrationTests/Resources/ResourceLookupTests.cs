@@ -349,7 +349,7 @@ public class ResourceLookupTests
                     )
                 ),
             configureAdmin: admin =>
-                admin.AddEfCoreResource<CatalogDbContext, Category>(resource =>
+                admin.AddEfCoreResource<Category>(resource =>
                     resource.AllowCreate(create =>
                         create.Fields(fields => fields.Add(category => category.Name))
                     )
@@ -385,7 +385,7 @@ public class ResourceLookupTests
     }
 
     private static void ConfigureLookupEdit(
-        EfCoreResourceBuilder<CatalogDbContext, Product> resource,
+        EfCoreResourceBuilder<Product> resource,
         Action<EfCoreLookupItemsBuilder<Category, int>> configure,
         int pageSize = 20
     ) =>
@@ -407,7 +407,7 @@ public class ResourceLookupTests
         LookupSheetEditor options,
         Action<EfCoreLookupItemsBuilder<Category, int>> configure
     ) =>
-        options.UseItems<CatalogDbContext, Category, int>(
+        options.UseItems<Category, int>(
             category => category.Id,
             category => category.Name,
             configure

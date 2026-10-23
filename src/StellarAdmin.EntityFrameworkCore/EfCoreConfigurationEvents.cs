@@ -25,4 +25,5 @@ internal static class EfCoreConfigurationEvents
         1087,
         nameof(SortableNavigationColumn)
     );
+    public static readonly EventId AmbiguousDbContext = new(1088, nameof(AmbiguousDbContext));
 }

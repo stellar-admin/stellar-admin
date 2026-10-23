@@ -8,6 +8,9 @@ internal sealed class EfCoreLookupItemsOptions<TEntity, TValue>
     // False when EF Core can't translate the title, so searches and ordering don't use it
     internal bool CanQueryTitle { get; init; } = true;
 
+    // The context UseDbContext pins, or a referenced resource's; otherwise, the one that maps the entity is found
+    internal Type? ContextType { get; set; }
+
     internal Expression<Func<TEntity, string?>>? DescriptionExpression { get; set; }
 
     internal List<Func<object?, Expression<Func<TEntity, bool>>>> FormFilters { get; } = [];

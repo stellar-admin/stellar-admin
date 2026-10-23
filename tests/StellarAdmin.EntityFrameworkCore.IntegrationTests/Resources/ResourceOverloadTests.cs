@@ -17,11 +17,7 @@ public class ResourceOverloadTests
 
         // Act
         Action act = () =>
-            sut.UseItems<CatalogDbContext, Category, int>(
-                category => category.Id,
-                category => category.Name,
-                null!
-            );
+            sut.UseItems<Category, int>(category => category.Id, category => category.Name, null!);
 
         // Assert
         await Assert.That(act).Throws<ArgumentNullException>();
@@ -35,11 +31,7 @@ public class ResourceOverloadTests
 
         // Act
         Action act = () =>
-            sut.UseItems<CatalogDbContext, Category, int>(
-                category => category.Id,
-                category => category.Name,
-                null!
-            );
+            sut.UseItems<Category, int>(category => category.Id, category => category.Name, null!);
 
         // Assert
         await Assert.That(act).Throws<ArgumentNullException>();
@@ -53,11 +45,7 @@ public class ResourceOverloadTests
 
         // Act
         Action act = () =>
-            sut.UseItems<CatalogDbContext, Category, int>(
-                category => category.Id,
-                category => category.Name,
-                null!
-            );
+            sut.UseItems<Category, int>(category => category.Id, category => category.Name, null!);
 
         // Assert
         await Assert.That(act).Throws<ArgumentNullException>();
@@ -71,7 +59,7 @@ public class ResourceOverloadTests
 
         // Act
         Action act = () =>
-            sut.UseItems<CatalogDbContext, Category, int>(
+            sut.UseItems<Category, int>(
                 category => category.Id,
                 category => category.Name,
                 items => items.SearchOn(category => category.Name, null!, null!)
@@ -89,7 +77,7 @@ public class ResourceOverloadTests
 
         // Act
         Action act = () =>
-            sut.UseItems<CatalogDbContext, Category, int>(
+            sut.UseItems<Category, int>(
                 category => category.Id,
                 category => category.Name,
                 items => items.SearchOn(null!)
@@ -111,7 +99,7 @@ public class ResourceOverloadTests
         // Act
         Action act = () =>
             services.AddStellarAdmin(admin =>
-                admin.AddEfCoreResource<CatalogDbContext, Product>(resource =>
+                admin.AddEfCoreResource<Product>(resource =>
                     resource.Index(index =>
                         index.EnableScopes(scopes => scopes.Add("all", "All products", null!))
                     )

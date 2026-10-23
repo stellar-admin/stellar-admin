@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace StellarAdmin.EntityFrameworkCore;
 
@@ -86,6 +87,23 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
         ArgumentNullException.ThrowIfNull(code);
 
         _options.Media = EfCoreItemMedia<TEntity>.Code(code);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Loads the choices with a database context.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the database context.</typeparam>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     By default, the registered database context whose model maps the entity is used. Pick
+    ///     one when several contexts map it.
+    /// </remarks>
+    public EfCoreChoiceItemsBuilder<TEntity, TValue> UseDbContext<TContext>()
+        where TContext : DbContext
+    {
+        _options.ContextType = typeof(TContext);
 
         return this;
     }

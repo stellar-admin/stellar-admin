@@ -8,14 +8,11 @@ namespace StellarAdmin.EntityFrameworkCore;
 /// <summary>
 ///     Adds the panels shown in a row's details for a resource that EF Core loads.
 /// </summary>
-/// <typeparam name="TContext">The type of the database context that holds the entities.</typeparam>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
 /// <remarks>
 ///     Two or more panels are shown as tabs.
 /// </remarks>
-public sealed class EfCoreRowDetailPanelsBuilder<TContext, TEntity>
-    : ResourceRowDetailPanelsBuilder<TEntity>
-    where TContext : DbContext
+public sealed class EfCoreRowDetailPanelsBuilder<TEntity> : ResourceRowDetailPanelsBuilder<TEntity>
     where TEntity : class
 {
     internal EfCoreRowDetailPanelsBuilder(IServiceCollection services)
@@ -49,10 +46,6 @@ public sealed class EfCoreRowDetailPanelsBuilder<TContext, TEntity>
     {
         ArgumentNullException.ThrowIfNull(select);
 
-        return AddPanel(
-            title,
-            partialName,
-            new EfCoreRowDetailLoader<TContext, TEntity, TModel>(select)
-        );
+        return AddPanel(title, partialName, new EfCoreRowDetailLoader<TEntity, TModel>(select));
     }
 }

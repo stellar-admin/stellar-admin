@@ -24,7 +24,7 @@ public class HomePageTests
         var html = await client.GetStringAsync("/stellaradmin");
 
         // Assert
-        await Assert.That(html).Contains("AddEfCoreResource&lt;StoreDbContext, Category&gt;");
+        await Assert.That(html).Contains("AddEfCoreResource&lt;Category&gt;");
         await Assert.That(html).Contains("columns.Add(category =&gt; category.Name)");
         await Assert.That(html).DoesNotContain("dotnet add package");
     }

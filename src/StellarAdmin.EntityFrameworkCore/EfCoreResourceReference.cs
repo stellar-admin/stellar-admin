@@ -21,13 +21,13 @@ internal static class EfCoreResourceReference
             BindingFlags.NonPublic | BindingFlags.Static
         )!;
 
-    public static void Configure<TContext, TEntity>(
+    public static void Configure<TEntity>(
         ResourceOptions<TEntity> options,
         EfCoreResourceReferenceOptions<TEntity> reference,
-        TContext db,
+        DbContext db,
+        Type contextType,
         PropertyInfo key
     )
-        where TContext : DbContext
         where TEntity : class
     {
         // A title EF Core can't translate is still shown, but searches and ordering can't use it
@@ -46,14 +46,13 @@ internal static class EfCoreResourceReference
             );
         }
 
-        var createItems = CreateItemsMethod.MakeGenericMethod(
-            typeof(TContext),
-            typeof(TEntity),
-            key.PropertyType
-        );
+        var createItems = CreateItemsMethod.MakeGenericMethod(typeof(TEntity), key.PropertyType);
         options.UseReferenceItems(filters =>
             (ResourceReferenceItems)
-                createItems.Invoke(null, [options, reference, key, canQueryTitle, filters])!
+                createItems.Invoke(
+                    null,
+                    [options, reference, contextType, key, canQueryTitle, filters]
+                )!
         );
     }
 
@@ -71,14 +70,14 @@ internal static class EfCoreResourceReference
         }
     }
 
-    private static ResourceReferenceItems CreateItems<TContext, TEntity, TKey>(
+    private static ResourceReferenceItems CreateItems<TEntity, TKey>(
         ResourceOptions<TEntity> options,
         EfCoreResourceReferenceOptions<TEntity> reference,
+        Type contextType,
         PropertyInfo key,
         bool canQueryTitle,
         IReadOnlyList<LambdaExpression> filters
     )
-        where TContext : DbContext
         where TEntity : class
     {
         var entity = Expression.Parameter(typeof(TEntity), "entity");
@@ -88,6 +87,7 @@ internal static class EfCoreResourceReference
         )
         {
             CanQueryTitle = canQueryTitle,
+            ContextType = contextType,
             DescriptionExpression = options.Reference.Description,
             Media = CreateMedia(options.Reference),
             OrderQuery = reference.OrderQuery ?? FindDefaultOrder(options),
@@ -114,7 +114,7 @@ internal static class EfCoreResourceReference
             );
         }
 
-        return new EfCoreLookupItems<TContext, TEntity, TKey>(itemOptions);
+        return new EfCoreLookupItems<TEntity, TKey>(itemOptions);
     }
 
     private static EfCoreItemMedia<TEntity>? CreateMedia<TEntity>(

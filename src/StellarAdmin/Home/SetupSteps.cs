@@ -153,7 +153,7 @@ internal static class SetupSteps
 
                     builder.Services.AddStellarAdmin(admin =>
                     {
-                        admin.AddEfCoreResource<{{contextName}}, {{entityName}}>(resource =>
+                        admin.AddEfCoreResource<{{entityName}}>(resource =>
                         {
                             resource.Index(index => index.Columns(columns =>
                             {

@@ -8,10 +8,9 @@ using StellarAdmin.Resources.Editors;
 
 namespace StellarAdmin.EntityFrameworkCore;
 
-internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
+internal sealed class EfCoreLookupItems<TEntity, TValue>
     : ResourceReferenceItems,
         IEfCoreLookupReference
-    where TContext : DbContext
     where TEntity : class
 {
     private static readonly MethodInfo ContainsMethod = typeof(string).GetMethod(
@@ -65,7 +64,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
             return [];
         }
 
-        var db = services.GetRequiredService<TContext>();
+        var db = GetContext(services);
 
         // An edit page loads the reference with the entity; a changed selection no longer matches it
         if (
@@ -280,6 +279,9 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
             ? Convert.ToString(value, CultureInfo.InvariantCulture) ?? ""
             : title ?? "";
 
+    private DbContext GetContext(IServiceProvider services) =>
+        EfCoreContexts.For(services).Get(services, typeof(TEntity), _options.ContextType);
+
     private Expression<Func<TEntity, bool>>? Matches(string term)
     {
         // A captured term is sent as a query parameter rather than inlined
@@ -320,10 +322,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
     // The items the form's filters keep, matching a search term, in order
     private IOrderedQueryable<TEntity> Query(IServiceProvider services, object? model, string? term)
     {
-        IQueryable<TEntity> entities = services
-            .GetRequiredService<TContext>()
-            .Set<TEntity>()
-            .AsNoTracking();
+        IQueryable<TEntity> entities = GetContext(services).Set<TEntity>().AsNoTracking();
         foreach (var formFilter in _options.FormFilters)
         {
             entities = entities.Where(formFilter(model));

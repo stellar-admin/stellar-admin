@@ -8,22 +8,22 @@ namespace StellarAdmin.EntityFrameworkCore;
 
 internal static class EfCoreChoiceItemsLoader
 {
-    internal static void Configure<TContext, TEntity, TValue>(
+    internal static void Configure<TEntity, TValue>(
         ChoiceEditor editor,
         EfCoreChoiceItemsOptions<TEntity, TValue> itemOptions
     )
-        where TContext : DbContext
         where TEntity : class
     {
         var projection = CreateProjection(itemOptions);
         var orderQuery = itemOptions.OrderQuery;
         var media = itemOptions.Media;
         var formFilters = itemOptions.FormFilters.ToArray();
+        var contextType = itemOptions.ContextType;
 
         editor.UseItems<object>(
             async (model, services, cancellationToken) =>
             {
-                var db = services.GetRequiredService<TContext>();
+                var db = EfCoreContexts.For(services).Get(services, typeof(TEntity), contextType);
                 IQueryable<TEntity> query = db.Set<TEntity>().AsNoTracking();
                 foreach (var formFilter in formFilters)
                 {

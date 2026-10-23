@@ -24,7 +24,7 @@ public class ResourceReferenceTests
         await using var sut = await EfCoreTestHost.CreateAsync();
         await using var scope = sut.Services.CreateAsyncScope();
         var editor = new CheckboxGroupEditor();
-        editor.UseItems<CatalogDbContext, Category, int>(
+        editor.UseItems<Category, int>(
             category => category.Id,
             category => category.Name,
             items => items.OrderBy(category => category.Name)
@@ -53,7 +53,7 @@ public class ResourceReferenceTests
         await using var sut = await EfCoreTestHost.CreateAsync();
         await using var scope = sut.Services.CreateAsyncScope();
         var editor = new RadioGroupEditor();
-        editor.UseItems<CatalogDbContext, Category, int>(
+        editor.UseItems<Category, int>(
             category => category.Id,
             category => category.Name,
             items =>
@@ -96,7 +96,7 @@ public class ResourceReferenceTests
         await using var sut = await EfCoreTestHost.CreateAsync();
         await using var scope = sut.Services.CreateAsyncScope();
         var editor = new RadioGroupEditor();
-        editor.UseItems<CatalogDbContext, Category, int>(
+        editor.UseItems<Category, int>(
             category => category.Id,
             category => category.Name,
             items =>
@@ -145,7 +145,7 @@ public class ResourceReferenceTests
         await using var sut = await EfCoreTestHost.CreateAsync();
         await using var scope = sut.Services.CreateAsyncScope();
         var editor = new SelectEditor();
-        editor.UseItems<CatalogDbContext, Category, double>(
+        editor.UseItems<Category, double>(
             category => category.Id + 0.5,
             category => category.Name,
             items => items.OrderBy(category => category.Id)
@@ -244,7 +244,7 @@ public class ResourceReferenceTests
                         .Add(product => product.CategoryId)
                         .UseEditor<SelectEditor>(options =>
                         {
-                            options.UseItems<CatalogDbContext, Category, int>(
+                            options.UseItems<Category, int>(
                                 category => category.Id,
                                 category => category.Name
                             );
@@ -399,9 +399,7 @@ public class ResourceReferenceTests
             .IsNotNullOrEmpty();
     }
 
-    private static void ConfigureReferenceCreate(
-        EfCoreResourceBuilder<CatalogDbContext, Product> resource
-    )
+    private static void ConfigureReferenceCreate(EfCoreResourceBuilder<Product> resource)
     {
         resource.AllowCreate(create =>
             create.Fields(fields =>
@@ -415,9 +413,7 @@ public class ResourceReferenceTests
         );
     }
 
-    private static void ConfigureCustomCreate(
-        EfCoreResourceBuilder<CatalogDbContext, Product> resource
-    ) =>
+    private static void ConfigureCustomCreate(EfCoreResourceBuilder<Product> resource) =>
         resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
             create.Fields(fields =>
             {
@@ -428,9 +424,7 @@ public class ResourceReferenceTests
             })
         );
 
-    private static void ConfigureReferenceEdit(
-        EfCoreResourceBuilder<CatalogDbContext, Product> resource
-    )
+    private static void ConfigureReferenceEdit(EfCoreResourceBuilder<Product> resource)
     {
         resource.AllowEdit(edit =>
             edit.Fields(fields =>
@@ -443,7 +437,7 @@ public class ResourceReferenceTests
 
     private static void ConfigureCategoryItems(SelectEditor options)
     {
-        options.UseItems<CatalogDbContext, Category, int>(
+        options.UseItems<Category, int>(
             category => category.Id,
             category => category.Name,
             items => items.OrderBy(category => category.Name)

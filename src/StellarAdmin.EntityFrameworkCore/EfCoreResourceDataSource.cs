@@ -9,25 +9,29 @@ using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.EntityFrameworkCore;
 
-internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
-    TContext db,
+internal sealed class EfCoreResourceDataSource<TEntity>(
+    IServiceProvider services,
+    EfCoreContexts contexts,
     IOptions<ResourceOptions<TEntity>> options,
     ResourceReferences references,
     EfCoreResourceTitles titles,
-    ILogger<EfCoreResourceDataSource<TContext, TEntity>> logger
+    ILogger<EfCoreResourceDataSource<TEntity>> logger
 ) : IResourceCrudDataSource<TEntity>
-    where TContext : DbContext
     where TEntity : class
 {
     private readonly ResourceOptions<TEntity> _resourceOptions = options.Value;
+    private DbContext? _db;
+
+    // Found on first use, since an unavailable resource's data source is still created and may have no context
+    private DbContext Db => _db ??= contexts.Get<TEntity>(services);
 
     public async Task<ResourceOperationResult> CreateAsync(
         TEntity model,
         CancellationToken cancellationToken
     )
     {
-        db.Set<TEntity>().Add(model);
-        await db.SaveChangesAsync(cancellationToken);
+        Db.Set<TEntity>().Add(model);
+        await Db.SaveChangesAsync(cancellationToken);
 
         return ResourceOperationResult.Success();
     }
@@ -43,10 +47,10 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             return ResourceOperationResult.NotFound();
         }
 
-        db.Set<TEntity>().Remove(entity);
+        Db.Set<TEntity>().Remove(entity);
         try
         {
-            await db.SaveChangesAsync(cancellationToken);
+            await Db.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -55,7 +59,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         // The database refused the delete, usually because other records still refer to this one
         catch (DbUpdateException exception)
         {
-            db.Entry(entity).State = EntityState.Detached;
+            Db.Entry(entity).State = EntityState.Detached;
             logger.LogWarning(
                 exception,
                 "The database refused to delete {Entity} {Key}.",
@@ -80,10 +84,10 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         CancellationToken cancellationToken
     )
     {
-        var query = db.Set<TEntity>().AsNoTracking();
+        var query = Db.Set<TEntity>().AsNoTracking();
         if (request.Keys is { } keys)
         {
-            query = query.Where(EfCoreResourceKey.CreatePredicate<TEntity>(db, keys));
+            query = query.Where(EfCoreResourceKey.CreatePredicate<TEntity>(Db, keys));
         }
 
         if (
@@ -108,7 +112,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         // and load the collections they show, such as Tags for p => p.Tags. A column that computes its
         // value loads what each path it reads needs, and one that shows related records loads what their
         // title reads, such as Category.Parent.
-        var entityType = db.Model.FindEntityType(typeof(TEntity))!;
+        var entityType = Db.Model.FindEntityType(typeof(TEntity))!;
         query = Include(
             query,
             _resourceOptions.Index.Columns.SelectMany(column =>
@@ -164,12 +168,12 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             return ResourceOperationResult.NotFound();
         }
 
-        var entityType = db.Model.FindEntityType(typeof(TEntity))!;
+        var entityType = Db.Model.FindEntityType(typeof(TEntity))!;
         foreach (var field in edit.Fields)
         {
             if (field.Binder is IManyToManyFieldBinder binder)
             {
-                await binder.CopyAsync(db, entity, model, cancellationToken);
+                await binder.CopyAsync(Db, entity, model, cancellationToken);
                 continue;
             }
 
@@ -199,7 +203,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
 
         try
         {
-            await db.SaveChangesAsync(cancellationToken);
+            await Db.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -227,13 +231,13 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         bool includeLookups = false
     )
     {
-        if (!EfCoreResourceKey.TryCreatePredicate<TEntity>(db, id, out var predicate))
+        if (!EfCoreResourceKey.TryCreatePredicate<TEntity>(Db, id, out var predicate))
         {
             return Task.FromResult<TEntity?>(null);
         }
 
-        var entityType = db.Model.FindEntityType(typeof(TEntity))!;
-        IQueryable<TEntity> query = db.Set<TEntity>();
+        var entityType = Db.Model.FindEntityType(typeof(TEntity))!;
+        IQueryable<TEntity> query = Db.Set<TEntity>();
         if (noTracking)
         {
             query = query.AsNoTracking();

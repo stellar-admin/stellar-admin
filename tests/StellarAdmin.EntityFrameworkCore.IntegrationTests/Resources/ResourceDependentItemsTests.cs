@@ -25,7 +25,7 @@ public class ResourceDependentItemsTests
                         .Add(product => product.CategoryId)
                         .DependsOn(product => product.Number)
                         .UseEditor<SelectEditor>(select =>
-                            select.UseItems<CatalogDbContext, Category, int>(
+                            select.UseItems<Category, int>(
                                 category => category.Id,
                                 category => category.Name,
                                 items =>
@@ -68,7 +68,7 @@ public class ResourceDependentItemsTests
                         .Add(product => product.CategoryId)
                         .DependsOn(product => product.Number)
                         .UseEditor<LookupSheetEditor>(lookup =>
-                            lookup.UseItems<CatalogDbContext, Category, int>(
+                            lookup.UseItems<Category, int>(
                                 category => category.Id,
                                 category => category.Name,
                                 items =>
