@@ -81,14 +81,14 @@ app.MapRazorPages();       // the app's own endpoints, in any order relative to 
 
 ## 4. Resources (when chosen)
 
-Register each chosen entity inside `AddStellarAdmin`, following the stellar-admin skill's "Add a resource" checklist. For an EF Core entity use `AddEfCoreResource<TContext, TEntity>`; the DbContext comes first.
+Register each chosen entity inside `AddStellarAdmin`, following the stellar-admin skill's "Add a resource" checklist. For an EF Core entity use `AddEfCoreResource<TEntity>`; the registered DbContext that maps it is found.
 
 ```csharp
 using StellarAdmin.EntityFrameworkCore;
 
 builder.Services.AddStellarAdmin(admin =>
 {
-    admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
+    admin.AddEfCoreResource<Customer>(resource =>
     {
         resource.Index(index => index.Columns(columns =>
         {

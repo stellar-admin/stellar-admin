@@ -56,15 +56,15 @@ Group statements that perform one logical step together, and separate those grou
 For example, resource registration has separate groups for argument validation, duplicate-registration checks, options construction/configuration/registration, sidebar registration, controller registration, authorization configuration, and the final return. Keep the statements within each group together:
 
 ```csharp
-var options = new EfCoreResourceOptions<TContext, TEntity>(name);
-configure(new EfCoreResourceBuilder<TContext, TEntity>(options));
+var options = new EfCoreResourceOptions<TEntity>(name);
+configure(new EfCoreResourceBuilder<TEntity>(options));
 builder.Services.AddSingleton(options);
 
 builder.Services.AddSingleton<ISidebarItemsProvider>(
     new ResourceSidebarProvider(name, () => options.IndexPage.EffectiveTitle)
 );
 
-var controller = typeof(EfCoreResourceController<TContext, TEntity>);
+var controller = typeof(EfCoreResourceController<TEntity>);
 builder
     .AddApplicationPart(typeof(StellarAdminBuilderExtensions).Assembly)
     .AddController(controller, name);

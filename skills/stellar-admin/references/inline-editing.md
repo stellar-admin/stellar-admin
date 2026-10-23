@@ -18,7 +18,7 @@ A small resource, whose two to four fields are all shown as columns, can be edit
 Call `UseInlineRow()` on the edit or create builder. Edit and create choose independently, for example inline edit with create on a page:
 
 ```csharp
-admin.AddEfCoreResource<AppDbContext, Destination>(resource =>
+admin.AddEfCoreResource<Destination>(resource =>
 {
     resource.Index(index => index.Columns(columns =>
     {

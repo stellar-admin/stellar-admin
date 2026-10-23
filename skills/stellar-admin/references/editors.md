@@ -130,7 +130,7 @@ Choice editors (`SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor`, `Segm
 | `UseItems((services, cancellationToken) => ...)` | An inline async loader returning `IReadOnlyList<ChoiceItem>` |
 | `UseItems((TForm form, services, cancellationToken) => ...)` | An inline loader that reads other fields of the form, with `DependsOn` ([relationships](relationships.md#items-that-depend-on-another-field)) |
 | `UseResource<TResource>()` | The records of a registered resource, named by their titles ([relationships](relationships.md#the-related-resource)) |
-| `UseItems<TContext, TEntity, TValue>(value, title, items => ...)` | Rows of an EF Core entity set that isn't a resource (namespace `StellarAdmin.EntityFrameworkCore`; [relationships](relationships.md#related-types-that-arent-resources)) |
+| `UseItems<TEntity, TValue>(value, title, items => ...)` | Rows of an EF Core entity set that isn't a resource, from the registered DbContext that maps it (`items.UseDbContext<TContext>()` picks one; namespace `StellarAdmin.EntityFrameworkCore`; [relationships](relationships.md#related-types-that-arent-resources)) |
 
 For an enum, describe the choices on the members instead of listing them:
 

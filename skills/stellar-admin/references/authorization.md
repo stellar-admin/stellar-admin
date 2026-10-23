@@ -7,9 +7,9 @@ builder.Services.AddStellarAdmin(admin =>
 {
     admin.RequireAuthorization();                                    // every panel page: signed-in users
 
-    admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource => { /* any signed-in user */ });
+    admin.AddEfCoreResource<Customer>(resource => { /* any signed-in user */ });
 
-    admin.AddEfCoreResource<VoyagerDbContext, Booking>(resource =>
+    admin.AddEfCoreResource<Booking>(resource =>
     {
         resource.RequireAuthorization(policy => policy.RequireRole("Sales"));   // and the Sales role
     });

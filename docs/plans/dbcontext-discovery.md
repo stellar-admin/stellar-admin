@@ -100,7 +100,7 @@ Checkpoint with Jerrie after step 1.
 
 ## Progress
 
-### Step 1 (2026-10-23, uncommitted)
+### Step 1 (2026-10-23, `bf4523b`)
 
 Done as planned, with these differences:
 
@@ -114,3 +114,15 @@ Done as planned, with these differences:
 Tests: `ResourceDbContextTests` (6 tests), with a `ReportingDbContext` fixture over the catalog's tables, registered after `AddStellarAdmin`. They cover a context found when registered after `AddStellarAdmin`, two contexts mapping an entity (unavailable, event 1088), `UseDbContext` picking one, a pinned context that doesn't map the entity (event 1080), an item pin, and an unpinned ambiguous item source. `UnmappedEntity_MakesOnlyThatResourceUnavailable` now expects the new message, and the other EF Core tests lost their context type argument.
 
 Verification: `dotnet test --project tests/StellarAdmin.EntityFrameworkCore.IntegrationTests` ran 153 tests, all passing. The samples don't compile until step 2, so the full solution wasn't built.
+
+### Step 2 (2026-10-23, uncommitted)
+
+- **AdminPlayground:** the five `AddEfCoreResource` calls that named `ApplicationDbContext` (Categories, Departments, Excursions, Products and Tags) dropped it. The playground's `UseItems` calls use lookup sources, not EF Core, so they're unchanged. The Excursions comments now say no registered context maps `ExcursionBooking`.
+- **Consumer skills:**
+  - `skills/stellar-admin` changed its SKILL file (task table and checklist) and the authorization, editors, inline-editing, relationships, resources and sidebar references. Resources and relationships explain how the context is found and `UseDbContext`.
+  - `skills/stellar-admin-setup` changed its SKILL file and the troubleshooting row for a missing context, which now covers both outcomes.
+- **Skill evals:** the `build/skill-evals/admin-panel` installed fixture and task checks were updated.
+- **Maintained docs:** `docs/development.md` explains how the context is found. The examples in `docs/conventions/options-builders.md` and `docs/conventions/csharp-file-organization.md` dropped `TContext`.
+- **Unchanged:** the home page snippet was already done in step 1. The website has no EF Core registration code.
+
+Verification: `dotnet build StellarAdmin.slnx -c Release` succeeded with no errors. The SkillsGenerator regeneration and its check reported no drift. Tests, the Release test run and the playground smoke run are step 3.

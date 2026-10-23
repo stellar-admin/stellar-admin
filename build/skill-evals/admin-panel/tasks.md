@@ -15,7 +15,7 @@ Starts from: `task-1` (no StellarAdmin).
 **Checks**
 
 1. Both packages referenced; the app builds.
-2. `AddStellarAdmin` with `AddEfCoreResource<VoyagerDbContext, Customer>` and `<VoyagerDbContext, Booking>`, each with index columns, `AllowCreate`, `AllowEdit` and `AllowDelete`.
+2. `AddStellarAdmin` with `AddEfCoreResource<Customer>` and `AddEfCoreResource<Booking>`, each with index columns, `AllowCreate`, `AllowEdit` and `AllowDelete`.
 3. `app.MapStellarAdmin()` mapped; authentication and authorization middleware run before it.
 4. Staff-only access through `admin.RequireAuthorization(policy => policy.RequireRole("Staff"))` or `app.MapStellarAdmin().RequireAuthorization(...)`: anonymous `/stellaradmin/bookings` challenges, a signed-in user without Staff is forbidden, Staff gets 200.
 5. The booking form's `CustomerId` is a choice editor (`SelectEditor` or `LookupSheetEditor` with EF `UseItems`) rather than a number input.
@@ -51,7 +51,7 @@ Starts from: `task-3` (StellarAdmin installed; Bookings has no forms).
 **Checks**
 
 1. `fields.Columns(...)` with two columns at a wide breakpoint, and two `AddSection` calls.
-2. Customer uses `LookupSheetEditor` with EF `UseItems<VoyagerDbContext, Customer, int>(...)` and `EnableCreate()` (Customers already has a create form).
+2. Customer uses `LookupSheetEditor` with EF `UseItems<Customer, int>(...)` and `EnableCreate()` (Customers already has a create form).
 3. Cabin uses `RadioGroupEditor` with `Appearance = RadioGroupAppearance.Cards`.
 4. Travellers uses `SliderEditor` (range from `[Range]` or explicit).
 5. Edit adds `Status` as a field, and `AddDisplayField` (or `AddDetails`) for reference and creation time, not editable fields.

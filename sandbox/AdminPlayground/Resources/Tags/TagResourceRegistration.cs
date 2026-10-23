@@ -10,7 +10,7 @@ internal static class TagResourceRegistration
     // The product tag lookups create tags with this resource's create form
     internal static void AddTagResource(this StellarAdminBuilder admin)
     {
-        admin.AddEfCoreResource<ApplicationDbContext, Tag>(resource =>
+        admin.AddEfCoreResource<Tag>(resource =>
         {
             resource.SidebarItem(item =>
             {

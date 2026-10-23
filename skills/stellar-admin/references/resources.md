@@ -15,12 +15,12 @@ A resource is one entity type exposed in the admin panel, with its own index pag
 
 ## EF Core resources
 
-Use `AddEfCoreResource<TContext, TEntity>` from `StellarAdmin.EntityFrameworkCore` for any entity in a registered DbContext. The context comes first.
+Use `AddEfCoreResource<TEntity>` from `StellarAdmin.EntityFrameworkCore` for any entity in a registered DbContext. The registered context whose model maps the entity is used; when more than one does, pick one with `resource.UseDbContext<TContext>()`, or the resource is unavailable.
 
 ```csharp
 using StellarAdmin.EntityFrameworkCore;
 
-admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
+admin.AddEfCoreResource<Customer>(resource =>
 {
     resource.Index(index => index.Columns(columns =>
     {
@@ -53,7 +53,7 @@ admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
 
 | Setting | Default | Change it with |
 | --- | --- | --- |
-| Slug (URL segment) | Kebab-case plural of the type name: `OrderItem` → `order-items` | `AddEfCoreResource<VoyagerDbContext, Booking>("reservations", resource => ...)` or `AddResource<T>("slug", ...)` |
+| Slug (URL segment) | Kebab-case plural of the type name: `OrderItem` → `order-items` | `AddEfCoreResource<Booking>("reservations", resource => ...)` or `AddResource<T>("slug", ...)` |
 | Singular label | Humanized type name: `OrderItem` → `Order item` | `resource.SingularLabel = "Reservation";` |
 | Plural label | English plural of the singular label | `resource.PluralLabel = "Reservations";` |
 | Sidebar label | Plural label | `resource.SidebarItem(item => item.Label = "...")` |

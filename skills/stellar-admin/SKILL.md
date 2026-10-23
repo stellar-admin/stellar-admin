@@ -19,7 +19,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 
 | Task | API | Reference |
 | --- | --- | --- |
-| Register an entity, slugs, labels, enable create/edit/view/delete, custom data source | `AddEfCoreResource<TContext, TEntity>`, `AddResource<T>`, `Allow*`, `UseDataSource` | [resources](references/resources.md) |
+| Register an entity, slugs, labels, enable create/edit/view/delete, custom data source | `AddEfCoreResource<TEntity>`, `AddResource<T>`, `Allow*`, `UseDataSource` | [resources](references/resources.md) |
 | Search, scope tabs, default sort, paging, expandable rows | `Index(index => ...)`, `EnableSearch`, `EnableScopes`, `DefaultSortBy`, `EnablePaging`, `EnableRowDetails` | [index-pages](references/index-pages.md) |
 | Grid columns: titles, sorting, currency, badges, values through references | `Columns(columns => columns.Add(...))`, `Sortable`, `UseDisplay` | [columns](references/columns.md) |
 | Create and edit pages: layout, sections, validation, defaults, save and add another, custom models | `AllowCreate`, `AllowEdit`, `Fields`, `AddSection`, `Columns`, `UseFactory`, `EnableAddAnother` | [forms](references/forms.md) |
@@ -52,7 +52,7 @@ builder.Services.AddStellarAdmin(admin =>
     admin.RequireAuthorization();
 
     // Customers name themselves by Name, by convention; booking lookups show the email too
-    admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
+    admin.AddEfCoreResource<Customer>(resource =>
     {
         resource.Reference(reference => reference.UseDescription(customer => customer.Email));
         resource.Index(index => index.Columns(columns => columns.Add(customer => customer.Name)));
@@ -63,7 +63,7 @@ builder.Services.AddStellarAdmin(admin =>
         }));
     });
 
-    admin.AddEfCoreResource<VoyagerDbContext, Booking>(resource =>
+    admin.AddEfCoreResource<Booking>(resource =>
     {
         resource.SidebarItem(item => { item.Group = "Sales"; item.Order = 1; });
 
@@ -137,7 +137,7 @@ public static class AdminResources
 public static class GuidesAdmin
 {
     public static StellarAdminBuilder AddGuides(this StellarAdminBuilder admin) =>
-        admin.AddEfCoreResource<VoyagerDbContext, Guide>(resource =>
+        admin.AddEfCoreResource<Guide>(resource =>
         {
             resource.SidebarItem(item => item.Group = "Operations");
             // index, forms, view and delete as above
@@ -150,7 +150,7 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 ## Add a resource: checklist
 
 ```
-- [ ] AddEfCoreResource<TContext, TEntity> (context first), or AddResource<T> + UseDataSource + UseKey
+- [ ] AddEfCoreResource<TEntity> (the DbContext that maps it is found), or AddResource<T> + UseDataSource + UseKey
 - [ ] Index columns (they start empty), with Title where the property name reads badly
 - [ ] Search/scopes/sort/paging as needed (EF: predicates in EnableSearch and scopes.Add)
 - [ ] AllowCreate/AllowEdit with Fields; register each foreign key's related type as a resource (EF Core forms then give it a lookup sheet), or use UseItems

@@ -10,7 +10,7 @@ Match the symptom from a real request (not just a successful build) to its cause
 | Every page is a 500 | Invalid resource configuration; read the exception message in the log. |
 | Anonymous users see the panel | No `RequireAuthorization`, or authentication and authorization middleware missing. |
 | Foreign key shows a number box | Register the related type as a resource; an EF Core entity form then gives the field a lookup sheet. A form model's field needs an editor with `UseResource<T>()`, and a related type that isn't a resource needs `UseItems`. |
-| `InvalidOperationException` naming a DbContext | `AddDbContext<TContext>` missing for the context named in `AddEfCoreResource`. |
+| `/stellaradmin/{slug}` 404, and the log says no registered DbContext has the entity, or more than one does | Register the context that maps it with `AddDbContext`, or pick one with `resource.UseDbContext<TContext>()`. |
 | `/stellaradmin/{slug}` 404 for one resource | The slug differs from the guess: it is the kebab-case plural of the type name (`OrderItem` → `order-items`) unless one was passed to `AddEfCoreResource` or `AddResource`. |
 | Every page is a 500 mentioning page sizes | `paging.PageSize` isn't one of `paging.PageSizes` (default 10, 25, 50, 100). |
 | Signed-in users without access land on a 404 | Cookie authentication redirects them to `/Account/AccessDenied`; add that page or set `AccessDeniedPath`. |

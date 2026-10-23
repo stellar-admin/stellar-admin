@@ -22,7 +22,7 @@ On an EF Core entity form, a foreign key or many-to-many navigation whose relate
 Related records come from their own resource. Register the related type as a resource, and say once how its records look when another record refers to them:
 
 ```csharp
-admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
+admin.AddEfCoreResource<Customer>(resource =>
 {
     resource.UseTitle(customer => customer.Name);   // optional: see the convention below
     resource.Reference(reference => reference
@@ -140,13 +140,13 @@ This works for navigations whose join table EF Core maps without an entity type,
 
 ## Related types that aren't resources
 
-A related type without admin pages of its own (countries, cities) keeps `UseItems`. The EF Core overload from `StellarAdmin.EntityFrameworkCore` takes the context, the related entity and the key type:
+A related type without admin pages of its own (countries, cities) keeps `UseItems`. The EF Core overload from `StellarAdmin.EntityFrameworkCore` takes the related entity and the key type, and loads from the registered DbContext that maps the entity (`items.UseDbContext<TContext>()` picks one when several do):
 
 ```csharp
 using StellarAdmin.EntityFrameworkCore;
 
 fields.Add(trip => trip.CountryId).UseEditor<SelectEditor>(select =>
-    select.UseItems<VoyagerDbContext, Country, int>(
+    select.UseItems<Country, int>(
         country => country.Id,
         country => country.Name,
         items => items.OrderBy(country => country.Name)));
@@ -189,12 +189,12 @@ The non-EF items builder has `UseDescription`, `UseCode`, `UseAvatar`, `UseImage
 
 ```csharp
 fields.Add(trip => trip.CountryId).UseEditor<SelectEditor>(select =>
-    select.UseItems<VoyagerDbContext, Country, int>(country => country.Id, country => country.Name));
+    select.UseItems<Country, int>(country => country.Id, country => country.Name));
 
 fields.Add(trip => trip.CityId)
     .DependsOn(trip => trip.CountryId)
     .UseEditor<SelectEditor>(select =>
-        select.UseItems<VoyagerDbContext, City, int>(
+        select.UseItems<City, int>(
             city => city.Id,
             city => city.Name,
             items => items.Where<Trip>((city, trip) => city.CountryId == trip.CountryId)));

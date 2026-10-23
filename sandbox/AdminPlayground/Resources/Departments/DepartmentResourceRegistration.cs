@@ -8,7 +8,7 @@ internal static class DepartmentResourceRegistration
 {
     internal static void AddDepartmentResource(this StellarAdminBuilder admin)
     {
-        admin.AddEfCoreResource<ApplicationDbContext, Department>(resource =>
+        admin.AddEfCoreResource<Department>(resource =>
         {
             resource.SidebarItem(item =>
             {

@@ -10,7 +10,7 @@ internal static class ProductResourceRegistration
 {
     internal static void AddProductResource(this StellarAdminBuilder admin)
     {
-        admin.AddEfCoreResource<ApplicationDbContext, Product>(resource =>
+        admin.AddEfCoreResource<Product>(resource =>
         {
             resource.UseTitle(product =>
                 product.Category != null

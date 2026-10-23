@@ -49,9 +49,9 @@ internal static class ExcursionResourceRegistration
             );
         });
 
-        // The booking isn't an entity of the context: the resource is unavailable, and Development shows why at
+        // No registered context maps the booking: the resource is unavailable, and Development shows why at
         // /stellaradmin/excursion-bookings
-        admin.AddEfCoreResource<ApplicationDbContext, ExcursionBooking>();
+        admin.AddEfCoreResource<ExcursionBooking>();
 
         // A blank page name: the link is left out
         admin.AddSidebarLink("Excursion report", SidebarLinkTarget.Page(" "));

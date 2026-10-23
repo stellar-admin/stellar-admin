@@ -19,7 +19,7 @@ The sidebar lists each resource and any custom links, in groups, under a header 
 Each resource adds an item linking to its index. Configure it with `SidebarItem`:
 
 ```csharp
-admin.AddEfCoreResource<VoyagerDbContext, Booking>(resource =>
+admin.AddEfCoreResource<Booking>(resource =>
 {
     resource.SidebarItem(item =>
     {

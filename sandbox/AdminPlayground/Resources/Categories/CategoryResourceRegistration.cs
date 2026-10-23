@@ -10,7 +10,7 @@ internal static class CategoryResourceRegistration
     // The product category lookups create categories with this resource's create form
     internal static void AddCategoryResource(this StellarAdminBuilder admin)
     {
-        admin.AddEfCoreResource<ApplicationDbContext, Category>(resource =>
+        admin.AddEfCoreResource<Category>(resource =>
         {
             resource.SidebarItem(item =>
             {
