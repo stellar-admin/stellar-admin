@@ -1,6 +1,6 @@
 # Configuration simplification
 
-Status: in progress (2026-10-23). Branch `configuration-simplification`. Stage B is done (2026-10-23): [resource-references](archive/resource-references.md). Stage C is done (2026-10-23): [foreign-key-editors](archive/foreign-key-editors.md). Stage E is done (2026-10-23): [dbcontext-discovery](archive/dbcontext-discovery.md). Stages A and D are done (2026-10-23): [typed-editors](archive/typed-editors.md). Stage F is done (2026-10-23): [handler-models](archive/handler-models.md). Stage G is optional and research only; it gets its own plan, and Jerrie's approval, before work starts. All stages ship on this one branch.
+Status: completed (2026-10-23), not merged yet. Branch `configuration-simplification`. Stage B is done (2026-10-23): [resource-references](archive/resource-references.md). Stage C is done (2026-10-23): [foreign-key-editors](archive/foreign-key-editors.md). Stage E is done (2026-10-23): [dbcontext-discovery](archive/dbcontext-discovery.md). Stages A and D are done (2026-10-23): [typed-editors](archive/typed-editors.md). Stage F is done (2026-10-23): [handler-models](archive/handler-models.md). Stage G is closed without implementation (2026-10-23): [resource-classes](archive/resource-classes.md). All stages ship on this one branch.
 
 ## Goal
 
@@ -27,7 +27,7 @@ Counted in the playground, samples and tests: 81 explicit two-argument calls (`A
 | A | Fields keep their types; each editor gets its own method | Done: [typed-editors](archive/typed-editors.md) |
 | D | Lookup sources that aren't resources own their value and title | Done: [typed-editors](archive/typed-editors.md) |
 | F | Handlers name their model once | Done, for row details and panels: [handler-models](archive/handler-models.md) |
-| G | Resource classes | Research, optional |
+| G | Resource classes | Closed, not implemented: [resource-classes](archive/resource-classes.md) |
 
 The order is a recommendation (2026-10-22): B, C and E are the biggest wins and mostly additive. A is the structural fix and the largest breaking change, and D lands with it. F and G are optional.
 
@@ -122,6 +122,8 @@ admin.AddResourcesFromAssembly(typeof(Program).Assembly);
 - The types are named once, on the class. Shared field helpers become members, so their signatures don't name builder types (`ResourceFieldsBuilder<Trip>`), which matters more once A adds a type parameter.
 - The lambda style stays for small apps. This is about organising larger apps, not about type arguments.
 - Configuration only: the class isn't resolved per request and takes no services, so lifetimes don't mix.
+
+Outcome (2026-10-23, [resource-classes](archive/resource-classes.md)): closed without implementation. One static extension method per resource, which the consumer skill already teaches, gives most of the benefit with no new API. Shared helpers name builder types as members too (`ResourceFieldsBuilder<Trip>`), so the first point above doesn't hold.
 
 ## Prior art (how other admin frameworks configure related records)
 
