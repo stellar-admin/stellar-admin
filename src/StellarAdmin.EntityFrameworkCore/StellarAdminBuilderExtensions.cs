@@ -227,15 +227,15 @@ public static class StellarAdminBuilderExtensions
 
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
                     {
+                        InferReferencedResources(entity, create);
                         UseManyToManyBinders<TContext, TEntity>(options, entity, create);
                         RemoveUnsupportedFormFields(options, entity, create);
-                        InferReferencedResources(entity, create);
                     }
                     if (options.Edit is { } edit && edit.ModelType == typeof(TEntity))
                     {
+                        InferReferencedResources(entity, edit);
                         UseManyToManyBinders<TContext, TEntity>(options, entity, edit);
                         RemoveUnsupportedFormFields(options, entity, edit);
-                        InferReferencedResources(entity, edit);
                     }
                 }
             );
@@ -244,7 +244,8 @@ public static class StellarAdminBuilderExtensions
     }
 
     // A many-to-many navigation without an entity type for its join table binds as the keys of its related entities.
-    // A navigation that can't be bound, or an editor that selects one item, leaves the field out.
+    // A navigation that can't be bound, or an editor that selects one item, leaves the field out. A field with no
+    // editor gets a multi-lookup sheet once its related entity's resource is found.
     private static void UseManyToManyBinders<TContext, TEntity>(
         ResourceOptions<TEntity> options,
         IEntityType entity,
@@ -280,10 +281,10 @@ public static class StellarAdminBuilderExtensions
 
             // A built-in single-value editor would show nothing selected and save at most one related entity
             if (
-                field.Editor is null
-                || field.Editor.GetType().Assembly == typeof(FieldEditor).Assembly
-                    && field.Editor
-                        is not (CheckboxGroupEditor or ToggleGroupEditor or MultiLookupSheetEditor)
+                field.Editor is not null
+                && field.Editor.GetType().Assembly == typeof(FieldEditor).Assembly
+                && field.Editor
+                    is not (CheckboxGroupEditor or ToggleGroupEditor or MultiLookupSheetEditor)
             )
             {
                 form.RemoveField(field);
@@ -306,7 +307,7 @@ public static class StellarAdminBuilderExtensions
     }
 
     // A choice or lookup editor without items on a foreign key or many-to-many field takes them from the related
-    // entity's resource
+    // entity's resource, and a field with no editor gets a lookup sheet for it
     private static void InferReferencedResources(IEntityType entity, ResourceFormOptions form)
     {
         foreach (var field in form.Fields.Where(field => field.PropertyPath.Count == 1))

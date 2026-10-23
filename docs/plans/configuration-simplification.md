@@ -22,7 +22,7 @@ Counted in the playground, samples and tests: 81 explicit two-argument calls (`A
 | Stage | Change | Status |
 | --- | --- | --- |
 | B | Related records come from their own resource | Done: [resource-references](archive/resource-references.md) |
-| C | EF Core conventions pick an editor for foreign keys | Research |
+| C | EF Core conventions pick an editor for foreign keys | Proposed: [foreign-key-editors](foreign-key-editors.md) |
 | E | The DbContext is found, not named | Research |
 | A | Fields keep their types; each editor gets its own method | Research |
 | D | Lookup sources that aren't resources own their value and title | Research |

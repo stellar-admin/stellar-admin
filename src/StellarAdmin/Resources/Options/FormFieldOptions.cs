@@ -75,6 +75,10 @@ public sealed class FormFieldOptions : FormItemOptions
 
     internal Type? HandlerType { get; set; }
 
+    // The resource an integration inferred for the field while it had no editor. The field gets a sheet editor for it
+    // once the registered resources are known.
+    internal ReferencedResource? InferredResource { get; set; }
+
     internal FormFieldOptions(
         LambdaExpression fieldExpression,
         string fieldName,
@@ -88,7 +92,7 @@ public sealed class FormFieldOptions : FormItemOptions
 
     /// <summary>
     ///     Takes the items of the field's editor from a resource, when the editor is a choice or
-    ///     lookup editor without items.
+    ///     lookup editor without items, or the field has no editor.
     /// </summary>
     /// <param name="resourceType">The type of the resource.</param>
     /// <exception cref="ArgumentNullException">
@@ -96,7 +100,9 @@ public sealed class FormFieldOptions : FormItemOptions
     /// </exception>
     /// <remarks>
     ///     Integrations call it from a post-configuration callback for a field whose related records
-    ///     they know, such as from a foreign key. An editor with items keeps them.
+    ///     they know, such as from a foreign key. An editor with items keeps them. A field with no
+    ///     editor gets a lookup sheet, or a multi-lookup sheet for a collection, when the resource is
+    ///     registered.
     /// </remarks>
     public void InferResource(Type resourceType)
     {
@@ -113,6 +119,9 @@ public sealed class FormFieldOptions : FormItemOptions
                 break;
             case MultiLookupSheetEditor { Items: null, Resource: null } lookup:
                 lookup.UseResource(resource);
+                break;
+            case null:
+                InferredResource = resource;
                 break;
         }
     }

@@ -60,6 +60,7 @@ internal enum ConfigurationProblemKind
 
     ReferenceUnavailable = 1064,
     ReferenceFilterIgnored = 1065,
+    InferredEditorUnavailable = 1066,
 
     WordmarkWithSubtitle = 1070,
     InvalidLink = 1071,

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
@@ -391,9 +392,7 @@ public class ResourceManyToManyTests
     }
 
     [Test]
-    [Arguments("none")]
-    [Arguments("select")]
-    public async Task Edit_WithSingleValueEditor_LogsProblem(string editor)
+    public async Task Edit_WithSingleValueEditor_LogsProblem()
     {
         // Arrange
 
@@ -401,18 +400,15 @@ public class ResourceManyToManyTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
-                {
-                    var field = fields.Add(product => product.Tags);
-                    if (editor == "select")
-                    {
-                        field.UseEditor<SelectEditor>(select =>
+                    fields
+                        .Add(product => product.Tags)
+                        .UseEditor<SelectEditor>(select =>
                             select.UseItems<CatalogDbContext, Tag, int>(
                                 tag => tag.Id,
                                 tag => tag.Name
                             )
-                        );
-                    }
-                })
+                        )
+                )
             )
         );
 
@@ -429,6 +425,129 @@ public class ResourceManyToManyTests
             .IsTrue();
         var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
         await Assert.That(options.Edit!.Fields).IsEmpty();
+    }
+
+    [Test]
+    public async Task Edit_WithoutEditor_UsesMultiLookupSheetOfTagResource()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields => fields.Add(product => product.Tags))
+                ),
+            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Tag>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/edit/2");
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll(
+                        "admin-multi-lookup-sheet-editor input[type='hidden'][name='Entity.Tags']"
+                    )
+                    .Select(input => input.GetAttribute("value"))
+            )
+            .IsEquivalentTo(["1", "2"]);
+    }
+
+    [Test]
+    public async Task EditPost_WithoutEditor_ReplacesTheRelatedEntities()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields => fields.Add(product => product.Tags))
+                ),
+            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Tag>()
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        values.Add(new("Entity.Tags", "3"));
+
+        // Act
+        using var response = await client.PostAsync(
+            "/stellaradmin/products/edit/2",
+            new FormUrlEncodedContent(values)
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert.That(await ReadTagIds(sut, 2)).IsEquivalentTo([3]);
+    }
+
+    [Test]
+    public async Task Edit_WithoutEditorOrResource_LeavesFieldOutAndLogsProblem()
+    {
+        // Arrange
+
+        // Act
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowEdit(edit => edit.Fields(fields => fields.Add(product => product.Tags)))
+        );
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert.That(options.Edit!.Fields).IsEmpty();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Level == LogLevel.Warning
+                    && log.Message.Contains(
+                        "because it has no editor, and no resource is registered for Tag."
+                    )
+                )
+            )
+            .IsTrue();
+    }
+
+    [Test]
+    public async Task InlineEditRow_WithoutEditor_LeavesFieldOutAndLogsProblem()
+    {
+        // Arrange
+
+        // Act
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+            {
+                resource.Index(index =>
+                    index.Columns(columns => columns.Add(product => product.Name))
+                );
+                resource.AllowEdit(edit =>
+                {
+                    edit.Fields(fields =>
+                    {
+                        fields.Add(product => product.Name);
+                        fields.Add(product => product.Tags);
+                    });
+                    edit.UseInlineRow();
+                });
+            },
+            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Tag>()
+        );
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        await Assert
+            .That(options.Edit?.Fields.Select(field => field.FieldName))
+            .IsEquivalentTo(["Name"]);
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "the inline row has no editor that selects several Tag records."
+                    )
+                )
+            )
+            .IsTrue();
     }
 
     private static void UseCheckboxGroup(ResourceFieldsBuilder<Product> fields) =>

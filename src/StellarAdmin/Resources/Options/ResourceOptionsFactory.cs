@@ -72,6 +72,7 @@ internal sealed class ResourceOptionsFactory<TResource>(
         FieldBinderCheck.Run(options);
         ImageEditorCheck.Run(options);
         IconEditorCheck.Run(options, icons);
+        InferredEditorCheck.Run(options, resourceTypes);
         EditorCheck.Run(options);
         DependencyCheck.Run(options);
         GridLayoutCheck.Run(options);

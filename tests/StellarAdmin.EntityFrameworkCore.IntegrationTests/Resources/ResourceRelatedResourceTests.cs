@@ -4,6 +4,7 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
@@ -170,6 +171,70 @@ public class ResourceRelatedResourceTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains("no resource is registered for Category")
+                )
+            )
+            .IsTrue();
+    }
+
+    [Test]
+    public async Task ForeignKey_WithoutEditor_UsesLookupSheetOfCategoryResource()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields => fields.Add(product => product.CategoryId))
+                ),
+            configureAdmin: admin => admin.AddEfCoreResource<CatalogDbContext, Category>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await GetDocument(client, "/stellaradmin/products/edit/1");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelector("#Entity_CategoryId-selected [data-lookup='title']")
+                    ?.TextContent.Trim()
+            )
+            .IsEqualTo("Office");
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-slot='field-label']")
+                    .Select(label => label.TextContent.Trim())
+            )
+            .Contains("Category");
+    }
+
+    [Test]
+    public async Task ForeignKey_WithoutEditorOrResource_KeepsNumberInputAndLogsInfo()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowEdit(edit =>
+                edit.Fields(fields => fields.Add(product => product.CategoryId))
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await GetDocument(client, "/stellaradmin/products/edit/1");
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(document.QuerySelector("input[name='Entity.CategoryId']")?.GetAttribute("type"))
+            .IsEqualTo("number");
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Level == LogLevel.Information
+                    && log.Message.Contains(
+                        "uses its property's default editor because no resource is registered for Category."
+                    )
                 )
             )
             .IsTrue();
