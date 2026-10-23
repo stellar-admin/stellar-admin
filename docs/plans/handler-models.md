@@ -1,6 +1,6 @@
 # Handlers name their model once
 
-Status: in progress (2026-10-23); step 1 done, uncommitted. Stage F of [configuration simplification](configuration-simplification.md#f-handlers-name-their-model-once), on the `configuration-simplification` branch.
+Status: in progress (2026-10-23); step 1 committed in `7cd60d4`, step 2 done, uncommitted. Stage F of [configuration simplification](configuration-simplification.md#f-handlers-name-their-model-once), on the `configuration-simplification` branch.
 
 ## Goal
 
@@ -60,3 +60,4 @@ Recommendation: do this part, if the lost compile-time check is acceptable. Othe
 ## Progress
 
 - Step 1 (2026-10-23): `EnableRowDetails<THandler>` (both overloads) and `panels.Add<THandler>` replace the `<TModel, THandler>` forms. `HandlerRowDetailLoader.Create` reads the model from the handler's interface and registers the handler; a handler naming no model, or several, gets a stand-in loader that `RowDetailsCheck` removes and reports as `UnusableRowDetailHandler` (1067). The tests and the playground (`CategoryResourceRegistration`, `ProductResourceRegistration`) use the new forms, and two HTTP tests cover the problem. Verified: `dotnet test --solution StellarAdmin.slnx --configuration Release`, 1889/1889 passed. The playground compiles; it wasn't run.
+- Step 2 (2026-10-23): the index pages reference (`skills/stellar-admin/references/index-pages.md`) shows the handler-only forms and says a handler for no model, or two, leaves its panel out. No other maintained docs, skill evals or website docs use the old forms (website checked read-only, clean). Verified: skill validator (4 skills, 92 files) and `SkillsGenerator -- --check` (no drift) pass; the playground on 5207 logs no row-detail problems, and `/stellaradmin/categories/rowdetail/8` and `/stellaradmin/products/rowdetail/7?panel=related` return 200 with their handler's model. The server is stopped, and `app.db` is unchanged.

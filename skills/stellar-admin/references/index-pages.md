@@ -122,16 +122,17 @@ index.EnableRowDetails("_BookingSummary");
 index.EnableRowDetails("_BookingPricing", booking => new BookingPricing(booking.Total, booking.Travellers));
 
 // A model loaded on expand by a handler implementing IResourceRowDetailHandler<BookingNotes>
-index.EnableRowDetails<BookingNotes, BookingNotesHandler>("_BookingNotes");
+index.EnableRowDetails<BookingNotesHandler>("_BookingNotes");
 
 // Two or more panels become tabs
 index.EnableRowDetails(panels =>
 {
     panels.Add("Summary", "_BookingSummary");
-    panels.Add<BookingNotes, BookingNotesHandler>("Notes", "_BookingNotes");
+    panels.Add<BookingNotesHandler>("Notes", "_BookingNotes");
 });
 ```
 
+- A handler's partial takes the model its `IResourceRowDetailHandler<TModel>` names. Give each model its own handler: one that implements the interface for no model, or for two, is a configuration problem, and its panel is left out.
 - Put the partials in `Areas/StellarAdmin/Views/{slug}/` or `Areas/StellarAdmin/Views/Shared/`, with an area `_ViewImports.cshtml` ([customization](customization.md#view-imports)).
 - The callback overloads configure presentation: `details => { details.Emphasis = DataGridRowDetailEmphasis.Rail; details.ExpandMode = DataGridRowDetailExpandMode.Single; details.RowClick = true; }`. Other settings: `Animate`, `Divider` (`DataGridRowDetailDivider`), `Inset`, `Toggle`. The enums are in `StellarAdmin.UI`.
 - Row details are for per-row information. Content for the whole page, such as a summary above the grid, belongs in an index override ([customization](customization.md#add-content-to-a-generated-page)).
