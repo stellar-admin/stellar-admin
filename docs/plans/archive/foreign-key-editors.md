@@ -1,6 +1,6 @@
 # Foreign-key editors
 
-Status: approved (2026-10-23), in progress. Stage C of [configuration simplification](configuration-simplification.md), on the `configuration-simplification` branch. Builds on [resource references](archive/resource-references.md).
+Status: completed (2026-10-23). Stage C of [configuration simplification](../configuration-simplification.md), committed in `fb52188` and `0cb8129` on the `configuration-simplification` branch, which isn't merged yet. Builds on [resource references](resource-references.md). Follow-ups are under [Open](#open).
 
 ## Goal
 
@@ -59,9 +59,10 @@ Checkpoint with Jerrie after step 1.
 
 ## Progress
 
-- **Step 1 (2026-10-23, not committed).** `InferResource` stores the related resource on a field with no editor (internal `FormFieldOptions.InferredResource`). The new `InferredEditorCheck` runs before `EditorCheck` and gives such a field a `LookupSheetEditor` or `MultiLookupSheetEditor` with its handler, when the resource is registered. Otherwise it reports `InferredEditorUnavailable` (event 1066): Info for a field that keeps its default editor, and a warning for a binder field it leaves out. The many-to-many field of an inline row is also left out with a warning, since the grid has no multi-lookup editor. The EF Core PostConfigure runs `InferReferencedResources` before `UseManyToManyBinders`, which now accepts a many-to-many field with no editor. Tests: foreign key and many-to-many fields with no editor (rendering, the label, saving), without a resource (number input with Info, many-to-many left out with a warning), and an inline edit row. `Edit_WithSingleValueEditor_LogsProblem` lost its no-editor case. Release: 147 EF Core integration tests, 664 admin panel integration tests and 308 admin panel unit tests pass.
+- **Step 1 (2026-10-23).** `InferResource` stores the related resource on a field with no editor (internal `FormFieldOptions.InferredResource`). The new `InferredEditorCheck` runs before `EditorCheck` and gives such a field a `LookupSheetEditor` or `MultiLookupSheetEditor` with its handler, when the resource is registered. Otherwise it reports `InferredEditorUnavailable` (event 1066): Info for a field that keeps its default editor, and a warning for a binder field it leaves out. The many-to-many field of an inline row is also left out with a warning, since the grid has no multi-lookup editor. The EF Core PostConfigure runs `InferReferencedResources` before `UseManyToManyBinders`, which now accepts a many-to-many field with no editor. Tests: foreign key and many-to-many fields with no editor (rendering, the label, saving), without a resource (number input with Info, many-to-many left out with a warning), and an inline edit row. `Edit_WithSingleValueEditor_LogsProblem` lost its no-editor case. Release: 147 EF Core integration tests, 664 admin panel integration tests and 308 admin panel unit tests pass.
 - **Step 1 committed** in `fb52188`.
-- **Step 2 (2026-10-23, not committed).** The Products edit form's Category is `fields.Add(product => product.CategoryId)`. The consumer references follow: `relationships.md` (the default editors, the foreign key with no resource, the many-to-many example and when it's left out), `editors.md` (what is inferred), the stellar-admin skill's checklist and foreign-key gotcha, and the setup skill's foreign-key note and troubleshooting row. `util/SkillsGenerator -- --check` reports no drift. A smoke run on port 5207 showed the Products edit page's Category as a lookup sheet labelled "Category", with the product's category selected, and no configuration problems logged for it; `app.db` was unchanged.
+- **Step 2 (2026-10-23), committed in `0cb8129`.** The Products edit form's Category is `fields.Add(product => product.CategoryId)`. The consumer references follow: `relationships.md` (the default editors, the foreign key with no resource, the many-to-many example and when it's left out), `editors.md` (what is inferred), the stellar-admin skill's checklist and foreign-key gotcha, and the setup skill's foreign-key note and troubleshooting row. `util/SkillsGenerator -- --check` reports no drift. A smoke run on port 5207 showed the Products edit page's Category as a lookup sheet labelled "Category", with the product's category selected, and no configuration problems logged for it; `app.db` was unchanged.
+- **Step 3 (2026-10-23).** After a Release build of the solution, `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1 --no-build` passed all 1870 tests. The plan moved to the archive. Website docs remain batched with the configuration simplification follow-ups.
 
 ## Samples
 
@@ -79,6 +80,6 @@ Checkpoint with Jerrie after step 1.
 
 ## Open
 
-- Built-in array and dictionary editors, for quickly entering a list of items or key-value pairs, get their own plan later (Jerrie, 2026-10-23). An array editor could then be the default for a many-to-many field whose related type isn't a resource.
+- Built-in array and dictionary editors, for quickly entering a list of items or key-value pairs, get their own plan, [array-dictionary-editors](../array-dictionary-editors.md) (Jerrie, 2026-10-23). An array editor could then be the default for a many-to-many field whose related type isn't a resource.
 
 - There's no way to keep a number input for a foreign key to a registered resource, since no built-in editor renders one. Not needed unless someone asks.
