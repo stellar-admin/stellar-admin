@@ -1,6 +1,6 @@
 # Handlers name their model once
 
-Status: completed (2026-10-23). Stage F of [configuration simplification](../configuration-simplification.md#f-handlers-name-their-model-once), committed in `7cd60d4`, `1f24a88` and the commit that closes this plan, on the `configuration-simplification` branch, which isn't merged yet.
+Status: completed (2026-10-23). Stage F of [configuration simplification](configuration-simplification.md#f-handlers-name-their-model-once), committed in `7cd60d4`, `1f24a88` and the commit that closes this plan, on the `configuration-simplification` branch, which was merged into `master` on 2026-10-23.
 
 ## Goal
 

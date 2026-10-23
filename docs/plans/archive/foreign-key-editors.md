@@ -1,6 +1,6 @@
 # Foreign-key editors
 
-Status: completed (2026-10-23). Stage C of [configuration simplification](../configuration-simplification.md), committed in `fb52188` and `0cb8129` on the `configuration-simplification` branch, which isn't merged yet. Builds on [resource references](resource-references.md). Follow-ups are under [Open](#open).
+Status: completed (2026-10-23). Stage C of [configuration simplification](configuration-simplification.md), committed in `fb52188` and `0cb8129` on the `configuration-simplification` branch, which was merged into `master` on 2026-10-23. Builds on [resource references](resource-references.md). Follow-ups are under [Open](#open).
 
 ## Goal
 

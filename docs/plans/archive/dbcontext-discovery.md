@@ -1,6 +1,6 @@
 # DbContext discovery
 
-Status: completed (2026-10-23). Stage E of [configuration simplification](../configuration-simplification.md#e-the-dbcontext-is-found-not-named), committed in `bf4523b`, `a9c86b0` and the commit that closes this plan, on the `configuration-simplification` branch, which isn't merged yet.
+Status: completed (2026-10-23). Stage E of [configuration simplification](configuration-simplification.md#e-the-dbcontext-is-found-not-named), committed in `bf4523b`, `a9c86b0` and the commit that closes this plan, on the `configuration-simplification` branch, which was merged into `master` on 2026-10-23.
 
 ## Goal
 

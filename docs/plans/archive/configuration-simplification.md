@@ -1,6 +1,6 @@
 # Configuration simplification
 
-Status: completed (2026-10-23), not merged yet. Branch `configuration-simplification`. Stage B is done (2026-10-23): [resource-references](archive/resource-references.md). Stage C is done (2026-10-23): [foreign-key-editors](archive/foreign-key-editors.md). Stage E is done (2026-10-23): [dbcontext-discovery](archive/dbcontext-discovery.md). Stages A and D are done (2026-10-23): [typed-editors](archive/typed-editors.md). Stage F is done (2026-10-23): [handler-models](archive/handler-models.md). Stage G is closed without implementation (2026-10-23): [resource-classes](archive/resource-classes.md). All stages ship on this one branch.
+Status: completed (2026-10-23). Delivered on the `configuration-simplification` branch and fast-forwarded into `master` at `d6b6a4c`. Stage B is done (2026-10-23): [resource-references](resource-references.md). Stage C is done (2026-10-23): [foreign-key-editors](foreign-key-editors.md). Stage E is done (2026-10-23): [dbcontext-discovery](dbcontext-discovery.md). Stages A and D are done (2026-10-23): [typed-editors](typed-editors.md). Stage F is done (2026-10-23): [handler-models](handler-models.md). Stage G is closed without implementation (2026-10-23): [resource-classes](resource-classes.md). All stages ship on this one branch.
 
 ## Goal
 
@@ -8,7 +8,7 @@ Make the admin panel configuration read cleanly. Developer experience comes firs
 
 ## Why there are so many type arguments
 
-Research on 2026-10-22, from the current source, the AdminPlayground registrations, the consumer references and the earlier decisions ([public API review](archive/public-api-review.md) D9 and the type-inference follow-up in [dependent fields](archive/dependent-fields.md#open)).
+Research on 2026-10-22, from the current source, the AdminPlayground registrations, the consumer references and the earlier decisions ([public API review](public-api-review.md) D9 and the type-inference follow-up in [dependent fields](dependent-fields.md#open)).
 
 1. **Editors drop the field's types.** `ResourceFieldBuilder<TResource>.UseEditor<TEditor>(Action<TEditor>)` creates a non-generic editor with `new()`. The editor doesn't know the form's type, the property's type or the EF Core context, so every items call names them again. Inside `AddEfCoreResource<ApplicationDbContext, Product>` the playground still writes `UseItems<ApplicationDbContext, Category, int>`. The same loss causes `Where<Trip>` and `ReferenceFrom<Booking>` on the EF items builders, `BadgeDisplay.UseText<Tag>`, and loaders written as `(Trip trip, IServiceProvider services, CancellationToken cancellationToken) =>`.
 2. **Related items are described per field, not per entity.** `UserResourceRegistration` configures the same Department select (12 lines) on create and again on edit, and the same roles checkbox group twice. Products shares its Category and Tag lookups through helper methods. The field editor gallery's `GalleryAirport` is a resource and also has a separate `GalleryAirportLookupSource` that repeats what its data source does.
@@ -21,13 +21,13 @@ Counted in the playground, samples and tests: 81 explicit two-argument calls (`A
 
 | Stage | Change | Status |
 | --- | --- | --- |
-| B | Related records come from their own resource | Done: [resource-references](archive/resource-references.md) |
-| C | EF Core conventions pick an editor for foreign keys | Done: [foreign-key-editors](archive/foreign-key-editors.md) |
-| E | The DbContext is found, not named | Done: [dbcontext-discovery](archive/dbcontext-discovery.md) |
-| A | Fields keep their types; each editor gets its own method | Done: [typed-editors](archive/typed-editors.md) |
-| D | Lookup sources that aren't resources own their value and title | Done: [typed-editors](archive/typed-editors.md) |
-| F | Handlers name their model once | Done, for row details and panels: [handler-models](archive/handler-models.md) |
-| G | Resource classes | Closed, not implemented: [resource-classes](archive/resource-classes.md) |
+| B | Related records come from their own resource | Done: [resource-references](resource-references.md) |
+| C | EF Core conventions pick an editor for foreign keys | Done: [foreign-key-editors](foreign-key-editors.md) |
+| E | The DbContext is found, not named | Done: [dbcontext-discovery](dbcontext-discovery.md) |
+| A | Fields keep their types; each editor gets its own method | Done: [typed-editors](typed-editors.md) |
+| D | Lookup sources that aren't resources own their value and title | Done: [typed-editors](typed-editors.md) |
+| F | Handlers name their model once | Done, for row details and panels: [handler-models](handler-models.md) |
+| G | Resource classes | Closed, not implemented: [resource-classes](resource-classes.md) |
 
 The order is a recommendation (2026-10-22): B, C and E are the biggest wins and mostly additive. A is the structural fix and the largest breaking change, and D lands with it. F and G are optional.
 
@@ -47,7 +47,7 @@ fields.Add(product => product.Tags).UseCheckboxGroup(group => group.Columns(2));
 - The same applies to displays: a typed column or display field builder lets `BadgeDisplay` on `p => p.Tags` take `tag => tag.Name` without `<Tag>`.
 - `UseEditor<TEditor>` and `UseDisplay<TDisplay>` stay for custom editors and displays.
 - Prior art: FluentValidation's `RuleFor(x => x.Email).EmailAddress()`, where the rule builder carries `<T, TProperty>` and validators are extension methods on it. AutoMapper's `ForMember` carries three inferred types the same way. EF Core's `Property(b => b.Url)` returns a `PropertyBuilder<TProperty>`.
-- Method names follow the [options builder conventions](../conventions/options-builders.md): behavior is a verb on the leaf, so `UseSelect`, `UseLookupSheet`, `UseCheckboxGroup`.
+- Method names follow the [options builder conventions](../../conventions/options-builders.md): behavior is a verb on the leaf, so `UseSelect`, `UseLookupSheet`, `UseCheckboxGroup`.
 - Costs: a breaking change across every built-in editor, the consumer references and the samples. Helper methods that take a builder get one more type parameter (`ResourceFieldBuilder<Trip, int?>`), which G reduces. A nullable foreign key (`int?`) against a non-nullable key (`int`) needs overloads or a conversion rule. Collection fields (`List<int>`, `int[]`, `ICollection<Tag>`) need care because C# generics are invariant.
 - The dependent-fields plan recorded the same idea (`UseLookupSheet(lookup => ...)` with a `LookupSheetEditor<TModel, TProperty>`) and Jerrie's constraint that items stay on the editor, not the field. This proposal keeps that.
 
@@ -103,7 +103,7 @@ select.UseItems<Category>(category => category.Id, category => category.Name);  
 
 Small win (two to one) across `AllowCreate`, `AllowEdit`, `AllowView`, `EnableRowDetails` and `panels.Add`.
 
-Outcome (2026-10-23, [handler-models](archive/handler-models.md)): row details and panels take only the handler (`EnableRowDetails<THandler>`, `panels.Add<THandler>`), and the model is read from it. Create, edit and view keep `<TModel, THandler>`, because their fields are typed by the model, and either option above would make the registration longer or move it to `Program.cs`.
+Outcome (2026-10-23, [handler-models](handler-models.md)): row details and panels take only the handler (`EnableRowDetails<THandler>`, `panels.Add<THandler>`), and the model is read from it. Create, edit and view keep `<TModel, THandler>`, because their fields are typed by the model, and either option above would make the registration longer or move it to `Program.cs`.
 
 ## G. Resource classes (optional)
 
@@ -123,7 +123,7 @@ admin.AddResourcesFromAssembly(typeof(Program).Assembly);
 - The lambda style stays for small apps. This is about organising larger apps, not about type arguments.
 - Configuration only: the class isn't resolved per request and takes no services, so lifetimes don't mix.
 
-Outcome (2026-10-23, [resource-classes](archive/resource-classes.md)): closed without implementation. One static extension method per resource, which the consumer skill already teaches, gives most of the benefit with no new API. Shared helpers name builder types as members too (`ResourceFieldsBuilder<Trip>`), so the first point above doesn't hold.
+Outcome (2026-10-23, [resource-classes](resource-classes.md)): closed without implementation. One static extension method per resource, which the consumer skill already teaches, gives most of the benefit with no new API. Shared helpers name builder types as members too (`ResourceFieldsBuilder<Trip>`), so the first point above doesn't hold.
 
 ## Prior art (how other admin frameworks configure related records)
 
@@ -140,4 +140,4 @@ Outcome (2026-10-23, [resource-classes](archive/resource-classes.md)): closed wi
 ## Decisions (Jerrie)
 
 - 2026-10-22: One branch, `configuration-simplification`, for all stages, delivered stage by stage.
-- 2026-10-22: Stage B is planned first. Its decisions are in [resource-references](archive/resource-references.md#decisions-jerrie-2026-10-22).
+- 2026-10-22: Stage B is planned first. Its decisions are in [resource-references](resource-references.md#decisions-jerrie-2026-10-22).

@@ -1,6 +1,6 @@
 # Resource classes
 
-Status: closed without implementation (2026-10-23). Stage G of [configuration simplification](../configuration-simplification.md#g-resource-classes-optional). Jerrie chose to keep plain extension methods, which the stellar-admin consumer skill already teaches under "Organising the configuration" in `skills/stellar-admin/SKILL.md`. The API below is kept for reference.
+Status: closed without implementation (2026-10-23). Stage G of [configuration simplification](configuration-simplification.md#g-resource-classes-optional). Jerrie chose to keep plain extension methods, which the stellar-admin consumer skill already teaches under "Organising the configuration" in `skills/stellar-admin/SKILL.md`. The API below is kept for reference.
 
 ## Goal
 

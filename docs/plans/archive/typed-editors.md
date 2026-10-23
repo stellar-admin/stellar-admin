@@ -1,6 +1,6 @@
 # Typed editors and lookup sources
 
-Status: completed (2026-10-23). Stages A and D of [configuration simplification](../configuration-simplification.md#a-fields-keep-their-types-each-editor-gets-its-own-method), committed in `92e1638`, `5703182` and the commit that closes this plan, on the `configuration-simplification` branch, which isn't merged yet.
+Status: completed (2026-10-23). Stages A and D of [configuration simplification](configuration-simplification.md#a-fields-keep-their-types-each-editor-gets-its-own-method), committed in `92e1638`, `5703182` and the commit that closes this plan, on the `configuration-simplification` branch, which was merged into `master` on 2026-10-23.
 
 ## Goal
 

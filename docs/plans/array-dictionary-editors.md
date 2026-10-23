@@ -8,5 +8,5 @@ Built-in admin panel editors for quickly entering a list of items (array editor)
 
 ## Context
 
-- Raised by Jerrie during [foreign-key editors](archive/foreign-key-editors.md) (Stage C of [configuration simplification](configuration-simplification.md)).
+- Raised by Jerrie during [foreign-key editors](archive/foreign-key-editors.md) (Stage C of [configuration simplification](archive/configuration-simplification.md)).
 - An array editor might also become the default editor for an EF Core many-to-many field whose related type isn't a registered resource. Today such a field is left out of the form with a warning.

@@ -1,6 +1,6 @@
 # Resource references
 
-Status: completed (2026-10-23). Stage B of [configuration simplification](../configuration-simplification.md), committed in `0027612`, `d2c0f42` and `0019744` on the `configuration-simplification` branch, which isn't merged yet. Follow-ups are under [Open](#open).
+Status: completed (2026-10-23). Stage B of [configuration simplification](configuration-simplification.md), committed in `0027612`, `d2c0f42` and `0019744` on the `configuration-simplification` branch, which was merged into `master` on 2026-10-23. Follow-ups are under [Open](#open).
 
 ## Goal
 
