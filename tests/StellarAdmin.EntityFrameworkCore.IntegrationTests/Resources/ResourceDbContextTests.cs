@@ -22,7 +22,9 @@ public class ResourceDbContextTests
         // Arrange
         await using var sut = await CreateAsync(configureAdmin: admin =>
             admin.AddEfCoreResource<Warehouse>(resource =>
-                resource.Index(index => index.Columns(columns => columns.Add(warehouse => warehouse.Name)))
+                resource.Index(index =>
+                    index.Columns(columns => columns.Add(warehouse => warehouse.Name))
+                )
             )
         );
         using (var scope = sut.Services.CreateScope())
@@ -61,7 +63,7 @@ public class ResourceDbContextTests
         await Assert
             .That(problem.Message)
             .Contains(
-                "because more than one DbContext has a Product entity: CatalogDbContext and ReportingDbContext."
+                "because more than one DbContext maps Product: CatalogDbContext and ReportingDbContext."
             );
     }
 
@@ -180,7 +182,7 @@ public class ResourceDbContextTests
         await Assert
             .That(await response.Content.ReadAsStringAsync())
             .Contains(
-                "Category items can't load because more than one DbContext has a Category entity: CatalogDbContext and ReportingDbContext. Call UseDbContext<TContext>() on the items to pick one."
+                "Category items can't load because more than one DbContext maps Category: CatalogDbContext and ReportingDbContext. Call UseDbContext<TContext>() on the items to pick one."
             );
     }
 

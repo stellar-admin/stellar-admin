@@ -1,6 +1,6 @@
 # DbContext discovery
 
-Status: approved (2026-10-23), in progress. Stage E of [configuration simplification](configuration-simplification.md#e-the-dbcontext-is-found-not-named), on the `configuration-simplification` branch.
+Status: completed (2026-10-23). Stage E of [configuration simplification](../configuration-simplification.md#e-the-dbcontext-is-found-not-named), committed in `bf4523b`, `a9c86b0` and the commit that closes this plan, on the `configuration-simplification` branch, which isn't merged yet.
 
 ## Goal
 
@@ -115,7 +115,7 @@ Tests: `ResourceDbContextTests` (6 tests), with a `ReportingDbContext` fixture o
 
 Verification: `dotnet test --project tests/StellarAdmin.EntityFrameworkCore.IntegrationTests` ran 153 tests, all passing. The samples don't compile until step 2, so the full solution wasn't built.
 
-### Step 2 (2026-10-23, uncommitted)
+### Step 2 (2026-10-23, `a9c86b0`)
 
 - **AdminPlayground:** the five `AddEfCoreResource` calls that named `ApplicationDbContext` (Categories, Departments, Excursions, Products and Tags) dropped it. The playground's `UseItems` calls use lookup sources, not EF Core, so they're unchanged. The Excursions comments now say no registered context maps `ExcursionBooking`.
 - **Consumer skills:**
@@ -126,3 +126,19 @@ Verification: `dotnet test --project tests/StellarAdmin.EntityFrameworkCore.Inte
 - **Unchanged:** the home page snippet was already done in step 1. The website has no EF Core registration code.
 
 Verification: `dotnet build StellarAdmin.slnx -c Release` succeeded with no errors. The SkillsGenerator regeneration and its check reported no drift. Tests, the Release test run and the playground smoke run are step 3.
+
+### Step 3 (2026-10-23)
+
+- **Release tests:** `dotnet build StellarAdmin.slnx -c Release`, then `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1 --no-build`, ran 1876 tests, all passing.
+- **Skills:** the SkillsGenerator check reported no drift.
+- **Playground smoke run on port 5207:**
+  - Products, the Products edit page, Categories, Tags and Departments returned 200 from the context that was found.
+  - The edit page's Category lookup sheet listed categories and searched them.
+  - Excursion bookings returned 404, and its problem was logged.
+  - `app.db` was unchanged after the run.
+- **Message fix:** the smoke run showed "has a ExcursionBooking entity". The messages now say a context "maps" the entity ("no registered DbContext maps `ExcursionBooking`", "more than one DbContext maps `Product`: ..."). The tests and the troubleshooting row follow. After the change, the EF Core tests (153) passed again in Release, and the skills check reported no drift.
+
+## Open
+
+- An app-wide `admin.UseDbContext<T>()` (decision 1) waits until an app needs it.
+- An unpinned item source of an entity that several contexts map is only reported when a request loads it. Checking it when options are built would need a hook for item sources on forms that aren't EF Core resources.

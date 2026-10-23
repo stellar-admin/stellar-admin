@@ -24,10 +24,9 @@ internal sealed class EfCoreContexts(
 
     // Why an entity has no single context, to follow "because"
     public string DescribeMissing(Type entityType, IReadOnlyList<Type> matches) =>
-        matches.Count > 1
-            ? $"more than one DbContext has a `{entityType.Name}` entity: {Join(matches)}"
+        matches.Count > 1 ? $"more than one DbContext maps `{entityType.Name}`: {Join(matches)}"
         : Candidates.Count == 0 ? "no DbContext is registered"
-        : $"no registered DbContext has a `{entityType.Name}` entity";
+        : $"no registered DbContext maps `{entityType.Name}`";
 
     // The app's contexts. An app without EF Core resources hasn't registered them, so an item source finds its
     // context without the cache.

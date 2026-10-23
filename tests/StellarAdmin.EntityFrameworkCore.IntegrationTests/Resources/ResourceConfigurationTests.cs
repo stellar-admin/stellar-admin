@@ -32,7 +32,7 @@ public class ResourceConfigurationTests
         await Assert.That(products.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert
             .That(logs.ConfigurationProblems.Single().Message)
-            .Contains("because no registered DbContext has a Supplier entity.");
+            .Contains("because no registered DbContext maps Supplier.");
     }
 
     [Test]
