@@ -47,7 +47,7 @@ public class ResourceRowDetailPanelsBuilderTests
         var sut = new DefaultRowDetailPanelsBuilder<Product>(services);
 
         // Act
-        sut.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
+        sut.Add<ProductNotesHandler>("Notes", "_ProductNotes");
 
         // Assert
         await Assert.That(sut.Panels.Single().LoadsOnDemand).IsTrue();

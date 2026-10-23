@@ -36,7 +36,7 @@ internal static class CategoryResourceRegistration
                     search => search.Placeholder = "Search categories..."
                 );
                 index.EnablePaging();
-                index.EnableRowDetails<CategoryProducts, CategoryProductsHandler>(
+                index.EnableRowDetails<CategoryProductsHandler>(
                     "_CategoryProducts",
                     details =>
                     {

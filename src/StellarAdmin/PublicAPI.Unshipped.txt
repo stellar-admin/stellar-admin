@@ -608,8 +608,8 @@ StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.En
 StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails(string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!>! configure) -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails(System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>!>! panels) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails(System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>!>! panels, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!>! configure) -> TBuilder!
-StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails<TModel, THandler>(string! partialName) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails<TModel, THandler>(string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails<THandler>(string! partialName) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.EnableRowDetails<THandler>(string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!>! configure) -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.NotShownMessage.set -> void
 StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.RegisterRowDetails(StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>! panels) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.RegisterRowDetails(string! partialName, StellarAdmin.Resources.ResourceRowDetailLoader? loader) -> StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>!
@@ -654,7 +654,7 @@ StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder
 StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder.Name.set -> void
 StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>
 StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Add(string! title, string! partialName) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!
-StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Add<TModel, THandler>(string! title, string! partialName) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Add<THandler>(string! title, string! partialName) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!
 StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.AddPanel(string! title, string! partialName, StellarAdmin.Resources.ResourceRowDetailLoader? loader) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!
 StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.ResourceRowDetailPanelsBuilder(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
 StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!

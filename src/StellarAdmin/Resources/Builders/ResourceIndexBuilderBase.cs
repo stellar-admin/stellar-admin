@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
@@ -318,12 +317,16 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <summary>
     ///     Shows a partial view with a model that a handler loads when a row is expanded.
     /// </summary>
-    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
-    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the model, which implements
+    ///     <see cref="IResourceRowDetailHandler{TModel}" /> for the partial view's model.
+    /// </typeparam>
     /// <param name="partialName">The partial view to render.</param>
     /// <returns>A builder that configures the rows.</returns>
     /// <remarks>
-    ///     The handler is registered as a scoped service if it isn't registered already.
+    ///     The handler is registered as a scoped service if it isn't registered already. A handler
+    ///     that doesn't implement <see cref="IResourceRowDetailHandler{TModel}" /> for exactly one
+    ///     model is a configuration problem, and rows don't expand.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="partialName" /> is <see langword="null" />.
@@ -331,27 +334,25 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentException">
     ///     <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailsBuilder<TResource> EnableRowDetails<TModel, THandler>(
-        string partialName
-    )
-        where THandler : class, IResourceRowDetailHandler<TModel>
-    {
-        Services.TryAddScoped<THandler>();
-
-        return RegisterRowDetails(partialName, new HandlerRowDetailLoader<TModel, THandler>());
-    }
+    public ResourceRowDetailsBuilder<TResource> EnableRowDetails<THandler>(string partialName)
+        where THandler : class =>
+        RegisterRowDetails(partialName, HandlerRowDetailLoader.Create(typeof(THandler), Services));
 
     /// <summary>
     ///     Shows a partial view with a model that a handler loads when a row is expanded, and
     ///     configures the rows.
     /// </summary>
-    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
-    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the model, which implements
+    ///     <see cref="IResourceRowDetailHandler{TModel}" /> for the partial view's model.
+    /// </typeparam>
     /// <param name="partialName">The partial view to render.</param>
     /// <param name="configure">A delegate that configures the rows.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     The handler is registered as a scoped service if it isn't registered already.
+    ///     The handler is registered as a scoped service if it isn't registered already. A handler
+    ///     that doesn't implement <see cref="IResourceRowDetailHandler{TModel}" /> for exactly one
+    ///     model is a configuration problem, and rows don't expand.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="partialName" /> or <paramref name="configure" /> is
@@ -360,14 +361,14 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentException">
     ///     <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public TBuilder EnableRowDetails<TModel, THandler>(
+    public TBuilder EnableRowDetails<THandler>(
         string partialName,
         Action<ResourceRowDetailsBuilder<TResource>> configure
     )
-        where THandler : class, IResourceRowDetailHandler<TModel>
+        where THandler : class
     {
         ArgumentNullException.ThrowIfNull(configure);
-        configure(EnableRowDetails<TModel, THandler>(partialName));
+        configure(EnableRowDetails<THandler>(partialName));
 
         return (TBuilder)this;
     }

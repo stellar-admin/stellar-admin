@@ -1,6 +1,5 @@
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
@@ -52,14 +51,18 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <summary>
     ///     Adds a panel that shows a partial view with a model that a handler loads.
     /// </summary>
-    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
-    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the model, which implements
+    ///     <see cref="IResourceRowDetailHandler{TModel}" /> for the partial view's model.
+    /// </typeparam>
     /// <param name="title">The title of the panel's tab.</param>
     /// <param name="partialName">The partial view to render.</param>
     /// <returns>A builder that configures the panel.</returns>
     /// <remarks>
     ///     The handler loads the model when the panel is first shown. The handler is registered as
-    ///     a scoped service if it isn't registered already.
+    ///     a scoped service if it isn't registered already. A handler that doesn't implement
+    ///     <see cref="IResourceRowDetailHandler{TModel}" /> for exactly one model is a
+    ///     configuration problem, and the panel is left out.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is <see langword="null" />.
@@ -67,13 +70,9 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <exception cref="ArgumentException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailPanelBuilder Add<TModel, THandler>(string title, string partialName)
-        where THandler : class, IResourceRowDetailHandler<TModel>
-    {
-        Services.TryAddScoped<THandler>();
-
-        return AddPanel(title, partialName, new HandlerRowDetailLoader<TModel, THandler>());
-    }
+    public ResourceRowDetailPanelBuilder Add<THandler>(string title, string partialName)
+        where THandler : class =>
+        AddPanel(title, partialName, HandlerRowDetailLoader.Create(typeof(THandler), Services));
 
     // "Order history" becomes "order-history"
     private static string CreateName(string title)

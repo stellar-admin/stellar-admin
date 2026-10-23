@@ -175,7 +175,7 @@ public class ResourceRowDetailsTests
             new([new(7, "Notebook", 8.50m)]),
             resource =>
                 resource.Index(index =>
-                    index.EnableRowDetails<ProductNotes, ProductNotesHandler>("_ProductNotes")
+                    index.EnableRowDetails<ProductNotesHandler>("_ProductNotes")
                 )
         );
         using var client = sut.GetTestClient();
@@ -190,6 +190,39 @@ public class ResourceRowDetailsTests
             .That(
                 logs.ConfigurationProblems.Any(log =>
                     log.Message.Contains("which needs a resource key")
+                )
+            )
+            .IsTrue();
+    }
+
+    [Test]
+    public async Task HandlerDetailsWithoutModel_RowsDontExpandAndLogProblem()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.Index(index => index.EnableRowDetails<ProductState>("_ProductNotes"));
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert
+            .That(document.QuerySelector("[data-slot='table-row-detail-content']"))
+            .IsNull();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "ProductState doesn't implement IResourceRowDetailHandler<TModel>"
+                    )
                 )
             )
             .IsTrue();
@@ -345,15 +378,55 @@ public class ResourceRowDetailsTests
             .IsEqualTo("Summary for Notebook");
     }
 
+    [Test]
+    public async Task PanelHandlerForTwoModels_LeavesPanelOutAndLogsProblem()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.Index(index =>
+                    index.EnableRowDetails(panels =>
+                    {
+                        panels.Add("Summary", "_ProductSummary");
+                        panels.Add<ProductNotesAndSummaryHandler>("Notes", "_ProductNotes");
+                    })
+                );
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(document.QuerySelector("sel-tabs")).IsNull();
+        await Assert
+            .That(document.RequiredElement("[data-test='summary']").TextContent)
+            .IsEqualTo("Summary for Notebook");
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "ProductNotesAndSummaryHandler implements IResourceRowDetailHandler<TModel> for more than one model (ProductNotes, Product)"
+                    )
+                )
+            )
+            .IsTrue();
+    }
+
     private static void ConfigurePanels(ResourceBuilder<Product> resource)
     {
         resource.UseKey(product => product.Id);
         resource.Index(index =>
             index.EnableRowDetails(panels =>
             {
-                panels.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
+                panels.Add<ProductNotesHandler>("Notes", "_ProductNotes");
                 panels.Add("Summary", "_ProductSummary");
-                panels.Add<ProductNotes, ProductNotesHandler>("Archived notes", "_ProductNotes");
+                panels.Add<ProductNotesHandler>("Archived notes", "_ProductNotes");
             })
         );
     }
@@ -361,8 +434,6 @@ public class ResourceRowDetailsTests
     private static void ConfigureHandlerDetails(ResourceBuilder<Product> resource)
     {
         resource.UseKey(product => product.Id);
-        resource.Index(index =>
-            index.EnableRowDetails<ProductNotes, ProductNotesHandler>("_ProductNotes")
-        );
+        resource.Index(index => index.EnableRowDetails<ProductNotesHandler>("_ProductNotes"));
     }
 }

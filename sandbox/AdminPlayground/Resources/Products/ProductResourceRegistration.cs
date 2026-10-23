@@ -29,9 +29,7 @@ internal static class ProductResourceRegistration
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
-                    fields
-                        .Add(product => product.CategoryId)
-                        .UseLookupSheetEditor(UseCategories);
+                    fields.Add(product => product.CategoryId).UseLookupSheetEditor(UseCategories);
                     fields.Add(product => product.Tags).UseMultiLookupSheetEditor(UseTags);
                 })
             );
@@ -116,10 +114,7 @@ internal static class ProductResourceRegistration
                         )
                     );
                     panels.Add("Overview", "_ProductOverview");
-                    panels.Add<RelatedProducts, RelatedProductsHandler>(
-                        "Related",
-                        "_RelatedProducts"
-                    );
+                    panels.Add<RelatedProductsHandler>("Related", "_RelatedProducts");
                 });
                 index.EnablePaging(paging =>
                 {

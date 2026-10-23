@@ -38,9 +38,7 @@ public class ResourceIndexBuilderBaseTests
         var resource = services.AddStellarAdmin().AddResource<Product>();
 
         // Act
-        resource.Index(index =>
-            index.EnableRowDetails<ProductNotes, ProductNotesHandler>("_ProductNotes")
-        );
+        resource.Index(index => index.EnableRowDetails<ProductNotesHandler>("_ProductNotes"));
 
         // Assert
         var registration = services.Single(service =>
@@ -62,7 +60,7 @@ public class ResourceIndexBuilderBaseTests
             index.EnableRowDetails(panels =>
             {
                 panels.Add("Summary", "_ProductSummary");
-                panels.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
+                panels.Add<ProductNotesHandler>("Notes", "_ProductNotes");
             })
         );
 
