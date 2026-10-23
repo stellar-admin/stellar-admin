@@ -112,7 +112,7 @@ builder.Services.AddStellarAdmin(admin =>
 
 - The DbContext must be registered with `AddDbContext` (any provider). The key is discovered from EF metadata: a single `int`, `long`, `Guid` or `string` property.
 - Index columns start empty, and create, edit, view and delete are off until `AllowCreate`, `AllowEdit`, `AllowView` and `AllowDelete` are called. Add only the pages the user wants.
-- A foreign key field such as `Booking.CustomerId` renders as a number input unless it gets a `SelectEditor` or `LookupSheetEditor` with EF `UseItems`; see the stellar-admin skill's relationships reference.
+- A foreign key field such as `Booking.CustomerId` renders as a number input unless its related type (`Customer`) is registered as a resource, which gives it a lookup sheet on an EF Core entity form, or it gets an editor with items; see the stellar-admin skill's relationships reference.
 - Resource pages are at `/stellaradmin/{slug}`, where the slug is the kebab-case plural of the type name: `Booking` → `/stellaradmin/bookings`, `OrderItem` → `/stellaradmin/order-items`.
 - Entities that don't live in EF Core use `admin.AddResource<T>(resource => resource.UseDataSource<TDataSource>())`; see the stellar-admin skill.
 

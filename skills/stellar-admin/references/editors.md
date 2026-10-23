@@ -75,7 +75,9 @@ A `string` without `[DataType]` gets a single-line text input, however long its 
 | `bool?` | Select with Yes, No and Not set |
 | Non-flags enum | Select of its members, labelled with `[Display(Name)]`, else the humanized member name (`NorthAmerica` shows as "North America") |
 | Flags enum | Text input; use `CheckboxGroupEditor` or `ToggleGroupEditor` on a collection instead |
-| Foreign key (`int CustomerId`) | **Number input**: configure `SelectEditor` or `LookupSheetEditor` |
+| Foreign key (`int CustomerId`) on an EF Core entity form, `Customer` a registered resource | `LookupSheetEditor` of customers |
+| Many-to-many navigation on an EF Core entity form, related type a registered resource | `MultiLookupSheetEditor` |
+| Any other foreign key | **Number input**: configure `SelectEditor` or `LookupSheetEditor` |
 
 Settings left unset are inferred from the property (for example, `SliderEditor` takes `Min`/`Max` from `[Range]`, `OneTimeCodeEditor` takes `Length` from the property's maximum length); explicit settings win.
 

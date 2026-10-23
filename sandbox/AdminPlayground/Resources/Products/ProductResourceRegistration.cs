@@ -41,9 +41,8 @@ internal static class ProductResourceRegistration
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
-                    fields
-                        .Add(product => product.CategoryId)
-                        .UseEditor<LookupSheetEditor>(UseCategories);
+                    // No editor: the foreign key gets a lookup sheet of the category resource
+                    fields.Add(product => product.CategoryId);
                     fields.AddDisplayField(
                         product => string.Join(", ", product.Tags.Select(t => t.Name)),
                         field => field.Title = "Tags (2)"

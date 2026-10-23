@@ -15,7 +15,7 @@ How to edit and show related records: a foreign key picked from a list, a search
 - [Items that depend on another field](#items-that-depend-on-another-field)
 - [Showing related values](#showing-related-values)
 
-A foreign-key field without an editor renders a number input. Always give it one of the editors below.
+On an EF Core entity form, a foreign key or many-to-many navigation whose related type is a registered resource needs no editor: it gets a lookup sheet, or a multi-lookup sheet. Configure an editor for a select or another choice editor, or for the lookup's settings. A foreign key without an editor elsewhere (a form model, a custom data source, or a related type with no resource) renders a number input; give it one of the editors below.
 
 ## The related resource
 
@@ -42,10 +42,11 @@ admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource =>
 - **Values** are the related resource's key, so the field's type must match it.
 - **Access.** Picking a related record doesn't need access to its resource: someone who edits bookings can pick a customer without managing customers.
 
-Fields then refer to the resource. On an EF Core entity form, a choice or lookup editor without items on a foreign key or a many-to-many navigation takes them from the related entity's resource, so the field needs only its editor. A form model, or a resource with a custom data source, names the resource with `UseResource<T>()`:
+Fields then refer to the resource. On an EF Core entity form, a foreign key or a many-to-many navigation takes its items from the related entity's resource: with no editor it gets `LookupSheetEditor` or `MultiLookupSheetEditor`, and a choice or lookup editor without items takes them from there too. A form model, or a resource with a custom data source, names the resource with `UseResource<T>()`:
 
 ```csharp
 // EF Core entity form: the foreign key names the Customer resource
+fields.Add(booking => booking.CustomerId);   // a lookup sheet of customers
 fields.Add(booking => booking.CustomerId).UseEditor<LookupSheetEditor>(lookup => lookup.EnableCreate());
 
 // A form model: name the resource
@@ -54,7 +55,7 @@ fields.Add(form => form.CustomerId).UseEditor<SelectEditor>(select => select.Use
 
 - `UseResource<T>()` is on every choice editor, `LookupSheetEditor` and `MultiLookupSheetEditor`. Explicit `UseItems` or `UseResource` always wins over the inferred resource.
 - A field without a `Title` or `[Display(Name)]` is labelled with the related resource's singular label ("Customer", not "CustomerId"). Collections keep their property's name.
-- A field that refers to a type with no registered resource, or to an unavailable one, has no items, and a configuration problem is logged when the form renders. Register the resource, or give the editor `UseItems` ([below](#related-types-that-arent-resources)).
+- A field that refers to a type with no registered resource, or to an unavailable one, has no items, and a configuration problem is logged when the form renders. Register the resource, or give the editor `UseItems` ([below](#related-types-that-arent-resources)). A foreign key with no editor and no related resource keeps its number input instead, and an info problem is logged.
 - A field that needs a different look from the resource's uses `UseItems`.
 
 ## Foreign key as a select
@@ -129,13 +130,13 @@ public sealed class Tour
 resource.AllowEdit(edit => edit.Fields(fields =>
 {
     fields.Add(tour => tour.Name);
-    fields.Add(tour => tour.Destinations).UseEditor<MultiLookupSheetEditor>();
+    fields.Add(tour => tour.Destinations);   // MultiLookupSheetEditor, from the Destination resource
 }));
 ```
 
 This works for navigations whose join table EF Core maps without an entity type, on create, edit and inline rows. A value that matches no related entity shows an error under the field. A join entity of your own, or a related entity with a composite key, is left out of the form, and a configuration problem is logged; use a form model with a key collection and a handler that loads and saves the join instead ([forms](forms.md#custom-create-and-edit-models)).
 
-`[MinLength(1)]` and `[MaxLength(3)]` on the collection or navigation validate the number of selections. For a short list of choices, `CheckboxGroupEditor` or `ToggleGroupEditor` also edit a key collection or a many-to-many navigation. A many-to-many field with no editor, or with a single-value editor such as `SelectEditor`, is left out of the form, and a configuration problem is logged; use one of these three editors.
+`[MinLength(1)]` and `[MaxLength(3)]` on the collection or navigation validate the number of selections. For a short list of choices, `CheckboxGroupEditor` or `ToggleGroupEditor` also edit a key collection or a many-to-many navigation. A many-to-many field with a single-value editor such as `SelectEditor` is left out of the form, and a configuration problem is logged; use one of these three editors. So is one with no editor when the related entity has no registered resource, or when it's on an inline row.
 
 ## Related types that aren't resources
 

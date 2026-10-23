@@ -153,7 +153,7 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 - [ ] AddEfCoreResource<TContext, TEntity> (context first), or AddResource<T> + UseDataSource + UseKey
 - [ ] Index columns (they start empty), with Title where the property name reads badly
 - [ ] Search/scopes/sort/paging as needed (EF: predicates in EnableSearch and scopes.Add)
-- [ ] AllowCreate/AllowEdit with Fields; foreign keys get SelectEditor or LookupSheetEditor, with the related type registered as a resource (or UseItems)
+- [ ] AllowCreate/AllowEdit with Fields; register each foreign key's related type as a resource (EF Core forms then give it a lookup sheet), or use UseItems
 - [ ] UseFactory for defaults (dates, generated references) instead of hidden fields
 - [ ] AllowView with at least one field, if a detail page is wanted
 - [ ] AllowDelete, if wanted
@@ -180,7 +180,7 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 These come from agents building real tasks without this skill. Each compiled or looked plausible and was wrong.
 
 - **Never hand-write create, edit or list pages** (Razor Pages, controllers, `AddController` into the admin area). Use `AllowCreate`/`AllowEdit` with fields and editors; override a generated page only to add to it.
-- **A foreign key needs a choice editor.** `fields.Add(b => b.CustomerId)` alone renders a number box. Use `SelectEditor` or `LookupSheetEditor`; on an EF Core entity form it takes its items from the related entity's resource, so register `Customer` as a resource. A form model names it with `UseResource<Customer>()`. Use EF `UseItems<TContext, TEntity, TValue>(value, title)` only for a related type that isn't a resource ([relationships](references/relationships.md)).
+- **A foreign key needs its related resource.** On an EF Core entity form, `fields.Add(b => b.CustomerId)` gets a lookup sheet only when `Customer` is registered as a resource; otherwise it renders a number box. Configure `SelectEditor` for a short list, or `LookupSheetEditor` for its settings. A form model has no foreign key to follow: give it an editor with `UseResource<Customer>()`. Use EF `UseItems<TContext, TEntity, TValue>(value, title)` only for a related type that isn't a resource ([relationships](references/relationships.md)).
 - **Long text needs a textarea or rich text editor.** A `string` without `[DataType]` renders a single-line input. Use `TextareaEditor` for long plain text and `RichTextEditor` for values that hold HTML, which the seed data or the app's `Html.Raw` views show ([editors](references/editors.md#which-editor)).
 - **EF search and scopes take predicates.** `index.EnableSearch(term => entity => ...)` requires the predicate factory. Scopes filter through the third argument: `scopes.Add("pending", "Pending", b => b.Status == BookingStatus.Pending)`. The id is only the URL value; putting filter text in it filters nothing.
 - **`Add(selector, callback)` returns the parent builder, not the field.** `fields.Add(b => b.CustomerId, f => f.Title = "Customer").UseEditor<...>()` doesn't compile. Configure everything inside the callback (`f => { f.Title = "Customer"; f.UseEditor<LookupSheetEditor>(...); }`) or use `fields.Add(b => b.CustomerId).UseEditor<...>()`. The same holds for columns, sections and display fields.
