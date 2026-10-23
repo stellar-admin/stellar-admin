@@ -1,6 +1,6 @@
 # Typed editors and lookup sources
 
-Status: in progress (2026-10-23). Stages A and D of [configuration simplification](configuration-simplification.md#a-fields-keep-their-types-each-editor-gets-its-own-method), on the `configuration-simplification` branch. Jerrie approved the plan and step 1 on 2026-10-23.
+Status: completed (2026-10-23). Stages A and D of [configuration simplification](../configuration-simplification.md#a-fields-keep-their-types-each-editor-gets-its-own-method), committed in `92e1638`, `5703182` and the commit that closes this plan, on the `configuration-simplification` branch, which isn't merged yet.
 
 ## Goal
 
@@ -138,11 +138,12 @@ Each step is committed separately, after Jerrie's go-ahead.
   - Tests: the integration tests were migrated the same way, and the category test source has a subclass per description and media. EF Core integration tests create the form-typed editors through `Infrastructure/TestEditors.cs`. New: `EditorCheckTests` (items and sources of another value type, nullable and element types, source arguments missing, extra or of another type, two media methods), `SourceLookupItemsTests` (shape and argument type read from the source and the expression, a missing argument value) and `ResourceConfigurationTests.ItemsOfAnotherValueType_KeepDefaultEditorAndLogProblem`. The editor methods, form-typed loaders, `Where((record, form) => ...)` and `UseSource` are covered by the migrated HTTP tests.
   - Verified: `dotnet test --solution StellarAdmin.slnx -c Release`, 1887 passed, 0 failed. A full build shows no new warnings.
   - Committed in `92e1638`.
-- **Step 2 (2026-10-23, uncommitted):**
+- **Step 2 (2026-10-23):** committed in `5703182`.
   - Consumer references: `skills/stellar-admin` (SKILL.md, and the editors, relationships, forms and inline editing references) teach the `Use…Editor` methods, `UseEditor<TEditor>` for custom editors only, form-typed loaders and `Where((record, form) => ...)`, EF `UseItems<TEntity>` with its value check, and `LookupSource` classes with `UseSource`. `skills/stellar-admin-setup` troubleshooting names lookup sources. SKILL.md and `docs/development.md` also still named the stage E `UseItems<TContext, TEntity, TValue>`; both are fixed.
   - `build/skill-evals/admin-panel/tasks.md`: the checks name `UseLookupSheetEditor`, `UseRadioGroupEditor` and `UseSliderEditor`, and the customer lookup takes its items from the Customers resource.
   - Playground: gallery labels and descriptions name the new calls. The gallery's airport lookups keep their sources instead of moving to `UseResource<GalleryAirport>()` as planned: the gallery shows each layout with a different description and media, which one resource's `Reference` settings can't give per field.
   - Verified: the playground builds; `npm run check --prefix build/skill-validation` validated 4 skills and 92 Markdown files; `dotnet run --project util/SkillsGenerator -- --check` reports no drift. Smoke run on port 5207 (stopped afterwards; `app.db` unchanged): the home page, Trips, the Trips edit page, Products and its edit page, Categories, Destinations and all 16 field editor gallery create pages return 200; Users redirects to sign-in. Lookup searches return the source's titles, descriptions, codes, images and avatars on the lookup and multi-lookup galleries, and the Trips airport lookup returns Osaka's airports for Japan and Santiago for Chile from the form's country. The startup problems are only the deliberately misconfigured Excursions ones.
+- **Step 3 (2026-10-23):** this plan is archived, the stage table marks A and D done, and the plan index lists it as retired.
 
 ## Open
 
