@@ -49,7 +49,7 @@ public class RichTextEditorTests
         await using var sut = await CreateAsync(fields =>
             fields
                 .Add(model => model.Story)
-                .UseEditor<RichTextEditor>(editor =>
+                .UseRichTextEditor(editor =>
                 {
                     Configure(editor);
                     editor.Placeholder = "Tell the product's story";
@@ -109,7 +109,7 @@ public class RichTextEditorTests
         await using var sut = await CreateAsync(
             fields =>
             {
-                fields.Add(model => model.Story).UseEditor<RichTextEditor>();
+                fields.Add(model => model.Story).UseRichTextEditor();
                 fields.Add(model => model.Notes);
             },
             stories
@@ -140,7 +140,7 @@ public class RichTextEditorTests
             + "<img src=\"/uploads/kyoto.png\" width=\"320\" height=\"200\"><p><a href=\"/tours/kyoto\">Tour</a> <a href=\"mailto:hello@voyager.example\">Mail</a></p>";
         var stories = new ProductStories();
         await using var sut = await CreateAsync(
-            fields => fields.Add(model => model.Story).UseEditor<RichTextEditor>(),
+            fields => fields.Add(model => model.Story).UseRichTextEditor(),
             stories
         );
         using var client = sut.GetTestClient();
@@ -162,7 +162,7 @@ public class RichTextEditorTests
         // Arrange
         var stories = new ProductStories();
         await using var sut = await CreateAsync(
-            fields => fields.Add(model => model.Story).UseEditor<RichTextEditor>(),
+            fields => fields.Add(model => model.Story).UseRichTextEditor(),
             stories,
             services => services.AddSingleton<IRichTextSanitizer, UpperCaseSanitizer>()
         );
@@ -184,7 +184,7 @@ public class RichTextEditorTests
         // Arrange
         var stories = new ProductStories();
         await using var sut = await CreateAsync(
-            fields => fields.Add(model => model.Story).UseEditor<RichTextEditor>(Configure),
+            fields => fields.Add(model => model.Story).UseRichTextEditor(Configure),
             stories
         );
         using var client = sut.GetTestClient();
@@ -205,7 +205,7 @@ public class RichTextEditorTests
     {
         // Arrange
         await using var sut = await CreateAsync(fields =>
-            fields.Add(model => model.Story).UseEditor<RichTextEditor>()
+            fields.Add(model => model.Story).UseRichTextEditor()
         );
         using var client = sut.GetTestClient();
         var token = (await PrepareForm(client, EditUrl))["__RequestVerificationToken"];
@@ -226,7 +226,7 @@ public class RichTextEditorTests
         await using var app = await CreateAsync(fields =>
             fields
                 .Add(model => model.Story)
-                .UseEditor<RichTextEditor>(editor =>
+                .UseRichTextEditor(editor =>
                 {
                     Configure(editor);
                     editor.AcceptedTypes = [];

@@ -55,7 +55,7 @@ public class InputEditorTests
         {
             fields
                 .Add(model => model.Departure)
-                .UseEditor<DateInputEditor>(date =>
+                .UseDateInputEditor(date =>
                 {
                     date.Max = new DateOnly(2026, 12, 31);
                     date.Min = new DateOnly(2026, 1, 1);
@@ -63,14 +63,14 @@ public class InputEditorTests
                 });
             fields
                 .Add(model => model.Boarding)
-                .UseEditor<DateTimeInputEditor>(dateTime =>
+                .UseDateTimeInputEditor(dateTime =>
                 {
                     dateTime.Min = new DateTime(2026, 1, 1, 6, 0, 0);
                     dateTime.Step = TimeSpan.FromMinutes(15);
                 });
             fields
                 .Add(model => model.Gate)
-                .UseEditor<TimeInputEditor>(time =>
+                .UseTimeInputEditor(time =>
                 {
                     time.Max = new TimeOnly(22, 0);
                     time.Step = TimeSpan.FromMinutes(5);
@@ -127,7 +127,7 @@ public class InputEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields
                 .Add(model => model.Insured)
-                .UseEditor<ToggleEditor>(toggle => toggle.ClassNames.Control = "insured-switch")
+                .UseToggleEditor(toggle => toggle.ClassNames.Control = "insured-switch")
         );
         using var client = sut.GetTestClient();
 
@@ -154,11 +154,11 @@ public class InputEditorTests
             var field = fields.Add(model => model.OptionalInsured);
             if (editorType == typeof(CheckboxEditor))
             {
-                field.UseEditor<CheckboxEditor>();
+                field.UseCheckboxEditor();
             }
             else
             {
-                field.UseEditor<ToggleEditor>();
+                field.UseToggleEditor();
             }
         });
         using var client = sut.GetTestClient();
@@ -189,7 +189,7 @@ public class InputEditorTests
             fields.Add(model => model.Notes);
             fields
                 .Add(model => model.PromoCode)
-                .UseEditor<TextareaEditor>(textarea =>
+                .UseTextareaEditor(textarea =>
                 {
                     textarea.Placeholder = "Optional";
                     textarea.Rows = 6;
@@ -217,7 +217,7 @@ public class InputEditorTests
     {
         // Arrange
         await using var sut = await CreateInputFieldsHost(fields =>
-            fields.Add(model => model.Passengers).UseEditor<SliderEditor>()
+            fields.Add(model => model.Passengers).UseSliderEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -241,7 +241,7 @@ public class InputEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields
                 .Add(model => model.Passengers)
-                .UseEditor<SliderEditor>(slider =>
+                .UseSliderEditor(slider =>
                 {
                     slider.Max = 8;
                     slider.Step = 2;
@@ -265,10 +265,10 @@ public class InputEditorTests
         // Arrange
         await using var sut = await CreateInputFieldsHost(fields =>
         {
-            fields.Add(model => model.BookingCode).UseEditor<OneTimeCodeEditor>();
+            fields.Add(model => model.BookingCode).UseOneTimeCodeEditor();
             fields
                 .Add(model => model.PromoCode)
-                .UseEditor<OneTimeCodeEditor>(code => code.Length = 8);
+                .UseOneTimeCodeEditor(code => code.Length = 8);
         });
         using var client = sut.GetTestClient();
 
@@ -291,7 +291,7 @@ public class InputEditorTests
     {
         // Arrange
         await using var sut = await CreateInputFieldsHost(fields =>
-            fields.Add(model => model.BookingCode).UseEditor<OneTimeCodeEditor>()
+            fields.Add(model => model.BookingCode).UseOneTimeCodeEditor()
         );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
@@ -322,7 +322,7 @@ public class InputEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
         {
             fields.Add(model => model.BookingCode);
-            fields.Add(model => model.Passengers).UseEditor<SliderEditor>();
+            fields.Add(model => model.Passengers).UseSliderEditor();
         });
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");

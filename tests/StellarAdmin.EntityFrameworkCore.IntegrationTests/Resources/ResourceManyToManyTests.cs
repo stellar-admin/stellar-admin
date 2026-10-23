@@ -402,8 +402,8 @@ public class ResourceManyToManyTests
                 edit.Fields(fields =>
                     fields
                         .Add(product => product.Tags)
-                        .UseEditor<SelectEditor>(select =>
-                            select.UseItems<Tag, int>(tag => tag.Id, tag => tag.Name)
+                        .UseSelectEditor(select =>
+                            select.UseItems<Tag>(tag => tag.Id, tag => tag.Name)
                         )
                 )
             )
@@ -550,22 +550,22 @@ public class ResourceManyToManyTests
     private static void UseCheckboxGroup(ResourceFieldsBuilder<Product> fields) =>
         fields
             .Add(product => product.Tags)
-            .UseEditor<CheckboxGroupEditor>(editor =>
-                editor.UseItems<Tag, int>(tag => tag.Id, tag => tag.Name)
+            .UseCheckboxGroupEditor(editor =>
+                editor.UseItems<Tag>(tag => tag.Id, tag => tag.Name)
             );
 
     private static void UseToggleGroup(ResourceFieldsBuilder<Product> fields) =>
         fields
             .Add(product => product.Tags)
-            .UseEditor<ToggleGroupEditor>(editor =>
-                editor.UseItems<Tag, int>(tag => tag.Id, tag => tag.Name)
+            .UseToggleGroupEditor(editor =>
+                editor.UseItems<Tag>(tag => tag.Id, tag => tag.Name)
             );
 
     private static void UseMultiLookupSheet(ResourceFieldsBuilder<Product> fields) =>
         fields
             .Add(product => product.Tags)
-            .UseEditor<MultiLookupSheetEditor>(editor =>
-                editor.UseItems<Tag, int>(tag => tag.Id, tag => tag.Name)
+            .UseMultiLookupSheetEditor(editor =>
+                editor.UseItems<Tag>(tag => tag.Id, tag => tag.Name)
             );
 
     private sealed class TagEditor : FieldEditor

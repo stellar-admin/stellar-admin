@@ -31,8 +31,8 @@ internal static class ProductResourceRegistration
                     fields.Add(product => product.Details.Sku);
                     fields
                         .Add(product => product.CategoryId)
-                        .UseEditor<LookupSheetEditor>(UseCategories);
-                    fields.Add(product => product.Tags).UseEditor<MultiLookupSheetEditor>(UseTags);
+                        .UseLookupSheetEditor(UseCategories);
+                    fields.Add(product => product.Tags).UseMultiLookupSheetEditor(UseTags);
                 })
             );
             resource.AllowEdit(edit =>
@@ -49,7 +49,7 @@ internal static class ProductResourceRegistration
                     );
                     fields
                         .Add(product => product.Tags)
-                        .UseEditor<CheckboxGroupEditor>(checkboxes =>
+                        .UseCheckboxGroupEditor(checkboxes =>
                         {
                             checkboxes.Appearance = CheckboxGroupAppearance.Cards;
                             checkboxes.Columns(2);

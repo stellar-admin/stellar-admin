@@ -23,4 +23,8 @@ public abstract class FieldEditor
     ///     Gets the additional CSS classes for the parts of the editor.
     /// </summary>
     public virtual EditorClassNames ClassNames { get; } = new();
+
+    // The editor's name in configuration problems, without the form type of the built-in editors that take items
+    internal string TypeName =>
+        GetType() is { IsGenericType: true } type ? type.Name[..type.Name.IndexOf('`')] : GetType().Name;
 }

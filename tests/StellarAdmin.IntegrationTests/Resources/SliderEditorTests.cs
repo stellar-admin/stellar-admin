@@ -17,7 +17,7 @@ public class SliderEditorTests
     {
         // Arrange
         await using var sut = await CreateSliderFieldsHost(fields =>
-            fields.Add(model => model.Passengers).UseEditor<SliderEditor>()
+            fields.Add(model => model.Passengers).UseSliderEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -44,7 +44,7 @@ public class SliderEditorTests
         await using var sut = await CreateSliderFieldsHost(fields =>
             fields
                 .Add(model => model.Passengers)
-                .UseEditor<SliderEditor>(slider => slider.ShowValue = false)
+                .UseSliderEditor(slider => slider.ShowValue = false)
         );
         using var client = sut.GetTestClient();
 
@@ -63,7 +63,7 @@ public class SliderEditorTests
         await using var sut = await CreateSliderFieldsHost(fields =>
             fields
                 .Add(model => model.Passengers)
-                .UseEditor<SliderEditor>(slider => slider.ValueFormat = "{0} seats")
+                .UseSliderEditor(slider => slider.ValueFormat = "{0} seats")
         );
         using var client = sut.GetTestClient();
 
@@ -86,7 +86,7 @@ public class SliderEditorTests
         await using var sut = await CreateSliderFieldsHost(fields =>
             fields
                 .Add(model => model.Passengers)
-                .UseEditor<SliderEditor>(slider =>
+                .UseSliderEditor(slider =>
                 {
                     slider.MarkInterval = 2;
                     slider.MarkLabels = SliderMarkLabels.None;
@@ -117,7 +117,7 @@ public class SliderEditorTests
         await using var sut = await CreateSliderFieldsHost(fields =>
             fields
                 .Add(model => model.Passengers)
-                .UseEditor<SliderEditor>(slider => slider.MarkLabels = SliderMarkLabels.None)
+                .UseSliderEditor(slider => slider.MarkLabels = SliderMarkLabels.None)
         );
         using var client = sut.GetTestClient();
 
@@ -135,7 +135,7 @@ public class SliderEditorTests
         await using var sut = await CreateSliderFieldsHost(fields =>
             fields
                 .Add(model => model.Passengers)
-                .UseEditor<SliderEditor>(slider =>
+                .UseSliderEditor(slider =>
                 {
                     slider.MarkInterval = 1;
                     slider.AddMark(1, "Solo");
@@ -164,7 +164,7 @@ public class SliderEditorTests
     {
         // Arrange
         await using var sut = await CreateSliderFieldsHost(fields =>
-            fields.Add(model => model.Passengers).UseEditor<SliderEditor>().Description =
+            fields.Add(model => model.Passengers).UseSliderEditor().Description =
                 "Including children."
         );
         using var client = sut.GetTestClient();
@@ -186,7 +186,7 @@ public class SliderEditorTests
     {
         // Arrange
         await using var sut = await CreateSliderFieldsHost(fields =>
-            fields.Add(model => model.Passengers).UseEditor<SliderEditor>()
+            fields.Add(model => model.Passengers).UseSliderEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -205,7 +205,7 @@ public class SliderEditorTests
     {
         // Arrange
         await using var sut = await CreateSliderFieldsHost(fields =>
-            fields.Add(model => model.Passengers).UseEditor<SliderEditor>()
+            fields.Add(model => model.Passengers).UseSliderEditor()
         );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
@@ -232,7 +232,7 @@ public class SliderEditorTests
         await using var sut = await CreateSliderFieldsHost(fields =>
             fields
                 .Add(model => model.Passengers)
-                .UseEditor<SliderEditor>(slider =>
+                .UseSliderEditor(slider =>
                 {
                     slider.ClassNames.Root = "root-class";
                     slider.ClassNames.Label = "label-class";

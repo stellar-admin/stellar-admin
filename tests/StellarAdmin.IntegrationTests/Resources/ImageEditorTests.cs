@@ -42,10 +42,10 @@ public class ImageEditorTests
         // Arrange
         await using var sut = await CreateAsync(fields =>
         {
-            fields.Add(model => model.Photo).UseEditor<ImageEditor>(Configure);
+            fields.Add(model => model.Photo).UseImageEditor(Configure);
             fields
                 .Add(model => model.Thumbnail)
-                .UseEditor<ImageEditor>(editor =>
+                .UseImageEditor(editor =>
                 {
                     Configure(editor);
                     editor.Layout = ImageEditorLayout.Compact;
@@ -82,7 +82,7 @@ public class ImageEditorTests
         await using var sut = await CreateAsync(fields =>
             fields
                 .Add(model => model.Photo)
-                .UseEditor<ImageEditor>(editor =>
+                .UseImageEditor(editor =>
                 {
                     Configure(editor);
                     editor.ClassNames.Control = "max-w-md";
@@ -116,7 +116,7 @@ public class ImageEditorTests
         // Arrange
         var photos = new ProductPhotos();
         await using var sut = await CreateAsync(
-            fields => fields.Add(model => model.Photo).UseEditor<ImageEditor>(Configure),
+            fields => fields.Add(model => model.Photo).UseImageEditor(Configure),
             photos
         );
         using var client = sut.GetTestClient();
@@ -141,7 +141,7 @@ public class ImageEditorTests
         // Arrange
         var photos = new ProductPhotos();
         await using var sut = await CreateAsync(
-            fields => fields.Add(model => model.Photo).UseEditor<ImageEditor>(Configure),
+            fields => fields.Add(model => model.Photo).UseImageEditor(Configure),
             photos
         );
         using var client = sut.GetTestClient();
@@ -163,7 +163,7 @@ public class ImageEditorTests
             fields =>
                 fields
                     .Add(model => model.Photo)
-                    .UseEditor<ImageEditor>(editor =>
+                    .UseImageEditor(editor =>
                     {
                         Configure(editor);
                         editor.MaxFileSize = 8;
@@ -194,7 +194,7 @@ public class ImageEditorTests
         // Arrange
         var photos = new ProductPhotos();
         await using var sut = await CreateAsync(
-            fields => fields.Add(model => model.Photo).UseEditor<ImageEditor>(Configure),
+            fields => fields.Add(model => model.Photo).UseImageEditor(Configure),
             photos
         );
         using var client = sut.GetTestClient();
@@ -227,7 +227,7 @@ public class ImageEditorTests
             fields =>
                 fields
                     .Add(model => model.Photo)
-                    .UseEditor<ImageEditor>(editor =>
+                    .UseImageEditor(editor =>
                     {
                         Configure(editor);
                         editor.AcceptedTypes = ["image/jpeg"];
@@ -255,7 +255,7 @@ public class ImageEditorTests
         await using var sut = await CreateAsync(fields =>
         {
             fields.Add(model => model.Name);
-            fields.Add(model => model.Photo).UseEditor<ImageEditor>(Configure);
+            fields.Add(model => model.Photo).UseImageEditor(Configure);
         });
         using var client = sut.GetTestClient();
         var token = await PrepareTokenAsync(client);
@@ -273,7 +273,7 @@ public class ImageEditorTests
         // Arrange
         var photos = new ProductPhotos();
         await using var sut = await CreateAsync(
-            fields => fields.Add(model => model.Photo).UseEditor<ImageEditor>(Configure),
+            fields => fields.Add(model => model.Photo).UseImageEditor(Configure),
             photos,
             resource => resource.RequireAuthorization(),
             TestAuthenticationHandler.Register
@@ -294,7 +294,7 @@ public class ImageEditorTests
         // Arrange
         var photos = new ProductPhotos();
         await using var sut = await CreateAsync(
-            fields => fields.Add(model => model.Photo).UseEditor<ImageEditor>(Configure),
+            fields => fields.Add(model => model.Photo).UseImageEditor(Configure),
             photos
         );
         using var client = sut.GetTestClient();
@@ -322,7 +322,7 @@ public class ImageEditorTests
                 resource.AllowEdit(edit =>
                 {
                     edit.Fields(fields =>
-                        fields.Add(product => product.Name).UseEditor<ImageEditor>(Configure)
+                        fields.Add(product => product.Name).UseImageEditor(Configure)
                     );
                     edit.UseInlineRow();
                 });
@@ -351,7 +351,7 @@ public class ImageEditorTests
 
         // Act
         await using var app = await CreateAsync(fields =>
-            fields.Add(model => model.Photo).UseEditor<ImageEditor>()
+            fields.Add(model => model.Photo).UseImageEditor()
         );
 
         // Assert

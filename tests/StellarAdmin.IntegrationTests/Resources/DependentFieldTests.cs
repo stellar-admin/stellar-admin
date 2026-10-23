@@ -247,25 +247,21 @@ public class DependentFieldTests
 
     private static void ConfigureFields(ResourceFieldsBuilder<TripFieldsModel> fields)
     {
-        fields.Add(trip => trip.CountryId).UseEditor<SelectEditor>(UseCountries);
+        fields.Add(trip => trip.CountryId).UseSelectEditor(UseCountries);
         fields
             .Add(trip => trip.CityId)
             .DependsOn(trip => trip.CountryId)
-            .UseEditor<SelectEditor>(select =>
+            .UseSelectEditor(select =>
                 select.UseItems(
-                    (TripFieldsModel trip, IServiceProvider _, CancellationToken _) =>
+                    (trip, _, _) =>
                         Task.FromResult(Cities(trip.CountryId!.Value))
                 )
             );
         fields
             .Add(trip => trip.PlaceId)
             .DependsOn(trip => trip.CountryId)
-            .UseEditor<LookupSheetEditor>(lookup =>
-                lookup.UseItems<PlaceLookupSource, Place, int, int, TripFieldsModel>(
-                    place => place.Id,
-                    place => place.Name,
-                    trip => trip.CountryId!.Value
-                )
+            .UseLookupSheetEditor(lookup =>
+                lookup.UseSource<PlaceLookupSource>(trip => trip.CountryId!.Value)
             );
         fields
             .Add(trip => trip.StopIds)
@@ -273,9 +269,9 @@ public class DependentFieldTests
                 trip => trip.CityId,
                 city => city.EmptyText = "Choose a city to see its stops"
             )
-            .UseEditor<CheckboxGroupEditor>(group =>
+            .UseCheckboxGroupEditor(group =>
                 group.UseItems(
-                    (TripFieldsModel trip, IServiceProvider _, CancellationToken _) =>
+                    (trip, _, _) =>
                         Task.FromResult<IReadOnlyList<ChoiceItem>>([
                             new($"{trip.CityId}1", "Station"),
                             new($"{trip.CityId}2", "Harbour"),

@@ -23,7 +23,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [2, 1] }
         );
         using var client = sut.GetTestClient();
@@ -60,7 +60,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [2, 1] }
         );
         using var client = sut.GetTestClient();
@@ -96,14 +96,10 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.ClassNames.Media = "font-semibold";
-                        lookup.UseItems<CategoryLookupSource, Category, int>(
-                            category => category.Id,
-                            category => category.Name,
-                            items => items.UseCode(category => category.Code)
-                        );
+                        lookup.UseSource<CodedCategorySource>();
                     }),
             new() { CategoryIds = [2] }
         );
@@ -129,7 +125,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.EmptyText = "Pick categories");
                         UseCategories(lookup);
@@ -164,7 +160,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
                         UseCategories(lookup);
@@ -198,7 +194,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
@@ -232,7 +228,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
@@ -265,7 +261,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.FixedCategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
@@ -300,7 +296,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.FixedCategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new() { FixedCategoryIds = [1, 2] }
         );
         using var client = sut.GetTestClient();
@@ -324,7 +320,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.FixedCategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -346,7 +342,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [1, 99] }
         );
         using var client = sut.GetTestClient();
@@ -369,7 +365,7 @@ public class MultiLookupSheetEditorTests
     {
         // Arrange
         await using var sut = await CreateHost(
-            fields => fields.Add(model => model.CategoryIds).UseEditor<MultiLookupSheetEditor>(),
+            fields => fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(),
             new()
         );
         using var client = sut.GetTestClient();
@@ -400,7 +396,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             state
         );
         using var client = sut.GetTestClient();
@@ -432,7 +428,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             state
         );
         using var client = sut.GetTestClient();
@@ -457,7 +453,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.LimitedCategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             state,
             categories => categories.Add(Category(3, "Lenses"))
         );
@@ -508,7 +504,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [1] }
         );
         using var client = sut.GetTestClient();
@@ -543,7 +539,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -580,7 +576,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -606,7 +602,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.PageSize = 1);
                         UseCategories(lookup);
@@ -635,7 +631,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -664,7 +660,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -693,7 +689,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -721,7 +717,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
@@ -756,7 +752,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -778,7 +774,7 @@ public class MultiLookupSheetEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -841,10 +837,6 @@ public class MultiLookupSheetEditorTests
         );
     }
 
-    private static void UseCategories(MultiLookupSheetEditor lookup) =>
-        lookup.UseItems<CategoryLookupSource, Category, int>(
-            category => category.Id,
-            category => category.Name,
-            items => items.UseDescription(category => category.Code)
-        );
+    private static void UseCategories<TModel>(MultiLookupSheetEditor<TModel> lookup) =>
+        lookup.UseSource<DescribedCategorySource>();
 }

@@ -23,7 +23,7 @@ public class IconEditorTests
     {
         // Arrange
         await using var sut = await CreateAsync(fields =>
-            fields.Add(model => model.Icon).UseEditor<IconEditor>()
+            fields.Add(model => model.Icon).UseIconEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -58,7 +58,7 @@ public class IconEditorTests
         await using var sut = await CreateAsync(fields =>
             fields
                 .Add(model => model.Icon)
-                .UseEditor<IconEditor>(editor =>
+                .UseIconEditor(editor =>
                 {
                     editor.Icons = icons;
                     editor.Layout = layout;
@@ -89,7 +89,7 @@ public class IconEditorTests
     {
         // Arrange
         await using var sut = await CreateAsync(fields =>
-            fields.Add(model => model.Badge).UseEditor<IconEditor>(Configure)
+            fields.Add(model => model.Badge).UseIconEditor(Configure)
         );
         using var client = sut.GetTestClient();
 
@@ -116,7 +116,7 @@ public class IconEditorTests
                 resource.AllowEdit(edit =>
                 {
                     edit.Fields(fields =>
-                        fields.Add(product => product.Name).UseEditor<IconEditor>(Configure)
+                        fields.Add(product => product.Name).UseIconEditor(Configure)
                     );
                     edit.UseInlineRow();
                 });
@@ -154,8 +154,8 @@ public class IconEditorTests
         await using var sut = await CreateAsync(
             fields =>
             {
-                fields.Add(model => model.Icon).UseEditor<IconEditor>();
-                fields.Add(model => model.Badge).UseEditor<IconEditor>(Configure);
+                fields.Add(model => model.Icon).UseIconEditor();
+                fields.Add(model => model.Badge).UseIconEditor(Configure);
             },
             icons
         );
@@ -180,7 +180,7 @@ public class IconEditorTests
         // Arrange
         var icons = new AmenityIcons();
         await using var sut = await CreateAsync(
-            fields => fields.Add(model => model.Badge).UseEditor<IconEditor>(Configure),
+            fields => fields.Add(model => model.Badge).UseIconEditor(Configure),
             icons
         );
         using var client = sut.GetTestClient();
@@ -210,8 +210,8 @@ public class IconEditorTests
         await using var sut = await CreateAsync(
             fields =>
             {
-                fields.Add(model => model.Icon).UseEditor<IconEditor>();
-                fields.Add(model => model.Badge).UseEditor<IconEditor>(Configure);
+                fields.Add(model => model.Icon).UseIconEditor();
+                fields.Add(model => model.Badge).UseIconEditor(Configure);
             },
             icons
         );
@@ -268,7 +268,7 @@ public class IconEditorTests
         await using var app = await CreateAsync(fields =>
             fields
                 .Add(model => model.Icon)
-                .UseEditor<IconEditor>(editor =>
+                .UseIconEditor(editor =>
                 {
                     editor.Icons = icons;
                     editor.Layout = layout;

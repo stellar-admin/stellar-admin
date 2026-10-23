@@ -50,7 +50,7 @@ internal static class GuideResourceRegistration
         fields.Add(guide => guide.Name);
         fields
             .Add(guide => guide.Bio)
-            .UseEditor<RichTextEditor>(editor =>
+            .UseRichTextEditor(editor =>
             {
                 editor.Placeholder = "Tell travellers about this guide…";
                 editor.StoreImage(

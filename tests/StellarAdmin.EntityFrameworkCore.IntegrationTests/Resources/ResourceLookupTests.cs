@@ -171,7 +171,7 @@ public class ResourceLookupTests
                     fields.Add(product => product.Price);
                     fields
                         .Add(product => product.CategoryId)
-                        .UseEditor<LookupSheetEditor>(options => ConfigureItems(options, _ => { }));
+                        .UseLookupSheetEditor(options => ConfigureItems(options, _ => { }));
                 })
             )
         );
@@ -341,7 +341,7 @@ public class ResourceLookupTests
                     edit.Fields(fields =>
                         fields
                             .Add(product => product.CategoryId)
-                            .UseEditor<LookupSheetEditor>(options =>
+                            .UseLookupSheetEditor(options =>
                             {
                                 ConfigureItems(options, _ => { });
                                 options.EnableCreate();
@@ -386,7 +386,7 @@ public class ResourceLookupTests
 
     private static void ConfigureLookupEdit(
         EfCoreResourceBuilder<Product> resource,
-        Action<EfCoreLookupItemsBuilder<Category, int>> configure,
+        Action<EfCoreLookupItemsBuilder<Category>> configure,
         int pageSize = 20
     ) =>
         resource.AllowEdit(edit =>
@@ -395,7 +395,7 @@ public class ResourceLookupTests
                 fields.Add(product => product.Price);
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<LookupSheetEditor>(options =>
+                    .UseLookupSheetEditor(options =>
                     {
                         options.Sheet(sheet => sheet.PageSize = pageSize);
                         ConfigureItems(options, configure);
@@ -405,9 +405,9 @@ public class ResourceLookupTests
 
     private static void ConfigureItems(
         LookupSheetEditor options,
-        Action<EfCoreLookupItemsBuilder<Category, int>> configure
+        Action<EfCoreLookupItemsBuilder<Category>> configure
     ) =>
-        options.UseItems<Category, int>(
+        options.UseItems<Category>(
             category => category.Id,
             category => category.Name,
             configure

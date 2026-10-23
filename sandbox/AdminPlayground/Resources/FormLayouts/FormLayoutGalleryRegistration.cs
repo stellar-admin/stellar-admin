@@ -239,7 +239,7 @@ internal static class FormLayoutGalleryRegistration
                                     section.Add(model => model.Region);
                                     section
                                         .Add(model => model.Notes)
-                                        .UseEditor<TextareaEditor>(textarea => textarea.Rows = 3)
+                                        .UseTextareaEditor(textarea => textarea.Rows = 3)
                                         .ColumnSpanFull();
                                 }
                             )
@@ -506,7 +506,7 @@ internal static class FormLayoutGalleryRegistration
                     "New opens the destination create form in the sheet. Its section is Split with Small(2), and the sheet stacks it.";
                 section
                     .Add(model => model.Destination)
-                    .UseEditor<LookupSheetEditor>(UseDestinations);
+                    .UseLookupSheetEditor(UseDestinations);
             }
         );
     }
@@ -534,18 +534,18 @@ internal static class FormLayoutGalleryRegistration
                     "Text, select, lookup, date, number, radio group, textarea and toggle editors of different heights.";
                 section.Columns(3);
                 section.Add(model => model.TravellerName);
-                section.Add(model => model.Cabin).UseEditor<SelectEditor>();
+                section.Add(model => model.Cabin).UseSelectEditor();
                 section
                     .Add(model => model.Destination)
-                    .UseEditor<LookupSheetEditor>(UseDestinations);
+                    .UseLookupSheetEditor(UseDestinations);
                 section.Add(model => model.Departure);
                 section.Add(model => model.CheckedBags);
-                section.Add(model => model.SeatCabin).UseEditor<RadioGroupEditor>();
+                section.Add(model => model.SeatCabin).UseRadioGroupEditor();
                 section
                     .Add(model => model.Notes)
-                    .UseEditor<TextareaEditor>(textarea => textarea.Rows = 4)
+                    .UseTextareaEditor(textarea => textarea.Rows = 4)
                     .ColumnSpan(2);
-                section.Add(model => model.Insurance).UseEditor<ToggleEditor>();
+                section.Add(model => model.Insurance).UseToggleEditor();
             }
         );
         fields.AddSection(
@@ -554,10 +554,10 @@ internal static class FormLayoutGalleryRegistration
             {
                 section.Description = "Toggles and checkboxes keep their label beside the control.";
                 section.Columns(2);
-                section.Add(model => model.EmailUpdates).UseEditor<ToggleEditor>();
-                section.Add(model => model.TextMessages).UseEditor<ToggleEditor>();
-                section.Add(model => model.AcceptTerms).UseEditor<CheckboxEditor>();
-                section.Add(model => model.SharePartners).UseEditor<CheckboxEditor>();
+                section.Add(model => model.EmailUpdates).UseToggleEditor();
+                section.Add(model => model.TextMessages).UseToggleEditor();
+                section.Add(model => model.AcceptTerms).UseCheckboxEditor();
+                section.Add(model => model.SharePartners).UseCheckboxEditor();
             }
         );
     }
@@ -769,13 +769,9 @@ internal static class FormLayoutGalleryRegistration
         );
     }
 
-    private static void UseDestinations(LookupSheetEditor lookup)
+    private static void UseDestinations<TModel>(LookupSheetEditor<TModel> lookup)
     {
-        lookup.UseItems<LayoutDestinationLookupSource, LayoutDestination, string>(
-            destination => destination.Code,
-            destination => destination.Name,
-            items => items.UseDescription(destination => destination.Country)
-        );
+        lookup.UseSource<LayoutDestinationLookupSource>();
         lookup.EnableCreate();
     }
 }

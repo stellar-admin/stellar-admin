@@ -50,9 +50,9 @@ public sealed class LayoutDestinationStore
 }
 
 public sealed class LayoutDestinationLookupSource(LayoutDestinationStore store)
-    : ILookupSource<LayoutDestination, string>
+    : LookupSource<LayoutDestination, string>
 {
-    public Task<IReadOnlyCollection<LayoutDestination>> FindAsync(
+    public override Task<IReadOnlyCollection<LayoutDestination>> FindAsync(
         IReadOnlyCollection<string> values,
         CancellationToken cancellationToken
     ) =>
@@ -60,7 +60,13 @@ public sealed class LayoutDestinationLookupSource(LayoutDestinationStore store)
             store.ToArray().Where(destination => values.Contains(destination.Code)).ToArray()
         );
 
-    public Task<LookupPage<LayoutDestination>> SearchAsync(
+    public override string? GetDescription(LayoutDestination item) => item.Country;
+
+    public override string GetTitle(LayoutDestination item) => item.Name;
+
+    public override string GetValue(LayoutDestination item) => item.Code;
+
+    public override Task<LookupPage<LayoutDestination>> SearchAsync(
         LookupQuery query,
         CancellationToken cancellationToken
     )

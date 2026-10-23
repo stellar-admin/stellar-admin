@@ -43,14 +43,14 @@ internal static class AmenityResourceRegistration
                 create.Fields(fields =>
                 {
                     fields.Add(amenity => amenity.Name);
-                    fields.Add(amenity => amenity.Icon).UseEditor<IconEditor>();
+                    fields.Add(amenity => amenity.Icon).UseIconEditor();
                 })
             );
             resource.AllowEdit(edit =>
             {
                 edit.Fields(fields =>
                 {
-                    fields.Add(amenity => amenity.Icon).UseEditor<IconEditor>();
+                    fields.Add(amenity => amenity.Icon).UseIconEditor();
                     fields.Add(amenity => amenity.Name);
                 });
                 edit.UseInlineRow();

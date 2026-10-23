@@ -45,24 +45,26 @@ public sealed class ReferencedResource
     /// </summary>
     /// <typeparam name="TResource">The type of the resource.</typeparam>
     /// <returns>The resource.</returns>
-    public static ReferencedResource For<TResource>() => For<TResource>(_ => { });
+    public static ReferencedResource For<TResource>() =>
+        new(typeof(TResource), [], ConfigurationSource.Capture());
 
     /// <summary>
     ///     Returns the resource of a type, with the items configured for a field.
     /// </summary>
+    /// <typeparam name="TModel">The type of the form's model.</typeparam>
     /// <typeparam name="TResource">The type of the resource.</typeparam>
     /// <param name="configure">A delegate that configures the items.</param>
     /// <returns>The resource.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public static ReferencedResource For<TResource>(
-        Action<ResourceItemsBuilder<TResource>> configure
+    public static ReferencedResource For<TModel, TResource>(
+        Action<ResourceItemsBuilder<TModel, TResource>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        var items = new ResourceItemsBuilder<TResource>();
+        var items = new ResourceItemsBuilder<TModel, TResource>();
         configure(items);
 
         return new(typeof(TResource), items.Filters.ToArray(), ConfigurationSource.Capture());

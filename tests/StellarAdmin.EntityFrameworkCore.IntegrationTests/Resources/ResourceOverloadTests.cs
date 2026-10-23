@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
+using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Editors;
 using TUnit.Assertions;
 using TUnit.Core;
@@ -13,11 +14,11 @@ public class ResourceOverloadTests
     public async Task ChoiceUseItems_WithNullConfigure_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = new SelectEditor();
+        var sut = TestEditors.Create<SelectEditor<Product>>();
 
         // Act
         Action act = () =>
-            sut.UseItems<Category, int>(category => category.Id, category => category.Name, null!);
+            sut.UseItems<Category>(category => category.Id, category => category.Name, null!);
 
         // Assert
         await Assert.That(act).Throws<ArgumentNullException>();
@@ -27,11 +28,11 @@ public class ResourceOverloadTests
     public async Task LookupUseItems_WithNullConfigure_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = new LookupSheetEditor();
+        var sut = TestEditors.Create<LookupSheetEditor<Product>>();
 
         // Act
         Action act = () =>
-            sut.UseItems<Category, int>(category => category.Id, category => category.Name, null!);
+            sut.UseItems<Category>(category => category.Id, category => category.Name, null!);
 
         // Assert
         await Assert.That(act).Throws<ArgumentNullException>();
@@ -41,11 +42,11 @@ public class ResourceOverloadTests
     public async Task MultiLookupUseItems_WithNullConfigure_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = new MultiLookupSheetEditor();
+        var sut = TestEditors.Create<MultiLookupSheetEditor<Product>>();
 
         // Act
         Action act = () =>
-            sut.UseItems<Category, int>(category => category.Id, category => category.Name, null!);
+            sut.UseItems<Category>(category => category.Id, category => category.Name, null!);
 
         // Assert
         await Assert.That(act).Throws<ArgumentNullException>();
@@ -55,11 +56,11 @@ public class ResourceOverloadTests
     public async Task SearchOn_WithNullInMoreSelectors_ThrowsArgumentException()
     {
         // Arrange
-        var sut = new LookupSheetEditor();
+        var sut = TestEditors.Create<LookupSheetEditor<Product>>();
 
         // Act
         Action act = () =>
-            sut.UseItems<Category, int>(
+            sut.UseItems<Category>(
                 category => category.Id,
                 category => category.Name,
                 items => items.SearchOn(category => category.Name, null!, null!)
@@ -73,11 +74,11 @@ public class ResourceOverloadTests
     public async Task SearchOn_WithNullSelector_ThrowsArgumentNullException()
     {
         // Arrange
-        var sut = new LookupSheetEditor();
+        var sut = TestEditors.Create<LookupSheetEditor<Product>>();
 
         // Act
         Action act = () =>
-            sut.UseItems<Category, int>(
+            sut.UseItems<Category>(
                 category => category.Id,
                 category => category.Name,
                 items => items.SearchOn(null!)

@@ -14,6 +14,41 @@ namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 public class ResourceConfigurationTests
 {
     [Test]
+    public async Task ItemsOfAnotherValueType_KeepDefaultEditorAndLogProblem()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(configureAdmin: admin =>
+            admin.AddEfCoreResource<Product>(resource =>
+                resource.AllowCreate(create =>
+                    create.Fields(fields =>
+                        fields
+                            .Add(product => product.Name)
+                            .UseSelectEditor(select =>
+                                select.UseItems<Category>(
+                                    category => category.Id,
+                                    category => category.Name
+                                )
+                            )
+                    )
+                )
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/create");
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        var html = await response.Content.ReadAsStringAsync();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(html).DoesNotContain("<select");
+        await Assert
+            .That(logs.ConfigurationProblems.Single().Message)
+            .Contains("its items' values are Int32, and Name holds String");
+    }
+
+    [Test]
     public async Task UnmappedEntity_MakesOnlyThatResourceUnavailable()
     {
         // Arrange

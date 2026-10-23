@@ -5,8 +5,9 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures the items a field takes from the resource it refers to.
 /// </summary>
+/// <typeparam name="TModel">The type of the form's model.</typeparam>
 /// <typeparam name="TResource">The type of the resource.</typeparam>
-public sealed class ResourceItemsBuilder<TResource>
+public sealed class ResourceItemsBuilder<TModel, TResource>
 {
     internal ResourceItemsBuilder() { }
 
@@ -15,7 +16,6 @@ public sealed class ResourceItemsBuilder<TResource>
     /// <summary>
     ///     Filters the items by the form's values.
     /// </summary>
-    /// <typeparam name="TModel">The type of the form's model.</typeparam>
     /// <param name="filter">
     ///     An expression that returns whether a record is an item, from the record and the form's
     ///     model.
@@ -30,7 +30,7 @@ public sealed class ResourceItemsBuilder<TResource>
     ///     The filter applies to searches and choices, not to the selected items. Calling this more
     ///     than once keeps the items that match every filter.
     /// </remarks>
-    public ResourceItemsBuilder<TResource> Where<TModel>(
+    public ResourceItemsBuilder<TModel, TResource> Where(
         Expression<Func<TResource, TModel, bool>> filter
     )
     {

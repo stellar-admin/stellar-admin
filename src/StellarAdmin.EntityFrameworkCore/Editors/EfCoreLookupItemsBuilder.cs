@@ -7,13 +7,12 @@ namespace StellarAdmin.EntityFrameworkCore;
 ///     Configures the lookup items that load from an entity set.
 /// </summary>
 /// <typeparam name="TEntity">The type of the entities.</typeparam>
-/// <typeparam name="TValue">The type of the value that identifies an entity.</typeparam>
-public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
+public sealed class EfCoreLookupItemsBuilder<TEntity>
     where TEntity : class
 {
-    private readonly EfCoreLookupItemsOptions<TEntity, TValue> _options;
+    private readonly EfCoreLookupItemsOptions<TEntity> _options;
 
-    internal EfCoreLookupItemsBuilder(EfCoreLookupItemsOptions<TEntity, TValue> options)
+    internal EfCoreLookupItemsBuilder(EfCoreLookupItemsOptions<TEntity> options)
     {
         _options = options;
     }
@@ -30,7 +29,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     By default, the items are ordered by their title.
     /// </remarks>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> OrderBy<TSort>(
+    public EfCoreLookupItemsBuilder<TEntity> OrderBy<TSort>(
         Expression<Func<TEntity, TSort>> selector
     )
     {
@@ -57,7 +56,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     By default, the navigation is inferred from the field's foreign key.
     /// </remarks>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> ReferenceFrom<TModel>(
+    public EfCoreLookupItemsBuilder<TEntity> ReferenceFrom<TModel>(
         Expression<Func<TModel, TEntity?>> navigation
     )
     {
@@ -96,7 +95,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     ///     A search matches items that contain the term in any of the properties, ignoring case.
     ///     By default, the search matches the item's title.
     /// </remarks>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> SearchOn(
+    public EfCoreLookupItemsBuilder<TEntity> SearchOn(
         Expression<Func<TEntity, string?>> selector,
         params Expression<Func<TEntity, string?>>[] moreSelectors
     )
@@ -130,7 +129,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Replaces any other media.
     /// </remarks>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> UseAvatar(
+    public EfCoreLookupItemsBuilder<TEntity> UseAvatar(
         Expression<Func<TEntity, string?>> imageUrl
     )
     {
@@ -155,7 +154,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Replaces any other media.
     /// </remarks>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> UseCode(
+    public EfCoreLookupItemsBuilder<TEntity> UseCode(
         Expression<Func<TEntity, string?>> code
     )
     {
@@ -175,7 +174,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     ///     By default, the registered database context whose model maps the entity is used. Pick
     ///     one when several contexts map it.
     /// </remarks>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> UseDbContext<TContext>()
+    public EfCoreLookupItemsBuilder<TEntity> UseDbContext<TContext>()
         where TContext : DbContext
     {
         _options.ContextType = typeof(TContext);
@@ -193,7 +192,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="description" /> is <see langword="null" />.
     /// </exception>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> UseDescription(
+    public EfCoreLookupItemsBuilder<TEntity> UseDescription(
         Expression<Func<TEntity, string?>> description
     )
     {
@@ -218,7 +217,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Replaces any other media.
     /// </remarks>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> UseIcon(
+    public EfCoreLookupItemsBuilder<TEntity> UseIcon(
         Expression<Func<TEntity, string?>> iconName
     )
     {
@@ -243,7 +242,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Replaces any other media.
     /// </remarks>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> UseImage(
+    public EfCoreLookupItemsBuilder<TEntity> UseImage(
         Expression<Func<TEntity, string?>> imageUrl
     )
     {
@@ -271,7 +270,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     ///     fields' values, and the key on the edit form. The filter applies to searches, not to
     ///     the selected items. Calling this more than once keeps the items that match every filter.
     /// </remarks>
-    public EfCoreLookupItemsBuilder<TEntity, TValue> Where<TModel>(
+    public EfCoreLookupItemsBuilder<TEntity> Where<TModel>(
         Expression<Func<TEntity, TModel, bool>> filter
     )
     {

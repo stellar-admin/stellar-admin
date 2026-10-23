@@ -75,7 +75,7 @@ public partial class ResourceBuilderTests
                     section =>
                         section.AddGroup(outer =>
                             outer.AddGroup(group =>
-                                group.Add(product => product.Name).UseEditor<TextInputEditor>()
+                                group.Add(product => product.Name).UseTextInputEditor()
                             )
                         )
                 )

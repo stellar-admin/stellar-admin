@@ -9,7 +9,7 @@ namespace StellarAdmin.Areas.StellarAdmin;
 /// </summary>
 /// <typeparam name="TEditor">The type of the editor that the template renders.</typeparam>
 public abstract class FieldEditorView<TEditor> : RazorPage<object?>
-    where TEditor : FieldEditor, new()
+    where TEditor : FieldEditor
 {
     /// <summary>
     ///     Gets the field's help text, or <see langword="null" /> to use the property's
@@ -73,11 +73,12 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
         return Field?.Editor switch
         {
             TEditor editor => editor,
-            null => new TEditor(),
+            // The built-in editors that take items have no public constructor
+            null => (TEditor)Activator.CreateInstance(typeof(TEditor), nonPublic: true)!,
             var other => throw new ConfigurationException(
                 ConfigurationProblemKind.TemplateMismatch,
-                $"its editor is a `{other.GetType().Name}`, but it renders with the template for `{typeof(TEditor).Name}`",
-                $"Render the field with the template for `{other.GetType().Name}`, or give it a `{typeof(TEditor).Name}`."
+                $"its editor is a `{other.TypeName}`, but it renders with the template for `{typeof(TEditor).Name}`",
+                $"Render the field with the template for `{other.TypeName}`, or give it a `{typeof(TEditor).Name}`."
             ),
         };
     }

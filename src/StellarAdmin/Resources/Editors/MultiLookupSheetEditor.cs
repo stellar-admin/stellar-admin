@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Builders;
 
@@ -10,7 +11,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <remarks>
 ///     The field binds a collection of values, such as an array or a list.
 /// </remarks>
-public sealed class MultiLookupSheetEditor
+public class MultiLookupSheetEditor
     : FieldEditor,
         IFieldEditor<MultiLookupSheetEditorHandler>,
         ILookupSheetEditor
@@ -53,6 +54,8 @@ public sealed class MultiLookupSheetEditor
     string? ILookupSheetEditor.MediaClassName => ClassNames.Media;
 
     LookupSheetOptions ILookupSheetEditor.SheetOptions => SheetOptions;
+
+    internal MultiLookupSheetEditor() { }
 
     /// <summary>
     ///     Configures how the field is displayed in the form.
@@ -129,124 +132,6 @@ public sealed class MultiLookupSheetEditor
     }
 
     /// <summary>
-    ///     Sets a registered source that supplies the items for each request.
-    /// </summary>
-    /// <typeparam name="TSource">The type of the source that supplies the items.</typeparam>
-    /// <typeparam name="TEntity">The type of the items.</typeparam>
-    /// <typeparam name="TValue">The type of the value that identifies an item.</typeparam>
-    /// <param name="value">A delegate that returns an item's value.</param>
-    /// <param name="title">A delegate that returns an item's title.</param>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="value" /> or <paramref name="title" /> is <see langword="null" />.
-    /// </exception>
-    /// <remarks>
-    ///     Register <typeparamref name="TSource" /> as a service.
-    /// </remarks>
-    public void UseItems<TSource, TEntity, TValue>(
-        Func<TEntity, TValue> value,
-        Func<TEntity, string> title
-    )
-        where TSource : class, ILookupSource<TEntity, TValue> =>
-        UseItems<TSource, TEntity, TValue>(value, title, _ => { });
-
-    /// <summary>
-    ///     Sets a registered source that supplies the items for each request, and configures what
-    ///     each item shows.
-    /// </summary>
-    /// <typeparam name="TSource">The type of the source that supplies the items.</typeparam>
-    /// <typeparam name="TEntity">The type of the items.</typeparam>
-    /// <typeparam name="TValue">The type of the value that identifies an item.</typeparam>
-    /// <param name="value">A delegate that returns an item's value.</param>
-    /// <param name="title">A delegate that returns an item's title.</param>
-    /// <param name="configure">A delegate that configures what each item shows.</param>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="value" />, <paramref name="title" /> or <paramref name="configure" /> is
-    ///     <see langword="null" />.
-    /// </exception>
-    /// <remarks>
-    ///     Register <typeparamref name="TSource" /> as a service.
-    /// </remarks>
-    public void UseItems<TSource, TEntity, TValue>(
-        Func<TEntity, TValue> value,
-        Func<TEntity, string> title,
-        Action<LookupItemsBuilder<TEntity>> configure
-    )
-        where TSource : class, ILookupSource<TEntity, TValue> =>
-        UseItems(LookupItems.Create<TSource, TEntity, TValue>(value, title, configure));
-
-    /// <summary>
-    ///     Sets a registered source that supplies the items for each request, searching them with a
-    ///     value from the form.
-    /// </summary>
-    /// <typeparam name="TSource">The type of the source that supplies the items.</typeparam>
-    /// <typeparam name="TEntity">The type of the items.</typeparam>
-    /// <typeparam name="TValue">The type of the value that identifies an item.</typeparam>
-    /// <typeparam name="TArgument">The type of the value the source searches with.</typeparam>
-    /// <typeparam name="TModel">The type of the form's model.</typeparam>
-    /// <param name="value">A delegate that returns an item's value.</param>
-    /// <param name="title">A delegate that returns an item's title.</param>
-    /// <param name="argument">
-    ///     A delegate that returns the value the source searches with, from the form's model.
-    /// </param>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="value" />, <paramref name="title" /> or <paramref name="argument" /> is
-    ///     <see langword="null" />.
-    /// </exception>
-    /// <remarks>
-    ///     Register <typeparamref name="TSource" /> as a service. Declare each field the argument
-    ///     reads with <c>DependsOn</c>: the form holds only those fields' values, and the key on the
-    ///     edit form, and the sheet doesn't search while any of them has no value.
-    /// </remarks>
-    public void UseItems<TSource, TEntity, TValue, TArgument, TModel>(
-        Func<TEntity, TValue> value,
-        Func<TEntity, string> title,
-        Func<TModel, TArgument> argument
-    )
-        where TSource : class, ILookupSource<TEntity, TValue, TArgument> =>
-        UseItems<TSource, TEntity, TValue, TArgument, TModel>(value, title, argument, _ => { });
-
-    /// <summary>
-    ///     Sets a registered source that supplies the items for each request, searching them with a
-    ///     value from the form, and configures what each item shows.
-    /// </summary>
-    /// <typeparam name="TSource">The type of the source that supplies the items.</typeparam>
-    /// <typeparam name="TEntity">The type of the items.</typeparam>
-    /// <typeparam name="TValue">The type of the value that identifies an item.</typeparam>
-    /// <typeparam name="TArgument">The type of the value the source searches with.</typeparam>
-    /// <typeparam name="TModel">The type of the form's model.</typeparam>
-    /// <param name="value">A delegate that returns an item's value.</param>
-    /// <param name="title">A delegate that returns an item's title.</param>
-    /// <param name="argument">
-    ///     A delegate that returns the value the source searches with, from the form's model.
-    /// </param>
-    /// <param name="configure">A delegate that configures what each item shows.</param>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="value" />, <paramref name="title" />, <paramref name="argument" /> or
-    ///     <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <remarks>
-    ///     Register <typeparamref name="TSource" /> as a service. Declare each field the argument
-    ///     reads with <c>DependsOn</c>: the form holds only those fields' values, and the key on the
-    ///     edit form, and the sheet doesn't search while any of them has no value.
-    /// </remarks>
-    public void UseItems<TSource, TEntity, TValue, TArgument, TModel>(
-        Func<TEntity, TValue> value,
-        Func<TEntity, string> title,
-        Func<TModel, TArgument> argument,
-        Action<LookupItemsBuilder<TEntity>> configure
-    )
-        where TSource : class, ILookupSource<TEntity, TValue, TArgument> =>
-        UseItems(
-            LookupItems.Create<TSource, TEntity, TValue, TArgument, TModel>(
-                value,
-                title,
-                argument,
-                configure,
-                GetType()
-            )
-        );
-
-    /// <summary>
     ///     Takes the items from a resource: its records, named by their titles.
     /// </summary>
     /// <typeparam name="TResource">The type of the resource.</typeparam>
@@ -256,7 +141,22 @@ public sealed class MultiLookupSheetEditor
     ///     items. When no resource is registered for <typeparamref name="TResource" />, the editor
     ///     has no items.
     /// </remarks>
-    public void UseResource<TResource>() => UseResource<TResource>(_ => { });
+    public void UseResource<TResource>() => UseResource(ReferencedResource.For<TResource>());
+
+    internal void UseResource(ReferencedResource resource)
+    {
+        Resource = resource;
+        Items = null;
+    }
+}
+
+/// <summary>
+///     Configures a multi-select lookup editor on a form.
+/// </summary>
+/// <typeparam name="TModel">The type of the form's model.</typeparam>
+public sealed class MultiLookupSheetEditor<TModel> : MultiLookupSheetEditor
+{
+    internal MultiLookupSheetEditor() { }
 
     /// <summary>
     ///     Takes the items from a resource, and configures them for this field.
@@ -267,14 +167,45 @@ public sealed class MultiLookupSheetEditor
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     /// <remarks>
-    ///     See <see cref="UseResource{TResource}()" />.
+    ///     See <see cref="MultiLookupSheetEditor.UseResource{TResource}()" />.
     /// </remarks>
-    public void UseResource<TResource>(Action<ResourceItemsBuilder<TResource>> configure) =>
+    public void UseResource<TResource>(Action<ResourceItemsBuilder<TModel, TResource>> configure) =>
         UseResource(ReferencedResource.For(configure));
 
-    internal void UseResource(ReferencedResource resource)
+    /// <summary>
+    ///     Takes the items from a lookup source.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the source.</typeparam>
+    /// <remarks>
+    ///     The source is resolved from the request's services, or created with them when it isn't
+    ///     registered. A source whose values aren't the field's type, or whose search takes a value
+    ///     from the form, is a configuration problem, and the field keeps its default editor.
+    /// </remarks>
+    public void UseSource<TSource>()
+        where TSource : LookupSource =>
+        UseItems(SourceLookupItems.Create<TModel>(typeof(TSource), null, TypeName));
+
+    /// <summary>
+    ///     Takes the items from a lookup source that searches with a value from the form.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the source.</typeparam>
+    /// <param name="argument">
+    ///     An expression that returns the value the source searches with, from the form's model.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="argument" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Declare each field the argument reads with <c>DependsOn</c>: the form holds only those
+    ///     fields' values, and the key on the edit form, and the sheet doesn't search while any of
+    ///     them has no value. A value whose type isn't the one the source searches with, or its
+    ///     nullable form, is a configuration problem, and the field keeps its default editor.
+    /// </remarks>
+    public void UseSource<TSource>(Expression<Func<TModel, object?>> argument)
+        where TSource : LookupSource
     {
-        Resource = resource;
-        Items = null;
+        ArgumentNullException.ThrowIfNull(argument);
+
+        UseItems(SourceLookupItems.Create(typeof(TSource), argument, TypeName));
     }
 }

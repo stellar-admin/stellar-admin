@@ -308,7 +308,7 @@ public static class StellarAdminBuilderExtensions
                 options.ReportProblem(
                     EfCoreConfigurationEvents.SingleValueManyToManyEditor,
                     $"The `{field.FieldName}` field isn't on the {FormName(options, form)} form because `{typeof(TEntity).Name}.{field.FieldName}` is a many-to-many field, and its editor selects one item.",
-                    "Call `UseEditor<CheckboxGroupEditor>`, `UseEditor<ToggleGroupEditor>` or `UseEditor<MultiLookupSheetEditor>` on the field.",
+                    "Call `UseCheckboxGroupEditor`, `UseToggleGroupEditor` or `UseMultiLookupSheetEditor` on the field.",
                     field
                 );
                 continue;

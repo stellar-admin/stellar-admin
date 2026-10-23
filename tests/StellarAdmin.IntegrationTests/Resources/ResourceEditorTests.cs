@@ -186,7 +186,7 @@ public class ResourceEditorTests
                         fields.Clear();
                         fields
                             .Add(product => product.Name)
-                            .UseEditor<SelectEditor>(options =>
+                            .UseSelectEditor(options =>
                                 options.UseItems<FixedChoiceItemsProvider>()
                             );
                     })
@@ -222,7 +222,7 @@ public class ResourceEditorTests
                         fields.Clear();
                         fields
                             .Add(product => product.Name)
-                            .UseEditor<SelectEditor>(options => options.UseItems(choices));
+                            .UseSelectEditor(options => options.UseItems(choices));
                         fields.Add(product => product.Price);
                     })
                 )
@@ -282,7 +282,7 @@ public class ResourceEditorTests
             fields.Clear();
             fields
                 .Add(product => product.Id)
-                .UseEditor<SelectEditor>(options =>
+                .UseSelectEditor(options =>
                     options.UseItems([
                         new SelectListItem("Notebook", "7"),
                         new SelectListItem("Lamp", "8"),
@@ -460,7 +460,7 @@ public class ResourceEditorTests
                     edit.Fields(fields =>
                         fields
                             .Add(model => model.RoleIds)
-                            .UseEditor<CheckboxGroupEditor>(options =>
+                            .UseCheckboxGroupEditor(options =>
                             {
                                 options.UseItems([
                                     new SelectListItem("Auditor", "auditor"),

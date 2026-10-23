@@ -65,7 +65,7 @@ public class GridEditorTests
     {
         // Arrange
         await using var sut = await CreateInputFieldsHost(fields =>
-            fields.Add(model => model.Insured).UseEditor<ToggleEditor>()
+            fields.Add(model => model.Insured).UseToggleEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -88,8 +88,8 @@ public class GridEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
         {
             fields.Add(model => model.Booked);
-            fields.Add(model => model.Boarding).UseEditor<DateTimeInputEditor>();
-            fields.Add(model => model.OptionalInsured).UseEditor<SegmentedControlEditor>();
+            fields.Add(model => model.Boarding).UseDateTimeInputEditor();
+            fields.Add(model => model.OptionalInsured).UseSegmentedControlEditor();
         });
         using var client = sut.GetTestClient();
 
@@ -118,7 +118,7 @@ public class GridEditorTests
     {
         // Arrange
         await using var sut = await CreateInputFieldsHost(
-            fields => fields.Add(model => model.Notes).UseEditor<TextareaEditor>(),
+            fields => fields.Add(model => model.Notes).UseTextareaEditor(),
             environment
         );
         using var client = sut.GetTestClient();
@@ -182,11 +182,8 @@ public class GridEditorTests
                             create.Fields(fields =>
                                 fields
                                     .Add(model => model.CategoryId)
-                                    .UseEditor<LookupSheetEditor>(lookup =>
-                                        lookup.UseItems<CategoryLookupSource, Category, int>(
-                                            category => category.Id,
-                                            category => category.Name
-                                        )
+                                    .UseLookupSheetEditor(lookup =>
+                                        lookup.UseSource<CategoryLookupSource>()
                                     )
                             );
                         })

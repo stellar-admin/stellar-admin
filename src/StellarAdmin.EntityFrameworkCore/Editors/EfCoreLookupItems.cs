@@ -52,6 +52,8 @@ internal sealed class EfCoreLookupItems<TEntity, TValue>
 
     public override Type? MediaType => _options.Media?.Type;
 
+    public override Type ValueType => typeof(TValue);
+
     public override async Task<IReadOnlyList<ChoiceItem>> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,

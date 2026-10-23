@@ -125,8 +125,8 @@ public class ResourceDbContextTests
                 edit.Fields(fields =>
                     fields
                         .Add(product => product.CategoryId)
-                        .UseEditor<SelectEditor>(select =>
-                            select.UseItems<Category, int>(
+                        .UseSelectEditor(select =>
+                            select.UseItems<Category>(
                                 category => category.Id,
                                 category => category.Name,
                                 items => items.UseDbContext<ReportingDbContext>()
@@ -163,8 +163,8 @@ public class ResourceDbContextTests
                 edit.Fields(fields =>
                     fields
                         .Add(product => product.CategoryId)
-                        .UseEditor<SelectEditor>(select =>
-                            select.UseItems<Category, int>(
+                        .UseSelectEditor(select =>
+                            select.UseItems<Category>(
                                 category => category.Id,
                                 category => category.Name
                             )

@@ -12,7 +12,7 @@ internal static class EditorClassNamesMapper
         {
             throw new ConfigurationException(
                 ConfigurationProblemKind.TemplateMismatch,
-                $"its editor is a `{editor.GetType().Name}`, but it renders with the checkbox group template",
+                $"its editor is a `{editor.TypeName}`, but it renders with the checkbox group template",
                 "Render the field with its editor's own template, or give it a `CheckboxGroupEditor`."
             );
         }
@@ -99,7 +99,7 @@ internal static class EditorClassNamesMapper
         {
             throw new ConfigurationException(
                 ConfigurationProblemKind.TemplateMismatch,
-                $"its editor is a `{editor.GetType().Name}`, but it renders with the radio group template",
+                $"its editor is a `{editor.TypeName}`, but it renders with the radio group template",
                 "Render the field with its editor's own template, or give it a `RadioGroupEditor`."
             );
         }

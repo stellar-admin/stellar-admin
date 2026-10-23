@@ -40,7 +40,7 @@ internal static class InferredEditorCheck
             var isRegistered = resourceTypes.Contains(resource.ResourceType);
             if (isRegistered && !isCollection)
             {
-                var lookup = new LookupSheetEditor();
+                var lookup = new LookupSheetEditor<TResource>();
                 lookup.UseResource(resource);
                 Use(field, lookup);
                 continue;
@@ -56,7 +56,7 @@ internal static class InferredEditorCheck
                     )
             )
             {
-                var lookup = new MultiLookupSheetEditor();
+                var lookup = new MultiLookupSheetEditor<TResource>();
                 lookup.UseResource(resource);
                 Use(field, lookup);
                 continue;

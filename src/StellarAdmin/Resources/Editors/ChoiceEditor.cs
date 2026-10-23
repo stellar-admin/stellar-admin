@@ -57,9 +57,13 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
         private set
         {
             field = value;
+            ItemsValueType = null;
             Resource = null;
         }
     }
+
+    // The type of the items' values when the items know it, checked against the field's property
+    internal Type? ItemsValueType { get; private set; }
 
     // A select shows its first choice as selected when none is, so it keeps the empty choice while a required value
     // is unset or matches no choice, such as the 0 of a new entity's foreign key
@@ -80,6 +84,21 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     {
         ItemsLoader = (_, services, cancellationToken) =>
             services.GetRequiredService<TProvider>().GetItemsAsync(cancellationToken);
+    }
+
+    /// <summary>
+    ///     Sets the choices an integration package supplies for each request.
+    /// </summary>
+    /// <param name="items">The choices.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="items" /> is <see langword="null" />.
+    /// </exception>
+    public void UseItems(ChoiceItems items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+
+        ItemsLoader = items.LoadAsync;
+        ItemsValueType = items.ValueType;
     }
 
     /// <summary>
@@ -142,22 +161,19 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     }
 
     /// <summary>
-    ///     Sets a delegate that loads the choices for each request from the form's values.
+    ///     Takes the items from a resource: its records, named by their titles.
     /// </summary>
-    /// <typeparam name="TModel">The type of the form's model.</typeparam>
-    /// <param name="itemsLoader">
-    ///     A delegate that loads the choices from the form's model with the request's services.
-    /// </param>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="itemsLoader" /> is <see langword="null" />.
-    /// </exception>
+    /// <typeparam name="TResource">The type of the resource.</typeparam>
     /// <remarks>
-    ///     When the field depends on other fields, the model holds only their values, and the key
-    ///     on the edit form; the delegate isn't called while any of them has no value. A form whose
-    ///     model isn't a <typeparamref name="TModel" /> is a configuration problem, and the field is
-    ///     left out of it.
+    ///     Each item's value is the record's key. The resource's <c>Reference</c> settings add a
+    ///     description and media, and an EF Core resource's settings order and filter the items.
+    ///     When no resource is registered for <typeparamref name="TResource" />, the editor has no
+    ///     items.
     /// </remarks>
-    public void UseItems<TModel>(
+    public void UseResource<TResource>() => UseResource(ReferencedResource.For<TResource>());
+
+    // A loader that reads the form, from an editor typed by the form's model
+    internal void UseFormItems<TModel>(
         Func<
             TModel,
             IServiceProvider,
@@ -169,34 +185,8 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
         ArgumentNullException.ThrowIfNull(itemsLoader);
 
         ItemsLoader = (model, services, cancellationToken) =>
-            itemsLoader(FormModel.Cast<TModel>(model, GetType()), services, cancellationToken);
+            itemsLoader(FormModel.Cast<TModel>(model, TypeName), services, cancellationToken);
     }
-
-    /// <summary>
-    ///     Takes the items from a resource: its records, named by their titles.
-    /// </summary>
-    /// <typeparam name="TResource">The type of the resource.</typeparam>
-    /// <remarks>
-    ///     Each item's value is the record's key. The resource's <c>Reference</c> settings add a
-    ///     description and media, and an EF Core resource's settings order and filter the items.
-    ///     When no resource is registered for <typeparamref name="TResource" />, the editor has no
-    ///     items.
-    /// </remarks>
-    public void UseResource<TResource>() => UseResource<TResource>(_ => { });
-
-    /// <summary>
-    ///     Takes the items from a resource, and configures them for this field.
-    /// </summary>
-    /// <typeparam name="TResource">The type of the resource.</typeparam>
-    /// <param name="configure">A delegate that configures the items.</param>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <remarks>
-    ///     See <see cref="UseResource{TResource}()" />.
-    /// </remarks>
-    public void UseResource<TResource>(Action<ResourceItemsBuilder<TResource>> configure) =>
-        UseResource(ReferencedResource.For(configure));
 
     internal void UseResource(ReferencedResource resource)
     {
@@ -312,8 +302,8 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
 
         throw new ConfigurationException(
             ConfigurationProblemKind.UnsuitableEditor,
-            $"`{GetType().Name}` has no items, and `{metadata.PropertyName}` isn't a non-flags enum or a Boolean to take them from",
-            $"Give the `{GetType().Name}` items with `UseItems`."
+            $"`{TypeName}` has no items, and `{metadata.PropertyName}` isn't a non-flags enum or a Boolean to take them from",
+            $"Give the `{TypeName}` items with `UseItems`."
         );
     }
 }

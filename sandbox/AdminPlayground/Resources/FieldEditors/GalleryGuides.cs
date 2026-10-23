@@ -6,7 +6,7 @@ namespace AdminPlayground.Resources.FieldEditors;
 public sealed record GalleryGuide(string Id, string Name, string Region, string Languages);
 
 // Searches the guides in memory. A real source would query a database or an API.
-public sealed class GalleryGuideLookupSource : ILookupSource<GalleryGuide, string>
+public class GalleryGuideLookupSource : LookupSource<GalleryGuide, string>
 {
     private static readonly GalleryGuide[] Guides =
     [
@@ -35,7 +35,7 @@ public sealed class GalleryGuideLookupSource : ILookupSource<GalleryGuide, strin
         new("thandi-mokoena", "Thandi Mokoena", "Kruger National Park", "Sotho, English"),
     ];
 
-    public Task<IReadOnlyCollection<GalleryGuide>> FindAsync(
+    public override Task<IReadOnlyCollection<GalleryGuide>> FindAsync(
         IReadOnlyCollection<string> values,
         CancellationToken cancellationToken
     ) =>
@@ -43,7 +43,11 @@ public sealed class GalleryGuideLookupSource : ILookupSource<GalleryGuide, strin
             Guides.Where(guide => values.Contains(guide.Id)).ToArray()
         );
 
-    public Task<LookupPage<GalleryGuide>> SearchAsync(
+    public override string GetTitle(GalleryGuide item) => item.Name;
+
+    public override string GetValue(GalleryGuide item) => item.Id;
+
+    public override Task<LookupPage<GalleryGuide>> SearchAsync(
         LookupQuery query,
         CancellationToken cancellationToken
     )
@@ -63,4 +67,17 @@ public sealed class GalleryGuideLookupSource : ILookupSource<GalleryGuide, strin
             )
         );
     }
+}
+
+// The gallery has no guide photos, so avatars show the guide's initials
+public sealed class AvatarGuideSource : GalleryGuideLookupSource
+{
+    public override string? GetAvatar(GalleryGuide item) => null;
+}
+
+public sealed class DescribedAvatarGuideSource : GalleryGuideLookupSource
+{
+    public override string? GetAvatar(GalleryGuide item) => null;
+
+    public override string? GetDescription(GalleryGuide item) => $"{item.Region} · {item.Languages}";
 }

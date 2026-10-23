@@ -203,6 +203,74 @@ public sealed class ResourceFieldBuilder<TResource>
     }
 
     /// <summary>
+    ///     Edits the field with a checkbox.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseCheckboxEditor() => UseCheckboxEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a checkbox and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseCheckboxEditor(Action<CheckboxEditor> configure) =>
+        Use(() => new CheckboxEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a group of checkboxes.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseCheckboxGroupEditor() => UseCheckboxGroupEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a group of checkboxes and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseCheckboxGroupEditor(Action<CheckboxGroupEditor<TResource>> configure) =>
+        Use(() => new CheckboxGroupEditor<TResource>(), configure);
+
+    /// <summary>
+    ///     Edits the field with a date input.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseDateInputEditor() => UseDateInputEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a date input and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseDateInputEditor(Action<DateInputEditor> configure) =>
+        Use(() => new DateInputEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a date and time input.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseDateTimeInputEditor() => UseDateTimeInputEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a date and time input and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseDateTimeInputEditor(Action<DateTimeInputEditor> configure) =>
+        Use(() => new DateTimeInputEditor(), configure);
+
+    /// <summary>
     ///     Edits the field with an editor and configures it.
     /// </summary>
     /// <typeparam name="TEditor">The type of the editor.</typeparam>
@@ -211,6 +279,10 @@ public sealed class ResourceFieldBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
+    /// <remarks>
+    ///     Use this for custom editors. The built-in editors have their own methods, such as
+    ///     <see cref="UseSelectEditor(Action{SelectEditor{TResource}})" />.
+    /// </remarks>
     public ResourceFieldBuilder<TResource> UseEditor<TEditor>(Action<TEditor> configure)
         where TEditor : FieldEditor, new()
     {
@@ -251,6 +323,261 @@ public sealed class ResourceFieldBuilder<TResource>
     public ResourceFieldBuilder<TResource> UseEditor<TEditor>()
         where TEditor : FieldEditor, new() => UseEditor<TEditor>(_ => { });
 
+    /// <summary>
+    ///     Edits the field with an icon editor.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseIconEditor() => UseIconEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with an icon editor and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseIconEditor(Action<IconEditor> configure) =>
+        Use(() => new IconEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with an image editor.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseImageEditor() => UseImageEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with an image editor and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseImageEditor(Action<ImageEditor> configure) =>
+        Use(() => new ImageEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a lookup sheet.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseLookupSheetEditor() => UseLookupSheetEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a lookup sheet and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseLookupSheetEditor(Action<LookupSheetEditor<TResource>> configure) =>
+        Use(() => new LookupSheetEditor<TResource>(), configure);
+
+    /// <summary>
+    ///     Edits the field with a multi-select lookup sheet.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseMultiLookupSheetEditor() => UseMultiLookupSheetEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a multi-select lookup sheet and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseMultiLookupSheetEditor(Action<MultiLookupSheetEditor<TResource>> configure) =>
+        Use(() => new MultiLookupSheetEditor<TResource>(), configure);
+
+    /// <summary>
+    ///     Edits the field with a one-time code input.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseOneTimeCodeEditor() => UseOneTimeCodeEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a one-time code input and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseOneTimeCodeEditor(Action<OneTimeCodeEditor> configure) =>
+        Use(() => new OneTimeCodeEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a radio group.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseRadioGroupEditor() => UseRadioGroupEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a radio group and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseRadioGroupEditor(Action<RadioGroupEditor<TResource>> configure) =>
+        Use(() => new RadioGroupEditor<TResource>(), configure);
+
+    /// <summary>
+    ///     Edits the field with a rich text editor.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseRichTextEditor() => UseRichTextEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a rich text editor and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseRichTextEditor(Action<RichTextEditor> configure) =>
+        Use(() => new RichTextEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a segmented control.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseSegmentedControlEditor() => UseSegmentedControlEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a segmented control and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseSegmentedControlEditor(Action<SegmentedControlEditor<TResource>> configure) =>
+        Use(() => new SegmentedControlEditor<TResource>(), configure);
+
+    /// <summary>
+    ///     Edits the field with a select.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseSelectEditor() => UseSelectEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a select and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseSelectEditor(Action<SelectEditor<TResource>> configure) =>
+        Use(() => new SelectEditor<TResource>(), configure);
+
+    /// <summary>
+    ///     Edits the field with a slider.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseSliderEditor() => UseSliderEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a slider and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseSliderEditor(Action<SliderEditor> configure) =>
+        Use(() => new SliderEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a text area.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseTextareaEditor() => UseTextareaEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a text area and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseTextareaEditor(Action<TextareaEditor> configure) =>
+        Use(() => new TextareaEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a text input.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseTextInputEditor() => UseTextInputEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a text input and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseTextInputEditor(Action<TextInputEditor> configure) =>
+        Use(() => new TextInputEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a time input.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseTimeInputEditor() => UseTimeInputEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a time input and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseTimeInputEditor(Action<TimeInputEditor> configure) =>
+        Use(() => new TimeInputEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with an on and off switch.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseToggleEditor() => UseToggleEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with an on and off switch and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseToggleEditor(Action<ToggleEditor> configure) =>
+        Use(() => new ToggleEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a toggle group.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseToggleGroupEditor() => UseToggleGroupEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a toggle group and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseToggleGroupEditor(Action<ToggleGroupEditor<TResource>> configure) =>
+        Use(() => new ToggleGroupEditor<TResource>(), configure);
+
     internal FormFieldOptions Build()
     {
         var options = new FormFieldOptions(_field, _fieldName, _propertyPath) { Source = _source };
@@ -260,5 +587,24 @@ public sealed class ResourceFieldBuilder<TResource>
         }
 
         return options;
+    }
+
+    private ResourceFieldBuilder<TResource> Use<TEditor>(
+        Func<TEditor> create,
+        Action<TEditor> configure
+    )
+        where TEditor : FieldEditor
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        _configuration.Add(options =>
+        {
+            var editor = create();
+            configure(editor);
+            options.Editor = editor;
+            options.HandlerType = (editor as IFieldEditor)?.HandlerType;
+        });
+
+        return this;
     }
 }

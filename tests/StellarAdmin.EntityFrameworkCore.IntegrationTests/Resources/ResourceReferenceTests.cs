@@ -23,8 +23,8 @@ public class ResourceReferenceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync();
         await using var scope = sut.Services.CreateAsyncScope();
-        var editor = new CheckboxGroupEditor();
-        editor.UseItems<Category, int>(
+        var editor = TestEditors.Create<CheckboxGroupEditor<Product>>();
+        editor.UseItems<Category>(
             category => category.Id,
             category => category.Name,
             items => items.OrderBy(category => category.Name)
@@ -52,8 +52,8 @@ public class ResourceReferenceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync();
         await using var scope = sut.Services.CreateAsyncScope();
-        var editor = new RadioGroupEditor();
-        editor.UseItems<Category, int>(
+        var editor = TestEditors.Create<RadioGroupEditor<Product>>();
+        editor.UseItems<Category>(
             category => category.Id,
             category => category.Name,
             items =>
@@ -95,8 +95,8 @@ public class ResourceReferenceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync();
         await using var scope = sut.Services.CreateAsyncScope();
-        var editor = new RadioGroupEditor();
-        editor.UseItems<Category, int>(
+        var editor = TestEditors.Create<RadioGroupEditor<Product>>();
+        editor.UseItems<Category>(
             category => category.Id,
             category => category.Name,
             items =>
@@ -144,8 +144,8 @@ public class ResourceReferenceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync();
         await using var scope = sut.Services.CreateAsyncScope();
-        var editor = new SelectEditor();
-        editor.UseItems<Category, double>(
+        var editor = TestEditors.Create<SelectEditor<Product>>();
+        editor.UseItems<Category>(
             category => category.Id + 0.5,
             category => category.Name,
             items => items.OrderBy(category => category.Id)
@@ -242,9 +242,9 @@ public class ResourceReferenceTests
                 create.Fields(fields =>
                     fields
                         .Add(product => product.CategoryId)
-                        .UseEditor<SelectEditor>(options =>
+                        .UseSelectEditor(options =>
                         {
-                            options.UseItems<Category, int>(
+                            options.UseItems<Category>(
                                 category => category.Id,
                                 category => category.Name
                             );
@@ -408,7 +408,7 @@ public class ResourceReferenceTests
                 fields.Add(product => product.Price);
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<SelectEditor>(ConfigureCategoryItems);
+                    .UseSelectEditor(ConfigureCategoryItems);
             })
         );
     }
@@ -420,7 +420,7 @@ public class ResourceReferenceTests
                 fields.Add(model => model.Name);
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<SelectEditor>(ConfigureCategoryItems);
+                    .UseSelectEditor(ConfigureCategoryItems);
             })
         );
 
@@ -430,14 +430,14 @@ public class ResourceReferenceTests
             edit.Fields(fields =>
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<SelectEditor>(ConfigureCategoryItems)
+                    .UseSelectEditor(ConfigureCategoryItems)
             )
         );
     }
 
     private static void ConfigureCategoryItems(SelectEditor options)
     {
-        options.UseItems<Category, int>(
+        options.UseItems<Category>(
             category => category.Id,
             category => category.Name,
             items => items.OrderBy(category => category.Name)

@@ -813,7 +813,6 @@ StellarAdmin.Resources.Editors.CheckboxGroupAppearance.Default = 0 -> StellarAdm
 StellarAdmin.Resources.Editors.CheckboxGroupEditor
 StellarAdmin.Resources.Editors.CheckboxGroupEditor.Appearance.get -> StellarAdmin.Resources.Editors.CheckboxGroupAppearance
 StellarAdmin.Resources.Editors.CheckboxGroupEditor.Appearance.set -> void
-StellarAdmin.Resources.Editors.CheckboxGroupEditor.CheckboxGroupEditor() -> void
 StellarAdmin.Resources.Editors.CheckboxGroupEditor.Columns(int count) -> void
 StellarAdmin.Resources.Editors.CheckboxGroupEditor.Columns(System.Action<StellarAdmin.Resources.Builders.GridColumnsBuilder!>! configure) -> void
 StellarAdmin.Resources.Editors.CheckboxGroupEditor.Flow.get -> StellarAdmin.UI.CheckboxGroupFlow
@@ -828,7 +827,6 @@ StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(System.Collections.Generic.
 StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(System.Collections.Generic.IEnumerable<StellarAdmin.Resources.Editors.ChoiceItem!>! items) -> void
 StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(System.Func<System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
 StellarAdmin.Resources.Editors.ChoiceEditor.UseItems<TProvider>() -> void
-StellarAdmin.Resources.Editors.ChoiceEditor.UseItems<TModel>(System.Func<TModel, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
 StellarAdmin.Resources.Editors.ChoiceEditorClassNames
 StellarAdmin.Resources.Editors.ChoiceEditorClassNames.ChoiceEditorClassNames() -> void
 StellarAdmin.Resources.Editors.ChoiceEditorClassNames.Media.get -> string?
@@ -907,9 +905,6 @@ StellarAdmin.Resources.Editors.IFieldEditor<THandler>
 StellarAdmin.Resources.Editors.IFieldEditorHandler
 StellarAdmin.Resources.Editors.IFieldEditorHandler.PrepareAsync(StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
 StellarAdmin.Resources.Editors.IFieldEditorHandler<TEditor>
-StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue>
-StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue>.FindAsync(System.Collections.Generic.IReadOnlyCollection<TValue>! values, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyCollection<TEntity>!>!
-StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue>.SearchAsync(StellarAdmin.Resources.Editors.LookupQuery! query, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.Editors.LookupPage<TEntity>!>!
 StellarAdmin.Resources.Editors.ImageEditor
 StellarAdmin.Resources.Editors.ImageEditor.AcceptedTypes.get -> System.Collections.Generic.IReadOnlyList<string!>!
 StellarAdmin.Resources.Editors.ImageEditor.AcceptedTypes.set -> void
@@ -1005,13 +1000,8 @@ StellarAdmin.Resources.Editors.LookupSheetEditor.EnableCreate() -> void
 StellarAdmin.Resources.Editors.LookupSheetEditor.EnableCreate<TResource>() -> void
 StellarAdmin.Resources.Editors.LookupSheetEditor.Field(System.Action<StellarAdmin.Resources.Editors.LookupFieldOptions!>! configure) -> void
 StellarAdmin.Resources.Editors.LookupSheetEditor.Items.get -> StellarAdmin.Resources.Editors.LookupItems?
-StellarAdmin.Resources.Editors.LookupSheetEditor.LookupSheetEditor() -> void
 StellarAdmin.Resources.Editors.LookupSheetEditor.Sheet(System.Action<StellarAdmin.Resources.Editors.LookupSheetOptions!>! configure) -> void
 StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems(StellarAdmin.Resources.Editors.LookupItems! items) -> void
-StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title) -> void
-StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
-StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue, TArgument, TModel>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Func<TModel, TArgument>! argument) -> void
-StellarAdmin.Resources.Editors.LookupSheetEditor.UseItems<TSource, TEntity, TValue, TArgument, TModel>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Func<TModel, TArgument>! argument, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
 StellarAdmin.Resources.Editors.LookupSheetEditorClassNames
 StellarAdmin.Resources.Editors.LookupSheetEditorClassNames.LookupSheetEditorClassNames() -> void
 StellarAdmin.Resources.Editors.LookupSheetEditorClassNames.Media.get -> string?
@@ -1046,13 +1036,8 @@ StellarAdmin.Resources.Editors.MultiLookupSheetEditor.EnableCreate() -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditor.EnableCreate<TResource>() -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditor.Field(System.Action<StellarAdmin.Resources.Editors.MultiLookupFieldOptions!>! configure) -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditor.Items.get -> StellarAdmin.Resources.Editors.LookupItems?
-StellarAdmin.Resources.Editors.MultiLookupSheetEditor.MultiLookupSheetEditor() -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditor.Sheet(System.Action<StellarAdmin.Resources.Editors.LookupSheetOptions!>! configure) -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems(StellarAdmin.Resources.Editors.LookupItems! items) -> void
-StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title) -> void
-StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
-StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue, TArgument, TModel>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Func<TModel, TArgument>! argument) -> void
-StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseItems<TSource, TEntity, TValue, TArgument, TModel>(System.Func<TEntity, TValue>! value, System.Func<TEntity, string!>! title, System.Func<TModel, TArgument>! argument, System.Action<StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!>! configure) -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames
 StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames.Media.get -> string?
 StellarAdmin.Resources.Editors.MultiLookupSheetEditorClassNames.Media.set -> void
@@ -1077,14 +1062,11 @@ StellarAdmin.Resources.Editors.RadioGroupEditor.Columns(int count) -> void
 StellarAdmin.Resources.Editors.RadioGroupEditor.Columns(System.Action<StellarAdmin.Resources.Builders.GridColumnsBuilder!>! configure) -> void
 StellarAdmin.Resources.Editors.RadioGroupEditor.Flow.get -> StellarAdmin.UI.RadioGroupFlow
 StellarAdmin.Resources.Editors.RadioGroupEditor.Flow.set -> void
-StellarAdmin.Resources.Editors.RadioGroupEditor.RadioGroupEditor() -> void
 StellarAdmin.Resources.Editors.RadioGroupEditorClassNames
 StellarAdmin.Resources.Editors.RadioGroupEditorClassNames.Option.get -> StellarAdmin.UI.InputClassNames!
 StellarAdmin.Resources.Editors.RadioGroupEditorClassNames.RadioGroupEditorClassNames() -> void
 StellarAdmin.Resources.Editors.SegmentedControlEditor
-StellarAdmin.Resources.Editors.SegmentedControlEditor.SegmentedControlEditor() -> void
 StellarAdmin.Resources.Editors.SelectEditor
-StellarAdmin.Resources.Editors.SelectEditor.SelectEditor() -> void
 StellarAdmin.Resources.Editors.SliderEditor
 StellarAdmin.Resources.Editors.SliderEditor.AddMark(double value) -> void
 StellarAdmin.Resources.Editors.SliderEditor.AddMark(double value, string! label) -> void
@@ -1166,7 +1148,6 @@ StellarAdmin.Resources.Editors.ToggleGroupEditor.Appearance.get -> StellarAdmin.
 StellarAdmin.Resources.Editors.ToggleGroupEditor.Appearance.set -> void
 StellarAdmin.Resources.Editors.ToggleGroupEditor.CheckPlacement.get -> StellarAdmin.Resources.Editors.ToggleGroupCheckPlacement
 StellarAdmin.Resources.Editors.ToggleGroupEditor.CheckPlacement.set -> void
-StellarAdmin.Resources.Editors.ToggleGroupEditor.ToggleGroupEditor() -> void
 StellarAdmin.Resources.FieldBinder
 StellarAdmin.Resources.FieldBinder.FieldBinder() -> void
 StellarAdmin.Resources.FieldBindingContext
@@ -1729,9 +1710,6 @@ StellarAdmin.Resources.Editors.RichTextEditor.RichTextEditor() -> void
 StellarAdmin.Resources.Editors.RichTextEditor.Rows.get -> int?
 StellarAdmin.Resources.Editors.RichTextEditor.Rows.set -> void
 StellarAdmin.Resources.Editors.RichTextEditor.StoreImage(System.Func<Microsoft.AspNetCore.Http.IFormFile!, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<string!>!>! store) -> void
-StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue, TArgument>
-StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue, TArgument>.FindAsync(System.Collections.Generic.IReadOnlyCollection<TValue>! values, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyCollection<TEntity>!>!
-StellarAdmin.Resources.Editors.ILookupSource<TEntity, TValue, TArgument>.SearchAsync(TArgument argument, StellarAdmin.Resources.Editors.LookupQuery! query, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.Editors.LookupPage<TEntity>!>!
 StellarAdmin.Resources.IRichTextSanitizer
 StellarAdmin.Resources.IRichTextSanitizer.Sanitize(string! html) -> string!
 StellarAdmin.BannerEnvironmentIndicator
@@ -1782,8 +1760,6 @@ StellarAdmin.Resources.Editors.LookupQuery.Model.get -> object?
 StellarAdmin.Resources.Editors.LookupQuery.Model.init -> void
 StellarAdmin.Resources.Builders.ResourceBuilder<TResource>.Reference(System.Action<StellarAdmin.Resources.Builders.ResourceReferenceBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceBuilderBase<TResource, TBuilder>.UseTitle(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! title) -> TBuilder!
-StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>
-StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>.Where<TModel>(System.Linq.Expressions.Expression<System.Func<TResource, TModel, bool>!>! filter) -> StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceReferenceBuilder<TResource>
 StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>
 StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.ResourceReferenceBuilderBase(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
@@ -1794,11 +1770,8 @@ StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder
 StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.UseIcon(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! iconName) -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceReferenceBuilderBase<TResource, TBuilder>.UseImage(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! imageUrl) -> TBuilder!
 StellarAdmin.Resources.Editors.ChoiceEditor.UseResource<TResource>() -> void
-StellarAdmin.Resources.Editors.ChoiceEditor.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!>! configure) -> void
 StellarAdmin.Resources.Editors.LookupSheetEditor.UseResource<TResource>() -> void
-StellarAdmin.Resources.Editors.LookupSheetEditor.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!>! configure) -> void
 StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseResource<TResource>() -> void
-StellarAdmin.Resources.Editors.MultiLookupSheetEditor.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!>! configure) -> void
 StellarAdmin.Resources.Editors.ResourceReferenceItems
 StellarAdmin.Resources.Editors.ResourceReferenceItems.ResourceReferenceItems() -> void
 StellarAdmin.Resources.Options.ResourceOptions<TResource>.Reference.get -> StellarAdmin.Resources.Options.ResourceReferenceOptions<TResource>!
@@ -1817,5 +1790,98 @@ StellarAdmin.Resources.Editors.ReferencedResource.ResourceType.get -> System.Typ
 StellarAdmin.Resources.ResourceReferences
 StellarAdmin.Resources.ResourceReferences.GetItems(StellarAdmin.Resources.Editors.ReferencedResource! resource) -> StellarAdmin.Resources.Editors.ResourceReferenceItems?
 static StellarAdmin.Resources.Editors.ReferencedResource.For<TResource>() -> StellarAdmin.Resources.Editors.ReferencedResource!
-static StellarAdmin.Resources.Editors.ReferencedResource.For<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Editors.ReferencedResource!
 StellarAdmin.Resources.Options.FormFieldOptions.InferResource(System.Type! resourceType) -> void
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseCheckboxEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseCheckboxEditor(System.Action<StellarAdmin.Resources.Editors.CheckboxEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseCheckboxGroupEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseCheckboxGroupEditor(System.Action<StellarAdmin.Resources.Editors.CheckboxGroupEditor<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseDateInputEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseDateInputEditor(System.Action<StellarAdmin.Resources.Editors.DateInputEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseDateTimeInputEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseDateTimeInputEditor(System.Action<StellarAdmin.Resources.Editors.DateTimeInputEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseIconEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseIconEditor(System.Action<StellarAdmin.Resources.Editors.IconEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseImageEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseImageEditor(System.Action<StellarAdmin.Resources.Editors.ImageEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseLookupSheetEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseLookupSheetEditor(System.Action<StellarAdmin.Resources.Editors.LookupSheetEditor<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseMultiLookupSheetEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseMultiLookupSheetEditor(System.Action<StellarAdmin.Resources.Editors.MultiLookupSheetEditor<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseOneTimeCodeEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseOneTimeCodeEditor(System.Action<StellarAdmin.Resources.Editors.OneTimeCodeEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseRadioGroupEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseRadioGroupEditor(System.Action<StellarAdmin.Resources.Editors.RadioGroupEditor<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseRichTextEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseRichTextEditor(System.Action<StellarAdmin.Resources.Editors.RichTextEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseSegmentedControlEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseSegmentedControlEditor(System.Action<StellarAdmin.Resources.Editors.SegmentedControlEditor<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseSelectEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseSelectEditor(System.Action<StellarAdmin.Resources.Editors.SelectEditor<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseSliderEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseSliderEditor(System.Action<StellarAdmin.Resources.Editors.SliderEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseTextInputEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseTextInputEditor(System.Action<StellarAdmin.Resources.Editors.TextInputEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseTextareaEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseTextareaEditor(System.Action<StellarAdmin.Resources.Editors.TextareaEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseTimeInputEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseTimeInputEditor(System.Action<StellarAdmin.Resources.Editors.TimeInputEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseToggleEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseToggleEditor(System.Action<StellarAdmin.Resources.Editors.ToggleEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseToggleGroupEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseToggleGroupEditor(System.Action<StellarAdmin.Resources.Editors.ToggleGroupEditor<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>
+StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>.Where(System.Linq.Expressions.Expression<System.Func<TResource, TModel, bool>!>! filter) -> StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!
+StellarAdmin.Resources.Editors.CheckboxGroupEditor<TModel>
+StellarAdmin.Resources.Editors.CheckboxGroupEditor<TModel>.UseItems(System.Func<TModel, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
+StellarAdmin.Resources.Editors.CheckboxGroupEditor<TModel>.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.ChoiceEditor.UseItems(StellarAdmin.Resources.Editors.ChoiceItems! items) -> void
+StellarAdmin.Resources.Editors.ChoiceItems
+StellarAdmin.Resources.Editors.ChoiceItems.ChoiceItems() -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor<TModel>
+StellarAdmin.Resources.Editors.LookupSheetEditor<TModel>.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor<TModel>.UseSource<TSource>() -> void
+StellarAdmin.Resources.Editors.LookupSheetEditor<TModel>.UseSource<TSource>(System.Linq.Expressions.Expression<System.Func<TModel, object?>!>! argument) -> void
+StellarAdmin.Resources.Editors.LookupSource
+StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>
+StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.LookupSource() -> void
+StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>
+StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.LookupSource() -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor<TModel>
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor<TModel>.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor<TModel>.UseSource<TSource>() -> void
+StellarAdmin.Resources.Editors.MultiLookupSheetEditor<TModel>.UseSource<TSource>(System.Linq.Expressions.Expression<System.Func<TModel, object?>!>! argument) -> void
+StellarAdmin.Resources.Editors.RadioGroupEditor<TModel>
+StellarAdmin.Resources.Editors.RadioGroupEditor<TModel>.UseItems(System.Func<TModel, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
+StellarAdmin.Resources.Editors.RadioGroupEditor<TModel>.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.SegmentedControlEditor<TModel>
+StellarAdmin.Resources.Editors.SegmentedControlEditor<TModel>.UseItems(System.Func<TModel, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
+StellarAdmin.Resources.Editors.SegmentedControlEditor<TModel>.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.SelectEditor<TModel>
+StellarAdmin.Resources.Editors.SelectEditor<TModel>.UseItems(System.Func<TModel, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
+StellarAdmin.Resources.Editors.SelectEditor<TModel>.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.ToggleGroupEditor<TModel>
+StellarAdmin.Resources.Editors.ToggleGroupEditor<TModel>.UseItems(System.Func<TModel, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
+StellarAdmin.Resources.Editors.ToggleGroupEditor<TModel>.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> void
+abstract StellarAdmin.Resources.Editors.ChoiceItems.LoadAsync(object! model, System.IServiceProvider! services, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!
+abstract StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.FindAsync(System.Collections.Generic.IReadOnlyCollection<TValue>! values, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyCollection<TItem>!>!
+abstract StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.GetTitle(TItem item) -> string!
+abstract StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.GetValue(TItem item) -> TValue
+abstract StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.SearchAsync(TArgument argument, StellarAdmin.Resources.Editors.LookupQuery! query, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.Editors.LookupPage<TItem>!>!
+abstract StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.FindAsync(System.Collections.Generic.IReadOnlyCollection<TValue>! values, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyCollection<TItem>!>!
+abstract StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetTitle(TItem item) -> string!
+abstract StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetValue(TItem item) -> TValue
+abstract StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.SearchAsync(StellarAdmin.Resources.Editors.LookupQuery! query, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.Editors.LookupPage<TItem>!>!
+static StellarAdmin.Resources.Editors.ReferencedResource.For<TModel, TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> StellarAdmin.Resources.Editors.ReferencedResource!
+virtual StellarAdmin.Resources.Editors.ChoiceItems.ValueType.get -> System.Type?
+virtual StellarAdmin.Resources.Editors.LookupItems.ValueType.get -> System.Type?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.GetAvatar(TItem item) -> string?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.GetCode(TItem item) -> string?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.GetDescription(TItem item) -> string?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.GetIcon(TItem item) -> string?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue, TArgument>.GetImage(TItem item) -> string?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetAvatar(TItem item) -> string?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetCode(TItem item) -> string?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetDescription(TItem item) -> string?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetIcon(TItem item) -> string?
+virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetImage(TItem item) -> string?
+StellarAdmin.Resources.Editors.LookupSource.LookupSource() -> void

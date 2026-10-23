@@ -106,7 +106,7 @@ public sealed class ResourceReferences
                 resource,
                 ConfigurationProblemKind.ReferenceFilterIgnored,
                 $"A field that takes its items from `{name}` ignores its `Where` filter because the `{name}` resource loads its records through a data source, which can't apply it.",
-                $"Make `{name}` an EF Core resource, or give the field's editor an `ILookupSource` that takes the form's values with `UseItems`."
+                $"Make `{name}` an EF Core resource, or give the field's lookup editor a `LookupSource` that takes the form's values with `UseSource`."
             );
 
             return new(reference.CreateItems([]));

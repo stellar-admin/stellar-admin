@@ -1,8 +1,11 @@
 using System.Linq.Expressions;
+using StellarAdmin.Resources.Editors;
 
 namespace StellarAdmin.EntityFrameworkCore;
 
-internal sealed class EfCoreLookupItemsOptions<TEntity, TValue>
+// The settings of lookup items that load from an entity set. The builder sets them without knowing the value's type,
+// which the typed options below take from the value expression
+internal abstract class EfCoreLookupItemsOptions<TEntity>
     where TEntity : class
 {
     // False when EF Core can't translate the title, so searches and ordering don't use it
@@ -30,14 +33,39 @@ internal sealed class EfCoreLookupItemsOptions<TEntity, TValue>
     // Whether an item without a title is named by its value
     internal bool TitlesFallBackToValue { get; init; }
 
-    internal Expression<Func<TEntity, TValue>> ValueExpression { get; }
-
-    internal EfCoreLookupItemsOptions(
-        Expression<Func<TEntity, TValue>> valueExpression,
-        Expression<Func<TEntity, string>> titleExpression
-    )
+    private protected EfCoreLookupItemsOptions(Expression<Func<TEntity, string>> titleExpression)
     {
-        ValueExpression = valueExpression;
         TitleExpression = titleExpression;
     }
+
+    internal static EfCoreLookupItemsOptions<TEntity> Create(
+        Expression<Func<TEntity, object?>> value,
+        Expression<Func<TEntity, string>> title
+    )
+    {
+        var typedValue = EfCoreItemValue.Unbox(value);
+
+        return (EfCoreLookupItemsOptions<TEntity>)
+            Activator.CreateInstance(
+                typeof(EfCoreLookupItemsOptions<,>).MakeGenericType(
+                    typeof(TEntity),
+                    typedValue.ReturnType
+                ),
+                typedValue,
+                title
+            )!;
+    }
+
+    internal abstract LookupItems CreateItems();
+}
+
+internal sealed class EfCoreLookupItemsOptions<TEntity, TValue>(
+    Expression<Func<TEntity, TValue>> valueExpression,
+    Expression<Func<TEntity, string>> titleExpression
+) : EfCoreLookupItemsOptions<TEntity>(titleExpression)
+    where TEntity : class
+{
+    internal Expression<Func<TEntity, TValue>> ValueExpression { get; } = valueExpression;
+
+    internal override LookupItems CreateItems() => new EfCoreLookupItems<TEntity, TValue>(this);
 }

@@ -25,7 +25,7 @@ public class ResourceRelatedResourceTests
             resource =>
                 resource.AllowCreate(create =>
                     create.Fields(fields =>
-                        fields.Add(product => product.CategoryId).UseEditor<SelectEditor>()
+                        fields.Add(product => product.CategoryId).UseSelectEditor()
                     )
                 ),
             configureAdmin: admin => admin.AddEfCoreResource<Category>()
@@ -50,7 +50,7 @@ public class ResourceRelatedResourceTests
             resource =>
                 resource.AllowEdit(edit =>
                     edit.Fields(fields =>
-                        fields.Add(product => product.CategoryId).UseEditor<LookupSheetEditor>()
+                        fields.Add(product => product.CategoryId).UseLookupSheetEditor()
                     )
                 ),
             commands,
@@ -88,7 +88,7 @@ public class ResourceRelatedResourceTests
                     create.Fields(fields =>
                         fields
                             .Add(product => product.CategoryId)
-                            .UseEditor<LookupSheetEditor>(lookup => lookup.EnableCreate())
+                            .UseLookupSheetEditor(lookup => lookup.EnableCreate())
                     )
                 ),
             configureAdmin: admin =>
@@ -115,7 +115,7 @@ public class ResourceRelatedResourceTests
             resource =>
                 resource.AllowEdit(edit =>
                     edit.Fields(fields =>
-                        fields.Add(product => product.Tags).UseEditor<CheckboxGroupEditor>()
+                        fields.Add(product => product.Tags).UseCheckboxGroupEditor()
                     )
                 ),
             configureAdmin: admin => admin.AddEfCoreResource<Tag>()
@@ -153,7 +153,7 @@ public class ResourceRelatedResourceTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
-                    fields.Add(product => product.CategoryId).UseEditor<LookupSheetEditor>()
+                    fields.Add(product => product.CategoryId).UseLookupSheetEditor()
                 )
             )
         );
@@ -309,9 +309,9 @@ public class ResourceRelatedResourceTests
                     edit.Fields(fields =>
                         fields
                             .Add(item => item.ParentId)
-                            .UseEditor<LookupSheetEditor>(lookup =>
+                            .UseLookupSheetEditor(lookup =>
                                 lookup.UseResource<Category>(items =>
-                                    items.Where<Category>((item, form) => item.Id != form.Id)
+                                    items.Where((item, form) => item.Id != form.Id)
                                 )
                             )
                     )
@@ -342,7 +342,7 @@ public class ResourceRelatedResourceTests
                     create.Fields(fields =>
                         fields
                             .Add(model => model.ProductNumber)
-                            .UseEditor<SelectEditor>(select => select.UseResource<Product>())
+                            .UseSelectEditor(select => select.UseResource<Product>())
                     )
                 )
             )
@@ -366,7 +366,7 @@ public class ResourceRelatedResourceTests
             resource =>
                 resource.AllowCreate(create =>
                     create.Fields(fields =>
-                        fields.Add(product => product.CategoryId).UseEditor<SelectEditor>()
+                        fields.Add(product => product.CategoryId).UseSelectEditor()
                     )
                 ),
             configureAdmin: admin =>
@@ -409,7 +409,7 @@ public class ResourceRelatedResourceTests
             resource =>
                 resource.AllowCreate(create =>
                     create.Fields(fields =>
-                        fields.Add(product => product.CategoryId).UseEditor<SelectEditor>()
+                        fields.Add(product => product.CategoryId).UseSelectEditor()
                     )
                 ),
             configureAdmin: admin => admin.AddEfCoreResource<Category>()
@@ -582,7 +582,7 @@ public class ResourceRelatedResourceTests
             resource =>
                 resource.AllowCreate(create =>
                     create.Fields(fields =>
-                        fields.Add(product => product.CategoryId).UseEditor<LookupSheetEditor>()
+                        fields.Add(product => product.CategoryId).UseLookupSheetEditor()
                     )
                 ),
             configureAdmin: admin => admin.AddEfCoreResource<Category>(configureCategories)

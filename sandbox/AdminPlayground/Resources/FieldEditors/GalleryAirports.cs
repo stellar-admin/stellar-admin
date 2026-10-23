@@ -80,10 +80,10 @@ public sealed class GalleryAirportStore
 }
 
 // Searches the airports in memory. A real source would query a database or an API.
-public sealed class GalleryAirportLookupSource(GalleryAirportStore store)
-    : ILookupSource<GalleryAirport, string>
+public class GalleryAirportLookupSource(GalleryAirportStore store)
+    : LookupSource<GalleryAirport, string>
 {
-    public Task<IReadOnlyCollection<GalleryAirport>> FindAsync(
+    public override Task<IReadOnlyCollection<GalleryAirport>> FindAsync(
         IReadOnlyCollection<string> values,
         CancellationToken cancellationToken
     ) =>
@@ -91,7 +91,11 @@ public sealed class GalleryAirportLookupSource(GalleryAirportStore store)
             store.ToArray().Where(airport => values.Contains(airport.Code)).ToArray()
         );
 
-    public Task<LookupPage<GalleryAirport>> SearchAsync(
+    public override string GetTitle(GalleryAirport item) => item.City;
+
+    public override string GetValue(GalleryAirport item) => item.Code;
+
+    public override Task<LookupPage<GalleryAirport>> SearchAsync(
         LookupQuery query,
         CancellationToken cancellationToken
     )
@@ -169,4 +173,59 @@ public sealed class CreateGalleryAirportHandler(GalleryAirportStore store)
         CreateGalleryAirportModel model,
         CancellationToken cancellationToken
     ) => Task.FromResult(store.Add(new(model.Code, model.City, model.Country, model.HubCode)));
+}
+
+// The gallery shows each lookup layout with a different description and media, and a source says what its items show,
+// so each combination has its own source. The gallery has no airport photos, so avatars show the title's initials and
+// only two airports have images
+public sealed class DescribedAirportSource(GalleryAirportStore store)
+    : GalleryAirportLookupSource(store)
+{
+    public override string? GetDescription(GalleryAirport item) => $"{item.Code} · {item.Country}";
+}
+
+public sealed class CodedAirportSource(GalleryAirportStore store) : GalleryAirportLookupSource(store)
+{
+    public override string? GetCode(GalleryAirport item) => item.Code;
+}
+
+// A code chip already shows the code
+public sealed class DescribedCodedAirportSource(GalleryAirportStore store)
+    : GalleryAirportLookupSource(store)
+{
+    public override string? GetCode(GalleryAirport item) => item.Code;
+
+    public override string? GetDescription(GalleryAirport item) => item.Country;
+}
+
+public sealed class AvatarAirportSource(GalleryAirportStore store) : GalleryAirportLookupSource(store)
+{
+    public override string? GetAvatar(GalleryAirport item) => null;
+}
+
+public sealed class DescribedAvatarAirportSource(GalleryAirportStore store)
+    : GalleryAirportLookupSource(store)
+{
+    public override string? GetAvatar(GalleryAirport item) => null;
+
+    public override string? GetDescription(GalleryAirport item) => $"{item.Code} · {item.Country}";
+}
+
+public sealed class DescribedImageAirportSource(GalleryAirportStore store)
+    : GalleryAirportLookupSource(store)
+{
+    public override string? GetDescription(GalleryAirport item) => $"{item.Code} · {item.Country}";
+
+    public override string? GetImage(GalleryAirport item) =>
+        item.Code switch
+        {
+            "LIS" => "/images/lisbon.jpg",
+            "CPT" => "/images/cape-town.jpg",
+            _ => null,
+        };
+}
+
+public sealed class IconAirportSource(GalleryAirportStore store) : GalleryAirportLookupSource(store)
+{
+    public override string? GetIcon(GalleryAirport item) => "plane-landing";
 }

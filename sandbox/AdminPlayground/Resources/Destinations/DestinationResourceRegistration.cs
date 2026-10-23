@@ -78,7 +78,7 @@ internal static class DestinationResourceRegistration
 
     private static void ConfigureFields(ResourceFieldsBuilder<Destination> fields)
     {
-        fields.Add(destination => destination.Photo).UseEditor<ImageEditor>(ConfigureEditor);
+        fields.Add(destination => destination.Photo).UseImageEditor(ConfigureEditor);
         fields.Add(destination => destination.Name);
         fields.Add(destination => destination.Country);
     }

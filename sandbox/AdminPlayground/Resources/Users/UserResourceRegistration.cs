@@ -69,7 +69,7 @@ internal static class UserResourceRegistration
                                     model => model.DepartmentId,
                                     field =>
                                     {
-                                        field.UseEditor<SelectEditor>(options =>
+                                        field.UseSelectEditor(options =>
                                         {
                                             options.UseResource<Department>();
                                             options.EmptyChoiceText = "Not specified";
@@ -81,14 +81,14 @@ internal static class UserResourceRegistration
                                     group.Columns(2);
                                     group
                                         .Add(model => model.PreferredLanguage)
-                                        .UseEditor<SelectEditor>(options =>
+                                        .UseSelectEditor(options =>
                                         {
                                             options.UseItems(UserLookups.Languages());
                                             options.EmptyChoiceText = "Not specified";
                                         });
                                     group
                                         .Add(model => model.TimeZoneId)
-                                        .UseEditor<SelectEditor>(options =>
+                                        .UseSelectEditor(options =>
                                         {
                                             options.UseItems(UserLookups.TimeZones());
                                             options.EmptyChoiceText = "Not specified";
@@ -105,7 +105,7 @@ internal static class UserResourceRegistration
                                     model => model.RoleIds,
                                     field =>
                                     {
-                                        field.UseEditor<CheckboxGroupEditor>(options =>
+                                        field.UseCheckboxGroupEditor(options =>
                                         {
                                             options.UseResource<ApplicationRole>();
                                             options.Columns(2);
@@ -151,7 +151,7 @@ internal static class UserResourceRegistration
                                     model => model.DepartmentId,
                                     field =>
                                     {
-                                        field.UseEditor<SelectEditor>(options =>
+                                        field.UseSelectEditor(options =>
                                         {
                                             options.UseResource<Department>();
                                             options.EmptyChoiceText = "Not specified";
@@ -163,14 +163,14 @@ internal static class UserResourceRegistration
                                     group.Columns(2);
                                     group
                                         .Add(model => model.PreferredLanguage)
-                                        .UseEditor<SelectEditor>(options =>
+                                        .UseSelectEditor(options =>
                                         {
                                             options.UseItems(UserLookups.Languages());
                                             options.EmptyChoiceText = "Not specified";
                                         });
                                     group
                                         .Add(model => model.TimeZoneId)
-                                        .UseEditor<SelectEditor>(options =>
+                                        .UseSelectEditor(options =>
                                         {
                                             options.UseItems(UserLookups.TimeZones());
                                             options.EmptyChoiceText = "Not specified";
@@ -187,7 +187,7 @@ internal static class UserResourceRegistration
                                     model => model.RoleIds,
                                     field =>
                                     {
-                                        field.UseEditor<CheckboxGroupEditor>(options =>
+                                        field.UseCheckboxGroupEditor(options =>
                                         {
                                             options.UseResource<ApplicationRole>();
                                             options.Columns(2);

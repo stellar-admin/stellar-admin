@@ -124,7 +124,7 @@ internal static class FieldEditorGalleryRegistration
                             fields.Add(model => model.Country);
                             fields
                                 .Add(model => model.HubCode)
-                                .UseEditor<LookupSheetEditor>(lookup =>
+                                .UseLookupSheetEditor(lookup =>
                                 {
                                     lookup.UseResource<GalleryAirport>();
                                     lookup.EnableCreate();
@@ -212,12 +212,12 @@ internal static class FieldEditorGalleryRegistration
                     "Set with the field's Description.";
                 section
                     .Add(model => model.OverriddenDescription)
-                    .UseEditor<TextInputEditor>(input => input.Prefix = "@")
+                    .UseTextInputEditor(input => input.Prefix = "@")
                     .Description = "Set with the field's Description, replacing the attribute.";
                 section.Add(model => model.ReadOnlyText);
                 section
                     .Add(model => model.ReadOnlyAmount)
-                    .UseEditor<TextInputEditor>(input => input.Prefix = "$");
+                    .UseTextInputEditor(input => input.Prefix = "$");
             }
         );
         fields.AddSection(
@@ -227,16 +227,16 @@ internal static class FieldEditorGalleryRegistration
                 section.Description = "UseEditor<TextInputEditor> with explicit settings.";
                 section
                     .Add(model => model.PlaceholderText)
-                    .UseEditor<TextInputEditor>(input => input.Placeholder = "Seat preference");
+                    .UseTextInputEditor(input => input.Placeholder = "Seat preference");
                 section
                     .Add(model => model.ExplicitEmail)
-                    .UseEditor<TextInputEditor>(input => input.Type = TextInputType.Email);
+                    .UseTextInputEditor(input => input.Type = TextInputType.Email);
                 section
                     .Add(model => model.TextQuantity)
-                    .UseEditor<TextInputEditor>(input => input.Type = TextInputType.Text);
+                    .UseTextInputEditor(input => input.Type = TextInputType.Text);
                 section
                     .Add(model => model.Constrained)
-                    .UseEditor<TextInputEditor>(input =>
+                    .UseTextInputEditor(input =>
                     {
                         input.Max = 500m;
                         input.Min = 0m;
@@ -244,20 +244,20 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.Domain)
-                    .UseEditor<TextInputEditor>(input => input.Prefix = "https://");
+                    .UseTextInputEditor(input => input.Prefix = "https://");
                 section
                     .Add(model => model.Mass)
-                    .UseEditor<TextInputEditor>(input => input.Suffix = "kg");
+                    .UseTextInputEditor(input => input.Suffix = "kg");
                 section
                     .Add(model => model.GroupedPrice)
-                    .UseEditor<TextInputEditor>(input =>
+                    .UseTextInputEditor(input =>
                     {
                         input.Prefix = "$";
                         input.Suffix = "USD";
                     });
                 section
                     .Add(model => model.StyledCode)
-                    .UseEditor<TextInputEditor>(input =>
+                    .UseTextInputEditor(input =>
                     {
                         input.ClassNames.Control = "border-dashed";
                         input.Placeholder = "AAA-00";
@@ -303,16 +303,16 @@ internal static class FieldEditorGalleryRegistration
                 section.Description = "UseEditor<SelectEditor> with explicit settings.";
                 section
                     .Add(model => model.AnyCabin)
-                    .UseEditor<SelectEditor>(select => select.EmptyChoiceText = "Any cabin");
+                    .UseSelectEditor(select => select.EmptyChoiceText = "Any cabin");
                 section
                     .Add(model => model.OmittedCabin)
-                    .UseEditor<SelectEditor>(select => select.EmptyChoice = EmptyChoice.Omit);
+                    .UseSelectEditor(select => select.EmptyChoice = EmptyChoice.Omit);
                 section
                     .Add(model => model.Seat)
-                    .UseEditor<SelectEditor>(select => select.UseItems(GallerySeats.Items));
+                    .UseSelectEditor(select => select.UseItems(GallerySeats.Items));
                 section
                     .Add(model => model.Airport)
-                    .UseEditor<SelectEditor>(select =>
+                    .UseSelectEditor(select =>
                     {
                         var europe = new ChoiceGroup("Europe");
                         select.UseItems([
@@ -332,7 +332,7 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.StyledCabin)
-                    .UseEditor<SelectEditor>(select => select.ClassNames.Control = "border-dashed");
+                    .UseSelectEditor(select => select.ClassNames.Control = "border-dashed");
             }
         );
     }
@@ -347,13 +347,13 @@ internal static class FieldEditorGalleryRegistration
                     "UseEditor<LookupSheetEditor> with UseItems from a registered ILookupSource. Optional fields can be cleared.";
                 section
                     .Add(model => model.Airport)
-                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup));
                 section
                     .Add(model => model.RequiredAirport)
-                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup));
                 section
                     .Add(model => model.DescribedItemsAirport)
-                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup, describe: true));
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup, describe: true));
             }
         );
         fields.AddSection(
@@ -362,21 +362,21 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.TitledAirport)
-                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup))
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup))
                     .Title = "Title override";
                 section
                     .Add(model => model.DescribedAirport)
-                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup));
                 section
                     .Add(model => model.FieldDescribedAirport)
-                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup))
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup))
                     .Description = "Set with the field's Description.";
                 section
                     .Add(model => model.ReadOnlyAirport)
-                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup));
                 section
                     .Add(model => model.UnknownAirport)
-                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup));
             }
         );
         fields.AddSection(
@@ -385,7 +385,7 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.LabelledAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.Sheet(sheet =>
                         {
@@ -397,28 +397,28 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.UnclearableAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.AllowClear = false);
                         UseAirports(lookup);
                     });
                 section
                     .Add(model => model.SearchedAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.MinimumSearchLength = 2);
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.PagedAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.PageSize = 5);
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.StyledAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.ClassNames.Control = "max-w-xs";
                         UseAirports(lookup);
@@ -433,124 +433,113 @@ internal static class FieldEditorGalleryRegistration
                     "UseCode, UseAvatar, UseImage and UseIcon display media beside each item. The layout is a card when the items have a description, otherwise a button. Only Lisbon and Cape Town have images; the other airports have no media.";
                 section
                     .Add(model => model.CodeAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                         UseAirports(lookup, describe: true, media: AirportMedia.Code)
                     );
                 section
                     .Add(model => model.CodeInputAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                         UseAirports(lookup, media: AirportMedia.Code)
                     );
                 section
                     .Add(model => model.AvatarAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                         UseAirports(lookup, describe: true, media: AirportMedia.Avatar)
                     );
                 section
                     .Add(model => model.AvatarInputAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                         UseAirports(lookup, media: AirportMedia.Avatar)
                     );
                 section
                     .Add(model => model.ImageAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                         UseAirports(lookup, describe: true, media: AirportMedia.Image)
                     );
                 section
                     .Add(model => model.IconInputAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.ClassNames.Media = "text-muted-foreground";
                         UseAirports(lookup, media: AirportMedia.Icon);
                     });
                 section
                     .Add(model => model.InputLayoutAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.Layout = LookupSheetEditorLayout.Input);
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.CardLayoutAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.Layout = LookupSheetEditorLayout.Card);
                         UseAirports(lookup, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.EditorMediaHiddenAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.ShowMedia = false);
                         UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.SheetMediaHiddenAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.ShowMedia = false);
                         UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.CreatableAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                     {
                         lookup.EnableCreate();
                         UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.ReadOnlyCodeAirport)
-                    .UseEditor<LookupSheetEditor>(lookup =>
+                    .UseLookupSheetEditor(lookup =>
                         UseAirports(lookup, describe: true, media: AirportMedia.Code)
                     );
             }
         );
 
-        // The gallery has no airport photos, so avatars show the title's initials and only two airports have images
-        static void UseAirports(
-            LookupSheetEditor lookup,
+        static void UseAirports<TModel>(
+            LookupSheetEditor<TModel> lookup,
             bool describe = false,
             AirportMedia? media = null
-        ) =>
-            lookup.UseItems<GalleryAirportLookupSource, GalleryAirport, string>(
-                airport => airport.Code,
-                airport => airport.City,
-                items =>
-                {
-                    // A code chip already shows the code
-                    if (describe && media == AirportMedia.Code)
-                    {
-                        items.UseDescription(airport => airport.Country);
-                    }
-                    else if (describe)
-                    {
-                        items.UseDescription(airport => $"{airport.Code} · {airport.Country}");
-                    }
-
-                    switch (media)
-                    {
-                        case AirportMedia.Code:
-                            items.UseCode(airport => airport.Code);
-                            break;
-                        case AirportMedia.Avatar:
-                            items.UseAvatar(_ => null);
-                            break;
-                        case AirportMedia.Image:
-                            items.UseImage(airport =>
-                                airport.Code switch
-                                {
-                                    "LIS" => "/images/lisbon.jpg",
-                                    "CPT" => "/images/cape-town.jpg",
-                                    _ => null,
-                                }
-                            );
-                            break;
-                        case AirportMedia.Icon:
-                            items.UseIcon(_ => "plane-landing");
-                            break;
-                    }
-                }
-            );
+        )
+        {
+            switch (media, describe)
+            {
+                case (AirportMedia.Code, true):
+                    lookup.UseSource<DescribedCodedAirportSource>();
+                    break;
+                case (AirportMedia.Code, false):
+                    lookup.UseSource<CodedAirportSource>();
+                    break;
+                case (AirportMedia.Avatar, true):
+                    lookup.UseSource<DescribedAvatarAirportSource>();
+                    break;
+                case (AirportMedia.Avatar, false):
+                    lookup.UseSource<AvatarAirportSource>();
+                    break;
+                case (AirportMedia.Image, _):
+                    lookup.UseSource<DescribedImageAirportSource>();
+                    break;
+                case (AirportMedia.Icon, _):
+                    lookup.UseSource<IconAirportSource>();
+                    break;
+                case (null, true):
+                    lookup.UseSource<DescribedAirportSource>();
+                    break;
+                default:
+                    lookup.UseSource<GalleryAirportLookupSource>();
+                    break;
+            }
+        }
     }
 
     private static void ConfigureMultiLookupFields(ResourceFieldsBuilder<MultiLookupGallery> fields)
@@ -563,31 +552,31 @@ internal static class FieldEditorGalleryRegistration
                     "UseEditor<MultiLookupSheetEditor> on a collection of keys. Add, Choose or the summary opens the sheet, where each result toggles and EnableCreate adds New; Remove and Clear edit the selection.";
                 section
                     .Add(model => model.Destinations)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         UseDestinations(lookup);
                         lookup.EnableCreate();
                     });
                 section
                     .Add(model => model.Guides)
-                    .UseEditor<MultiLookupSheetEditor>(lookup => UseGuides(lookup));
+                    .UseMultiLookupSheetEditor(lookup => UseGuides(lookup));
                 section
                     .Add(model => model.ListDestinations)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
                         UseDestinations(lookup, describe: true);
                     });
                 section
                     .Add(model => model.ListGuides)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
                         UseGuides(lookup, describe: true);
                     });
                 section
                     .Add(model => model.SummaryDestinations)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
@@ -596,7 +585,7 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.SummaryGuides)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
@@ -611,16 +600,16 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.RequiredDestinations)
-                    .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
+                    .UseMultiLookupSheetEditor(lookup => UseDestinations(lookup));
                 section
                     .Add(model => model.LimitedGuides)
-                    .UseEditor<MultiLookupSheetEditor>(lookup => UseGuides(lookup));
+                    .UseMultiLookupSheetEditor(lookup => UseGuides(lookup));
                 section
                     .Add(model => model.UnknownDestinations)
-                    .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
+                    .UseMultiLookupSheetEditor(lookup => UseDestinations(lookup));
                 section
                     .Add(model => model.LabelledDestinations)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.EmptyText = "Any destination");
                         lookup.Sheet(sheet => sheet.Title = "Select destinations");
@@ -628,14 +617,14 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.MediaHiddenGuides)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.ShowMedia = false);
                         UseGuides(lookup);
                     });
                 section
                     .Add(model => model.StyledDestinations)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.ClassNames.Control = "max-w-sm";
                         lookup.ClassNames.Media = "bg-primary text-primary-foreground";
@@ -649,17 +638,17 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.ReadOnlyDestinations)
-                    .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
+                    .UseMultiLookupSheetEditor(lookup => UseDestinations(lookup));
                 section
                     .Add(model => model.ReadOnlyListGuides)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
                         UseGuides(lookup, describe: true);
                     });
                 section
                     .Add(model => model.ReadOnlySummaryGuides)
-                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    .UseMultiLookupSheetEditor(lookup =>
                     {
                         lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
@@ -668,38 +657,36 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.ReadOnlyEmptyDestinations)
-                    .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
+                    .UseMultiLookupSheetEditor(lookup => UseDestinations(lookup));
             }
         );
 
-        static void UseDestinations(MultiLookupSheetEditor lookup, bool describe = false) =>
-            lookup.UseItems<GalleryAirportLookupSource, GalleryAirport, string>(
-                airport => airport.Code,
-                airport => airport.City,
-                items =>
-                {
-                    items.UseCode(airport => airport.Code);
-                    if (describe)
-                    {
-                        items.UseDescription(airport => airport.Country);
-                    }
-                }
-            );
+        static void UseDestinations<TModel>(
+            MultiLookupSheetEditor<TModel> lookup,
+            bool describe = false
+        )
+        {
+            if (describe)
+            {
+                lookup.UseSource<DescribedCodedAirportSource>();
+            }
+            else
+            {
+                lookup.UseSource<CodedAirportSource>();
+            }
+        }
 
-        // The gallery has no guide photos, so avatars show the guide's initials
-        static void UseGuides(MultiLookupSheetEditor lookup, bool describe = false) =>
-            lookup.UseItems<GalleryGuideLookupSource, GalleryGuide, string>(
-                guide => guide.Id,
-                guide => guide.Name,
-                items =>
-                {
-                    items.UseAvatar(_ => null);
-                    if (describe)
-                    {
-                        items.UseDescription(guide => $"{guide.Region} · {guide.Languages}");
-                    }
-                }
-            );
+        static void UseGuides<TModel>(MultiLookupSheetEditor<TModel> lookup, bool describe = false)
+        {
+            if (describe)
+            {
+                lookup.UseSource<DescribedAvatarGuideSource>();
+            }
+            else
+            {
+                lookup.UseSource<AvatarGuideSource>();
+            }
+        }
     }
 
     private static void ConfigureRadioGroupFields(ResourceFieldsBuilder<RadioGroupGallery> fields)
@@ -710,35 +697,35 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Description =
                     "UseEditor<RadioGroupEditor> without UseItems. The property supplies the choices.";
-                section.Add(model => model.Cabin).UseEditor<RadioGroupEditor>();
+                section.Add(model => model.Cabin).UseRadioGroupEditor();
                 section
                     .Add(model => model.CabinCards)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                         radio.Appearance = RadioGroupAppearance.Cards
                     );
-                section.Add(model => model.OptionalCabin).UseEditor<RadioGroupEditor>();
+                section.Add(model => model.OptionalCabin).UseRadioGroupEditor();
                 section
                     .Add(model => model.RequiredCabin)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                         radio.Appearance = RadioGroupAppearance.Cards
                     );
-                section.Add(model => model.Insured).UseEditor<RadioGroupEditor>();
+                section.Add(model => model.Insured).UseRadioGroupEditor();
             }
         );
         fields.AddSection(
             "Field configuration",
             section =>
             {
-                section.Add(model => model.TitledCabin).UseEditor<RadioGroupEditor>().Title =
+                section.Add(model => model.TitledCabin).UseRadioGroupEditor().Title =
                     "Title override";
                 section
                     .Add(model => model.DescribedCabin)
-                    .UseEditor<RadioGroupEditor>()
+                    .UseRadioGroupEditor()
                     .Description = "Set with the field's Description, replacing the attribute.";
-                section.Add(model => model.ReadOnlyCabin).UseEditor<RadioGroupEditor>();
+                section.Add(model => model.ReadOnlyCabin).UseRadioGroupEditor();
                 section
                     .Add(model => model.ReadOnlyCabinCards)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                         radio.Appearance = RadioGroupAppearance.Cards
                     );
             }
@@ -749,10 +736,10 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.Seat)
-                    .UseEditor<RadioGroupEditor>(radio => radio.UseItems(GallerySeats.Items));
+                    .UseRadioGroupEditor(radio => radio.UseItems(GallerySeats.Items));
                 section
                     .Add(model => model.SeatCards)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                     {
                         radio.Appearance = RadioGroupAppearance.Cards;
                         radio.ClassNames.Option.Root = "border-dashed";
@@ -768,14 +755,14 @@ internal static class FieldEditorGalleryRegistration
                     "Columns respond to the field's width, and the choices fill each row unless Flow is Down.";
                 section
                     .Add(model => model.ColumnSeat)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                     {
                         radio.UseItems(GallerySeats.Items);
                         radio.Columns(2);
                     });
                 section
                     .Add(model => model.DownTransport)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                     {
                         radio.UseItems(GalleryTransport.Items);
                         radio.Columns(columns => columns.Small(2).Large(3));
@@ -783,7 +770,7 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.CardColumnCabin)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                     {
                         radio.Appearance = RadioGroupAppearance.Cards;
                         radio.Columns(2);
@@ -799,10 +786,10 @@ internal static class FieldEditorGalleryRegistration
                 section.Columns(2);
                 section
                     .Add(model => model.Transport)
-                    .UseEditor<RadioGroupEditor>(radio => radio.UseItems(GalleryTransport.Items));
+                    .UseRadioGroupEditor(radio => radio.UseItems(GalleryTransport.Items));
                 section
                     .Add(model => model.AirportCode)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                         radio.UseItems(
                             GalleryAirportCodes.Items.Select(item =>
                                 item with
@@ -814,14 +801,14 @@ internal static class FieldEditorGalleryRegistration
                     );
                 section
                     .Add(model => model.Guide)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                     {
                         radio.Appearance = RadioGroupAppearance.Cards;
                         radio.UseItems(GalleryGuides.Items);
                     });
                 section
                     .Add(model => model.City)
-                    .UseEditor<RadioGroupEditor>(radio =>
+                    .UseRadioGroupEditor(radio =>
                     {
                         radio.Appearance = RadioGroupAppearance.Cards;
                         radio.ClassNames.Media = "size-10";
@@ -841,24 +828,24 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Description =
                     "UseEditor<CheckboxGroupEditor> without UseItems. The enum element type supplies the choices.";
-                section.Add(model => model.Cabins).UseEditor<CheckboxGroupEditor>();
-                section.Add(model => model.RequiredCabins).UseEditor<CheckboxGroupEditor>();
+                section.Add(model => model.Cabins).UseCheckboxGroupEditor();
+                section.Add(model => model.RequiredCabins).UseCheckboxGroupEditor();
             }
         );
         fields.AddSection(
             "Field configuration",
             section =>
             {
-                section.Add(model => model.TitledCabins).UseEditor<CheckboxGroupEditor>().Title =
+                section.Add(model => model.TitledCabins).UseCheckboxGroupEditor().Title =
                     "Title override";
                 section
                     .Add(model => model.AttributeDescribedCabins)
-                    .UseEditor<CheckboxGroupEditor>();
+                    .UseCheckboxGroupEditor();
                 section
                     .Add(model => model.DescribedCabins)
-                    .UseEditor<CheckboxGroupEditor>()
+                    .UseCheckboxGroupEditor()
                     .Description = "Set with the field's Description.";
-                section.Add(model => model.ReadOnlyCabins).UseEditor<CheckboxGroupEditor>();
+                section.Add(model => model.ReadOnlyCabins).UseCheckboxGroupEditor();
             }
         );
         fields.AddSection(
@@ -867,10 +854,10 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.Seats)
-                    .UseEditor<CheckboxGroupEditor>(group => group.UseItems(GallerySeats.Items));
+                    .UseCheckboxGroupEditor(group => group.UseItems(GallerySeats.Items));
                 section
                     .Add(model => model.StyledCabins)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                         group.ClassNames.Control = "border border-dashed p-3"
                     );
             }
@@ -883,19 +870,19 @@ internal static class FieldEditorGalleryRegistration
                     "Columns respond to the field's width, and the choices fill each row unless Flow is Down.";
                 section
                     .Add(model => model.CardCabins)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                         group.Appearance = CheckboxGroupAppearance.Cards
                     );
                 section
                     .Add(model => model.Amenities)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                     {
                         group.UseItems(GalleryAmenities.Items);
                         group.Columns(2);
                     });
                 section
                     .Add(model => model.DownAmenities)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                     {
                         group.UseItems(GalleryAmenities.Items);
                         group.Columns(columns => columns.Small(2).Large(3));
@@ -903,7 +890,7 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.CardColumnCabins)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                     {
                         group.Appearance = CheckboxGroupAppearance.Cards;
                         group.Columns(2);
@@ -919,14 +906,14 @@ internal static class FieldEditorGalleryRegistration
                 section.Columns(2);
                 section
                     .Add(model => model.NarrowAmenities)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                     {
                         group.UseItems(GalleryAmenities.Items);
                         group.Columns(2);
                     });
                 section
                     .Add(model => model.NarrowAmenitiesBeside)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                     {
                         group.UseItems(GalleryAmenities.Items);
                         group.Columns(2);
@@ -942,26 +929,26 @@ internal static class FieldEditorGalleryRegistration
                 section.Columns(2);
                 section
                     .Add(model => model.Transports)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                         group.UseItems(
                             GalleryTransport.Items.Select(item => item with { Description = null })
                         )
                     );
                 section
                     .Add(model => model.AirportCodes)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                         group.UseItems(GalleryAirportCodes.Items)
                     );
                 section
                     .Add(model => model.Guides)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                     {
                         group.Appearance = CheckboxGroupAppearance.Cards;
                         group.UseItems(GalleryGuides.Items);
                     });
                 section
                     .Add(model => model.Cities)
-                    .UseEditor<CheckboxGroupEditor>(group =>
+                    .UseCheckboxGroupEditor(group =>
                     {
                         group.Appearance = CheckboxGroupAppearance.Cards;
                         group.UseItems(GalleryCities.Items);
@@ -981,23 +968,23 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Description =
                     "UseEditor<SegmentedControlEditor> without UseItems. The enum or Boolean property supplies the choices.";
-                section.Add(model => model.Cabin).UseEditor<SegmentedControlEditor>();
-                section.Add(model => model.OptionalCabin).UseEditor<SegmentedControlEditor>();
-                section.Add(model => model.Insured).UseEditor<SegmentedControlEditor>();
+                section.Add(model => model.Cabin).UseSegmentedControlEditor();
+                section.Add(model => model.OptionalCabin).UseSegmentedControlEditor();
+                section.Add(model => model.Insured).UseSegmentedControlEditor();
             }
         );
         fields.AddSection(
             "Field configuration",
             section =>
             {
-                section.Add(model => model.TitledCabin).UseEditor<SegmentedControlEditor>().Title =
+                section.Add(model => model.TitledCabin).UseSegmentedControlEditor().Title =
                     "Title override";
-                section.Add(model => model.DescribedCabin).UseEditor<SegmentedControlEditor>();
+                section.Add(model => model.DescribedCabin).UseSegmentedControlEditor();
                 section
                     .Add(model => model.FieldDescribedCabin)
-                    .UseEditor<SegmentedControlEditor>()
+                    .UseSegmentedControlEditor()
                     .Description = "Set with the field's Description.";
-                section.Add(model => model.ReadOnlyCabin).UseEditor<SegmentedControlEditor>();
+                section.Add(model => model.ReadOnlyCabin).UseSegmentedControlEditor();
             }
         );
         fields.AddSection(
@@ -1006,12 +993,12 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.Seat)
-                    .UseEditor<SegmentedControlEditor>(toggle =>
+                    .UseSegmentedControlEditor(toggle =>
                         toggle.UseItems(GallerySeats.Items)
                     );
                 section
                     .Add(model => model.StyledCabin)
-                    .UseEditor<SegmentedControlEditor>(toggle =>
+                    .UseSegmentedControlEditor(toggle =>
                         toggle.ClassNames.Control = "border-dashed"
                     );
             }
@@ -1024,17 +1011,17 @@ internal static class FieldEditorGalleryRegistration
                     "Choices with ItemMedia display it before the text. A segmented control has no descriptions.";
                 section
                     .Add(model => model.Transport)
-                    .UseEditor<SegmentedControlEditor>(toggle =>
+                    .UseSegmentedControlEditor(toggle =>
                         toggle.UseItems(GalleryTransport.Items)
                     );
                 section
                     .Add(model => model.Guide)
-                    .UseEditor<SegmentedControlEditor>(toggle =>
+                    .UseSegmentedControlEditor(toggle =>
                         toggle.UseItems(GalleryGuides.Items)
                     );
                 section
                     .Add(model => model.AirportCode)
-                    .UseEditor<SegmentedControlEditor>(toggle =>
+                    .UseSegmentedControlEditor(toggle =>
                     {
                         toggle.ClassNames.Media = "border bg-transparent";
                         toggle.UseItems(GalleryAirportCodes.Items);
@@ -1051,33 +1038,33 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Description =
                     "A collection property selects multiple values and any other property selects one. Chips is the default appearance.";
-                section.Add(model => model.Cabins).UseEditor<ToggleGroupEditor>();
+                section.Add(model => model.Cabins).UseToggleGroupEditor();
                 section
                     .Add(model => model.Amenities)
-                    .UseEditor<ToggleGroupEditor>(group => group.UseItems(GalleryAmenities.Items));
-                section.Add(model => model.Cabin).UseEditor<ToggleGroupEditor>();
+                    .UseToggleGroupEditor(group => group.UseItems(GalleryAmenities.Items));
+                section.Add(model => model.Cabin).UseToggleGroupEditor();
                 section
                     .Add(model => model.Days)
-                    .UseEditor<ToggleGroupEditor>(group =>
+                    .UseToggleGroupEditor(group =>
                     {
                         group.UseItems(GalleryDays.Items);
                         group.Appearance = ToggleGroupAppearance.Joined;
                     });
                 section
                     .Add(model => model.OptionalCabin)
-                    .UseEditor<ToggleGroupEditor>(group =>
+                    .UseToggleGroupEditor(group =>
                         group.Appearance = ToggleGroupAppearance.Joined
                     );
                 section
                     .Add(model => model.Meals)
-                    .UseEditor<ToggleGroupEditor>(group =>
+                    .UseToggleGroupEditor(group =>
                     {
                         group.UseItems(GalleryMeals.Items);
                         group.Appearance = ToggleGroupAppearance.Buttons;
                     });
                 section
                     .Add(model => model.Insured)
-                    .UseEditor<ToggleGroupEditor>(group =>
+                    .UseToggleGroupEditor(group =>
                         group.Appearance = ToggleGroupAppearance.Buttons
                     );
             }
@@ -1086,13 +1073,13 @@ internal static class FieldEditorGalleryRegistration
             "Field configuration",
             section =>
             {
-                section.Add(model => model.TitledCabins).UseEditor<ToggleGroupEditor>().Title =
+                section.Add(model => model.TitledCabins).UseToggleGroupEditor().Title =
                     "Title override";
-                section.Add(model => model.DescribedCabins).UseEditor<ToggleGroupEditor>();
-                section.Add(model => model.ReadOnlyCabins).UseEditor<ToggleGroupEditor>();
+                section.Add(model => model.DescribedCabins).UseToggleGroupEditor();
+                section.Add(model => model.ReadOnlyCabins).UseToggleGroupEditor();
                 section
                     .Add(model => model.StyledCabins)
-                    .UseEditor<ToggleGroupEditor>(group =>
+                    .UseToggleGroupEditor(group =>
                         group.ClassNames.Control = "rounded-lg border border-dashed p-3"
                     );
             }
@@ -1105,31 +1092,31 @@ internal static class FieldEditorGalleryRegistration
                     "Choices with ItemMedia display it before the text. A chip's check mark replaces its media while on, unless CheckPlacement moves it.";
                 section
                     .Add(model => model.Transports)
-                    .UseEditor<ToggleGroupEditor>(group => group.UseItems(GalleryTransport.Items));
+                    .UseToggleGroupEditor(group => group.UseItems(GalleryTransport.Items));
                 section
                     .Add(model => model.Guides)
-                    .UseEditor<ToggleGroupEditor>(group =>
+                    .UseToggleGroupEditor(group =>
                     {
                         group.CheckPlacement = ToggleGroupCheckPlacement.Start;
                         group.UseItems(GalleryGuides.Items);
                     });
                 section
                     .Add(model => model.AirportCodes)
-                    .UseEditor<ToggleGroupEditor>(group =>
+                    .UseToggleGroupEditor(group =>
                     {
                         group.CheckPlacement = ToggleGroupCheckPlacement.End;
                         group.UseItems(GalleryAirportCodes.Items);
                     });
                 section
                     .Add(model => model.City)
-                    .UseEditor<ToggleGroupEditor>(group =>
+                    .UseToggleGroupEditor(group =>
                     {
                         group.Appearance = ToggleGroupAppearance.Joined;
                         group.UseItems(GalleryCities.Items);
                     });
                 section
                     .Add(model => model.ButtonTransports)
-                    .UseEditor<ToggleGroupEditor>(group =>
+                    .UseToggleGroupEditor(group =>
                     {
                         group.Appearance = ToggleGroupAppearance.Buttons;
                         group.UseItems(GalleryTransport.Items);
@@ -1168,15 +1155,15 @@ internal static class FieldEditorGalleryRegistration
                 section.Description = "UseEditor<TextareaEditor> with explicit settings.";
                 section
                     .Add(model => model.PlaceholderNotes)
-                    .UseEditor<TextareaEditor>(textarea =>
+                    .UseTextareaEditor(textarea =>
                         textarea.Placeholder = "Anything the crew should know"
                     );
                 section
                     .Add(model => model.TallNotes)
-                    .UseEditor<TextareaEditor>(textarea => textarea.Rows = 8);
+                    .UseTextareaEditor(textarea => textarea.Rows = 8);
                 section
                     .Add(model => model.StyledNotes)
-                    .UseEditor<TextareaEditor>(textarea =>
+                    .UseTextareaEditor(textarea =>
                         textarea.ClassNames.Control = "border-dashed"
                     );
             }
@@ -1193,7 +1180,7 @@ internal static class FieldEditorGalleryRegistration
                     "The Boolean template forwards to Editors/Checkbox. UseEditor<CheckboxEditor> renders the same.";
                 section.Add(model => model.Subscribed);
                 section.Add(model => model.DescribedSubscribed);
-                section.Add(model => model.ExplicitSubscribed).UseEditor<CheckboxEditor>();
+                section.Add(model => model.ExplicitSubscribed).UseCheckboxEditor();
             }
         );
         fields.AddSection(
@@ -1222,10 +1209,10 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.LabelStyled)
-                    .UseEditor<CheckboxEditor>(checkbox => checkbox.ClassNames.Label = "italic");
+                    .UseCheckboxEditor(checkbox => checkbox.ClassNames.Label = "italic");
                 section
                     .Add(model => model.RootStyled)
-                    .UseEditor<CheckboxEditor>(checkbox =>
+                    .UseCheckboxEditor(checkbox =>
                         checkbox.ClassNames.Root = "rounded-lg border border-dashed p-3"
                     );
             }
@@ -1239,9 +1226,9 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description = "UseEditor<ToggleEditor> on Boolean properties.";
-                section.Add(model => model.Notifications).UseEditor<ToggleEditor>();
-                section.Add(model => model.Newsletter).UseEditor<ToggleEditor>();
-                section.Add(model => model.DescribedNotifications).UseEditor<ToggleEditor>();
+                section.Add(model => model.Notifications).UseToggleEditor();
+                section.Add(model => model.Newsletter).UseToggleEditor();
+                section.Add(model => model.DescribedNotifications).UseToggleEditor();
             }
         );
         fields.AddSection(
@@ -1249,22 +1236,22 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description = "Turn these off and save to see the server errors.";
-                section.Add(model => model.RequiredAlerts).UseEditor<ToggleEditor>();
-                section.Add(model => model.RequiredTracking).UseEditor<ToggleEditor>();
+                section.Add(model => model.RequiredAlerts).UseToggleEditor();
+                section.Add(model => model.RequiredTracking).UseToggleEditor();
             }
         );
         fields.AddSection(
             "Field configuration",
             section =>
             {
-                section.Add(model => model.TitledNotifications).UseEditor<ToggleEditor>().Title =
+                section.Add(model => model.TitledNotifications).UseToggleEditor().Title =
                     "Title override";
                 section
                     .Add(model => model.FieldDescribedNotifications)
-                    .UseEditor<ToggleEditor>()
+                    .UseToggleEditor()
                     .Description = "Set with the field's Description.";
-                section.Add(model => model.ReadOnlyOn).UseEditor<ToggleEditor>();
-                section.Add(model => model.ReadOnlyOff).UseEditor<ToggleEditor>();
+                section.Add(model => model.ReadOnlyOn).UseToggleEditor();
+                section.Add(model => model.ReadOnlyOff).UseToggleEditor();
             }
         );
         fields.AddSection(
@@ -1273,10 +1260,10 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.LabelStyled)
-                    .UseEditor<ToggleEditor>(toggle => toggle.ClassNames.Label = "italic");
+                    .UseToggleEditor(toggle => toggle.ClassNames.Label = "italic");
                 section
                     .Add(model => model.RootStyled)
-                    .UseEditor<ToggleEditor>(toggle =>
+                    .UseToggleEditor(toggle =>
                         toggle.ClassNames.Root = "rounded-lg border border-dashed p-3"
                     );
             }
@@ -1322,22 +1309,22 @@ internal static class FieldEditorGalleryRegistration
                     "UseEditor<DateInputEditor>, UseEditor<DateTimeInputEditor> and UseEditor<TimeInputEditor> with explicit settings.";
                 section
                     .Add(model => model.BoundedDeparture)
-                    .UseEditor<DateInputEditor>(date =>
+                    .UseDateInputEditor(date =>
                     {
                         date.Max = new DateOnly(2026, 12, 31);
                         date.Min = new DateOnly(2026, 1, 1);
                     });
                 section
                     .Add(model => model.WeeklyDeparture)
-                    .UseEditor<DateInputEditor>(date => date.Step = 7);
+                    .UseDateInputEditor(date => date.Step = 7);
                 section
                     .Add(model => model.QuarterHourBoarding)
-                    .UseEditor<DateTimeInputEditor>(dateTime =>
+                    .UseDateTimeInputEditor(dateTime =>
                         dateTime.Step = TimeSpan.FromMinutes(15)
                     );
                 section
                     .Add(model => model.OfficeHoursGate)
-                    .UseEditor<TimeInputEditor>(time =>
+                    .UseTimeInputEditor(time =>
                     {
                         time.Max = new TimeOnly(18, 0);
                         time.Min = new TimeOnly(8, 0);
@@ -1345,7 +1332,7 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.StyledDeparture)
-                    .UseEditor<DateInputEditor>(date => date.ClassNames.Control = "border-dashed");
+                    .UseDateInputEditor(date => date.ClassNames.Control = "border-dashed");
             }
         );
     }
@@ -1358,8 +1345,8 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Description =
                     "No Icons list: the picker loads every registered icon from the panel's icons endpoint when it first opens.";
-                section.Add(model => model.Icon).UseEditor<IconEditor>();
-                section.Add(model => model.TourIcon).UseEditor<IconEditor>();
+                section.Add(model => model.Icon).UseIconEditor();
+                section.Add(model => model.TourIcon).UseIconEditor();
             }
         );
         fields.AddSection(
@@ -1370,20 +1357,20 @@ internal static class FieldEditorGalleryRegistration
                     "Auto shows tiles for 24 icons or fewer and the picker for more.";
                 section
                     .Add(model => model.Amenity)
-                    .UseEditor<IconEditor>(editor => editor.Icons = GalleryIcons.Amenities);
+                    .UseIconEditor(editor => editor.Icons = GalleryIcons.Amenities);
                 section
                     .Add(model => model.Activity)
-                    .UseEditor<IconEditor>(editor => editor.Icons = GalleryIcons.Activities);
+                    .UseIconEditor(editor => editor.Icons = GalleryIcons.Activities);
                 section
                     .Add(model => model.PickerAmenity)
-                    .UseEditor<IconEditor>(editor =>
+                    .UseIconEditor(editor =>
                     {
                         editor.Icons = GalleryIcons.Amenities;
                         editor.Layout = IconEditorLayout.Picker;
                     });
                 section
                     .Add(model => model.Transport)
-                    .UseEditor<IconEditor>(editor =>
+                    .UseIconEditor(editor =>
                     {
                         editor.Icons = GalleryIcons.Transport;
                         editor.Layout = IconEditorLayout.Inline;
@@ -1396,11 +1383,11 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Description =
                     "A stored name that isn't an icon shows a dashed box and saves unchanged; a new value must be one the field offers.";
-                section.Add(model => model.LegacyIcon).UseEditor<IconEditor>();
+                section.Add(model => model.LegacyIcon).UseIconEditor();
                 section
                     .Add(model => model.LegacyAmenity)
-                    .UseEditor<IconEditor>(editor => editor.Icons = GalleryIcons.Amenities);
-                section.Add(model => model.ReadOnlyIcon).UseEditor<IconEditor>();
+                    .UseIconEditor(editor => editor.Icons = GalleryIcons.Amenities);
+                section.Add(model => model.ReadOnlyIcon).UseIconEditor();
             }
         );
     }
@@ -1413,18 +1400,18 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Description =
                     "A picked file uploads straight away to the playground's image store; Save keeps the returned value.";
-                section.Add(model => model.Photo).UseEditor<ImageEditor>(ConfigureEditor);
-                section.Add(model => model.Cover).UseEditor<ImageEditor>(ConfigureEditor);
+                section.Add(model => model.Photo).UseImageEditor(ConfigureEditor);
+                section.Add(model => model.Cover).UseImageEditor(ConfigureEditor);
                 section
                     .Add(model => model.Thumbnail)
-                    .UseEditor<ImageEditor>(editor =>
+                    .UseImageEditor(editor =>
                     {
                         ConfigureEditor(editor);
                         editor.Layout = ImageEditorLayout.Compact;
                     });
                 section
                     .Add(model => model.Attachment)
-                    .UseEditor<ImageEditor>(editor =>
+                    .UseImageEditor(editor =>
                     {
                         ConfigureEditor(editor);
                         editor.Layout = ImageEditorLayout.Attachment;
@@ -1437,7 +1424,7 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.Limited)
-                    .UseEditor<ImageEditor>(editor =>
+                    .UseImageEditor(editor =>
                     {
                         ConfigureEditor(editor);
                         editor.MaxFileSize = 100 * 1024;
@@ -1445,14 +1432,14 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.Styled)
-                    .UseEditor<ImageEditor>(editor =>
+                    .UseImageEditor(editor =>
                     {
                         ConfigureEditor(editor);
                         editor.Layout = ImageEditorLayout.Compact;
                         editor.ClassNames.Image = "ring-2 ring-primary";
                         editor.ClassNames.Note = "italic";
                     });
-                section.Add(model => model.ReadOnlyPhoto).UseEditor<ImageEditor>(ConfigureEditor);
+                section.Add(model => model.ReadOnlyPhoto).UseImageEditor(ConfigureEditor);
             }
         );
 
@@ -1468,23 +1455,23 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Description =
                     "UseEditor<SliderEditor> without settings. Bounds come from [Range], or 0 to 100.";
-                section.Add(model => model.Volume).UseEditor<SliderEditor>();
-                section.Add(model => model.Passengers).UseEditor<SliderEditor>();
-                section.Add(model => model.Rating).UseEditor<SliderEditor>();
+                section.Add(model => model.Volume).UseSliderEditor();
+                section.Add(model => model.Passengers).UseSliderEditor();
+                section.Add(model => model.Rating).UseSliderEditor();
             }
         );
         fields.AddSection(
             "Field configuration",
             section =>
             {
-                section.Add(model => model.TitledVolume).UseEditor<SliderEditor>().Title =
+                section.Add(model => model.TitledVolume).UseSliderEditor().Title =
                     "Title override";
-                section.Add(model => model.DescribedVolume).UseEditor<SliderEditor>();
+                section.Add(model => model.DescribedVolume).UseSliderEditor();
                 section
                     .Add(model => model.FieldDescribedVolume)
-                    .UseEditor<SliderEditor>()
+                    .UseSliderEditor()
                     .Description = "Set with the field's Description.";
-                section.Add(model => model.ReadOnlyVolume).UseEditor<SliderEditor>();
+                section.Add(model => model.ReadOnlyVolume).UseSliderEditor();
             }
         );
         fields.AddSection(
@@ -1493,7 +1480,7 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.Discount)
-                    .UseEditor<SliderEditor>(slider =>
+                    .UseSliderEditor(slider =>
                     {
                         slider.Max = 50;
                         slider.Min = 0;
@@ -1501,7 +1488,7 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.StyledVolume)
-                    .UseEditor<SliderEditor>(slider => slider.ClassNames.Control = "max-w-xs");
+                    .UseSliderEditor(slider => slider.ClassNames.Control = "max-w-xs");
             }
         );
         fields.AddSection(
@@ -1512,7 +1499,7 @@ internal static class FieldEditorGalleryRegistration
                     "The value shows beside the label and the bounds under the track by default. ValueFormat formats both.";
                 section
                     .Add(model => model.DistanceFromCenter)
-                    .UseEditor<SliderEditor>(slider =>
+                    .UseSliderEditor(slider =>
                     {
                         slider.Max = 50;
                         slider.ValueFormat = "{0} km";
@@ -1520,14 +1507,14 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.Nights)
-                    .UseEditor<SliderEditor>(slider =>
+                    .UseSliderEditor(slider =>
                     {
                         slider.MarkInterval = 1;
                         slider.MarkLabels = SliderMarkLabels.All;
                     });
                 section
                     .Add(model => model.GuestRating)
-                    .UseEditor<SliderEditor>(slider =>
+                    .UseSliderEditor(slider =>
                     {
                         slider.AddMark(1, "Poor");
                         slider.AddMark(3, "Good");
@@ -1535,14 +1522,14 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.PlainVolume)
-                    .UseEditor<SliderEditor>(slider =>
+                    .UseSliderEditor(slider =>
                     {
                         slider.ShowValue = false;
                         slider.MarkLabels = SliderMarkLabels.None;
                     });
                 section
                     .Add(model => model.StyledMarkVolume)
-                    .UseEditor<SliderEditor>(slider =>
+                    .UseSliderEditor(slider =>
                     {
                         slider.ClassNames.Value = "font-semibold text-foreground";
                         slider.ClassNames.MarkLabel = "text-primary";
@@ -1559,23 +1546,23 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Description =
                     "UseEditor<OneTimeCodeEditor> without settings. The length comes from [StringLength], or 6.";
-                section.Add(model => model.Code).UseEditor<OneTimeCodeEditor>();
-                section.Add(model => model.RequiredCode).UseEditor<OneTimeCodeEditor>();
-                section.Add(model => model.Pin).UseEditor<OneTimeCodeEditor>();
+                section.Add(model => model.Code).UseOneTimeCodeEditor();
+                section.Add(model => model.RequiredCode).UseOneTimeCodeEditor();
+                section.Add(model => model.Pin).UseOneTimeCodeEditor();
             }
         );
         fields.AddSection(
             "Field configuration",
             section =>
             {
-                section.Add(model => model.TitledCode).UseEditor<OneTimeCodeEditor>().Title =
+                section.Add(model => model.TitledCode).UseOneTimeCodeEditor().Title =
                     "Title override";
-                section.Add(model => model.DescribedCode).UseEditor<OneTimeCodeEditor>();
+                section.Add(model => model.DescribedCode).UseOneTimeCodeEditor();
                 section
                     .Add(model => model.FieldDescribedCode)
-                    .UseEditor<OneTimeCodeEditor>()
+                    .UseOneTimeCodeEditor()
                     .Description = "Set with the field's Description.";
-                section.Add(model => model.ReadOnlyCode).UseEditor<OneTimeCodeEditor>();
+                section.Add(model => model.ReadOnlyCode).UseOneTimeCodeEditor();
             }
         );
         fields.AddSection(
@@ -1584,10 +1571,10 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.LongCode)
-                    .UseEditor<OneTimeCodeEditor>(code => code.Length = 8);
+                    .UseOneTimeCodeEditor(code => code.Length = 8);
                 section
                     .Add(model => model.StyledCode)
-                    .UseEditor<OneTimeCodeEditor>(code => code.ClassNames.Control = "gap-3");
+                    .UseOneTimeCodeEditor(code => code.ClassNames.Control = "gap-3");
             }
         );
     }

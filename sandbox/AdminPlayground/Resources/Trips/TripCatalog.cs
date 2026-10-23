@@ -127,9 +127,9 @@ public sealed class TripCatalog
 }
 
 // The airports a trip arrives at, searched within the trip's country
-public sealed class TripAirportSource : ILookupSource<TripAirport, string, int>
+public sealed class TripAirportSource : LookupSource<TripAirport, string, int>
 {
-    public Task<IReadOnlyCollection<TripAirport>> FindAsync(
+    public override Task<IReadOnlyCollection<TripAirport>> FindAsync(
         IReadOnlyCollection<string> values,
         CancellationToken cancellationToken
     ) =>
@@ -137,7 +137,13 @@ public sealed class TripAirportSource : ILookupSource<TripAirport, string, int>
             TripCatalog.Airports.Where(airport => values.Contains(airport.Code)).ToArray()
         );
 
-    public Task<LookupPage<TripAirport>> SearchAsync(
+    public override string? GetCode(TripAirport item) => item.Code;
+
+    public override string GetTitle(TripAirport item) => item.Name;
+
+    public override string GetValue(TripAirport item) => item.Code;
+
+    public override Task<LookupPage<TripAirport>> SearchAsync(
         int countryId,
         LookupQuery query,
         CancellationToken cancellationToken

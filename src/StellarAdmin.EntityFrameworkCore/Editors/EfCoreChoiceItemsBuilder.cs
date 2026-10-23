@@ -7,13 +7,12 @@ namespace StellarAdmin.EntityFrameworkCore;
 ///     Configures the choices that load from an entity set.
 /// </summary>
 /// <typeparam name="TEntity">The type of the entities.</typeparam>
-/// <typeparam name="TValue">The type of the value that identifies an entity.</typeparam>
-public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
+public sealed class EfCoreChoiceItemsBuilder<TEntity>
     where TEntity : class
 {
-    private readonly EfCoreChoiceItemsOptions<TEntity, TValue> _options;
+    private readonly EfCoreChoiceItemsOptions<TEntity> _options;
 
-    internal EfCoreChoiceItemsBuilder(EfCoreChoiceItemsOptions<TEntity, TValue> options)
+    internal EfCoreChoiceItemsBuilder(EfCoreChoiceItemsOptions<TEntity> options)
     {
         _options = options;
     }
@@ -30,7 +29,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Grouped choices keep this order within their group.
     /// </remarks>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> OrderBy<TSort>(
+    public EfCoreChoiceItemsBuilder<TEntity> OrderBy<TSort>(
         Expression<Func<TEntity, TSort>> selector
     )
     {
@@ -55,7 +54,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Replaces any other media. Editors that can't display media ignore it.
     /// </remarks>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> UseAvatar(
+    public EfCoreChoiceItemsBuilder<TEntity> UseAvatar(
         Expression<Func<TEntity, string?>> imageUrl
     )
     {
@@ -80,7 +79,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Replaces any other media. Editors that can't display media ignore it.
     /// </remarks>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> UseCode(
+    public EfCoreChoiceItemsBuilder<TEntity> UseCode(
         Expression<Func<TEntity, string?>> code
     )
     {
@@ -100,7 +99,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     ///     By default, the registered database context whose model maps the entity is used. Pick
     ///     one when several contexts map it.
     /// </remarks>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> UseDbContext<TContext>()
+    public EfCoreChoiceItemsBuilder<TEntity> UseDbContext<TContext>()
         where TContext : DbContext
     {
         _options.ContextType = typeof(TContext);
@@ -121,7 +120,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Editors that can't display descriptions ignore it.
     /// </remarks>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> UseDescription(
+    public EfCoreChoiceItemsBuilder<TEntity> UseDescription(
         Expression<Func<TEntity, string?>> description
     )
     {
@@ -146,7 +145,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Editors that can't display groups ignore them.
     /// </remarks>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> UseGroup(
+    public EfCoreChoiceItemsBuilder<TEntity> UseGroup(
         Expression<Func<TEntity, string?>> group
     )
     {
@@ -171,7 +170,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Replaces any other media. Editors that can't display media ignore it.
     /// </remarks>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> UseIcon(
+    public EfCoreChoiceItemsBuilder<TEntity> UseIcon(
         Expression<Func<TEntity, string?>> iconName
     )
     {
@@ -196,7 +195,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     /// <remarks>
     ///     Replaces any other media. Editors that can't display media ignore it.
     /// </remarks>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> UseImage(
+    public EfCoreChoiceItemsBuilder<TEntity> UseImage(
         Expression<Func<TEntity, string?>> imageUrl
     )
     {
@@ -224,7 +223,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     ///     fields' values, and the key on the edit form. Calling this more than once keeps the
     ///     choices that match every filter.
     /// </remarks>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> Where<TModel>(
+    public EfCoreChoiceItemsBuilder<TEntity> Where<TModel>(
         Expression<Func<TEntity, TModel, bool>> filter
     )
     {

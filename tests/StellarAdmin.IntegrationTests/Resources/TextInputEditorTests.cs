@@ -139,7 +139,7 @@ public class TextInputEditorTests
         await using var sut = await CreateTextInputFieldsHost(fields =>
             fields
                 .Add(model => model.Email)
-                .UseEditor<TextInputEditor>(input => input.Prefix = "@")
+                .UseTextInputEditor(input => input.Prefix = "@")
                 .Description = "We send the itinerary here."
         );
         using var client = sut.GetTestClient();
@@ -169,8 +169,8 @@ public class TextInputEditorTests
                     create.UseFactory(() => new(10m));
                     create.Fields(fields =>
                     {
-                        fields.Add(model => model.ProductName).UseEditor<TextInputEditor>();
-                        fields.Add(model => model.Password).UseEditor<TextInputEditor>();
+                        fields.Add(model => model.ProductName).UseTextInputEditor();
+                        fields.Add(model => model.Password).UseTextInputEditor();
                     });
                 })
         );
@@ -195,7 +195,7 @@ public class TextInputEditorTests
         {
             fields
                 .Add(model => model.Budget)
-                .UseEditor<TextInputEditor>(input =>
+                .UseTextInputEditor(input =>
                 {
                     input.Max = 500m;
                     input.Min = 0m;
@@ -204,7 +204,7 @@ public class TextInputEditorTests
                 });
             fields
                 .Add(model => model.Quantity)
-                .UseEditor<TextInputEditor>(input => input.Type = TextInputType.Text);
+                .UseTextInputEditor(input => input.Type = TextInputType.Text);
         });
         using var client = sut.GetTestClient();
 
@@ -230,7 +230,7 @@ public class TextInputEditorTests
         await using var sut = await CreateTextInputFieldsHost(fields =>
             fields
                 .Add(model => model.Code)
-                .UseEditor<TextInputEditor>(input =>
+                .UseTextInputEditor(input =>
                 {
                     input.ClassNames.Control = "code-group";
                     input.Prefix = "INV-";
@@ -278,7 +278,7 @@ public class TextInputEditorTests
                         fields.Add(product => product.Name);
                         fields
                             .Add(product => product.Price)
-                            .UseEditor<TextInputEditor>(input => input.Prefix = "$");
+                            .UseTextInputEditor(input => input.Prefix = "$");
                     })
                 )
         );

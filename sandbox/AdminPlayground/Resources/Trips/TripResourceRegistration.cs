@@ -67,13 +67,9 @@ internal static class TripResourceRegistration
                             trip => trip.CityId,
                             city => city.EmptyText = "Choose a city to see its neighbourhoods"
                         )
-                        .UseEditor<ToggleGroupEditor>(group =>
+                        .UseToggleGroupEditor(group =>
                             group.UseItems(
-                                (
-                                    Trip trip,
-                                    IServiceProvider services,
-                                    CancellationToken cancellationToken
-                                ) =>
+                                (trip, services, cancellationToken) =>
                                     services
                                         .GetRequiredService<TripCatalog>()
                                         .NeighbourhoodsAsync(trip.CityId!.Value, cancellationToken)
@@ -82,13 +78,9 @@ internal static class TripResourceRegistration
                     fields
                         .Add(trip => trip.PickupPointIds)
                         .DependsOn(trip => trip.CityId)
-                        .UseEditor<CheckboxGroupEditor>(group =>
+                        .UseCheckboxGroupEditor(group =>
                             group.UseItems(
-                                (
-                                    Trip trip,
-                                    IServiceProvider services,
-                                    CancellationToken cancellationToken
-                                ) =>
+                                (trip, services, cancellationToken) =>
                                     services
                                         .GetRequiredService<TripCatalog>()
                                         .PickupPointsAsync(trip.CityId!.Value, cancellationToken)
@@ -103,13 +95,13 @@ internal static class TripResourceRegistration
     {
         fields
             .Add(trip => trip.CountryId)
-            .UseEditor<SelectEditor>(select => select.UseItems(TripCatalog.CountryChoices()));
+            .UseSelectEditor(select => select.UseItems(TripCatalog.CountryChoices()));
         fields
             .Add(trip => trip.CityId)
             .DependsOn(trip => trip.CountryId)
-            .UseEditor<SelectEditor>(select =>
+            .UseSelectEditor(select =>
                 select.UseItems(
-                    (Trip trip, IServiceProvider services, CancellationToken cancellationToken) =>
+                    (trip, services, cancellationToken) =>
                         services
                             .GetRequiredService<TripCatalog>()
                             .CitiesAsync(trip.CountryId!.Value, cancellationToken)
@@ -118,13 +110,8 @@ internal static class TripResourceRegistration
         fields
             .Add(trip => trip.ArrivalAirport)
             .DependsOn(trip => trip.CountryId)
-            .UseEditor<LookupSheetEditor>(lookup =>
-                lookup.UseItems<TripAirportSource, TripAirport, string, int, Trip>(
-                    airport => airport.Code,
-                    airport => airport.Name,
-                    trip => trip.CountryId!.Value,
-                    items => items.UseCode(airport => airport.Code)
-                )
+            .UseLookupSheetEditor(lookup =>
+                lookup.UseSource<TripAirportSource>(trip => trip.CountryId!.Value)
             );
     }
 }

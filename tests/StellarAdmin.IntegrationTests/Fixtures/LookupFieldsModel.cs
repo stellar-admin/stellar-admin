@@ -35,9 +35,9 @@ public sealed class CategoryStore
     ];
 }
 
-public sealed class CategoryLookupSource(CategoryStore store) : ILookupSource<Category, int>
+public class CategoryLookupSource(CategoryStore store) : LookupSource<Category, int>
 {
-    public Task<IReadOnlyCollection<Category>> FindAsync(
+    public override Task<IReadOnlyCollection<Category>> FindAsync(
         IReadOnlyCollection<int> values,
         CancellationToken cancellationToken
     ) =>
@@ -45,7 +45,11 @@ public sealed class CategoryLookupSource(CategoryStore store) : ILookupSource<Ca
             store.Categories.Where(category => values.Contains(category.Id)).ToArray()
         );
 
-    public Task<LookupPage<Category>> SearchAsync(
+    public override string GetTitle(Category item) => item.Name;
+
+    public override int GetValue(Category item) => item.Id;
+
+    public override Task<LookupPage<Category>> SearchAsync(
         LookupQuery query,
         CancellationToken cancellationToken
     )
@@ -64,6 +68,44 @@ public sealed class CategoryLookupSource(CategoryStore store) : ILookupSource<Ca
             )
         );
     }
+}
+
+public sealed class DescribedCategorySource(CategoryStore store) : CategoryLookupSource(store)
+{
+    public override string? GetDescription(Category item) => item.Code;
+}
+
+public sealed class CodedCategorySource(CategoryStore store) : CategoryLookupSource(store)
+{
+    public override string? GetCode(Category item) => item.Code;
+}
+
+public sealed class NamedCodedCategorySource(CategoryStore store) : CategoryLookupSource(store)
+{
+    public override string? GetCode(Category item) => item.Code;
+
+    public override string? GetDescription(Category item) => item.Name;
+}
+
+public sealed class AvatarCategorySource(CategoryStore store) : CategoryLookupSource(store)
+{
+    public override string? GetAvatar(Category item) => $"/images/{item.Code}.png";
+}
+
+// Avatars without images show the title's initials
+public sealed class InitialsCategorySource(CategoryStore store) : CategoryLookupSource(store)
+{
+    public override string? GetAvatar(Category item) => null;
+}
+
+public sealed class ImageCategorySource(CategoryStore store) : CategoryLookupSource(store)
+{
+    public override string? GetImage(Category item) => $"/images/{item.Code}.png";
+}
+
+public sealed class IconCategorySource(CategoryStore store) : CategoryLookupSource(store)
+{
+    public override string? GetIcon(Category item) => "tag";
 }
 
 // Creates categories with the resource as the create model, so the resource's key selector returns the new key

@@ -20,7 +20,7 @@ public class ResourceReferenceTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.SupplierId)
-                .UseEditor<SelectEditor>(select => select.UseResource<Supplier>())
+                .UseSelectEditor(select => select.UseResource<Supplier>())
         );
         using var client = sut.GetTestClient();
 
@@ -47,7 +47,7 @@ public class ResourceReferenceTests
             fields =>
                 fields
                     .Add(model => model.SupplierId)
-                    .UseEditor<SelectEditor>(select => select.UseResource<Supplier>()),
+                    .UseSelectEditor(select => select.UseResource<Supplier>()),
             configureSuppliers: supplier => supplier.SingularLabel = "preferred supplier"
         );
         using var client = sut.GetTestClient();
@@ -69,7 +69,7 @@ public class ResourceReferenceTests
             fields =>
                 fields
                     .Add(model => model.SupplierId)
-                    .UseEditor<LookupSheetEditor>(lookup => lookup.UseResource<Supplier>()),
+                    .UseLookupSheetEditor(lookup => lookup.UseResource<Supplier>()),
             new() { SupplierId = 4 },
             supplier =>
                 supplier.Reference(reference => reference.UseDescription(item => item.Country))
@@ -96,7 +96,7 @@ public class ResourceReferenceTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.SupplierId)
-                .UseEditor<LookupSheetEditor>(lookup => lookup.UseResource<Supplier>())
+                .UseLookupSheetEditor(lookup => lookup.UseResource<Supplier>())
         );
         using var client = sut.GetTestClient();
         var dataSource = sut.Services.GetRequiredService<SupplierDataSource>();
@@ -129,7 +129,7 @@ public class ResourceReferenceTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.SupplierId)
-                .UseEditor<LookupSheetEditor>(lookup => lookup.UseResource<Supplier>())
+                .UseLookupSheetEditor(lookup => lookup.UseResource<Supplier>())
         );
         using var client = sut.GetTestClient();
 
@@ -151,7 +151,7 @@ public class ResourceReferenceTests
             fields =>
                 fields
                     .Add(model => model.SupplierIds)
-                    .UseEditor<MultiLookupSheetEditor>(lookup => lookup.UseResource<Supplier>()),
+                    .UseMultiLookupSheetEditor(lookup => lookup.UseResource<Supplier>()),
             new() { SupplierIds = [3, 12] }
         );
         using var client = sut.GetTestClient();
@@ -177,7 +177,7 @@ public class ResourceReferenceTests
             fields =>
                 fields
                     .Add(model => model.SupplierId)
-                    .UseEditor<SelectEditor>(select => select.UseResource<Supplier>()),
+                    .UseSelectEditor(select => select.UseResource<Supplier>()),
             configureSuppliers: supplier =>
                 supplier.UseTitle(item => item.Name + " (" + item.Country + ")")
         );
@@ -201,10 +201,10 @@ public class ResourceReferenceTests
             {
                 fields
                     .Add(model => model.CarrierId)
-                    .UseEditor<SelectEditor>(select => select.UseResource<Carrier>());
+                    .UseSelectEditor(select => select.UseResource<Carrier>());
                 fields
                     .Add(model => model.DockCode)
-                    .UseEditor<SelectEditor>(select => select.UseResource<Dock>());
+                    .UseSelectEditor(select => select.UseResource<Dock>());
             },
             configureAdmin: admin =>
             {
@@ -249,7 +249,7 @@ public class ResourceReferenceTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.CarrierId)
-                .UseEditor<SelectEditor>(select => select.UseResource<Carrier>())
+                .UseSelectEditor(select => select.UseResource<Carrier>())
         );
         using var client = sut.GetTestClient();
 
@@ -285,7 +285,7 @@ public class ResourceReferenceTests
             fields =>
                 fields
                     .Add(model => model.CarrierId)
-                    .UseEditor<LookupSheetEditor>(lookup => lookup.UseResource<Carrier>()),
+                    .UseLookupSheetEditor(lookup => lookup.UseResource<Carrier>()),
             new() { CarrierId = 1 },
             configureAdmin: admin =>
                 admin.AddResource<Carrier>(carrier => carrier.UseDataSource<CarrierDataSource>())
@@ -316,9 +316,9 @@ public class ResourceReferenceTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.SupplierId)
-                .UseEditor<SelectEditor>(select =>
+                .UseSelectEditor(select =>
                     select.UseResource<Supplier>(items =>
-                        items.Where<ReferenceFieldsModel>((supplier, model) => supplier.Id < 3)
+                        items.Where((supplier, model) => supplier.Id < 3)
                     )
                 )
         );
@@ -356,7 +356,7 @@ public class ResourceReferenceTests
             fields =>
                 fields
                     .Add(model => model.SupplierId)
-                    .UseEditor<SelectEditor>(select => select.UseResource<Supplier>()),
+                    .UseSelectEditor(select => select.UseResource<Supplier>()),
             configureSuppliers: supplier =>
                 supplier.RequireAuthorization(policy => policy.RequireRole("Purchasing")),
             configureServices: TestAuthenticationHandler.Register

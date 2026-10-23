@@ -107,7 +107,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.OptionalCabin)
-                .UseEditor<SelectEditor>(select => select.EmptyChoiceText = "Any cabin")
+                .UseSelectEditor(select => select.EmptyChoiceText = "Any cabin")
         );
         using var client = sut.GetTestClient();
 
@@ -135,7 +135,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabin)
-                .UseEditor<RadioGroupEditor>(radio => radio.Appearance = appearance)
+                .UseRadioGroupEditor(radio => radio.Appearance = appearance)
         );
         using var client = sut.GetTestClient();
 
@@ -167,7 +167,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields.Add(model => model.OptionalCabin).UseEditor<RadioGroupEditor>()
+            fields.Add(model => model.OptionalCabin).UseRadioGroupEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -193,7 +193,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields.Add(model => model.Cabins).UseEditor<CheckboxGroupEditor>()
+            fields.Add(model => model.Cabins).UseCheckboxGroupEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -230,7 +230,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabins)
-                .UseEditor<CheckboxGroupEditor>(editor =>
+                .UseCheckboxGroupEditor(editor =>
                     editor.Appearance = CheckboxGroupAppearance.Cards
                 )
         );
@@ -253,7 +253,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabins)
-                .UseEditor<CheckboxGroupEditor>(editor => editor.Columns(2))
+                .UseCheckboxGroupEditor(editor => editor.Columns(2))
         );
         using var client = sut.GetTestClient();
 
@@ -274,7 +274,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabins)
-                .UseEditor<CheckboxGroupEditor>(editor =>
+                .UseCheckboxGroupEditor(editor =>
                 {
                     editor.Columns(columns => columns.Small(2).Large(3));
                     editor.Flow = CheckboxGroupFlow.Down;
@@ -300,7 +300,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields.Add(model => model.Cabins).UseEditor<CheckboxGroupEditor>()
+            fields.Add(model => model.Cabins).UseCheckboxGroupEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -320,7 +320,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabin)
-                .UseEditor<RadioGroupEditor>(editor => editor.Columns(2))
+                .UseRadioGroupEditor(editor => editor.Columns(2))
         );
         using var client = sut.GetTestClient();
 
@@ -341,7 +341,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabin)
-                .UseEditor<RadioGroupEditor>(editor =>
+                .UseRadioGroupEditor(editor =>
                 {
                     editor.Columns(columns => columns.Small(2).Large(3));
                     editor.Flow = RadioGroupFlow.Down;
@@ -367,7 +367,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields.Add(model => model.Cabin).UseEditor<RadioGroupEditor>()
+            fields.Add(model => model.Cabin).UseRadioGroupEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -386,10 +386,10 @@ public class ChoiceEditorTests
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
         {
-            fields.Add(model => model.Cabin).UseEditor<SegmentedControlEditor>();
+            fields.Add(model => model.Cabin).UseSegmentedControlEditor();
             fields
                 .Add(model => model.Seat)
-                .UseEditor<SegmentedControlEditor>(toggle =>
+                .UseSegmentedControlEditor(toggle =>
                 {
                     toggle.ClassNames.Control = "seat-buttons";
                     toggle.UseItems([
@@ -423,7 +423,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields.Add(model => model.Cabins).UseEditor<ToggleGroupEditor>()
+            fields.Add(model => model.Cabins).UseToggleGroupEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -457,7 +457,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabin)
-                .UseEditor<ToggleGroupEditor>(editor =>
+                .UseToggleGroupEditor(editor =>
                     editor.Appearance = ToggleGroupAppearance.Joined
                 )
         );
@@ -485,7 +485,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Insured)
-                .UseEditor<ToggleGroupEditor>(editor =>
+                .UseToggleGroupEditor(editor =>
                     editor.Appearance = ToggleGroupAppearance.Buttons
                 )
         );
@@ -513,7 +513,7 @@ public class ChoiceEditorTests
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
         {
-            fields.Add(model => model.Cabins).UseEditor<ToggleGroupEditor>();
+            fields.Add(model => model.Cabins).UseToggleGroupEditor();
             fields.Add(model => model.Seat);
         });
         using var client = sut.GetTestClient();
@@ -541,7 +541,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Seat)
-                .UseEditor<SelectEditor>(select =>
+                .UseSelectEditor(select =>
                     select.UseItems([
                         new ChoiceItem("1a", "1A") { Group = new("Front") },
                         new ChoiceItem("any", "Any seat"),
@@ -604,7 +604,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Seat)
-                .UseEditor<RadioGroupEditor>(radio =>
+                .UseRadioGroupEditor(radio =>
                     radio.UseItems([
                         new ChoiceItem("aisle", "Aisle") { Description = "Easy to stretch." },
                         new ChoiceItem("window", "Window"),
@@ -636,7 +636,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Seat)
-                .UseEditor<SelectEditor>(select => select.UseItems(SeatChoices))
+                .UseSelectEditor(select => select.UseItems(SeatChoices))
         );
         using var client = sut.GetTestClient();
 
@@ -661,7 +661,7 @@ public class ChoiceEditorTests
         {
             fields
                 .Add(model => model.Seat)
-                .UseEditor<SelectEditor>(select => select.UseItems(SeatChoices));
+                .UseSelectEditor(select => select.UseItems(SeatChoices));
             fields.Add(model => model.RequiredCabin);
         });
         using var client = sut.GetTestClient();
@@ -693,7 +693,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields.Add(model => model.RequiredCabin).UseEditor<RadioGroupEditor>()
+            fields.Add(model => model.RequiredCabin).UseRadioGroupEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -713,7 +713,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Preference)
-                .UseEditor<RadioGroupEditor>(radio =>
+                .UseRadioGroupEditor(radio =>
                 {
                     radio.UseItems(SeatChoices);
                     radio.EmptyChoiceText = "No preference";
@@ -741,7 +741,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Preference)
-                .UseEditor<SelectEditor>(select =>
+                .UseSelectEditor(select =>
                     select.UseItems([new ChoiceItem("", "Any seat"), .. SeatChoices])
                 )
         );
@@ -768,13 +768,13 @@ public class ChoiceEditorTests
         {
             fields
                 .Add(model => model.RequiredCabin)
-                .UseEditor<RadioGroupEditor>(radio => radio.EmptyChoice = EmptyChoice.Include);
+                .UseRadioGroupEditor(radio => radio.EmptyChoice = EmptyChoice.Include);
             fields
                 .Add(model => model.OptionalCabin)
-                .UseEditor<SelectEditor>(select => select.EmptyChoice = EmptyChoice.Omit);
+                .UseSelectEditor(select => select.EmptyChoice = EmptyChoice.Omit);
             fields
                 .Add(model => model.Cabins)
-                .UseEditor<CheckboxGroupEditor>(group => group.EmptyChoice = EmptyChoice.Include);
+                .UseCheckboxGroupEditor(group => group.EmptyChoice = EmptyChoice.Include);
         });
         using var client = sut.GetTestClient();
 
@@ -796,7 +796,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields.Add(model => model.OptionalCabin).UseEditor<SegmentedControlEditor>()
+            fields.Add(model => model.OptionalCabin).UseSegmentedControlEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -819,7 +819,7 @@ public class ChoiceEditorTests
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
         {
-            fields.Add(model => model.OptionalCabin).UseEditor<RadioGroupEditor>();
+            fields.Add(model => model.OptionalCabin).UseRadioGroupEditor();
             fields.Add(model => model.Insured);
             fields.Add(model => model.Seat);
         });
@@ -857,7 +857,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields.Add(model => model.Seat).UseEditor<SelectEditor>()
+            fields.Add(model => model.Seat).UseSelectEditor()
         );
         using var client = sut.GetTestClient();
 
@@ -885,7 +885,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Seat)
-                .UseEditor<RadioGroupEditor>(radio => radio.UseItems(MediaChoices))
+                .UseRadioGroupEditor(radio => radio.UseItems(MediaChoices))
         );
         using var client = sut.GetTestClient();
 
@@ -915,7 +915,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Seat)
-                .UseEditor<RadioGroupEditor>(radio =>
+                .UseRadioGroupEditor(radio =>
                 {
                     radio.Appearance = RadioGroupAppearance.Cards;
                     radio.ClassNames.Media = "size-10";
@@ -947,7 +947,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabins)
-                .UseEditor<CheckboxGroupEditor>(group =>
+                .UseCheckboxGroupEditor(group =>
                 {
                     group.Appearance = CheckboxGroupAppearance.Cards;
                     group.UseItems([
@@ -987,7 +987,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Seat)
-                .UseEditor<SegmentedControlEditor>(toggle =>
+                .UseSegmentedControlEditor(toggle =>
                 {
                     toggle.ClassNames.Media = "border";
                     toggle.UseItems(MediaChoices);
@@ -1019,7 +1019,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Seat)
-                .UseEditor<ToggleGroupEditor>(group =>
+                .UseToggleGroupEditor(group =>
                 {
                     group.CheckPlacement = placement;
                     group.UseItems(MediaChoices);
@@ -1047,7 +1047,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Seat)
-                .UseEditor<ToggleGroupEditor>(group =>
+                .UseToggleGroupEditor(group =>
                 {
                     group.CheckPlacement = ToggleGroupCheckPlacement.Start;
                     group.UseItems(MediaChoices);

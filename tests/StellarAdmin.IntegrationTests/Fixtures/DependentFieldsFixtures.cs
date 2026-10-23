@@ -56,7 +56,7 @@ public sealed class TripFieldsHandler(TripFieldsState state) : IResourceEditHand
 public sealed record Place(int Id, string Name, int CountryId);
 
 // Places in Japan (1) and Chile (2), searched by country
-public sealed class PlaceLookupSource : ILookupSource<Place, int, int>
+public sealed class PlaceLookupSource : LookupSource<Place, int, int>
 {
     public static readonly Place[] Places =
     [
@@ -67,7 +67,7 @@ public sealed class PlaceLookupSource : ILookupSource<Place, int, int>
 
     public List<int> SearchedCountries { get; } = [];
 
-    public Task<IReadOnlyCollection<Place>> FindAsync(
+    public override Task<IReadOnlyCollection<Place>> FindAsync(
         IReadOnlyCollection<int> values,
         CancellationToken cancellationToken
     ) =>
@@ -75,7 +75,11 @@ public sealed class PlaceLookupSource : ILookupSource<Place, int, int>
             Places.Where(place => values.Contains(place.Id)).ToArray()
         );
 
-    public Task<LookupPage<Place>> SearchAsync(
+    public override string GetTitle(Place item) => item.Name;
+
+    public override int GetValue(Place item) => item.Id;
+
+    public override Task<LookupPage<Place>> SearchAsync(
         int countryId,
         LookupQuery query,
         CancellationToken cancellationToken

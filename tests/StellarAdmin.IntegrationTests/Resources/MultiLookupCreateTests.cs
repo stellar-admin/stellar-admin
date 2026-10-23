@@ -23,7 +23,7 @@ public class MultiLookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryIds).UseEditor<MultiLookupSheetEditor>(UseCategories)
+            fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -48,7 +48,7 @@ public class MultiLookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryIds).UseEditor<MultiLookupSheetEditor>(UseCategories)
+            fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -75,7 +75,7 @@ public class MultiLookupCreateTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.CategoryIds)
-                .UseEditor<MultiLookupSheetEditor>(lookup => UseCategories(lookup, create: false))
+                .UseMultiLookupSheetEditor(lookup => UseCategories(lookup, create: false))
         );
         using var client = sut.GetTestClient();
 
@@ -93,7 +93,7 @@ public class MultiLookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryIds).UseEditor<MultiLookupSheetEditor>(UseCategories)
+            fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -119,7 +119,7 @@ public class MultiLookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryIds).UseEditor<MultiLookupSheetEditor>(UseCategories)
+            fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -140,7 +140,7 @@ public class MultiLookupCreateTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             addCategoryResource: false
         );
         using var client = sut.GetTestClient();
@@ -174,7 +174,7 @@ public class MultiLookupCreateTests
             fields =>
                 fields
                     .Add(model => model.CategoryIds)
-                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+                    .UseMultiLookupSheetEditor(UseCategories),
             resource => resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             configureServices: TestAuthenticationHandler.Register
         );
@@ -222,15 +222,12 @@ public class MultiLookupCreateTests
             }
         );
 
-    private static void UseCategories(MultiLookupSheetEditor lookup) =>
+    private static void UseCategories<TModel>(MultiLookupSheetEditor<TModel> lookup) =>
         UseCategories(lookup, create: true);
 
-    private static void UseCategories(MultiLookupSheetEditor lookup, bool create)
+    private static void UseCategories<TModel>(MultiLookupSheetEditor<TModel> lookup, bool create)
     {
-        lookup.UseItems<CategoryLookupSource, Category, int>(
-            category => category.Id,
-            category => category.Name
-        );
+        lookup.UseSource<CategoryLookupSource>();
         if (create)
         {
             lookup.EnableCreate();

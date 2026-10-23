@@ -22,7 +22,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories)
+            fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -48,7 +48,7 @@ public class LookupCreateTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.CategoryId)
-                .UseEditor<LookupSheetEditor>(lookup =>
+                .UseLookupSheetEditor(lookup =>
                 {
                     lookup.UseItems(new UntypedItems());
                     lookup.EnableCreate<Category>();
@@ -76,7 +76,7 @@ public class LookupCreateTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.CategoryId)
-                .UseEditor<LookupSheetEditor>(lookup =>
+                .UseLookupSheetEditor(lookup =>
                 {
                     lookup.UseItems(new UntypedItems());
                     lookup.EnableCreate();
@@ -105,7 +105,7 @@ public class LookupCreateTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
+                fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             addCategoryResource: false
         );
         using var client = sut.GetTestClient();
@@ -131,7 +131,7 @@ public class LookupCreateTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
+                fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             admin =>
                 admin.AddResource<Category>(resource =>
                     resource.UseDataSource<CategoryDataSource>()
@@ -165,7 +165,7 @@ public class LookupCreateTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
+                fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             configureCategories: resource =>
                 resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             configureServices: TestAuthenticationHandler.Register
@@ -263,7 +263,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories)
+            fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -526,7 +526,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories)
+            fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -557,7 +557,7 @@ public class LookupCreateTests
         // Arrange
         await using var sut = await CreateHost(fields =>
         {
-            fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories);
+            fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories);
             fields.Add(model => model.PrimaryCategoryId);
         });
         using var client = sut.GetTestClient();
@@ -600,13 +600,9 @@ public class LookupCreateTests
             }
         );
 
-    private static void UseCategories(LookupSheetEditor lookup)
+    private static void UseCategories<TModel>(LookupSheetEditor<TModel> lookup)
     {
-        lookup.UseItems<CategoryLookupSource, Category, int>(
-            category => category.Id,
-            category => category.Name,
-            items => items.UseDescription(category => category.Code)
-        );
+        lookup.UseSource<DescribedCategorySource>();
         lookup.EnableCreate();
     }
 
