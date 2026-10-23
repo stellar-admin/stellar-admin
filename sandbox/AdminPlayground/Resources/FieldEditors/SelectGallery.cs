@@ -51,7 +51,7 @@ public sealed class SelectGallery
     [Display(Name = "bool? · [Editable(false)]")]
     public bool? ReadOnlyInsured { get; set; }
 
-    // UseEditor<SelectEditor> settings
+    // UseSelectEditor settings
 
     [Display(Name = "enum? · EmptyChoiceText")]
     public GalleryCabin? AnyCabin { get; set; }

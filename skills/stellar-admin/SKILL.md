@@ -25,12 +25,12 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Create and edit pages: layout, sections, validation, defaults, save and add another, custom models | `AllowCreate`, `AllowEdit`, `Fields`, `AddSection`, `Columns`, `UseFactory`, `EnableAddAnother` | [forms](references/forms.md) |
 | Edit and add small resources in the index grid's rows | `UseInlineRow`, `EditsField`, `InlineCreatePosition`, `InlineAddButton` | [inline-editing](references/inline-editing.md) |
 | Read-only values in forms, displays, display templates | `AddDisplayField`, `AddDetails`, `UseDisplay<TDisplay>` | [fields](references/fields.md) |
-| Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseEditor<TEditor>` | [editors](references/editors.md) |
+| Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseRadioGroupEditor`, `UseSliderEditor` and the other `Use…Editor` methods, `UseEditor<TEditor>` for custom editors | [editors](references/editors.md) |
 | Images: thumbnails in the grid, photos on the view page, uploads | `ImageDisplay`, `ImageEditor`, `ResolveUrl`, `StoreImage` | [editors](references/editors.md#images), [columns](references/columns.md#built-in-displays-in-cells) |
 | Icons: a field that stores an icon's name, chosen from a picker | `IconEditor`, `IconDisplay` | [editors](references/editors.md#icons) |
 | Formatted text (HTML) with headings, lists, links, tables and images, sanitized | `RichTextEditor`, `HtmlDisplay`, `[DataType(DataType.Html)]`, `IRichTextSanitizer` | [editors](references/editors.md#rich-text) |
 | Foreign keys, lookups, many-to-many, create-from-lookup, related records in columns | `UseTitle`, `Reference`, `SelectEditor`/`LookupSheetEditor`, `UseResource<T>`, `MultiLookupSheetEditor`, `EnableCreate`, `BadgeDisplay` | [relationships](references/relationships.md) |
-| Items that depend on another field: cities of the selected country, cascading selects and lookups | `DependsOn`, `UseResource<T>(items => items.Where<TForm>(...))`, EF `Where<TForm>`, `UseItems((TForm form, ...) => ...)`, `ILookupSource<TEntity, TValue, TArgument>` | [relationships](references/relationships.md#items-that-depend-on-another-field) |
+| Items that depend on another field: cities of the selected country, cascading selects and lookups | `DependsOn`, `UseResource<T>(items => items.Where((record, form) => ...))`, EF `Where<TForm>`, `UseItems((form, services, cancellationToken) => ...)`, `UseSource<T>(form => ...)` with `LookupSource<TItem, TValue, TArgument>` | [relationships](references/relationships.md#items-that-depend-on-another-field) |
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
 | Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
 | Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
@@ -97,7 +97,7 @@ builder.Services.AddStellarAdmin(admin =>
             create.Fields(fields =>
             {
                 // The foreign key takes its items, and its "Customer" label, from the Customer resource
-                fields.Add(booking => booking.CustomerId).UseEditor<LookupSheetEditor>(lookup => lookup.EnableCreate());
+                fields.Add(booking => booking.CustomerId).UseLookupSheetEditor(lookup => lookup.EnableCreate());
                 fields.Add(booking => booking.Destination);
                 fields.Add(booking => booking.DepartureDate);
             });
@@ -165,8 +165,8 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 | Namespace | Package | Contains |
 | --- | --- | --- |
 | `StellarAdmin` | StellarAdmin | `AddStellarAdmin`, `MapStellarAdmin`, `StellarAdminLayouts`, `EnvironmentIndicator`, `EnvironmentColor` |
-| `StellarAdmin.EntityFrameworkCore` | StellarAdmin.EntityFrameworkCore | `AddEfCoreResource`, and the EF `UseItems` overloads on editors for types that aren't resources |
-| `StellarAdmin.Resources.Editors` | StellarAdmin | Editors, `ChoiceItem`, `ItemMedia`, `ILookupSource` |
+| `StellarAdmin.EntityFrameworkCore` | StellarAdmin.EntityFrameworkCore | `AddEfCoreResource`, and the EF `UseItems<TEntity>` overloads on editors for types that aren't resources |
+| `StellarAdmin.Resources.Editors` | StellarAdmin | Editors, `ChoiceItem`, `ItemMedia`, `LookupSource` |
 | `StellarAdmin.Resources.Displays` | StellarAdmin | Displays such as `NumberDisplay`, `BadgeDisplay`, `FieldDisplay` |
 | `StellarAdmin.Resources.Builders` | StellarAdmin | Builder types, for helper methods such as `void BookingFields(ResourceFieldsBuilder<Booking> fields)` |
 | `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `InlineCreatePosition`, `InlineAddButton`, `FieldBinder` |
@@ -180,10 +180,10 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 These come from agents building real tasks without this skill. Each compiled or looked plausible and was wrong.
 
 - **Never hand-write create, edit or list pages** (Razor Pages, controllers, `AddController` into the admin area). Use `AllowCreate`/`AllowEdit` with fields and editors; override a generated page only to add to it.
-- **A foreign key needs its related resource.** On an EF Core entity form, `fields.Add(b => b.CustomerId)` gets a lookup sheet only when `Customer` is registered as a resource; otherwise it renders a number box. Configure `SelectEditor` for a short list, or `LookupSheetEditor` for its settings. A form model has no foreign key to follow: give it an editor with `UseResource<Customer>()`. Use EF `UseItems<TContext, TEntity, TValue>(value, title)` only for a related type that isn't a resource ([relationships](references/relationships.md)).
+- **A foreign key needs its related resource.** On an EF Core entity form, `fields.Add(b => b.CustomerId)` gets a lookup sheet only when `Customer` is registered as a resource; otherwise it renders a number box. Use `UseSelectEditor()` for a short list, or `UseLookupSheetEditor(...)` for its settings. A form model has no foreign key to follow: give it an editor with `UseResource<Customer>()`. Use EF `UseItems<TEntity>(value, title)` only for a related type that isn't a resource ([relationships](references/relationships.md)).
 - **Long text needs a textarea or rich text editor.** A `string` without `[DataType]` renders a single-line input. Use `TextareaEditor` for long plain text and `RichTextEditor` for values that hold HTML, which the seed data or the app's `Html.Raw` views show ([editors](references/editors.md#which-editor)).
 - **EF search and scopes take predicates.** `index.EnableSearch(term => entity => ...)` requires the predicate factory. Scopes filter through the third argument: `scopes.Add("pending", "Pending", b => b.Status == BookingStatus.Pending)`. The id is only the URL value; putting filter text in it filters nothing.
-- **`Add(selector, callback)` returns the parent builder, not the field.** `fields.Add(b => b.CustomerId, f => f.Title = "Customer").UseEditor<...>()` doesn't compile. Configure everything inside the callback (`f => { f.Title = "Customer"; f.UseEditor<LookupSheetEditor>(...); }`) or use `fields.Add(b => b.CustomerId).UseEditor<...>()`. The same holds for columns, sections and display fields.
+- **`Add(selector, callback)` returns the parent builder, not the field.** `fields.Add(b => b.CustomerId, f => f.Title = "Customer").UseLookupSheetEditor()` doesn't compile. Configure everything inside the callback (`f => { f.Title = "Customer"; f.UseLookupSheetEditor(...); }`) or use `fields.Add(b => b.CustomerId).UseLookupSheetEditor(...)`. The same holds for columns, sections and display fields.
 - **`PageSize` must be in `PageSizes`** (default 10, 25, 50, 100), or the panel adds it and logs a configuration problem. Set both for other sizes.
 - **`Allow*` calls don't chain.** Each returns its own page builder (or the resource builder when given a callback). Call them as separate statements on `resource`.
 - **`AllowView` needs fields.** `AllowView()` without `view.Fields(...)` leaves the resource without a view page.

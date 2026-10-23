@@ -27,7 +27,7 @@ resource.AllowCreate(create => create.Fields(fields =>
 
 - Fields start empty; only configured fields are shown and bound. Other properties keep their values (the factory's on create, the stored values on edit).
 - A field selects a direct property with a public getter and setter. An EF Core many-to-many navigation is the exception: it needs no setter ([relationships](relationships.md#many-to-many-with-multilookupsheeteditor)). Paths through references (`b => b.Customer.Name`) are only for display fields.
-- The input comes from the property's type and data annotations unless `UseEditor<TEditor>()` chooses one ([editors](editors.md)).
+- The input comes from the property's type and data annotations unless an editor method such as `UseTextareaEditor()` chooses one ([editors](editors.md)).
 - Label: `field.Title`, else `[Display(Name)]`, else the raw property name (`DepartureDate`). Add `[Display(Name = "Departure date")]` to the model, or set `Title`, for readable labels.
 - Prefer `[Display(Name)]` for a readable name: validation messages use it too ("The Departure date field is required."). `Title` changes only the label, so the messages of most fields keep the raw property name.
 - Help text: `field.Description`, else `[Display(Description)]`.
@@ -154,7 +154,7 @@ edit.Fields(fields =>
 | Form (`fields`) | `Columns`, `Add`, `AddSection`, `AddGroup`, `AddDisplayField`, `AddDetails`, `Clear` |
 | Section (`AddSection(title, ...)`) | Everything on the form, plus `Description`, `Layout`, `ColumnSpan`, `ColumnSpanFull`, `ColumnStart` |
 | Group (`AddGroup(...)`) | Everything on the form, plus `ColumnSpan`, `ColumnSpanFull`, `ColumnStart`; no title or border |
-| Field | `Title`, `Description`, `UseEditor`, `ColumnSpan`, `ColumnSpanFull`, `ColumnStart` |
+| Field | `Title`, `Description`, `Use…Editor` methods, `UseEditor<TEditor>`, `DependsOn`, `ColumnSpan`, `ColumnSpanFull`, `ColumnStart` |
 
 - Breakpoints: `Base`, `Small` (30rem), `Medium` (40rem), `Large` (56rem). They measure the grid's own width, not the viewport, so a narrow section or the create sheet keeps fewer columns.
 - `Columns(n)` is one column below `Medium` and `n` from `Medium`. `Columns(columns => columns.Small(2).Large(3))` sets each breakpoint; unset ones inherit from the next smaller. Counts are 1 to 12; the default is 1.

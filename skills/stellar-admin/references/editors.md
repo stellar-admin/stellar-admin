@@ -1,6 +1,6 @@
 # Editors
 
-An editor is the input a form field renders. Without `UseEditor`, the input is inferred from the property, so most fields need no editor configuration. Choose one with `UseEditor<TEditor>()` or `UseEditor<TEditor>(editor => { ... })`. Editors are in `StellarAdmin.Resources.Editors`.
+An editor is the input a form field renders. Without one, the input is inferred from the property, so most fields need no editor configuration. Each built-in editor has its own method on the field, `Use` followed by the editor's name: `UseSliderEditor()` or `UseSliderEditor(slider => { ... })` for `SliderEditor`. Custom editors use `UseEditor<TEditor>` ([custom editors](#overriding-and-custom-editors)). Editors are in `StellarAdmin.Resources.Editors`.
 
 ## Contents
 
@@ -19,20 +19,20 @@ An editor is the input a form field renders. Without `UseEditor`, the input is i
 ```csharp
 using StellarAdmin.Resources.Editors;
 
-fields.Add(booking => booking.Cabin).UseEditor<RadioGroupEditor>(radio => radio.Appearance = RadioGroupAppearance.Cards);
-fields.Add(booking => booking.Travellers).UseEditor<SliderEditor>();          // range from [Range(1, 12)]
-fields.Add(booking => booking.Total).UseEditor<TextInputEditor>(input => input.Prefix = "$");
-fields.Add(booking => booking.Notes).UseEditor<TextareaEditor>(text => text.Rows = 6);
-fields.Add(customer => customer.IsVip).UseEditor<ToggleEditor>();
+fields.Add(booking => booking.Cabin).UseRadioGroupEditor(radio => radio.Appearance = RadioGroupAppearance.Cards);
+fields.Add(booking => booking.Travellers).UseSliderEditor();          // range from [Range(1, 12)]
+fields.Add(booking => booking.Total).UseTextInputEditor(input => input.Prefix = "$");
+fields.Add(booking => booking.Notes).UseTextareaEditor(text => text.Rows = 6);
+fields.Add(customer => customer.IsVip).UseToggleEditor();
 ```
 
-To set a title or other field settings as well, choose the editor inside the field callback. `fields.Add(selector, configure)` returns the fields builder, so `UseEditor` can't be chained after it:
+To set a title or other field settings as well, choose the editor inside the field callback. `fields.Add(selector, configure)` returns the fields builder, so the editor method can't be chained after it:
 
 ```csharp
 fields.Add(booking => booking.Notes, field =>
 {
     field.Title = "Special requests";
-    field.UseEditor<TextareaEditor>(text => text.Rows = 6);
+    field.UseTextareaEditor(text => text.Rows = 6);
 });
 ```
 
@@ -57,7 +57,7 @@ fields.Add(booking => booking.Notes, field =>
 | Image stored as a file name, key or URL | `ImageEditor` ([images](#images)) |
 | Name of an icon (an amenity's or a category's icon) | `IconEditor` ([icons](#icons)) |
 
-`ChoiceEditor` is the abstract base of the choice editors; don't pass it to `UseEditor`. There is no general file upload, colour or tag-input editor.
+The built-in editors are chosen only with their methods: `UseEditor<SelectEditor>` doesn't compile. There is no general file upload, colour or tag-input editor.
 
 A `string` without `[DataType]` gets a single-line text input, however long its values are. Descriptions, bios, notes and other long text, often a property with no `MaxLength` or a large one, need `TextareaEditor`, or `RichTextEditor` when the values are HTML. The data shows which: seed data or stored values that contain tags, or app views that render the property with `Html.Raw`. Use `RichTextEditor` only for HTML; plain text loses its line breaks there, because HTML ignores them.
 
@@ -105,7 +105,7 @@ Settings left unset are inferred from the property (for example, `SliderEditor` 
 Every editor also has `ClassNames` for extra CSS classes on its parts (`ClassNames.Media` on choice editors, `ClassNames.Image` and `ClassNames.Note` on `ImageEditor`). `RadioGroupFlow`, `CheckboxGroupFlow` and `SliderMarkLabels` are in `StellarAdmin.UI`; the appearance enums are in `StellarAdmin.Resources.Editors`.
 
 ```csharp
-fields.Add(booking => booking.Travellers).UseEditor<SliderEditor>(slider =>
+fields.Add(booking => booking.Travellers).UseSliderEditor(slider =>
 {
     slider.MarkInterval = 1;
     slider.ValueFormat = "{0} travellers";
@@ -128,9 +128,9 @@ Choice editors (`SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor`, `Segm
 | `UseItems(IEnumerable<SelectListItem>)` | Existing select list items |
 | `UseItems<TProvider>()` | A registered service implementing `IChoiceItemsProvider` (`GetItemsAsync(cancellationToken)`) |
 | `UseItems((services, cancellationToken) => ...)` | An inline async loader returning `IReadOnlyList<ChoiceItem>` |
-| `UseItems((TForm form, services, cancellationToken) => ...)` | An inline loader that reads other fields of the form, with `DependsOn` ([relationships](relationships.md#items-that-depend-on-another-field)) |
+| `UseItems((form, services, cancellationToken) => ...)` | An inline loader that reads other fields of the form, with `DependsOn`; `form` is typed as the form's model ([relationships](relationships.md#items-that-depend-on-another-field)) |
 | `UseResource<TResource>()` | The records of a registered resource, named by their titles ([relationships](relationships.md#the-related-resource)) |
-| `UseItems<TEntity, TValue>(value, title, items => ...)` | Rows of an EF Core entity set that isn't a resource, from the registered DbContext that maps it (`items.UseDbContext<TContext>()` picks one; namespace `StellarAdmin.EntityFrameworkCore`; [relationships](relationships.md#related-types-that-arent-resources)) |
+| `UseItems<TEntity>(value, title, items => ...)` | Rows of an EF Core entity set that isn't a resource, from the registered DbContext that maps it (`items.UseDbContext<TContext>()` picks one; namespace `StellarAdmin.EntityFrameworkCore`; [relationships](relationships.md#related-types-that-arent-resources)). The value must have the field's type, or its element type for a collection |
 
 For an enum, describe the choices on the members instead of listing them:
 
@@ -143,7 +143,7 @@ public enum CabinClass
     Business,
 }
 
-fields.Add(booking => booking.Cabin).UseEditor<RadioGroupEditor>(cabin =>
+fields.Add(booking => booking.Cabin).UseRadioGroupEditor(cabin =>
 {
     cabin.Appearance = RadioGroupAppearance.Cards;
     cabin.Columns(2);
@@ -153,7 +153,7 @@ fields.Add(booking => booking.Cabin).UseEditor<RadioGroupEditor>(cabin =>
 For other types, list the choices:
 
 ```csharp
-fields.Add(tour => tour.GuideCode).UseEditor<RadioGroupEditor>(guide =>
+fields.Add(tour => tour.GuideCode).UseRadioGroupEditor(guide =>
 {
     guide.Appearance = RadioGroupAppearance.Cards;
     guide.UseItems([
@@ -189,7 +189,7 @@ The editor adds a first choice that clears the value, labelled `EmptyChoiceText`
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
 
-fields.Add(destination => destination.Photo).UseEditor<ImageEditor>(image =>
+fields.Add(destination => destination.Photo).UseImageEditor(image =>
 {
     image.ResolveUrl(value => $"https://cdn.voyager.example/photos/{value}");
     image.StoreImage((file, services, ct) => services.GetRequiredService<IPhotoStore>().SaveAsync(file, ct)); // returns the value to store
@@ -208,7 +208,7 @@ columns.Add(destination => destination.Photo, column => column.UseDisplay<ImageD
 
 ## Rich text
 
-`RichTextEditor` edits a string property that stores HTML, with a toolbar (undo, text style, bold, italic, underline, strikethrough, inline code, lists, quote, code block, link, table, divider), a bubble over selected text, a `/` menu for blocks, Markdown shortcuts (`##`, `-`, `1.`, `>`) and table handles for rows and columns. `[DataType(DataType.Html)]` on the property picks it without `UseEditor`, and picks `HtmlDisplay` for its columns and view page ([columns](columns.md#built-in-displays-in-cells)).
+`RichTextEditor` edits a string property that stores HTML, with a toolbar (undo, text style, bold, italic, underline, strikethrough, inline code, lists, quote, code block, link, table, divider), a bubble over selected text, a `/` menu for blocks, Markdown shortcuts (`##`, `-`, `1.`, `>`) and table handles for rows and columns. `[DataType(DataType.Html)]` on the property picks it without `UseRichTextEditor`, and picks `HtmlDisplay` for its columns and view page ([columns](columns.md#built-in-displays-in-cells)).
 
 ```csharp
 using StellarAdmin.Resources.Editors;
@@ -219,7 +219,7 @@ public class Guide
     public string? Bio { get; set; }
 }
 
-fields.Add(guide => guide.Bio).UseEditor<RichTextEditor>(editor =>
+fields.Add(guide => guide.Bio).UseRichTextEditor(editor =>
 {
     editor.Placeholder = "Tell travellers about this guide";
     editor.StoreImage(async (file, services, ct) =>
@@ -241,11 +241,11 @@ fields.Add(guide => guide.Bio).UseEditor<RichTextEditor>(editor =>
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
 
-fields.Add(amenity => amenity.Icon).UseEditor<IconEditor>(icon =>
+fields.Add(amenity => amenity.Icon).UseIconEditor(icon =>
 {
     icon.Icons = ["wifi", "waves-ladder", "coffee", "square-parking", "dumbbell"];
 });
-fields.Add(category => category.Icon).UseEditor<IconEditor>(); // every registered icon
+fields.Add(category => category.Icon).UseIconEditor(); // every registered icon
 
 columns.Add(amenity => amenity.Icon, column => column.UseDisplay<IconDisplay>());
 ```

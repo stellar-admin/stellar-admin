@@ -86,7 +86,7 @@ public sealed class TextInputGallery
     [Display(Name = "decimal · [Editable(false)] · Prefix $")]
     public decimal ReadOnlyAmount { get; set; }
 
-    // UseEditor<TextInputEditor> settings
+    // UseTextInputEditor settings
 
     [Display(Name = "string · Placeholder")]
     public string? PlaceholderText { get; set; }

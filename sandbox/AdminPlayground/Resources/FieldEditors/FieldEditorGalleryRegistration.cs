@@ -224,7 +224,7 @@ internal static class FieldEditorGalleryRegistration
             "TextInputEditor settings",
             section =>
             {
-                section.Description = "UseEditor<TextInputEditor> with explicit settings.";
+                section.Description = "UseTextInputEditor with explicit settings.";
                 section
                     .Add(model => model.PlaceholderText)
                     .UseTextInputEditor(input => input.Placeholder = "Seat preference");
@@ -300,7 +300,7 @@ internal static class FieldEditorGalleryRegistration
             "SelectEditor settings",
             section =>
             {
-                section.Description = "UseEditor<SelectEditor> with explicit settings.";
+                section.Description = "UseSelectEditor with explicit settings.";
                 section
                     .Add(model => model.AnyCabin)
                     .UseSelectEditor(select => select.EmptyChoiceText = "Any cabin");
@@ -344,7 +344,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<LookupSheetEditor> with UseItems from a registered ILookupSource. Optional fields can be cleared.";
+                    "UseLookupSheetEditor with UseSource, one LookupSource per description and media. Optional fields can be cleared.";
                 section
                     .Add(model => model.Airport)
                     .UseLookupSheetEditor(lookup => UseAirports(lookup));
@@ -549,7 +549,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<MultiLookupSheetEditor> on a collection of keys. Add, Choose or the summary opens the sheet, where each result toggles and EnableCreate adds New; Remove and Clear edit the selection.";
+                    "UseMultiLookupSheetEditor on a collection of keys. Add, Choose or the summary opens the sheet, where each result toggles and EnableCreate adds New; Remove and Clear edit the selection.";
                 section
                     .Add(model => model.Destinations)
                     .UseMultiLookupSheetEditor(lookup =>
@@ -696,7 +696,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<RadioGroupEditor> without UseItems. The property supplies the choices.";
+                    "UseRadioGroupEditor without UseItems. The property supplies the choices.";
                 section.Add(model => model.Cabin).UseRadioGroupEditor();
                 section
                     .Add(model => model.CabinCards)
@@ -827,7 +827,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<CheckboxGroupEditor> without UseItems. The enum element type supplies the choices.";
+                    "UseCheckboxGroupEditor without UseItems. The enum element type supplies the choices.";
                 section.Add(model => model.Cabins).UseCheckboxGroupEditor();
                 section.Add(model => model.RequiredCabins).UseCheckboxGroupEditor();
             }
@@ -967,7 +967,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<SegmentedControlEditor> without UseItems. The enum or Boolean property supplies the choices.";
+                    "UseSegmentedControlEditor without UseItems. The enum or Boolean property supplies the choices.";
                 section.Add(model => model.Cabin).UseSegmentedControlEditor();
                 section.Add(model => model.OptionalCabin).UseSegmentedControlEditor();
                 section.Add(model => model.Insured).UseSegmentedControlEditor();
@@ -1152,7 +1152,7 @@ internal static class FieldEditorGalleryRegistration
             "TextareaEditor settings",
             section =>
             {
-                section.Description = "UseEditor<TextareaEditor> with explicit settings.";
+                section.Description = "UseTextareaEditor with explicit settings.";
                 section
                     .Add(model => model.PlaceholderNotes)
                     .UseTextareaEditor(textarea =>
@@ -1177,7 +1177,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "The Boolean template forwards to Editors/Checkbox. UseEditor<CheckboxEditor> renders the same.";
+                    "The Boolean template forwards to Editors/Checkbox. UseCheckboxEditor renders the same.";
                 section.Add(model => model.Subscribed);
                 section.Add(model => model.DescribedSubscribed);
                 section.Add(model => model.ExplicitSubscribed).UseCheckboxEditor();
@@ -1225,7 +1225,7 @@ internal static class FieldEditorGalleryRegistration
             "States",
             section =>
             {
-                section.Description = "UseEditor<ToggleEditor> on Boolean properties.";
+                section.Description = "UseToggleEditor on Boolean properties.";
                 section.Add(model => model.Notifications).UseToggleEditor();
                 section.Add(model => model.Newsletter).UseToggleEditor();
                 section.Add(model => model.DescribedNotifications).UseToggleEditor();
@@ -1306,7 +1306,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<DateInputEditor>, UseEditor<DateTimeInputEditor> and UseEditor<TimeInputEditor> with explicit settings.";
+                    "UseDateInputEditor, UseDateTimeInputEditor and UseTimeInputEditor with explicit settings.";
                 section
                     .Add(model => model.BoundedDeparture)
                     .UseDateInputEditor(date =>
@@ -1454,7 +1454,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<SliderEditor> without settings. Bounds come from [Range], or 0 to 100.";
+                    "UseSliderEditor without settings. Bounds come from [Range], or 0 to 100.";
                 section.Add(model => model.Volume).UseSliderEditor();
                 section.Add(model => model.Passengers).UseSliderEditor();
                 section.Add(model => model.Rating).UseSliderEditor();
@@ -1545,7 +1545,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<OneTimeCodeEditor> without settings. The length comes from [StringLength], or 6.";
+                    "UseOneTimeCodeEditor without settings. The length comes from [StringLength], or 6.";
                 section.Add(model => model.Code).UseOneTimeCodeEditor();
                 section.Add(model => model.RequiredCode).UseOneTimeCodeEditor();
                 section.Add(model => model.Pin).UseOneTimeCodeEditor();

@@ -47,35 +47,35 @@ Fields then refer to the resource. On an EF Core entity form, a foreign key or a
 ```csharp
 // EF Core entity form: the foreign key names the Customer resource
 fields.Add(booking => booking.CustomerId);   // a lookup sheet of customers
-fields.Add(booking => booking.CustomerId).UseEditor<LookupSheetEditor>(lookup => lookup.EnableCreate());
+fields.Add(booking => booking.CustomerId).UseLookupSheetEditor(lookup => lookup.EnableCreate());
 
 // A form model: name the resource
-fields.Add(form => form.CustomerId).UseEditor<SelectEditor>(select => select.UseResource<Customer>());
+fields.Add(form => form.CustomerId).UseSelectEditor(select => select.UseResource<Customer>());
 ```
 
 - `UseResource<T>()` is on every choice editor, `LookupSheetEditor` and `MultiLookupSheetEditor`. Explicit `UseItems` or `UseResource` always wins over the inferred resource.
 - A field without a `Title` or `[Display(Name)]` is labelled with the related resource's singular label ("Customer", not "CustomerId"). Collections keep their property's name.
 - A field that refers to a type with no registered resource, or to an unavailable one, has no items, and a configuration problem is logged when the form renders. Register the resource, or give the editor `UseItems` ([below](#related-types-that-arent-resources)). A foreign key with no editor and no related resource keeps its number input instead, and an info problem is logged.
-- A field that needs a different look from the resource's uses `UseItems`.
+- A field that needs a different look from the resource's uses `UseItems`, or `UseSource` on a lookup ([below](#lookups-without-ef-core)).
 
 ## Foreign key as a select
 
 For a short related list, use `SelectEditor` or any choice editor. The items are the related resource's records, named by their titles, in its order:
 
 ```csharp
-fields.Add(tour => tour.GuideId).UseEditor<SelectEditor>(select => select.EmptyChoiceText = "No guide yet");
+fields.Add(tour => tour.GuideId).UseSelectEditor(select => select.EmptyChoiceText = "No guide yet");
 ```
 
 - An optional key (`int? GuideId` without `[Required]`) gets a "Not set" choice; relabel it with `EmptyChoiceText`.
 - `RadioGroupEditor` with `Appearance = RadioGroupAppearance.Cards` shows the related records as cards, with the resource's description and media.
-- Share the configuration between create and edit with an `Action<SelectEditor>` variable or a helper method.
+- Share the configuration between create and edit with a helper method that takes the editor, typed by the form: `static void UseGuides(SelectEditor<Tour> select) => ...`.
 
 ## Foreign key as a searchable lookup
 
 For a long related list, use `LookupSheetEditor`. The field shows the selection; Choose opens a sheet that searches as the user types and pages results.
 
 ```csharp
-fields.Add(booking => booking.CustomerId).UseEditor<LookupSheetEditor>(lookup =>
+fields.Add(booking => booking.CustomerId).UseLookupSheetEditor(lookup =>
     lookup.Sheet(sheet => sheet.Title = "Choose a customer"));
 ```
 
@@ -87,7 +87,7 @@ fields.Add(booking => booking.CustomerId).UseEditor<LookupSheetEditor>(lookup =>
 `lookup.EnableCreate()` adds a New button that opens the related resource's create form in a sheet. Saving closes the sheet and selects the new record.
 
 ```csharp
-fields.Add(booking => booking.CustomerId).UseEditor<LookupSheetEditor>(lookup => lookup.EnableCreate());
+fields.Add(booking => booking.CustomerId).UseLookupSheetEditor(lookup => lookup.EnableCreate());
 ```
 
 - The related type (`Customer`) must be registered as a resource with `AllowCreate`; otherwise the lookup has no New button, and a configuration problem is logged when the form renders. `EnableCreate<TResource>()` names the resource explicitly.
@@ -107,10 +107,10 @@ The fixed lookup texts ("Choose {field}", "New", "Load more") come from `admin.C
 
 ## Many-to-many with MultiLookupSheetEditor
 
-`MultiLookupSheetEditor` selects several keys into a collection property (`List<int>`, `string[]`, ...). It takes the same `UseResource`, `UseItems`, `Field`, `Sheet` and `EnableCreate` as the single lookup.
+`MultiLookupSheetEditor` selects several keys into a collection property (`List<int>`, `string[]`, ...). It takes the same `UseResource`, `UseItems`, `UseSource`, `Field`, `Sheet` and `EnableCreate` as the single lookup.
 
 ```csharp
-fields.Add(form => form.DestinationIds).UseEditor<MultiLookupSheetEditor>(lookup =>
+fields.Add(form => form.DestinationIds).UseMultiLookupSheetEditor(lookup =>
 {
     lookup.UseResource<Destination>();
     lookup.Field(field => field.Layout = MultiLookupSheetEditorLayout.Chips);
@@ -140,61 +140,63 @@ This works for navigations whose join table EF Core maps without an entity type,
 
 ## Related types that aren't resources
 
-A related type without admin pages of its own (countries, cities) keeps `UseItems`. The EF Core overload from `StellarAdmin.EntityFrameworkCore` takes the related entity and the key type, and loads from the registered DbContext that maps the entity (`items.UseDbContext<TContext>()` picks one when several do):
+A related type without admin pages of its own (countries, cities) keeps `UseItems`. The EF Core overload from `StellarAdmin.EntityFrameworkCore` takes the related entity, and loads from the registered DbContext that maps the entity (`items.UseDbContext<TContext>()` picks one when several do):
 
 ```csharp
 using StellarAdmin.EntityFrameworkCore;
 
-fields.Add(trip => trip.CountryId).UseEditor<SelectEditor>(select =>
-    select.UseItems<Country, int>(
+fields.Add(trip => trip.CountryId).UseSelectEditor(select =>
+    select.UseItems<Country>(
         country => country.Id,
         country => country.Name,
         items => items.OrderBy(country => country.Name)));
 ```
 
+- The value must have the field's type (`int` for an `int` or `int?` foreign key), or its element type for a collection. Otherwise the field keeps its default editor, and a configuration problem is logged.
 - The query projects only value, title and the configured extras; it honours global query filters.
-- The choice items builder: `OrderBy`, `UseDescription`, `UseGroup` (option groups in a select), `Where<TForm>`, and media with `UseIcon`, `UseAvatar`, `UseImage` or `UseCode`.
+- The choice items builder: `OrderBy`, `UseDescription`, `UseGroup` (option groups in a select), `Where<TForm>` ([below](#items-that-depend-on-another-field)), and media with `UseIcon`, `UseAvatar`, `UseImage` or `UseCode`.
 - The lookup items builder adds `SearchOn(...)` (the title by default) and `ReferenceFrom<TModel>(model => model.Navigation)`, which names the navigation that loads the selection on an edit page when the foreign key doesn't.
 - Title, description and media selectors can read through references and combine values, for example `UseDescription(city => city.Country.Name)`. Don't add null checks for references: the edit page loads the references a selector reads, and a selector that reads a collection or passes the entity to a method gets a separate query instead.
 
 ## Lookups without EF Core
 
-For a related type that isn't a resource and doesn't come from EF Core, register a source implementing `ILookupSource<TEntity, TValue>` and pass it as the first type argument. A registered resource with a custom data source needs no source: use `UseResource<T>()`.
+For a related type that isn't a resource and doesn't come from EF Core, write a source deriving from `LookupSource<TItem, TValue>`. It says what each item is and shows, and the lookup names only the source. A registered resource with a custom data source needs no source: use `UseResource<T>()`.
 
 ```csharp
-builder.Services.AddScoped<AirportLookupSource>();
+fields.Add(trip => trip.AirportCode).UseLookupSheetEditor(lookup => lookup.UseSource<AirportSource>());
 
-fields.Add(trip => trip.AirportCode).UseEditor<LookupSheetEditor>(lookup =>
-    lookup.UseItems<AirportLookupSource, Airport, string>(
-        airport => airport.Code,
-        airport => airport.City,
-        items => items.UseDescription(airport => airport.Country)));
-
-public sealed class AirportLookupSource(AirportClient client) : ILookupSource<Airport, string>
+public sealed class AirportSource(AirportClient client) : LookupSource<Airport, string>
 {
+    public override string GetValue(Airport airport) => airport.Code;
+    public override string GetTitle(Airport airport) => airport.City;
+    public override string? GetDescription(Airport airport) => airport.Country;
+
     // The airports with these codes; leave out codes that don't exist
-    public Task<IReadOnlyCollection<Airport>> FindAsync(IReadOnlyCollection<string> values, CancellationToken cancellationToken) => client.FindAsync(values, cancellationToken);
+    public override Task<IReadOnlyCollection<Airport>> FindAsync(IReadOnlyCollection<string> values, CancellationToken cancellationToken) => client.FindAsync(values, cancellationToken);
 
     // query.Term (null when empty), query.Skip, query.Take; HasMore when more results follow
-    public async Task<LookupPage<Airport>> SearchAsync(LookupQuery query, CancellationToken cancellationToken) =>
+    public override async Task<LookupPage<Airport>> SearchAsync(LookupQuery query, CancellationToken cancellationToken) =>
         await client.SearchAsync(query.Term, query.Skip, query.Take, cancellationToken);
 }
 ```
 
-The non-EF items builder has `UseDescription`, `UseCode`, `UseAvatar`, `UseImage` and `UseIcon` (each returns nothing, so call one per statement). With a custom source, `EnableCreate()` needs `EnableCreate<TResource>()` when the item type isn't a registered resource.
+- The source is resolved from the request's services, or created with them when the app didn't register it, so its constructor can take services.
+- Media: override one of `GetAvatar` (initials when it returns null), `GetCode`, `GetIcon` or `GetImage`. A source that overrides more than one, or whose value type isn't the field's, makes the field keep its default editor, and a configuration problem is logged.
+- What a source shows is the same on every field that uses it; a field that needs another description or media uses another source, which can derive from the first and override only that.
+- With a source, `EnableCreate()` needs `EnableCreate<TResource>()` when the item type isn't a registered resource.
 
 ## Items that depend on another field
 
 `DependsOn` makes a field's items depend on another field of the same form, such as the cities of the selected country. It works with every choice editor, `LookupSheetEditor` and `MultiLookupSheetEditor`, on create and edit pages, create sheets and inline rows. Call it once per field the items depend on; dependencies chain (country → city → neighbourhoods).
 
 ```csharp
-fields.Add(trip => trip.CountryId).UseEditor<SelectEditor>(select =>
-    select.UseItems<Country, int>(country => country.Id, country => country.Name));
+fields.Add(trip => trip.CountryId).UseSelectEditor(select =>
+    select.UseItems<Country>(country => country.Id, country => country.Name));
 
 fields.Add(trip => trip.CityId)
     .DependsOn(trip => trip.CountryId)
-    .UseEditor<SelectEditor>(select =>
-        select.UseItems<City, int>(
+    .UseSelectEditor(select =>
+        select.UseItems<City>(
             city => city.Id,
             city => city.Name,
             items => items.Where<Trip>((city, trip) => city.CountryId == trip.CountryId)));
@@ -202,46 +204,44 @@ fields.Add(trip => trip.CityId)
 
 - When the country changes, the city field reloads its items and its value is cleared. While the country is empty, the city field is disabled and shows "Select Country first"; set other text with `.DependsOn(trip => trip.CountryId, country => country.EmptyText = "Choose a country to see its cities")`.
 - The form a filter or loader receives holds only the fields named in `DependsOn` (and the key on an edit page); every other property has its default value. A filter that reads `trip.Region` needs `.DependsOn(trip => trip.Region)` too.
-- EF `Where<TForm>` is available on the choice and lookup items builders, with the form's type as the type argument. With a related EF Core resource, filter it the same way: `select.UseResource<City>(items => items.Where<Trip>((city, trip) => city.CountryId == trip.CountryId))`. A resource with a custom data source can't apply the filter: it is ignored, and a configuration problem is logged.
+- EF `Where<TForm>` is available on the choice and lookup items builders, with the form's type as the type argument. A related EF Core resource is filtered without it, because the editor knows the form: `select.UseResource<City>(items => items.Where((city, trip) => city.CountryId == trip.CountryId))`. A resource with a custom data source can't apply the filter: it is ignored, and a configuration problem is logged.
 - The lookup sheet names its filter ("Filtered by Country: Japan").
 - Saving doesn't check that the city belongs to the country; validate that in the app (a custom handler, or `IValidatableObject` on the model) when it matters.
 - A `DependsOn` field that isn't an editable field of the same form, or that makes a cycle, is ignored and reported as a configuration problem.
 
-Choice editors without EF Core take a loader whose first parameter is the form:
+Choice editors without EF Core take a loader whose first parameter is the form, typed by the editor:
 
 ```csharp
 fields.Add(trip => trip.NeighbourhoodIds)
     .DependsOn(trip => trip.CityId)
-    .UseEditor<ToggleGroupEditor>(group =>
-        group.UseItems((Trip trip, IServiceProvider services, CancellationToken cancellationToken) =>
+    .UseToggleGroupEditor(group =>
+        group.UseItems((trip, services, cancellationToken) =>
             services.GetRequiredService<CityGuide>().NeighbourhoodsAsync(trip.CityId!.Value, cancellationToken)));
 ```
 
-A lookup without EF Core uses a source implementing `ILookupSource<TEntity, TValue, TArgument>`, whose search receives an argument the field takes from the form. The form's type is the fifth type argument:
+A lookup without EF Core uses a source deriving from `LookupSource<TItem, TValue, TArgument>`, whose search receives an argument the field takes from the form:
 
 ```csharp
-builder.Services.AddScoped<CountryAirportSource>();
-
 fields.Add(trip => trip.ArrivalAirport)
     .DependsOn(trip => trip.CountryId)
-    .UseEditor<LookupSheetEditor>(lookup =>
-        lookup.UseItems<CountryAirportSource, Airport, string, int, Trip>(
-            airport => airport.Code,
-            airport => airport.Name,
-            trip => trip.CountryId!.Value,
-            items => items.UseCode(airport => airport.Code)));
+    .UseLookupSheetEditor(lookup => lookup.UseSource<CountryAirportSource>(trip => trip.CountryId));
 
-public sealed class CountryAirportSource(AirportClient client) : ILookupSource<Airport, string, int>
+public sealed class CountryAirportSource(AirportClient client) : LookupSource<Airport, string, int>
 {
-    // Not filtered: the selected airports load whatever the country
-    public Task<IReadOnlyCollection<Airport>> FindAsync(IReadOnlyCollection<string> values, CancellationToken cancellationToken) => client.FindAsync(values, cancellationToken);
+    public override string GetValue(Airport airport) => airport.Code;
+    public override string GetTitle(Airport airport) => airport.Name;
+    public override string? GetCode(Airport airport) => airport.Code;
 
-    public Task<LookupPage<Airport>> SearchAsync(int countryId, LookupQuery query, CancellationToken cancellationToken) =>
+    // Not filtered: the selected airports load whatever the country
+    public override Task<IReadOnlyCollection<Airport>> FindAsync(IReadOnlyCollection<string> values, CancellationToken cancellationToken) => client.FindAsync(values, cancellationToken);
+
+    public override Task<LookupPage<Airport>> SearchAsync(int countryId, LookupQuery query, CancellationToken cancellationToken) =>
         client.SearchAsync(countryId, query.Term, query.Skip, query.Take, cancellationToken);
 }
 ```
 
-A search that needs several values takes a record of them as its argument, such as `ILookupSource<Hotel, int, HotelFilter>` with `trip => new HotelFilter(trip.CityId!.Value, trip.StarRating)`.
+- The argument must have the type the source searches with, or its nullable form (`trip.CountryId` for an `int?`); the sheet doesn't search while a field it depends on is empty. A source given no argument, or given one it doesn't take, makes the field keep its default editor, and a configuration problem is logged.
+- A search that needs several values takes a record of them as its argument, such as `LookupSource<Hotel, int, HotelFilter>` with `trip => new HotelFilter(trip.CityId!.Value, trip.StarRating)`.
 
 ## Showing related values
 

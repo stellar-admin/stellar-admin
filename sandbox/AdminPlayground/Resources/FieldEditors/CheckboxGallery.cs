@@ -15,7 +15,7 @@ public sealed class CheckboxGallery
     [Display(Name = "bool · [Display(Description)]", Description = "Shown below the checkbox.")]
     public bool DescribedSubscribed { get; set; }
 
-    [Display(Name = "bool · UseEditor<CheckboxEditor>")]
+    [Display(Name = "bool · UseCheckboxEditor")]
     public bool ExplicitSubscribed { get; set; }
 
     // Validation

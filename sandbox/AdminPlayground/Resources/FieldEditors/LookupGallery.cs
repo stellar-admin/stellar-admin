@@ -7,16 +7,16 @@ public sealed class LookupGallery
     : FieldEditorGalleryRecord,
         IFieldEditorGalleryRecord<LookupGallery>
 {
-    // UseItems with and without descriptions
+    // UseSource with and without descriptions
 
-    [Display(Name = "string? · UseItems")]
+    [Display(Name = "string? · UseSource")]
     public string? Airport { get; set; }
 
     [Required]
-    [Display(Name = "string · [Required] · UseItems")]
+    [Display(Name = "string · [Required] · UseSource")]
     public string? RequiredAirport { get; set; }
 
-    [Display(Name = "string? · UseItems with UseDescription")]
+    [Display(Name = "string? · UseSource with GetDescription")]
     public string? DescribedItemsAirport { get; set; }
 
     // Field configuration
@@ -37,7 +37,7 @@ public sealed class LookupGallery
     [Display(Name = "string? · a value the source does not have")]
     public string? UnknownAirport { get; set; }
 
-    // UseEditor<LookupSheetEditor> settings
+    // UseLookupSheetEditor settings
 
     [Display(Name = "string? · sheet Title · SearchPlaceholder · editor EmptyText")]
     public string? LabelledAirport { get; set; }
@@ -56,41 +56,41 @@ public sealed class LookupGallery
 
     // Media and layout
 
-    [Display(Name = "string? · UseCode with UseDescription")]
+    [Display(Name = "string? · GetCode with GetDescription")]
     public string? CodeAirport { get; set; }
 
-    [Display(Name = "string? · UseCode")]
+    [Display(Name = "string? · GetCode")]
     public string? CodeInputAirport { get; set; }
 
-    [Display(Name = "string? · UseAvatar with UseDescription")]
+    [Display(Name = "string? · GetAvatar with GetDescription")]
     public string? AvatarAirport { get; set; }
 
-    [Display(Name = "string? · UseAvatar")]
+    [Display(Name = "string? · GetAvatar")]
     public string? AvatarInputAirport { get; set; }
 
-    [Display(Name = "string? · UseImage with UseDescription")]
+    [Display(Name = "string? · GetImage with GetDescription")]
     public string? ImageAirport { get; set; }
 
-    [Display(Name = "string? · UseIcon · ClassNames.Media")]
+    [Display(Name = "string? · GetIcon · ClassNames.Media")]
     public string? IconInputAirport { get; set; }
 
-    [Display(Name = "string? · UseDescription · editor Layout Input")]
+    [Display(Name = "string? · GetDescription · editor Layout Input")]
     public string? InputLayoutAirport { get; set; }
 
-    [Display(Name = "string? · UseCode · editor Layout Card")]
+    [Display(Name = "string? · GetCode · editor Layout Card")]
     public string? CardLayoutAirport { get; set; }
 
-    [Display(Name = "string? · UseCode · editor ShowMedia false")]
+    [Display(Name = "string? · GetCode · editor ShowMedia false")]
     public string? EditorMediaHiddenAirport { get; set; }
 
-    [Display(Name = "string? · UseCode · sheet ShowMedia false")]
+    [Display(Name = "string? · GetCode · sheet ShowMedia false")]
     public string? SheetMediaHiddenAirport { get; set; }
 
-    [Display(Name = "string? · UseCode · EnableCreate")]
+    [Display(Name = "string? · GetCode · EnableCreate")]
     public string? CreatableAirport { get; set; }
 
     [Editable(false)]
-    [Display(Name = "string? · UseCode · [Editable(false)]")]
+    [Display(Name = "string? · GetCode · [Editable(false)]")]
     public string? ReadOnlyCodeAirport { get; set; }
 
     public static LookupGallery CreateSample() =>

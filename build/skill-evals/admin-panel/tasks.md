@@ -18,7 +18,7 @@ Starts from: `task-1` (no StellarAdmin).
 2. `AddStellarAdmin` with `AddEfCoreResource<Customer>` and `AddEfCoreResource<Booking>`, each with index columns, `AllowCreate`, `AllowEdit` and `AllowDelete`.
 3. `app.MapStellarAdmin()` mapped; authentication and authorization middleware run before it.
 4. Staff-only access through `admin.RequireAuthorization(policy => policy.RequireRole("Staff"))` or `app.MapStellarAdmin().RequireAuthorization(...)`: anonymous `/stellaradmin/bookings` challenges, a signed-in user without Staff is forbidden, Staff gets 200.
-5. The booking form's `CustomerId` is a choice editor (`SelectEditor` or `LookupSheetEditor` with EF `UseItems`) rather than a number input.
+5. The booking form's `CustomerId` is a choice editor rather than a number input: the lookup sheet inferred from the registered Customers resource, or `UseSelectEditor` / `UseLookupSheetEditor`.
 6. Creating and editing a booking through the forms succeeds.
 
 ## Task 2: index page
@@ -51,9 +51,9 @@ Starts from: `task-3` (StellarAdmin installed; Bookings has no forms).
 **Checks**
 
 1. `fields.Columns(...)` with two columns at a wide breakpoint, and two `AddSection` calls.
-2. Customer uses `LookupSheetEditor` with EF `UseItems<Customer, int>(...)` and `EnableCreate()` (Customers already has a create form).
-3. Cabin uses `RadioGroupEditor` with `Appearance = RadioGroupAppearance.Cards`.
-4. Travellers uses `SliderEditor` (range from `[Range]` or explicit).
+2. Customer uses `UseLookupSheetEditor(lookup => lookup.EnableCreate())`, taking its items from the Customers resource (which already has a create form).
+3. Cabin uses `UseRadioGroupEditor` with `Appearance = RadioGroupAppearance.Cards`.
+4. Travellers uses `UseSliderEditor` (range from `[Range]` or explicit).
 5. Edit adds `Status` as a field, and `AddDisplayField` (or `AddDetails`) for reference and creation time, not editable fields.
 6. Reference generated through `create.UseFactory(() => new Booking { Reference = ... })` or a create handler, not a hidden field or controller hack.
 7. Creating a booking, including one with a customer created from the lookup, and editing it both work.

@@ -9,22 +9,22 @@ public sealed class MultiLookupGallery
 {
     // Layouts
 
-    [Display(Name = "List<string> · Chips (default) · UseCode · EnableCreate")]
+    [Display(Name = "List<string> · Chips (default) · GetCode · EnableCreate")]
     public List<string> Destinations { get; set; } = [];
 
-    [Display(Name = "string[] · Chips · UseAvatar")]
+    [Display(Name = "string[] · Chips · GetAvatar")]
     public string[] Guides { get; set; } = [];
 
-    [Display(Name = "List<string> · Layout List · UseCode with UseDescription")]
+    [Display(Name = "List<string> · Layout List · GetCode with GetDescription")]
     public List<string> ListDestinations { get; set; } = [];
 
-    [Display(Name = "string[] · Layout List · UseAvatar with UseDescription")]
+    [Display(Name = "string[] · Layout List · GetAvatar with GetDescription")]
     public string[] ListGuides { get; set; } = [];
 
-    [Display(Name = "List<string> · Layout Summary · UseCode")]
+    [Display(Name = "List<string> · Layout Summary · GetCode")]
     public List<string> SummaryDestinations { get; set; } = [];
 
-    [Display(Name = "string[] · Layout Summary · UseAvatar")]
+    [Display(Name = "string[] · Layout Summary · GetAvatar")]
     public string[] SummaryGuides { get; set; } = [];
 
     // Field configuration

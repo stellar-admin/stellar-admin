@@ -33,7 +33,7 @@ admin.AddEfCoreResource<Destination>(resource =>
         edit.Fields(fields =>
         {
             fields.Add(destination => destination.Name);
-            fields.Add(destination => destination.CountryId).UseEditor<LookupSheetEditor>(/* see relationships.md */);
+            fields.Add(destination => destination.CountryId).UseLookupSheetEditor(/* see relationships.md */);
             fields.Add(destination => destination.BestSeason);
             fields.Add(destination => destination.Active);
         });
