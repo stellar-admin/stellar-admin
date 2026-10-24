@@ -37,6 +37,7 @@ internal static class DemoNavigation
             [
                 new DemoItem("Checkbox", "/Checkbox/Index"),
                 new DemoItem("Checkbox Group", "/CheckboxGroup/Index"),
+                new DemoItem("Dictionary Editor", "/DictionaryEditor/Index"),
                 new DemoItem("Field", "/Field/Index"),
                 new DemoItem("Icon Picker", "/IconPicker/Index"),
                 new DemoItem("Image Upload", "/ImageUpload/Index"),
@@ -45,6 +46,7 @@ internal static class DemoNavigation
                 new DemoItem("Input OTP", "/InputOtp/Index"),
                 new DemoItem("Segmented Control", "/SegmentedControl/Index"),
                 new DemoItem("Label", "/Label/Index"),
+                new DemoItem("List Editor", "/ListEditor/Index"),
                 new DemoItem("Questionnaire", "/Questionnaire/Index"),
                 new DemoItem("Radio", "/Radio/Index"),
                 new DemoItem("Radio Group", "/RadioGroup/Index"),

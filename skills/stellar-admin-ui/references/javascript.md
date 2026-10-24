@@ -21,6 +21,7 @@ A handful of tag helpers render a custom element around or in place of their mar
 | Tag Helper | Element | What the script adds |
 |------------|---------|----------------------|
 | `<sa-collapsible>` | `<sel-collapsible>` | Handles the `--toggle`, `--show` and `--hide` commands; keeps `aria-expanded` in sync on the trigger buttons. |
+| `<sa-list-editor>`, `<sa-dictionary-editor>` | `<sel-collection-editor>` | Adds, removes and reorders rows; renumbers the indexed names they post; keyboard, paste and dragging; checks the rows, blocks the submit while one is invalid, and drops blank rows on submit. |
 | `<sa-dialog>`, `<sa-alert-dialog>`, `<sa-sheet>` | `<sel-dialog>` | Locks page scrolling while a modal is open; mirrors open state in `data-open`. |
 | `<sa-dropdown-menu-content>`, `<sa-dropdown-menu-sub-content>` | `<sel-dropdown-menu>` | Menu semantics over a native popover: roving arrow-key focus, Home/End, type-ahead, Enter/Space activation, close-on-select, checkbox and radio items, sub-menu open/close. |
 | `<sa-input-otp>` | `<sel-input-otp>` | Keeps the visual slot cells in sync with the backing `<input>`, shows the active cell and caret, enforces the pattern. |

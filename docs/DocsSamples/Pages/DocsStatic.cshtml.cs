@@ -23,6 +23,12 @@ public class DocsStatic : PageModel
             "CheckboxGroup/_CollectionBinding" => new CheckboxGroup.Index.OrderModel(),
             "CheckboxGroup/_Validation" => new CheckboxGroup.Index.ValidationModel(),
             "Checkbox/_Validation" => new Checkbox.Index.ValidationModel(),
+            "DictionaryEditor/_Intro" => new DictionaryEditor.Index.LocalNamesModel(),
+            "DictionaryEditor/_EnumKeys" or "DictionaryEditor/_ReadOnly" =>
+                new DictionaryEditor.Index.SeasonalPricesModel(),
+            "DictionaryEditor/_Items" => new DictionaryEditor.Index.GuidesModel(),
+            "DictionaryEditor/_Numbers" => new DictionaryEditor.Index.BaggageModel(),
+            "DictionaryEditor/_Validation" => new DictionaryEditor.Index.IndexModel().Validation,
             "Details/_Columns"
             or "Details/_Divided"
             or "Details/_EmptyValues"
@@ -57,6 +63,14 @@ public class DocsStatic : PageModel
             "InputOtp/_ModelBinding" => new Pages.InputOtp.Index.ModelBindingModel(),
             "InputOtp/_Validation" => new Pages.InputOtp.Index.ValidationModel(),
             "Label/_ModelBinding" => new Label.Index.ModelBindingModel(),
+            "ListEditor/_Affixes" => new ListEditor.Index.TrailModel(),
+            "ListEditor/_Empty" => new ListEditor.Index.PackingModel(),
+            "ListEditor/_Intro"
+            or "ListEditor/_Numbered"
+            or "ListEditor/_ReadOnly"
+            or "ListEditor/_Validation" => new ListEditor.Index.TripModel(),
+            "ListEditor/_ItemChecks" => new ListEditor.Index.AirportsModel(),
+            "ListEditor/_Numbers" => new ListEditor.Index.DeparturesModel(),
             "Progress/_FileUploadList" => Pages.Progress.Index.Files,
             "Questionnaire/_Card" => new Questionnaire.Index.CardModel(),
             "Questionnaire/_CustomProgress" => new Questionnaire.Index.CustomProgressModel(),
@@ -134,6 +148,12 @@ public class DocsStatic : PageModel
                     "PartialModel.CabinClass",
                     "Please select a valid cabin class"
                 );
+                break;
+            case "DictionaryEditor/_Validation":
+                DictionaryEditor.Index.AddValidationErrors(ModelState, "PartialModel");
+                break;
+            case "ListEditor/_Validation":
+                ListEditor.Index.AddValidationErrors(ModelState, "PartialModel");
                 break;
             case "DataGrid/_EditingErrors":
                 DataGrid.Index.AddEditingErrors(ModelState);

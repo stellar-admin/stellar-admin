@@ -1,0 +1,23 @@
+@page
+@model DocsSamples.Pages.DictionaryEditor.Index
+
+<docs-example-wrapper>
+    <docs-example title="Intro">
+        <partial name="_Intro" for="Model.Intro"/>
+    </docs-example>
+    <docs-example title="Enum Keys">
+        <partial name="_EnumKeys" for="Model.EnumKeys"/>
+    </docs-example>
+    <docs-example title="Items">
+        <partial name="_Items" for="Model.Items"/>
+    </docs-example>
+    <docs-example title="Numbers">
+        <partial name="_Numbers" for="Model.Numbers"/>
+    </docs-example>
+    <docs-example title="Validation">
+        <partial name="_Validation" for="Model.Validation"/>
+    </docs-example>
+    <docs-example title="Read Only">
+        <partial name="_ReadOnly" for="Model.ReadOnly"/>
+    </docs-example>
+</docs-example-wrapper>

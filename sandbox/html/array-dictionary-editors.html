@@ -1,0 +1,1361 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Array and dictionary editors</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Figtree:wght@400..700&display=swap"
+    />
+
+    <!--
+      Real built library and admin panel assets. The field, input, native select, button, badge and kbd
+      markup is captured from DocsSamples and dependent-fields.html (2026-10-23); the form and grid shells
+      come from dependent-fields.html. The editors themselves are the candidate: rendered by the script
+      below, styled by the candidate stylesheet, as <admin-array-editor> / <admin-dictionary-editor> would be.
+      Round 3: the unified box only, with the round-2 choices locked in.
+    -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css" />
+    <!-- Theme fixture, swapped from the control bar; empty for the default theme. -->
+    <link id="theme-css" rel="stylesheet" />
+    <script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <style>
+      /* ---------------------------------------------------------------------------------------- */
+      /* Page chrome (prototype only)                                                              */
+      /* ---------------------------------------------------------------------------------------- */
+      :root { --sa-font-sans: "Inter", sans-serif; }
+      body {
+        margin: 0;
+        background: var(--sa-color-canvas);
+        color: var(--sa-color-ink);
+        font-family: var(--sa-font-sans);
+      }
+      .proto-page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 160px; }
+      .proto-page > h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+      .proto-intro { margin: 0 0 8px; color: var(--sa-color-ink-muted); font-size: 14px; max-width: 95ch; }
+      .proto-nav { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 32px; font-size: 14px; }
+      .proto-nav a { color: var(--sa-color-ink-muted); }
+      .proto-section { margin-bottom: 72px; scroll-margin-top: 16px; }
+      .proto-section-head h2 { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
+      .proto-section-head p { margin: 0 0 12px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 100ch; }
+      .proto-section-head code, .proto-intro code { font-size: 12px; }
+      /* Options panel: floats over the page so choices can change while their effect is in view */
+      .proto-panel {
+        position: fixed; right: 16px; bottom: 16px; z-index: 50;
+        display: flex; flex-direction: column;
+        width: min(300px, calc(100vw - 32px)); max-height: calc(100vh - 32px);
+        font-size: 13px; color: var(--sa-color-ink);
+        background: var(--sa-color-surface-raised);
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container);
+        box-shadow: var(--sa-shadow-overlay);
+      }
+      .proto-panel-head {
+        display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 14px;
+        border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+      }
+      .proto-panel-head strong { font-weight: 600; }
+      .proto-panel-head button { margin-left: auto; }
+      .proto-panel:not([data-open]) { width: auto; }
+      .proto-panel:not([data-open]) .proto-panel-head { border-bottom: 0; }
+      .proto-panel:not([data-open]) .proto-panel-body { display: none; }
+      .proto-panel-body { overflow-y: auto; overscroll-behavior: contain; padding: 12px 14px 14px; }
+      .proto-options, .proto-controls { display: grid; gap: 4px; }
+      .proto-options > span, .proto-controls > span { margin-top: 8px; font-weight: 500; }
+      .proto-options > span:first-child { margin-top: 0; }
+      .proto-options > span small { font-weight: 400; color: var(--sa-color-ink-muted); margin-left: 4px; }
+      .proto-controls { margin-top: 14px; padding-top: 6px; border-top: var(--sa-border-width) solid var(--sa-color-line); }
+      .proto-options .group, .proto-controls .group { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+      .proto-panel button {
+        font: inherit; font-size: 12.5px; padding: 2px 8px; cursor: pointer; color: var(--sa-color-ink);
+        background: var(--sa-color-surface); border: var(--sa-border-width) solid var(--sa-color-line);
+        border-radius: var(--sa-radius-control-sm);
+      }
+      .proto-panel button[aria-pressed="true"] {
+        background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); border-color: transparent;
+      }
+      /* Wide screens: the page makes room for the open panel instead of sliding under it */
+      @media (min-width: 1100px) {
+        body:has(.proto-panel[data-open]) .proto-page { margin-right: 332px; }
+      }
+      .proto-frame {
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container);
+        background: var(--sa-color-canvas); padding: 24px;
+      }
+      .proto-frame .sa-page-container { padding: 0; }
+      .proto-form-actions { display: flex; gap: 8px; margin-top: 24px; }
+      .proto-post {
+        margin-top: 12px; font: 12px/1.55 ui-monospace, monospace; color: var(--sa-color-ink-muted);
+        padding: 10px 12px; background: var(--sa-color-surface-sunken); border-radius: var(--sa-radius-control);
+        white-space: pre-wrap; max-height: 16em; overflow: auto;
+      }
+      .proto-post b { color: var(--sa-color-ink); font-weight: 500; }
+      .proto-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 32px; align-items: start; }
+      .proto-pair > figure { margin: 0; min-width: 0; }
+      .proto-pair > figure > figcaption { margin: 0 0 8px; font-size: 13px; color: var(--sa-color-ink-muted); }
+      .proto-pair > figure > figcaption b { color: var(--sa-color-ink); font-weight: 600; margin-right: 6px; }
+      .proto-pair .proto-frame { display: grid; gap: 20px; }
+      .proto-matrix { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+      .proto-matrix th { text-align: left; font-weight: 600; padding: 8px 10px; color: var(--sa-color-ink-muted); vertical-align: bottom; }
+      .proto-matrix th:first-child { width: 120px; }
+      .proto-matrix td { padding: 12px 10px; vertical-align: top; border-top: var(--sa-border-width) solid var(--sa-color-line); }
+      .proto-matrix td:first-child { color: var(--sa-color-ink-muted); padding-top: 18px; }
+      .proto-api { margin-top: 12px; font-size: 12px; }
+      .proto-api pre {
+        margin: 6px 0 0; padding: 10px 12px; overflow-x: auto;
+        background: var(--sa-color-surface-sunken); border-radius: var(--sa-radius-control);
+      }
+      @media (max-width: 900px) {
+        .proto-pair { grid-template-columns: 1fr; }
+        .proto-matrix, .proto-matrix tbody, .proto-matrix tr, .proto-matrix td { display: block; width: auto; }
+        .proto-matrix thead { display: none; }
+        .proto-matrix td[data-col]::before { content: attr(data-col); display: block; margin-bottom: 6px; font-weight: 600; color: var(--sa-color-ink-muted); }
+      }
+
+      /* ---------------------------------------------------------------------------------------- */
+      /* Candidate: collection editor (would go in the admin panel stylesheet)                     */
+      /* ---------------------------------------------------------------------------------------- */
+      @layer sa.components {
+        /* One field with a row per value. Each row is a grid of [gutter] [key] value actions; the
+           column head and the rows share --_cols, which the editor sets for its own columns. */
+        .sa-collection-editor {
+          --_row-h: var(--sa-control-h);
+          --_actions-w: var(--sa-control-h);
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+          border: var(--sa-border-width) solid var(--sa-color-line-control);
+          border-radius: var(--sa-radius-box);
+          background: var(--sa-color-field);
+          background-clip: padding-box;
+          box-shadow: var(--sa-shadow-control);
+          overflow: hidden;
+          transition:
+            border-color var(--sa-motion-fast) var(--sa-motion-ease),
+            box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+          &:hover:not(:focus-within, [data-readonly]) { border-color: var(--sa-color-line-control-hover); }
+          &:focus-within {
+            border-color: var(--sa-focus-border);
+            box-shadow: var(--sa-shadow-control), var(--sa-focus-shadow-field);
+          }
+          &:is([aria-invalid="true"], :has([aria-invalid="true"])) { border-color: var(--sa-color-danger); }
+          &[aria-invalid="true"]:focus-within { box-shadow: var(--sa-shadow-control), var(--sa-invalid-focus-shadow); }
+          /* Read-only: the values as text on a disabled select's fill, with no add row, remove or grip (for now;
+             see the read-only fields plan) */
+          &[data-readonly] {
+            border-color: var(--sa-color-line);
+            background: var(--sa-color-field-disabled);
+            box-shadow: none;
+          }
+        }
+
+        .sa-collection-editor-head,
+        .sa-collection-editor-item {
+          display: grid;
+          grid-template-columns: var(--_cols);
+          align-items: center;
+          min-width: 0;
+        }
+        .sa-collection-editor-head {
+          min-height: calc(7 * var(--sa-unit));
+          border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+          background: var(--sa-color-surface-subtle);
+          color: var(--sa-color-ink-muted);
+          font-size: var(--sa-text-xs);
+          font-weight: var(--sa-weight-control);
+          & > span { padding-inline: var(--sa-control-px); }
+          & > [data-col="number"] { padding: 0; text-align: center; }
+        }
+        .sa-collection-editor-items {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          & > li + li { border-top: var(--sa-border-width) solid var(--sa-color-line); }
+        }
+        .sa-collection-editor-item {
+          &:focus-within:not([data-invalid], [data-dragging]) { background: var(--sa-color-hover); }
+          &[data-invalid] { background: color-mix(in oklab, var(--sa-color-danger) 6%, transparent); }
+          /* The dragged row's place: an empty slot that moves as the row is dragged */
+          &[data-dragging] {
+            background: var(--sa-color-surface-sunken);
+            & > * { visibility: hidden; }
+          }
+        }
+        /* The row being dragged: lifted above the page and following the pointer */
+        .sa-collection-editor.sa-collection-editor-ghost {
+          position: fixed;
+          z-index: 50;
+          margin: 0;
+          border-color: var(--sa-color-line-control);
+          background: var(--sa-color-surface);
+          box-shadow: var(--sa-shadow-overlay);
+          pointer-events: none;
+          & .sa-collection-editor-item { background: transparent; }
+          & .sa-collection-editor-remove { opacity: 0; }
+        }
+        :root[data-collection-dragging], :root[data-collection-dragging] * { cursor: grabbing !important; user-select: none; }
+        .sa-collection-editor-cell {
+          display: flex;
+          align-items: center;
+          align-self: stretch;
+          min-width: 0;
+          & + .sa-collection-editor-cell { border-inline-start: var(--sa-border-width) solid var(--sa-color-line); }
+        }
+        /* The inputs and selects inside the rows give up their own field look: the box is the field */
+        .sa-collection-editor-cell > .sa-input,
+        .sa-collection-editor-cell > .sa-native-select-wrapper > .sa-native-select {
+          flex: 1;
+          min-width: 0;
+          height: var(--_row-h);
+          border-color: transparent;
+          border-radius: 0;
+          background: transparent;
+          box-shadow: none;
+        }
+        /* (Specific enough to beat the input's and select's own hover, focus and invalid states) */
+        .sa-collection-editor .sa-collection-editor-cell :is(.sa-input, .sa-native-select):is(:hover, :focus-visible, [aria-invalid="true"], .input-validation-error) {
+          border-color: transparent;
+          box-shadow: none;
+        }
+        .sa-collection-editor-cell > .sa-native-select-wrapper {
+          flex: 1;
+          min-width: 0;
+          height: 100%;
+          & > .sa-native-select { width: 100%; height: 100%; }
+        }
+        .sa-collection-editor-text {
+          flex: 1;
+          min-width: 0;
+          padding-inline: var(--sa-control-px);
+          font-size: var(--sa-text-control);
+          line-height: var(--_row-h);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .sa-collection-editor-affix {
+          color: var(--sa-color-ink-muted);
+          font-size: var(--sa-text-sm);
+          &[data-side="start"] { padding-inline-start: var(--sa-control-px); margin-inline-end: calc(-0.5 * var(--sa-control-px)); }
+          &[data-side="end"] { padding-inline: var(--sa-unit) var(--sa-control-px); }
+        }
+
+        /* Gutter: row numbers (optional) or, for a sortable list without them, a grip. With both, the
+           number turns into the grip while the row is hovered or focused. */
+        .sa-collection-editor-gutter,
+        .sa-collection-editor-actions {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          align-self: stretch;
+        }
+        .sa-collection-editor-gutter[data-numbered] {
+          background: var(--sa-color-surface-subtle);
+          border-inline-end: var(--sa-border-width) solid var(--sa-color-line);
+        }
+        .sa-collection-editor-number {
+          color: var(--sa-color-ink-muted);
+          font-size: var(--sa-text-xs);
+          font-variant-numeric: tabular-nums;
+        }
+        .sa-collection-editor-handle,
+        .sa-collection-editor-remove { color: var(--sa-color-ink-muted); }
+        .sa-collection-editor-handle {
+          width: 100%;
+          height: 100%;
+          min-height: 0;
+          padding: 0;
+          border-radius: 0;
+          cursor: grab;
+          touch-action: none;
+          & > svg { width: 0.875rem; height: 0.875rem; }
+          & > .sa-collection-editor-number + svg { display: none; }
+        }
+        /* (Specific enough to beat the ghost button's hover and focus) */
+        .sa-collection-editor-gutter > .sa-collection-editor-handle {
+          &:is(:hover, :active):not(:disabled) {
+            background-color: transparent;
+            color: var(--sa-color-ink);
+          }
+          &:focus-visible {
+            outline: none;
+            box-shadow: inset 0 0 0 2px var(--sa-focus-border);
+          }
+        }
+        .sa-collection-editor-item:is(:hover, :focus-within) .sa-collection-editor-handle:has(> .sa-collection-editor-number) {
+          & > .sa-collection-editor-number { display: none; }
+          & > svg { display: block; }
+        }
+        /* Remove shows on hover and focus (always on touch screens); the grip always shows */
+        @media (hover: hover) {
+          .sa-collection-editor-item:not(:hover, :focus-within) .sa-collection-editor-remove {
+            opacity: 0;
+          }
+        }
+        .sa-collection-editor-item-error {
+          grid-column: var(--_err-col, 1 / -1);
+          margin: 0;
+          padding: 0 var(--sa-control-px) calc(1.5 * var(--sa-unit));
+          color: var(--sa-color-danger-text);
+          font-size: var(--sa-text-sm);
+          line-height: var(--sa-leading-ui);
+        }
+
+        /* Empty message, and "Add" as the last row with the count */
+        .sa-collection-editor-empty {
+          display: flex;
+          align-items: center;
+          min-height: var(--_row-h);
+          padding-inline: var(--sa-control-px);
+          color: var(--sa-color-ink-muted);
+          font-size: var(--sa-text-sm);
+        }
+        .sa-collection-editor-add {
+          display: flex;
+          align-items: center;
+          gap: calc(2 * var(--sa-unit));
+          width: 100%;
+          min-height: var(--_row-h);
+          padding-inline: var(--sa-control-px);
+          border: 0;
+          background: transparent;
+          color: var(--sa-color-ink-muted);
+          font: inherit;
+          font-size: var(--sa-text-sm);
+          font-weight: var(--sa-weight-control);
+          text-align: start;
+          cursor: pointer;
+          & > svg { width: var(--sa-control-icon); height: var(--sa-control-icon); flex-shrink: 0; }
+          &:hover:not(:disabled) { color: var(--sa-color-ink); background: var(--sa-color-hover); }
+          &:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--sa-focus-border); }
+          &:disabled { cursor: not-allowed; }
+          &:disabled > :not(.sa-collection-editor-count) { opacity: var(--sa-disabled-opacity); }
+        }
+        .sa-collection-editor > :is(.sa-collection-editor-items, .sa-collection-editor-empty) + .sa-collection-editor-add {
+          border-top: var(--sa-border-width) solid var(--sa-color-line);
+        }
+        .sa-collection-editor-count {
+          margin-inline-start: auto;
+          color: var(--sa-color-ink-muted);
+          font-size: var(--sa-text-xs);
+          font-weight: 400;
+          font-variant-numeric: tabular-nums;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="proto-page">
+      <h1>Array and dictionary editors</h1>
+      <p class="proto-intro">
+        One field with a row per value, for a list of primitive values (<code>List&lt;string&gt;</code>,
+        <code>int[]</code>, …) or for keyed values (<code>Dictionary&lt;string, T&gt;</code>,
+        <code>Dictionary&lt;TEnum, T&gt;</code>). Every editor below is live: <kbd data-slot="kbd" class="sa-kbd">Enter</kbd>
+        adds a row, <kbd data-slot="kbd" class="sa-kbd">↑</kbd>/<kbd data-slot="kbd" class="sa-kbd">↓</kbd> move between rows,
+        <kbd data-slot="kbd" class="sa-kbd">Backspace</kbd> in an empty row removes it, pasting several lines (or
+        <code>key=value</code> lines, or two spreadsheet columns) adds several, and
+        <kbd data-slot="kbd" class="sa-kbd">Alt</kbd>+<kbd data-slot="kbd" class="sa-kbd">↑</kbd>/<kbd data-slot="kbd" class="sa-kbd">↓</kbd> moves a sortable row.
+      </p>
+      <nav class="proto-nav">
+        <a href="#numbers">Row numbers and reordering</a>
+        <a href="#form">Edit form</a>
+        <a href="#readonly">Read-only beside other fields</a>
+        <a href="#matrix">Every editor, every state</a>
+        <a href="#grid">Grid display</a>
+      </nav>
+
+      <section class="proto-section" id="numbers">
+        <div class="proto-section-head">
+          <h2>Row numbers and reordering</h2>
+          <p>
+            Two independent list options, both off by default. With both, the row's number turns into the grip while
+            the row is hovered or focused. A dictionary can number its rows but not reorder them: its entries have no
+            order to keep.
+          </p>
+        </div>
+        <div class="proto-pair">
+          <figure><figcaption><b>Neither</b>the default</figcaption><div class="proto-frame"><div data-instance="n_plain"></div></div></figure>
+          <figure><figcaption><b>Row numbers</b><code>.RowNumbers()</code></figcaption><div class="proto-frame"><div data-instance="n_numbers"></div></div></figure>
+          <figure><figcaption><b>Reordering</b><code>.Sortable()</code></figcaption><div class="proto-frame"><div data-instance="n_sortable"></div></div></figure>
+          <figure><figcaption><b>Both</b><code>.RowNumbers().Sortable()</code></figcaption><div class="proto-frame"><div data-instance="n_both"></div></div></figure>
+        </div>
+      </section>
+
+      <section class="proto-section" id="form">
+        <div class="proto-section-head">
+          <h2>Edit form</h2>
+          <p>
+            Highlights is a sortable <code>List&lt;string&gt;</code> (1 to 8). Arrival airports is a unique
+            <code>string[]</code> matching <code>^[A-Z]{3}$</code>, upper-cased on entry. Departure days is an
+            <code>int[]</code> from 1 to 31. Local names is a <code>Dictionary&lt;string, string&gt;</code> whose keys
+            match <code>^[a-z]{2}$</code>, with its own empty message. Seasonal prices is a
+            <code>Dictionary&lt;Season, decimal&gt;</code>: the key is a select, a season can be used once, and Add stops
+            when every season is in. Guides by language picks both its key and its value from supplied items. Baggage
+            allowance is a <code>Dictionary&lt;string, int&gt;</code> in kg.
+            Rows validate when they lose focus; Save validates everything and shows what would be posted.
+          </p>
+        </div>
+        <div class="proto-frame">
+          <div class="sa-page-container sa-page-container-width-large sa-resource-form" data-form-layout="split" data-slot="page-container" data-width="large">
+            <header class="sa-page-header sa-resource-form-header" data-slot="page-header">
+              <h1 data-slot="page-header-title" class="sa-page-header-title">Lisbon food walk</h1>
+            </header>
+            <form method="post" data-resource-form id="trip-form" novalidate>
+              <section data-slot="form-section" data-layout="split" aria-labelledby="sec-content" class="sa-form-section">
+                <div class="sa-form-section-inner">
+                  <div class="sa-form-section-header" data-slot="form-section-header">
+                    <h2 class="sa-form-section-title" data-slot="form-section-title" id="sec-content">Trip page</h2>
+                  </div>
+                  <div class="sa-form-section-content" data-slot="form-section-content">
+                    <div data-slot="grid" class="sa-grid">
+                      <div class="sa-grid-content" data-slot="grid-content" data-columns="single" id="form-content"></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section data-slot="form-section" data-layout="split" aria-labelledby="sec-logistics" class="sa-form-section">
+                <div class="sa-form-section-inner">
+                  <div class="sa-form-section-header" data-slot="form-section-header">
+                    <h2 class="sa-form-section-title" data-slot="form-section-title" id="sec-logistics">Logistics</h2>
+                  </div>
+                  <div class="sa-form-section-content" data-slot="form-section-content">
+                    <div data-slot="grid" class="sa-grid">
+                      <div class="sa-grid-content" data-slot="grid-content" data-columns="single" id="form-logistics"></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <div class="proto-form-actions">
+                <button type="submit" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default">Save</button>
+                <button type="button" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-default" id="form-reset">Reset</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="proto-post" id="form-post" aria-live="polite"></div>
+        <div class="proto-api">
+          Configuration this form could come from (proposal, not final):
+          <pre>fields.Add(t => t.Highlights).UseEditor&lt;ListEditor&gt;(list => list
+    .Count(1, 8).Sortable().Placeholder("e.g. Tasting at a family-run tasca"));
+fields.Add(t => t.ArrivalAirports).UseEditor&lt;ListEditor&gt;(list => list
+    .Pattern("^[A-Z]{3}$", "Use a three-letter IATA code, like LIS.").Unique().UpperCase());
+fields.Add(t => t.DepartureDays).UseEditor&lt;ListEditor&gt;(list => list.Range(1, 31).Unique());
+fields.Add(t => t.LocalNames).UseEditor&lt;DictionaryEditor&gt;(dict => dict
+    .Key("Language", key => key.Pattern("^[a-z]{2}$", "Use a two-letter language code, like pt."))
+    .Value("Local name")
+    .EmptyText("No translations yet. Pages use the English name."));
+fields.Add(t => t.SeasonalPrices).UseEditor&lt;DictionaryEditor&gt;(dict => dict
+    .Key("Season").Value("Price", value => value.Prefix("€")));   // enum key: a select, each season once
+fields.Add(t => t.GuidesByLanguage).UseEditor&lt;DictionaryEditor&gt;(dict => dict
+    .Key("Language", key => key.UseItems(Languages))
+    .Value("Guide", value => value.UseResource&lt;Guide&gt;()));   // the same item sources as SelectEditor
+fields.Add(t => t.BaggageAllowance).UseEditor&lt;DictionaryEditor&gt;(dict => dict
+    .Key("Cabin").Value("Allowance", value => value.Range(0, 50).Suffix("kg")));</pre>
+        </div>
+      </section>
+
+      <section class="proto-section" id="readonly">
+        <div class="proto-section-head">
+          <h2>Read-only beside other fields</h2>
+          <p>
+            Each field as the panel renders it when <code>IsReadOnly</code> is set: text inputs, input groups and text
+            areas are <code>readonly</code> and look editable; a select and a checkbox have no read-only state, so they
+            are <code>disabled</code>; a multi-select lookup shows its items on the muted fill, and "None" in an input
+            when it has none. Lists and dictionaries take the disabled select's fill for now.
+          </p>
+        </div>
+        <div class="proto-frame">
+          <div class="sa-page-container sa-page-container-width-large sa-resource-form" data-form-layout="split" data-slot="page-container" data-width="large">
+            <header class="sa-page-header sa-resource-form-header" data-slot="page-header">
+              <h1 data-slot="page-header-title" class="sa-page-header-title">Lisbon food walk</h1>
+            </header>
+            <form id="ro-form" onsubmit="return false">
+              <section data-slot="form-section" data-layout="split" aria-labelledby="ro-sec-filled" class="sa-form-section">
+                <div class="sa-form-section-inner">
+                  <div class="sa-form-section-header" data-slot="form-section-header">
+                    <h2 class="sa-form-section-title" data-slot="form-section-title" id="ro-sec-filled">With values</h2>
+                  </div>
+                  <div class="sa-form-section-content" data-slot="form-section-content">
+                    <div data-slot="grid" class="sa-grid">
+                      <div class="sa-grid-content" data-slot="grid-content" data-columns="single">
+                      <div data-slot="grid-item" class="sa-grid-item"><div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="ro-name">Name</label><input class="sa-input" data-slot="input" id="ro-name" type="text" value="Lisbon food walk" readonly></div></div>
+                      <div data-slot="grid-item" class="sa-grid-item"><div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="ro-price">Price from</label><div class="sa-input-group" role="group" data-slot="input-group"><div class="sa-input-group-addon sa-input-group-addon-align-start" data-align="start" data-slot="input-group-addon" role="group"><span class="sa-input-group-text" data-slot="input-group-text">€</span></div><input class="sa-input sa-input-group-input" data-slot="input-group-control" id="ro-price" type="text" value="49.00" readonly></div></div></div>
+                      <div data-slot="grid-item" class="sa-grid-item"><div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="ro-summary">Summary</label><textarea class="sa-textarea" data-slot="textarea" id="ro-summary" readonly>Three hours through Alfama and Mouraria, with seven tastings and the stories behind them.</textarea></div></div>
+                      <div data-slot="grid-item" class="sa-grid-item"><div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="ro-difficulty">Difficulty</label><div data-slot="native-select-wrapper" data-size="default" class="sa-native-select-wrapper"><select data-slot="native-select" data-size="default" class="sa-native-select" id="ro-difficulty" disabled><option>Easy</option></select><svg class="sa-native-select-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></div></div></div>
+                      <div data-slot="grid-item" class="sa-grid-item" data-instance="ro_Highlights"></div>
+                      <div data-slot="grid-item" class="sa-grid-item"><div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><span class="sa-label sa-field-label" data-slot="field-label" id="ro-guides-label">Guides (multi-select lookup)</span><div class="flex flex-col gap-1.5" role="list" aria-labelledby="ro-guides-label"><div class="sa-item sa-item-variant-muted sa-item-size-xs flex-nowrap" data-slot="item" role="listitem"><div class="sa-item-content min-w-0 gap-0" data-slot="item-content"><div class="sa-item-title w-full text-sm" data-slot="item-title"><span class="truncate">Inês Duarte</span></div></div></div><div class="sa-item sa-item-variant-muted sa-item-size-xs flex-nowrap" data-slot="item" role="listitem"><div class="sa-item-content min-w-0 gap-0" data-slot="item-content"><div class="sa-item-title w-full text-sm" data-slot="item-title"><span class="truncate">Tiago Monteiro</span></div></div></div></div></div></div>
+                      <div data-slot="grid-item" class="sa-grid-item" data-instance="ro_LocalNames"></div>
+                      <div data-slot="grid-item" class="sa-grid-item" data-instance="ro_SeasonalPrices"></div>
+                      <div data-slot="grid-item" class="sa-grid-item"><div class="sa-field sa-field-orientation-horizontal" data-orientation="horizontal" data-slot="field"><span class="sa-input-control-wrapper"><input type="checkbox" id="ro-published" data-slot="input" class="sa-checkbox" checked disabled><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span></span><label class="sa-field-label" data-slot="field-label" for="ro-published">Published</label></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section data-slot="form-section" data-layout="split" aria-labelledby="ro-sec-empty" class="sa-form-section">
+                <div class="sa-form-section-inner">
+                  <div class="sa-form-section-header" data-slot="form-section-header">
+                    <h2 class="sa-form-section-title" data-slot="form-section-title" id="ro-sec-empty">Empty</h2>
+                  </div>
+                  <div class="sa-form-section-content" data-slot="form-section-content">
+                    <div data-slot="grid" class="sa-grid">
+                      <div class="sa-grid-content" data-slot="grid-content" data-columns="single">
+                      <div data-slot="grid-item" class="sa-grid-item"><div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="ro-subtitle">Subtitle</label><input class="sa-input" data-slot="input" id="ro-subtitle" type="text" value="" readonly></div></div>
+                      <div data-slot="grid-item" class="sa-grid-item"><div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="ro-notes">Notes</label><textarea class="sa-textarea" data-slot="textarea" id="ro-notes" readonly></textarea></div></div>
+                      <div data-slot="grid-item" class="sa-grid-item"><div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><span class="sa-label sa-field-label" data-slot="field-label">Partners (multi-select lookup)</span><div class="sa-input flex items-center"><span class="text-muted-foreground">None</span></div></div></div>
+                      <div data-slot="grid-item" class="sa-grid-item" data-instance="ro_ArrivalAirports"></div>
+                      <div data-slot="grid-item" class="sa-grid-item" data-instance="ro_BaggageAllowance"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="proto-section" id="matrix">
+        <div class="proto-section-head">
+          <h2>Every editor, every state</h2>
+          <p>
+            Live editors in fixed starting states. "Invalid" shows errors as they would come back from Save: an
+            item's error under its row (ModelState key <code>Highlights[1]</code>, <code>LocalNames[1].Key</code>), a
+            collection's error under the field (key <code>Highlights</code>).
+          </p>
+        </div>
+        <table class="proto-matrix">
+          <thead>
+            <tr><th>Editor</th><th>Empty</th><th>Invalid</th><th>At maximum (3)</th><th>Read-only</th></tr>
+          </thead>
+          <tbody id="matrix-body"></tbody>
+        </table>
+      </section>
+
+      <section class="proto-section" id="grid">
+        <div class="proto-section-head">
+          <h2>Grid display</h2>
+          <p>
+            The existing <code>BadgeDisplay</code>, which already shows a badge per item of a collection. Proposed
+            additions: a limit with a "+N" badge (the full list in its title), and "key: value" as a dictionary
+            entry's default text.
+          </p>
+        </div>
+        <div class="sa-data-grid sa-card sa-resource-index-grid" data-slot="data-grid">
+          <div class="sa-table-container" data-slot="table-container">
+            <table class="sa-table" data-slot="table">
+              <thead class="sa-table-header" data-slot="table-header">
+                <tr class="sa-table-row" data-slot="table-row">
+                  <th class="sa-table-head" data-slot="table-head">Name</th>
+                  <th class="sa-table-head" data-slot="table-head">Highlights</th>
+                  <th class="sa-table-head" data-slot="table-head">Airports</th>
+                  <th class="sa-table-head" data-slot="table-head">Departure days</th>
+                  <th class="sa-table-head" data-slot="table-head">Local names</th>
+                </tr>
+              </thead>
+              <tbody class="sa-table-body" data-slot="table-body" id="grid-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="proto-panel" id="proto-panel" aria-label="Prototype options" data-open>
+      <div class="proto-panel-head">
+        <strong>Options</strong>
+        <button type="button" id="proto-panel-toggle" aria-expanded="true" aria-controls="proto-panel-body">Hide</button>
+      </div>
+      <div class="proto-panel-body" id="proto-panel-body">
+        <div class="proto-options" id="options-bar">
+          <span>Row numbers <small>form and matrix</small></span>
+          <div class="group" data-option="numbers">
+            <button data-value="config">As configured</button>
+            <button data-value="on">On</button>
+            <button data-value="off">Off</button>
+          </div>
+          <span>Reordering <small>lists in the form and matrix</small></span>
+          <div class="group" data-option="sorting">
+            <button data-value="config">As configured</button>
+            <button data-value="on">On</button>
+            <button data-value="off">Off</button>
+          </div>
+        </div>
+        <div class="proto-controls" aria-label="View">
+          <span>Theme</span>
+          <div class="group" data-control="theme">
+            <button data-value="default" aria-pressed="true">Default</button>
+            <button data-value="ops" aria-pressed="false">Ops</button>
+            <button data-value="soft" aria-pressed="false">Soft</button>
+            <button data-value="ledger" aria-pressed="false">Ledger</button>
+          </div>
+          <span>Mode</span>
+          <div class="group" data-control="mode">
+            <button data-value="light" aria-pressed="true">Light</button>
+            <button data-value="dark" aria-pressed="false">Dark</button>
+          </div>
+          <span>Density</span>
+          <div class="group" data-control="density">
+            <button data-value="compact" aria-pressed="false">Compact</button>
+            <button data-value="default" aria-pressed="true">Default</button>
+            <button data-value="comfortable" aria-pressed="false">Comfortable</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <script>
+      // ------------------------------------------------------------------------------------------
+      // Options (round 2's choices are locked in; these override the fields' own configuration)
+      // ------------------------------------------------------------------------------------------
+      const opt = { numbers: "config", sorting: "config" };
+
+      // ------------------------------------------------------------------------------------------
+      // Field definitions (Voyager Travel): what the editor configuration would carry to the view
+      // ------------------------------------------------------------------------------------------
+      // Items are [value, title]: an enum's members and their display names, or items the app supplies
+      const SEASONS = [["Low", "Low season"], ["Shoulder", "Shoulder season"], ["High", "High season"], ["Peak", "Peak (holidays)"]];
+      const LANGUAGES = [["pt", "Portuguese"], ["en", "English"], ["es", "Spanish"], ["fr", "French"], ["de", "German"], ["ja", "Japanese"]];
+      const GUIDES = [["ines", "Inês Duarte"], ["tiago", "Tiago Moreira"], ["beatriz", "Beatriz Lopes"], ["haruka", "Haruka Sato"]];
+      const DEFS = {
+        Highlights: {
+          kind: "list", label: "Highlights", noun: "highlight", nouns: "highlights", type: "text", minItems: 1, maxItems: 8, maxLength: 120, sortable: true,
+          placeholder: "e.g. Tasting at a family-run tasca", description: "Shown as bullet points on the trip page.",
+        },
+        ArrivalAirports: {
+          kind: "list", label: "Arrival airports", noun: "airport", nouns: "airports", type: "text", unique: true, maxItems: 6,
+          pattern: "^[A-Z]{3}$", patternMessage: "Use a three-letter IATA code, like LIS.", normalize: (v) => v.toUpperCase(),
+          placeholder: "LIS", description: "Three-letter IATA codes.",
+        },
+        DepartureDays: {
+          kind: "list", label: "Departure days", noun: "day", nouns: "departure days", type: "number", unique: true, min: 1, max: 31,
+          placeholder: "1–31", description: "Days of the month the walk departs.",
+        },
+        LocalNames: {
+          kind: "dict", label: "Local names", noun: "name", nouns: "local names", keyLabel: "Language", valueLabel: "Local name",
+          keyPattern: "^[a-z]{2}$", keyPatternMessage: "Use a two-letter language code, like pt.", keyNormalize: (v) => v.toLowerCase(),
+          keyPlaceholder: "pt", valuePlaceholder: "Passeio gastronómico por Lisboa", description: "The trip's name on localised pages.",
+          emptyText: "No translations yet. Pages use the English name.",
+        },
+        SeasonalPrices: {
+          kind: "dict", label: "Seasonal prices", noun: "season", nouns: "seasons", keyLabel: "Season", valueLabel: "Price per traveller",
+          keyOptions: SEASONS, valueType: "decimal", min: 0, prefix: "€", valuePlaceholder: "0.00",
+        },
+        GuidesByLanguage: {
+          kind: "dict", label: "Guides by language", noun: "language", nouns: "languages", keyLabel: "Language", valueLabel: "Guide",
+          keyOptions: LANGUAGES, valueOptions: GUIDES, description: "Who leads the walk in each language.",
+        },
+        BaggageAllowance: {
+          kind: "dict", label: "Baggage allowance", noun: "cabin", nouns: "cabins", keyLabel: "Cabin", valueLabel: "Allowance",
+          valueType: "number", min: 0, max: 50, suffix: "kg", keyPlaceholder: "Economy", valuePlaceholder: "23",
+        },
+      };
+
+      // ------------------------------------------------------------------------------------------
+      // Instances: every editor on the page is one, keyed so delegated events find their state
+      // ------------------------------------------------------------------------------------------
+      let nextId = 1;
+      const uid = () => `i${nextId++}`;
+      const instances = {};
+
+      function createInstance(key, defName, values, extra = {}) {
+        const def = { ...DEFS[defName], ...(extra.def || {}) };
+        // A key from items allows each item once, so the items are the maximum
+        if (def.keyOptions && def.maxItems == null) def.maxItems = def.keyOptions.length;
+        const inst = { key, defName, def, items: [], fieldError: null, readOnly: !!extra.readOnly, prefix: extra.prefix || "Entity", numbers: extra.numbers ?? null, sortable: extra.sortable ?? null, mount: null };
+        inst.items = def.kind === "dict"
+          ? values.map(([k, v]) => ({ id: uid(), key: String(k), value: String(v), keyError: null, valueError: null }))
+          : values.map((v) => ({ id: uid(), value: String(v), error: null }));
+        instances[key] = inst;
+        return inst;
+      }
+      // The section comparing the options fixes them per editor; elsewhere the panel can override the configuration
+      const numbered = (inst) => inst.numbers ?? (opt.numbers === "config" ? !!inst.def.rowNumbers : opt.numbers === "on");
+      const sortableOf = (inst) => !isDict(inst) && !inst.readOnly && (inst.sortable ?? (opt.sorting === "config" ? !!inst.def.sortable : opt.sorting === "on"));
+
+      // ------------------------------------------------------------------------------------------
+      // Icons, as the tag helpers emit them
+      // ------------------------------------------------------------------------------------------
+      const svg = (paths, cls = "") => `<svg${cls ? ` class="${cls}"` : ""} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+      const ICON = {
+        x: (c) => svg(`<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>`, c),
+        plus: (c) => svg(`<path d="M5 12h14"></path><path d="M12 5v14"></path>`, c),
+        grip: (c) => svg(`<circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle>`, c),
+        chevronDown: (c) => svg(`<path d="m6 9 6 6 6-6"></path>`, c),
+      };
+      const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+      const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+      // ------------------------------------------------------------------------------------------
+      // Validation (the server repeats it on save; the client runs it on blur and on submit)
+      // ------------------------------------------------------------------------------------------
+      function checkValue(raw, { pattern, patternMessage, type, min, max, nounLabel }) {
+        const v = raw.trim();
+        if (v === "") return null;
+        if (type === "number" || type === "decimal") {
+          if (type === "number" && !/^-?\d+$/.test(v)) return "Enter a whole number.";
+          if (type === "decimal" && !/^-?\d+(\.\d{1,2})?$/.test(v)) return "Enter an amount, like 49.50.";
+          const n = Number(v);
+          if (min != null && max != null && (n < min || n > max)) return `Enter a number from ${min} to ${max}.`;
+          if (min != null && n < min) return `Enter ${min} or more.`;
+        }
+        if (pattern && !new RegExp(pattern).test(v)) return patternMessage || `${nounLabel} isn't in the expected format.`;
+        return null;
+      }
+
+      // `leaving`: focus left the row, so a key without a value counts as missing
+      function validate(inst, { all = false, only = null, leaving = true } = {}) {
+        const d = inst.def;
+        if (d.kind === "list") {
+          inst.items.forEach((it) => {
+            if (!all && it.id !== only && !it.error) return;
+            it.error = checkValue(it.value, { pattern: d.pattern, patternMessage: d.patternMessage, type: d.type, min: d.min, max: d.max, nounLabel: cap(d.noun) });
+          });
+          if (d.unique) {
+            const seen = new Set();
+            inst.items.forEach((it) => {
+              const k = it.value.trim().toLowerCase();
+              if (!k) return;
+              if (seen.has(k) && !it.error) it.error = `${it.value.trim()} is already in the list.`;
+              seen.add(k);
+            });
+          }
+        } else {
+          inst.items.forEach((it) => {
+            if (!all && it.id !== only && !it.keyError && !it.valueError) return;
+            const hasKey = it.key.trim() !== "", hasValue = it.value.trim() !== "";
+            const wasMissing = !!it.valueError && !hasValue;
+            it.keyError = !hasKey && hasValue ? `${d.keyOptions ? "Choose" : "Enter"} a ${d.keyLabel.toLowerCase()}.` : checkValue(it.key, { pattern: d.keyPattern, patternMessage: d.keyPatternMessage, nounLabel: d.keyLabel });
+            it.valueError = hasKey && !hasValue && (all || (only === it.id && leaving) || wasMissing) ? `${d.valueOptions ? "Choose" : "Enter"} a ${d.valueLabel.toLowerCase()} for ${keyText(inst, it.key.trim())}.` : checkValue(it.value, { type: d.valueType, min: d.min, max: d.max, nounLabel: d.valueLabel });
+          });
+          const seen = new Set();
+          inst.items.forEach((it) => {
+            const k = it.key.trim().toLowerCase();
+            if (!k) return;
+            if (seen.has(k) && !it.keyError) it.keyError = `${keyText(inst, it.key.trim())} is already used.`;
+            seen.add(k);
+          });
+        }
+        // The collection's own rules, under the field: only on Save, and cleared once met
+        if (all || inst.fieldError) {
+          const count = inst.items.filter((i) => !isEmptyItem(inst, i)).length;
+          inst.fieldError = d.minItems && count < d.minItems ? `Add at least ${d.minItems === 1 ? `one ${d.noun}` : `${d.minItems} ${d.nouns}`}.` : null;
+        }
+      }
+      const errorSignature = (inst) => `${inst.fieldError}#` + inst.items.map((i) => `${i.error}|${i.keyError}|${i.valueError}`).join(";");
+      const optionText = (options, v) => options?.find(([o]) => o === v)?.[1] ?? v;
+      const keyText = (inst, k) => optionText(inst.def.keyOptions, k);
+
+      // ------------------------------------------------------------------------------------------
+      // Rendering
+      // ------------------------------------------------------------------------------------------
+      const isDict = (inst) => inst.def.kind === "dict";
+      const atMax = (inst) => inst.def.maxItems != null && inst.items.length >= inst.def.maxItems;
+      const isEmptyItem = (inst, it) => (isDict(inst) ? !it.key.trim() && !it.value.trim() : !it.value.trim());
+      const firstPart = (inst) => (isDict(inst) ? "key" : "value");
+      const fieldName = (inst, n, part) => (isDict(inst) ? `${inst.prefix}.${inst.defName}[${n}].${part === "key" ? "Key" : "Value"}` : `${inst.prefix}.${inst.defName}[${n}]`);
+
+      function inputAttrs(type, { min, max, maxLength, placeholder }) {
+        return [
+          type === "number" ? `type="number" inputmode="numeric" step="1"` : type === "decimal" ? `type="number" inputmode="decimal" step="0.01"` : `type="text"`,
+          min != null ? `min="${min}"` : "", max != null ? `max="${max}"` : "",
+          maxLength ? `maxlength="${maxLength}"` : "",
+          placeholder ? `placeholder="${esc(placeholder)}"` : "",
+        ].join(" ");
+      }
+
+      function render(inst) {
+        const d = inst.def;
+        const id = inst.key;
+        const fieldErr = inst.fieldError;
+        return `<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"${fieldErr ? ` data-invalid="true"` : ""}>
+          <label id="${id}-label" data-slot="field-label" class="sa-label sa-field-label">${esc(d.label)}</label>
+          ${renderEditor(inst)}
+          <div id="${id}-error" class="sa-field-error ${fieldErr ? "field-validation-error" : "field-validation-valid"}" role="alert" data-slot="field-error">${esc(fieldErr || "")}</div>
+          ${d.description ? `<p class="sa-field-description" data-slot="field-description" id="${id}-description">${esc(d.description)}</p>` : ""}
+        </div>`;
+      }
+
+      function renderEditor(inst) {
+        const d = inst.def;
+        const numbers = numbered(inst);
+        const sortable = sortableOf(inst);
+        const gutter = numbers || sortable;
+        const actions = !inst.readOnly;
+        const cols = [
+          gutter ? (numbers ? "calc(8 * var(--sa-unit))" : "calc(7 * var(--sa-unit))") : null,
+          isDict(inst) ? "minmax(min(8rem, 40%), 2fr)" : null,
+          isDict(inst) ? "minmax(0, 5fr)" : "minmax(0, 1fr)",
+          actions ? "var(--_actions-w)" : null,
+        ].filter(Boolean).join(" ");
+        const canSort = sortable && inst.items.length > 1;
+
+        const rows = inst.items.map((it, n) => {
+          const errorId = `${inst.key}-${it.id}-error`;
+          const err = it.error || it.keyError || it.valueError;
+          let g = "";
+          if (gutter) {
+            const num = numbers ? `<span class="sa-collection-editor-number">${n + 1}</span>` : "";
+            g = canSort
+              ? `<span class="sa-collection-editor-gutter"${numbers ? " data-numbered" : ""}><button type="button" aria-label="Move ${esc(d.noun)} ${n + 1}" title="Drag, or Alt+↑/↓" data-action="handle" data-item="${it.id}" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-icon sa-collection-editor-handle">${num}${ICON.grip()}</button></span>`
+              : `<span class="sa-collection-editor-gutter"${numbers ? " data-numbered" : ""} aria-hidden="true">${num}</span>`;
+          }
+          const cell = (part) => {
+            const isKey = part === "key";
+            const value = isKey ? it.key : it.value;
+            const e = isKey ? it.keyError : isDict(inst) ? it.valueError : it.error;
+            const pre = !isKey && d.prefix ? `<span class="sa-collection-editor-affix" data-side="start">${esc(d.prefix)}</span>` : "";
+            const suf = !isKey && d.suffix ? `<span class="sa-collection-editor-affix" data-side="end">${esc(d.suffix)}</span>` : "";
+            const options = isKey ? d.keyOptions : d.valueOptions;
+            if (inst.readOnly) return `<div class="sa-collection-editor-cell" data-col="${part}">${pre}<span class="sa-collection-editor-text">${esc(optionText(options, value))}</span>${suf}</div>`;
+            const aria = `${isKey ? d.keyLabel : isDict(inst) ? d.valueLabel : cap(d.noun)} ${n + 1}`;
+            const common = `name="${esc(fieldName(inst, n, part))}" aria-label="${esc(aria)}" data-item="${it.id}" data-part="${part}"${e ? ` aria-invalid="true" aria-describedby="${errorId}"` : ""}`;
+            if (options) {
+              // A dictionary's key or value from an enum's members or supplied items. A key may be used once,
+              // so the keys other rows use are disabled.
+              const used = isKey ? new Set(inst.items.filter((o) => o !== it).map((o) => o.key)) : new Set();
+              const label = isKey ? d.keyLabel : d.valueLabel;
+              const html = [`<option value="">Choose ${esc(label.toLowerCase())}</option>`]
+                .concat(options.map(([v, t]) => `<option value="${esc(v)}"${v === value ? " selected" : ""}${used.has(v) ? " disabled" : ""}>${esc(t)}</option>`)).join("");
+              return `<div class="sa-collection-editor-cell" data-col="${part}"><div data-slot="native-select-wrapper" data-size="default" class="sa-native-select-wrapper"><select data-slot="native-select" data-size="default" class="sa-native-select" ${common}>${html}</select>${ICON.chevronDown("sa-native-select-icon")}</div></div>`;
+            }
+            const type = isKey ? "text" : isDict(inst) ? d.valueType : d.type;
+            const placeholder = isKey ? d.keyPlaceholder : isDict(inst) ? d.valuePlaceholder : d.placeholder;
+            return `<div class="sa-collection-editor-cell" data-col="${part}">${pre}<input ${inputAttrs(type, { min: isKey ? null : d.min, max: isKey ? null : d.max, maxLength: d.maxLength, placeholder })} value="${esc(value)}" ${common} data-slot="input" class="sa-input">${suf}</div>`;
+          };
+          const remove = actions
+            ? `<span class="sa-collection-editor-actions"><button type="button" aria-label="Remove ${esc(isDict(inst) ? (keyText(inst, it.key.trim()) || `row ${n + 1}`) : `${d.noun} ${n + 1}`)}" title="Remove" data-action="remove" data-item="${it.id}" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-collection-editor-remove">${ICON.x()}</button></span>`
+            : "";
+          return `<li class="sa-collection-editor-item" data-item="${it.id}"${err ? " data-invalid" : ""}>
+            ${g}${isDict(inst) ? cell("key") : ""}${cell("value")}${remove}
+            ${err ? `<p class="sa-collection-editor-item-error" id="${errorId}">${esc(err)}</p>` : ""}
+          </li>`;
+        }).join("");
+
+        const head = rows && isDict(inst)
+          ? `<div class="sa-collection-editor-head" aria-hidden="true">${gutter ? `<span data-col="number">${numbers ? "#" : ""}</span>` : ""}<span>${esc(d.keyLabel)}</span><span>${esc(d.valueLabel)}</span>${actions ? "<span></span>" : ""}</div>`
+          : "";
+        const empty = !rows ? `<div class="sa-collection-editor-empty">${esc(inst.readOnly ? "None" : d.emptyText || `No ${d.nouns} yet`)}</div>` : "";
+        const count = d.maxItems != null && inst.items.length > 0 ? `<span class="sa-collection-editor-count">${inst.items.length} of ${d.maxItems}</span>` : "";
+        const full = atMax(inst) ? ` disabled title="${esc(d.keyOptions ? `Every ${d.keyLabel.toLowerCase()} is added.` : `You can add up to ${d.maxItems} ${d.nouns}.`)}"` : "";
+        const add = actions ? `<button type="button" data-action="add" class="sa-collection-editor-add"${full}>${ICON.plus()}<span>Add ${esc(d.noun)}</span>${count}</button>` : "";
+        const tag = isDict(inst) ? "admin-dictionary-editor" : "admin-array-editor";
+        return `<${tag} class="sa-collection-editor" data-editor="${inst.key}" role="group" aria-labelledby="${inst.key}-label"${inst.fieldError ? ` aria-invalid="true" aria-describedby="${inst.key}-error"` : ""}${inst.readOnly ? " data-readonly" : ""} style="--_cols: ${cols}; --_err-col: ${gutter ? "2 / -1" : "1 / -1"}">
+          ${head}${rows ? `<ol class="sa-collection-editor-items">${rows}</ol>` : ""}${empty}${add}
+        </${tag}>`;
+      }
+
+      // ------------------------------------------------------------------------------------------
+      // Re-rendering with focus kept on the same item and part
+      // ------------------------------------------------------------------------------------------
+      function refresh(inst, focus) {
+        const active = document.activeElement;
+        const keep = focus || (active && inst.mount.contains(active) && active.dataset.item ? { item: active.dataset.item, part: active.dataset.part, caret: active.selectionStart } : null);
+        inst.mount.innerHTML = render(inst);
+        if (keep) focusPart(inst, keep);
+        if (isForm(inst)) postPreview();
+      }
+
+      function focusPart(inst, { item, part, caret, end }) {
+        const el = inst.mount.querySelector(`[data-item="${item}"][data-part="${part || "value"}"]`) || inst.mount.querySelector(`[data-action="add"]:not(:disabled)`) || inst.mount.querySelector("[data-part]");
+        if (!el) return;
+        el.focus();
+        if (el.setSelectionRange && el.type === "text") {
+          try { const p = end ? el.value.length : caret ?? el.value.length; el.setSelectionRange(p, p); } catch {}
+        }
+      }
+
+      const instOf = (el) => instances[el.closest("[data-instance]")?.dataset.instance];
+      const itemOf = (inst, id) => inst.items.find((i) => i.id === id);
+
+      // ------------------------------------------------------------------------------------------
+      // Behaviour: what <admin-array-editor> / <admin-dictionary-editor> would do
+      // ------------------------------------------------------------------------------------------
+      function addItem(inst, at = inst.items.length, data = {}) {
+        if (atMax(inst)) return null;
+        const it = isDict(inst) ? { id: uid(), key: "", value: "", keyError: null, valueError: null, ...data } : { id: uid(), value: "", error: null, ...data };
+        inst.items.splice(at, 0, it);
+        return it;
+      }
+
+      function removeItem(inst, id) {
+        const n = inst.items.findIndex((i) => i.id === id);
+        if (n < 0) return;
+        inst.items.splice(n, 1);
+        validate(inst);
+        const next = inst.items[n] || inst.items[n - 1];
+        refresh(inst, next ? { item: next.id, part: "value", end: true } : { item: "none" });
+      }
+
+      function moveItem(inst, id, delta) {
+        const n = inst.items.findIndex((i) => i.id === id);
+        const m = n + delta;
+        if (n < 0 || m < 0 || m >= inst.items.length) return false;
+        const [it] = inst.items.splice(n, 1);
+        inst.items.splice(m, 0, it);
+        return true;
+      }
+
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-action]");
+        if (!btn) return;
+        const inst = instOf(btn);
+        if (!inst) return;
+        if (btn.dataset.action === "add") {
+          const it = addItem(inst);
+          if (it) { validate(inst); refresh(inst, { item: it.id, part: firstPart(inst) }); }
+        } else if (btn.dataset.action === "remove") removeItem(inst, btn.dataset.item);
+      });
+
+      function onEdit(e) {
+        const el = e.target;
+        const inst = el.dataset?.part && instOf(el);
+        if (!inst) return;
+        const it = itemOf(inst, el.dataset.item);
+        if (!it) return;
+        if (el.dataset.part === "key") it.key = el.value; else it.value = el.value;
+        // A chosen item changes which items the other rows' selects may offer
+        if (el.tagName === "SELECT") { validate(inst, { only: it.id, leaving: false }); refresh(inst); return; }
+        // Once a row shows an error, re-check it as it is typed so the error goes as soon as it is fixed
+        if (it.error || it.keyError || it.valueError || inst.fieldError) {
+          const before = errorSignature(inst);
+          validate(inst, { only: it.id, leaving: false });
+          if (errorSignature(inst) !== before) refresh(inst);
+        }
+        if (isForm(inst)) postPreview();
+      }
+      document.addEventListener("input", (e) => e.target.tagName !== "SELECT" && onEdit(e));
+      document.addEventListener("change", (e) => e.target.tagName === "SELECT" && onEdit(e));
+
+      document.addEventListener("focusout", (e) => {
+        const el = e.target;
+        const inst = el.dataset?.part && instOf(el);
+        if (!inst || inst.readOnly || !el.isConnected) return;
+        const id = el.dataset.item;
+        const it = itemOf(inst, id);
+        if (!it) return;
+        if (!isDict(inst) && inst.def.normalize && it.value) el.value = it.value = inst.def.normalize(it.value);
+        if (isDict(inst) && inst.def.keyNormalize && it.key && el.dataset.part === "key") el.value = it.key = inst.def.keyNormalize(it.key);
+        // Moving within the row checks what was typed but doesn't yet ask for the rest of the row
+        const rel = e.relatedTarget;
+        const leaving = !(rel && rel.dataset?.item === id && rel.dataset.part);
+        // Re-render only when an error appears or goes, so a click on a button in the row isn't lost
+        const before = errorSignature(inst);
+        validate(inst, { only: id, leaving });
+        if (errorSignature(inst) !== before) setTimeout(() => refresh(inst), 0);
+      });
+
+      document.addEventListener("keydown", (e) => {
+        const el = e.target;
+        if (el.dataset?.action === "handle") return handleKeys(e, el);
+        const inst = el.dataset?.part && instOf(el);
+        if (!inst || inst.readOnly) return;
+        const id = el.dataset.item;
+        const n = inst.items.findIndex((i) => i.id === id);
+        const part = el.dataset.part;
+        const select = el.tagName === "SELECT";
+        if (e.key === "Enter" && !select) {
+          e.preventDefault();
+          const it = itemOf(inst, id);
+          if (isDict(inst) && part === "key") { focusPart(inst, { item: id, part: "value", end: true }); return; }
+          const next = inst.items[n + 1];
+          if (next) { focusPart(inst, { item: next.id, part: firstPart(inst), end: true }); return; }
+          if (isEmptyItem(inst, it)) return;
+          validate(inst, { only: id });
+          const added = addItem(inst, n + 1);
+          if (added) refresh(inst, { item: added.id, part: firstPart(inst) });
+        } else if (e.key === "Backspace" && !select) {
+          const it = itemOf(inst, id);
+          if (isEmptyItem(inst, it) && (el.type === "number" || el.selectionStart === 0)) {
+            e.preventDefault();
+            const prev = inst.items[n - 1];
+            inst.items.splice(n, 1);
+            validate(inst);
+            refresh(inst, prev ? { item: prev.id, part: "value", end: true } : { item: "none" });
+          }
+        } else if (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+          if (!sortableOf(inst)) return;
+          e.preventDefault();
+          const list = inst.mount.querySelector(".sa-collection-editor-items");
+          const before = measure(list);
+          if (moveItem(inst, id, e.key === "ArrowUp" ? -1 : 1)) {
+            refresh(inst, { item: id, part, end: true });
+            slide(inst.mount.querySelector(".sa-collection-editor-items"), before);
+          }
+        } else if ((e.key === "ArrowUp" || e.key === "ArrowDown") && el.type === "text") {
+          // Up and down move between rows, keeping the column
+          const target = inst.items[n + (e.key === "ArrowUp" ? -1 : 1)];
+          if (!target) return;
+          e.preventDefault();
+          focusPart(inst, { item: target.id, part, end: true });
+        }
+      });
+
+      function handleKeys(e, el) {
+        const inst = instOf(el);
+        if (!inst || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
+        e.preventDefault();
+        if (moveItem(inst, el.dataset.item, e.key === "ArrowUp" ? -1 : 1)) {
+          refresh(inst);
+          inst.mount.querySelector(`[data-action="handle"][data-item="${el.dataset.item}"]`)?.focus();
+        }
+      }
+
+      // Paste: several lines become several rows; key=value / key: value / tab-separated lines become entries
+      document.addEventListener("paste", (e) => {
+        const el = e.target;
+        const inst = el.dataset?.part && instOf(el);
+        if (!inst || inst.readOnly) return;
+        const text = e.clipboardData.getData("text");
+        const lines = text.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+        const isPairs = isDict(inst) && lines.some((l) => /\t|=|:\s/.test(l));
+        if (lines.length < 2 && !isPairs) return;
+        e.preventDefault();
+        const id = el.dataset.item;
+        let at = inst.items.findIndex((i) => i.id === id);
+        const current = itemOf(inst, id);
+        // An empty row takes the first pasted value; the rest go after it
+        if (current && isEmptyItem(inst, current)) inst.items.splice(at, 1); else at += 1;
+        let last = null;
+        for (const line of lines) {
+          let data;
+          if (isDict(inst)) {
+            const m = line.match(/^(.*?)(?:\t|\s*=\s*|:\s+)(.*)$/);
+            data = m ? { key: m[1].trim(), value: m[2].trim() } : { key: line, value: "" };
+            if (inst.def.keyNormalize) data.key = inst.def.keyNormalize(data.key);
+            if (inst.def.keyOptions) data.key = matchOption(inst.def.keyOptions, data.key);
+            if (inst.def.valueOptions) data.value = matchOption(inst.def.valueOptions, data.value);
+          } else data = { value: inst.def.normalize ? inst.def.normalize(line) : line };
+          const it = addItem(inst, at++, data);
+          if (!it) break;
+          last = it;
+        }
+        validate(inst, { all: true });
+        refresh(inst, last ? { item: last.id, part: "value", end: true } : null);
+      });
+
+      // A pasted name matches an item by its value or its title
+      function matchOption(options, text) {
+        return options.find(([v, t]) => [v, t].some((s) => s.toLowerCase() === text.toLowerCase()))?.[0] ?? "";
+      }
+
+      // Rows slide to their new places: measure each row, change the DOM, then animate from the old place to the
+      // new one (FLIP)
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+      const rowsOf = (list, skip) => [...list.children].filter((li) => li !== skip && li.matches("li.sa-collection-editor-item"));
+      function measure(list, skip) {
+        return new Map(rowsOf(list, skip).map((li) => [li.dataset.item, li.getBoundingClientRect().top]));
+      }
+      function slide(list, before, skip) {
+        if (reduceMotion.matches) return;
+        rowsOf(list, skip).forEach((li) => {
+          const from = before.get(li.dataset.item);
+          const dy = from === undefined ? 0 : from - li.getBoundingClientRect().top;
+          if (!dy) return;
+          li.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration: 150, easing: "cubic-bezier(0.2, 0, 0, 1)" });
+        });
+      }
+
+      // Drag to reorder by the handle (pointer events, so it also works for touch). The row lifts into a copy that
+      // follows the pointer, its place stays open as a slot, and the other rows slide out of the way. Escape cancels
+      let drag = null;
+      document.addEventListener("pointerdown", (e) => {
+        const h = e.target.closest('[data-action="handle"]');
+        if (!h || e.button !== 0) return;
+        const li = h.closest("li");
+        drag = { inst: instOf(h), id: h.dataset.item, handle: h, li, list: li.parentElement, startY: e.clientY, pointerId: e.pointerId, started: false };
+        h.setPointerCapture(e.pointerId);
+      });
+      function startDrag() {
+        const { inst, li, startY } = drag;
+        const rect = li.getBoundingClientRect();
+        const editor = li.closest(".sa-collection-editor");
+        // The copy sits in a box of its own, with the editor's columns so its cells line up
+        const ghost = document.createElement("div");
+        ghost.className = "sa-collection-editor sa-collection-editor-ghost";
+        ghost.setAttribute("aria-hidden", "true");
+        const border = parseFloat(getComputedStyle(editor).borderLeftWidth) || 0;
+        ghost.style.cssText = `${editor.getAttribute("style")}; left: ${rect.left - border}px; top: ${rect.top - border}px; width: ${rect.width + 2 * border}px`;
+        const copy = li.cloneNode(true);
+        copy.removeAttribute("data-invalid");
+        // A copy keeps the markup's values, not what was typed since
+        const fields = li.querySelectorAll("input, select");
+        copy.querySelectorAll("input, select").forEach((el, i) => { el.value = fields[i].value; el.tabIndex = -1; });
+        ghost.dataset.border = border;
+        ghost.innerHTML = `<ul class="sa-collection-editor-items"></ul>`;
+        ghost.firstChild.append(copy);
+        document.body.append(ghost);
+        li.setAttribute("data-dragging", "");
+        document.documentElement.setAttribute("data-collection-dragging", "");
+        Object.assign(drag, { ghost, border, offsetY: startY - rect.top + border, order: inst.items.map((i) => i.id), started: true });
+      }
+      document.addEventListener("pointermove", (e) => {
+        if (!drag || e.pointerId !== drag.pointerId) return;
+        if (!drag.started) {
+          if (Math.abs(e.clientY - drag.startY) < 4) return;
+          startDrag();
+        }
+        const { ghost, li, list, offsetY } = drag;
+        ghost.style.top = `${e.clientY - offsetY}px`;
+        // The slot moves before the first row whose middle is below the pointer
+        const next = rowsOf(list, li).find((r) => { const b = r.getBoundingClientRect(); return e.clientY < b.top + b.height / 2; }) || null;
+        if (next !== li.nextElementSibling || (!next && li !== rowsOf(list).at(-1))) {
+          const before = measure(list, li);
+          list.insertBefore(li, next || list.querySelector(":scope > li:not(.sa-collection-editor-item)"));
+          slide(list, before, li);
+        }
+        // Near the window's edge, the page scrolls
+        const edge = 48;
+        if (e.clientY < edge) scrollBy(0, -12);
+        else if (e.clientY > innerHeight - edge) scrollBy(0, 12);
+      });
+      function endDrag(cancel) {
+        const { inst, id, handle, li, list, ghost, order } = drag;
+        drag = null;
+        document.documentElement.removeAttribute("data-collection-dragging");
+        if (!ghost) return;
+        if (cancel) {
+          const before = measure(list, li);
+          order.forEach((rid) => list.insertBefore(list.querySelector(`:scope > li[data-item="${rid}"]`), list.querySelector(":scope > li:not(.sa-collection-editor-item)")));
+          slide(list, before, li);
+        }
+        const finish = () => {
+          ghost.remove();
+          li.removeAttribute("data-dragging");
+          // Keep the new order, renumber the names and keep focus on the handle
+          const ids = [...list.querySelectorAll(":scope > li.sa-collection-editor-item")].map((r) => r.dataset.item);
+          inst.items.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+          refresh(inst);
+          inst.mount.querySelector(`[data-action="handle"][data-item="${id}"]`)?.focus({ preventScroll: true });
+        };
+        // The copy settles into the slot
+        const to = li.getBoundingClientRect();
+        if (reduceMotion.matches) return finish();
+        const top = `${to.top - Number(ghost.dataset.border)}px`;
+        ghost.animate([{ top: ghost.style.top }, { top }], { duration: 150, easing: "cubic-bezier(0.2, 0, 0, 1)" }).onfinish = finish;
+        ghost.style.top = top;
+      }
+      document.addEventListener("pointerup", (e) => drag && e.pointerId === drag.pointerId && endDrag(false));
+      document.addEventListener("pointercancel", (e) => drag && e.pointerId === drag.pointerId && endDrag(true));
+      document.addEventListener("keydown", (e) => {
+        if (drag?.started && e.key === "Escape") {
+          e.preventDefault();
+          endDrag(true);
+        }
+      }, true);
+
+      // ------------------------------------------------------------------------------------------
+      // Form
+      // ------------------------------------------------------------------------------------------
+      const START = {
+        Highlights: ["Tasting at a family-run tasca in Alfama", "Pastéis de nata, warm from the oven in Belém", "Sunset at the Miradouro da Senhora do Monte"],
+        ArrivalAirports: ["LIS", "OPO"],
+        DepartureDays: [5, 12, 19, 26],
+        LocalNames: [["pt", "Passeio gastronómico por Lisboa"], ["es", "Ruta gastronómica por Lisboa"], ["ja", "リスボン食べ歩きツアー"]],
+        SeasonalPrices: [["Low", "49.00"], ["High", "69.00"]],
+        GuidesByLanguage: [["pt", "ines"], ["en", "tiago"], ["ja", "haruka"]],
+        BaggageAllowance: [["Economy", 23], ["Business", 32]],
+      };
+      const FORM_LAYOUT = { "form-content": ["Highlights", "LocalNames"], "form-logistics": ["ArrivalAirports", "DepartureDays", "SeasonalPrices", "GuidesByLanguage", "BaggageAllowance"] };
+      const formKeys = [];
+      let saveStatus = "";
+      const isForm = (inst) => formKeys.includes(inst.key);
+      function buildForm() {
+        Object.entries(FORM_LAYOUT).forEach(([mountId, names]) => {
+          const host = document.getElementById(mountId);
+          host.innerHTML = names.map((n) => `<div data-slot="grid-item" class="sa-grid-item" data-instance="Entity_${n}"></div>`).join("");
+          names.forEach((n) => {
+            const inst = createInstance(`Entity_${n}`, n, START[n]);
+            inst.mount = host.querySelector(`[data-instance="Entity_${n}"]`);
+            formKeys.push(inst.key);
+          });
+        });
+      }
+
+      function postPreview() {
+        const fd = new FormData(document.getElementById("trip-form"));
+        const lines = [...fd.entries()].map(([k, v]) => `<b>${esc(k)}</b>=${esc(v)}`);
+        document.getElementById("form-post").innerHTML = `${saveStatus}Form data (as posted; indexes renumber after a move or removal):\n${lines.join("\n")}`;
+      }
+
+      document.getElementById("trip-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        let invalid = 0;
+        formKeys.forEach((k) => {
+          const inst = instances[k];
+          // Blank rows are dropped on save
+          inst.items = inst.items.filter((i) => !isEmptyItem(inst, i));
+          validate(inst, { all: true });
+          invalid += inst.items.filter((i) => i.error || i.keyError || i.valueError).length + (inst.fieldError ? 1 : 0);
+        });
+        saveStatus = invalid ? `Not saved: ${invalid} error${invalid > 1 ? "s" : ""} to fix.\n\n` : "Saved.\n\n";
+        formKeys.forEach((k) => (instances[k].mount.innerHTML = render(instances[k])));
+        postPreview();
+        if (invalid) document.querySelector('#trip-form [aria-invalid="true"]:is(input, select), #trip-form [aria-invalid="true"] [data-action="add"]')?.focus();
+      });
+      document.getElementById("form-reset").addEventListener("click", () => {
+        formKeys.forEach((k) => {
+          const inst = instances[k];
+          createInstance(k, inst.defName, START[inst.defName]).mount = inst.mount;
+        });
+        saveStatus = "";
+        renderAll();
+      });
+
+      // ------------------------------------------------------------------------------------------
+      // Row numbers and reordering, side by side
+      // ------------------------------------------------------------------------------------------
+      const numberKeys = [];
+      function buildNumbers() {
+        [["plain", false, false], ["numbers", true, false], ["sortable", false, true], ["both", true, true]].forEach(([k, numbers, sortable]) => {
+          const key = `n_${k}`;
+          const inst = createInstance(key, "Highlights", START.Highlights, { numbers, sortable, prefix: key, def: { description: undefined } });
+          inst.mount = document.querySelector(`[data-instance="${key}"]`);
+          numberKeys.push(key);
+        });
+      }
+
+      // ------------------------------------------------------------------------------------------
+      // Matrix: fixed starting states for each editor
+      // ------------------------------------------------------------------------------------------
+      const MATRIX = [
+        { label: "List", def: "Highlights", states: {
+          empty: [], invalid: ["Tasting at a family-run tasca", "Tasting at a family-run tasca", "Fado night in Mouraria"], max: ["Tasting at a family-run tasca", "Fado night in Mouraria", "Tram 28 to Graça"], readOnly: ["Tasting at a family-run tasca", "Fado night in Mouraria"] },
+          extra: { unique: true } },
+        { label: "Collection error", def: "Highlights", states: { empty: [], invalid: [], max: ["Tasting at a family-run tasca", "Fado night in Mouraria", "Tram 28 to Graça"], readOnly: [] } },
+        { label: "List with a pattern", def: "ArrivalAirports", states: { empty: [], invalid: ["LIS", "Lisbon", "OPO"], max: ["LIS", "OPO", "FAO"], readOnly: ["LIS", "OPO"] } },
+        { label: "Number list", def: "DepartureDays", states: { empty: [], invalid: [5, 12, 42], max: [5, 12, 19], readOnly: [5, 12, 19, 26] } },
+        { label: "Dictionary, custom empty text", def: "LocalNames", states: {
+          empty: [], invalid: [["pt", "Passeio gastronómico por Lisboa"], ["Spanish", "Ruta gastronómica"], ["pt", "Lisboa à mesa"]], max: [["pt", "Passeio gastronómico"], ["es", "Ruta gastronómica"], ["fr", "Balade gourmande"]], readOnly: [["pt", "Passeio gastronómico por Lisboa"], ["es", "Ruta gastronómica por Lisboa"]] } },
+        { label: "Dictionary, enum key", def: "SeasonalPrices", states: {
+          empty: [], invalid: [["Low", "49.00"], ["", "55"], ["High", "69.999"]], max: [["Low", "49.00"], ["Shoulder", "59.00"], ["High", "69.00"], ["Peak", "89.00"]], readOnly: [["Low", "49.00"], ["High", "69.00"]] },
+          noMax: true },
+        { label: "Dictionary of choices", def: "GuidesByLanguage", states: {
+          empty: [], invalid: [["pt", "ines"], ["en", ""], ["", "haruka"]], max: [["pt", "ines"], ["en", "tiago"], ["ja", "haruka"]], readOnly: [["pt", "ines"], ["ja", "haruka"]] } },
+        { label: "Dictionary, numbers", def: "BaggageAllowance", states: {
+          empty: [], invalid: [["Economy", 23], ["Business", 80], ["First", ""]], max: [["Economy", 23], ["Premium", 28], ["Business", 32]], readOnly: [["Economy", 23], ["Business", 32]] } },
+      ];
+      const COLS = [["empty", "Empty"], ["invalid", "Invalid"], ["max", "At maximum (3)"], ["readOnly", "Read-only"]];
+      const readOnlyKeys = [];
+      function buildReadOnly() {
+        const starts = { Highlights: START.Highlights, LocalNames: START.LocalNames, SeasonalPrices: START.SeasonalPrices, ArrivalAirports: [], BaggageAllowance: [] };
+        Object.entries(starts).forEach(([n, values]) => {
+          const key = `ro_${n}`;
+          const inst = createInstance(key, n, values, { readOnly: true, prefix: key, def: { description: undefined } });
+          inst.mount = document.querySelector(`[data-instance="${key}"]`);
+          readOnlyKeys.push(key);
+        });
+      }
+
+      const matrixKeys = [];
+      function buildMatrix() {
+        document.getElementById("matrix-body").innerHTML = MATRIX.map((m, r) => `<tr><td>${m.label}</td>${COLS.map(([c, title]) => `<td data-col="${title}"><div data-instance="m${r}_${c}"></div></td>`).join("")}</tr>`).join("");
+        resetMatrix();
+      }
+      function resetMatrix() {
+        matrixKeys.length = 0;
+        MATRIX.forEach((m, r) => COLS.forEach(([c]) => {
+          const key = `m${r}_${c}`;
+          const maxItems = c === "max" && !m.noMax ? 3 : DEFS[m.def].maxItems;
+          const inst = createInstance(key, m.def, m.states[c], { readOnly: c === "readOnly", prefix: key, def: { ...(m.extra || {}), maxItems, description: undefined } });
+          inst.mount = document.querySelector(`[data-instance="${key}"]`);
+          if (c === "invalid") validate(inst, { all: true });
+          matrixKeys.push(key);
+        }));
+      }
+
+      // ------------------------------------------------------------------------------------------
+      // Grid display: BadgeDisplay, with the proposed limit and dictionary text
+      // ------------------------------------------------------------------------------------------
+      const GRID_ROWS = [
+        { name: "Lisbon food walk", Highlights: START.Highlights, ArrivalAirports: ["LIS", "OPO"], DepartureDays: [5, 12, 19, 26], LocalNames: START.LocalNames },
+        { name: "Kyoto temple trail", Highlights: ["Dawn at Fushimi Inari", "Tea ceremony in Gion"], ArrivalAirports: ["KIX", "ITM", "NRT", "HND"], DepartureDays: [1, 15], LocalNames: [["ja", "京都寺社めぐり"]] },
+        { name: "Table Mountain day", Highlights: [], ArrivalAirports: ["CPT"], DepartureDays: [], LocalNames: [] },
+      ];
+      // A long item truncates at its end (the badge centres its content, so the text needs its own box)
+      const badge = (text, variant = "secondary", title = "") => `<span data-slot="badge" class="sa-badge sa-badge-variant-${variant}"${title ? ` title="${esc(title)}"` : ""} style="max-width:160px;justify-content:flex-start"><span style="overflow:hidden;text-overflow:ellipsis">${esc(text)}</span></span>`;
+      function badges(values, limit = 1) {
+        if (!values.length) return "";
+        const shown = values.slice(0, limit).map((v) => badge(v)).join(" ");
+        const rest = values.slice(limit);
+        return `<div style="display:flex;gap:4px;white-space:nowrap">${shown}${rest.length ? " " + badge(`+${rest.length}`, "outline", rest.join(", ")) : ""}</div>`;
+      }
+      function renderGrid() {
+        document.getElementById("grid-body").innerHTML = GRID_ROWS.map((r) => `<tr class="sa-table-row" data-slot="table-row">
+          <td class="sa-table-cell" data-slot="table-cell"><span class="sa-text-display">${esc(r.name)}</span></td>
+          <td class="sa-table-cell" data-slot="table-cell">${badges(r.Highlights, 1)}</td>
+          <td class="sa-table-cell" data-slot="table-cell">${badges(r.ArrivalAirports, 3)}</td>
+          <td class="sa-table-cell" data-slot="table-cell">${badges(r.DepartureDays.map(String), 3)}</td>
+          <td class="sa-table-cell" data-slot="table-cell">${badges(r.LocalNames.map(([k, v]) => `${k}: ${v}`), 1)}</td>
+        </tr>`).join("");
+      }
+
+      // ------------------------------------------------------------------------------------------
+      // Wiring
+      // ------------------------------------------------------------------------------------------
+      function renderAll() {
+        formKeys.concat(numberKeys, readOnlyKeys, matrixKeys).forEach((k) => (instances[k].mount.innerHTML = render(instances[k])));
+        renderGrid();
+        postPreview();
+        document.querySelectorAll("#options-bar [data-option]").forEach((g) =>
+          g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(opt[g.dataset.option] === b.dataset.value))),
+        );
+      }
+      document.getElementById("options-bar").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        opt[b.closest("[data-option]").dataset.option] = b.dataset.value;
+        renderAll();
+      });
+
+      // ------------------------------------------------------------------------------------------
+      // Control bar
+      // ------------------------------------------------------------------------------------------
+      const view = { theme: "default", mode: "light", density: "default" };
+      function applyView() {
+        document.getElementById("theme-css").href = view.theme === "default" ? "data:text/css," : `../../util/theme-check/presets/${view.theme}.css`;
+        document.documentElement.classList.toggle("dark", view.mode === "dark");
+        const page = document.querySelector(".proto-page");
+        if (view.density === "default") page.removeAttribute("data-sa-density");
+        else page.setAttribute("data-sa-density", view.density);
+        document.querySelectorAll(".proto-controls [data-control]").forEach((g) =>
+          g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(view[g.dataset.control] === b.dataset.value))),
+        );
+      }
+      document.querySelector(".proto-controls").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        view[b.closest("[data-control]").dataset.control] = b.dataset.value;
+        applyView();
+      });
+
+      // Options panel: open or closed, remembered in this browser
+      const panel = document.getElementById("proto-panel");
+      const panelToggle = document.getElementById("proto-panel-toggle");
+      function setPanel(open) {
+        panel.toggleAttribute("data-open", open);
+        panelToggle.setAttribute("aria-expanded", String(open));
+        panelToggle.textContent = open ? "Hide" : "Show";
+        try { localStorage.setItem("array-dict-panel", open ? "open" : "closed"); } catch {}
+      }
+      panelToggle.addEventListener("click", () => setPanel(!panel.hasAttribute("data-open")));
+      try { if (localStorage.getItem("array-dict-panel") === "closed") setPanel(false); } catch {}
+
+      // Read the query string so screenshots can pick options: ?numbers=on&mode=dark
+      const qs = new URLSearchParams(location.search);
+      Object.keys(opt).forEach((k) => qs.has(k) && (opt[k] = qs.get(k)));
+      Object.keys(view).forEach((k) => qs.has(k) && (view[k] = qs.get(k)));
+
+      buildNumbers();
+      buildForm();
+      buildReadOnly();
+      buildMatrix();
+      applyView();
+      renderAll();
+    </script>
+  </body>
+</html>

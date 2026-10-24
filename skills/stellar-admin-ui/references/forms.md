@@ -144,6 +144,8 @@ if (!ModelState.IsValid) return Page();
 | On/off toggle | `<sa-switch asp-for="...">` |
 | Pressed-state button | `<sa-toggle asp-for="...">`, `<sa-toggle-group>` |
 | Numeric range | `<sa-slider asp-for="..." min="0" max="100">` |
+| List of text or numbers (`List<string>`, `int[]`) | [`<sa-list-editor asp-for="...">`](components/list-editor.md): a row per item, Add, remove, optional reordering |
+| Dictionary of keys and values | [`<sa-dictionary-editor asp-for="..." key-label="..." value-label="...">`](components/dictionary-editor.md) |
 | One-time code | `<sa-input-otp asp-for="..." groups="3,3">` |
 | Input with an addon | `<sa-input-group>` with `<sa-input-group-input>` + `<sa-input-group-addon>` |
 | Read-only value (no input) | [`<sa-display-field asp-for="...">`](components/details.md) among the inputs; a block of them, such as audit information, in `<sa-details>` |

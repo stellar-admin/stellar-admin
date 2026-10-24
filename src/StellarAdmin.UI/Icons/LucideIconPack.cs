@@ -86,6 +86,9 @@ public sealed class LucideIconPack : IIconPack
             [SemanticIconRole.RichTextMergeCells] = "table-cells-merge",
             [SemanticIconRole.RichTextSplitCell] = "table-cells-split",
             [SemanticIconRole.RichTextClearCells] = "eraser",
+            [SemanticIconRole.CollectionEditorAdd] = "plus",
+            [SemanticIconRole.CollectionEditorRemove] = "x",
+            [SemanticIconRole.CollectionEditorHandle] = "grip-vertical",
         };
     }
 }

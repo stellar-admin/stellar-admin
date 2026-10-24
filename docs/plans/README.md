@@ -8,7 +8,8 @@ The audit checks source, configuration, samples, generated website artifacts and
 
 | Record | Status | Current assessment |
 | --- | --- | --- |
-| [array-dictionary-editors](array-dictionary-editors.md) | proposed | Built-in editors for entering a list of items or key-value pairs; possibly the default for many-to-many fields without a related resource. Design left to the agent who picks it up. |
+| [array-dictionary-editors](array-dictionary-editors.md) | in progress | `sa-list-editor` and `sa-dictionary-editor` in StellarAdmin.UI, and `UseListEditor` and `UseDictionaryEditor` in the admin panel, for lists of simple values and dictionaries keyed by text or an enum. Stage 1 (StellarAdmin.UI) built and awaiting Jerrie's review; stage 2 (admin panel) not started. |
+| [read-only-fields](read-only-fields.md) | proposed | One recognisable read-only look across the UI library's components; today a read-only input looks editable, and controls without a read-only state are disabled. |
 | [admin-panel-backlog](admin-panel-backlog.md) | backlog | Admin panel features comparable frameworks offer and StellarAdmin lacks (custom and bulk actions, filters, form tabs, dashboards, file uploads and others). Unscheduled; an item becomes a plan when picked up. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [row-detail-expand-when](row-detail-expand-when.md) | deferred | Per-row expand rules for row details. Deferred until an application needs them; the plan records the smallest route (an admin panel `ExpandWhen` bool backed by a grid marker element) and the reviewed reason-tooltip variant. Prototype in `sandbox/html/row-details-expand-when.html`. |

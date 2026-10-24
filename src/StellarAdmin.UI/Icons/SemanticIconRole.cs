@@ -354,4 +354,19 @@ public enum SemanticIconRole
     ///     An action that clears the contents of table cells in a rich text editor.
     /// </summary>
     RichTextClearCells,
+
+    /// <summary>
+    ///     An action that adds an item to a list or dictionary editor.
+    /// </summary>
+    CollectionEditorAdd,
+
+    /// <summary>
+    ///     An action that removes an item from a list or dictionary editor.
+    /// </summary>
+    CollectionEditorRemove,
+
+    /// <summary>
+    ///     The handle that moves an item in a list editor.
+    /// </summary>
+    CollectionEditorHandle,
 }

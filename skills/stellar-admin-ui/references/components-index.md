@@ -23,6 +23,7 @@
 | [DataGrid](components/data-grid.md) | `<sa-data-grid>`, `<sa-data-grid-add-row>`, `<sa-data-grid-column>`, … | Renders a table of items, with columns declared by `sa-data-grid-column` children. |
 | [Details](components/details.md) | `<sa-details>`, `<sa-display-field>` | Lays out `sa-display-field` elements in a description list. |
 | [Dialog](components/dialog.md) | `<sa-dialog>`, `<sa-dialog-description>`, `<sa-dialog-footer>`, … | Renders a modal window over the page. |
+| [DictionaryEditor](components/dictionary-editor.md) | `<sa-dictionary-editor>` | Renders an editor for a dictionary of keys and values, with a row per entry. |
 | [DropdownMenu](components/dropdown-menu.md) | `<sa-dropdown-menu>`, `<sa-dropdown-menu-checkbox-item>`, `<sa-dropdown-menu-content>`, … | Renders a dropdown menu, which pairs a trigger with its content. |
 | [Empty](components/empty.md) | `<sa-empty>`, `<sa-empty-content>`, `<sa-empty-description>`, … | Renders an empty state, which tells the user there is no content to show. |
 | [EnvironmentIndicator](components/environment-indicator.md) | `<sa-environment-frame>`, `<sa-environment-banner>`, `<sa-environment-stripe>` | Renders a border around the window, with a tab on the top edge that names the environment the application runs in. |
@@ -39,6 +40,7 @@
 | [Kbd](components/kbd.md) | `<sa-kbd>`, `<sa-kbd-group>` | Renders a keyboard key or keystroke. |
 | [Label](components/label.md) | `<sa-label>` | Renders a label for a form control. |
 | [Layout](components/layout.md) | `<sa-group>`, `<sa-page-container>`, `<sa-stack>` | Renders a layout that arranges its children in a row. |
+| [ListEditor](components/list-editor.md) | `<sa-list-editor>` | Renders an editor for a list of text or number values, with a row per item. |
 | [Marker](components/marker.md) | `<sa-marker>`, `<sa-marker-button>`, `<sa-marker-content>`, … | Renders a note in a conversation, such as a status update, a system message or a labeled divider. |
 | [Message](components/message.md) | `<sa-message>`, `<sa-message-avatar>`, `<sa-message-content>`, … | Renders a message in a conversation, with its avatar, content, header and footer. |
 | [MessageScroller](components/message-scroller.md) | `<sa-message-scroller>`, `<sa-message-scroller-button>`, `<sa-message-scroller-content>`, … | Renders a scrolling frame for a conversation, with its transcript and scroll buttons. |

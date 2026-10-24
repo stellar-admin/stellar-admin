@@ -913,6 +913,71 @@ StellarAdmin.UI.DialogTagHelper
 StellarAdmin.UI.DialogTagHelper.DialogTagHelper() -> void
 StellarAdmin.UI.DialogTitleTagHelper
 StellarAdmin.UI.DialogTitleTagHelper.DialogTitleTagHelper() -> void
+StellarAdmin.UI.DictionaryEditorAlign
+StellarAdmin.UI.DictionaryEditorAlign.End = 1 -> StellarAdmin.UI.DictionaryEditorAlign
+StellarAdmin.UI.DictionaryEditorAlign.Start = 0 -> StellarAdmin.UI.DictionaryEditorAlign
+StellarAdmin.UI.DictionaryEditorCasing
+StellarAdmin.UI.DictionaryEditorCasing.Lower = 2 -> StellarAdmin.UI.DictionaryEditorCasing
+StellarAdmin.UI.DictionaryEditorCasing.None = 0 -> StellarAdmin.UI.DictionaryEditorCasing
+StellarAdmin.UI.DictionaryEditorCasing.Upper = 1 -> StellarAdmin.UI.DictionaryEditorCasing
+StellarAdmin.UI.DictionaryEditorClassNames
+StellarAdmin.UI.DictionaryEditorClassNames.Control.get -> string?
+StellarAdmin.UI.DictionaryEditorClassNames.Control.set -> void
+StellarAdmin.UI.DictionaryEditorClassNames.DictionaryEditorClassNames() -> void
+StellarAdmin.UI.DictionaryEditorTagHelper
+StellarAdmin.UI.DictionaryEditorTagHelper.AddText.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.AddText.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.DictionaryEditorTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! generator, Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.Icons.IconOptions!>! icons) -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.EmptyText.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.EmptyText.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyCasing.get -> StellarAdmin.UI.DictionaryEditorCasing?
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyCasing.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyItems.get -> System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem!>?
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyItems.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyLabel.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyLabel.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyMaxLength.get -> int?
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyMaxLength.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyPattern.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyPattern.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyPatternMessage.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyPatternMessage.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyPlaceholder.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.KeyPlaceholder.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.MaxItems.get -> int?
+StellarAdmin.UI.DictionaryEditorTagHelper.MaxItems.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.MinItems.get -> int?
+StellarAdmin.UI.DictionaryEditorTagHelper.MinItems.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.Numbered.get -> bool?
+StellarAdmin.UI.DictionaryEditorTagHelper.Numbered.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.DictionaryEditorTagHelper.ReadOnly.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueAlign.get -> StellarAdmin.UI.DictionaryEditorAlign?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueAlign.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueCasing.get -> StellarAdmin.UI.DictionaryEditorCasing?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueCasing.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueItems.get -> System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem!>?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueItems.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueLabel.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueLabel.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueMax.get -> double?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueMax.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueMaxLength.get -> int?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueMaxLength.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueMin.get -> double?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueMin.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValuePattern.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValuePattern.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValuePatternMessage.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValuePatternMessage.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValuePlaceholder.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValuePlaceholder.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValuePrefix.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValuePrefix.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueStep.get -> double?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueStep.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueSuffix.get -> string?
+StellarAdmin.UI.DictionaryEditorTagHelper.ValueSuffix.set -> void
 StellarAdmin.UI.DisplayFieldOrientation
 StellarAdmin.UI.DisplayFieldOrientation.Horizontal = 1 -> StellarAdmin.UI.DisplayFieldOrientation
 StellarAdmin.UI.DisplayFieldOrientation.Vertical = 0 -> StellarAdmin.UI.DisplayFieldOrientation
@@ -1329,6 +1394,9 @@ StellarAdmin.UI.Icons.SemanticIconRole.CarouselNext = 2 -> StellarAdmin.UI.Icons
 StellarAdmin.UI.Icons.SemanticIconRole.CarouselPrevious = 3 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.CheckboxSelected = 4 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.ChecklistDone = 38 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.CollectionEditorAdd = 70 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.CollectionEditorHandle = 72 -> StellarAdmin.UI.Icons.SemanticIconRole
+StellarAdmin.UI.Icons.SemanticIconRole.CollectionEditorRemove = 71 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.RichTextUndo = 39 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.RichTextRedo = 40 -> StellarAdmin.UI.Icons.SemanticIconRole
 StellarAdmin.UI.Icons.SemanticIconRole.RichTextBold = 41 -> StellarAdmin.UI.Icons.SemanticIconRole
@@ -1624,6 +1692,57 @@ StellarAdmin.UI.LabelTagHelper.For.set -> void
 StellarAdmin.UI.LabelTagHelper.LabelTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator) -> void
 StellarAdmin.UI.LabelTagHelper.ViewContext.get -> Microsoft.AspNetCore.Mvc.Rendering.ViewContext!
 StellarAdmin.UI.LabelTagHelper.ViewContext.set -> void
+StellarAdmin.UI.ListEditorAlign
+StellarAdmin.UI.ListEditorAlign.End = 1 -> StellarAdmin.UI.ListEditorAlign
+StellarAdmin.UI.ListEditorAlign.Start = 0 -> StellarAdmin.UI.ListEditorAlign
+StellarAdmin.UI.ListEditorCasing
+StellarAdmin.UI.ListEditorCasing.Lower = 2 -> StellarAdmin.UI.ListEditorCasing
+StellarAdmin.UI.ListEditorCasing.None = 0 -> StellarAdmin.UI.ListEditorCasing
+StellarAdmin.UI.ListEditorCasing.Upper = 1 -> StellarAdmin.UI.ListEditorCasing
+StellarAdmin.UI.ListEditorClassNames
+StellarAdmin.UI.ListEditorClassNames.Control.get -> string?
+StellarAdmin.UI.ListEditorClassNames.Control.set -> void
+StellarAdmin.UI.ListEditorClassNames.ListEditorClassNames() -> void
+StellarAdmin.UI.ListEditorTagHelper
+StellarAdmin.UI.ListEditorTagHelper.AddText.get -> string?
+StellarAdmin.UI.ListEditorTagHelper.AddText.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Align.get -> StellarAdmin.UI.ListEditorAlign?
+StellarAdmin.UI.ListEditorTagHelper.Align.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Casing.get -> StellarAdmin.UI.ListEditorCasing?
+StellarAdmin.UI.ListEditorTagHelper.Casing.set -> void
+StellarAdmin.UI.ListEditorTagHelper.EmptyText.get -> string?
+StellarAdmin.UI.ListEditorTagHelper.EmptyText.set -> void
+StellarAdmin.UI.ListEditorTagHelper.ListEditorTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! generator, Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.Icons.IconOptions!>! icons) -> void
+StellarAdmin.UI.ListEditorTagHelper.Max.get -> double?
+StellarAdmin.UI.ListEditorTagHelper.Max.set -> void
+StellarAdmin.UI.ListEditorTagHelper.MaxItems.get -> int?
+StellarAdmin.UI.ListEditorTagHelper.MaxItems.set -> void
+StellarAdmin.UI.ListEditorTagHelper.MaxLength.get -> int?
+StellarAdmin.UI.ListEditorTagHelper.MaxLength.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Min.get -> double?
+StellarAdmin.UI.ListEditorTagHelper.Min.set -> void
+StellarAdmin.UI.ListEditorTagHelper.MinItems.get -> int?
+StellarAdmin.UI.ListEditorTagHelper.MinItems.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Numbered.get -> bool?
+StellarAdmin.UI.ListEditorTagHelper.Numbered.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Pattern.get -> string?
+StellarAdmin.UI.ListEditorTagHelper.Pattern.set -> void
+StellarAdmin.UI.ListEditorTagHelper.PatternMessage.get -> string?
+StellarAdmin.UI.ListEditorTagHelper.PatternMessage.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Placeholder.get -> string?
+StellarAdmin.UI.ListEditorTagHelper.Placeholder.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Prefix.get -> string?
+StellarAdmin.UI.ListEditorTagHelper.Prefix.set -> void
+StellarAdmin.UI.ListEditorTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.ListEditorTagHelper.ReadOnly.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Sortable.get -> bool?
+StellarAdmin.UI.ListEditorTagHelper.Sortable.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Step.get -> double?
+StellarAdmin.UI.ListEditorTagHelper.Step.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Suffix.get -> string?
+StellarAdmin.UI.ListEditorTagHelper.Suffix.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Unique.get -> bool?
+StellarAdmin.UI.ListEditorTagHelper.Unique.set -> void
 StellarAdmin.UI.MarkerButtonTagHelper
 StellarAdmin.UI.MarkerButtonTagHelper.MarkerButtonTagHelper() -> void
 StellarAdmin.UI.MarkerButtonTagHelper.Variant.get -> StellarAdmin.UI.MarkerVariant?

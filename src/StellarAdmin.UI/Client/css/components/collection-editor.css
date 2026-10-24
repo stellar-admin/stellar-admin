@@ -1,0 +1,364 @@
+/* List and dictionary editors: one field with a row per value. Each row is a grid of [gutter] [key]
+   value actions, with the same columns as the dictionary's column heads. Add is the last row; row
+   actions show on hover and focus (always on touch screens); the drag handle always shows.
+   Replaces: .sa-collection-editor, .sa-collection-editor-actions, .sa-collection-editor-add,
+   .sa-collection-editor-affix, .sa-collection-editor-cell, .sa-collection-editor-count,
+   .sa-collection-editor-empty, .sa-collection-editor-ghost, .sa-collection-editor-gutter,
+   .sa-collection-editor-handle, .sa-collection-editor-head, .sa-collection-editor-head-gutter,
+   .sa-collection-editor-item, .sa-collection-editor-item-error, .sa-collection-editor-items,
+   .sa-collection-editor-number, .sa-collection-editor-remove, .sa-collection-editor-text */
+
+@layer sa.components {
+  .sa-collection-editor {
+    --_row-h: var(--sa-control-h);
+    --_actions-w: var(--sa-control-h);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
+    border-radius: var(--sa-radius-box);
+    background: var(--sa-color-field);
+    background-clip: padding-box;
+    box-shadow: var(--sa-shadow-control);
+    overflow: hidden;
+    transition:
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+    &:is([data-numbered], [data-sortable]) {
+      --_gutter-col: calc(7 * var(--sa-unit));
+      --_error-col: 2 / -1;
+    }
+    &[data-numbered] {
+      --_gutter-col: calc(8 * var(--sa-unit));
+    }
+    &[data-kind="dictionary"] {
+      --_key-col: minmax(min(8rem, 40%), 2fr);
+      --_value-col: minmax(0, 5fr);
+    }
+    &:not([data-readonly]) {
+      --_actions-col: var(--_actions-w);
+    }
+    &:hover:not(:focus-within, [data-readonly]) {
+      border-color: var(--sa-color-line-control-hover);
+    }
+    &:focus-within {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-shadow-control), var(--sa-focus-shadow-field);
+    }
+    &:is([aria-invalid="true"], :has([aria-invalid="true"])) {
+      border-color: var(--sa-color-danger);
+    }
+    &[aria-invalid="true"]:focus-within {
+      box-shadow: var(--sa-shadow-control), var(--sa-invalid-focus-shadow);
+    }
+    /* Read-only: the values as text on a disabled select's fill, with no add row, remove or handle */
+    &[data-readonly] {
+      border-color: var(--sa-color-line);
+      background: var(--sa-color-field-disabled);
+      box-shadow: none;
+    }
+  }
+
+  .sa-collection-editor-head,
+  .sa-collection-editor-item {
+    display: grid;
+    grid-template-columns:
+      var(--_gutter-col,) var(--_key-col,) var(--_value-col, minmax(0, 1fr))
+      var(--_actions-col,);
+    align-items: center;
+    min-width: 0;
+  }
+
+  .sa-collection-editor-head {
+    min-height: calc(7 * var(--sa-unit));
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+    background: var(--sa-color-surface-subtle);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
+    font-weight: var(--sa-weight-control);
+    & > span {
+      padding-inline: var(--sa-control-px);
+    }
+    & > .sa-collection-editor-head-gutter {
+      padding: 0;
+      text-align: center;
+    }
+    & > [data-align="end"] {
+      text-align: end;
+    }
+  }
+
+  .sa-collection-editor-items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    & > li + li {
+      border-top: var(--sa-border-width) solid var(--sa-color-line);
+    }
+  }
+
+  .sa-collection-editor-item {
+    &:focus-within:not([data-invalid], [data-dragging]) {
+      background: var(--sa-color-hover);
+    }
+    &[data-invalid] {
+      background: color-mix(in oklab, var(--sa-color-danger) 6%, transparent);
+    }
+    /* The dragged row's place: an empty slot that moves as the row is dragged */
+    &[data-dragging] {
+      background: var(--sa-color-surface-sunken);
+      & > * {
+        visibility: hidden;
+      }
+    }
+  }
+
+  /* The row being dragged: lifted above the page and following the pointer */
+  .sa-collection-editor.sa-collection-editor-ghost {
+    position: fixed;
+    z-index: 50;
+    margin: 0;
+    border-color: var(--sa-color-line-control);
+    background: var(--sa-color-surface);
+    box-shadow: var(--sa-shadow-overlay);
+    pointer-events: none;
+    & .sa-collection-editor-item {
+      background: transparent;
+    }
+    & .sa-collection-editor-remove {
+      opacity: 0;
+    }
+  }
+
+  .sa-collection-editor[data-reordering],
+  .sa-collection-editor[data-reordering] * {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .sa-collection-editor-cell {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    min-width: 0;
+    & + .sa-collection-editor-cell {
+      border-inline-start: var(--sa-border-width) solid var(--sa-color-line);
+    }
+  }
+
+  /* The inputs and selects in the rows give up their own field look: the box is the field */
+  .sa-collection-editor-cell > .sa-input,
+  .sa-collection-editor-cell > .sa-native-select-wrapper > .sa-native-select {
+    flex: 1;
+    min-width: 0;
+    height: var(--_row-h);
+    border-color: transparent;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* (Specific enough to beat the input's and select's own hover, focus and invalid states) */
+  .sa-collection-editor
+    .sa-collection-editor-cell
+    :is(.sa-input, .sa-native-select):is(
+      :hover,
+      :focus-visible,
+      [aria-invalid="true"],
+      .input-validation-error
+    ) {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  /* Numbers step with the arrow keys; spin buttons would crowd the row and, in Chrome, keep their
+     room even when hidden, pushing an end-aligned number away from its suffix */
+  .sa-collection-editor-cell > .sa-input[type="number"] {
+    appearance: textfield;
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+  }
+
+  .sa-collection-editor-cell > .sa-native-select-wrapper {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    & > .sa-native-select {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  /* End-aligned values, such as numbers, so that their digits line up */
+  .sa-collection-editor-cell[data-align="end"] {
+    & > :is(.sa-input, .sa-collection-editor-text),
+    & > .sa-native-select-wrapper > .sa-native-select {
+      text-align: end;
+      text-align-last: end;
+    }
+    /* The suffix's own padding is the gap, so the value sits beside it */
+    & > :is(.sa-input, .sa-collection-editor-text):has(+ .sa-collection-editor-affix[data-side="end"]) {
+      padding-inline-end: 0;
+    }
+  }
+
+  .sa-collection-editor-text {
+    flex: 1;
+    min-width: 0;
+    padding-inline: var(--sa-control-px);
+    font-size: var(--sa-text-control);
+    line-height: var(--_row-h);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sa-collection-editor-affix {
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    &[data-side="start"] {
+      padding-inline-start: var(--sa-control-px);
+      margin-inline-end: calc(-0.5 * var(--sa-control-px));
+    }
+    &[data-side="end"] {
+      padding-inline: var(--sa-unit) var(--sa-control-px);
+    }
+  }
+
+  /* Gutter: row numbers or, for a sortable list without them, a handle. With both, the number
+     turns into the handle while the row is hovered or focused. */
+  .sa-collection-editor-gutter,
+  .sa-collection-editor-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+  }
+
+  .sa-collection-editor[data-numbered] .sa-collection-editor-gutter {
+    background: var(--sa-color-surface-subtle);
+    border-inline-end: var(--sa-border-width) solid var(--sa-color-line);
+  }
+
+  .sa-collection-editor-number {
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sa-collection-editor-handle,
+  .sa-collection-editor-remove {
+    color: var(--sa-color-ink-muted);
+  }
+
+  .sa-collection-editor-handle {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    cursor: grab;
+    touch-action: none;
+    & > svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+    & > .sa-collection-editor-number + svg {
+      display: none;
+    }
+  }
+
+  /* (Specific enough to beat the ghost button's hover and focus) */
+  .sa-collection-editor-gutter > .sa-collection-editor-handle {
+    &:is(:hover, :active):not(:disabled) {
+      background-color: transparent;
+      color: var(--sa-color-ink);
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--sa-focus-border);
+    }
+  }
+
+  .sa-collection-editor-item:is(:hover, :focus-within)
+    .sa-collection-editor-handle:has(> .sa-collection-editor-number) {
+    & > .sa-collection-editor-number {
+      display: none;
+    }
+    & > svg {
+      display: block;
+    }
+  }
+
+  @media (hover: hover) {
+    .sa-collection-editor-item:not(:hover, :focus-within) .sa-collection-editor-remove {
+      opacity: 0;
+    }
+  }
+
+  .sa-collection-editor-item-error {
+    grid-column: var(--_error-col, 1 / -1);
+    margin: 0;
+    padding: 0 var(--sa-control-px) calc(1.5 * var(--sa-unit));
+    color: var(--sa-color-danger-text);
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+  }
+
+  .sa-collection-editor-empty {
+    display: flex;
+    align-items: center;
+    min-height: var(--_row-h);
+    padding-inline: var(--sa-control-px);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+  }
+
+  .sa-collection-editor-add {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    width: 100%;
+    min-height: var(--_row-h);
+    padding-inline: var(--sa-control-px);
+    border: 0;
+    border-top: var(--sa-border-width) solid var(--sa-color-line);
+    background: transparent;
+    color: var(--sa-color-ink-muted);
+    font: inherit;
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    text-align: start;
+    cursor: pointer;
+    & > svg {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+      flex-shrink: 0;
+    }
+    &:hover:not(:disabled) {
+      color: var(--sa-color-ink);
+      background: var(--sa-color-hover);
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--sa-focus-border);
+    }
+    &:disabled {
+      cursor: not-allowed;
+    }
+    &:disabled > :not(.sa-collection-editor-count) {
+      opacity: var(--sa-disabled-opacity);
+    }
+  }
+
+  .sa-collection-editor-count {
+    margin-inline-start: auto;
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+}

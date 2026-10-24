@@ -229,6 +229,86 @@ public class CheckboxGroupModelBinderProviderTests
         await Assert.That(existing.Roles).IsEquivalentTo(new[] { 2, 3 });
     }
 
+    [Test]
+    public async Task BindModelAsync_IndexedListWithMarker_BindsItems()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var binding = await CreateBindingAsync(
+            context,
+            typeof(List<string>),
+            null,
+            new()
+            {
+                ["Input[0]"] = "Fado in Alfama",
+                ["Input[1]"] = "Tram 28",
+                ["__sa_checkbox_group.Input"] = "true",
+            }
+        );
+        var sut = binding.Binder;
+
+        // Act
+        await sut.BindModelAsync(binding.Context);
+
+        // Assert
+        await Assert
+            .That(binding.Context.Result.Model as List<string>)
+            .IsEquivalentTo(new[] { "Fado in Alfama", "Tram 28" });
+    }
+
+    [Test]
+    public async Task BindModelAsync_MarkerOnly_ClearsExistingNestedDictionary()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var existing = new TripModel { Allowance = new() { ["Economy"] = 23 } };
+        var binding = await CreateBindingAsync(
+            context,
+            typeof(TripModel),
+            existing,
+            new() { ["__sa_checkbox_group.Input.Allowance"] = "true" }
+        );
+        var sut = binding.Binder;
+
+        // Act
+        await sut.BindModelAsync(binding.Context);
+
+        // Assert
+        await Assert.That(existing.Allowance).IsEmpty();
+        await Assert
+            .That(binding.Context.ModelState["Input.Allowance"]?.RawValue as string[])
+            .IsEmpty();
+    }
+
+    [Test]
+    public async Task BindModelAsync_IndexedDictionaryWithMarker_BindsEntries()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var binding = await CreateBindingAsync(
+            context,
+            typeof(Dictionary<DayOfWeek, int>),
+            null,
+            new()
+            {
+                ["Input[0].Key"] = "Monday",
+                ["Input[0].Value"] = "3",
+                ["Input[1].Key"] = "Friday",
+                ["Input[1].Value"] = "5",
+                ["__sa_checkbox_group.Input"] = "true",
+            }
+        );
+        var sut = binding.Binder;
+
+        // Act
+        await sut.BindModelAsync(binding.Context);
+
+        // Assert
+        var result = binding.Context.Result.Model as Dictionary<DayOfWeek, int>;
+        await Assert.That(result?[DayOfWeek.Monday]).IsEqualTo(3);
+        await Assert.That(result?[DayOfWeek.Friday]).IsEqualTo(5);
+    }
+
     private static async Task<(
         IModelBinder Binder,
         ModelBindingContext Context
@@ -267,6 +347,11 @@ public class CheckboxGroupModelBinderProviderTests
     {
         [FromQuery]
         public int[] Roles { get; set; } = [];
+    }
+
+    public class TripModel
+    {
+        public Dictionary<string, int> Allowance { get; set; } = [];
     }
 
     public class InputModel

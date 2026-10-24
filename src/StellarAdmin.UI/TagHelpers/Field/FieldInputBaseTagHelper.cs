@@ -530,6 +530,26 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGrid
         }
     }
 
+    // A label can't target a group such as a list editor, so a rendered field label is referenced
+    // by id instead
+    private protected void LabelGroup(TagHelperAttributeList attributes, string id)
+    {
+        var labelled =
+            attributes.ContainsName("aria-label") || attributes.ContainsName("aria-labelledby");
+        if (WillRenderFieldLabel())
+        {
+            LabelId = $"{id}-label";
+            if (!labelled)
+            {
+                attributes.SetAttribute("aria-labelledby", LabelId);
+            }
+        }
+        else if (!labelled && (Label ?? For?.Metadata.DisplayName ?? For?.Name) is { } groupLabel)
+        {
+            attributes.SetAttribute("aria-label", groupLabel);
+        }
+    }
+
     private protected bool IsInvalid() =>
         !string.IsNullOrEmpty(Error)
         || For != null

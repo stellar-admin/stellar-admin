@@ -1,5 +1,6 @@
 ﻿import "./web-components/sel-carousel.js";
 import "./web-components/sel-collapsible.js";
+import "./web-components/sel-collection-editor.js";
 import "./web-components/sel-command.js";
 import "./web-components/sel-dialog.js";
 import "./web-components/sel-dropdown-menu.js";

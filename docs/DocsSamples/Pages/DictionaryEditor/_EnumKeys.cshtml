@@ -1,0 +1,9 @@
+@model Index.SeasonalPricesModel
+
+<div class="w-full max-w-lg">
+    <!-- code begin -->
+    <sa-dictionary-editor asp-for="SeasonalPrices" key-label="Season" key-placeholder="Choose a season"
+                          value-label="Price per traveller" value-min="0" value-step="0.01"
+                          value-prefix="€" add-text="Add season" />
+    <!-- code end -->
+</div>

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -60,11 +61,14 @@ public static class StellarAdminUIExtensions
             {
                 if (!options.ModelBinderProviders.OfType<CheckboxGroupModelBinderProvider>().Any())
                 {
+                    // Before the first of MVC's dictionary, array and collection binders
                     var index = options
                         .ModelBinderProviders.ToList()
                         .FindIndex(provider =>
                             provider
-                            is Microsoft.AspNetCore.Mvc.ModelBinding.Binders.ArrayModelBinderProvider
+                                is DictionaryModelBinderProvider
+                                    or ArrayModelBinderProvider
+                                    or CollectionModelBinderProvider
                         );
                     options.ModelBinderProviders.Insert(
                         index < 0 ? options.ModelBinderProviders.Count : index,

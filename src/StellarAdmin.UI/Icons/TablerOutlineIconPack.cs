@@ -86,6 +86,9 @@ public sealed class TablerOutlineIconPack : IIconPack
             [SemanticIconRole.RichTextMergeCells] = "arrows-join",
             [SemanticIconRole.RichTextSplitCell] = "arrows-split",
             [SemanticIconRole.RichTextClearCells] = "eraser",
+            [SemanticIconRole.CollectionEditorAdd] = "plus",
+            [SemanticIconRole.CollectionEditorRemove] = "x",
+            [SemanticIconRole.CollectionEditorHandle] = "grip-vertical",
         };
     }
 }
