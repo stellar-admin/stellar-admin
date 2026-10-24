@@ -57,6 +57,8 @@ export function sanitizeSvg(markup) {
  *
  * In the inline layout, the icons are toggle group radios. Clicking the chosen tile again clears an
  * optional field: the hidden input then posts an empty value.
+ *
+ * A read-only picker (`data-readonly`) has no popover, and its tiles cancel their own clicks.
  */
 export class IconPicker extends HTMLElement {
   /** @type {HTMLElement | null} */
@@ -90,6 +92,8 @@ export class IconPicker extends HTMLElement {
 
   connectedCallback() {
     this.#hidden = this.#part("icon-picker-value");
+    if (this.hasAttribute("data-readonly")) return;
+
     if (this.dataset.layout === "inline") {
       this.addEventListener("pointerdown", this.#onTilePointerDown);
       this.addEventListener("click", this.#onTileClick);

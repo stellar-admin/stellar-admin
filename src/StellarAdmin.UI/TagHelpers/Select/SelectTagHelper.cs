@@ -105,6 +105,7 @@ public sealed class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
             selectOutput.Content.SetHtmlContent(await output.GetChildContentAsync());
         }
         ApplyFieldAttributes(context, selectOutput.Attributes, FieldLayout.Stacked);
+        ReadOnlyHandlers.ApplyToSelect(selectOutput.Attributes);
         output.Content.AppendHtml(selectOutput);
 
         /*

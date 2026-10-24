@@ -89,8 +89,25 @@ public sealed class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
     ///     <see langword="true" /> if the slider is disabled and can't be moved; otherwise,
     ///     <see langword="false" />. The default is <see langword="false" />.
     /// </value>
+    /// <remarks>
+    ///     A disabled slider's value isn't posted.
+    /// </remarks>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
+
+    /// <summary>
+    ///     Gets or sets a value that indicates whether the value can't be changed.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the value can't be changed; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A read-only slider looks like an editable one and its thumbs can still be focused, and
+    ///     its value is posted.
+    /// </remarks>
+    [HtmlAttributeName("readonly")]
+    public bool? ReadOnly { get; set; }
 
     /// <summary>
     ///     Gets or sets the value of each thumb.
@@ -163,6 +180,7 @@ public sealed class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
         var effectiveOrientation = Orientation ?? SliderOrientation.Horizontal;
         var effectiveThumbAlignment = ThumbAlignment ?? SliderThumbAlignment.Edge;
         var effectiveDisabled = Disabled ?? false;
+        var effectiveReadOnly = !effectiveDisabled && (ReadOnly ?? false);
 
         if (effectiveMin >= effectiveMax)
         {
@@ -245,6 +263,10 @@ public sealed class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
         if (effectiveDisabled)
         {
             output.Attributes.SetAttribute("data-disabled", "true");
+        }
+        if (effectiveReadOnly)
+        {
+            output.Attributes.SetAttribute("data-readonly", "true");
         }
         output.Attributes.SetAttribute(
             "class",
@@ -351,6 +373,10 @@ public sealed class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
                 // host wrapper only, so per-thumb disabled utilities are left inert here.
                 thumb.Attributes.Add("aria-disabled", "true");
             }
+            if (effectiveReadOnly)
+            {
+                thumb.Attributes.Add("aria-readonly", "true");
+            }
             foreach (var attribute in thumbAttributes)
             {
                 thumb.Attributes.Add(attribute.Name, attribute.Value?.ToString());
@@ -383,6 +409,10 @@ public sealed class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
                 if (FormName != null)
                 {
                     hidden.Attributes.Add("form", FormName);
+                }
+                if (effectiveDisabled)
+                {
+                    hidden.Attributes.Add("disabled", "disabled");
                 }
                 output.Content.AppendHtml(hidden);
             }

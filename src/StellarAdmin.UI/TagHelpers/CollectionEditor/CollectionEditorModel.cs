@@ -6,6 +6,7 @@ internal sealed class CollectionEditorModel
 {
     public required string AddText { get; init; }
     public required bool Dictionary { get; init; }
+    public bool Disabled { get; init; }
     public required string EmptyText { get; init; }
     public required string Id { get; init; }
     public int? MaxItems { get; init; }

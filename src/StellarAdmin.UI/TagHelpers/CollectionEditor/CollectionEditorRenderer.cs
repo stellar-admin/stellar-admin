@@ -40,6 +40,11 @@ internal sealed class CollectionEditorRenderer(
         SetFlag(output, "data-sortable", model.Sortable);
         SetFlag(output, "data-unique", model.Unique);
         SetFlag(output, "data-readonly", model.ReadOnly);
+
+        // The element is form-associated, so it matches :disabled, and a disabled fieldset
+        // disables it too
+        SetFlag(output, "disabled", model.Disabled);
+
         if (model.MinItems is { } minItems)
         {
             output.Attributes.SetAttribute("data-min-items", Number(minItems));
@@ -85,30 +90,33 @@ internal sealed class CollectionEditorRenderer(
 
         emptyMessage.InnerHtml.Append(model.ReadOnly ? model.Texts["none"] : model.EmptyText);
         content.AppendHtml(emptyMessage);
-        if (model.ReadOnly)
+        if (!model.ReadOnly)
         {
-            return;
+            content.AppendHtml(await AddAsync());
+
+            var template = new TagBuilder("template");
+            template.InnerHtml.AppendHtml(
+                await RowAsync(
+                    new CollectionEditorRow(
+                        model.Parts.Select(_ => "").ToList(),
+                        model.Parts.Select(_ => (string?)null).ToList()
+                    ),
+                    null
+                )
+            );
+            content.AppendHtml(template);
         }
-
-        content.AppendHtml(await AddAsync());
-
-        var template = new TagBuilder("template");
-        template.InnerHtml.AppendHtml(
-            await RowAsync(
-                new CollectionEditorRow(
-                    model.Parts.Select(_ => "").ToList(),
-                    model.Parts.Select(_ => (string?)null).ToList()
-                ),
-                null
-            )
-        );
-        content.AppendHtml(template);
 
         // Posted with the rows, so that removing every row binds an empty collection
         var marker = new TagBuilder("input") { TagRenderMode = TagRenderMode.SelfClosing };
         marker.Attributes["type"] = "hidden";
         marker.Attributes["name"] = CheckboxGroupModelBinderProvider.MarkerPrefix + model.Name;
         marker.Attributes["value"] = "true";
+        if (model.Disabled)
+        {
+            marker.Attributes["disabled"] = "disabled";
+        }
+
         content.AppendHtml(marker);
     }
 
@@ -151,6 +159,10 @@ internal sealed class CollectionEditorRenderer(
             add.Attributes.Add("disabled", "disabled");
             add.Attributes.Add("title", model.Texts["full"]);
         }
+        else if (model.Disabled)
+        {
+            add.Attributes.Add("disabled", "disabled");
+        }
 
         var text = new TagBuilder("span");
         text.InnerHtml.Append(model.AddText);
@@ -183,7 +195,8 @@ internal sealed class CollectionEditorRenderer(
         string label,
         IHtmlContent content,
         ButtonSize size,
-        string? command
+        string? command,
+        bool disabled
     )
     {
         var button = new TagHelperOutput(
@@ -197,6 +210,11 @@ internal sealed class CollectionEditorRenderer(
         {
             button.Attributes.SetAttribute("command", command);
             button.Attributes.SetAttribute("commandfor", model.Id);
+        }
+
+        if (disabled)
+        {
+            button.Attributes.SetAttribute("disabled", "disabled");
         }
 
         button.Content.SetHtmlContent(content);
@@ -231,6 +249,16 @@ internal sealed class CollectionEditorRenderer(
         {
             attributes.Add("aria-invalid", "true");
             attributes.Add("aria-describedby", errorId);
+        }
+
+        // The template row is cloned for Add, so it is never disabled
+        if (model.Disabled && index != null)
+        {
+            attributes.Add("disabled", "disabled");
+        }
+        else if (model.ReadOnly)
+        {
+            attributes.Add("readonly", "readonly");
         }
 
         if (part.Items != null)
@@ -346,19 +374,7 @@ internal sealed class CollectionEditorRenderer(
             cell.InnerHtml.AppendHtml(Affix(part.Prefix, "start"));
         }
 
-        if (model.ReadOnly)
-        {
-            var text = Element("span", "sa-collection-editor-text");
-            text.InnerHtml.Append(
-                part.Items?.FirstOrDefault(item => (item.Value ?? item.Text) == value)?.Text
-                    ?? value
-            );
-            cell.InnerHtml.AppendHtml(text);
-        }
-        else
-        {
-            cell.InnerHtml.AppendHtml(await ControlAsync(part, value, index, errorId));
-        }
+        cell.InnerHtml.AppendHtml(await ControlAsync(part, value, index, errorId));
 
         if (!string.IsNullOrEmpty(part.Suffix))
         {
@@ -472,7 +488,8 @@ internal sealed class CollectionEditorRenderer(
                         Format(model.Texts["move"], number),
                         content,
                         ButtonSize.Icon,
-                        null
+                        null,
+                        model.Disabled && index != null
                     )
                 );
             }
@@ -506,7 +523,8 @@ internal sealed class CollectionEditorRenderer(
                     Format(model.Texts["remove"], number),
                     await IconAsync(SemanticIconRole.CollectionEditorRemove, null),
                     ButtonSize.IconSmall,
-                    "--remove"
+                    "--remove",
+                    model.Disabled && index != null
                 )
             );
             item.InnerHtml.AppendHtml(actions);

@@ -67,6 +67,20 @@ public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupCl
     public ToggleGroupOrientation? Orientation { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value that indicates whether the selection can't be changed.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the selection can't be changed; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A read-only group looks like an editable one and can still be focused, and its selection
+    ///     is posted.
+    /// </remarks>
+    [HtmlAttributeName("readonly")]
+    public bool? ReadOnly { get; set; }
+
+    /// <summary>
     ///     Gets or sets the space between the items.
     /// </summary>
     /// <value>
@@ -159,6 +173,7 @@ public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupCl
             Size = effectiveSize,
             Spacing = effectiveSpacing,
             FieldName = fieldName,
+            ReadOnly = ReadOnly ?? false,
             SelectedValues = (hasState && !multiple ? selection.Take(1) : selection).ToHashSet(
                 StringComparer.Ordinal
             ),

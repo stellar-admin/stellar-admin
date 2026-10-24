@@ -249,6 +249,14 @@ Register the assembly with `@addTagHelper *, MyApp` and use it like any input. `
 - `FieldLayout.Stacked`, `FieldLayout.StackedDescriptionFirst` and `FieldLayout.ControlFirst` cover the usual arrangements. Build a `FieldLayout` to choose other parts, order or orientation.
 - To accept `class-names` for the field's parts, derive from `FieldInputBaseTagHelper<TClassNames>` with a class that inherits `FieldClassNames`, and add `ClassNames?.Control` to the control's classes yourself.
 
+## Read-only and disabled
+
+Every input follows the browser's own controls. **Read-only** looks like the editable input, can't be changed, can still be focused, and **posts** its value. **Disabled** fades, can't be focused, and posts **nothing**. Use read-only for a value the user should see in the form but not change; use disabled for an input that doesn't apply. Never trust either on the server: ignore fields the user may not change when saving.
+
+- `<sa-input>` (including checkboxes and radios), `<sa-textarea>`, `<sa-select>`, `<sa-switch>` and `<sa-toggle>` pass `readonly` and `disabled` to the native element, so the bare attributes work.
+- The other inputs bind them as `bool` attributes that need a value: `readonly="true"`, `disabled="true"`. That covers `<sa-checkbox-group>`, `<sa-radio-group>`, `<sa-toggle-group>`, `<sa-segmented-control>`, `<sa-slider>`, `<sa-icon-picker>`, `<sa-image-upload>`, `<sa-input-otp>`, `<sa-rich-text-editor>`, `<sa-list-editor>` and `<sa-dictionary-editor>`.
+- Browsers ignore `readonly` on checkboxes, radios and selects, so the tag helpers add inline handlers that keep their value: `onclick="return false"` on a checkbox or radio, and `onmousedown` and `onkeydown` on a select, which shows no dropdown icon and doesn't open. A strict Content Security Policy must allow inline handlers for them to work.
+
 ## Rules and gotchas
 
 1. **Prefer implicit + `asp-for`** for model-bound forms; fall back to explicit `<sa-field>` only when you need custom structure.

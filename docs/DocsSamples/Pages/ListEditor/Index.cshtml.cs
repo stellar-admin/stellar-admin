@@ -40,6 +40,8 @@ public class Index : PageModel
         public TripModel Validation { get; set; } = new TripModel();
 
         public TripModel ReadOnly { get; set; } = new TripModel();
+
+        public TripModel Disabled { get; set; } = new TripModel();
     }
 
     public class TripModel

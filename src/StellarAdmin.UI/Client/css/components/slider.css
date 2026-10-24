@@ -36,6 +36,11 @@
     &:is([data-disabled]:not([data-disabled="false"])) {
       opacity: var(--sa-disabled-opacity);
     }
+    /* Read-only looks like the editable slider, but a touch scrolls the page and the thumbs have no
+       hover ring */
+    &[data-readonly] {
+      touch-action: auto;
+    }
     /* Mark labels hang outside the host, which stays as tight as the track; reserve their room. */
     &[data-orientation="horizontal"]:has([data-slot="slider-mark-label"]) {
       margin-bottom: calc(var(--_slider-thumb) / 2 + 1.25rem);
@@ -100,6 +105,9 @@
     }
     &:is(:hover, :focus-visible, :active) {
       box-shadow: var(--sa-shadow-control), var(--sa-focus-shadow);
+    }
+    .sa-slider[data-readonly] > &:not(:focus-visible) {
+      box-shadow: var(--sa-shadow-control);
     }
   }
 

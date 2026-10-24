@@ -69,7 +69,7 @@
       background: var(--sa-color-on-accent);
       translate: -50% -50%;
     }
-    &:hover:not(:disabled, :focus-visible, :checked, :indeterminate) {
+    &:hover:not(:disabled, :focus-visible, :checked, :indeterminate, [readonly]) {
       border-color: var(--sa-color-line-control-hover);
     }
     &:is(:checked, :indeterminate) {
@@ -96,6 +96,10 @@
     &:disabled {
       cursor: not-allowed;
       opacity: var(--sa-disabled-opacity);
+    }
+    /* Read-only looks like the editable checkbox, but nothing responds to the pointer */
+    &[readonly] {
+      cursor: default;
     }
   }
   .sa-checkbox-indicator {

@@ -70,14 +70,14 @@
     &:has(> [data-icon="inline-end"]) {
       padding-inline-end: calc(var(--_px) - 0.5 * var(--sa-unit));
     }
-    &:hover {
+    &:hover:not(:has(> input[readonly])) {
       background-color: var(--sa-color-hover);
     }
     &:has(> input:checked) {
       border-color: var(--_on-border);
       background-color: var(--sa-color-selected);
       color: var(--sa-color-ink);
-      &:hover {
+      &:hover:not(:has(> input[readonly])) {
         background-color: color-mix(in oklab, var(--sa-color-selected), var(--sa-color-ink) 5%);
       }
     }
@@ -96,6 +96,10 @@
       opacity: var(--sa-disabled-opacity);
       cursor: not-allowed;
       pointer-events: none;
+    }
+    /* Read-only looks like the editable toggle, but nothing responds to the pointer */
+    &:has(> input[readonly]) {
+      cursor: default;
     }
   }
 

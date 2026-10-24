@@ -52,7 +52,9 @@ import { createUploader, defineImageView, rejectReason } from "./images.js";
  * the link popover, the slash menu, the table handles and the selection bubble. Controls name what
  * they do in `data-action`; the element keeps toggles checked and buttons disabled to match the
  * selection. The value is HTML in the child textarea, which is what the form posts and what shows
- * until this script has loaded. Images upload to `data-upload-url` as they are added.
+ * until this script has loaded. Images upload to `data-upload-url` as they are added. A read-only
+ * editor (`data-readonly`) has no toolbar; a disabled one (`data-disabled`) has its toolbar's
+ * controls disabled.
  */
 class SelRichTextEditor extends HTMLElement {
   /** @type {RichTextEditor | undefined} */
@@ -88,7 +90,8 @@ class SelRichTextEditor extends HTMLElement {
       };
     }
 
-    const readonly = this.hasAttribute("data-readonly");
+    const disabled = this.hasAttribute("data-disabled");
+    const readonly = disabled || this.hasAttribute("data-readonly");
     const editor = createEditor({
       extension: this.#defineExtension(textarea.placeholder, readonly),
       defaultContent: toHtml(textarea.value),
@@ -101,7 +104,7 @@ class SelRichTextEditor extends HTMLElement {
     // A click on the field's label focuses the editor, as it would the textarea
     const labelId = content.getAttribute("aria-labelledby")?.split(" ")[0];
     const label = labelId ? document.getElementById(labelId) : null;
-    label?.addEventListener("click", () => editor.focus());
+    if (!disabled) label?.addEventListener("click", () => editor.focus());
 
     if (!readonly) {
       this.#setUpToolbar();
@@ -113,6 +116,14 @@ class SelRichTextEditor extends HTMLElement {
     }
 
     this.#sync(true);
+
+    if (disabled) {
+      for (const control of /** @type {NodeListOf<HTMLButtonElement | HTMLInputElement>} */ (
+        this.querySelectorAll("[data-slot=rich-text-editor-toolbar] :is(button, input)")
+      )) {
+        control.disabled = true;
+      }
+    }
   }
 
   /**

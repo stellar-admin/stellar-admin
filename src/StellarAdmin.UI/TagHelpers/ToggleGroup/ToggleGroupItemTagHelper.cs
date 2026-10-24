@@ -120,6 +120,18 @@ public sealed class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
         else if (toggleGroupContext != null)
         {
             toggleGroupContext.HasEnabledItem = true;
+            if (toggleGroupContext.ReadOnly)
+            {
+                inputOutput.Attributes.SetAttribute("readonly", "readonly");
+                if (multiple)
+                {
+                    ReadOnlyHandlers.ApplyToCheckbox(inputOutput.Attributes);
+                }
+                else
+                {
+                    ReadOnlyHandlers.ApplyToRadio(inputOutput.Attributes);
+                }
+            }
         }
 
         // Visually hidden but still focusable so native keyboard selection drives has-* state.

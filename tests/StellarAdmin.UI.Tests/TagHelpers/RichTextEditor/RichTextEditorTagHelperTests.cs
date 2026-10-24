@@ -137,7 +137,7 @@ public class RichTextEditorTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_ReadOnly_RendersNoToolbarAndReadonlyTextarea()
+    public async Task ProcessAsync_ReadOnly_RendersNoToolbarAndFocusableContent()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -155,13 +155,9 @@ public class RichTextEditorTagHelperTests
         await Assert.That(editor?.QuerySelector("[data-slot=rich-text-editor-toolbar]")).IsNull();
         await Assert.That(editor?.QuerySelector("prosekit-autocomplete-root")).IsNull();
         await Assert.That(editor?.QuerySelector("textarea")?.HasAttribute("readonly")).IsTrue();
-        await Assert
-            .That(
-                editor
-                    ?.QuerySelector("[data-slot=rich-text-editor-content]")
-                    ?.GetAttribute("aria-readonly")
-            )
-            .IsEqualTo("true");
+        var content = editor?.QuerySelector("[data-slot=rich-text-editor-content]");
+        await Assert.That(content?.GetAttribute("aria-readonly")).IsEqualTo("true");
+        await Assert.That(content?.GetAttribute("tabindex")).IsEqualTo("0");
     }
 
     [Test]
@@ -237,6 +233,33 @@ public class RichTextEditorTagHelperTests
 
         // Assert
         await Assert.That(act).Throws<InvalidOperationException>();
+    }
+
+    [Test]
+    public async Task ProcessAsync_Disabled_RendersToolbarWithDisabledTextarea()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Disabled = true;
+        sut.UploadUrl = "/tours/upload";
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var editor = html.QuerySelector("sel-rich-text-editor");
+        await Assert.That(editor?.GetAttribute("data-disabled")).IsEqualTo("true");
+        await Assert.That(editor?.HasAttribute("data-readonly")).IsFalse();
+        await Assert.That(editor?.HasAttribute("data-upload-url")).IsFalse();
+        await Assert
+            .That(editor?.QuerySelector("[data-slot=rich-text-editor-toolbar]"))
+            .IsNotNull();
+        await Assert.That(editor?.QuerySelector("prosekit-autocomplete-root")).IsNull();
+        await Assert.That(editor?.QuerySelector("textarea")?.HasAttribute("disabled")).IsTrue();
+        var content = editor?.QuerySelector("[data-slot=rich-text-editor-content]");
+        await Assert.That(content?.GetAttribute("aria-disabled")).IsEqualTo("true");
+        await Assert.That(content?.HasAttribute("tabindex")).IsFalse();
     }
 
     private static RichTextEditorTagHelper CreateSut(RenderingContext context) =>

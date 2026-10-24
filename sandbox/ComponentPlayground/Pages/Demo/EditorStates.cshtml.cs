@@ -20,10 +20,7 @@ public class EditorStatesModel
 {
     [Display(Name = "Highlights")]
     public List<string> Highlights { get; set; } =
-    [
-        "Tasting at a family-run tasca in Alfama",
-        "Pastéis de nata in Belém",
-    ];
+    ["Tasting at a family-run tasca in Alfama", "Pastéis de nata in Belém"];
 
     [Display(Name = "Local names")]
     public Dictionary<string, string> LocalNames { get; set; } =

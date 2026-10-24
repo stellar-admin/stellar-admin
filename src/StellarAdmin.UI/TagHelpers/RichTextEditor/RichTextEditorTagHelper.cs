@@ -67,6 +67,19 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
     public string? Accept { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value that indicates whether the editor is disabled.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the editor is disabled; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A disabled editor can't be focused, and its value isn't posted.
+    /// </remarks>
+    [HtmlAttributeName("disabled")]
+    public bool? Disabled { get; set; }
+
+    /// <summary>
     ///     Gets or sets the largest image that can be added.
     /// </summary>
     /// <value>
@@ -92,7 +105,7 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
     ///     <see langword="false" />. The default is <see langword="false" />.
     /// </value>
     /// <remarks>
-    ///     A read-only editor has no toolbar. Its value is still posted.
+    ///     A read-only editor has no toolbar, but can still be focused, and its value is posted.
     /// </remarks>
     [HtmlAttributeName("readonly")]
     public bool? ReadOnly { get; set; }
@@ -152,8 +165,10 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             );
         }
 
-        var readOnly = ReadOnly ?? false;
-        var uploads = !readOnly && !string.IsNullOrEmpty(UploadUrl);
+        var disabled = Disabled ?? false;
+        var readOnly = !disabled && (ReadOnly ?? false);
+        var editable = !disabled && !readOnly;
+        var uploads = editable && !string.IsNullOrEmpty(UploadUrl);
         var id = $"--sa-rich-text-editor-{GetUniqueId(context)}";
 
         output.Attributes.RemoveAll("name");
@@ -168,6 +183,11 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
                 output.GetUserSuppliedClass()
             )
         );
+        if (disabled)
+        {
+            output.Attributes.SetAttribute("data-disabled", "true");
+        }
+
         if (readOnly)
         {
             output.Attributes.SetAttribute("data-readonly", "true");
@@ -209,9 +229,16 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             editor.SetAttribute("aria-labelledby", LabelId);
         }
 
+        if (disabled)
+        {
+            editor.SetAttribute("aria-disabled", "true");
+        }
+
+        // The content of a read-only editor isn't editable, so it would otherwise not be focusable
         if (readOnly)
         {
             editor.SetAttribute("aria-readonly", "true");
+            editor.SetAttribute("tabindex", "0");
         }
 
         ApplyFieldAttributes(context, editor, FieldLayout.Stacked);
@@ -223,6 +250,11 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             {
                 textarea.MergeAttribute(name, value, replaceExisting: true);
             }
+        }
+
+        if (disabled)
+        {
+            textarea.MergeAttribute("disabled", "disabled");
         }
 
         if (readOnly)
@@ -252,7 +284,7 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
         note.Attributes.Add("hidden", "hidden");
         output.Content.AppendHtml(note);
 
-        if (!readOnly)
+        if (editable)
         {
             output.Content.AppendHtml(parts.LinkPopover());
             output.Content.AppendHtml(parts.SlashMenu(uploads));

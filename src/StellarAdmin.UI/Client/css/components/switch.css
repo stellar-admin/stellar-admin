@@ -71,6 +71,9 @@
     &:disabled {
       cursor: not-allowed;
     }
+    &[readonly] {
+      cursor: default;
+    }
   }
   /* In a choice card (a field label around the field), the card shows focus instead. */
   [data-slot="field-label"] .sa-switch:focus-visible {

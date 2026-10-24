@@ -30,6 +30,7 @@ Use it for long text that staff format: a guide's bio, a tour's itinerary, an em
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `accept` | `string` | — | — |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `max-file-size` | `long` | `5242880` | — |
 | `placeholder` | `string` | — | — |
 | `readonly` | `bool` | `false` | `true`, `false` |

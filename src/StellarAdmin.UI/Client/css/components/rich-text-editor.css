@@ -22,7 +22,7 @@
       border-color var(--sa-motion-fast) var(--sa-motion-ease),
       box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
 
-    &:hover:not(:focus-within) {
+    &:hover:not(:focus-within, [data-disabled]) {
       border-color: var(--sa-color-line-control-hover);
     }
     &:has(> [data-slot="rich-text-editor-content"]:focus-visible) {
@@ -35,6 +35,13 @@
       &:has(> [data-slot="rich-text-editor-content"]:focus-visible) {
         box-shadow: var(--sa-shadow-control), var(--sa-invalid-focus-shadow);
       }
+    }
+
+    /* Disabled fades like a disabled textarea */
+    &[data-disabled]:defined {
+      background: var(--sa-color-field-disabled);
+      opacity: var(--sa-disabled-opacity);
+      cursor: not-allowed;
     }
 
     /* Until the script has loaded, the textarea is the field: the HTML as text, still posted. */

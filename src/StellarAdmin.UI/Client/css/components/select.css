@@ -59,7 +59,7 @@
       background-color: var(--sa-color-surface-raised);
       color: var(--sa-color-ink);
     }
-    &:hover:not(:disabled, :focus-visible) {
+    &:hover:not(:disabled, :focus-visible, [readonly]) {
       border-color: var(--sa-color-line-control-hover);
     }
     &:focus-visible {
@@ -78,6 +78,10 @@
       cursor: not-allowed;
       pointer-events: none;
     }
+    /* Read-only looks like the editable select, without the dropdown icon, and doesn't open */
+    &[readonly] {
+      cursor: default;
+    }
   }
   .sa-native-select-icon {
     position: absolute;
@@ -89,6 +93,9 @@
     pointer-events: none;
     user-select: none;
     translate: 0 -50%;
+    .sa-native-select[readonly] + & {
+      display: none;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .sa-native-select {

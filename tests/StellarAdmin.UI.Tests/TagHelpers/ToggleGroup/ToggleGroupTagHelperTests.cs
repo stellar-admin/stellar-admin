@@ -335,6 +335,46 @@ public partial class ToggleGroupTagHelperTests
         await Assert.That(act).Throws<InvalidOperationException>();
     }
 
+    [Test]
+    public async Task ProcessAsync_MultipleReadOnly_MarksCheckboxesReadonlyAndRendersMarker()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new ToggleGroupTagHelper(context.Generator)
+        {
+            ViewContext = context.ViewContext,
+            Name = "Days",
+            Multiple = true,
+            ReadOnly = true,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            sut,
+            parent =>
+                RenderItemsAsync(
+                    parent,
+                    new ToggleGroupItemTagHelper { Value = "mon" },
+                    new ToggleGroupItemTagHelper { Value = "tue", Disabled = true }
+                )
+        );
+
+        // Assert
+        await Assert
+            .That(
+                html.QuerySelectorAll(
+                    "input[type=checkbox][readonly][aria-readonly=true][onclick='return false']"
+                ).Length
+            )
+            .IsEqualTo(1);
+        await Assert
+            .That(html.QuerySelector("input[type=checkbox]:disabled")?.HasAttribute("readonly"))
+            .IsFalse();
+        await Assert
+            .That(html.QuerySelector("input[type=hidden]")?.GetAttribute("name"))
+            .IsEqualTo("__sa_checkbox_group.Days");
+    }
+
     private static async Task<string> RenderItemsAsync(
         TagHelperContext parent,
         params ToggleGroupItemTagHelper[] items

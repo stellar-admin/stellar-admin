@@ -6,7 +6,7 @@
    .sa-collection-editor-empty, .sa-collection-editor-ghost, .sa-collection-editor-gutter,
    .sa-collection-editor-handle, .sa-collection-editor-head, .sa-collection-editor-head-gutter,
    .sa-collection-editor-item, .sa-collection-editor-item-error, .sa-collection-editor-items,
-   .sa-collection-editor-number, .sa-collection-editor-remove, .sa-collection-editor-text */
+   .sa-collection-editor-number, .sa-collection-editor-remove */
 
 @layer sa.components {
   .sa-collection-editor {
@@ -38,7 +38,7 @@
     &:not([data-readonly]) {
       --_actions-col: var(--_actions-w);
     }
-    &:hover:not(:focus-within, [data-readonly]) {
+    &:hover:not(:focus-within, :disabled) {
       border-color: var(--sa-color-line-control-hover);
     }
     &:focus-within {
@@ -51,9 +51,9 @@
     &[aria-invalid="true"]:focus-within {
       box-shadow: var(--sa-shadow-control), var(--sa-invalid-focus-shadow);
     }
-    /* Read-only: the values as text on a disabled select's fill, with no add row, remove or handle */
-    &[data-readonly] {
-      border-color: var(--sa-color-line);
+    /* Read-only has read-only inputs and no add row, remove or handle. Disabled takes a disabled
+       field's fill, and its controls fade. */
+    &:disabled {
       background: var(--sa-color-field-disabled);
       box-shadow: none;
     }
@@ -194,26 +194,15 @@
 
   /* End-aligned values, such as numbers, so that their digits line up */
   .sa-collection-editor-cell[data-align="end"] {
-    & > :is(.sa-input, .sa-collection-editor-text),
+    & > .sa-input,
     & > .sa-native-select-wrapper > .sa-native-select {
       text-align: end;
       text-align-last: end;
     }
     /* The suffix's own padding is the gap, so the value sits beside it */
-    & > :is(.sa-input, .sa-collection-editor-text):has(+ .sa-collection-editor-affix[data-side="end"]) {
+    & > .sa-input:has(+ .sa-collection-editor-affix[data-side="end"]) {
       padding-inline-end: 0;
     }
-  }
-
-  .sa-collection-editor-text {
-    flex: 1;
-    min-width: 0;
-    padding-inline: var(--sa-control-px);
-    font-size: var(--sa-text-control);
-    line-height: var(--_row-h);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .sa-collection-editor-affix {

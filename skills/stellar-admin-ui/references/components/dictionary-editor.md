@@ -13,7 +13,7 @@ Renders an editor for a dictionary of keys and values, with a row per entry.
 
 `<sa-dictionary-editor>` edits a `Dictionary<TKey, TValue>` or `IDictionary<TKey, TValue>` bound with `asp-for`, with a string or enum key and a string, number or enum value (other types throw). Each row has the key and value under the `key-label` and `value-label` column heads. Rows post `Name[0].Key` and `Name[0].Value`, which MVC binds to the dictionary; a hidden marker makes removing every row bind an empty dictionary, and blank rows are dropped on submit. Needs `stellar-admin.js` for adding, removing, paste and the checks.
 
-An enum key or value is a select of its members (display names from `[Display]`); `asp-key-items`/`asp-value-items` (`IEnumerable<SelectListItem>`) supply other choices. Keys are unique: keys used by other rows are disabled in a key select, and selectable keys cap `max-items`. The key and value take the list editor's item checks with a `key-` or `value-` prefix (`key-pattern`, `value-min`, `value-suffix`, …); prefix and suffix are for values only. Number values align to the end; `value-align` changes it. A row with only a key or only a value is invalid. A ModelState error for `Name[1].Value` shows under that row. `readonly` shows text (a select's item text) and posts nothing. How the app stores a dictionary (EF Core value converter or JSON column) is outside the editor.
+An enum key or value is a select of its members (display names from `[Display]`); `asp-key-items`/`asp-value-items` (`IEnumerable<SelectListItem>`) supply other choices. Keys are unique: keys used by other rows are disabled in a key select, and selectable keys cap `max-items`. The key and value take the list editor's item checks with a `key-` or `value-` prefix (`key-pattern`, `value-min`, `value-suffix`, …); prefix and suffix are for values only. Number values align to the end; `value-align` changes it. A row with only a key or only a value is invalid. A ModelState error for `Name[1].Value` shows under that row. `readonly="true"` shows the entries in read-only inputs and selects, without Add or remove, and posts them; `disabled="true"` fades the editor and posts nothing. How the app stores a dictionary (EF Core value converter or JSON column) is outside the editor.
 <!-- structure:end -->
 
 ## Attributes
@@ -21,6 +21,7 @@ An enum key or value is a select of its members (display names from `[Display]`)
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `add-text` | `string` | — | — |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `empty-text` | `string` | — | — |
 | `key-casing` | `DictionaryEditorCasing` | `None` | `None`, `Upper`, `Lower` |
 | `asp-key-items` | `IEnumerable<SelectListItem>` | — | — |

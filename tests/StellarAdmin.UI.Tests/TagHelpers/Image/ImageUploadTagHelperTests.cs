@@ -129,7 +129,7 @@ public class ImageUploadTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_Disabled_DisablesActionsWithoutUploadUrl()
+    public async Task ProcessAsync_Disabled_DisablesActionsAndValueWithoutUploadUrl()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -151,6 +151,9 @@ public class ImageUploadTagHelperTests
             .IsTrue();
         await Assert
             .That(html.QuerySelector("input[type=file]")?.HasAttribute("disabled"))
+            .IsTrue();
+        await Assert
+            .That(html.QuerySelector("[data-slot=image-upload-value]")?.HasAttribute("disabled"))
             .IsTrue();
     }
 
@@ -191,6 +194,47 @@ public class ImageUploadTagHelperTests
                 html.QuerySelector("[data-slot=field-label]")?.ClassList.Contains("font-semibold")
             )
             .IsTrue();
+    }
+
+    [Test]
+    [Arguments(ImageUploadLayout.Dropzone)]
+    [Arguments(ImageUploadLayout.Compact)]
+    [Arguments(ImageUploadLayout.Attachment)]
+    [Arguments(ImageUploadLayout.Cell)]
+    public async Task ProcessAsync_ReadOnly_RendersImageAloneAndPostsValue(ImageUploadLayout layout)
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.UploadUrl = null;
+        sut.ReadOnly = true;
+        sut.Name = "Cover";
+        sut.Value = "kyoto.jpg";
+        sut.Layout = layout;
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("sel-image-upload")?.GetAttribute("data-readonly"))
+            .IsEqualTo("true");
+        await Assert
+            .That(html.QuerySelector(".sa-image > img")?.GetAttribute("src"))
+            .IsEqualTo("kyoto.jpg");
+        await Assert
+            .That(
+                html.QuerySelector(
+                    "button, [data-slot=image-upload-drop], [data-slot=image-upload-note]"
+                )
+            )
+            .IsNull();
+        await Assert
+            .That(html.QuerySelector("input[type=file]")?.HasAttribute("disabled"))
+            .IsTrue();
+        var value = html.QuerySelector("[data-slot=image-upload-value]");
+        await Assert.That(value?.GetAttribute("value")).IsEqualTo("kyoto.jpg");
+        await Assert.That(value?.HasAttribute("disabled")).IsFalse();
     }
 
     private static ImageUploadTagHelper CreateSut(RenderingContext context) =>

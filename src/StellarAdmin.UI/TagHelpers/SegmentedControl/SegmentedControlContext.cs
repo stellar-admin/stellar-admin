@@ -10,6 +10,7 @@ internal sealed class SegmentedControlContext
     public required ModelExpression? For { get; init; }
     public required bool Invalid { get; init; }
     public required string Name { get; init; }
+    public required bool ReadOnly { get; init; }
     public required bool Required { get; init; }
     public required string? Value { get; init; }
 }

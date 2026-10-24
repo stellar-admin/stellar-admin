@@ -705,6 +705,8 @@ StellarAdmin.UI.ChoiceGroupTagHelper.Disabled.get -> bool?
 StellarAdmin.UI.ChoiceGroupTagHelper.Disabled.set -> void
 StellarAdmin.UI.ChoiceGroupTagHelper.Items.get -> System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem!>?
 StellarAdmin.UI.ChoiceGroupTagHelper.Items.set -> void
+StellarAdmin.UI.ChoiceGroupTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.ChoiceGroupTagHelper.ReadOnly.set -> void
 StellarAdmin.UI.CollapsibleTagHelper
 StellarAdmin.UI.CollapsibleTagHelper.CollapsibleTagHelper() -> void
 StellarAdmin.UI.CommandDialogTagHelper
@@ -928,6 +930,8 @@ StellarAdmin.UI.DictionaryEditorTagHelper
 StellarAdmin.UI.DictionaryEditorTagHelper.AddText.get -> string?
 StellarAdmin.UI.DictionaryEditorTagHelper.AddText.set -> void
 StellarAdmin.UI.DictionaryEditorTagHelper.DictionaryEditorTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! generator, Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.Icons.IconOptions!>! icons) -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.Disabled.get -> bool?
+StellarAdmin.UI.DictionaryEditorTagHelper.Disabled.set -> void
 StellarAdmin.UI.DictionaryEditorTagHelper.EmptyText.get -> string?
 StellarAdmin.UI.DictionaryEditorTagHelper.EmptyText.set -> void
 StellarAdmin.UI.DictionaryEditorTagHelper.KeyCasing.get -> StellarAdmin.UI.DictionaryEditorCasing?
@@ -1369,6 +1373,8 @@ StellarAdmin.UI.IconPickerTagHelper.Layout.get -> StellarAdmin.UI.IconPickerLayo
 StellarAdmin.UI.IconPickerTagHelper.Layout.set -> void
 StellarAdmin.UI.IconPickerTagHelper.Placeholder.get -> string?
 StellarAdmin.UI.IconPickerTagHelper.Placeholder.set -> void
+StellarAdmin.UI.IconPickerTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.IconPickerTagHelper.ReadOnly.set -> void
 StellarAdmin.UI.IconPickerTagHelper.Required.get -> bool?
 StellarAdmin.UI.IconPickerTagHelper.Required.set -> void
 StellarAdmin.UI.IconPickerTagHelper.Value.get -> string?
@@ -1555,6 +1561,8 @@ StellarAdmin.UI.ImageUploadTagHelper.Layout.get -> StellarAdmin.UI.ImageUploadLa
 StellarAdmin.UI.ImageUploadTagHelper.Layout.set -> void
 StellarAdmin.UI.ImageUploadTagHelper.MaxFileSize.get -> long?
 StellarAdmin.UI.ImageUploadTagHelper.MaxFileSize.set -> void
+StellarAdmin.UI.ImageUploadTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.ImageUploadTagHelper.ReadOnly.set -> void
 StellarAdmin.UI.ImageUploadTagHelper.Source.get -> string?
 StellarAdmin.UI.ImageUploadTagHelper.Source.set -> void
 StellarAdmin.UI.ImageUploadTagHelper.UploadUrl.get -> string?
@@ -1646,6 +1654,8 @@ StellarAdmin.UI.InputOtpTagHelper.MaxLength.get -> int?
 StellarAdmin.UI.InputOtpTagHelper.MaxLength.set -> void
 StellarAdmin.UI.InputOtpTagHelper.Pattern.get -> string?
 StellarAdmin.UI.InputOtpTagHelper.Pattern.set -> void
+StellarAdmin.UI.InputOtpTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.InputOtpTagHelper.ReadOnly.set -> void
 StellarAdmin.UI.InputOtpTagHelper.Value.get -> string?
 StellarAdmin.UI.InputOtpTagHelper.Value.set -> void
 StellarAdmin.UI.InputTagHelper
@@ -1730,6 +1740,8 @@ StellarAdmin.UI.ListEditorTagHelper.Align.get -> StellarAdmin.UI.ListEditorAlign
 StellarAdmin.UI.ListEditorTagHelper.Align.set -> void
 StellarAdmin.UI.ListEditorTagHelper.Casing.get -> StellarAdmin.UI.ListEditorCasing?
 StellarAdmin.UI.ListEditorTagHelper.Casing.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Disabled.get -> bool?
+StellarAdmin.UI.ListEditorTagHelper.Disabled.set -> void
 StellarAdmin.UI.ListEditorTagHelper.EmptyText.get -> string?
 StellarAdmin.UI.ListEditorTagHelper.EmptyText.set -> void
 StellarAdmin.UI.ListEditorTagHelper.ListEditorTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! generator, Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.Icons.IconOptions!>! icons) -> void
@@ -2060,6 +2072,8 @@ StellarAdmin.UI.SegmentedControlItemTagHelper.ViewContext.set -> void
 StellarAdmin.UI.SegmentedControlTagHelper
 StellarAdmin.UI.SegmentedControlTagHelper.Disabled.get -> bool?
 StellarAdmin.UI.SegmentedControlTagHelper.Disabled.set -> void
+StellarAdmin.UI.SegmentedControlTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.SegmentedControlTagHelper.ReadOnly.set -> void
 StellarAdmin.UI.SegmentedControlTagHelper.Required.get -> bool?
 StellarAdmin.UI.SegmentedControlTagHelper.Required.set -> void
 StellarAdmin.UI.SegmentedControlTagHelper.SegmentedControlTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator) -> void
@@ -2247,6 +2261,8 @@ StellarAdmin.UI.SliderTagHelper.MinDistance.get -> double?
 StellarAdmin.UI.SliderTagHelper.MinDistance.set -> void
 StellarAdmin.UI.SliderTagHelper.Orientation.get -> StellarAdmin.UI.SliderOrientation?
 StellarAdmin.UI.SliderTagHelper.Orientation.set -> void
+StellarAdmin.UI.SliderTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.SliderTagHelper.ReadOnly.set -> void
 StellarAdmin.UI.SliderTagHelper.SliderTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator) -> void
 StellarAdmin.UI.SliderTagHelper.Step.get -> double?
 StellarAdmin.UI.SliderTagHelper.Step.set -> void
@@ -2634,6 +2650,8 @@ StellarAdmin.UI.ToggleGroupTagHelper.Multiple.get -> bool?
 StellarAdmin.UI.ToggleGroupTagHelper.Multiple.set -> void
 StellarAdmin.UI.ToggleGroupTagHelper.Orientation.get -> StellarAdmin.UI.ToggleGroupOrientation?
 StellarAdmin.UI.ToggleGroupTagHelper.Orientation.set -> void
+StellarAdmin.UI.ToggleGroupTagHelper.ReadOnly.get -> bool?
+StellarAdmin.UI.ToggleGroupTagHelper.ReadOnly.set -> void
 StellarAdmin.UI.ToggleGroupTagHelper.Size.get -> StellarAdmin.UI.ToggleSize?
 StellarAdmin.UI.ToggleGroupTagHelper.Size.set -> void
 StellarAdmin.UI.ToggleGroupTagHelper.Spacing.get -> StellarAdmin.UI.ToggleGroupSpacing?
@@ -2693,6 +2711,8 @@ StellarAdmin.UI.RichTextEditorClassNames.Toolbar.set -> void
 StellarAdmin.UI.RichTextEditorTagHelper
 StellarAdmin.UI.RichTextEditorTagHelper.Accept.get -> string?
 StellarAdmin.UI.RichTextEditorTagHelper.Accept.set -> void
+StellarAdmin.UI.RichTextEditorTagHelper.Disabled.get -> bool?
+StellarAdmin.UI.RichTextEditorTagHelper.Disabled.set -> void
 StellarAdmin.UI.RichTextEditorTagHelper.MaxFileSize.get -> long?
 StellarAdmin.UI.RichTextEditorTagHelper.MaxFileSize.set -> void
 StellarAdmin.UI.RichTextEditorTagHelper.Placeholder.get -> string?

@@ -35,6 +35,7 @@ A stored value that isn't one of the icons still shows and posts unchanged, so v
 | `icons-url` | `string` | — | — |
 | `layout` | `IconPickerLayout` | `Picker` | `Picker`, `Inline` |
 | `placeholder` | `string` | — | — |
+| `readonly` | `bool` | `false` | `true`, `false` |
 | `required` | `bool` | — | `true`, `false` |
 | `value` | `string` | — | — |
 | `class-names` | `IconPickerClassNames` | — | — |

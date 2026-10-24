@@ -10,7 +10,8 @@
  * sync.
  *
  * Supports both orientations (read from `data-orientation`), snaps to `step`, and enforces
- * `data-min-distance` between adjacent thumbs on a range slider.
+ * `data-min-distance` between adjacent thumbs on a range slider. A disabled (`data-disabled`) or
+ * read-only (`data-readonly`) slider ignores the pointer and the keys.
  *
  * It also fills the `<output data-slot="slider-value">` elements that show its value (those
  * without `for` in its field, and those whose `for` names its id), formats values with
@@ -125,6 +126,10 @@ export class Slider extends HTMLElement {
     return this.hasAttribute("data-disabled");
   }
 
+  get #readOnly() {
+    return this.hasAttribute("data-readonly");
+  }
+
   /**
    * @param {string} name
    * @param {number} fallback
@@ -136,7 +141,7 @@ export class Slider extends HTMLElement {
 
   /** @param {PointerEvent} event */
   #onPointerDown = (event) => {
-    if (this.#disabled || event.button !== 0) return;
+    if (this.#disabled || this.#readOnly || event.button !== 0) return;
 
     const target = /** @type {Element} */ (event.target);
     const thumb = /** @type {HTMLElement | null} */ (target.closest('[data-slot="slider-thumb"]'));
@@ -156,7 +161,7 @@ export class Slider extends HTMLElement {
 
   /** @param {KeyboardEvent} event */
   #onKeyDown = (event) => {
-    if (this.#disabled) return;
+    if (this.#disabled || this.#readOnly) return;
 
     const thumb = /** @type {HTMLElement | null} */ (
       /** @type {Element} */ (event.target).closest('[data-slot="slider-thumb"]')

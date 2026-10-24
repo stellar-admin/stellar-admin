@@ -21,7 +21,9 @@ let nextErrorId = 0;
 
 /**
  * The list and dictionary editors' rows: adds, removes and reorders them, renumbers their names
- * so that MVC binds them as a collection, and checks them as they are edited and on submit.
+ * so that MVC binds them as a collection, and checks them as they are edited and on submit. A
+ * read-only editor (`data-readonly`) is left as rendered; a disabled one, through its own
+ * `disabled` or a disabled fieldset, disables its controls.
  */
 export class CollectionEditor extends HTMLElement {
   static formAssociated = true;
@@ -82,6 +84,19 @@ export class CollectionEditor extends HTMLElement {
 
     if (this.#drag) {
       this.#endDrag(true);
+    }
+  }
+
+  /** @param {boolean} disabled */
+  formDisabledCallback(disabled) {
+    for (const control of this.querySelectorAll("input, select, button")) {
+      /** @type {HTMLInputElement | HTMLSelectElement | HTMLButtonElement} */ (control).disabled =
+        disabled;
+    }
+
+    // Restores the add button's limit; the parser may not have reached the rows yet
+    if (!this.hasAttribute("data-readonly") && this.#list) {
+      this.#update();
     }
   }
 
@@ -285,7 +300,7 @@ export class CollectionEditor extends HTMLElement {
     const add = this.#addButton();
     if (add) {
       const full = rows.length >= this.#maxItems;
-      add.disabled = full;
+      add.disabled = full || this.matches(":disabled");
       if (full && this.#texts.full) {
         add.title = this.#texts.full;
       } else {

@@ -25,6 +25,7 @@ Renders a group of toggle items that lets the user select one item or several.
 | `variant` | `ToggleVariant` | `Default` | `Default`, `Outline` |
 | `size` | `ToggleSize` | `Default` | `Default`, `Small`, `Large` |
 | `orientation` | `ToggleGroupOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
+| `readonly` | `bool` | `false` | `true`, `false` |
 | `spacing` | `ToggleGroupSpacing` | `Default` | `Default`, `None`, `Small`, `Large` |
 | `value` | `string` | — | — |
 | `values` | `IEnumerable<string>` | — | — |

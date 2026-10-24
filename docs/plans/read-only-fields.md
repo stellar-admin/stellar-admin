@@ -1,6 +1,6 @@
 # Read-only and disabled states across the UI library
 
-Status: approved scope for stage 1, not started (2026-10-24).
+Status: stage 1 built and verified, not committed (2026-10-24). Stage 2 not started.
 
 Every UI library editor follows the web platform's read-only and disabled behaviour, so the two states mean the same thing on every component. The admin panel then chooses deliberately between them (stage 2).
 
@@ -76,6 +76,30 @@ Then, as usual for UI library changes:
 - Tests.
 - An updated Editor States page.
 
+### Stage 1 record
+
+Built as planned, with these decisions:
+
+- `sa-select`, `sa-switch`, `sa-toggle` and `sa-input` pass `readonly` through to the native element, so bare `readonly` keeps working. A shared field helper adds `aria-readonly="true"` to a read-only select, switch, toggle or checkbox; a lone radio has no role that takes it.
+- The other components bind `readonly` (and `disabled` on the rich text, list and dictionary editors) as `bool?`. When both are set, disabled wins. Radio groups and segmented controls put `aria-readonly` on the radiogroup; checkbox groups and multiple toggle groups put it on each checkbox.
+- Browsers ignore `readonly` on checkboxes, radios and selects, so the tag helpers render inline handlers on a read-only one (internal `ReadOnlyHandlers`): `onclick="return false"` on a checkbox or radio, which also covers its label, Space and a radio group's arrow keys, and on a select `onmousedown="this.focus(); return false"` plus an `onkeydown` that ignores the keys that open or change it while Tab and Ctrl/Cmd shortcuts still work. Every choice control rendered by a tag helper is covered; hand-written markup isn't, and a strict Content Security Policy must allow inline handlers. A first version used a page-wide `read-only.js`; Jerrie preferred the handlers in the markup. CSS drops their hover and pointer cursor, and hides a read-only select's icon.
+- The slider and icon picker mark read-only with `data-readonly`, as they mark disabled. The slider ignores the pointer and keys. A read-only icon picker renders no chevron, popover or icon template, and its script does nothing.
+- A read-only image upload renders the image alone (the empty image when there is none) with a disabled file input, needs no `upload-url`, and refuses drops. Its lightbox still works.
+- A disabled rich text editor (`data-disabled`) renders its toolbar, which the script disables, and a disabled textarea; its content isn't editable or focusable. A read-only editor's content gets `tabindex="0"`.
+- A disabled list or dictionary editor sets `disabled` on the form-associated `sel-collection-editor`, so it matches `:disabled`; its controls and marker are disabled, but not the template row. `formDisabledCallback` keeps the controls in step with the element and with a disabled fieldset. A read-only editor renders read-only inputs and selects and the marker, with no add row, template or remove buttons. `.sa-collection-editor-text` is gone.
+- DocsSamples has Read Only demos for select, checkbox, radio, switch, toggle, toggle group, segmented control, checkbox group, radio group, slider, icon picker, image upload and input OTP, and Disabled demos for the rich text, list and dictionary editors. All are in the generator's list and exported to the website, whose 16 component pages document them. The consumer references were regenerated, with a "Read-only and disabled" section in `forms.md`.
+
+Verified 2026-10-24:
+
+- `npm run build`, `npm run check` and oxfmt in `src/StellarAdmin.UI/Client`; the solution build (Release).
+- All five test suites, 1,982 tests, after the library change; the UI unit suite (794) again after the new tests. The two list and dictionary read-only tests were rewritten for the new behaviour; new tests cover each component's read-only and disabled rendering.
+- The Editor States page in headless Chromium with real mouse and key input: the read-only checkbox (click, label, Space), switch, toggle, radio, radio group (click, label, arrow), segmented control, toggle group, choice card and inline icon picker don't change; the read-only select keeps its value under clicks, ↓ and End, takes focus and hides its icon; the read-only slider stays put under ArrowRight and a track click while the normal one moves; the read-only picker doesn't open; OTP typing doesn't change the code. Every cell posts and takes tab stops as the platform does, except the read-only image upload, which has no tab stop. No console errors. Screenshots in light and dark match the prototype.
+- The 16 new demos render through DocsStatic; the SkillsGenerator check and the skill bundle validation pass; the website's `pnpm lint`, `pnpm types:check` and `pnpm build` pass.
+
+After the switch to inline handlers (2026-10-24): all five test suites (1,982), the website export, lint, type check and build, the same Editor States interaction run with the same results, and real clicks on the normal checkbox, radio, switch, checkbox group and segmented control, which still change. In a bare page without scripts, Chromium 151 lets a click and Space change a `readonly` checkbox and a click change a `readonly` radio; `onclick="return false"` stops both, and the arrow keys then move focus in a radio group without changing the selection.
+
+Not checked: Firefox, Safari, touch (whether a mouse down handler keeps a mobile select closed), the theme fixtures, phone widths and screen readers.
+
 ## Stage 2: admin panel
 
 After stage 1. The admin panel uses `disabled` today for every editor without a read-only state: select, checkbox, checkbox group, radio group, switch, toggle group, segmented control, slider, OTP and icon picker. The image upload drops its upload URL instead.
@@ -84,7 +108,7 @@ Stage 2 decides when a field is read-only and when it is disabled, since the two
 
 Before relying on read-only values being posted, confirm that saving still ignores read-only fields; posted values must never be trusted.
 
-## Verification so far
+## Prototype verification
 
 - Checked in headless Chromium, light and dark, on 2026-10-24:
   - the Editor States page;

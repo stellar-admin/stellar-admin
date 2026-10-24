@@ -56,4 +56,27 @@ public partial class InputOtpTagHelperTests
             .That(html.QuerySelector("sel-input-otp")?.GetAttribute("data-caret-line-class"))
             .IsEqualTo("sa-input-otp-caret-line");
     }
+
+    [Test]
+    public async Task ProcessAsync_ReadOnly_MarksInputReadonly()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new InputOtpTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "code",
+            Value = "123456",
+            ReadOnly = true,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var input = html.QuerySelector("input[data-slot=input-otp]");
+        await Assert.That(input?.HasAttribute("readonly")).IsTrue();
+        await Assert.That(input?.HasAttribute("disabled")).IsFalse();
+        await Assert.That(input?.GetAttribute("value")).IsEqualTo("123456");
+    }
 }

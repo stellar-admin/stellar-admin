@@ -6,9 +6,10 @@
 
 @*
     Each cell is its own form, so the line under it shows exactly what that control would post and
-    whether it is a tab stop. The read-only column passes readonly even to editors with no read-only
-    state, to show what that does today. "Admin panel" names what the admin panel renders for an
-    IsReadOnly field using that editor.
+    whether it is a tab stop. Every editor follows the platform: read-only looks like the editable
+    control, can't change, stays focusable and posts; disabled fades, takes no focus and doesn't
+    post. "Admin panel" names what the admin panel renders for an IsReadOnly field using that
+    editor.
 *@
 
 <div class="es-toolbar">
@@ -114,13 +115,13 @@
     <form class="es-cell"><sa-textarea name="textarea-r" label="Notes" rows="3" readonly>Meet at the Rossio fountain.</sa-textarea></form>
 
     @* Input OTP *@
-    <div class="es-name"><strong>Input OTP</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <div class="es-name"><strong>Input OTP</strong><span>readonly: tag helper attribute, on the inner input</span><span>Admin panel: disabled</span></div>
     <form class="es-cell"><sa-input-otp name="otp-n" maxlength="6" value="482913" label="Booking code"/></form>
     <form class="es-cell"><sa-input-otp name="otp-d" maxlength="6" value="482913" label="Booking code" disabled="true"/></form>
-    <form class="es-cell"><sa-input-otp name="otp-r" maxlength="6" value="482913" label="Booking code" readonly/></form>
+    <form class="es-cell"><sa-input-otp name="otp-r" maxlength="6" value="482913" label="Booking code" readonly="true"/></form>
 
     @* Select *@
-    <div class="es-name"><strong>Select</strong><span>readonly: none (native select has no read-only state)</span><span>Admin panel: disabled</span></div>
+    <div class="es-name"><strong>Select</strong><span>readonly: passed through; aria-readonly, no icon, doesn't open</span><span>Admin panel: disabled</span></div>
     <form class="es-cell">
         <sa-select name="select-n" label="Cabin class">
             <option value="economy">Economy</option>
@@ -144,13 +145,13 @@
     </form>
 
     @* Checkbox *@
-    <div class="es-name"><strong>Checkbox</strong><span>readonly: none (ignored on checkboxes)</span><span>Admin panel: disabled</span></div>
+    <div class="es-name"><strong>Checkbox</strong><span>readonly: passed through; aria-readonly, onclick=&quot;return false&quot;</span><span>Admin panel: disabled</span></div>
     <form class="es-cell"><sa-input type="checkbox" name="checkbox-n" value="true" label="Travel insurance" description="Covers cancellations" checked/></form>
     <form class="es-cell"><sa-input type="checkbox" name="checkbox-d" value="true" label="Travel insurance" description="Covers cancellations" checked disabled/></form>
     <form class="es-cell"><sa-input type="checkbox" name="checkbox-r" value="true" label="Travel insurance" description="Covers cancellations" checked readonly/></form>
 
     @* Radio *@
-    <div class="es-name"><strong>Radio</strong><span>readonly: none (ignored on radios)</span><span>Admin panel: not used (radio group)</span></div>
+    <div class="es-name"><strong>Radio</strong><span>readonly: passed through; onclick=&quot;return false&quot;</span><span>Admin panel: not used (radio group)</span></div>
     @foreach (var (suffix, state) in new[] { ("n", ""), ("d", "disabled"), ("r", "readonly") })
     {
         <form class="es-cell">
@@ -175,7 +176,7 @@
     }
 
     @* Checkbox group *@
-    <div class="es-name"><strong>Checkbox group</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <div class="es-name"><strong>Checkbox group</strong><span>readonly: tag helper attribute</span><span>Admin panel: disabled</span></div>
     <form class="es-cell">
         <sa-checkbox-group name="cbgroup-n" values="@(["insurance"])" label="Extras">
             <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
@@ -189,14 +190,14 @@
         </sa-checkbox-group>
     </form>
     <form class="es-cell">
-        <sa-checkbox-group name="cbgroup-r" values="@(["insurance"])" label="Extras" readonly>
+        <sa-checkbox-group name="cbgroup-r" values="@(["insurance"])" label="Extras" readonly="true">
             <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
             <sa-checkbox-group-item value="transfer" description="Airport pickup">Transfer</sa-checkbox-group-item>
         </sa-checkbox-group>
     </form>
 
     @* Checkbox group: cards *@
-    <div class="es-name"><strong>Checkbox group · cards</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <div class="es-name"><strong>Checkbox group · cards</strong><span>readonly: tag helper attribute</span><span>Admin panel: disabled</span></div>
     <form class="es-cell">
         <sa-checkbox-group name="cbcards-n" values="@(["insurance"])" label="Extras" variant="CheckboxGroupVariant.ChoiceCard">
             <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
@@ -210,14 +211,14 @@
         </sa-checkbox-group>
     </form>
     <form class="es-cell">
-        <sa-checkbox-group name="cbcards-r" values="@(["insurance"])" label="Extras" variant="CheckboxGroupVariant.ChoiceCard" readonly>
+        <sa-checkbox-group name="cbcards-r" values="@(["insurance"])" label="Extras" variant="CheckboxGroupVariant.ChoiceCard" readonly="true">
             <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
             <sa-checkbox-group-item value="transfer" description="Airport pickup">Transfer</sa-checkbox-group-item>
         </sa-checkbox-group>
     </form>
 
     @* Radio group *@
-    <div class="es-name"><strong>Radio group</strong><span>readonly: none</span><span>Admin panel: disabled (each item)</span></div>
+    <div class="es-name"><strong>Radio group</strong><span>readonly: tag helper attribute</span><span>Admin panel: disabled (each item)</span></div>
     <form class="es-cell">
         <sa-radio-group name="radiogroup-n" value="express" label="Delivery">
             <sa-radio-group-item value="standard" description="Arrives in five days">Standard</sa-radio-group-item>
@@ -231,20 +232,20 @@
         </sa-radio-group>
     </form>
     <form class="es-cell">
-        <sa-radio-group name="radiogroup-r" value="express" label="Delivery" readonly>
+        <sa-radio-group name="radiogroup-r" value="express" label="Delivery" readonly="true">
             <sa-radio-group-item value="standard" description="Arrives in five days">Standard</sa-radio-group-item>
             <sa-radio-group-item value="express" description="Arrives tomorrow">Express</sa-radio-group-item>
         </sa-radio-group>
     </form>
 
     @* Switch *@
-    <div class="es-name"><strong>Switch</strong><span>readonly: none (checkbox-backed)</span><span>Admin panel: disabled (Toggle editor)</span></div>
+    <div class="es-name"><strong>Switch</strong><span>readonly: passed through; aria-readonly</span><span>Admin panel: disabled (Toggle editor)</span></div>
     <form class="es-cell"><sa-switch name="switch-n" value="true" label="Pet friendly" checked/></form>
     <form class="es-cell"><sa-switch name="switch-d" value="true" label="Pet friendly" checked disabled/></form>
     <form class="es-cell"><sa-switch name="switch-r" value="true" label="Pet friendly" checked readonly/></form>
 
     @* Toggle *@
-    <div class="es-name"><strong>Toggle</strong><span>readonly: none (checkbox-backed)</span><span>Admin panel: not used</span></div>
+    <div class="es-name"><strong>Toggle</strong><span>readonly: passed through; aria-readonly</span><span>Admin panel: not used</span></div>
     @foreach (var state in new[] { "", "disabled", "readonly" })
     {
         <form class="es-cell">
@@ -269,7 +270,7 @@
     }
 
     @* Toggle group *@
-    <div class="es-name"><strong>Toggle group</strong><span>readonly: none; disabled only per item</span><span>Admin panel: disabled (each item)</span></div>
+    <div class="es-name"><strong>Toggle group</strong><span>readonly: tag helper attribute; disabled only per item</span><span>Admin panel: disabled (each item)</span></div>
     <form class="es-cell">
         <sa-toggle-group name="tgroup-n" value="list" label="Results view">
             <sa-toggle-group-item value="list" aria-label="List view"><sa-icon name="list"/></sa-toggle-group-item>
@@ -285,7 +286,7 @@
         </sa-toggle-group>
     </form>
     <form class="es-cell">
-        <sa-toggle-group name="tgroup-r" value="list" label="Results view" readonly>
+        <sa-toggle-group name="tgroup-r" value="list" label="Results view" readonly="true">
             <sa-toggle-group-item value="list" aria-label="List view"><sa-icon name="list"/></sa-toggle-group-item>
             <sa-toggle-group-item value="grid" aria-label="Grid view"><sa-icon name="layout-grid"/></sa-toggle-group-item>
             <sa-toggle-group-item value="map" aria-label="Map view"><sa-icon name="map"/></sa-toggle-group-item>
@@ -293,7 +294,7 @@
     </form>
 
     @* Segmented control *@
-    <div class="es-name"><strong>Segmented control</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <div class="es-name"><strong>Segmented control</strong><span>readonly: tag helper attribute</span><span>Admin panel: disabled</span></div>
     <form class="es-cell">
         <sa-segmented-control name="seg-n" value="Stays" label="Travel">
             <sa-segmented-control-item value="Flights">Flights</sa-segmented-control-item>
@@ -309,7 +310,7 @@
         </sa-segmented-control>
     </form>
     <form class="es-cell">
-        <sa-segmented-control name="seg-r" value="Stays" label="Travel" readonly>
+        <sa-segmented-control name="seg-r" value="Stays" label="Travel" readonly="true">
             <sa-segmented-control-item value="Flights">Flights</sa-segmented-control-item>
             <sa-segmented-control-item value="Stays">Stays</sa-segmented-control-item>
             <sa-segmented-control-item value="Cars">Cars</sa-segmented-control-item>
@@ -317,13 +318,13 @@
     </form>
 
     @* Slider *@
-    <div class="es-name"><strong>Slider</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <div class="es-name"><strong>Slider</strong><span>readonly: tag helper attribute; disabled doesn't post</span><span>Admin panel: disabled</span></div>
     <form class="es-cell"><sa-slider name="slider-n" value="60" max="100" label="Difficulty"/></form>
     <form class="es-cell"><sa-slider name="slider-d" value="60" max="100" label="Difficulty" disabled="true"/></form>
-    <form class="es-cell"><sa-slider name="slider-r" value="60" max="100" label="Difficulty" readonly/></form>
+    <form class="es-cell"><sa-slider name="slider-r" value="60" max="100" label="Difficulty" readonly="true"/></form>
 
     @* Icon picker *@
-    <div class="es-name"><strong>Icon picker · picker</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <div class="es-name"><strong>Icon picker · picker</strong><span>readonly: tag helper attribute; no chevron or popover</span><span>Admin panel: disabled</span></div>
     <form class="es-cell">
         <sa-icon-picker name="icon-n" value="ship" label="Tour icon">
             <sa-icon name="ship"/><sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/>
@@ -335,13 +336,13 @@
         </sa-icon-picker>
     </form>
     <form class="es-cell">
-        <sa-icon-picker name="icon-r" value="ship" label="Tour icon" readonly>
+        <sa-icon-picker name="icon-r" value="ship" label="Tour icon" readonly="true">
             <sa-icon name="ship"/><sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/>
         </sa-icon-picker>
     </form>
 
     @* Icon picker: inline *@
-    <div class="es-name"><strong>Icon picker · inline</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <div class="es-name"><strong>Icon picker · inline</strong><span>readonly: tag helper attribute</span><span>Admin panel: disabled</span></div>
     <form class="es-cell">
         <sa-icon-picker name="iconinline-n" value="sailboat" layout="IconPickerLayout.Inline" label="Trip style">
             <sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/><sa-icon name="tree-palm"/>
@@ -353,39 +354,39 @@
         </sa-icon-picker>
     </form>
     <form class="es-cell">
-        <sa-icon-picker name="iconinline-r" value="sailboat" layout="IconPickerLayout.Inline" label="Trip style" readonly>
+        <sa-icon-picker name="iconinline-r" value="sailboat" layout="IconPickerLayout.Inline" label="Trip style" readonly="true">
             <sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/><sa-icon name="tree-palm"/>
         </sa-icon-picker>
     </form>
 
     @* Image upload *@
-    <div class="es-name"><strong>Image upload</strong><span>readonly: none</span><span>Admin panel: disabled (no upload URL)</span></div>
+    <div class="es-name"><strong>Image upload</strong><span>readonly: tag helper attribute, the image alone; disabled doesn't post</span><span>Admin panel: disabled (no upload URL)</span></div>
     <form class="es-cell"><sa-image-upload name="image-n" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" label="Cover photo"/></form>
     <form class="es-cell"><sa-image-upload name="image-d" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" label="Cover photo" disabled="true"/></form>
-    <form class="es-cell"><sa-image-upload name="image-r" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" label="Cover photo" readonly/></form>
+    <form class="es-cell"><sa-image-upload name="image-r" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" label="Cover photo" readonly="true"/></form>
 
     @* Image upload: compact *@
-    <div class="es-name"><strong>Image upload · compact</strong><span>readonly: none</span><span>Admin panel: disabled (no upload URL)</span></div>
+    <div class="es-name"><strong>Image upload · compact</strong><span>readonly: tag helper attribute, the image alone; disabled doesn't post</span><span>Admin panel: disabled (no upload URL)</span></div>
     <form class="es-cell"><sa-image-upload name="imagec-n" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" layout="ImageUploadLayout.Compact" label="Cover photo"/></form>
     <form class="es-cell"><sa-image-upload name="imagec-d" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" layout="ImageUploadLayout.Compact" label="Cover photo" disabled="true"/></form>
-    <form class="es-cell"><sa-image-upload name="imagec-r" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" layout="ImageUploadLayout.Compact" label="Cover photo" readonly/></form>
+    <form class="es-cell"><sa-image-upload name="imagec-r" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" layout="ImageUploadLayout.Compact" label="Cover photo" readonly="true"/></form>
 
     @* Rich text editor *@
-    <div class="es-name"><strong>Rich text editor</strong><span>readonly: tag helper attribute</span><span>disabled: none (ignored)</span><span>Admin panel: readonly</span></div>
+    <div class="es-name"><strong>Rich text editor</strong><span>readonly and disabled: tag helper attributes</span><span>Admin panel: readonly</span></div>
     <form class="es-cell"><sa-rich-text-editor name="rte-n" label="Booking terms" rows="3" value="<p>Free cancellation up to <strong>14 days</strong> before departure.</p>"/></form>
-    <form class="es-cell"><sa-rich-text-editor name="rte-d" label="Booking terms" rows="3" disabled value="<p>Free cancellation up to <strong>14 days</strong> before departure.</p>"/></form>
+    <form class="es-cell"><sa-rich-text-editor name="rte-d" label="Booking terms" rows="3" disabled="true" value="<p>Free cancellation up to <strong>14 days</strong> before departure.</p>"/></form>
     <form class="es-cell"><sa-rich-text-editor name="rte-r" label="Booking terms" rows="3" readonly="true" value="<p>Free cancellation up to <strong>14 days</strong> before departure.</p>"/></form>
 
     @* List editor *@
-    <div class="es-name"><strong>List editor</strong><span>readonly: tag helper attribute</span><span>disabled: none (ignored)</span><span>Admin panel: readonly</span></div>
+    <div class="es-name"><strong>List editor</strong><span>readonly and disabled: tag helper attributes</span><span>Admin panel: readonly</span></div>
     <form class="es-cell"><sa-list-editor asp-for="Normal.Highlights"/></form>
-    <form class="es-cell"><sa-list-editor asp-for="Disabled.Highlights" disabled/></form>
+    <form class="es-cell"><sa-list-editor asp-for="Disabled.Highlights" disabled="true"/></form>
     <form class="es-cell"><sa-list-editor asp-for="ReadOnly.Highlights" readonly="true"/></form>
 
     @* Dictionary editor *@
-    <div class="es-name"><strong>Dictionary editor</strong><span>readonly: tag helper attribute</span><span>disabled: none (ignored)</span><span>Admin panel: readonly</span></div>
+    <div class="es-name"><strong>Dictionary editor</strong><span>readonly and disabled: tag helper attributes</span><span>Admin panel: readonly</span></div>
     <form class="es-cell"><sa-dictionary-editor asp-for="Normal.LocalNames" key-label="Language" value-label="Local name"/></form>
-    <form class="es-cell"><sa-dictionary-editor asp-for="Disabled.LocalNames" key-label="Language" value-label="Local name" disabled/></form>
+    <form class="es-cell"><sa-dictionary-editor asp-for="Disabled.LocalNames" key-label="Language" value-label="Local name" disabled="true"/></form>
     <form class="es-cell"><sa-dictionary-editor asp-for="ReadOnly.LocalNames" key-label="Language" value-label="Local name" readonly="true"/></form>
 </div>
 
@@ -422,23 +423,40 @@
 
         const escape = text => text.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
 
+        const lines = cells.map(cell => {
+            const line = document.createElement("div");
+            line.className = "es-report";
+            cell.append(line);
+            return line;
+        });
+
         function report(cell) {
-            let line = cell.querySelector(":scope > .es-report");
-            if (!line) {
-                line = document.createElement("div");
-                line.className = "es-report";
-                cell.append(line);
-            }
             const posts = [...new FormData(cell)].map(([name, value]) =>
                 `${name}=${value instanceof File ? `[file ${value.name || "none"}]` : escape(JSON.stringify(value).slice(0, 60))}`);
             const tabStops = [...cell.querySelectorAll(focusable)]
                 .filter(element => !element.closest(".es-report") && !element.matches(":disabled") && element.tabIndex >= 0
                     && element.getClientRects().length > 0);
-            line.innerHTML = `<b>posts:</b> ${posts.length ? posts.join(", ") : '<span class="es-no">nothing</span>'}<br>`
+            return `<b>posts:</b> ${posts.length ? posts.join(", ") : '<span class="es-no">nothing</span>'}<br>`
                 + `<b>tab stops:</b> ${tabStops.length || '<span class="es-no">none</span>'}`;
         }
 
-        const refresh = () => cells.forEach(report);
+        // Measures every cell before writing any line, so the page lays out once, and at most once a frame
+        let queued = false;
+        const refresh = () => {
+            if (queued) {
+                return;
+            }
+            queued = true;
+            requestAnimationFrame(() => {
+                queued = false;
+                const reports = cells.map(report);
+                reports.forEach((html, index) => {
+                    if (lines[index].innerHTML !== html) {
+                        lines[index].innerHTML = html;
+                    }
+                });
+            });
+        };
         refresh();
         document.addEventListener("input", refresh);
         document.addEventListener("change", refresh);

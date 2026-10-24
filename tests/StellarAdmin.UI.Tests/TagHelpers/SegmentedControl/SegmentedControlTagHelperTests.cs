@@ -59,4 +59,55 @@ public class SegmentedControlTagHelperTests
             .That(html.QuerySelectorAll("[data-slot=field].segmented-root").Length)
             .IsEqualTo(1);
     }
+
+    [Test]
+    public async Task ProcessAsync_ReadOnly_MarksGroupAndInputsReadonly()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new SegmentedControlTagHelper(context.Generator)
+        {
+            ViewContext = context.ViewContext,
+            Name = "cabin",
+            Value = "economy",
+            ReadOnly = true,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            sut,
+            async parent =>
+                await TagHelperRenderer.RenderChildAsync(
+                    new SegmentedControlItemTagHelper(context.Generator)
+                    {
+                        ViewContext = context.ViewContext,
+                        Value = "economy",
+                    },
+                    parent
+                )
+                + await TagHelperRenderer.RenderChildAsync(
+                    new SegmentedControlItemTagHelper(context.Generator)
+                    {
+                        ViewContext = context.ViewContext,
+                        Value = "business",
+                    },
+                    parent
+                )
+        );
+
+        // Assert
+        await Assert
+            .That(
+                html.QuerySelector("[data-slot=segmented-control]")?.GetAttribute("aria-readonly")
+            )
+            .IsEqualTo("true");
+        await Assert
+            .That(
+                html.QuerySelectorAll("input[type=radio][readonly][onclick='return false']").Length
+            )
+            .IsEqualTo(2);
+        await Assert
+            .That(html.QuerySelector("input[type=radio]:checked")?.GetAttribute("value"))
+            .IsEqualTo("economy");
+    }
 }

@@ -161,7 +161,7 @@
     & > [data-slot="field"] {
       padding: calc(2.5 * var(--sa-unit));
     }
-    &:hover:not(:has(:disabled, [data-disabled])) {
+    &:hover:not(:has(:disabled, [data-disabled], [readonly])) {
       border-color: var(--sa-color-line-control-hover);
       background: var(--sa-color-hover);
     }

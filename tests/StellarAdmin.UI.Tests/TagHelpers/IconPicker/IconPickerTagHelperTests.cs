@@ -446,6 +446,64 @@ public class IconPickerTagHelperTests
             .IsTrue();
     }
 
+    [Test]
+    public async Task ProcessAsync_ReadOnly_RendersTriggerWithoutPopoverOrChevron()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Name = "Icon";
+        sut.Value = "wifi";
+        sut.ReadOnly = true;
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut, Icons(context, "wifi"));
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("sel-icon-picker")?.GetAttribute("data-readonly"))
+            .IsEqualTo("true");
+        var trigger = html.QuerySelector("[data-slot=icon-picker-trigger]");
+        await Assert.That(trigger?.HasAttribute("popovertarget")).IsFalse();
+        await Assert.That(trigger?.HasAttribute("aria-haspopup")).IsFalse();
+        await Assert.That(trigger?.HasAttribute("disabled")).IsFalse();
+        await Assert
+            .That(
+                html.QuerySelector(
+                    "[data-slot=icon-picker-popover], .sa-icon-picker-chevron, template"
+                )
+            )
+            .IsNull();
+        var value = html.QuerySelector("[data-slot=icon-picker-value]");
+        await Assert.That(value?.GetAttribute("value")).IsEqualTo("wifi");
+        await Assert.That(value?.HasAttribute("disabled")).IsFalse();
+    }
+
+    [Test]
+    public async Task ProcessAsync_InlineReadOnly_MarksTilesReadonly()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Name = "Icon";
+        sut.Value = "wifi";
+        sut.Layout = IconPickerLayout.Inline;
+        sut.ReadOnly = true;
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut, Icons(context, "wifi", "plane"));
+
+        // Assert
+        await Assert
+            .That(
+                html.QuerySelectorAll("input[type=radio][readonly][onclick='return false']").Length
+            )
+            .IsEqualTo(2);
+        await Assert
+            .That(html.QuerySelector("input[type=radio]:checked")?.GetAttribute("value"))
+            .IsEqualTo("wifi");
+    }
+
     private static IconDefinition CreateIcon(IReadOnlyList<string> keywords) =>
         new(
             new Dictionary<string, string> { ["viewBox"] = "0 0 24 24" },

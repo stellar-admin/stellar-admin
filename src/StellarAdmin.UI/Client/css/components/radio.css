@@ -43,7 +43,7 @@
       position: absolute;
       inset: calc(-2 * var(--sa-unit)) calc(-3 * var(--sa-unit));
     }
-    &:hover:not(:disabled, :focus-visible, :checked) {
+    &:hover:not(:disabled, :focus-visible, :checked, [readonly]) {
       border-color: var(--sa-color-line-control-hover);
     }
     &:checked {
@@ -67,6 +67,10 @@
     &:disabled {
       cursor: not-allowed;
       opacity: var(--sa-disabled-opacity);
+    }
+    /* Read-only looks like the editable radio button, but nothing responds to the pointer */
+    &[readonly] {
+      cursor: default;
     }
   }
   .sa-radiobutton-indicator {

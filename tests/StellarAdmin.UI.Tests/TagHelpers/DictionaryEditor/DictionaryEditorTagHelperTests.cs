@@ -218,7 +218,7 @@ public class DictionaryEditorTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_ReadOnly_RendersItemTextWithoutControls()
+    public async Task ProcessAsync_ReadOnly_RendersReadonlyControlsWithoutActions()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -233,14 +233,47 @@ public class DictionaryEditorTagHelperTests
         using var html = await TagHelperRenderer.RenderAsync(sut);
 
         // Assert
-        await Assert
-            .That(html.QuerySelectorAll("input, select, button, template").Length)
-            .IsEqualTo(0);
+        await Assert.That(html.QuerySelectorAll("button, template").Length).IsEqualTo(0);
         await Assert
             .That(
-                html.QuerySelectorAll(".sa-collection-editor-text").Select(text => text.TextContent)
+                html.QuerySelectorAll("select[readonly][aria-readonly=true]")
+                    .Select(select => select.GetAttribute("name"))
             )
-            .IsEquivalentTo(new[] { "Low season", "49.5", "High season", "69" });
+            .IsEquivalentTo(new[] { "SeasonalPrices[0].Key", "SeasonalPrices[1].Key" });
+        await Assert
+            .That(
+                html.QuerySelectorAll("input[type=number][readonly]")
+                    .Select(input => input.GetAttribute("value"))
+            )
+            .IsEquivalentTo(new[] { "49.5", "69" });
+    }
+
+    [Test]
+    public async Task ProcessAsync_Disabled_DisablesControls()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new DictionaryEditorTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            For = For(context, nameof(Trip.SeasonalPrices)),
+            Disabled = true,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("sel-collection-editor")?.HasAttribute("disabled"))
+            .IsTrue();
+        await Assert.That(html.QuerySelectorAll("select:disabled").Length).IsEqualTo(2);
+        await Assert
+            .That(
+                html.QuerySelectorAll("input, button")
+                    .All(control => control.HasAttribute("disabled"))
+            )
+            .IsTrue();
     }
 
     [Test]

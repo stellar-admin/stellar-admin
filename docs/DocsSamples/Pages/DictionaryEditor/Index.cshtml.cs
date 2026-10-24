@@ -58,6 +58,8 @@ public class Index : PageModel
             };
 
         public SeasonalPricesModel ReadOnly { get; set; } = new SeasonalPricesModel();
+
+        public SeasonalPricesModel Disabled { get; set; } = new SeasonalPricesModel();
     }
 
     public class LocalNamesModel

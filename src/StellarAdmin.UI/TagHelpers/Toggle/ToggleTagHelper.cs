@@ -134,6 +134,7 @@ public sealed class ToggleTagHelper : FieldInputBaseTagHelper<ToggleClassNames>
         // and the label reflects its state via the has-* variants.
         inputOutput.Attributes.SetAttribute("class", "sr-only");
         ApplyFieldAttributes(context, inputOutput.Attributes, FieldLayout.Stacked);
+        ReadOnlyHandlers.ApplyToCheckbox(inputOutput.Attributes);
 
         var userClass = output.GetUserSuppliedClass();
 

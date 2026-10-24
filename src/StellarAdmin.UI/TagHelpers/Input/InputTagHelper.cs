@@ -179,6 +179,14 @@ public sealed class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
             _ => FieldLayout.Stacked,
         };
         ApplyFieldAttributes(context, inputOutput.Attributes, layout);
+        if (type == "checkbox")
+        {
+            ReadOnlyHandlers.ApplyToCheckbox(inputOutput.Attributes);
+        }
+        else if (type == "radio")
+        {
+            ReadOnlyHandlers.ApplyToRadio(inputOutput.Attributes);
+        }
 
         output.Content.AppendHtml(inputOutput);
 

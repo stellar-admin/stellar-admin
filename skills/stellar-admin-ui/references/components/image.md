@@ -51,6 +51,7 @@ The upload endpoint you give as `upload-url` receives a multipart POST with the 
 | `form` | `string` | — | — |
 | `layout` | `ImageUploadLayout` | `Dropzone` | `Dropzone`, `Compact`, `Attachment`, `Cell` |
 | `max-file-size` | `long` | `5242880` | — |
+| `readonly` | `bool` | `false` | `true`, `false` |
 | `src` | `string` | — | — |
 | `upload-url` | `string` | — | — |
 | `value` | `string` | — | — |

@@ -128,6 +128,11 @@ public sealed class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
         {
             input.Attributes["disabled"] = "disabled";
         }
+        else if (group.ReadOnly)
+        {
+            input.Attributes["readonly"] = "readonly";
+            input.Attributes["onclick"] = ReadOnlyHandlers.Choice;
+        }
 
         if (group.Required)
         {

@@ -253,4 +253,38 @@ public partial class CheckboxGroupTagHelperTests
         // Assert
         await Assert.That(act).Throws<InvalidOperationException>();
     }
+
+    [Test]
+    public async Task ProcessAsync_ReadOnlyGroup_MarksOptionsReadonlyAndKeepsMarker()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new CheckboxGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "roles",
+            Values = new[] { "admin" },
+            ReadOnly = true,
+            Items = [new("Administrator", "admin"), new("Editor", "editor")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert
+            .That(
+                html.QuerySelectorAll(
+                    "input[type=checkbox][readonly][aria-readonly=true][onclick='return false']"
+                ).Length
+            )
+            .IsEqualTo(2);
+        await Assert.That(html.QuerySelectorAll("input:disabled").Length).IsEqualTo(0);
+        await Assert
+            .That(html.QuerySelector("[data-slot=checkbox-group]")?.HasAttribute("aria-readonly"))
+            .IsFalse();
+        await Assert
+            .That(html.QuerySelector("input[type=hidden]")?.GetAttribute("name"))
+            .IsEqualTo("__sa_checkbox_group.roles");
+    }
 }

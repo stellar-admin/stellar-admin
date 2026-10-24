@@ -265,7 +265,7 @@ public class ListEditorTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_ReadOnly_RendersTextWithoutControlsOrMarker()
+    public async Task ProcessAsync_ReadOnly_RendersReadonlyInputsAndMarkerWithoutActions()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -287,12 +287,48 @@ public class ListEditorTagHelperTests
         await Assert
             .That(html.QuerySelector("sel-collection-editor")?.HasAttribute("data-sortable"))
             .IsFalse();
-        await Assert.That(html.QuerySelectorAll("input, button, template").Length).IsEqualTo(0);
+        await Assert.That(html.QuerySelectorAll("button, template").Length).IsEqualTo(0);
         await Assert
             .That(
-                html.QuerySelectorAll(".sa-collection-editor-text").Select(text => text.TextContent)
+                html.QuerySelectorAll("input[type=text][readonly]")
+                    .Select(input => input.GetAttribute("name") + "=" + input.GetAttribute("value"))
             )
-            .IsEquivalentTo(new[] { "Fado in Alfama", "Pastéis de nata" });
+            .IsEquivalentTo(
+                new[] { "Highlights[0]=Fado in Alfama", "Highlights[1]=Pastéis de nata" }
+            );
+        await Assert
+            .That(html.QuerySelector("input[type=hidden]")?.GetAttribute("name"))
+            .IsEqualTo("__sa_checkbox_group.Highlights");
+    }
+
+    [Test]
+    public async Task ProcessAsync_Disabled_DisablesControlsAndMarkerButNotTemplate()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new ListEditorTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            For = For(context, new Trip()),
+            Disabled = true,
+            Sortable = true,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("sel-collection-editor")?.HasAttribute("disabled"))
+            .IsTrue();
+        await Assert
+            .That(
+                html.QuerySelectorAll("input, button")
+                    .All(control => control.HasAttribute("disabled"))
+            )
+            .IsTrue();
+        await Assert.That(html.QuerySelectorAll("input[type=text]").Length).IsEqualTo(2);
+        await Assert.That(html.QuerySelector("template")?.InnerHtml.Contains("disabled")).IsFalse();
     }
 
     [Test]

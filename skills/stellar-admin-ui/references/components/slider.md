@@ -30,6 +30,7 @@ Renders an input that selects a number, or a range of numbers, by dragging thumb
 | `orientation` | `SliderOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
 | `thumb-alignment` | `SliderThumbAlignment` | `Edge` | `Center`, `Edge` |
 | `disabled` | `bool` | `false` | `true`, `false` |
+| `readonly` | `bool` | `false` | `true`, `false` |
 | `value` | `string` | — | — |
 | `value-format` | `string` | — | — |
 | `thumb-labels` | `string` | — | — |

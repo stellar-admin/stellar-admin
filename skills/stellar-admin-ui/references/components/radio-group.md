@@ -54,6 +54,7 @@ Use a nullable property with `[Required]` when the server must reject no selecti
 | `columns-sm` | `int` | — | — |
 | `disabled` | `bool` | `false` | `true`, `false` |
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
+| `readonly` | `bool` | `false` | `true`, `false` |
 | `class-names` | `ChoiceGroupClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |

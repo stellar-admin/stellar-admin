@@ -130,6 +130,7 @@ public sealed class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
         );
 
         ApplyFieldAttributes(context, inputOutput.Attributes, FieldLayout.ControlFirst);
+        ReadOnlyHandlers.ApplyToCheckbox(inputOutput.Attributes);
 
         output.Content.AppendHtml(inputOutput);
 

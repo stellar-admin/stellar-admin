@@ -1,0 +1,17 @@
+<sa-field-set class="w-full">
+    <sa-field-legend>Bed Preference</sa-field-legend>
+    <sa-field-description>
+        Your room is confirmed, so the bed can no longer change.
+    </sa-field-description>
+    <sa-field-group data-slot="radio-group">
+        <sa-input type="radio" name="readonly-bed-preference" value="king"
+                   label="1 King"
+                   description="Large bed for couples or solo travelers"
+                   readonly/>
+        <sa-input type="radio" name="readonly-bed-preference" value="single"
+                   label="2 Single"
+                   description="Ideal for friends or colleagues"
+                   checked
+                   readonly/>
+    </sa-field-group>
+</sa-field-set>

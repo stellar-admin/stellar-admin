@@ -65,6 +65,19 @@ public sealed class ListEditorTagHelper : FieldInputBaseTagHelper<ListEditorClas
     public ListEditorCasing? Casing { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value that indicates whether the list is disabled.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the list is disabled; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A disabled list can't be focused, and its values aren't posted.
+    /// </remarks>
+    [HtmlAttributeName("disabled")]
+    public bool? Disabled { get; set; }
+
+    /// <summary>
     ///     Gets or sets the text shown when the list has no items.
     /// </summary>
     /// <value>
@@ -149,15 +162,15 @@ public sealed class ListEditorTagHelper : FieldInputBaseTagHelper<ListEditorClas
     public string? Prefix { get; set; }
 
     /// <summary>
-    ///     Gets or sets a value that indicates whether the list shows its items without editing.
+    ///     Gets or sets a value that indicates whether the items can't be changed.
     /// </summary>
     /// <value>
-    ///     <see langword="true" /> to show the items as text, without adding, removing or
-    ///     reordering; otherwise, <see langword="false" />. The default is
-    ///     <see langword="false" />.
+    ///     <see langword="true" /> if the items can't be changed, added, removed or reordered;
+    ///     otherwise, <see langword="false" />. The default is <see langword="false" />.
     /// </value>
     /// <remarks>
-    ///     A read-only list posts no values.
+    ///     A read-only list shows its items in read-only inputs, which can still be focused, and its
+    ///     values are posted.
     /// </remarks>
     [HtmlAttributeName("readonly")]
     public bool? ReadOnly { get; set; }
@@ -227,7 +240,8 @@ public sealed class ListEditorTagHelper : FieldInputBaseTagHelper<ListEditorClas
             );
         }
 
-        var effectiveReadOnly = ReadOnly ?? false;
+        var effectiveDisabled = Disabled ?? false;
+        var effectiveReadOnly = !effectiveDisabled && (ReadOnly ?? false);
         var name = Name ?? ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For!.Name);
         var validators = For!.Metadata.ValidatorMetadata;
         var minItems =
@@ -287,6 +301,7 @@ public sealed class ListEditorTagHelper : FieldInputBaseTagHelper<ListEditorClas
             Numbered = Numbered ?? false,
             Sortable = !effectiveReadOnly && (Sortable ?? false),
             Unique = Unique ?? false,
+            Disabled = effectiveDisabled,
             ReadOnly = effectiveReadOnly,
             AddText = AddText ?? "Add item",
             EmptyText = EmptyText ?? "No items yet",

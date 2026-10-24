@@ -54,6 +54,13 @@
     margin-inline-start: auto;
     color: var(--sa-color-ink-muted);
   }
+  /* Read-only: the icon and its name, without the chevron, and nothing responds to the pointer */
+  .sa-icon-picker[data-readonly] > .sa-input.sa-icon-picker-trigger {
+    cursor: default;
+    &:hover:not(:focus-visible) {
+      border-color: var(--sa-color-line-control);
+    }
+  }
 
   .sa-popover-content.sa-icon-picker-popover {
     --_cell: calc(10 * var(--sa-unit));

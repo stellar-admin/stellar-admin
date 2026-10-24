@@ -61,6 +61,9 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
     ///     <see langword="true" /> if the control is disabled; otherwise, <see langword="false" />.
     ///     The default is <see langword="false" />.
     /// </value>
+    /// <remarks>
+    ///     A disabled control doesn't post its value.
+    /// </remarks>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
@@ -96,6 +99,20 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
     public long? MaxFileSize { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value that indicates whether the image can't be changed.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the image can't be changed; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A read-only control shows the image alone, without the upload area, the buttons or the
+    ///     accepted types, and its value is posted.
+    /// </remarks>
+    [HtmlAttributeName("readonly")]
+    public bool? ReadOnly { get; set; }
+
+    /// <summary>
     ///     Gets or sets the URL of the current image.
     /// </summary>
     /// <value>
@@ -108,7 +125,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
     ///     Gets or sets the URL that a picked file is posted to.
     /// </summary>
     /// <remarks>
-    ///     Required unless the control is disabled.
+    ///     Required unless the control is disabled or read-only.
     /// </remarks>
     [HtmlAttributeName("upload-url")]
     public string? UploadUrl { get; set; }
@@ -134,12 +151,13 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
     {
         var effectiveLayout = Layout ?? ImageUploadLayout.Dropzone;
         var effectiveDisabled = Disabled ?? false;
+        var effectiveReadOnly = !effectiveDisabled && (ReadOnly ?? false);
         var effectiveMaxFileSize = MaxFileSize ?? DefaultMaxFileSize;
         var accept = string.IsNullOrWhiteSpace(Accept) ? DefaultAccept : Accept;
-        if (string.IsNullOrEmpty(UploadUrl) && !effectiveDisabled)
+        if (string.IsNullOrEmpty(UploadUrl) && !effectiveDisabled && !effectiveReadOnly)
         {
             throw new InvalidOperationException(
-                "An image upload needs an upload-url unless it is disabled."
+                "An image upload needs an upload-url unless it is disabled or read-only."
             );
         }
 
@@ -173,6 +191,11 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             output.Attributes.SetAttribute("data-disabled", "true");
         }
 
+        if (effectiveReadOnly)
+        {
+            output.Attributes.SetAttribute("data-readonly", "true");
+        }
+
         output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-image-upload", ClassNames?.Control, output.GetUserSuppliedClass())
@@ -195,7 +218,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         file.Attributes.Add("accept", accept);
         file.Attributes.Add("tabindex", "-1");
         file.Attributes.Add("aria-hidden", "true");
-        if (effectiveDisabled)
+        if (effectiveDisabled || effectiveReadOnly)
         {
             file.Attributes.Add("disabled", "disabled");
         }
@@ -216,9 +239,21 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             hidden.Attributes.Add("form", FormName);
         }
 
+        if (effectiveDisabled)
+        {
+            hidden.Attributes.Add("disabled", "disabled");
+        }
+
         output.Content.AppendHtml(hidden);
 
-        var parts = new Parts(context, _iconOptions, state, effectiveDisabled, ClassNames?.Image);
+        var parts = new Parts(
+            context,
+            _iconOptions,
+            state,
+            effectiveDisabled,
+            effectiveReadOnly,
+            ClassNames?.Image
+        );
         switch (effectiveLayout)
         {
             case ImageUploadLayout.Compact:
@@ -235,7 +270,8 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
                 break;
         }
 
-        if (effectiveLayout == ImageUploadLayout.Cell)
+        // Nothing can be uploaded to a read-only control, so it has no hint or error
+        if (effectiveLayout == ImageUploadLayout.Cell && !effectiveReadOnly)
         {
             var error = new TagBuilder("span");
             error.Attributes.Add("data-slot", "image-upload-note");
@@ -244,7 +280,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             error.Attributes.Add("hidden", "hidden");
             output.Content.AppendHtml(error);
         }
-        else
+        else if (!effectiveReadOnly)
         {
             var note = new TagBuilder("p");
             note.Attributes.Add("data-slot", "image-upload-note");
@@ -283,6 +319,26 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         string? source
     )
     {
+        // Read-only shows the image, or the empty image, alone
+        if (parts.ReadOnly)
+        {
+            var image = parts.Media(null);
+            image.InnerHtml.AppendHtml(
+                await parts.ImageAsync(
+                    source,
+                    new ImageAppearance(
+                        ImageVariant.Figure,
+                        ImageSize.Medium,
+                        ImageAspectRatio.Original,
+                        ImageFit.Cover,
+                        ImageInteraction.None
+                    )
+                )
+            );
+            content.AppendHtml(image);
+            return;
+        }
+
         content.AppendHtml(await parts.DropAsync(row: false));
 
         var media = parts.Media("filled uploading removed");
@@ -349,6 +405,10 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         );
         media.InnerHtml.AppendHtml(await parts.ProgressAsync(bar: false));
         content.AppendHtml(media);
+        if (parts.ReadOnly)
+        {
+            return;
+        }
 
         var actions = new TagBuilder("div");
         actions.Attributes.Add("class", "sa-image-upload-actions");
@@ -402,7 +462,10 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         string? value
     )
     {
-        content.AppendHtml(await parts.DropAsync(row: true));
+        if (!parts.ReadOnly)
+        {
+            content.AppendHtml(await parts.DropAsync(row: true));
+        }
 
         var attachment = new TagBuilder("div");
         attachment.Attributes.Add("data-slot", "attachment");
@@ -413,7 +476,10 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             "class",
             "sa-attachment sa-attachment-size-default sa-attachment-orientation-horizontal"
         );
-        parts.ShowWhen(attachment, "filled uploading removed");
+        if (!parts.ReadOnly)
+        {
+            parts.ShowWhen(attachment, "filled uploading removed");
+        }
 
         var media = new TagBuilder("div");
         media.Attributes.Add("data-slot", "attachment-media");
@@ -441,6 +507,11 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         attachmentContent.InnerHtml.AppendHtml(title);
         attachmentContent.InnerHtml.AppendHtml(description);
         attachment.InnerHtml.AppendHtml(attachmentContent);
+        if (parts.ReadOnly)
+        {
+            content.AppendHtml(attachment);
+            return;
+        }
 
         var actions = new TagBuilder("div");
         actions.Attributes.Add("data-slot", "attachment-actions");
@@ -494,6 +565,14 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
 
     private static async Task RenderCellAsync(Parts parts, TagHelperContent content, string? source)
     {
+        if (parts.ReadOnly)
+        {
+            content.AppendHtml(
+                await parts.ImageAsync(source, ImageRendering.Thumbnail(ImageSize.Small))
+            );
+            return;
+        }
+
         var trigger = new TagBuilder("button");
         trigger.Attributes.Add("type", "button");
         trigger.Attributes.Add("data-slot", "image-upload-trigger");
@@ -607,6 +686,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         IconOptions iconOptions,
         string state,
         bool disabled,
+        bool readOnly,
         string? imageClass
     )
     {
@@ -615,6 +695,8 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         public bool Disabled { get; } = disabled;
 
         public IconOptions IconOptions { get; } = iconOptions;
+
+        public bool ReadOnly { get; } = readOnly;
 
         public async Task<TagHelperOutput> ButtonAsync(
             string action,

@@ -49,6 +49,19 @@ public sealed class DictionaryEditorTagHelper : FieldInputBaseTagHelper<Dictiona
     public string? AddText { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value that indicates whether the dictionary is disabled.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the dictionary is disabled; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A disabled dictionary can't be focused, and its values aren't posted.
+    /// </remarks>
+    [HtmlAttributeName("disabled")]
+    public bool? Disabled { get; set; }
+
+    /// <summary>
     ///     Gets or sets the text shown when the dictionary has no entries.
     /// </summary>
     /// <value>
@@ -147,15 +160,15 @@ public sealed class DictionaryEditorTagHelper : FieldInputBaseTagHelper<Dictiona
     public bool? Numbered { get; set; }
 
     /// <summary>
-    ///     Gets or sets a value that indicates whether the dictionary shows its entries without
-    ///     editing.
+    ///     Gets or sets a value that indicates whether the entries can't be changed.
     /// </summary>
     /// <value>
-    ///     <see langword="true" /> to show the entries as text, without adding or removing;
-    ///     otherwise, <see langword="false" />. The default is <see langword="false" />.
+    ///     <see langword="true" /> if the entries can't be changed, added or removed; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
     /// </value>
     /// <remarks>
-    ///     A read-only dictionary posts no values.
+    ///     A read-only dictionary shows its entries in read-only inputs, which can still be
+    ///     focused, and its values are posted.
     /// </remarks>
     [HtmlAttributeName("readonly")]
     public bool? ReadOnly { get; set; }
@@ -293,7 +306,8 @@ public sealed class DictionaryEditorTagHelper : FieldInputBaseTagHelper<Dictiona
             );
         }
 
-        var effectiveReadOnly = ReadOnly ?? false;
+        var effectiveDisabled = Disabled ?? false;
+        var effectiveReadOnly = !effectiveDisabled && (ReadOnly ?? false);
         var effectiveKeyLabel = KeyLabel ?? "Key";
         var effectiveValueLabel = ValueLabel ?? "Value";
         var name = Name ?? ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name);
@@ -380,6 +394,7 @@ public sealed class DictionaryEditorTagHelper : FieldInputBaseTagHelper<Dictiona
             MaxItems = maxItems,
             Numbered = Numbered ?? false,
             Unique = true,
+            Disabled = effectiveDisabled,
             ReadOnly = effectiveReadOnly,
             AddText = AddText ?? "Add item",
             EmptyText = EmptyText ?? "No items yet",

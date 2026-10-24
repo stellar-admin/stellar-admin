@@ -28,6 +28,7 @@ Renders a one-time code input with a slot for each character.
 | `groups` | `string` | — | — |
 | `inputmode` | `string` | `numeric` | — |
 | `disabled` | `bool` | `false` | `true`, `false` |
+| `readonly` | `bool` | `false` | `true`, `false` |
 | `aria-invalid` | `bool` | — | `true`, `false` |
 | `value` | `string` | — | — |
 | `form` | `string` | — | — |

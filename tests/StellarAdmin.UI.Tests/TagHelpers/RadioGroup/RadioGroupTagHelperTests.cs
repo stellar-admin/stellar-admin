@@ -434,4 +434,55 @@ public class RadioGroupTagHelperTests
                 "--sa-cols:2;--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:2;--sa-rows:2;--sa-rows-sm:2;--sa-rows-md:2;--sa-rows-lg:2"
             );
     }
+
+    [Test]
+    public async Task ProcessAsync_ReadOnly_MarksGroupAndOptionsReadonly()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new RadioGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "delivery",
+            Value = "express",
+            ReadOnly = true,
+            Items = [new("Standard", "standard"), new("Express", "express")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("[data-slot=radio-group]")?.GetAttribute("aria-readonly"))
+            .IsEqualTo("true");
+        await Assert
+            .That(
+                html.QuerySelectorAll("input[type=radio][readonly][onclick='return false']").Length
+            )
+            .IsEqualTo(2);
+        await Assert.That(html.QuerySelectorAll("input:disabled").Length).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task ProcessAsync_ReadOnlyAndDisabled_RendersDisabled()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new RadioGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "delivery",
+            ReadOnly = true,
+            Disabled = true,
+            Items = [new("Standard", "standard")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert.That(html.QuerySelector("input[type=radio]:disabled")).IsNotNull();
+        await Assert.That(html.QuerySelector("[readonly], [aria-readonly], [onclick]")).IsNull();
+    }
 }

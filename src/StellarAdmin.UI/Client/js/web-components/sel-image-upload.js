@@ -16,7 +16,8 @@ const formatSize = (bytes) =>
  * checked against `data-accept` and `data-max-file-size`, then posted to `data-upload-url` straight
  * away, with progress. The value the endpoint returns goes in the hidden input, which is all the form
  * posts. Replace and remove are staged until the form saves; undo puts the original value back. Parts
- * that belong to some states only name them in `data-when`, and are shown and hidden here.
+ * that belong to some states only name them in `data-when`, and are shown and hidden here. A
+ * read-only control (`data-readonly`) has no buttons or upload area, and refuses dropped files.
  */
 export class ImageUpload extends HTMLElement {
   /** @type {HTMLInputElement} */
@@ -76,6 +77,10 @@ export class ImageUpload extends HTMLElement {
     return this.hasAttribute("data-disabled");
   }
 
+  get #readOnly() {
+    return this.hasAttribute("data-readonly");
+  }
+
   get #layout() {
     return this.dataset.layout ?? "dropzone";
   }
@@ -132,7 +137,7 @@ export class ImageUpload extends HTMLElement {
 
   /** @param {DragEvent} event */
   #onDragOver = (event) => {
-    if (this.#disabled || !event.dataTransfer?.types.includes("Files")) return;
+    if (this.#disabled || this.#readOnly || !event.dataTransfer?.types.includes("Files")) return;
     event.preventDefault();
     this.toggleAttribute("data-dragover", true);
   };
@@ -147,7 +152,7 @@ export class ImageUpload extends HTMLElement {
   #onDrop = (event) => {
     this.removeAttribute("data-dragover");
     const file = event.dataTransfer?.files[0];
-    if (this.#disabled || !file) return;
+    if (this.#disabled || this.#readOnly || !file) return;
     event.preventDefault();
     this.#accept(file);
   };

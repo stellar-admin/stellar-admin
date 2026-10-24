@@ -24,6 +24,20 @@ public sealed class SegmentedControlTagHelper : FieldInputBaseTagHelper<Segmente
     public bool? Disabled { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value that indicates whether the selection can't be changed.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the selection can't be changed; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A read-only control looks like an editable one and can still be focused, and its
+    ///     selection is posted.
+    /// </remarks>
+    [HtmlAttributeName("readonly")]
+    public bool? ReadOnly { get; set; }
+
+    /// <summary>
     ///     Gets or sets a value that indicates whether an option must be selected before the form
     ///     is submitted.
     /// </summary>
@@ -78,6 +92,7 @@ public sealed class SegmentedControlTagHelper : FieldInputBaseTagHelper<Segmente
             For = For,
             Invalid = invalid,
             Name = name,
+            ReadOnly = ReadOnly == true && Disabled != true,
             Required = Required ?? For?.Metadata.IsRequired ?? false,
             Value = Value,
         };
@@ -104,9 +119,14 @@ public sealed class SegmentedControlTagHelper : FieldInputBaseTagHelper<Segmente
             output.Attributes.SetAttribute("aria-invalid", "true");
         }
 
+        if (group.ReadOnly)
+        {
+            output.Attributes.SetAttribute("aria-readonly", "true");
+        }
+
         ApplyFieldAttributes(context, output.Attributes, FieldLayout.Stacked);
 
-        foreach (var attribute in new[] { "name", "value", "disabled", "required" })
+        foreach (var attribute in new[] { "name", "value", "disabled", "readonly", "required" })
         {
             output.Attributes.RemoveAll(attribute);
         }

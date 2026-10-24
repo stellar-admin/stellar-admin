@@ -104,6 +104,20 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
     public string? Placeholder { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value that indicates whether the icon can't be changed.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the icon can't be changed; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A read-only control looks like an editable one, without the picker's chevron, and can
+    ///     still be focused. Its value is posted.
+    /// </remarks>
+    [HtmlAttributeName("readonly")]
+    public bool? ReadOnly { get; set; }
+
+    /// <summary>
     ///     Gets or sets a value that indicates whether an icon must be chosen.
     /// </summary>
     /// <value>
@@ -139,6 +153,7 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
     {
         var effectiveLayout = Layout ?? IconPickerLayout.Picker;
         var effectiveDisabled = Disabled ?? false;
+        var effectiveReadOnly = !effectiveDisabled && (ReadOnly ?? false);
         var effectiveRequired = Required ?? For?.Metadata.IsRequired ?? false;
 
         var pickerContext = new IconPickerContext { Owner = this };
@@ -196,6 +211,7 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
             string.IsNullOrEmpty(value) ? null : value,
             ResolveName(),
             effectiveDisabled,
+            effectiveReadOnly,
             effectiveRequired
         );
 
@@ -223,6 +239,11 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         if (effectiveDisabled)
         {
             output.Attributes.SetAttribute("data-disabled", "true");
+        }
+
+        if (effectiveReadOnly)
+        {
+            output.Attributes.SetAttribute("data-readonly", "true");
         }
 
         output.Attributes.SetAttribute(
@@ -338,6 +359,11 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
             {
                 input.Attributes.Add("disabled", "disabled");
             }
+            else if (picker.ReadOnly)
+            {
+                input.Attributes.Add("readonly", "readonly");
+                input.Attributes.Add("onclick", ReadOnlyHandlers.Choice);
+            }
 
             if (FormName != null)
             {
@@ -447,8 +473,12 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         trigger.Attributes.SetAttribute("type", "button");
         trigger.Attributes.SetAttribute("id", triggerId);
         trigger.Attributes.SetAttribute("data-slot", "icon-picker-trigger");
-        trigger.Attributes.SetAttribute("popovertarget", popoverId);
-        trigger.Attributes.SetAttribute("aria-haspopup", "dialog");
+        if (!picker.ReadOnly)
+        {
+            trigger.Attributes.SetAttribute("popovertarget", popoverId);
+            trigger.Attributes.SetAttribute("aria-haspopup", "dialog");
+        }
+
         foreach (var name in new[] { "aria-label", "aria-describedby" })
         {
             if (output.Attributes[name] is { } attribute)
@@ -483,6 +513,14 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         }
 
         trigger.Content.AppendHtml(text);
+
+        // A read-only picker shows its icon, with no chevron or popover to choose another
+        if (picker.ReadOnly)
+        {
+            output.Content.AppendHtml(trigger);
+            return;
+        }
+
         trigger.Content.AppendHtml(
             RenderIcon(
                 context,
@@ -646,6 +684,7 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         string? Value,
         string? FieldName,
         bool Disabled,
+        bool ReadOnly,
         bool Required
     );
 }

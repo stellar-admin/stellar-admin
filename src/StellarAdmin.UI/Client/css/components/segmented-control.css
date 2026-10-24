@@ -86,7 +86,7 @@
     &:has(> [data-icon="inline-end"]) {
       padding-inline-end: var(--sa-unit);
     }
-    &:hover {
+    &:hover:not(:has([readonly])) {
       color: var(--sa-color-ink);
     }
     &:has(:checked) {
@@ -103,6 +103,10 @@
       opacity: var(--sa-disabled-opacity);
       cursor: not-allowed;
       pointer-events: none;
+    }
+    /* Read-only looks like the editable control, but nothing responds to the pointer */
+    &:has([readonly]) {
+      cursor: default;
     }
   }
   @media (prefers-reduced-motion: reduce) {

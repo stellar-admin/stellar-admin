@@ -95,6 +95,20 @@ public sealed class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNam
     public bool? Disabled { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value that indicates whether the code can't be changed.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the code can't be changed; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A read-only input looks like an editable one and can still be focused, and its code is
+    ///     posted.
+    /// </remarks>
+    [HtmlAttributeName("readonly")]
+    public bool? ReadOnly { get; set; }
+
+    /// <summary>
     ///     Gets or sets a value that indicates whether the input is shown as invalid.
     /// </summary>
     /// <value>
@@ -321,6 +335,10 @@ public sealed class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNam
         if (Disabled == true)
         {
             inputOutput.Attributes.SetAttribute("disabled", "disabled");
+        }
+        else if (ReadOnly == true)
+        {
+            inputOutput.Attributes.SetAttribute("readonly", "readonly");
         }
         // Inline styles, so the overlay does not depend on any stylesheet. The text and caret are transparent because the slots draw
         // the value and the fake caret; the field exists only to capture native input. The

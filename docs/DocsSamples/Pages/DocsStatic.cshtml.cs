@@ -24,8 +24,9 @@ public class DocsStatic : PageModel
             "CheckboxGroup/_Validation" => new CheckboxGroup.Index.ValidationModel(),
             "Checkbox/_Validation" => new Checkbox.Index.ValidationModel(),
             "DictionaryEditor/_Intro" => new DictionaryEditor.Index.LocalNamesModel(),
-            "DictionaryEditor/_EnumKeys" or "DictionaryEditor/_ReadOnly" =>
-                new DictionaryEditor.Index.SeasonalPricesModel(),
+            "DictionaryEditor/_EnumKeys"
+            or "DictionaryEditor/_ReadOnly"
+            or "DictionaryEditor/_Disabled" => new DictionaryEditor.Index.SeasonalPricesModel(),
             "DictionaryEditor/_Items" => new DictionaryEditor.Index.GuidesModel(),
             "DictionaryEditor/_Numbers" => new DictionaryEditor.Index.BaggageModel(),
             "DictionaryEditor/_Validation" => new DictionaryEditor.Index.IndexModel().Validation,
@@ -68,6 +69,7 @@ public class DocsStatic : PageModel
             "ListEditor/_Intro"
             or "ListEditor/_Numbered"
             or "ListEditor/_ReadOnly"
+            or "ListEditor/_Disabled"
             or "ListEditor/_Validation" => new ListEditor.Index.TripModel(),
             "ListEditor/_ItemChecks" => new ListEditor.Index.AirportsModel(),
             "ListEditor/_Numbers" => new ListEditor.Index.DeparturesModel(),

@@ -23,6 +23,8 @@ internal sealed class ToggleGroupContext
     /// </summary>
     public required string? FieldName { get; init; }
 
+    public required bool ReadOnly { get; init; }
+
     /// <summary>
     ///     The selected values, normalized to the bound value type: the posted values when the
     ///     field has model state, otherwise the bound model.

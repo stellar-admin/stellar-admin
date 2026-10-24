@@ -75,6 +75,20 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
     public IEnumerable<SelectListItem>? Items { get; set; }
 
     /// <summary>
+    ///     Gets or sets a value that indicates whether the selection can't be changed.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the selection can't be changed; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     A read-only group looks like an editable one and can still be focused, and its selection
+    ///     is posted.
+    /// </remarks>
+    [HtmlAttributeName("readonly")]
+    public bool? ReadOnly { get; set; }
+
+    /// <summary>
     ///     Initializes a new instance of the <see cref="ChoiceGroupTagHelper" /> class.
     /// </summary>
     /// <param name="generator">The generator that renders the field and its inputs.</param>
@@ -205,6 +219,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
             output.Attributes["id"]?.Value?.ToString()
             ?? $"sa-choice-{GetUniqueId(context)}-{sequence}";
         var invalid = Error != null || entry?.Errors.Count > 0;
+        var readOnly = ReadOnly == true && Disabled != true;
         var itemIndex = 0;
         var seen = new HashSet<string>(StringComparer.Ordinal);
         var group = new ChoiceGroupContext
@@ -231,6 +246,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
                     multiple,
                     card,
                     Disabled == true || disabled,
+                    readOnly,
                     invalid,
                     selected.Contains(formatted),
                     JoinCssClasses(ClassNames?.Item, css)
@@ -254,6 +270,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
                 "values",
                 "variant",
                 "disabled",
+                "readonly",
                 "label",
                 "description",
                 "error",
@@ -294,6 +311,12 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
         if (Disabled == true)
         {
             output.Attributes.SetAttribute("aria-disabled", "true");
+        }
+
+        // A checkbox group's role has no read-only state, so its checkboxes carry it
+        if (readOnly && !multiple)
+        {
+            output.Attributes.SetAttribute("aria-readonly", "true");
         }
 
         if (invalid)
@@ -374,6 +397,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
         bool multiple,
         bool card,
         bool disabled,
+        bool readOnly,
         bool invalid,
         bool selected,
         string? css
@@ -394,6 +418,10 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
         if (disabled)
         {
             attributes.Add("disabled", "disabled");
+        }
+        else if (readOnly)
+        {
+            attributes.Add("readonly", "readonly");
         }
 
         if (invalid)

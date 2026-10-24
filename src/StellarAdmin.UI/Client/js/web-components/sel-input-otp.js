@@ -165,7 +165,8 @@ export class InputOtp extends HTMLElement {
       slot.dataset.active = active ? "true" : "false";
 
       slot.textContent = char;
-      if (active && char === "" && !isRange) {
+      // A read-only input has no caret to show
+      if (active && char === "" && !isRange && !this.#field.readOnly) {
         slot.appendChild(this.#createCaret());
       }
     }
