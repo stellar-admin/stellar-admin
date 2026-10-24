@@ -85,95 +85,98 @@
     else
     {
         @* Items selected in the sheet and removed in the field edit the hidden inputs, and the server renders the items
-           again from the values. The marker posts an empty selection, which binds an empty collection. *@
-        <admin-multi-lookup-sheet-editor id="@id" class="contents" name="@name" selection-url="@selectionUrl">
-            <input type="hidden" name="@($"__sa_checkbox_group.{name}")" value="true" />
-            <div data-lookup="values" hidden>
-                @foreach (var item in items)
+           again from the values. The marker posts an empty selection, which binds an empty collection. A disabled lookup
+           disables its buttons and its posted values, as the fieldset disables every control in it *@
+        <fieldset class="contents" role="none" disabled="@IsDisabled">
+            <admin-multi-lookup-sheet-editor id="@id" class="contents" name="@name" selection-url="@selectionUrl">
+                <input type="hidden" name="@($"__sa_checkbox_group.{name}")" value="true" />
+                <div data-lookup="values" hidden>
+                    @foreach (var item in items)
+                    {
+                        <input type="hidden" name="@name" value="@item.Value" />
+                    }
+                </div>
+
+                @switch (layout)
                 {
-                    <input type="hidden" name="@name" value="@item.Value" />
-                }
-            </div>
-
-            @switch (layout)
-            {
-                case MultiLookupSheetEditorLayout.List:
-                    <div id="@($"{id}-selected")" data-lookup="selected" class="@($"flex flex-col gap-1.5 {classes.Control}")" hidden="@(items.Count == 0)">
-                        <div class="flex flex-col gap-1.5" role="list" aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy" data-lookup="items">
-                            <partial name="_MultiLookupItems" model="editableItems" />
+                    case MultiLookupSheetEditorLayout.List:
+                        <div id="@($"{id}-selected")" data-lookup="selected" class="@($"flex flex-col gap-1.5 {classes.Control}")" hidden="@(items.Count == 0)">
+                            <div class="flex flex-col gap-1.5" role="list" aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy" data-lookup="items">
+                                <partial name="_MultiLookupItems" model="editableItems" />
+                            </div>
+                            <sa-input-group class="@emptyClass">
+                                <button type="button" id="@($"{id}-add")" class="@emptyButtonClass" data-slot="input-group-control" data-sheet-open="@sheetUrl" data-lookup="open">
+                                    <sa-icon name="plus" class="size-4 shrink-0" />
+                                    <span class="truncate">@addText</span>
+                                </button>
+                            </sa-input-group>
                         </div>
-                        <sa-input-group class="@emptyClass">
-                            <button type="button" id="@($"{id}-add")" class="@emptyButtonClass" data-slot="input-group-control" data-sheet-open="@sheetUrl" data-lookup="open">
-                                <sa-icon name="plus" class="size-4 shrink-0" />
-                                <span class="truncate">@addText</span>
-                            </button>
-                        </sa-input-group>
-                    </div>
-                    <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(items.Count > 0)">
-                        <sa-input-group class="@($"h-12 {emptyClass} flex-1 {classes.Control}")">
-                            <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
-                                    aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@waiting">
-                                <sa-icon name="search" class="size-4 shrink-0" />
-                                <span class="truncate">@chooseText</span>
-                            </button>
-                        </sa-input-group>
-                    </div>
-                    break;
+                        <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(items.Count > 0)">
+                            <sa-input-group class="@($"h-12 {emptyClass} flex-1 {classes.Control}")">
+                                <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
+                                        aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@waiting">
+                                    <sa-icon name="search" class="size-4 shrink-0" />
+                                    <span class="truncate">@chooseText</span>
+                                </button>
+                            </sa-input-group>
+                        </div>
+                        break;
 
-                case MultiLookupSheetEditorLayout.Chips:
-                    <sa-chip-group id="@($"{id}-selected")" data-lookup="selected" hidden="@(items.Count == 0)"
-                                   appearance="ChipGroupAppearance.Input" aria-invalid="isInvalid" class="@classes.Control"
-                                   aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
-                        <span class="contents" data-lookup="items">
-                            <partial name="_MultiLookupItems" model="editableItems" />
-                        </span>
-                        <sa-button type="button" id="@($"{id}-add")" variant="ButtonVariant.Ghost" size="ButtonSize.ExtraSmall"
-                                   class="text-muted-foreground hover:text-foreground min-w-0" data-sheet-open="@sheetUrl" data-lookup="open">
-                            <sa-icon name="plus" />
-                            <span class="truncate">@addText</span>
-                        </sa-button>
-                    </sa-chip-group>
-                    @* Empty, the box stays an input: the hint and the chevrons, like a select *@
-                    <sa-input-group id="@($"{id}-empty")" data-lookup="empty" hidden="@(items.Count > 0)"
-                                    class="@($"h-9 min-w-0 items-stretch p-0 {invalidRing} {classes.Control}")">
-                        <button type="button" id="@($"{id}-choose")" data-slot="input-group-control" aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@waiting"
-                                aria-invalid="@(isInvalid ? "true" : null)"
-                                class="text-muted-foreground flex min-w-0 flex-1 items-center justify-between gap-2 px-3 text-sm outline-none">
-                            <span class="truncate">@chooseText</span>
-                            <sa-icon name="chevrons-up-down" class="size-4 shrink-0 opacity-60" />
-                        </button>
-                    </sa-input-group>
-                    break;
-
-                default:
-                    @* The summary is the button that opens the sheet, so each segment of the group has its own focus ring *@
-                    <sa-button-group id="@($"{id}-selected")" data-lookup="selected" hidden="@(items.Count == 0)" class="@($"w-full {classes.Control}")"
-                                     aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
-                        <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Outline"
-                                   class="@($"min-w-0 flex-1 justify-start font-normal {(hasMedia ? "pl-1.5" : "")} {invalidRing}")"
-                                   aria-invalid="@(isInvalid ? "true" : null)" data-sheet-open="@sheetUrl" data-lookup="open">
+                    case MultiLookupSheetEditorLayout.Chips:
+                        <sa-chip-group id="@($"{id}-selected")" data-lookup="selected" hidden="@(items.Count == 0)"
+                                       appearance="ChipGroupAppearance.Input" aria-invalid="isInvalid" class="@classes.Control"
+                                       aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
                             <span class="contents" data-lookup="items">
                                 <partial name="_MultiLookupItems" model="editableItems" />
                             </span>
-                            <sa-icon name="chevrons-up-down" class="text-muted-foreground size-4 shrink-0" />
-                        </sa-button>
-                        <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Icon" data-lookup="clear">
-                            <sa-icon name="x" />
-                            <span class="sr-only">@labels.Lookup.ClearLabel(labelContext)</span>
-                        </sa-button>
-                    </sa-button-group>
-                    <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(items.Count > 0)">
-                        <sa-input-group class="@($"{emptyClass} flex-1 {classes.Control}")">
-                            <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
-                                    aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@waiting">
-                                <sa-icon name="search" class="size-4 shrink-0" />
+                            <sa-button type="button" id="@($"{id}-add")" variant="ButtonVariant.Ghost" size="ButtonSize.ExtraSmall"
+                                       class="text-muted-foreground hover:text-foreground min-w-0" data-sheet-open="@sheetUrl" data-lookup="open">
+                                <sa-icon name="plus" />
+                                <span class="truncate">@addText</span>
+                            </sa-button>
+                        </sa-chip-group>
+                        @* Empty, the box stays an input: the hint and the chevrons, like a select *@
+                        <sa-input-group id="@($"{id}-empty")" data-lookup="empty" hidden="@(items.Count > 0)"
+                                        class="@($"h-9 min-w-0 items-stretch p-0 {invalidRing} {classes.Control}")">
+                            <button type="button" id="@($"{id}-choose")" data-slot="input-group-control" aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@waiting"
+                                    aria-invalid="@(isInvalid ? "true" : null)"
+                                    class="text-muted-foreground flex min-w-0 flex-1 items-center justify-between gap-2 px-3 text-sm outline-none">
                                 <span class="truncate">@chooseText</span>
+                                <sa-icon name="chevrons-up-down" class="size-4 shrink-0 opacity-60" />
                             </button>
                         </sa-input-group>
-                    </div>
-                    break;
-            }
-        </admin-multi-lookup-sheet-editor>
+                        break;
+
+                    default:
+                        @* The summary is the button that opens the sheet, so each segment of the group has its own focus ring *@
+                        <sa-button-group id="@($"{id}-selected")" data-lookup="selected" hidden="@(items.Count == 0)" class="@($"w-full {classes.Control}")"
+                                         aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
+                            <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Outline"
+                                       class="@($"min-w-0 flex-1 justify-start font-normal {(hasMedia ? "pl-1.5" : "")} {invalidRing}")"
+                                       aria-invalid="@(isInvalid ? "true" : null)" data-sheet-open="@sheetUrl" data-lookup="open">
+                                <span class="contents" data-lookup="items">
+                                    <partial name="_MultiLookupItems" model="editableItems" />
+                                </span>
+                                <sa-icon name="chevrons-up-down" class="text-muted-foreground size-4 shrink-0" />
+                            </sa-button>
+                            <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Icon" data-lookup="clear">
+                                <sa-icon name="x" />
+                                <span class="sr-only">@labels.Lookup.ClearLabel(labelContext)</span>
+                            </sa-button>
+                        </sa-button-group>
+                        <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(items.Count > 0)">
+                            <sa-input-group class="@($"{emptyClass} flex-1 {classes.Control}")">
+                                <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
+                                        aria-describedby="@describedBy" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@waiting">
+                                    <sa-icon name="search" class="size-4 shrink-0" />
+                                    <span class="truncate">@chooseText</span>
+                                </button>
+                            </sa-input-group>
+                        </div>
+                        break;
+                }
+            </admin-multi-lookup-sheet-editor>
+        </fieldset>
     }
 
     <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />

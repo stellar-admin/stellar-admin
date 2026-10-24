@@ -23,12 +23,12 @@
 }
 
 <sa-toggle-group class="@appearanceClass" class-names="@EditorClassNamesMapper.ForToggleGroup(Editor)" asp-for="@Model" multiple="@multiple" variant="ToggleVariant.Outline"
-                 spacing="@(joined ? ToggleGroupSpacing.None : ToggleGroupSpacing.Default)" label="@Title" description="@Description">
+                 spacing="@(joined ? ToggleGroupSpacing.None : ToggleGroupSpacing.Default)" label="@Title" description="@Description" readonly="@IsReadOnly">
     @foreach (var choice in choices)
     {
         bool? selected = emptySelected && choice.Value == "" ? true : null;
         var media = ItemMediaViewModel.Create(choice.Media, choice.Title, ItemMediaPlacement.Inline, Editor.ClassNames.Media);
-        <sa-toggle-group-item value="@choice.Value" selected="@selected" disabled="@(IsReadOnly || choice.Disabled)">
+        <sa-toggle-group-item value="@choice.Value" selected="@selected" disabled="@(IsDisabled || choice.Disabled)">
             @if (chips)
             {
                 <sa-icon name="check" class="sa-toggle-chip-check" />

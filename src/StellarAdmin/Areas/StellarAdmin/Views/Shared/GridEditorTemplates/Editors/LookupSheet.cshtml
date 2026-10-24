@@ -25,38 +25,41 @@
         : null;
 }
 
-<admin-lookup-sheet-editor class="contents">
-    @if (waiting)
-    {
-        <input type="hidden" id="@id" name="@Html.NameForModel()" value="" data-lookup="value" />
-    }
-    else
-    {
-        <input type="hidden" asp-for="@Model" data-lookup="value" />
-    }
+@* A disabled lookup disables its buttons and its posted values, as the fieldset disables every control in it *@
+<fieldset class="contents" role="none" disabled="@IsDisabled">
+    <admin-lookup-sheet-editor class="contents">
+        @if (waiting)
+        {
+            <input type="hidden" id="@id" name="@Html.NameForModel()" value="" data-lookup="value" />
+        }
+        else
+        {
+            <input type="hidden" asp-for="@Model" data-lookup="value" />
+        }
 
-    @if (!canLookUp)
-    {
-        <span class="flex min-w-0 items-center gap-2">
-            <partial name="_LookupSelection" model="selection" />
-        </span>
-    }
-    else
-    {
-        <div data-lookup="selected" hidden="@(item is null)">
-            <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Outline" size="ButtonSize.Small" class="sa-cell-editor sa-lookup-trigger"
-                       aria-invalid="@(isInvalid ? "true" : null)" aria-describedby="@CellErrorId" data-sheet-open="@sheetUrl" data-lookup="open">
-                <span class="sr-only">@labels.Lookup.ChangeLabel(labelContext) @label, </span>
+        @if (!canLookUp)
+        {
+            <span class="flex min-w-0 items-center gap-2">
                 <partial name="_LookupSelection" model="selection" />
-                <sa-icon name="chevrons-up-down" />
-            </sa-button>
-        </div>
-        <div data-lookup="empty" hidden="@(item is not null)">
-            <sa-button type="button" id="@($"{id}-choose")" variant="ButtonVariant.Outline" size="ButtonSize.Small" class="sa-cell-editor sa-lookup-trigger"
-                       data-empty aria-invalid="@(isInvalid ? "true" : null)" aria-describedby="@CellErrorId" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@(waiting ? "disabled" : null)">
-                <span class="truncate">@chooseText</span>
-                <sa-icon name="search" />
-            </sa-button>
-        </div>
-    }
-</admin-lookup-sheet-editor>
+            </span>
+        }
+        else
+        {
+            <div data-lookup="selected" hidden="@(item is null)">
+                <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Outline" size="ButtonSize.Small" class="sa-cell-editor sa-lookup-trigger"
+                           aria-invalid="@(isInvalid ? "true" : null)" aria-describedby="@CellErrorId" data-sheet-open="@sheetUrl" data-lookup="open">
+                    <span class="sr-only">@labels.Lookup.ChangeLabel(labelContext) @label, </span>
+                    <partial name="_LookupSelection" model="selection" />
+                    <sa-icon name="chevrons-up-down" />
+                </sa-button>
+            </div>
+            <div data-lookup="empty" hidden="@(item is not null)">
+                <sa-button type="button" id="@($"{id}-choose")" variant="ButtonVariant.Outline" size="ButtonSize.Small" class="sa-cell-editor sa-lookup-trigger"
+                           data-empty aria-invalid="@(isInvalid ? "true" : null)" aria-describedby="@CellErrorId" data-sheet-open="@sheetUrl" data-lookup="open" disabled="@(waiting ? "disabled" : null)">
+                    <span class="truncate">@chooseText</span>
+                    <sa-icon name="search" />
+                </sa-button>
+            </div>
+        }
+    </admin-lookup-sheet-editor>
+</fieldset>

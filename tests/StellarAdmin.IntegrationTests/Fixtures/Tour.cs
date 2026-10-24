@@ -18,6 +18,9 @@ public sealed class Tour
 
     public int[] DepartureDays { get; set; } = [];
 
+    [Editable(false)]
+    public List<string> Guides { get; set; } = [];
+
     public List<string> Highlights { get; set; } = [];
 
     public int Id { get; set; }

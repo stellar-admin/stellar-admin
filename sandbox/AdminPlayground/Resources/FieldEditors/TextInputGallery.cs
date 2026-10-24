@@ -82,6 +82,9 @@ public sealed class TextInputGallery
     [Display(Name = "string · [Editable(false)]")]
     public string? ReadOnlyText { get; set; }
 
+    [Display(Name = "string · Disabled()")]
+    public string? DisabledText { get; set; }
+
     [Editable(false)]
     [Display(Name = "decimal · [Editable(false)] · Prefix $")]
     public decimal ReadOnlyAmount { get; set; }
@@ -141,6 +144,7 @@ public sealed class TextInputGallery
             FieldDescribedText = "Aisle",
             OverriddenDescription = "lisbon.trips",
             ReadOnlyText = "VT-2026-0042",
+            DisabledText = "VT-2026-0042",
             ReadOnlyAmount = 1299.5m,
             PlaceholderText = "Window seat",
             ExplicitEmail = "concierge@voyager.example",

@@ -47,6 +47,9 @@ public sealed class SelectGallery
     [Display(Name = "enum · [Editable(false)]")]
     public GalleryCabin ReadOnlyCabin { get; set; }
 
+    [Display(Name = "enum · Disabled()")]
+    public GalleryCabin DisabledCabin { get; set; }
+
     [Editable(false)]
     [Display(Name = "bool? · [Editable(false)]")]
     public bool? ReadOnlyInsured { get; set; }
@@ -84,6 +87,7 @@ public sealed class SelectGallery
             TitledCabin = GalleryCabin.Business,
             FieldDescribedCabin = GalleryCabin.Economy,
             ReadOnlyCabin = GalleryCabin.First,
+            DisabledCabin = GalleryCabin.First,
             ReadOnlyInsured = false,
             AnyCabin = null,
             OmittedCabin = GalleryCabin.Business,

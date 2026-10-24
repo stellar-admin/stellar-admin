@@ -27,6 +27,9 @@ public sealed class ListEditorGallery
     [Display(Name = "List<string> · [Editable(false)]")]
     public List<string> ReadOnlyHighlights { get; set; } = [];
 
+    [Display(Name = "List<string> · Disabled()")]
+    public List<string> DisabledHighlights { get; set; } = [];
+
     [Display(Name = "List<string> · MinItems 1 · MaxItems 8 · Sortable · Numbered · MaxLength 120")]
     public List<string> Itinerary { get; set; } = [];
 
@@ -54,6 +57,7 @@ public sealed class ListEditorGallery
             TitledHighlights = ["Fado night"],
             DescribedHighlights = ["Sunset at Miradouro da Graça"],
             ReadOnlyHighlights = ["Jerónimos Monastery", "Belém Tower"],
+            DisabledHighlights = ["Jerónimos Monastery", "Belém Tower"],
             Itinerary = ["Arrive in Lisbon", "Sintra palaces", "Day at Cascais"],
             ArrivalAirports = ["LIS", "OPO"],
             MonthlyDepartures = [1, 15],

@@ -120,7 +120,7 @@ public sealed class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                 Name = Name,
                 ViewContext = ViewContext,
             };
-            inputTagHelper.Process(context, inputOutput);
+            CheckboxHiddenInput.Process(inputTagHelper, context, inputOutput);
         }
 
         var type = inputOutput.Attributes.TryGetAttribute("type", out var typeAttribute)

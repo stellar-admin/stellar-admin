@@ -319,7 +319,7 @@ To change a built-in editor's markup everywhere, add `Areas/StellarAdmin/Views/S
 For a new editor:
 
 1. A settings class deriving from `FieldEditor` that names its template with `public override string TemplateName => "MyEditor";`.
-2. A template at `Views/Shared/EditorTemplates/{TemplateName}.cshtml` (or under `Areas/StellarAdmin/Views/Shared/`). It inherits `FieldEditorView<MyEditor>` (`@inherits StellarAdmin.Areas.StellarAdmin.FieldEditorView<MyEditor>`), reads the typed settings from `Editor`, and renders inputs with `asp-for` on the model. `Title`, `Description`, `IsReadOnly` and `CellErrorId` are also available.
+2. A template at `Views/Shared/EditorTemplates/{TemplateName}.cshtml` (or under `Areas/StellarAdmin/Views/Shared/`). It inherits `FieldEditorView<MyEditor>` (`@inherits StellarAdmin.Areas.StellarAdmin.FieldEditorView<MyEditor>`), reads the typed settings from `Editor`, and renders inputs with `asp-for` on the model. `Title`, `Description`, `IsReadOnly`, `IsDisabled` and `CellErrorId` are also available: render a read-only field with `readonly`, which posts, and a disabled one with `disabled`, which doesn't. `IsReadOnly` is false when the field is disabled.
 3. `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { ... })`.
 
 ```csharp

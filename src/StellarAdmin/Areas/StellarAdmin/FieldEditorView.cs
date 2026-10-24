@@ -51,14 +51,33 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
         ViewData[ViewDataKeys.FormFieldProperties] as FormFieldProperties;
 
     /// <summary>
+    ///     Gets a value that indicates whether the field is disabled.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the field is disabled for the record; otherwise,
+    ///     <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     Render a disabled field's editor with <c>disabled</c>, so it doesn't post.
+    /// </remarks>
+    public bool IsDisabled => Field?.IsDisabled == true;
+
+    /// <summary>
     ///     Gets a value that indicates whether the field is read-only.
     /// </summary>
     /// <value>
-    ///     <see langword="true" /> if the field or its property is read-only; otherwise,
-    ///     <see langword="false" />.
+    ///     <see langword="true" /> if the field or its property is read-only and the field isn't
+    ///     disabled; otherwise, <see langword="false" />.
     /// </value>
+    /// <remarks>
+    ///     Render a read-only field's editor with <c>readonly</c>, so it posts its value. A field
+    ///     that is both disabled and read-only is disabled.
+    /// </remarks>
     public bool IsReadOnly =>
-        Field?.IsReadOnly == true || Field?.IsBound != true && ViewData.ModelMetadata.IsReadOnly;
+        !IsDisabled
+        && (
+            Field?.IsReadOnly == true || Field?.IsBound != true && ViewData.ModelMetadata.IsReadOnly
+        );
 
     /// <summary>
     ///     Gets the field's label, or <see langword="null" /> to use the property's display name.

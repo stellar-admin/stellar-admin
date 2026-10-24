@@ -33,6 +33,9 @@ public sealed class CheckboxGroupGallery
     [Display(Name = "List<enum> · [Editable(false)]")]
     public List<GalleryCabin> ReadOnlyCabins { get; set; } = [];
 
+    [Display(Name = "List<enum> · Disabled()")]
+    public List<GalleryCabin> DisabledCabins { get; set; } = [];
+
     [Display(Name = "List<enum> · ClassNames.Control")]
     public List<GalleryCabin> StyledCabins { get; set; } = [];
 
@@ -76,6 +79,7 @@ public sealed class CheckboxGroupGallery
             AttributeDescribedCabins = [GalleryCabin.First],
             DescribedCabins = [],
             ReadOnlyCabins = [GalleryCabin.Business],
+            DisabledCabins = [GalleryCabin.Business],
             StyledCabins = [GalleryCabin.Economy],
             CardCabins = [GalleryCabin.Business],
             Amenities = ["wifi", "seat"],

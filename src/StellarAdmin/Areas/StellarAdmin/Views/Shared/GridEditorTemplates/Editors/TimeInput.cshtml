@@ -5,5 +5,5 @@
 }
 
 <sa-input class="sa-cell-editor" wrap-in-field="false" asp-for="@Model" type="@attributes.Type" asp-format="@attributes.Format"
-          step="@attributes.Step" min="@attributes.Min" max="@attributes.Max" readonly="@IsReadOnly"
+          step="@attributes.Step" min="@attributes.Min" max="@attributes.Max" readonly="@IsReadOnly" disabled="@IsDisabled"
           aria-label="@(Title ?? ViewData.ModelMetadata.GetDisplayName())" aria-describedby="@CellErrorId" />

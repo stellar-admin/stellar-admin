@@ -21,21 +21,24 @@
     var down = columnsStyle is not null && Editor.Flow == RadioGroupFlow.Down;
     var rowsStyle = down ? ResponsiveGrid.RowsStyle(ResponsiveGrid.ResolveRows(columns, choices.Count)) : null;
     var groupStyle = string.Join(';', new[] { columnsStyle, rowsStyle }.OfType<string>());
+    // A radio button's role has no read-only state, so the group carries it
+    var legendId = $"{Html.IdForModel()}-legend";
 }
 
 <sa-field-set class="@classes.Root">
-    <sa-field-legend class="@classes.Label" variant="FieldLegendVariant.Label">
+    <sa-field-legend class="@classes.Label" id="@legendId" variant="FieldLegendVariant.Label">
         @(Title ?? metadata.DisplayName ?? metadata.PropertyName)
     </sa-field-legend>
     <sa-field-description class="@classes.Description" asp-for="@Model">@Description</sa-field-description>
 
-    <sa-field-group class="@classes.Control" data-slot="radio-group"
+    <sa-field-group class="@classes.Control" data-slot="radio-group" role="radiogroup" aria-labelledby="@legendId"
+                    aria-readonly="@(IsReadOnly ? "true" : null)"
                     data-columns="@(columnsStyle is null ? "single" : "multiple")" data-flow="@(down ? "down" : "across")"
                     style="@(groupStyle.Length > 0 ? groupStyle : null)">
         @foreach (var choice in choices)
         {
             var id = TagBuilder.CreateSanitizedId($"{Html.IdForModel()}_{choice.Value}", "_");
-            var disabled = IsReadOnly || choice.Disabled;
+            var disabled = IsDisabled || choice.Disabled;
             var isChecked = emptyChecked && choice.Value == "" ? "checked" : null;
             var media = ItemMediaViewModel.Create(choice.Media, choice.Title, cards ? ItemMediaPlacement.Card : ItemMediaPlacement.Inline, classes.Media);
 
@@ -57,7 +60,7 @@
                         </sa-field-content>
 
                         <sa-input asp-for="@Model" type="radio" value="@choice.Value" id="@id" checked="@isChecked"
-                                  disabled="@disabled" wrap-in-field="false" class-names="@classes.Option" />
+                                  readonly="@IsReadOnly" disabled="@disabled" wrap-in-field="false" class-names="@classes.Option" />
                     </sa-field>
                 </sa-field-label>
             }
@@ -65,7 +68,7 @@
             {
                 <sa-field class="@classes.Option.Root" orientation="FieldOrientation.Horizontal">
                     <sa-input asp-for="@Model" type="radio" value="@choice.Value" id="@id" checked="@isChecked"
-                              disabled="@disabled" wrap-in-field="false" class-names="@classes.Option" />
+                              readonly="@IsReadOnly" disabled="@disabled" wrap-in-field="false" class-names="@classes.Option" />
                     <sa-field-content class="@classes.Option.Content">
                         <sa-field-label class="@classes.Option.Label" for="@id">
                             @if (media is not null)

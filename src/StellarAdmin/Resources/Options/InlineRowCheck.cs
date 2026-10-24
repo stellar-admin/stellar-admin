@@ -63,7 +63,7 @@ internal static class InlineRowCheck
             .OfType<string>()
             .ToHashSet(StringComparer.Ordinal);
         var unmatched = form
-            .Fields.Where(field => !field.IsReadOnly && !editedFields.Contains(field.FieldName))
+            .Fields.Where(field => !field.IsNeverEditable && !editedFields.Contains(field.FieldName))
             .Select(field => field.FieldName)
             .ToArray();
 
@@ -81,7 +81,7 @@ internal static class InlineRowCheck
     )
     {
         var fields = create
-            .Fields.Where(field => !field.IsReadOnly)
+            .Fields.Where(field => !field.IsNeverEditable)
             .Select(field => field.FieldName)
             .ToHashSet(StringComparer.Ordinal);
         var missing = create

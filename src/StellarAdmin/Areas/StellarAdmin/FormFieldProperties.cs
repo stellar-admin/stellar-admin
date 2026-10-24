@@ -31,7 +31,15 @@ public sealed record FormFieldProperties
     public string? FieldName { get; init; }
 
     /// <summary>
-    ///     Gets a value that indicates whether the field is read-only.
+    ///     Gets a value that indicates whether the field is disabled for the record.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the field is disabled; otherwise, <see langword="false" />.
+    /// </value>
+    public bool IsDisabled { get; init; }
+
+    /// <summary>
+    ///     Gets a value that indicates whether the field is configured as read-only for the record.
     /// </summary>
     /// <value>
     ///     <see langword="true" /> if the field is read-only; otherwise, <see langword="false" />.

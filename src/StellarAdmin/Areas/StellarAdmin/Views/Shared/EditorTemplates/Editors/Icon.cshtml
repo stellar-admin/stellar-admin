@@ -9,7 +9,7 @@
 }
 
 <sa-icon-picker class-names="@EditorClassNamesMapper.ForIconPicker(Editor)" asp-for="@Model" layout="Editor.ResolveLayout()" icons-url="@iconsUrl"
-                disabled="@IsReadOnly" label="@Title" description="@Description">
+                readonly="@IsReadOnly" disabled="@IsDisabled" label="@Title" description="@Description">
     @foreach (var icon in icons ?? [])
     {
         <sa-icon name="@icon" />

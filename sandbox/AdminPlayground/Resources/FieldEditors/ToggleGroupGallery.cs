@@ -41,6 +41,9 @@ public sealed class ToggleGroupGallery
     [Display(Name = "List<enum> · [Editable(false)]")]
     public List<GalleryCabin> ReadOnlyCabins { get; set; } = [];
 
+    [Display(Name = "List<enum> · Disabled()")]
+    public List<GalleryCabin> DisabledCabins { get; set; } = [];
+
     [Display(Name = "List<enum> · ClassNames.Control")]
     public List<GalleryCabin> StyledCabins { get; set; } = [];
 
@@ -72,6 +75,7 @@ public sealed class ToggleGroupGallery
             TitledCabins = [GalleryCabin.First],
             DescribedCabins = [GalleryCabin.Economy],
             ReadOnlyCabins = [GalleryCabin.Business],
+            DisabledCabins = [GalleryCabin.Business],
             StyledCabins = [],
             Transports = ["flight", "ferry"],
             Guides = ["ana", "yuki"],

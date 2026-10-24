@@ -120,7 +120,7 @@ public sealed class ToggleTagHelper : FieldInputBaseTagHelper<ToggleClassNames>
                 Name = Name,
                 ViewContext = ViewContext,
             };
-            inputTagHelper.Process(context, inputOutput);
+            CheckboxHiddenInput.Process(inputTagHelper, context, inputOutput);
         }
 
         inputOutput.Attributes.SetAttribute("type", "checkbox");

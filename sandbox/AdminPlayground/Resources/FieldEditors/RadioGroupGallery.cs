@@ -40,6 +40,9 @@ public sealed class RadioGroupGallery
     [Display(Name = "enum · [Editable(false)]")]
     public GalleryCabin ReadOnlyCabin { get; set; }
 
+    [Display(Name = "enum · Disabled()")]
+    public GalleryCabin DisabledCabin { get; set; }
+
     [Editable(false)]
     [Display(Name = "enum · [Editable(false)] · Cards")]
     public GalleryCabin ReadOnlyCabinCards { get; set; }
@@ -89,6 +92,7 @@ public sealed class RadioGroupGallery
             TitledCabin = GalleryCabin.First,
             DescribedCabin = GalleryCabin.Economy,
             ReadOnlyCabin = GalleryCabin.Business,
+            DisabledCabin = GalleryCabin.Business,
             ReadOnlyCabinCards = GalleryCabin.PremiumEconomy,
             Seat = "aisle",
             SeatCards = "window",

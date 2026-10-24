@@ -203,6 +203,112 @@ public sealed class ResourceFieldBuilder<TResource>
     }
 
     /// <summary>
+    ///     Disables the field.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     A disabled field doesn't apply: its editor is faded, takes no focus and doesn't post,
+    ///     and a posted value for it is ignored. A field that is both disabled and read-only is
+    ///     disabled.
+    /// </remarks>
+    public ResourceFieldBuilder<TResource> Disabled()
+    {
+        _configuration.Add(options =>
+        {
+            options.IsAlwaysDisabled = true;
+            options.DisabledWhen = null;
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Disables the field for the records that match a condition.
+    /// </summary>
+    /// <param name="predicate">
+    ///     A function that returns <see langword="true" /> for a record whose field is disabled.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="predicate" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     <para>
+    ///         The condition is checked against the record as it loads, or the new model on a
+    ///         create form, before the posted values are bound, so a posted value never decides
+    ///         it. A form shown again with errors checks it against the model it shows.
+    ///     </para>
+    ///     <para>
+    ///         See <see cref="Disabled()" />.
+    ///     </para>
+    /// </remarks>
+    public ResourceFieldBuilder<TResource> Disabled(Func<TResource, bool> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+
+        _configuration.Add(options =>
+        {
+            options.IsAlwaysDisabled = false;
+            options.DisabledWhen = model => predicate((TResource)model);
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Makes the field read-only.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     A read-only field shows its value in an editor that can't change it, and a posted value
+    ///     for it is ignored. The property's <c>[ReadOnly(true)]</c> or <c>[Editable(false)]</c>
+    ///     also makes the field read-only. A field that is both disabled and read-only is disabled.
+    /// </remarks>
+    public ResourceFieldBuilder<TResource> ReadOnly()
+    {
+        _configuration.Add(options =>
+        {
+            options.IsAlwaysReadOnly = true;
+            options.ReadOnlyWhen = null;
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Makes the field read-only for the records that match a condition.
+    /// </summary>
+    /// <param name="predicate">
+    ///     A function that returns <see langword="true" /> for a record whose field is read-only.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="predicate" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     <para>
+    ///         The condition is checked against the record as it loads, or the new model on a
+    ///         create form, before the posted values are bound, so a posted value never decides
+    ///         it. A form shown again with errors checks it against the model it shows.
+    ///     </para>
+    ///     <para>
+    ///         See <see cref="ReadOnly()" />.
+    ///     </para>
+    /// </remarks>
+    public ResourceFieldBuilder<TResource> ReadOnly(Func<TResource, bool> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+
+        _configuration.Add(options =>
+        {
+            options.IsAlwaysReadOnly = false;
+            options.ReadOnlyWhen = model => predicate((TResource)model);
+        });
+
+        return this;
+    }
+
+    /// <summary>
     ///     Edits the field with a checkbox.
     /// </summary>
     /// <returns>The builder, so that calls can be chained.</returns>

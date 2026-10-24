@@ -31,6 +31,9 @@ public sealed class ImageGallery : FieldEditorGalleryRecord, IFieldEditorGallery
     [Display(Name = "[Editable(false)]")]
     public string? ReadOnlyPhoto { get; set; }
 
+    [Display(Name = "Disabled()")]
+    public string? DisabledPhoto { get; set; }
+
     public static ImageGallery CreateSample() =>
         new()
         {
@@ -39,5 +42,6 @@ public sealed class ImageGallery : FieldEditorGalleryRecord, IFieldEditorGallery
             Attachment = "chiang-mai.jpg",
             Styled = "cape-town.jpg",
             ReadOnlyPhoto = "kyoto.jpg",
+            DisabledPhoto = "kyoto.jpg",
         };
 }

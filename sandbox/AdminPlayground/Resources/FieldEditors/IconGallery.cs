@@ -39,6 +39,9 @@ public sealed class IconGallery : FieldEditorGalleryRecord, IFieldEditorGalleryR
     [Display(Name = "[Editable(false)]")]
     public string? ReadOnlyIcon { get; set; }
 
+    [Display(Name = "Disabled()")]
+    public string? DisabledIcon { get; set; }
+
     public static IconGallery CreateSample() =>
         new()
         {
@@ -51,5 +54,6 @@ public sealed class IconGallery : FieldEditorGalleryRecord, IFieldEditorGalleryR
             LegacyIcon = "spa-flower",
             LegacyAmenity = "spa-flower",
             ReadOnlyIcon = "wifi",
+            DisabledIcon = "wifi",
         };
 }

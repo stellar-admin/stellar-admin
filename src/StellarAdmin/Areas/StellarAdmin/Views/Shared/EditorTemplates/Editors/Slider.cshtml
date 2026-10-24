@@ -26,7 +26,7 @@
     }
 
     <sa-slider class-names="@EditorClassNamesMapper.ForSlider(Editor)" asp-for="@Model" min="@attributes.Min" max="@attributes.Max" step="@attributes.Step"
-               value-format="@Editor.ValueFormat" disabled="@IsReadOnly" aria-labelledby="@labelId"
+               value-format="@Editor.ValueFormat" readonly="@IsReadOnly" disabled="@IsDisabled" aria-labelledby="@labelId"
                aria-describedby="@(descriptionId is null ? errorId : $"{descriptionId} {errorId}")">
         @if (Editor.Marks.Count > 0)
         {

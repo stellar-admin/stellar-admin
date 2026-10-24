@@ -13,7 +13,7 @@
 }
 
 <sa-segmented-control class-names="@EditorClassNamesMapper.ForSegmentedControl(Editor)" asp-for="@Model"
-                      label="@Title" description="@Description" disabled="@IsReadOnly">
+                      label="@Title" description="@Description" readonly="@IsReadOnly" disabled="@IsDisabled">
     @foreach (var choice in choices)
     {
         bool? selected = emptySelected && choice.Value == "" ? true : null;

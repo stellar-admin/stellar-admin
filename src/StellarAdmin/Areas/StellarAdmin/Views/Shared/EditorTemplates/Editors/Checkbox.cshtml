@@ -4,4 +4,4 @@
     BooleanProperty.Ensure(Editor, ViewData.ModelMetadata);
 }
 
-<sa-input class-names="@EditorClassNamesMapper.ForInput(Editor)" asp-for="@Model" type="checkbox" label="@Title" description="@Description" disabled="@IsReadOnly" />
+<sa-input class-names="@EditorClassNamesMapper.ForInput(Editor)" asp-for="@Model" type="checkbox" label="@Title" description="@Description" readonly="@IsReadOnly" disabled="@IsDisabled" />

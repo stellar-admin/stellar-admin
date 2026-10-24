@@ -14,7 +14,7 @@
     var emptySelected = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);
 }
 
-<sa-segmented-control class="sa-cell-segmented" wrap-in-field="false" asp-for="@Model" disabled="@IsReadOnly"
+<sa-segmented-control class="sa-cell-segmented" wrap-in-field="false" asp-for="@Model" readonly="@IsReadOnly" disabled="@IsDisabled"
                       aria-label="@(Title ?? ViewData.ModelMetadata.GetDisplayName())" aria-describedby="@CellErrorId">
     @foreach (var choice in choices)
     {

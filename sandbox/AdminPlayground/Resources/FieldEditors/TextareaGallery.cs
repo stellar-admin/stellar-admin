@@ -36,6 +36,10 @@ public sealed class TextareaGallery
     [Display(Name = "string · [Editable(false)]")]
     public string? ReadOnlyNotes { get; set; }
 
+    [DataType(DataType.MultilineText)]
+    [Display(Name = "string · Disabled()")]
+    public string? DisabledNotes { get; set; }
+
     [Display(Name = "string · Placeholder")]
     public string? PlaceholderNotes { get; set; }
 
@@ -54,6 +58,7 @@ public sealed class TextareaGallery
             TitledNotes = "Late check-in agreed with the hotel.",
             FieldDescribedNotes = "Transfer booked for 18:30.",
             ReadOnlyNotes = "Imported from the original booking.",
+            DisabledNotes = "Imported from the original booking.",
             PlaceholderNotes = null,
             TallNotes = "Day 1: Lisbon\nDay 2: Sintra\nDay 3: Porto\nDay 4: Douro valley",
             StyledNotes = "Ask about the lounge pass.",

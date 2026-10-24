@@ -204,6 +204,7 @@ StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.Editor.get -> TEditor!
 StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.EditorData.get -> object?
 StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.Field.get -> StellarAdmin.Areas.StellarAdmin.FormFieldProperties?
 StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.FieldEditorView() -> void
+StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.IsDisabled.get -> bool
 StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.IsReadOnly.get -> bool
 StellarAdmin.Areas.StellarAdmin.FieldEditorView<TEditor>.Title.get -> string?
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties
@@ -218,6 +219,8 @@ StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Equals(StellarAdmin.Areas.St
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.FieldName.get -> string?
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.FieldName.init -> void
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.FormFieldProperties() -> void
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsDisabled.get -> bool
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsDisabled.init -> void
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsReadOnly.get -> bool
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsReadOnly.init -> void
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Title.get -> string?
@@ -594,6 +597,10 @@ StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnSpanFull()
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnStart(int start) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Description.set -> void
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Disabled() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Disabled(System.Func<TResource, bool>! predicate) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ReadOnly() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ReadOnly(System.Func<TResource, bool>! predicate) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Title.set -> void
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseDictionaryEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseDictionaryEditor(System.Action<StellarAdmin.Resources.Editors.DictionaryEditor<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
@@ -1410,7 +1417,8 @@ StellarAdmin.Resources.Options.FormFieldOptions.Description.get -> string?
 StellarAdmin.Resources.Options.FormFieldOptions.Editor.get -> StellarAdmin.Resources.Editors.FieldEditor?
 StellarAdmin.Resources.Options.FormFieldOptions.FieldExpression.get -> System.Linq.Expressions.LambdaExpression!
 StellarAdmin.Resources.Options.FormFieldOptions.FieldName.get -> string!
-StellarAdmin.Resources.Options.FormFieldOptions.IsReadOnly.get -> bool
+StellarAdmin.Resources.Options.FormFieldOptions.IsDisabled(object! model) -> bool
+StellarAdmin.Resources.Options.FormFieldOptions.IsReadOnly(object! model) -> bool
 StellarAdmin.Resources.Options.FormFieldOptions.PropertyPath.get -> System.Collections.Generic.IReadOnlyList<System.Reflection.PropertyInfo!>!
 StellarAdmin.Resources.Options.FormFieldOptions.Title.get -> string?
 StellarAdmin.Resources.Options.FormFieldOptions.Binder.get -> StellarAdmin.Resources.FieldBinder?

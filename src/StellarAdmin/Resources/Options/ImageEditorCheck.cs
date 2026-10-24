@@ -22,7 +22,7 @@ internal static class ImageEditorCheck
         {
             switch (field)
             {
-                case { IsReadOnly: false, Editor: RichTextEditor { HasStore: true } richText }:
+                case { IsNeverEditable: false, Editor: RichTextEditor { HasStore: true } richText }:
                     if (HasInvalidLimits(richText))
                     {
                         var defaults = new RichTextEditor();
@@ -35,7 +35,7 @@ internal static class ImageEditorCheck
                     }
 
                     break;
-                case { IsReadOnly: false, Editor: ImageEditor { HasStore: false } }:
+                case { IsNeverEditable: false, Editor: ImageEditor { HasStore: false } }:
                     FormItems.Remove(formOptions!, field);
                     options.Report(
                         ConfigurationProblemKind.ImageFieldWithoutStore,
@@ -44,7 +44,7 @@ internal static class ImageEditorCheck
                         field.Source
                     );
                     break;
-                case { IsReadOnly: false, Editor: ImageEditor image }:
+                case { IsNeverEditable: false, Editor: ImageEditor image }:
                     if (HasInvalidLimits(image))
                     {
                         var defaults = new ImageEditor();

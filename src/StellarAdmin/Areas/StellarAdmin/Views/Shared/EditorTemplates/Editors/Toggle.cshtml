@@ -4,4 +4,4 @@
     BooleanProperty.Ensure(Editor, ViewData.ModelMetadata);
 }
 
-<sa-switch class-names="@EditorClassNamesMapper.ForSwitch(Editor)" asp-for="@Model" label="@Title" description="@Description" disabled="@IsReadOnly" />
+<sa-switch class-names="@EditorClassNamesMapper.ForSwitch(Editor)" asp-for="@Model" label="@Title" description="@Description" readonly="@IsReadOnly" disabled="@IsDisabled" />

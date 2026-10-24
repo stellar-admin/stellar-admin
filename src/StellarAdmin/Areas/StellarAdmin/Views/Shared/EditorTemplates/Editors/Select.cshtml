@@ -12,4 +12,4 @@
     <input type="hidden" name="@Html.NameForModel()" value="" />
 }
 <sa-select class-names="@EditorClassNamesMapper.ForSelect(Editor)" asp-for="@Model" asp-items="@items"
-           label="@Title" description="@Description" disabled="@(IsReadOnly || waiting)" />
+           label="@Title" description="@Description" readonly="@IsReadOnly" disabled="@(IsDisabled || waiting)" />

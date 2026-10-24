@@ -54,6 +54,9 @@ public sealed class DateTimeGallery
     [Display(Name = "DateOnly · [Editable(false)]")]
     public DateOnly ReadOnlyDeparture { get; set; }
 
+    [Display(Name = "DateOnly · Disabled()")]
+    public DateOnly DisabledDeparture { get; set; }
+
     [Editable(false)]
     [Display(Name = "DateTime · [Editable(false)]")]
     public DateTime ReadOnlyBoarding { get; set; }
@@ -91,6 +94,7 @@ public sealed class DateTimeGallery
             DescribedDeparture = new DateOnly(2026, 10, 16),
             FieldDescribedDeparture = new DateOnly(2026, 10, 17),
             ReadOnlyDeparture = new DateOnly(2026, 10, 18),
+            DisabledDeparture = new DateOnly(2026, 10, 18),
             ReadOnlyBoarding = new DateTime(2026, 10, 18, 7, 45, 0),
             BoundedDeparture = new DateOnly(2026, 6, 1),
             WeeklyDeparture = new DateOnly(2026, 10, 15),

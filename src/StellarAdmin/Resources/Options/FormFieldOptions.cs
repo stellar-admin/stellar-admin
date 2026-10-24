@@ -49,15 +49,6 @@ public sealed class FormFieldOptions : FormItemOptions
     public string FieldName { get; }
 
     /// <summary>
-    ///     Gets a value that indicates whether the field is read-only.
-    /// </summary>
-    /// <value>
-    ///     <see langword="true" /> if the field is read-only and a posted value for it is ignored;
-    ///     otherwise, <see langword="false" />.
-    /// </value>
-    public bool IsReadOnly { get; internal set; }
-
-    /// <summary>
     ///     Gets the properties that <see cref="FieldExpression" /> selects, in order.
     /// </summary>
     public IReadOnlyList<PropertyInfo> PropertyPath { get; }
@@ -73,7 +64,21 @@ public sealed class FormFieldOptions : FormItemOptions
     // The fields whose values the field's items depend on, in the order they were declared
     internal List<FieldDependency> Dependencies { get; } = [];
 
+    // Decides for each record whether the field is disabled, or null when only IsAlwaysDisabled does
+    internal Func<object, bool>? DisabledWhen { get; set; }
+
     internal Type? HandlerType { get; set; }
+
+    internal bool IsAlwaysDisabled { get; set; }
+
+    internal bool IsAlwaysReadOnly { get; set; }
+
+    // A field that is read-only or disabled for every record, so the configuration checks that need an editable field
+    // skip it. A field a predicate decides is editable for them.
+    internal bool IsNeverEditable => IsAlwaysReadOnly || IsAlwaysDisabled;
+
+    // Decides for each record whether the field is read-only, or null when only IsAlwaysReadOnly does
+    internal Func<object, bool>? ReadOnlyWhen { get; set; }
 
     // The resource an integration inferred for the field while it had no editor. The field gets a sheet editor for it
     // once the registered resources are known.
@@ -124,6 +129,46 @@ public sealed class FormFieldOptions : FormItemOptions
                 InferredResource = resource;
                 break;
         }
+    }
+
+    /// <summary>
+    ///     Determines whether the field is disabled for a record.
+    /// </summary>
+    /// <param name="model">The model the form edits.</param>
+    /// <returns>
+    ///     <see langword="true" /> if the field is disabled, so its editor doesn't post and a
+    ///     posted value for it is ignored; otherwise, <see langword="false" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="model" /> is <see langword="null" />.
+    /// </exception>
+    public bool IsDisabled(object model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
+
+        return IsAlwaysDisabled || DisabledWhen?.Invoke(model) == true;
+    }
+
+    /// <summary>
+    ///     Determines whether the field is configured as read-only for a record.
+    /// </summary>
+    /// <param name="model">The model the form edits.</param>
+    /// <returns>
+    ///     <see langword="true" /> if the field is read-only, so a posted value for it is ignored;
+    ///     otherwise, <see langword="false" />.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="model" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The property's metadata, such as <c>[ReadOnly(true)]</c>, also makes a field without a
+    ///     binder read-only.
+    /// </remarks>
+    public bool IsReadOnly(object model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
+
+        return IsAlwaysReadOnly || ReadOnlyWhen?.Invoke(model) == true;
     }
 
     /// <summary>

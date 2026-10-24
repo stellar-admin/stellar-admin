@@ -13,7 +13,7 @@ internal static class AddAnotherCheck
         }
 
         var fields = create
-            .Fields.Where(field => !field.IsReadOnly)
+            .Fields.Where(field => !field.IsNeverEditable)
             .Select(field => field.FieldName)
             .ToHashSet(StringComparer.Ordinal);
         foreach (

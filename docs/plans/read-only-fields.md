@@ -1,6 +1,6 @@
 # Read-only and disabled states across the UI library
 
-Status: stage 1 built and verified, not committed (2026-10-24). Stage 2 not started.
+Status: stage 1 built, verified and committed (2a1ca97, 2026-10-24). Stage 2 built and verified, not committed (2026-10-24).
 
 Every UI library editor follows the web platform's read-only and disabled behaviour, so the two states mean the same thing on every component. The admin panel then chooses deliberately between them (stage 2).
 
@@ -102,11 +102,75 @@ Not checked: Firefox, Safari, touch (whether a mouse down handler keeps a mobile
 
 ## Stage 2: admin panel
 
-After stage 1. The admin panel uses `disabled` today for every editor without a read-only state: select, checkbox, checkbox group, radio group, switch, toggle group, segmented control, slider, OTP and icon picker. The image upload drops its upload URL instead.
+The admin panel supports both states, with distinct roles, and every editor template renders read-only as `readonly` and disabled as `disabled`.
 
-Stage 2 decides when a field is read-only and when it is disabled, since the two states play different roles, and moves the editor templates over.
+### Where it starts (2026-10-24 catalogue)
 
-Before relying on read-only values being posted, confirm that saving still ignores read-only fields; posted values must never be trusted.
+- A template's read-only flag is `FieldEditorView.IsReadOnly`: the field's `FormFieldOptions.IsReadOnly`, which nothing sets (no builder method), or, for a field without a binder, the property's metadata (`[ReadOnly(true)]`, `[Editable(false)]` or no public setter). MVC's tag helpers don't read that metadata; model binding uses it to skip read-only properties.
+- The admin panel has no disabled setting. Disabled appears only as the waiting state of a dependent field, and as the way ten templates render read-only.
+- Already `readonly`: text, date, date-time and time inputs, textarea, rich text, list and dictionary editors. Rendered `disabled` for read-only: select, checkbox, switch, checkbox group, radio group (radios composed in the template), toggle group (per item), segmented control, slider, OTP and icon picker. The image upload sets `disabled="!canUpload"`, which since stage 1 also fades it and stops its value posting, including outside a resource form. The lookup and multi-lookup sheets render static text when read-only.
+- Grids edit only text, date, time, select, checkbox, switch, segmented control, icon, image and lookup fields; list and dictionary cells show badges, and the other editors have no grid template. The grid leaves read-only fields out of its editing rows.
+- Edit binds the posted values onto the loaded record, limited to the form's field names; create binds onto a new model. Validation errors are scoped to the bound fields.
+
+### Decisions (Jerrie, 2026-10-24)
+
+- **Read-only**: the value matters, but can't be changed here. It looks normal, takes focus and posts. Sources: the property's metadata, and `.ReadOnly()` or `.ReadOnly(predicate)` on the field.
+- **Disabled**: the field doesn't apply right now. It fades, takes no focus and doesn't post. Sources: `.Disabled()` or `.Disabled(predicate)` on the field, and the dependent-field waiting state, which keeps its current behaviour.
+- Disabled wins when both apply. The server ignores posted values for both: binding leaves the field out, decided against the record as loaded (edit) or the new model (create), never against posted values.
+- Predicates take the record and come now. A re-rendered form evaluates them against the model it renders.
+- Disabled is decided on the server as the form renders. Reacting live to other fields' values in the browser is later work, likely on the dependent-fields mechanism.
+- Grids keep showing a read-only field's display value in place of an editor, now per row when a predicate decides it; a disabled field renders its editor disabled.
+
+### Public API
+
+```csharp
+// ResourceFieldBuilder<TResource>
+public ResourceFieldBuilder<TResource> ReadOnly();
+public ResourceFieldBuilder<TResource> ReadOnly(Func<TResource, bool> predicate);
+public ResourceFieldBuilder<TResource> Disabled();
+public ResourceFieldBuilder<TResource> Disabled(Func<TResource, bool> predicate);
+
+// FormFieldOptions: replaces the IsReadOnly property, which is unshipped
+public bool IsReadOnly(object model);
+public bool IsDisabled(object model);
+
+// FormFieldProperties and FieldEditorView<TEditor>, for custom templates
+public bool IsDisabled { get; }
+```
+
+The configuration checks that need editable fields (add another, dependencies, inline rows, image stores) treat only a field that is always read-only or disabled as not editable; a field a predicate decides is editable for them.
+
+### Work
+
+- Builder methods, options and per-record evaluation; binding leaves read-only and disabled fields out of the bound field names.
+- Templates, form and grid: the ten `disabled` editors switch to `readonly`; every editor gains disabled. The radio group and toggle group set the group's read-only state, not just each item's. The lookups keep their static read-only rendering and render a disabled trigger, with no posted value, when disabled. The image upload separates being unable to upload from read-only.
+- Grid rows decide read-only per row.
+- Tests, AdminPlayground galleries, the website's field docs and the consumer skill references.
+
+### Stage 2 record
+
+Built as agreed, with these decisions made while building:
+
+- `FieldStates` (internal) decides a field's state for a record, adding the property's metadata to the field's configuration, and the controller binds only the fields that are neither read-only nor disabled: edit and inline edit against the loaded record, create and kept add-another values against the new model. Validation errors of the fields left out are dropped, as for any unbound property, and handler errors that name them go to the summary.
+- `FieldEditorView.IsReadOnly` is false when the field is disabled, so templates pass `readonly="@IsReadOnly" disabled="@IsDisabled"` and precedence lives in one place.
+- The radio group template gains `role="radiogroup"`, labelled by its legend, which carries `aria-readonly`.
+- The image upload is read-only when it can't upload (read-only, or outside a resource form) and disabled when the field is.
+- The lookups wrap their editable layout in `<fieldset class="contents" role="none" disabled>` when disabled, which disables the buttons and the hidden values. The dependent-field script now skips controls that match `:disabled`, which includes those in a disabled fieldset.
+- The grid decides editors from the editing row's model up front (`EditModel` or `NewItem`), since a column's edit template is registered before any row renders; `GetColumnFields` no longer filters read-only fields.
+- The configuration checks (add another, dependencies, inline rows, image stores) and the upload and lookup endpoints treat only a field that is always read-only or disabled as not editable.
+
+Verification (2026-10-24):
+
+- Tests: `tests/StellarAdmin.IntegrationTests/Resources/FieldStateTests.cs` covers binding (read-only, disabled, a predicate against the stored record, create, a read-only list from `.ReadOnly()` and from `[Editable(false)]`), rendering for eleven editors in both states, the radio group's state, precedence, a disabled lookup, and inline rows. With the metadata check removed, the `[Editable(false)]` list test fails: MVC binds the posted rows into a read-only collection property. Suites: StellarAdmin.Tests 333, StellarAdmin.IntegrationTests 717, StellarAdmin.EntityFrameworkCore.IntegrationTests 154, all passing.
+- Headless Chromium on the AdminPlayground galleries (every gallery has a `Disabled()` example; the new "Read-only and disabled" gallery shows predicates): every read-only example renders `readonly` at full contrast, focusable and posting; every disabled one is faded (0.5), unfocusable and not posting; no console errors. Light and dark screenshots of the new gallery, and of the lookup and multi-lookup galleries.
+- Not checked: Firefox, Safari, screen readers, phone widths, an inline-row grid in the browser.
+
+Fixed after the stage 2 browser check: a disabled bound checkbox, switch or toggle posted `false` through the framework's hidden companion input, which it renders after the checkbox or at the end of the form, so a plain MVC form would clear a checked value. `CheckboxHiddenInput` (internal, UI library) leaves that input out when the checkbox is disabled. Tests in the input, switch and toggle tag helper tests fail without it; UI library tests 799 and admin integration tests 717 pass, and the AdminPlayground's disabled checkbox and switch no longer post.
+
+Known gaps:
+
+- A dependent field refreshed in the browser is rendered against the partial model the refresh binds, so a predicate reading other properties can decide differently there than on the page.
+- A read-only multi-lookup posts nothing, unlike the other read-only editors; the server ignores it either way.
 
 ## Prototype verification
 

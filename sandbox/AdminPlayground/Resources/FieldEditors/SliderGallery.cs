@@ -31,6 +31,9 @@ public sealed class SliderGallery
     [Display(Name = "int · [Editable(false)]")]
     public int ReadOnlyVolume { get; set; }
 
+    [Display(Name = "int · Disabled()")]
+    public int DisabledVolume { get; set; }
+
     [Display(Name = "int · Min 0 · Max 50 · Step 5")]
     public int Discount { get; set; }
 
@@ -64,6 +67,7 @@ public sealed class SliderGallery
             DescribedVolume = 25,
             FieldDescribedVolume = 75,
             ReadOnlyVolume = 50,
+            DisabledVolume = 50,
             Discount = 15,
             StyledVolume = 30,
             DistanceFromCenter = 15,

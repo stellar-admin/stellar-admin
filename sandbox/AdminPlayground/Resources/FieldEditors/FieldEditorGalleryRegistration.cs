@@ -98,6 +98,12 @@ internal static class FieldEditorGalleryRegistration
             100,
             ConfigureOneTimeCodeFields
         );
+        admin.AddGalleryResource<FieldStateGallery>(
+            "field-states",
+            "Read-only and disabled",
+            105,
+            ConfigureFieldStateFields
+        );
     }
 
     // The lookup gallery's EnableCreate field creates airports with this resource's create form
@@ -228,6 +234,7 @@ internal static class FieldEditorGalleryRegistration
                     .UseTextInputEditor(input => input.Prefix = "@")
                     .Description = "Set with the field's Description, replacing the attribute.";
                 section.Add(model => model.ReadOnlyText);
+                section.Add(model => model.DisabledText).Disabled();
                 section
                     .Add(model => model.ReadOnlyAmount)
                     .UseTextInputEditor(input => input.Prefix = "$");
@@ -306,6 +313,7 @@ internal static class FieldEditorGalleryRegistration
                 section.Add(model => model.FieldDescribedCabin).Description =
                     "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyCabin);
+                section.Add(model => model.DisabledCabin).Disabled();
                 section.Add(model => model.ReadOnlyInsured);
             }
         );
@@ -387,6 +395,10 @@ internal static class FieldEditorGalleryRegistration
                 section
                     .Add(model => model.ReadOnlyAirport)
                     .UseLookupSheetEditor(lookup => UseAirports(lookup));
+                section
+                    .Add(model => model.DisabledAirport)
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup))
+                    .Disabled();
                 section
                     .Add(model => model.UnknownAirport)
                     .UseLookupSheetEditor(lookup => UseAirports(lookup));
@@ -653,6 +665,10 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.ReadOnlyDestinations)
                     .UseMultiLookupSheetEditor(lookup => UseDestinations(lookup));
                 section
+                    .Add(model => model.DisabledDestinations)
+                    .UseMultiLookupSheetEditor(lookup => UseDestinations(lookup))
+                    .Disabled();
+                section
                     .Add(model => model.ReadOnlyListGuides)
                     .UseMultiLookupSheetEditor(lookup =>
                     {
@@ -736,6 +752,7 @@ internal static class FieldEditorGalleryRegistration
                     .UseRadioGroupEditor()
                     .Description = "Set with the field's Description, replacing the attribute.";
                 section.Add(model => model.ReadOnlyCabin).UseRadioGroupEditor();
+                section.Add(model => model.DisabledCabin).UseRadioGroupEditor().Disabled();
                 section
                     .Add(model => model.ReadOnlyCabinCards)
                     .UseRadioGroupEditor(radio =>
@@ -859,6 +876,7 @@ internal static class FieldEditorGalleryRegistration
                     .UseCheckboxGroupEditor()
                     .Description = "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyCabins).UseCheckboxGroupEditor();
+                section.Add(model => model.DisabledCabins).UseCheckboxGroupEditor().Disabled();
             }
         );
         fields.AddSection(
@@ -998,6 +1016,7 @@ internal static class FieldEditorGalleryRegistration
                     .UseSegmentedControlEditor()
                     .Description = "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyCabin).UseSegmentedControlEditor();
+                section.Add(model => model.DisabledCabin).UseSegmentedControlEditor().Disabled();
             }
         );
         fields.AddSection(
@@ -1090,6 +1109,7 @@ internal static class FieldEditorGalleryRegistration
                     "Title override";
                 section.Add(model => model.DescribedCabins).UseToggleGroupEditor();
                 section.Add(model => model.ReadOnlyCabins).UseToggleGroupEditor();
+                section.Add(model => model.DisabledCabins).UseToggleGroupEditor().Disabled();
                 section
                     .Add(model => model.StyledCabins)
                     .UseToggleGroupEditor(group =>
@@ -1159,6 +1179,7 @@ internal static class FieldEditorGalleryRegistration
                 section.Add(model => model.FieldDescribedNotes).Description =
                     "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyNotes);
+                section.Add(model => model.DisabledNotes).Disabled();
             }
         );
         fields.AddSection(
@@ -1213,6 +1234,7 @@ internal static class FieldEditorGalleryRegistration
                 section.Add(model => model.FieldDescribedSubscribed).Description =
                     "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyChecked);
+                section.Add(model => model.DisabledChecked).Disabled();
                 section.Add(model => model.ReadOnlyUnchecked);
             }
         );
@@ -1264,6 +1286,7 @@ internal static class FieldEditorGalleryRegistration
                     .UseToggleEditor()
                     .Description = "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyOn).UseToggleEditor();
+                section.Add(model => model.DisabledOn).UseToggleEditor().Disabled();
                 section.Add(model => model.ReadOnlyOff).UseToggleEditor();
             }
         );
@@ -1311,6 +1334,7 @@ internal static class FieldEditorGalleryRegistration
                 section.Add(model => model.FieldDescribedDeparture).Description =
                     "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyDeparture);
+                section.Add(model => model.DisabledDeparture).Disabled();
                 section.Add(model => model.ReadOnlyBoarding);
             }
         );
@@ -1401,6 +1425,7 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.LegacyAmenity)
                     .UseIconEditor(editor => editor.Icons = GalleryIcons.Amenities);
                 section.Add(model => model.ReadOnlyIcon).UseIconEditor();
+                section.Add(model => model.DisabledIcon).UseIconEditor().Disabled();
             }
         );
     }
@@ -1453,6 +1478,7 @@ internal static class FieldEditorGalleryRegistration
                         editor.ClassNames.Note = "italic";
                     });
                 section.Add(model => model.ReadOnlyPhoto).UseImageEditor(ConfigureEditor);
+                section.Add(model => model.DisabledPhoto).UseImageEditor(ConfigureEditor).Disabled();
             }
         );
 
@@ -1480,6 +1506,7 @@ internal static class FieldEditorGalleryRegistration
                 section.Add(model => model.TitledHighlights).Title = "Title override";
                 section.Add(model => model.DescribedHighlights);
                 section.Add(model => model.ReadOnlyHighlights);
+                section.Add(model => model.DisabledHighlights).Disabled();
             }
         );
         fields.AddSection(
@@ -1562,6 +1589,7 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Add(model => model.TitledNotes).Title = "Title override";
                 section.Add(model => model.ReadOnlyNotes);
+                section.Add(model => model.DisabledNotes).Disabled();
             }
         );
         fields.AddSection(
@@ -1658,6 +1686,7 @@ internal static class FieldEditorGalleryRegistration
                     .UseSliderEditor()
                     .Description = "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyVolume).UseSliderEditor();
+                section.Add(model => model.DisabledVolume).UseSliderEditor().Disabled();
             }
         );
         fields.AddSection(
@@ -1724,6 +1753,40 @@ internal static class FieldEditorGalleryRegistration
         );
     }
 
+    private static void ConfigureFieldStateFields(ResourceFieldsBuilder<FieldStateGallery> fields)
+    {
+        fields.AddSection(
+            "Record state",
+            section =>
+            {
+                section.Description =
+                    "The conditions below read these. They're decided as the form renders, so a change shows after saving.";
+                section.Add(model => model.Confirmed).UseToggleEditor();
+                section.Add(model => model.HasDiscount).UseToggleEditor();
+            }
+        );
+        fields.AddSection(
+            "Always",
+            section =>
+            {
+                section.Add(model => model.Reference).ReadOnly();
+                section.Add(model => model.AgentNotes).Disabled();
+                section.Add(model => model.LegacyCode).ReadOnly().Disabled();
+            }
+        );
+        fields.AddSection(
+            "For each record",
+            section =>
+            {
+                section
+                    .Add(model => model.Price)
+                    .UseTextInputEditor(input => input.Prefix = "$")
+                    .ReadOnly(model => model.Confirmed);
+                section.Add(model => model.DiscountCode).Disabled(model => !model.HasDiscount);
+            }
+        );
+    }
+
     private static void ConfigureOneTimeCodeFields(ResourceFieldsBuilder<OneTimeCodeGallery> fields)
     {
         fields.AddSection(
@@ -1749,6 +1812,7 @@ internal static class FieldEditorGalleryRegistration
                     .UseOneTimeCodeEditor()
                     .Description = "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyCode).UseOneTimeCodeEditor();
+                section.Add(model => model.DisabledCode).UseOneTimeCodeEditor().Disabled();
             }
         );
         fields.AddSection(

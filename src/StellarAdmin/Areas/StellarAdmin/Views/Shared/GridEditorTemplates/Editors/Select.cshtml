@@ -11,5 +11,5 @@
 {
     <input type="hidden" name="@Html.NameForModel()" value="" />
 }
-<sa-select class="sa-cell-editor" wrap-in-field="false" size="SelectSize.Small" asp-for="@Model" asp-items="@items" disabled="@(IsReadOnly || waiting)"
+<sa-select class="sa-cell-editor" wrap-in-field="false" size="SelectSize.Small" asp-for="@Model" asp-items="@items" readonly="@IsReadOnly" disabled="@(IsDisabled || waiting)"
            aria-label="@(Title ?? ViewData.ModelMetadata.GetDisplayName())" aria-describedby="@CellErrorId" />

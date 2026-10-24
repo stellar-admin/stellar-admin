@@ -9,7 +9,7 @@
 
 @* A cell has room for the icon alone, so the button names itself with the icon's name and the column names the field *@
 <sa-icon-picker class="sa-cell-editor" class-names="@EditorClassNamesMapper.ForIconPicker(Editor, "sa-icon-picker-cell-trigger")" wrap-in-field="false"
-                asp-for="@Model" layout="IconPickerLayout.Picker" icons-url="@iconsUrl" disabled="@IsReadOnly" aria-describedby="@CellErrorId">
+                asp-for="@Model" layout="IconPickerLayout.Picker" icons-url="@iconsUrl" readonly="@IsReadOnly" disabled="@IsDisabled" aria-describedby="@CellErrorId">
     @foreach (var icon in icons ?? [])
     {
         <sa-icon name="@icon" />

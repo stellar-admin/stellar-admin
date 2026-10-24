@@ -20,7 +20,7 @@ internal static class DependencyCheck
     {
         var fields = FormItems
             .Fields(formOptions)
-            .Where(field => !field.IsReadOnly)
+            .Where(field => !field.IsNeverEditable)
             .ToDictionary(field => field.FieldName, StringComparer.Ordinal);
         foreach (var field in FormItems.Fields(formOptions))
         {

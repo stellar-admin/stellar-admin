@@ -31,7 +31,7 @@ internal static class CollectionEditorValidator
         foreach (var field in fields)
         {
             var key = ModelNames.CreatePropertyModelName(prefix, field.FieldName);
-            if (field.IsReadOnly || !source.ContainsPrefix(key))
+            if (!source.ContainsPrefix(key))
             {
                 continue;
             }

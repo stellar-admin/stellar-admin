@@ -33,6 +33,9 @@ public sealed class SegmentedControlGallery
     [Display(Name = "enum · [Editable(false)]")]
     public GalleryCabin ReadOnlyCabin { get; set; }
 
+    [Display(Name = "enum · Disabled()")]
+    public GalleryCabin DisabledCabin { get; set; }
+
     [Display(Name = "enum · ClassNames.Control")]
     public GalleryCabin StyledCabin { get; set; }
 
@@ -56,6 +59,7 @@ public sealed class SegmentedControlGallery
             DescribedCabin = GalleryCabin.PremiumEconomy,
             FieldDescribedCabin = GalleryCabin.First,
             ReadOnlyCabin = GalleryCabin.First,
+            DisabledCabin = GalleryCabin.First,
             StyledCabin = GalleryCabin.Economy,
             Transport = "train",
             Guide = "yuki",

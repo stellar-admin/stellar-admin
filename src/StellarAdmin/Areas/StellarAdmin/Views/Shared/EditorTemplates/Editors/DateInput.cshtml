@@ -5,4 +5,4 @@
 }
 
 <sa-input class-names="@EditorClassNamesMapper.ForInput(Editor)" asp-for="@Model" type="@attributes.Type" asp-format="@attributes.Format"
-          step="@attributes.Step" min="@attributes.Min" max="@attributes.Max" label="@Title" description="@Description" readonly="@IsReadOnly" />
+          step="@attributes.Step" min="@attributes.Min" max="@attributes.Max" label="@Title" description="@Description" readonly="@IsReadOnly" disabled="@IsDisabled" />

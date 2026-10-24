@@ -43,6 +43,9 @@ public sealed class CheckboxGallery
     [Display(Name = "bool · [Editable(false)] · checked")]
     public bool ReadOnlyChecked { get; set; }
 
+    [Display(Name = "bool · Disabled() · checked")]
+    public bool DisabledChecked { get; set; }
+
     [Editable(false)]
     [Display(Name = "bool · [Editable(false)] · unchecked")]
     public bool ReadOnlyUnchecked { get; set; }
@@ -69,6 +72,7 @@ public sealed class CheckboxGallery
             TitledSubscribed = true,
             FieldDescribedSubscribed = false,
             ReadOnlyChecked = true,
+            DisabledChecked = true,
             ReadOnlyUnchecked = false,
             LabelStyled = true,
             RootStyled = false,

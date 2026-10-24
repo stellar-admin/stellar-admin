@@ -13,7 +13,7 @@
     var valueLabel = CollectionEditorSettings.DictionaryValueContext(context, labels, value).ColumnLabel!;
 }
 
-<sa-dictionary-editor class-names="@EditorClassNamesMapper.ForDictionaryEditor(Editor)" asp-for="@Model" label="@Title" description="@Description" readonly="@IsReadOnly"
+<sa-dictionary-editor class-names="@EditorClassNamesMapper.ForDictionaryEditor(Editor)" asp-for="@Model" label="@Title" description="@Description" readonly="@IsReadOnly" disabled="@IsDisabled"
                       min-items="@context.MinItems" max-items="@context.MaxItems" numbered="@Editor.Numbered"
                       add-text="@(Editor.AddText ?? labels.AddText(context))" empty-text="@(Editor.EmptyText ?? labels.EmptyText(context))"
                       key-label="@keyLabel" key-casing="@key.Casing" key-pattern="@key.Pattern" key-pattern-message="@key.PatternMessage"

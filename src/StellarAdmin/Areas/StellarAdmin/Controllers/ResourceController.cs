@@ -454,7 +454,7 @@ internal sealed class ResourceController<TResource>(
             return NotFound();
         }
 
-        var fields = GetEditFieldNames();
+        var fields = GetEditFieldNames(resource);
         var valid = await TryBindConfiguredFieldsAsync(
             resource,
             _resourceOptions.Edit.ModelType,
@@ -534,7 +534,7 @@ internal sealed class ResourceController<TResource>(
             return NotFound();
         }
 
-        var fields = GetEditFieldNames();
+        var fields = GetEditFieldNames(resource);
         var prefix = ModelNames.CreateIndexModelName(InlineRowsPrefix, id);
         if (
             !await TryBindConfiguredFieldsAsync(
@@ -1202,13 +1202,12 @@ internal sealed class ResourceController<TResource>(
     private async Task BindKeptFieldsAsync(object model, IValueProvider source, string prefix)
     {
         var create = _resourceOptions.Create!;
+        var kept = GetEditableFieldNames(create.Fields, model);
+        kept.IntersectWith(create.AddAnother!.KeptFields);
         var boundFields = create
-            .Fields.Where(field =>
-                field.Binder is not null && create.AddAnother!.KeptFields.Contains(field.FieldName)
-            )
+            .Fields.Where(field => field.Binder is not null && kept.Contains(field.FieldName))
             .ToArray();
-        var fields = create
-            .AddAnother!.KeptFields.Except(boundFields.Select(field => field.FieldName))
+        var fields = kept.Except(boundFields.Select(field => field.FieldName))
             .ToHashSet(StringComparer.Ordinal);
         if (fields.Count > 0)
         {
@@ -1392,7 +1391,7 @@ internal sealed class ResourceController<TResource>(
 
         FormFieldOptions?[] GetColumnFields(IEnumerable<FormFieldOptions> fields)
         {
-            var remaining = fields.Where(field => !field.IsReadOnly).ToList();
+            var remaining = fields.ToList();
 
             return _resourceOptions
                 .Index.Columns.Select(column =>
@@ -1638,7 +1637,7 @@ internal sealed class ResourceController<TResource>(
 
         return
             fields?.FirstOrDefault(options => options.FieldName == fieldName)
-                is { IsReadOnly: false, Editor: IImageUploadEditor { HasStore: true } editor }
+                is { IsNeverEditable: false, Editor: IImageUploadEditor { HasStore: true } editor }
             ? editor
             : null;
     }
@@ -1659,21 +1658,36 @@ internal sealed class ResourceController<TResource>(
     {
         return
             FindForm(query.Form)?.Fields.FirstOrDefault(options => options.FieldName == query.Field)
-                is { IsReadOnly: false, Editor: ILookupSheetEditor editor } options
+                is { IsNeverEditable: false, Editor: ILookupSheetEditor editor } options
             && editor.ResolveItems(HttpContext.RequestServices) is { } items
             ? (options, editor, items)
             : null;
     }
 
-    // The edit fields that are bound from a form; the key of a resource edited as itself is not
-    private HashSet<string> GetEditFieldNames() =>
-        _resourceOptions
-            .Edit!.Fields.Select(field => field.FieldName)
-            .Where(name =>
-                _resourceOptions.Edit.ModelType != typeof(TResource)
-                || name != _resourceOptions.KeyPropertyName
-            )
+    // The fields a form binds for a model, decided against it before binding: not those read-only or disabled for it
+    private HashSet<string> GetEditableFieldNames(
+        IEnumerable<FormFieldOptions> fields,
+        object model
+    ) =>
+        fields
+            .Where(field => FieldStates.IsEditable(field, model, MetadataProvider))
+            .Select(field => field.FieldName)
             .ToHashSet(StringComparer.Ordinal);
+
+    // The edit fields that are bound for the record as it loaded; the key of a resource edited as itself is not
+    private HashSet<string> GetEditFieldNames(object resource)
+    {
+        var fields = GetEditableFieldNames(_resourceOptions.Edit!.Fields, resource);
+        if (
+            _resourceOptions.Edit.ModelType == typeof(TResource)
+            && _resourceOptions.KeyPropertyName is { } key
+        )
+        {
+            fields.Remove(key);
+        }
+
+        return fields;
+    }
 
     private string GetFieldLabel(FormFieldOptions options) =>
         FieldLabels.Get(options, HttpContext.RequestServices, MetadataProvider);
@@ -2091,9 +2105,7 @@ internal sealed class ResourceController<TResource>(
     {
         var create = _resourceOptions.Create!;
         var resource = create.CreateModel();
-        var fields = create
-            .Fields.Select(field => field.FieldName)
-            .ToHashSet(StringComparer.Ordinal);
+        var fields = GetEditableFieldNames(create.Fields, resource);
 
         if (
             !await TryBindConfiguredFieldsAsync(
@@ -2215,10 +2227,7 @@ internal sealed class ResourceController<TResource>(
 
         // An icon field's stored value, which saves unchanged even when it isn't an icon the field offers
         var iconFields = formFields
-            .Where(field =>
-                field is { IsReadOnly: false, Editor: IconEditor }
-                && fields.Contains(field.FieldName)
-            )
+            .Where(field => field is { Editor: IconEditor } && fields.Contains(field.FieldName))
             .Select(field =>
                 (field, ResourcePropertyPath.GetValue(model, field.PropertyPath) as string)
             )
@@ -2338,7 +2347,6 @@ internal sealed class ResourceController<TResource>(
                     && property.GetCustomAttribute<DataTypeAttribute>()?.DataType == DataType.Html;
             if (
                 !richText
-                || field.IsReadOnly
                 || field.Binder is not null
                 || !fields.Contains(field.FieldName)
                 || property.PropertyType != typeof(string)

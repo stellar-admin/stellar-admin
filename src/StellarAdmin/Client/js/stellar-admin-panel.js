@@ -1199,8 +1199,9 @@ function dependentScope(element) {
 function postedValues(scope, name) {
   const values = [];
   for (const input of scope.querySelectorAll(`[name="${CSS.escape(name)}"]`)) {
+    // A control in a disabled fieldset doesn't post either
     if (
-      input.disabled ||
+      input.matches(":disabled") ||
       !("value" in input) ||
       input.matches("button, [type='button'], [type='submit']")
     ) {
@@ -1252,7 +1253,7 @@ function dependentSheetUrl(opener) {
 function displayedValue(scope, name) {
   const titles = [];
   for (const input of scope.querySelectorAll(`[name="${CSS.escape(name)}"]`)) {
-    if (input.disabled) {
+    if (input.matches(":disabled")) {
       continue;
     }
 

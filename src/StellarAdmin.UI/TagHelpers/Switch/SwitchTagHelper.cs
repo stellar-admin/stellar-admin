@@ -107,7 +107,7 @@ public sealed class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
                 Name = Name,
                 ViewContext = ViewContext,
             };
-            inputTagHelper.Process(context, inputOutput);
+            CheckboxHiddenInput.Process(inputTagHelper, context, inputOutput);
         }
 
         inputOutput.Attributes.SetAttribute("type", "checkbox");

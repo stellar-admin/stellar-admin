@@ -34,6 +34,9 @@ public sealed class DictionaryEditorGallery
     [Display(Name = "Dictionary<string, string> · [Editable(false)]")]
     public Dictionary<string, string> ReadOnlyNotes { get; set; } = [];
 
+    [Display(Name = "Dictionary<string, string> · Disabled()")]
+    public Dictionary<string, string> DisabledNotes { get; set; } = [];
+
     [Display(Name = "Dictionary<string, string> · key Pattern · key Casing Lower · labels")]
     public Dictionary<string, string> LocalNames { get; set; } = [];
 
@@ -53,6 +56,7 @@ public sealed class DictionaryEditorGallery
             SeasonalPrices = new() { [GallerySeason.Low] = 49.5m, [GallerySeason.High] = 69m },
             TitledNotes = new() { ["Dress code"] = "Comfortable shoes" },
             ReadOnlyNotes = new() { ["Operator"] = "Voyager Travel Lisbon" },
+            DisabledNotes = new() { ["Operator"] = "Voyager Travel Lisbon" },
             LocalNames = new() { ["pt"] = "Passeio por Lisboa", ["es"] = "Ruta por Lisboa" },
             BaggageAllowance = new() { ["Economy"] = 23, ["Business"] = 32 },
             GuidesByLanguage = new() { ["pt"] = 1 },

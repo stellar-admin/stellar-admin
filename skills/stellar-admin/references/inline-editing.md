@@ -70,7 +70,7 @@ The resource loses that create or edit, inline row included, and a configuration
 - a `[Required]` property of the create model has no field;
 - the resource has no key.
 
-Columns without a field keep showing their value in the editing row. Display fields (`AddDisplayField`) and read-only fields don't need a column.
+Columns without a field keep showing their value in the editing row. Display fields (`AddDisplayField`) and fields that are always read-only or disabled (`ReadOnly()`, `Disabled()`) don't need a column. A field read-only for the row, by a condition or its property's metadata, shows its value as the other rows do; a disabled field renders its editor disabled.
 
 ## Adding rows
 

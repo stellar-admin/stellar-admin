@@ -34,6 +34,9 @@ public sealed class LookupGallery
     [Display(Name = "string? · [Editable(false)]")]
     public string? ReadOnlyAirport { get; set; }
 
+    [Display(Name = "string? · Disabled()")]
+    public string? DisabledAirport { get; set; }
+
     [Display(Name = "string? · a value the source does not have")]
     public string? UnknownAirport { get; set; }
 
@@ -103,6 +106,7 @@ public sealed class LookupGallery
             DescribedAirport = "SYD",
             FieldDescribedAirport = "YVR",
             ReadOnlyAirport = "CDG",
+            DisabledAirport = "CDG",
             UnknownAirport = "XXX",
             LabelledAirport = null,
             UnclearableAirport = "MAD",

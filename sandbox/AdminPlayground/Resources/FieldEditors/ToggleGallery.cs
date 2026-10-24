@@ -43,6 +43,9 @@ public sealed class ToggleGallery
     [Display(Name = "bool · [Editable(false)] · on")]
     public bool ReadOnlyOn { get; set; }
 
+    [Display(Name = "bool · Disabled() · on")]
+    public bool DisabledOn { get; set; }
+
     [Editable(false)]
     [Display(Name = "bool · [Editable(false)] · off")]
     public bool ReadOnlyOff { get; set; }
@@ -69,6 +72,7 @@ public sealed class ToggleGallery
             TitledNotifications = false,
             FieldDescribedNotifications = true,
             ReadOnlyOn = true,
+            DisabledOn = true,
             ReadOnlyOff = false,
             LabelStyled = true,
             RootStyled = false,

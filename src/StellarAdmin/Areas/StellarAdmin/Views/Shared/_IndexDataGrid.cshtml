@@ -14,6 +14,10 @@
     var inline = Model.InlineRows;
     var isNewRow = inline?.NewItem is not null;
     var rowFields = isNewRow ? inline!.CreateFields : inline?.EditingKey is not null ? inline.EditFields : null;
+
+    // The model the row edits, which may be another type than the grid's item. A field read-only for it shows its value
+    // as the other rows do
+    var rowModel = isNewRow ? inline!.NewItem : inline?.EditModel;
     if (rowFields is not null)
     {
         ViewData[ViewDataKeys.LookupForm] = isNewRow ? "create" : "edit";
@@ -51,11 +55,10 @@
                              empty-text="@column.EmptyText"
                              sortable="@column.Sortable" sort-field="@column.SortField"
                              class="@(display is NumberDisplay ? "text-right" : null)">
-            @if (rowFields?[index] is { } field)
+            @if (rowFields?[index] is { } field && rowModel is not null && FieldStates.ShowsGridEditor(field, rowModel, MetadataProvider))
             {
-                @* An edited row's cells edit its edit model, which may be another type than the grid's item *@
                 <sa-data-grid-edit-template>
-                    @await Html.GridEditorAsync(field, inline!.EditModel ?? Html.GridItem<object>())
+                    @await Html.GridEditorAsync(field, rowModel)
                 </sa-data-grid-edit-template>
             }
         </sa-data-grid-column>

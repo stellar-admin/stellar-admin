@@ -3,12 +3,13 @@
 @{
     var data = (ImageEditorData?)EditorData;
 
-    // The upload goes to the resource of the form the field is on; a create form in a sheet is its own resource's
-    var canUpload = !IsReadOnly && Field?.FieldName is not null;
+    // The upload goes to the resource of the form the field is on; a create form in a sheet is its own resource's.
+    // Outside a resource form there's nowhere to upload, so the image is read-only
+    var canUpload = !IsReadOnly && !IsDisabled && Field?.FieldName is not null;
     var form = ViewData[ViewDataKeys.SheetLevel] is not null ? "create" : ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant();
     var uploadUrl = canUpload ? Url.Action("UploadImage", new { id = (string?)null, form, field = Field!.FieldName }) : null;
 }
 
 <sa-image-upload class-names="@EditorClassNamesMapper.ForImageUpload(Editor)" asp-for="@Model" src="@data?.Url" upload-url="@uploadUrl" layout="Editor.Layout.ToImageUploadLayout()"
-                 accept="@string.Join(',', Editor.AcceptedTypes)" max-file-size="Editor.MaxFileSize" disabled="!canUpload"
+                 accept="@string.Join(',', Editor.AcceptedTypes)" max-file-size="Editor.MaxFileSize" readonly="!canUpload" disabled="IsDisabled"
                  label="@Title" description="@Description" />

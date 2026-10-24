@@ -58,6 +58,9 @@ public sealed class MultiLookupGallery
     [Display(Name = "List<string> · [Editable(false)] · Chips")]
     public List<string> ReadOnlyDestinations { get; set; } = [];
 
+    [Display(Name = "List<string> · Disabled() · Chips")]
+    public List<string> DisabledDestinations { get; set; } = [];
+
     [Editable(false)]
     [Display(Name = "string[] · [Editable(false)] · List")]
     public string[] ReadOnlyListGuides { get; set; } = [];
@@ -86,6 +89,7 @@ public sealed class MultiLookupGallery
             MediaHiddenGuides = ["grace-mwangi", "sipho-dlamini"],
             StyledDestinations = ["NBO", "JNB"],
             ReadOnlyDestinations = ["CDG", "AMS"],
+            DisabledDestinations = ["CDG", "AMS"],
             ReadOnlyListGuides = ["nikos-pappas", "olivia-brown"],
             ReadOnlySummaryGuides = ["maya-cohen", "pedro-alves", "kavya-nair"],
             ReadOnlyEmptyDestinations = [],

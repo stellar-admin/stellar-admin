@@ -32,6 +32,9 @@ public sealed class OneTimeCodeGallery
     [Display(Name = "string · [Editable(false)]")]
     public string? ReadOnlyCode { get; set; }
 
+    [Display(Name = "string · Disabled()")]
+    public string? DisabledCode { get; set; }
+
     [Display(Name = "string · Length 8")]
     public string? LongCode { get; set; }
 
@@ -48,6 +51,7 @@ public sealed class OneTimeCodeGallery
             DescribedCode = "391840",
             FieldDescribedCode = "927705",
             ReadOnlyCode = "554120",
+            DisabledCode = "554120",
             LongCode = "30118842",
             StyledCode = "118204",
         };
