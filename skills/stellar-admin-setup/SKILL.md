@@ -173,7 +173,7 @@ Some configuration errors only show once a page is requested. On a working insta
 3. With resources: the sidebar lists each one, `/stellaradmin/{slug}` shows the grid with the configured columns and rows, and `/stellaradmin/{slug}/create` and `/stellaradmin/{slug}/edit/{id}` render and save for resources that allow them. Foreign keys show a list of related rows, not a number box.
 4. With protection: an anonymous request gets the challenge, a signed-in user without access is forbidden, an allowed user gets 200, and Log out in the sidebar footer signs them out.
 
-Options validation errors (for example `AllowView` without fields, or a default sort on a column that isn't sortable) fail every panel request with a 500 and name the problem in the log.
+Configuration mistakes don't fail requests. The panel repairs what it can, hides a resource it can't (its pages return 404), and reports each one as a configuration problem: in the log under the `StellarAdmin.Configuration` category and, in Development, in the panel. See the stellar-admin skill's configuration-problems reference.
 
 ## Troubleshooting
 

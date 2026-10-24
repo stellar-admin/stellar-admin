@@ -23,7 +23,11 @@ admin.AddEfCoreResource<Destination>(resource =>
     resource.Index(index => index.Columns(columns =>
     {
         columns.Add(destination => destination.Name);
-        columns.Add(destination => destination.Country!.Name, column => column.Title = "Country").EditsField(destination => destination.CountryId);
+        columns.Add(destination => destination.Country!.Name, column =>
+        {
+            column.Title = "Country";
+            column.EditsField(destination => destination.CountryId);
+        });
         columns.Add(destination => destination.BestSeason);
         columns.Add(destination => destination.Active);
     }));

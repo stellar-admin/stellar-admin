@@ -93,7 +93,7 @@ index.DefaultSortBy(booking => booking.DepartureDate);               // ascendin
 // or index.DefaultSortByDescending(booking => booking.Total);
 ```
 
-- The default sort must name a column that is sortable; otherwise options validation fails every request.
+- The default sort must name a sortable column; otherwise the list uses the data source's order and a configuration problem is reported.
 - Clicking a header toggles the direction.
 - EF Core breaks ties with the primary key.
 
