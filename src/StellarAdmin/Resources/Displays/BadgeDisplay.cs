@@ -6,12 +6,26 @@ namespace StellarAdmin.Resources.Displays;
 ///     Shows a value as a badge.
 /// </summary>
 /// <remarks>
-///     A collection shows a badge for each item. To choose the badge by value, write a display
-///     template that switches on it. To show a property of each item, such as the name of a
-///     related entity, call <see cref="UseText{TItem}(Func{TItem, string})" />.
+///     A collection shows a badge for each item, and a dictionary a badge for each entry, such as
+///     <c>pt: Passeio por Lisboa</c>. To choose the badge by value, write a display template that
+///     switches on it. To show a property of each item, such as the name of a related entity, call
+///     <see cref="UseText{TItem}(Func{TItem, string})" />.
 /// </remarks>
 public sealed class BadgeDisplay : FieldDisplay
 {
+    /// <summary>
+    ///     Gets or sets the largest number of badges a collection shows.
+    /// </summary>
+    /// <value>
+    ///     The number of badges, or <see langword="null" /> to show every item. The default is
+    ///     <see langword="null" />.
+    /// </value>
+    /// <remarks>
+    ///     The items after the limit show as one more badge with their count, such as <c>+3</c>,
+    ///     whose tooltip lists them.
+    /// </remarks>
+    public int? Limit { get; set; }
+
     /// <inheritdoc />
     public override string TemplateName => "Displays/Badge";
 

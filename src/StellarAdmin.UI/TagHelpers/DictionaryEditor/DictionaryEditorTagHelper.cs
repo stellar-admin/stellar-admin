@@ -161,6 +161,15 @@ public sealed class DictionaryEditorTagHelper : FieldInputBaseTagHelper<Dictiona
     public bool? ReadOnly { get; set; }
 
     /// <summary>
+    ///     Gets or sets the texts the editor shows as its entries change, such as its errors.
+    /// </summary>
+    /// <value>
+    ///     The texts, or <see langword="null" /> for the default texts.
+    /// </value>
+    [HtmlAttributeName("texts")]
+    public DictionaryEditorTexts? Texts { get; set; }
+
+    /// <summary>
     ///     Gets or sets how each value is aligned within its column.
     /// </summary>
     /// <value>
@@ -378,7 +387,8 @@ public sealed class DictionaryEditorTagHelper : FieldInputBaseTagHelper<Dictiona
                 effectiveKeyLabel,
                 effectiveValueLabel,
                 minItems,
-                maxItems
+                maxItems,
+                Texts
             ),
         };
         await new CollectionEditorRenderer(

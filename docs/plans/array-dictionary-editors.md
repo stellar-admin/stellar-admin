@@ -1,6 +1,6 @@
 # Array and dictionary editors
 
-Status: in progress. Approved 2026-10-24 with the five choices below; stage 1 (StellarAdmin.UI) built 2026-10-24 and awaiting Jerrie's review; stage 2 not started. Prototype in `sandbox/html/array-dictionary-editors.html`.
+Status: in progress. Approved 2026-10-24 with the five choices below; stage 1 (StellarAdmin.UI) built and committed 2026-10-24; stage 2 (admin panel) built 2026-10-24 and awaiting Jerrie's review. Prototype in `sandbox/html/array-dictionary-editors.html`.
 
 ## Summary
 
@@ -164,7 +164,7 @@ fields.Add(t => t.BaggageAllowance).UseDictionaryEditor(dict =>
 });
 ```
 
-`ListEditor` has the list attributes above as properties. `DictionaryEditor` has `MinItems`, `MaxItems`, `Numbered`, `AddText` and `EmptyText`, and `Key(...)` and `Value(...)`, which drill into a key and a value with `Label`, `Placeholder`, `Pattern`, `PatternMessage`, `MaxLength`, `Min`, `Max`, `Step`, `Casing` and the item sources (`UseItems`, `UseResource<T>()`); `Prefix` and `Suffix` on the value only. The dictionary editor is typed by the form, like the select editor, so the sources infer their value types.
+`ListEditor` has the list attributes above as properties, `Align` included. `DictionaryEditor` has `MinItems`, `MaxItems`, `Numbered`, `AddText` and `EmptyText`, and `Key(...)` and `Value(...)`, which drill into a key and a value with `Label`, `Placeholder`, `Pattern`, `PatternMessage`, `MaxLength`, `Casing` and the item sources (`UseItems`, `UseResource<T>()`); `Min`, `Max`, `Step`, `Prefix`, `Suffix` and `Align` on the value only, since keys are text or enums. The dictionary editor is typed by the form, like the select editor, so the sources infer their value types.
 
 The item sources live on `ChoiceEditor` today. Moving them into a part the select editor and a dictionary's key and value share is the largest internal change, including the handler that loads the items for the template and the items that depend on other fields (`DependsOn`), which a dictionary doesn't need at first.
 
@@ -207,6 +207,18 @@ Each stage stops for Jerrie's review.
 - While dragging, the editor has `data-reordering`, for the grabbing cursor. A `:root` attribute was tried and dropped: the website's inline-example export rejects document-level selectors.
 - DocsSamples pages `ListEditor` and `DictionaryEditor`, website pages `list-editor.mdx` and `dictionary-editor.mdx` (with navigation and the JavaScript page's element table), the exported demos, the generated consumer references with a hand-written structure section, and the UI skill's forms and JavaScript guides.
 
+## Stage 2 as built
+
+- `ListEditor` (`Resources/Editors/`) and `DictionaryEditor` / `DictionaryEditor<TModel>`, whose `Key(...)` and `Value(...)` configure `DictionaryEditorKey<TModel>` and `DictionaryEditorValue<TModel>` (with a shared `DictionaryEditorPart` base). `UseListEditor` and `UseDictionaryEditor` on the field builder. The casing and alignment enums are StellarAdmin.UI's own. Templates `Editors/ListEditor` and `Editors/DictionaryEditor` render the tag helpers; their `GridEditorTemplates` show the badge display, so an inline row shows the value and saving the row keeps it.
+- The item sources moved from `ChoiceEditor` into an internal `ChoiceSource`, which `ChoiceEditor` and each dictionary part own; the public `UseItems` and `UseResource` overloads forward to it. `DictionaryEditorHandler` loads the key and value items. `DependsOn` isn't supported on a dictionary: a waiting field renders without its items.
+- `CollectionEditorCheck` runs after `EditorCheck` and gives a field without an editor, binder or `[UIHint]` the list editor for an array or `List<T>`, `IList<T>`, `ICollection<T>`, `IEnumerable<T>`, `IReadOnlyList<T>` or `IReadOnlyCollection<T>` of strings or non-nullable numbers (not `byte[]`), and the dictionary editor for a supported dictionary. `EditorCheck` reports a list or dictionary editor on another property, and dictionary items whose value type isn't the key's or value's, and falls back to the default editor.
+- `CollectionEditorValidator` runs after model binding and reads the posted rows: the number of items (unless the property's attribute already reported it), duplicates, a dictionary row's missing key or value, and each text's pattern and length and each number's range. A field that posted nothing (no marker), such as one an editing row only shows, isn't checked. `ScopeValidationErrors` now leaves an error under a list or dictionary field's row in place instead of moving it to the summary, and the controller's field value provider lets indexed item keys (`Entity.Highlights[0]`) through, which it didn't before.
+- `AddValidationErrors` sends a handler error for `Highlights[2]` or `LocalNames[1].Key` to that row on the create and edit pages, when the field's editor shows rows; an inline row's goes to the summary.
+- `BadgeDisplay` is the default display for these fields; a dictionary shows `key: value` per entry with the key's and value's formatting (enum display names). New `Limit` shows that many badges and a `+N` outline badge with the rest in its title. Long badges truncate at `max-w-48` with the full text in their title when longer than 24 characters.
+- Label options `labels.ListEditor(...)` and `labels.DictionaryEditor(...)` (`ListEditorLabelOptions`, `DictionaryEditorLabelOptions`, with `ListEditorLabelContext` and `DictionaryEditorLabelContext`) cover the add and empty texts, None, the count, full, too-few, duplicate and required texts, the server-only pattern, length and range texts, the screen reader labels and the dictionary's default Key and Value column labels. To pass them in, the UI tag helpers gained a `texts` attribute (`ListEditorTexts`, `DictionaryEditorTexts`), documented on the website pages and in the generated UI references.
+- AdminPlayground: "List editor" and "Dictionary editor" pages in the field editor gallery. The consumer skill's editors, fields, columns and customization references.
+- After review: Razor passes an unset string attribute bound with `@`, such as `key-pattern="@key.Pattern"`, as an empty string, and the renderer wrote it as `pattern=""`, which rejects every value, so leaving a filled row showed "Please match the requested format." The renderer now treats an empty pattern, pattern message, placeholder, prefix or suffix as unset.
+
 ## Verification
 
 Stage 1, 2026-10-24:
@@ -221,3 +233,13 @@ Stage 1, 2026-10-24:
 After review, 2026-10-24: the UI unit tests (767, with 3 new alignment tests, 5 cases); `npm run check` and `npm run build`; `npm run fmt:check`; Chromium over CDP against DocsSamples on 5206, 11 checks: Enter then Escape removes the added row in a list inside a modal dialog that stays open, focus returns to the last row, Escape in a filled row closes the dialog and leaves the rows, Escape on the only blank row focuses Add, the dictionary's Enter and Escape, and the computed end alignment of number values, their column head and read-only text, with the key at the start. Screenshots of the list and dictionary numbers.
 
 Not checked: dragging with touch input, and a real page round trip through MVC binding in a browser (binding is covered by the binder tests).
+
+Stage 2, 2026-10-24:
+
+- `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after a Release build: 1957 passed, 0 failed. New: 16 admin panel integration tests (`CollectionEditorTests`: default editors, settings, key items, binding lists and dictionaries, removing every item, duplicate, too few, `[MinLength]` reported once, pattern, length and range messages, dictionary required and duplicate keys, handler errors under rows, label options, view page badges, `Limit`, an inline row's badges and its save keeping the list), 3 `EditorCheck` and 10 `CollectionEditorCheck` unit cases, 2 UI `texts` tests, and the display defaults test updated for the badge default.
+- Chromium over CDP against AdminPlayground on port 5207: 12 checks on the two gallery pages, including the defaults, `[Length]` counts, alignment, enum keys as display-name selects capping the count, key items and `UseResource<Guide>()` values, and, with Skip client validation, a duplicate and an out-of-range number rejected by the server and shown under their rows. Four more: on each page, a long badge truncates at 12rem with an ellipsis, and the page doesn't scroll sideways at 375px. `app.db` was unchanged.
+- `dotnet run --project util/SkillsGenerator -- --check` (no drift), `npm run check --prefix build/skill-validation`, and the website's `pnpm lint`.
+
+After review: the UI unit tests (771, with 2 new tests that empty item attributes render as unset), and Chromium on the two gallery pages: only the configured patterns render, and tabbing through all 20 editable controls on each page shows no row errors.
+
+Not checked: EF Core primitive collections end to end (EF Core maps them as properties, so the field checks accept them; no EF test entity has one), and dark mode and the theme fixtures for the badges.

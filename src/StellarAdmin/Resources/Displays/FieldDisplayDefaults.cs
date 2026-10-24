@@ -2,12 +2,14 @@ using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Displays;
 
 // The display a field uses when it configures none, chosen from the property's data type before its
-// CLR type. Collections and other types have none, so the display field renders them itself.
+// CLR type. A list or dictionary the list and dictionary editors edit shows badges; other collections
+// and types have none, so the display field renders them itself.
 internal static class FieldDisplayDefaults
 {
     // The display a column's cells render, or null to let the grid render a [UIHint] template or
@@ -51,6 +53,14 @@ internal static class FieldDisplayDefaults
                 return new PhoneDisplay();
             case nameof(DataType.Html):
                 return new HtmlDisplay();
+        }
+
+        if (
+            CollectionEditorTypes.ListElementType(metadata.ModelType) is not null
+            || CollectionEditorTypes.DictionaryTypes(metadata.ModelType) is not null
+        )
+        {
+            return new BadgeDisplay();
         }
 
         var type = metadata.UnderlyingOrModelType;

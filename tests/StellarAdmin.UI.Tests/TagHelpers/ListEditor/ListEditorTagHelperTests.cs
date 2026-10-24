@@ -321,6 +321,70 @@ public class ListEditorTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_EmptyItemAttributes_RendersThemAsUnset()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new ListEditorTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            For = For(context, new Trip()),
+            Pattern = "",
+            PatternMessage = "",
+            Placeholder = "",
+            Prefix = "",
+            Suffix = "",
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var input = html.QuerySelector("ol > li input[data-part='value']")!;
+        await Assert.That(input.HasAttribute("pattern")).IsFalse();
+        await Assert.That(input.HasAttribute("data-pattern-message")).IsFalse();
+        await Assert.That(input.HasAttribute("placeholder")).IsFalse();
+        await Assert.That(html.QuerySelector(".sa-collection-editor-affix")).IsNull();
+    }
+
+    [Test]
+    public async Task ProcessAsync_Texts_ReplaceTheDefaultTexts()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new ListEditorTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            For = For(context, new Trip()),
+            Texts = new ListEditorTexts
+            {
+                Count = "{count} de 8",
+                Remove = "Remover item {n}",
+                TooFew = "Adicione pelo menos um item.",
+            },
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var editor = html.QuerySelector("sel-collection-editor")!;
+        await Assert
+            .That(html.QuerySelector(".sa-collection-editor-count")?.TextContent)
+            .IsEqualTo("2 de 8");
+        await Assert
+            .That(
+                html.QuerySelector("ol > li .sa-collection-editor-remove")
+                    ?.GetAttribute("aria-label")
+            )
+            .IsEqualTo("Remover item 1");
+        await Assert
+            .That(editor.GetAttribute("data-texts"))
+            .Contains("Adicione pelo menos um item.");
+        await Assert.That(editor.GetAttribute("data-texts")).Contains("Item {n}");
+    }
+
+    [Test]
     [Arguments(typeof(Guid[]))]
     [Arguments(typeof(DayOfWeek[]))]
     [Arguments(typeof(int?[]))]

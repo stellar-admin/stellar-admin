@@ -1,15 +1,18 @@
-@using System.Collections
 @using StellarAdmin.Resources.Displays
 @inherits FieldDisplayView<BadgeDisplay>
 
 @{
-    var metadata = ViewData.ModelMetadata;
-    var items = Model is IEnumerable values and not string ? values.Cast<object?>() : [Model];
-    var itemMetadata = Model is IEnumerable and not string ? metadata.ElementMetadata ?? metadata : metadata;
+    var texts = BadgeDisplayItems.GetTexts(this, Model);
+    var shown = Display.Limit is { } limit && texts.Count > limit ? texts[..Math.Max(limit, 0)] : texts;
 }
 
-@* A collection shows a badge for each item *@
-@foreach (var item in items)
+@* A collection shows a badge for each item, up to the limit, and the rest as one badge with their count. A long badge
+   truncates, with its text in the tooltip. *@
+@foreach (var text in shown)
 {
-    <sa-badge variant="@Display.Variant">@(Display.Text is { } text && item is not null ? text(item) : FormatValue(item, itemMetadata))</sa-badge>
+    <sa-badge variant="@Display.Variant" class="max-w-48" title="@(text.Length > 24 ? text : null)"><span class="truncate">@text</span></sa-badge>
+}
+@if (shown.Count < texts.Count)
+{
+    <sa-badge variant="BadgeVariant.Outline" title="@string.Join(", ", texts[shown.Count..])">+@(texts.Count - shown.Count)</sa-badge>
 }

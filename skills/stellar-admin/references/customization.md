@@ -170,6 +170,7 @@ admin.ConfigureResourceLabels(labels =>
     labels.Edit(edit => edit.SubmitLabel = _ => "Save changes");
     labels.Delete(delete => delete.ConfirmLabel = _ => "Yes, delete");
     labels.Lookup(lookup => lookup.ChooseLabel = context => $"Select {context.FieldLabel}");
+    labels.ListEditor(list => list.AddText = context => $"Add to {context.FieldLabel.ToLower()}");
 });
 ```
 
@@ -180,6 +181,7 @@ admin.ConfigureResourceLabels(labels =>
 | `View` | `Title` |
 | `Delete` | `Title`, `Message`, `ConfirmLabel`, `CancelLabel` |
 | `Lookup` | `ChooseLabel`, `CreateLabel`, `NoneText`, `LoadMoreLabel`, `NoResultsTitle` and the other lookup texts (`LookupLabelContext`) |
+| `ListEditor`, `DictionaryEditor` | `AddText`, `EmptyText`, `NoneText`, `CountText`, `FullText`, `TooFewText`, `DuplicateText`, `PatternText`, `MaxLengthText`, `RangeText`, `RemoveLabel`; `ListEditor` also has `ItemLabel` and `MoveLabel`, and `DictionaryEditor` `KeyLabel`, `ValueLabel` and `RequiredText` (`ListEditorLabelContext`, `DictionaryEditorLabelContext`). `{n}`, `{count}` and `{value}` in a text are filled in as rows change |
 | `Sheet` | `SaveErrorDescription`, `ErrorTitle`, `ErrorDescription`, `RetryLabel` (plain strings) |
 
 This is the only localization mechanism; there is no `IStringLocalizer` integration. Field labels come from `[Display(Name)]`, which supports resource types.

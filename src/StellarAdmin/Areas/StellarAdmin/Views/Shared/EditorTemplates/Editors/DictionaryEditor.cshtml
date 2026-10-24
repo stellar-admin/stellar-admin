@@ -1,0 +1,26 @@
+@inherits FieldEditorView<DictionaryEditor>
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var labels = LabelOptions.Value.DictionaryEditor;
+    var data = EditorData as DictionaryEditorData;
+    var key = Editor.KeyPart;
+    var value = Editor.ValuePart;
+    var keyType = CollectionEditorTypes.DictionaryTypes(ViewData.ModelMetadata.ModelType)?.Key ?? typeof(string);
+    var context = CollectionEditorSettings.DictionaryContext(Editor, ViewData.ModelMetadata, Title ?? ViewData.ModelMetadata.GetDisplayName(),
+        CollectionEditorSettings.KeyCount(keyType, data?.Keys));
+    var keyLabel = CollectionEditorSettings.DictionaryKeyContext(context, labels, key).ColumnLabel!;
+    var valueLabel = CollectionEditorSettings.DictionaryValueContext(context, labels, value).ColumnLabel!;
+}
+
+<sa-dictionary-editor class-names="@EditorClassNamesMapper.ForDictionaryEditor(Editor)" asp-for="@Model" label="@Title" description="@Description" readonly="@IsReadOnly"
+                      min-items="@context.MinItems" max-items="@context.MaxItems" numbered="@Editor.Numbered"
+                      add-text="@(Editor.AddText ?? labels.AddText(context))" empty-text="@(Editor.EmptyText ?? labels.EmptyText(context))"
+                      key-label="@keyLabel" key-casing="@key.Casing" key-pattern="@key.Pattern" key-pattern-message="@key.PatternMessage"
+                      key-max-length="@key.MaxLength" key-placeholder="@key.Placeholder"
+                      asp-key-items="@(data?.Keys is { } keys ? ChoiceSelectListItems.Create(keys) : null)"
+                      value-label="@valueLabel" value-casing="@value.Casing" value-pattern="@value.Pattern" value-pattern-message="@value.PatternMessage"
+                      value-max-length="@value.MaxLength" value-placeholder="@value.Placeholder" value-min="@value.Min" value-max="@value.Max"
+                      value-step="@value.Step" value-prefix="@value.Prefix" value-suffix="@value.Suffix" value-align="@value.Align"
+                      asp-value-items="@(data?.Values is { } values ? ChoiceSelectListItems.Create(values) : null)"
+                      texts="@CollectionEditorSettings.DictionaryTexts(labels, context, keyLabel, valueLabel)" />

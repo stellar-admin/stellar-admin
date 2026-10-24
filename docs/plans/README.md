@@ -8,7 +8,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 
 | Record | Status | Current assessment |
 | --- | --- | --- |
-| [array-dictionary-editors](array-dictionary-editors.md) | in progress | `sa-list-editor` and `sa-dictionary-editor` in StellarAdmin.UI, and `UseListEditor` and `UseDictionaryEditor` in the admin panel, for lists of simple values and dictionaries keyed by text or an enum. Stage 1 (StellarAdmin.UI) built and awaiting Jerrie's review; stage 2 (admin panel) not started. |
+| [array-dictionary-editors](array-dictionary-editors.md) | in progress | `sa-list-editor` and `sa-dictionary-editor` in StellarAdmin.UI, and `UseListEditor` and `UseDictionaryEditor` in the admin panel, for lists of simple values and dictionaries keyed by text or an enum. Stage 1 (StellarAdmin.UI) built and committed; stage 2 (admin panel) built and awaiting Jerrie's review. |
 | [read-only-fields](read-only-fields.md) | proposed | One recognisable read-only look across the UI library's components; today a read-only input looks editable, and controls without a read-only state are disabled. |
 | [admin-panel-backlog](admin-panel-backlog.md) | backlog | Admin panel features comparable frameworks offer and StellarAdmin lacks (custom and bulk actions, filters, form tabs, dashboards, file uploads and others). Unscheduled; an item becomes a plan when picked up. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |

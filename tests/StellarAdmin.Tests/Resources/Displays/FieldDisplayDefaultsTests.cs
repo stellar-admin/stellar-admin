@@ -29,6 +29,8 @@ public class FieldDisplayDefaultsTests
     [Arguments(nameof(Model.Name), typeof(TextDisplay))]
     [Arguments(nameof(Model.Notes), typeof(TextDisplay))]
     [Arguments(nameof(Model.Story), typeof(HtmlDisplay))]
+    [Arguments(nameof(Model.Tags), typeof(BadgeDisplay))]
+    [Arguments(nameof(Model.LocalNames), typeof(BadgeDisplay))]
     public async Task Resolve_WithKnownType_ReturnsDefaultDisplay(string property, Type expected)
     {
         // Arrange
@@ -43,7 +45,7 @@ public class FieldDisplayDefaultsTests
 
     [Test]
     [Arguments(nameof(Model.Reference))]
-    [Arguments(nameof(Model.Tags))]
+    [Arguments(nameof(Model.RelatedReferences))]
     [Arguments(nameof(Model.Days))]
     public async Task Resolve_WithOtherType_ReturnsNull(string property)
     {
@@ -165,6 +167,8 @@ public class FieldDisplayDefaultsTests
         [EmailAddress]
         public string? Email { get; set; }
 
+        public Dictionary<string, string> LocalNames { get; set; } = [];
+
         public string? Name { get; set; }
 
         [DataType(DataType.MultilineText)]
@@ -187,6 +191,8 @@ public class FieldDisplayDefaultsTests
         public double? Rating { get; set; }
 
         public Guid Reference { get; set; }
+
+        public List<Guid> RelatedReferences { get; set; } = [];
 
         public DateOnly Released { get; set; }
 

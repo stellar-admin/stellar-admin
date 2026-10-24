@@ -33,6 +33,7 @@ An enum key or value is a select of its members (display names from `[Display]`)
 | `min-items` | `int` | — | — |
 | `numbered` | `bool` | `false` | `true`, `false` |
 | `readonly` | `bool` | `false` | `true`, `false` |
+| `texts` | `DictionaryEditorTexts` | — | — |
 | `value-align` | `DictionaryEditorAlign` | `End` | `Start`, `End` |
 | `value-casing` | `DictionaryEditorCasing` | `None` | `None`, `Upper`, `Lower` |
 | `asp-value-items` | `IEnumerable<SelectListItem>` | — | — |

@@ -11,6 +11,7 @@ An editor is the input a form field renders. Without one, the input is inferred 
 - [The empty choice](#the-empty-choice)
 - [Media on choices](#media-on-choices)
 - [Columns in radio and checkbox groups](#columns-in-radio-and-checkbox-groups)
+- [Lists and dictionaries](#lists-and-dictionaries)
 - [Images](#images)
 - [Rich text](#rich-text)
 - [Icons](#icons)
@@ -49,6 +50,8 @@ fields.Add(booking => booking.Notes, field =>
 | Enum or fixed list, all options visible, with descriptions | `RadioGroupEditor`; `Appearance = RadioGroupAppearance.Cards` for selectable cards |
 | Two to five short options in a row | `SegmentedControlEditor` |
 | Several values from a short list (collection property) | `CheckboxGroupEditor` or `ToggleGroupEditor` |
+| A list of text or numbers the user types (`List<string>`, `int[]`) | `ListEditor` (inferred; [lists and dictionaries](#lists-and-dictionaries)) |
+| Keys and values (`Dictionary<string, string>`, `Dictionary<Season, decimal>`) | `DictionaryEditor` (inferred; [lists and dictionaries](#lists-and-dictionaries)) |
 | Whole number in a range | `SliderEditor` |
 | Verification or PIN code | `OneTimeCodeEditor` |
 | Foreign key with few related rows | `SelectEditor`, with items from the related resource ([relationships](relationships.md)) |
@@ -57,7 +60,7 @@ fields.Add(booking => booking.Notes, field =>
 | Image stored as a file name, key or URL | `ImageEditor` ([images](#images)) |
 | Name of an icon (an amenity's or a category's icon) | `IconEditor` ([icons](#icons)) |
 
-The built-in editors are chosen only with their methods: `UseEditor<SelectEditor>` doesn't compile. There is no general file upload, colour or tag-input editor.
+The built-in editors are chosen only with their methods: `UseEditor<SelectEditor>` doesn't compile. There is no general file upload, colour or tag-input editor, and no editor for a list of records or complex values.
 
 A `string` without `[DataType]` gets a single-line text input, however long its values are. Descriptions, bios, notes and other long text, often a property with no `MaxLength` or a large one, need `TextareaEditor`, or `RichTextEditor` when the values are HTML. The data shows which: seed data or stored values that contain tags, or app views that render the property with `Html.Raw`. Use `RichTextEditor` only for HTML; plain text loses its line breaks there, because HTML ignores them.
 
@@ -75,6 +78,8 @@ A `string` without `[DataType]` gets a single-line text input, however long its 
 | `bool?` | Select with Yes, No and Not set |
 | Non-flags enum | Select of its members, labelled with `[Display(Name)]`, else the humanized member name (`NorthAmerica` shows as "North America") |
 | Flags enum | Text input; use `CheckboxGroupEditor` or `ToggleGroupEditor` on a collection instead |
+| Array or list of strings or numbers (`List<string>`, `int[]`, `IReadOnlyList<decimal>`) | List editor |
+| `Dictionary<TKey, TValue>` or `IDictionary<TKey, TValue>` with a string or enum key and a string, number or enum value | Dictionary editor |
 | Foreign key (`int CustomerId`) on an EF Core entity form, `Customer` a registered resource | `LookupSheetEditor` of customers |
 | Many-to-many navigation on an EF Core entity form, related type a registered resource | `MultiLookupSheetEditor` |
 | Any other foreign key | **Number input**: configure `SelectEditor` or `LookupSheetEditor` |
@@ -98,11 +103,13 @@ Settings left unset are inferred from the property (for example, `SliderEditor` 
 | `ToggleGroupEditor` | `UseItems(...)`, `EmptyChoice`, `EmptyChoiceText`, `Appearance` (`ToggleGroupAppearance.Chips`, `Joined`, `Buttons`), `CheckPlacement` (`ToggleGroupCheckPlacement.ReplaceMedia`, `Start`, `End`); several values on a collection property, one otherwise |
 | `SliderEditor` | `Min`, `Max` (from `[Range]`, else 0–100), `Step`, `ShowValue`, `ValueFormat` (`"{0} km"`), `MarkInterval`, `MarkLabels` (`SliderMarkLabels.None`, `Ends`, `All`), `AddMark(value, label)` |
 | `OneTimeCodeEditor` | `Length` (from max length, else 6) |
+| `ListEditor` | `MinItems`, `MaxItems` (from `[MinLength]`, `[MaxLength]`, `[Length]`), `Sortable`, `Numbered`, `Unique`, `Pattern`, `PatternMessage`, `MaxLength`, `Min`, `Max`, `Step`, `Casing` (`ListEditorCasing.None`, `Upper`, `Lower`), `Align` (`ListEditorAlign.Start`, `End`; numbers default to `End`), `Prefix`, `Suffix`, `Placeholder`, `AddText`, `EmptyText`; see [lists and dictionaries](#lists-and-dictionaries) |
+| `DictionaryEditor` | `MinItems`, `MaxItems`, `Numbered`, `AddText`, `EmptyText`, `Key(...)` and `Value(...)` with `Label`, `Placeholder`, `Pattern`, `PatternMessage`, `MaxLength`, `Casing` (`DictionaryEditorCasing`) and `UseItems(...)` or `UseResource<T>()`; `Value(...)` also has `Min`, `Max`, `Step`, `Prefix`, `Suffix` and `Align` (`DictionaryEditorAlign`); see [lists and dictionaries](#lists-and-dictionaries) |
 | `LookupSheetEditor`, `MultiLookupSheetEditor` | See [relationships](relationships.md#lookup-sheet-settings) |
 | `ImageEditor` | `StoreImage(...)` (required), `ResolveUrl(...)`, `Layout` (`ImageEditorLayout.Dropzone`, `Compact`, `Attachment`), `MaxFileSize` (bytes, default 5 MB), `AcceptedTypes` (default JPEG, PNG, WebP, GIF, AVIF); see [images](#images) |
 | `IconEditor` | `Icons` (the names offered; default every registered icon), `Layout` (`IconEditorLayout.Auto`, `Picker`, `Inline`); see [icons](#icons) |
 
-Every editor also has `ClassNames` for extra CSS classes on its parts (`ClassNames.Media` on choice editors, `ClassNames.Image` and `ClassNames.Note` on `ImageEditor`). `RadioGroupFlow`, `CheckboxGroupFlow` and `SliderMarkLabels` are in `StellarAdmin.UI`; the appearance enums are in `StellarAdmin.Resources.Editors`.
+Every editor also has `ClassNames` for extra CSS classes on its parts (`ClassNames.Media` on choice editors, `ClassNames.Image` and `ClassNames.Note` on `ImageEditor`). `RadioGroupFlow`, `CheckboxGroupFlow`, `SliderMarkLabels` and the list and dictionary editors' casing and alignment enums are in `StellarAdmin.UI`; the appearance enums are in `StellarAdmin.Resources.Editors`.
 
 ```csharp
 fields.Add(booking => booking.Travellers).UseSliderEditor(slider =>
@@ -180,6 +187,55 @@ The editor adds a first choice that clears the value, labelled `EmptyChoiceText`
 ## Columns in radio and checkbox groups
 
 `Columns(2)` or `Columns(columns => columns.Small(2).Large(3))` arranges choices in columns, measured against the field's width. `Flow = RadioGroupFlow.Down` fills each column before the next.
+
+## Lists and dictionaries
+
+A list of text or numbers and a dictionary of simple values each edit as one box with a row per item; Add is the last row. They are inferred, so configure them only to change their settings:
+
+```csharp
+fields.Add(tour => tour.Highlights).UseListEditor(list =>
+{
+    list.MaxItems = 8;                    // otherwise from [MaxLength] or [Length]
+    list.Sortable = true;                 // drag handle and Alt+Up/Down
+    list.Numbered = true;
+    list.MaxLength = 120;
+    list.AddText = "Add highlight";
+});
+
+fields.Add(tour => tour.ArrivalAirports).UseListEditor(list =>
+{
+    list.Unique = true;
+    list.Casing = ListEditorCasing.Upper;
+    list.Pattern = "^[A-Z]{3}$";
+    list.PatternMessage = "Use a three-letter IATA code, like LIS.";
+});
+
+fields.Add(tour => tour.BaggageAllowance).UseDictionaryEditor(dictionary =>
+{
+    dictionary.Key(key => key.Label = "Cabin");
+    dictionary.Value(value =>
+    {
+        value.Label = "Allowance";
+        value.Max = 50;
+        value.Suffix = "kg";
+    });
+});
+
+fields.Add(tour => tour.GuidesByLanguage).UseDictionaryEditor(dictionary =>
+{
+    dictionary.Key(key => key.UseItems(languages));   // a select; each key once
+    dictionary.Value(value => value.UseResource<Guide>());
+});
+```
+
+- An enum key or value is a select of its members; `UseItems` and `UseResource<T>` take the same sources as `SelectEditor` ([choices](#choices)). Keys are unique, so with a select key the dictionary has at most one entry per item.
+- Lists hold text and numbers only. A list of enum members is a `CheckboxGroupEditor` or `ToggleGroupEditor`, and a list of related records a `MultiLookupSheetEditor`.
+- The browser checks each row, and the panel checks the posted rows again on save: the number of items, duplicates, a dictionary row's missing key or value, and each item's pattern, length and range. A row's error shows under the row and the number of items under the field.
+- A handler's `ResourceValidationError` for an item goes under that row: `new ResourceValidationError("Highlights[2]", "...")`, or `"LocalNames[1].Key"` for a dictionary's key.
+- Removing every row saves an empty collection. Rows left blank are dropped.
+- In an inline row, the field shows its badges instead of an editor, and saving the row keeps its value.
+- The default texts ("Add item", "No items yet", "3 of 8" and the error messages) are global labels: `labels.ListEditor(...)` and `labels.DictionaryEditor(...)` ([customization](customization.md#global-labels)).
+- EF Core maps a list of strings or numbers as a primitive collection. A dictionary needs a value converter or a JSON column.
 
 ## Images
 

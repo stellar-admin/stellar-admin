@@ -952,6 +952,8 @@ StellarAdmin.UI.DictionaryEditorTagHelper.Numbered.get -> bool?
 StellarAdmin.UI.DictionaryEditorTagHelper.Numbered.set -> void
 StellarAdmin.UI.DictionaryEditorTagHelper.ReadOnly.get -> bool?
 StellarAdmin.UI.DictionaryEditorTagHelper.ReadOnly.set -> void
+StellarAdmin.UI.DictionaryEditorTagHelper.Texts.get -> StellarAdmin.UI.DictionaryEditorTexts?
+StellarAdmin.UI.DictionaryEditorTagHelper.Texts.set -> void
 StellarAdmin.UI.DictionaryEditorTagHelper.ValueAlign.get -> StellarAdmin.UI.DictionaryEditorAlign?
 StellarAdmin.UI.DictionaryEditorTagHelper.ValueAlign.set -> void
 StellarAdmin.UI.DictionaryEditorTagHelper.ValueCasing.get -> StellarAdmin.UI.DictionaryEditorCasing?
@@ -978,6 +980,24 @@ StellarAdmin.UI.DictionaryEditorTagHelper.ValueStep.get -> double?
 StellarAdmin.UI.DictionaryEditorTagHelper.ValueStep.set -> void
 StellarAdmin.UI.DictionaryEditorTagHelper.ValueSuffix.get -> string?
 StellarAdmin.UI.DictionaryEditorTagHelper.ValueSuffix.set -> void
+StellarAdmin.UI.DictionaryEditorTexts
+StellarAdmin.UI.DictionaryEditorTexts.Count.get -> string?
+StellarAdmin.UI.DictionaryEditorTexts.Count.set -> void
+StellarAdmin.UI.DictionaryEditorTexts.DictionaryEditorTexts() -> void
+StellarAdmin.UI.DictionaryEditorTexts.Duplicate.get -> string?
+StellarAdmin.UI.DictionaryEditorTexts.Duplicate.set -> void
+StellarAdmin.UI.DictionaryEditorTexts.Full.get -> string?
+StellarAdmin.UI.DictionaryEditorTexts.Full.set -> void
+StellarAdmin.UI.DictionaryEditorTexts.KeyRequired.get -> string?
+StellarAdmin.UI.DictionaryEditorTexts.KeyRequired.set -> void
+StellarAdmin.UI.DictionaryEditorTexts.None.get -> string?
+StellarAdmin.UI.DictionaryEditorTexts.None.set -> void
+StellarAdmin.UI.DictionaryEditorTexts.Remove.get -> string?
+StellarAdmin.UI.DictionaryEditorTexts.Remove.set -> void
+StellarAdmin.UI.DictionaryEditorTexts.TooFew.get -> string?
+StellarAdmin.UI.DictionaryEditorTexts.TooFew.set -> void
+StellarAdmin.UI.DictionaryEditorTexts.ValueRequired.get -> string?
+StellarAdmin.UI.DictionaryEditorTexts.ValueRequired.set -> void
 StellarAdmin.UI.DisplayFieldOrientation
 StellarAdmin.UI.DisplayFieldOrientation.Horizontal = 1 -> StellarAdmin.UI.DisplayFieldOrientation
 StellarAdmin.UI.DisplayFieldOrientation.Vertical = 0 -> StellarAdmin.UI.DisplayFieldOrientation
@@ -1741,8 +1761,28 @@ StellarAdmin.UI.ListEditorTagHelper.Step.get -> double?
 StellarAdmin.UI.ListEditorTagHelper.Step.set -> void
 StellarAdmin.UI.ListEditorTagHelper.Suffix.get -> string?
 StellarAdmin.UI.ListEditorTagHelper.Suffix.set -> void
+StellarAdmin.UI.ListEditorTagHelper.Texts.get -> StellarAdmin.UI.ListEditorTexts?
+StellarAdmin.UI.ListEditorTagHelper.Texts.set -> void
 StellarAdmin.UI.ListEditorTagHelper.Unique.get -> bool?
 StellarAdmin.UI.ListEditorTagHelper.Unique.set -> void
+StellarAdmin.UI.ListEditorTexts
+StellarAdmin.UI.ListEditorTexts.Count.get -> string?
+StellarAdmin.UI.ListEditorTexts.Count.set -> void
+StellarAdmin.UI.ListEditorTexts.Duplicate.get -> string?
+StellarAdmin.UI.ListEditorTexts.Duplicate.set -> void
+StellarAdmin.UI.ListEditorTexts.Full.get -> string?
+StellarAdmin.UI.ListEditorTexts.Full.set -> void
+StellarAdmin.UI.ListEditorTexts.Item.get -> string?
+StellarAdmin.UI.ListEditorTexts.Item.set -> void
+StellarAdmin.UI.ListEditorTexts.ListEditorTexts() -> void
+StellarAdmin.UI.ListEditorTexts.Move.get -> string?
+StellarAdmin.UI.ListEditorTexts.Move.set -> void
+StellarAdmin.UI.ListEditorTexts.None.get -> string?
+StellarAdmin.UI.ListEditorTexts.None.set -> void
+StellarAdmin.UI.ListEditorTexts.Remove.get -> string?
+StellarAdmin.UI.ListEditorTexts.Remove.set -> void
+StellarAdmin.UI.ListEditorTexts.TooFew.get -> string?
+StellarAdmin.UI.ListEditorTexts.TooFew.set -> void
 StellarAdmin.UI.MarkerButtonTagHelper
 StellarAdmin.UI.MarkerButtonTagHelper.MarkerButtonTagHelper() -> void
 StellarAdmin.UI.MarkerButtonTagHelper.Variant.get -> StellarAdmin.UI.MarkerVariant?

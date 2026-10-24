@@ -1,0 +1,4 @@
+@inherits FieldEditorView<DictionaryEditor>
+
+@* An editing row has no room for the editor's rows, so it shows the value as the grid's other rows do *@
+@await Html.PartialAsync("GridDisplayTemplates/Displays/Badge", Model, ViewData)

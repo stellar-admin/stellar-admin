@@ -44,33 +44,23 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     /// </value>
     public string EmptyChoiceText { get; set; } = "Not set";
 
-    // Loads the choices with the form the field is on, which holds only the field's parents when the field depends on
-    // other fields
+    // The items' loader, value type and resource, from the source
     internal Func<
         object,
         IServiceProvider,
         CancellationToken,
         Task<IReadOnlyList<ChoiceItem>>
-    >? ItemsLoader
-    {
-        get;
-        private set
-        {
-            field = value;
-            ItemsValueType = null;
-            Resource = null;
-        }
-    }
+    >? ItemsLoader => Source.ItemsLoader;
 
-    // The type of the items' values when the items know it, checked against the field's property
-    internal Type? ItemsValueType { get; private set; }
+    internal Type? ItemsValueType => Source.ItemsValueType;
 
     // A select shows its first choice as selected when none is, so it keeps the empty choice while a required value
     // is unset or matches no choice, such as the 0 of a new entity's foreign key
     internal virtual bool KeepsEmptyChoiceWhileUnset => false;
 
-    // The resource the items come from, or null when the editor has its own
-    internal ReferencedResource? Resource { get; private set; }
+    internal ReferencedResource? Resource => Source.Resource;
+
+    internal ChoiceSource Source { get; } = new();
 
     /// <summary>
     ///     Sets a registered provider that supplies the choices for each request.
@@ -80,11 +70,7 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     ///     Register <typeparamref name="TProvider" /> as a service.
     /// </remarks>
     public void UseItems<TProvider>()
-        where TProvider : class, IChoiceItemsProvider
-    {
-        ItemsLoader = (_, services, cancellationToken) =>
-            services.GetRequiredService<TProvider>().GetItemsAsync(cancellationToken);
-    }
+        where TProvider : class, IChoiceItemsProvider => Source.UseItems<TProvider>();
 
     /// <summary>
     ///     Sets the choices an integration package supplies for each request.
@@ -93,13 +79,7 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="items" /> is <see langword="null" />.
     /// </exception>
-    public void UseItems(ChoiceItems items)
-    {
-        ArgumentNullException.ThrowIfNull(items);
-
-        ItemsLoader = items.LoadAsync;
-        ItemsValueType = items.ValueType;
-    }
+    public void UseItems(ChoiceItems items) => Source.UseItems(items);
 
     /// <summary>
     ///     Sets a fixed list of choices.
@@ -108,13 +88,7 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="items" /> is <see langword="null" />.
     /// </exception>
-    public void UseItems(IEnumerable<ChoiceItem> items)
-    {
-        ArgumentNullException.ThrowIfNull(items);
-
-        var snapshot = items.ToArray();
-        ItemsLoader = (_, _, _) => Task.FromResult<IReadOnlyList<ChoiceItem>>(snapshot);
-    }
+    public void UseItems(IEnumerable<ChoiceItem> items) => Source.UseItems(items);
 
     /// <summary>
     ///     Sets a fixed list of choices from select list items.
@@ -127,20 +101,7 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     ///     An item without a value posts its text. The field's value decides which choices are
     ///     selected, so <see cref="SelectListItem.Selected" /> is ignored.
     /// </remarks>
-    public void UseItems(IEnumerable<SelectListItem> items)
-    {
-        ArgumentNullException.ThrowIfNull(items);
-
-        UseItems(
-            items.Select(item => new ChoiceItem(item.Value ?? item.Text, item.Text)
-            {
-                Disabled = item.Disabled,
-                Group = item.Group is null
-                    ? null
-                    : new ChoiceGroup(item.Group.Name ?? "") { Disabled = item.Group.Disabled },
-            })
-        );
-    }
+    public void UseItems(IEnumerable<SelectListItem> items) => Source.UseItems(items);
 
     /// <summary>
     ///     Sets a delegate that loads the choices for each request.
@@ -153,12 +114,7 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
     /// </exception>
     public void UseItems(
         Func<IServiceProvider, CancellationToken, Task<IReadOnlyList<ChoiceItem>>> itemsLoader
-    )
-    {
-        ArgumentNullException.ThrowIfNull(itemsLoader);
-
-        ItemsLoader = (_, services, cancellationToken) => itemsLoader(services, cancellationToken);
-    }
+    ) => Source.UseItems(itemsLoader);
 
     /// <summary>
     ///     Takes the items from a resource: its records, named by their titles.
@@ -180,22 +136,9 @@ public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandl
             CancellationToken,
             Task<IReadOnlyList<ChoiceItem>>
         > itemsLoader
-    )
-    {
-        ArgumentNullException.ThrowIfNull(itemsLoader);
+    ) => Source.UseFormItems(itemsLoader, TypeName);
 
-        ItemsLoader = (model, services, cancellationToken) =>
-            itemsLoader(FormModel.Cast<TModel>(model, TypeName), services, cancellationToken);
-    }
-
-    internal void UseResource(ReferencedResource resource)
-    {
-        ItemsLoader = async (model, services, cancellationToken) =>
-            services.GetRequiredService<ResourceReferences>().GetItems(resource) is { } items
-                ? await items.ListAsync(services, model, cancellationToken)
-                : [];
-        Resource = resource;
-    }
+    internal void UseResource(ReferencedResource resource) => Source.UseResource(resource);
 
     internal IReadOnlyList<ChoiceItem> ResolveChoices(
         object? editorData,

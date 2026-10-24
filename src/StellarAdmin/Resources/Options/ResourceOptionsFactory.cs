@@ -74,6 +74,7 @@ internal sealed class ResourceOptionsFactory<TResource>(
         IconEditorCheck.Run(options, icons);
         InferredEditorCheck.Run(options, resourceTypes);
         EditorCheck.Run(options);
+        CollectionEditorCheck.Run(options);
         DependencyCheck.Run(options);
         GridLayoutCheck.Run(options);
         ResourceHandlerCheck.RunViewFields(options);

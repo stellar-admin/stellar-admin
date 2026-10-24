@@ -341,7 +341,7 @@ internal sealed class ResourceController<TResource>(
                 );
             }
 
-            AddValidationErrors(result, [], ResourceFormPageViewModel.BindingPrefix);
+            AddValidationErrors(result, [], [], ResourceFormPageViewModel.BindingPrefix);
             return await IndexView(query, request, cancellationToken, redirectOutOfRange: false);
         }
 
@@ -475,7 +475,12 @@ internal sealed class ResourceController<TResource>(
 
         if (!result.IsSuccess)
         {
-            AddValidationErrors(result, fields, ResourceFormPageViewModel.BindingPrefix);
+            AddValidationErrors(
+                result,
+                fields,
+                _resourceOptions.Edit.Fields,
+                ResourceFormPageViewModel.BindingPrefix
+            );
             return await EditView(resource, id, cancellationToken);
         }
 
@@ -552,7 +557,7 @@ internal sealed class ResourceController<TResource>(
 
         if (!result.IsSuccess)
         {
-            AddValidationErrors(result, fields, prefix);
+            AddValidationErrors(result, fields, [], prefix);
             return await EditRowView(id, resource, query, cancellationToken);
         }
 
@@ -1151,20 +1156,33 @@ internal sealed class ResourceController<TResource>(
         );
     }
 
+    // A handler's error for a field goes under it, and for an item of a list or dictionary field whose rows the form
+    // shows, such as Highlights[2] or LocalNames[1].Key, under that row
     private void AddValidationErrors(
         ResourceOperationResult result,
         HashSet<string> fields,
+        IEnumerable<FormFieldOptions> rowFields,
         string prefix
     )
     {
+        var rowFieldNames = rowFields
+            .Where(field =>
+                CollectionEditorValidator.ShowsRowErrors(field) && fields.Contains(field.FieldName)
+            )
+            .Select(field => field.FieldName)
+            .ToHashSet(StringComparer.Ordinal);
         foreach (var error in result.Errors)
         {
             var key =
-                error.FieldName is not null && fields.Contains(error.FieldName)
-                    ? ModelNames.CreatePropertyModelName(prefix, error.FieldName)
+                error.FieldName is { } fieldName && (fields.Contains(fieldName) || IsRow(fieldName))
+                    ? ModelNames.CreatePropertyModelName(prefix, fieldName)
                     : string.Empty;
             ModelState.AddModelError(key, error.Message);
         }
+
+        bool IsRow(string fieldName) =>
+            fieldName.IndexOf('[') is > 0 and var index
+            && rowFieldNames.Contains(fieldName[..index]);
     }
 
     // A rejected delete from the edit or view page returns there with its errors
@@ -2102,9 +2120,15 @@ internal sealed class ResourceController<TResource>(
             SaveFailedMessage,
             cancellationToken
         );
+        // An inline row shows a list or dictionary field's value, not its rows
         if (!result.IsSuccess && !result.IsNotFound)
         {
-            AddValidationErrors(result, fields, prefix);
+            AddValidationErrors(
+                result,
+                fields,
+                create.InlineRow is null ? create.Fields : [],
+                prefix
+            );
         }
 
         return (resource, result);
@@ -2211,9 +2235,23 @@ internal sealed class ResourceController<TResource>(
             )
         )
         {
-            ScopeValidationErrors(fields, prefix);
+            ScopeValidationErrors(
+                fields,
+                formFields
+                    .Where(CollectionEditorValidator.ShowsRowErrors)
+                    .Select(field => field.FieldName),
+                prefix
+            );
         }
 
+        CollectionEditorValidator.Validate(
+            ModelState,
+            source,
+            formFields.Where(field => fields.Contains(field.FieldName)),
+            prefix,
+            HttpContext.RequestServices,
+            MetadataProvider
+        );
         ValidateIconFields(model, iconFields, prefix);
         SanitizeRichTextFields(model, formFields, fields);
         await BindWithBindersAsync(model, boundFields, source, prefix);
@@ -2320,16 +2358,32 @@ internal sealed class ResourceController<TResource>(
     // Validation checks the whole model, but the form only sets its configured fields. The errors of
     // other properties are dropped, such as a required navigation whose foreign key is a field, and
     // the data source still rejects what it can't save. An error no field displays, such as the
-    // model's own, moves to the summary so a submission never fails without a message.
-    private void ScopeValidationErrors(HashSet<string> fields, string prefix)
+    // model's own, moves to the summary so a submission never fails without a message. A list or
+    // dictionary editor shows an item's error, such as Highlights[2], under its row.
+    private void ScopeValidationErrors(
+        HashSet<string> fields,
+        IEnumerable<string> rowFields,
+        string prefix
+    )
     {
         var fieldKeys = fields
             .Select(field => ModelNames.CreatePropertyModelName(prefix, field))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var rowFieldKeys = rowFields
+            .Where(fields.Contains)
+            .Select(field => ModelNames.CreatePropertyModelName(prefix, field))
+            .ToArray();
         var unshown = new List<string>();
         foreach (var (key, entry) in ModelState.ToArray())
         {
-            if (entry.Errors.Count == 0 || key.Length == 0 || fieldKeys.Contains(key))
+            if (
+                entry.Errors.Count == 0
+                || key.Length == 0
+                || fieldKeys.Contains(key)
+                || rowFieldKeys.Any(fieldKey =>
+                    key.StartsWith(fieldKey + "[", StringComparison.OrdinalIgnoreCase)
+                )
+            )
             {
                 continue;
             }
@@ -2439,10 +2493,14 @@ internal sealed class ResourceController<TResource>(
         private readonly HashSet<string> _prefixes = CreatePrefixes(fields, bindingPrefix);
 
         public bool ContainsPrefix(string prefix) =>
-            _prefixes.Contains(prefix) && source.ContainsPrefix(prefix);
+            (_prefixes.Contains(prefix) || IsItem(prefix)) && source.ContainsPrefix(prefix);
 
         public ValueProviderResult GetValue(string key) =>
-            _keys.Contains(key) ? source.GetValue(key) : ValueProviderResult.None;
+            _keys.Contains(key) || IsItem(key) ? source.GetValue(key) : ValueProviderResult.None;
+
+        // An item of a field's collection, such as Highlights[0] or LocalNames[0].Key
+        private bool IsItem(string key) =>
+            _keys.Any(field => key.StartsWith(field + "[", StringComparison.OrdinalIgnoreCase));
 
         private static HashSet<string> CreatePrefixes(HashSet<string> fields, string bindingPrefix)
         {

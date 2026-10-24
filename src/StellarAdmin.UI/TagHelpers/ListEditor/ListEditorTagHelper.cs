@@ -189,6 +189,15 @@ public sealed class ListEditorTagHelper : FieldInputBaseTagHelper<ListEditorClas
     public string? Suffix { get; set; }
 
     /// <summary>
+    ///     Gets or sets the texts the editor shows as its items change, such as its errors.
+    /// </summary>
+    /// <value>
+    ///     The texts, or <see langword="null" /> for the default texts.
+    /// </value>
+    [HtmlAttributeName("texts")]
+    public ListEditorTexts? Texts { get; set; }
+
+    /// <summary>
     ///     Gets or sets a value that indicates whether each item must be different.
     /// </summary>
     /// <value>
@@ -281,7 +290,7 @@ public sealed class ListEditorTagHelper : FieldInputBaseTagHelper<ListEditorClas
             ReadOnly = effectiveReadOnly,
             AddText = AddText ?? "Add item",
             EmptyText = EmptyText ?? "No items yet",
-            Texts = CollectionEditorTexts.ForList(minItems, maxItems),
+            Texts = CollectionEditorTexts.ForList(minItems, maxItems, Texts),
         };
         await new CollectionEditorRenderer(
             context,

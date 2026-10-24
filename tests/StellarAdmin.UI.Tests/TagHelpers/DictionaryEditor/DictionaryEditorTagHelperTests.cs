@@ -271,6 +271,71 @@ public class DictionaryEditorTagHelperTests
         await Assert.That(act).Throws<InvalidOperationException>();
     }
 
+    [Test]
+    public async Task ProcessAsync_EmptyKeyAndValueAttributes_RendersThemAsUnset()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new DictionaryEditorTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            For = For(context, nameof(Trip.LocalNames)),
+            KeyPattern = "",
+            KeyPatternMessage = "",
+            KeyPlaceholder = "",
+            ValuePattern = "",
+            ValuePatternMessage = "",
+            ValuePlaceholder = "",
+            ValuePrefix = "",
+            ValueSuffix = "",
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var inputs = html.QuerySelectorAll("ol > li:first-child input[data-part]");
+        await Assert.That(inputs.Length).IsEqualTo(2);
+        await Assert.That(inputs.Any(input => input.HasAttribute("pattern"))).IsFalse();
+        await Assert
+            .That(inputs.Any(input => input.HasAttribute("data-pattern-message")))
+            .IsFalse();
+        await Assert.That(inputs.Any(input => input.HasAttribute("placeholder"))).IsFalse();
+        await Assert.That(html.QuerySelector(".sa-collection-editor-affix")).IsNull();
+    }
+
+    [Test]
+    public async Task ProcessAsync_Texts_ReplaceTheDefaultTexts()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new DictionaryEditorTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            For = For(context, nameof(Trip.LocalNames)),
+            KeyLabel = "Language",
+            Texts = new DictionaryEditorTexts
+            {
+                KeyRequired = "Escolha um idioma.",
+                Remove = "Remover linha {n}",
+            },
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var editor = html.QuerySelector("sel-collection-editor")!;
+        await Assert
+            .That(
+                html.QuerySelector("ol > li .sa-collection-editor-remove")
+                    ?.GetAttribute("aria-label")
+            )
+            .IsEqualTo("Remover linha 1");
+        await Assert.That(editor.GetAttribute("data-texts")).Contains("Escolha um idioma.");
+        await Assert.That(editor.GetAttribute("data-texts")).Contains("Value is required.");
+    }
+
     private static ModelExpression For(RenderingContext context, string property) =>
         new(
             property,

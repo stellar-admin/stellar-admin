@@ -51,6 +51,8 @@ override StellarAdmin.Resources.Editors.ChoiceItem.GetHashCode() -> int
 override StellarAdmin.Resources.Editors.ChoiceItem.ToString() -> string!
 override StellarAdmin.Resources.Editors.DateInputEditor.TemplateName.get -> string!
 override StellarAdmin.Resources.Editors.DateTimeInputEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.DictionaryEditor.TemplateName.get -> string!
+override StellarAdmin.Resources.Editors.DictionaryEditorHandler.PrepareAsync(StellarAdmin.Resources.Editors.FieldEditorContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object?>!
 override StellarAdmin.Resources.Editors.IconEditor.TemplateName.get -> string!
 override StellarAdmin.Resources.Editors.ImageEditor.ClassNames.get -> StellarAdmin.Resources.Editors.ImageEditorClassNames!
 override StellarAdmin.Resources.Editors.ImageEditor.TemplateName.get -> string!
@@ -74,6 +76,7 @@ override StellarAdmin.Resources.Editors.ItemMedia.Image.Equals(object? obj) -> b
 override StellarAdmin.Resources.Editors.ItemMedia.Image.GetHashCode() -> int
 override StellarAdmin.Resources.Editors.ItemMedia.Image.ToString() -> string!
 override StellarAdmin.Resources.Editors.ItemMedia.ToString() -> string!
+override StellarAdmin.Resources.Editors.ListEditor.TemplateName.get -> string!
 override StellarAdmin.Resources.Editors.LookupPage<TEntity>.Equals(object? obj) -> bool
 override StellarAdmin.Resources.Editors.LookupPage<TEntity>.GetHashCode() -> int
 override StellarAdmin.Resources.Editors.LookupPage<TEntity>.ToString() -> string!
@@ -412,11 +415,40 @@ StellarAdmin.Resources.Builders.ColumnStartBuilder.Medium(int start) -> StellarA
 StellarAdmin.Resources.Builders.ColumnStartBuilder.MediumAuto() -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
 StellarAdmin.Resources.Builders.ColumnStartBuilder.Small(int start) -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
 StellarAdmin.Resources.Builders.ColumnStartBuilder.SmallAuto() -> StellarAdmin.Resources.Builders.ColumnStartBuilder!
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.AddText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.CountText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.DuplicateText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.EmptyText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.FullText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.KeyLabel.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.MaxLengthText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.NoneText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.PatternText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.RangeText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.RemoveLabel.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.RequiredText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.TooFewText.set -> void
+StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder.ValueLabel.set -> void
 StellarAdmin.Resources.Builders.GridColumnsBuilder
 StellarAdmin.Resources.Builders.GridColumnsBuilder.Base(int count) -> StellarAdmin.Resources.Builders.GridColumnsBuilder!
 StellarAdmin.Resources.Builders.GridColumnsBuilder.Large(int count) -> StellarAdmin.Resources.Builders.GridColumnsBuilder!
 StellarAdmin.Resources.Builders.GridColumnsBuilder.Medium(int count) -> StellarAdmin.Resources.Builders.GridColumnsBuilder!
 StellarAdmin.Resources.Builders.GridColumnsBuilder.Small(int count) -> StellarAdmin.Resources.Builders.GridColumnsBuilder!
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.AddText.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.CountText.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.DuplicateText.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.EmptyText.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.FullText.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.ItemLabel.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.MaxLengthText.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.MoveLabel.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.NoneText.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.PatternText.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.RangeText.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.RemoveLabel.set -> void
+StellarAdmin.Resources.Builders.ListEditorLabelsBuilder.TooFewText.set -> void
 StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>
 StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>.UseAvatar(System.Func<TEntity, string?>! imageUrl) -> StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!
 StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>.UseCode(System.Func<TEntity, string?>! code) -> StellarAdmin.Resources.Builders.LookupItemsBuilder<TEntity>!
@@ -563,10 +595,14 @@ StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnStart(int 
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.ColumnStart(System.Action<StellarAdmin.Resources.Builders.ColumnStartBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Description.set -> void
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseDictionaryEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseDictionaryEditor(System.Action<StellarAdmin.Resources.Editors.DictionaryEditor<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseEditor<TEditor>() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseEditor<TEditor>(System.Action<TEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.DependsOn<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.DependsOn<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.FieldDependencyBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseListEditor() -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>.UseListEditor(System.Action<StellarAdmin.Resources.Editors.ListEditor!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceFieldBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceFieldsBuilder<TResource>!
@@ -642,8 +678,10 @@ StellarAdmin.Resources.Builders.ResourceInlineEditBuilder.DimOtherRows.set -> vo
 StellarAdmin.Resources.Builders.ResourceLabelsBuilder
 StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Create(System.Action<StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
 StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Delete(System.Action<StellarAdmin.Resources.Builders.ResourceDeleteLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder.DictionaryEditor(System.Action<StellarAdmin.Resources.Builders.DictionaryEditorLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
 StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Edit(System.Action<StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
 StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Index(System.Action<StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
+StellarAdmin.Resources.Builders.ResourceLabelsBuilder.ListEditor(System.Action<StellarAdmin.Resources.Builders.ListEditorLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
 StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Lookup(System.Action<StellarAdmin.Resources.Builders.LookupLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
 StellarAdmin.Resources.Builders.ResourceLabelsBuilder.Sheet(System.Action<StellarAdmin.Resources.Builders.ResourceSheetLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
 StellarAdmin.Resources.Builders.ResourceLabelsBuilder.View(System.Action<StellarAdmin.Resources.Builders.ResourceViewLabelsBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceLabelsBuilder!
@@ -725,8 +763,25 @@ StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.Description.s
 StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.Layout.set -> void
 StellarAdmin.Resources.Builders.ResourceViewSectionBuilder<TModel>.Orientation.set -> void
 StellarAdmin.Resources.Builders.FieldDependencyBuilder
+StellarAdmin.Resources.DictionaryEditorLabelContext
+StellarAdmin.Resources.DictionaryEditorLabelContext.ColumnLabel.get -> string?
+StellarAdmin.Resources.DictionaryEditorLabelContext.ColumnLabel.init -> void
+StellarAdmin.Resources.DictionaryEditorLabelContext.DictionaryEditorLabelContext(string! fieldLabel) -> void
+StellarAdmin.Resources.DictionaryEditorLabelContext.FieldLabel.get -> string!
+StellarAdmin.Resources.DictionaryEditorLabelContext.Max.get -> double?
+StellarAdmin.Resources.DictionaryEditorLabelContext.Max.init -> void
+StellarAdmin.Resources.DictionaryEditorLabelContext.MaxItems.get -> int?
+StellarAdmin.Resources.DictionaryEditorLabelContext.MaxItems.init -> void
+StellarAdmin.Resources.DictionaryEditorLabelContext.MaxLength.get -> int?
+StellarAdmin.Resources.DictionaryEditorLabelContext.MaxLength.init -> void
+StellarAdmin.Resources.DictionaryEditorLabelContext.Min.get -> double?
+StellarAdmin.Resources.DictionaryEditorLabelContext.Min.init -> void
+StellarAdmin.Resources.DictionaryEditorLabelContext.MinItems.get -> int?
+StellarAdmin.Resources.DictionaryEditorLabelContext.MinItems.init -> void
 StellarAdmin.Resources.Displays.BadgeDisplay
 StellarAdmin.Resources.Displays.BadgeDisplay.BadgeDisplay() -> void
+StellarAdmin.Resources.Displays.BadgeDisplay.Limit.get -> int?
+StellarAdmin.Resources.Displays.BadgeDisplay.Limit.set -> void
 StellarAdmin.Resources.Displays.BadgeDisplay.Variant.get -> StellarAdmin.UI.BadgeVariant
 StellarAdmin.Resources.Displays.BadgeDisplay.Variant.set -> void
 StellarAdmin.Resources.Displays.BadgeDisplay.UseText<TItem>(System.Func<TItem, string?>! text) -> void
@@ -869,6 +924,61 @@ StellarAdmin.Resources.Editors.DateTimeInputEditor
 StellarAdmin.Resources.Editors.DateTimeInputEditor.DateTimeInputEditor() -> void
 StellarAdmin.Resources.Editors.DateTimeInputEditor.Step.get -> System.TimeSpan?
 StellarAdmin.Resources.Editors.DateTimeInputEditor.Step.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditor
+StellarAdmin.Resources.Editors.DictionaryEditor.AddText.get -> string?
+StellarAdmin.Resources.Editors.DictionaryEditor.AddText.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditor.EmptyText.get -> string?
+StellarAdmin.Resources.Editors.DictionaryEditor.EmptyText.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditor.MaxItems.get -> int?
+StellarAdmin.Resources.Editors.DictionaryEditor.MaxItems.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditor.MinItems.get -> int?
+StellarAdmin.Resources.Editors.DictionaryEditor.MinItems.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditor.Numbered.get -> bool
+StellarAdmin.Resources.Editors.DictionaryEditor.Numbered.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditor<TModel>
+StellarAdmin.Resources.Editors.DictionaryEditor<TModel>.Key(System.Action<StellarAdmin.Resources.Editors.DictionaryEditorKey<TModel>!>! configure) -> void
+StellarAdmin.Resources.Editors.DictionaryEditor<TModel>.Value(System.Action<StellarAdmin.Resources.Editors.DictionaryEditorValue<TModel>!>! configure) -> void
+StellarAdmin.Resources.Editors.DictionaryEditorHandler
+StellarAdmin.Resources.Editors.DictionaryEditorHandler.DictionaryEditorHandler(StellarAdmin.Resources.Editors.DictionaryEditor! editor, System.IServiceProvider! services) -> void
+StellarAdmin.Resources.Editors.DictionaryEditorKey
+StellarAdmin.Resources.Editors.DictionaryEditorKey<TModel>
+StellarAdmin.Resources.Editors.DictionaryEditorKey<TModel>.UseItems(System.Func<TModel, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
+StellarAdmin.Resources.Editors.DictionaryEditorKey<TModel>.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart
+StellarAdmin.Resources.Editors.DictionaryEditorPart.Casing.get -> StellarAdmin.UI.DictionaryEditorCasing
+StellarAdmin.Resources.Editors.DictionaryEditorPart.Casing.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.Label.get -> string?
+StellarAdmin.Resources.Editors.DictionaryEditorPart.Label.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.MaxLength.get -> int?
+StellarAdmin.Resources.Editors.DictionaryEditorPart.MaxLength.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.Pattern.get -> string?
+StellarAdmin.Resources.Editors.DictionaryEditorPart.Pattern.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.PatternMessage.get -> string?
+StellarAdmin.Resources.Editors.DictionaryEditorPart.PatternMessage.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.Placeholder.get -> string?
+StellarAdmin.Resources.Editors.DictionaryEditorPart.Placeholder.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.UseItems(StellarAdmin.Resources.Editors.ChoiceItems! items) -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.UseItems(System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem!>! items) -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.UseItems(System.Collections.Generic.IEnumerable<StellarAdmin.Resources.Editors.ChoiceItem!>! items) -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.UseItems(System.Func<System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.UseItems<TProvider>() -> void
+StellarAdmin.Resources.Editors.DictionaryEditorPart.UseResource<TResource>() -> void
+StellarAdmin.Resources.Editors.DictionaryEditorValue
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Align.get -> StellarAdmin.UI.DictionaryEditorAlign?
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Align.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Max.get -> double?
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Max.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Min.get -> double?
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Min.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Prefix.get -> string?
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Prefix.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Step.get -> double?
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Step.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Suffix.get -> string?
+StellarAdmin.Resources.Editors.DictionaryEditorValue.Suffix.set -> void
+StellarAdmin.Resources.Editors.DictionaryEditorValue<TModel>
+StellarAdmin.Resources.Editors.DictionaryEditorValue<TModel>.UseItems(System.Func<TModel, System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Editors.ChoiceItem!>!>!>! itemsLoader) -> void
+StellarAdmin.Resources.Editors.DictionaryEditorValue<TModel>.UseResource<TResource>(System.Action<StellarAdmin.Resources.Builders.ResourceItemsBuilder<TModel, TResource>!>! configure) -> void
 StellarAdmin.Resources.Editors.EditorClassNames
 StellarAdmin.Resources.Editors.EditorClassNames.Control.get -> string?
 StellarAdmin.Resources.Editors.EditorClassNames.Control.set -> void
@@ -954,6 +1064,44 @@ StellarAdmin.Resources.Editors.ItemMedia.Image.Image(string! Url) -> void
 StellarAdmin.Resources.Editors.ItemMedia.Image.Url.get -> string!
 StellarAdmin.Resources.Editors.ItemMedia.Image.Url.init -> void
 StellarAdmin.Resources.Editors.ItemMedia.ItemMedia(StellarAdmin.Resources.Editors.ItemMedia! original) -> void
+StellarAdmin.Resources.Editors.ListEditor
+StellarAdmin.Resources.Editors.ListEditor.AddText.get -> string?
+StellarAdmin.Resources.Editors.ListEditor.AddText.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Align.get -> StellarAdmin.UI.ListEditorAlign?
+StellarAdmin.Resources.Editors.ListEditor.Align.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Casing.get -> StellarAdmin.UI.ListEditorCasing
+StellarAdmin.Resources.Editors.ListEditor.Casing.set -> void
+StellarAdmin.Resources.Editors.ListEditor.EmptyText.get -> string?
+StellarAdmin.Resources.Editors.ListEditor.EmptyText.set -> void
+StellarAdmin.Resources.Editors.ListEditor.ListEditor() -> void
+StellarAdmin.Resources.Editors.ListEditor.Max.get -> double?
+StellarAdmin.Resources.Editors.ListEditor.Max.set -> void
+StellarAdmin.Resources.Editors.ListEditor.MaxItems.get -> int?
+StellarAdmin.Resources.Editors.ListEditor.MaxItems.set -> void
+StellarAdmin.Resources.Editors.ListEditor.MaxLength.get -> int?
+StellarAdmin.Resources.Editors.ListEditor.MaxLength.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Min.get -> double?
+StellarAdmin.Resources.Editors.ListEditor.Min.set -> void
+StellarAdmin.Resources.Editors.ListEditor.MinItems.get -> int?
+StellarAdmin.Resources.Editors.ListEditor.MinItems.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Numbered.get -> bool
+StellarAdmin.Resources.Editors.ListEditor.Numbered.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Pattern.get -> string?
+StellarAdmin.Resources.Editors.ListEditor.Pattern.set -> void
+StellarAdmin.Resources.Editors.ListEditor.PatternMessage.get -> string?
+StellarAdmin.Resources.Editors.ListEditor.PatternMessage.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Placeholder.get -> string?
+StellarAdmin.Resources.Editors.ListEditor.Placeholder.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Prefix.get -> string?
+StellarAdmin.Resources.Editors.ListEditor.Prefix.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Sortable.get -> bool
+StellarAdmin.Resources.Editors.ListEditor.Sortable.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Step.get -> double?
+StellarAdmin.Resources.Editors.ListEditor.Step.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Suffix.get -> string?
+StellarAdmin.Resources.Editors.ListEditor.Suffix.set -> void
+StellarAdmin.Resources.Editors.ListEditor.Unique.get -> bool
+StellarAdmin.Resources.Editors.ListEditor.Unique.set -> void
 StellarAdmin.Resources.Editors.LookupFieldOptions
 StellarAdmin.Resources.Editors.LookupFieldOptions.AllowClear.get -> bool?
 StellarAdmin.Resources.Editors.LookupFieldOptions.AllowClear.set -> void
@@ -1179,6 +1327,19 @@ StellarAdmin.Resources.IResourceRowDetailHandler<TModel>
 StellarAdmin.Resources.IResourceRowDetailHandler<TModel>.FindAsync(string! id, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TModel?>!
 StellarAdmin.Resources.IResourceViewHandler<TModel>
 StellarAdmin.Resources.IResourceViewHandler<TModel>.FindAsync(string! id, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TModel?>!
+StellarAdmin.Resources.ListEditorLabelContext
+StellarAdmin.Resources.ListEditorLabelContext.FieldLabel.get -> string!
+StellarAdmin.Resources.ListEditorLabelContext.ListEditorLabelContext(string! fieldLabel) -> void
+StellarAdmin.Resources.ListEditorLabelContext.Max.get -> double?
+StellarAdmin.Resources.ListEditorLabelContext.Max.init -> void
+StellarAdmin.Resources.ListEditorLabelContext.MaxItems.get -> int?
+StellarAdmin.Resources.ListEditorLabelContext.MaxItems.init -> void
+StellarAdmin.Resources.ListEditorLabelContext.MaxLength.get -> int?
+StellarAdmin.Resources.ListEditorLabelContext.MaxLength.init -> void
+StellarAdmin.Resources.ListEditorLabelContext.Min.get -> double?
+StellarAdmin.Resources.ListEditorLabelContext.Min.init -> void
+StellarAdmin.Resources.ListEditorLabelContext.MinItems.get -> int?
+StellarAdmin.Resources.ListEditorLabelContext.MinItems.init -> void
 StellarAdmin.Resources.LookupLabelContext
 StellarAdmin.Resources.LookupLabelContext.Count.get -> int
 StellarAdmin.Resources.LookupLabelContext.Count.init -> void
@@ -1197,6 +1358,36 @@ StellarAdmin.Resources.Options.DataGridColumnOptions.Sortable.get -> bool
 StellarAdmin.Resources.Options.DataGridColumnOptions.SortExpression.get -> System.Linq.Expressions.LambdaExpression?
 StellarAdmin.Resources.Options.DataGridColumnOptions.SortField.get -> string?
 StellarAdmin.Resources.Options.DataGridColumnOptions.Title.get -> string?
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.AddText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.AddText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.CountText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.CountText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.DictionaryEditorLabelOptions() -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.DuplicateText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.DuplicateText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.EmptyText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.EmptyText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.FullText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.FullText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.KeyLabel.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.KeyLabel.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.MaxLengthText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.MaxLengthText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.NoneText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.NoneText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.PatternText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.PatternText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.RangeText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.RangeText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.RemoveLabel.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.RemoveLabel.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.RequiredText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.RequiredText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.TooFewText.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.TooFewText.set -> void
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.ValueLabel.get -> System.Func<StellarAdmin.Resources.DictionaryEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.DictionaryEditorLabelOptions.ValueLabel.set -> void
 StellarAdmin.Resources.Options.FormContainerOptions
 StellarAdmin.Resources.Options.FormContainerOptions.Items.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormItemOptions!>!
 StellarAdmin.Resources.Options.FormDetailsOptions
@@ -1231,6 +1422,34 @@ StellarAdmin.Resources.Options.FormSectionOptions.Description.get -> string?
 StellarAdmin.Resources.Options.FormSectionOptions.Layout.get -> StellarAdmin.UI.FormSectionLayout?
 StellarAdmin.Resources.Options.FormSectionOptions.Orientation.get -> StellarAdmin.UI.FieldOrientation?
 StellarAdmin.Resources.Options.FormSectionOptions.Title.get -> string!
+StellarAdmin.Resources.Options.ListEditorLabelOptions
+StellarAdmin.Resources.Options.ListEditorLabelOptions.AddText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.AddText.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.CountText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.CountText.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.DuplicateText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.DuplicateText.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.EmptyText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.EmptyText.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.FullText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.FullText.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.ItemLabel.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.ItemLabel.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.ListEditorLabelOptions() -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.MaxLengthText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.MaxLengthText.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.MoveLabel.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.MoveLabel.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.NoneText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.NoneText.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.PatternText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.PatternText.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.RangeText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.RangeText.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.RemoveLabel.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.RemoveLabel.set -> void
+StellarAdmin.Resources.Options.ListEditorLabelOptions.TooFewText.get -> System.Func<StellarAdmin.Resources.ListEditorLabelContext!, string!>!
+StellarAdmin.Resources.Options.ListEditorLabelOptions.TooFewText.set -> void
 StellarAdmin.Resources.Options.LookupLabelOptions
 StellarAdmin.Resources.Options.LookupLabelOptions.AddLabel.get -> System.Func<StellarAdmin.Resources.LookupLabelContext!, string!>!
 StellarAdmin.Resources.Options.LookupLabelOptions.AddLabel.set -> void
@@ -1394,8 +1613,10 @@ StellarAdmin.Resources.Options.ResourceInlineEditOptions.ResourceInlineEditOptio
 StellarAdmin.Resources.Options.ResourceLabelOptions
 StellarAdmin.Resources.Options.ResourceLabelOptions.Create.get -> StellarAdmin.Resources.Options.ResourceCreateLabelOptions!
 StellarAdmin.Resources.Options.ResourceLabelOptions.Delete.get -> StellarAdmin.Resources.Options.ResourceDeleteLabelOptions!
+StellarAdmin.Resources.Options.ResourceLabelOptions.DictionaryEditor.get -> StellarAdmin.Resources.Options.DictionaryEditorLabelOptions!
 StellarAdmin.Resources.Options.ResourceLabelOptions.Edit.get -> StellarAdmin.Resources.Options.ResourceEditLabelOptions!
 StellarAdmin.Resources.Options.ResourceLabelOptions.Index.get -> StellarAdmin.Resources.Options.ResourceIndexLabelOptions!
+StellarAdmin.Resources.Options.ResourceLabelOptions.ListEditor.get -> StellarAdmin.Resources.Options.ListEditorLabelOptions!
 StellarAdmin.Resources.Options.ResourceLabelOptions.Lookup.get -> StellarAdmin.Resources.Options.LookupLabelOptions!
 StellarAdmin.Resources.Options.ResourceLabelOptions.ResourceLabelOptions() -> void
 StellarAdmin.Resources.Options.ResourceLabelOptions.Sheet.get -> StellarAdmin.Resources.Options.ResourceSheetLabelOptions!

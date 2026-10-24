@@ -317,9 +317,11 @@ internal sealed class CollectionEditorRenderer(
         return input;
     }
 
+    // Razor passes an unset string attribute, such as key-pattern="@null", as an empty string, and an empty pattern
+    // would reject every value
     private static void AddIfSet(TagHelperAttributeList attributes, string name, string? value)
     {
-        if (value != null)
+        if (!string.IsNullOrEmpty(value))
         {
             attributes.Add(name, value);
         }
@@ -339,7 +341,7 @@ internal sealed class CollectionEditorRenderer(
             cell.Attributes["data-align"] = part.Align;
         }
 
-        if (part.Prefix != null)
+        if (!string.IsNullOrEmpty(part.Prefix))
         {
             cell.InnerHtml.AppendHtml(Affix(part.Prefix, "start"));
         }
@@ -358,7 +360,7 @@ internal sealed class CollectionEditorRenderer(
             cell.InnerHtml.AppendHtml(await ControlAsync(part, value, index, errorId));
         }
 
-        if (part.Suffix != null)
+        if (!string.IsNullOrEmpty(part.Suffix))
         {
             cell.InnerHtml.AppendHtml(Affix(part.Suffix, "end"));
         }

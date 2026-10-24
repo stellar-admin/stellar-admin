@@ -46,6 +46,23 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
+    ///     Configures the default text of dictionary editors.
+    /// </summary>
+    /// <param name="configure">A delegate that sets the default dictionary editor text.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceLabelsBuilder DictionaryEditor(Action<DictionaryEditorLabelsBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(_services));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Configures the default text of the edit page.
     /// </summary>
     /// <param name="configure">A delegate that sets the default edit page text.</param>
@@ -71,6 +88,23 @@ public sealed class ResourceLabelsBuilder
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     public ResourceLabelsBuilder Index(Action<ResourceIndexLabelsBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(_services));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures the default text of list editors.
+    /// </summary>
+    /// <param name="configure">A delegate that sets the default list editor text.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceLabelsBuilder ListEditor(Action<ListEditorLabelsBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 

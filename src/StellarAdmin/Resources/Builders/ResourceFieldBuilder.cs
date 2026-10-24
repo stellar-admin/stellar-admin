@@ -271,6 +271,23 @@ public sealed class ResourceFieldBuilder<TResource>
         Use(() => new DateTimeInputEditor(), configure);
 
     /// <summary>
+    ///     Edits the field with a dictionary editor.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseDictionaryEditor() => UseDictionaryEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a dictionary editor and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseDictionaryEditor(Action<DictionaryEditor<TResource>> configure) =>
+        Use(() => new DictionaryEditor<TResource>(), configure);
+
+    /// <summary>
     ///     Edits the field with an editor and configures it.
     /// </summary>
     /// <typeparam name="TEditor">The type of the editor.</typeparam>
@@ -356,6 +373,23 @@ public sealed class ResourceFieldBuilder<TResource>
     /// </exception>
     public ResourceFieldBuilder<TResource> UseImageEditor(Action<ImageEditor> configure) =>
         Use(() => new ImageEditor(), configure);
+
+    /// <summary>
+    ///     Edits the field with a list editor.
+    /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    public ResourceFieldBuilder<TResource> UseListEditor() => UseListEditor(_ => { });
+
+    /// <summary>
+    ///     Edits the field with a list editor and configures it.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceFieldBuilder<TResource> UseListEditor(Action<ListEditor> configure) =>
+        Use(() => new ListEditor(), configure);
 
     /// <summary>
     ///     Edits the field with a lookup sheet.

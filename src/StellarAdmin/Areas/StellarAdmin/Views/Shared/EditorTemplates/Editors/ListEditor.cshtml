@@ -1,0 +1,14 @@
+@inherits FieldEditorView<ListEditor>
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var labels = LabelOptions.Value.ListEditor;
+    var context = CollectionEditorSettings.ListContext(Editor, ViewData.ModelMetadata, Title ?? ViewData.ModelMetadata.GetDisplayName());
+}
+
+<sa-list-editor class-names="@EditorClassNamesMapper.ForListEditor(Editor)" asp-for="@Model" label="@Title" description="@Description" readonly="@IsReadOnly"
+                min-items="@context.MinItems" max-items="@context.MaxItems" sortable="@Editor.Sortable" numbered="@Editor.Numbered" unique="@Editor.Unique"
+                casing="@Editor.Casing" align="@Editor.Align" pattern="@Editor.Pattern" pattern-message="@Editor.PatternMessage" max-length="@Editor.MaxLength"
+                min="@Editor.Min" max="@Editor.Max" step="@Editor.Step" placeholder="@Editor.Placeholder" prefix="@Editor.Prefix" suffix="@Editor.Suffix"
+                add-text="@(Editor.AddText ?? labels.AddText(context))" empty-text="@(Editor.EmptyText ?? labels.EmptyText(context))"
+                texts="@CollectionEditorSettings.ListTexts(labels, context)" />

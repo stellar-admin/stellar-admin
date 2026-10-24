@@ -30,6 +30,21 @@ internal static class EditorClassNamesMapper
         };
     }
 
+    public static DictionaryEditorClassNames ForDictionaryEditor(DictionaryEditor editor)
+    {
+        var classes = editor.ClassNames;
+
+        return new DictionaryEditorClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Label = classes.Label,
+            Root = classes.Root,
+        };
+    }
+
     public static IconPickerClassNames ForIconPicker(IconEditor editor, string? trigger = null)
     {
         var classes = editor.ClassNames;
@@ -75,6 +90,21 @@ internal static class EditorClassNamesMapper
             Error = classes?.Error,
             Label = classes?.Label,
             Root = classes?.Root,
+        };
+    }
+
+    public static ListEditorClassNames ForListEditor(ListEditor editor)
+    {
+        var classes = editor.ClassNames;
+
+        return new ListEditorClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Label = classes.Label,
+            Root = classes.Root,
         };
     }
 

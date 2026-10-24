@@ -38,6 +38,7 @@ Renders an editor for a list of text or number values, with a row per item.
 | `sortable` | `bool` | `false` | `true`, `false` |
 | `step` | `double` | `1` | — |
 | `suffix` | `string` | — | — |
+| `texts` | `ListEditorTexts` | — | — |
 | `unique` | `bool` | `false` | `true`, `false` |
 | `class-names` | `ListEditorClassNames` | — | — |
 | `column-span` | `string` | `1` | — |

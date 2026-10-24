@@ -1,4 +1,5 @@
 using AdminPlayground.Resources.Destinations;
+using AdminPlayground.Resources.Guides;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin;
 using StellarAdmin.Resources.Builders;
@@ -75,6 +76,18 @@ internal static class FieldEditorGalleryRegistration
             "Date and time",
             80,
             ConfigureDateTimeFields
+        );
+        admin.AddGalleryResource<ListEditorGallery>(
+            "list-editor",
+            "List editor",
+            85,
+            ConfigureListEditorFields
+        );
+        admin.AddGalleryResource<DictionaryEditorGallery>(
+            "dictionary-editor",
+            "Dictionary editor",
+            87,
+            ConfigureDictionaryEditorFields
         );
         admin.AddGalleryResource<SliderGallery>("slider", "Slider", 90, ConfigureSliderFields);
         admin.AddGalleryResource<ImageGallery>("image", "Image", 95, ConfigureImageFields);
@@ -1445,6 +1458,179 @@ internal static class FieldEditorGalleryRegistration
 
         static void ConfigureEditor(ImageEditor editor) =>
             DestinationResourceRegistration.ConfigureEditor(editor);
+    }
+
+    private static void ConfigureListEditorFields(ResourceFieldsBuilder<ListEditorGallery> fields)
+    {
+        fields.AddSection(
+            "Defaults",
+            section =>
+            {
+                section.Description =
+                    "No UseEditor. A list of strings or numbers gets the list editor, with limits from [Length].";
+                section.Add(model => model.Highlights);
+                section.Add(model => model.DepartureDays);
+                section.Add(model => model.Themes);
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section.Add(model => model.TitledHighlights).Title = "Title override";
+                section.Add(model => model.DescribedHighlights);
+                section.Add(model => model.ReadOnlyHighlights);
+            }
+        );
+        fields.AddSection(
+            "ListEditor settings",
+            section =>
+            {
+                section.Description =
+                    "UseListEditor with explicit settings. Turn on Skip client validation to see the server's checks.";
+                section
+                    .Add(model => model.Itinerary)
+                    .UseListEditor(list =>
+                    {
+                        list.MinItems = 1;
+                        list.MaxItems = 8;
+                        list.Sortable = true;
+                        list.Numbered = true;
+                        list.MaxLength = 120;
+                    });
+                section
+                    .Add(model => model.ArrivalAirports)
+                    .UseListEditor(list =>
+                    {
+                        list.MaxItems = 6;
+                        list.Unique = true;
+                        list.Casing = ListEditorCasing.Upper;
+                        list.Pattern = "^[A-Z]{3}$";
+                        list.PatternMessage = "Use a three-letter IATA code, like LIS.";
+                    });
+                section
+                    .Add(model => model.MonthlyDepartures)
+                    .UseListEditor(list =>
+                    {
+                        list.Min = 1;
+                        list.Max = 31;
+                        list.Unique = true;
+                    });
+                section
+                    .Add(model => model.AddOnPrices)
+                    .UseListEditor(list =>
+                    {
+                        list.Prefix = "€";
+                        list.Step = 0.01;
+                    });
+                section
+                    .Add(model => model.BagWeights)
+                    .UseListEditor(list =>
+                    {
+                        list.Suffix = "kg";
+                        list.Align = ListEditorAlign.Start;
+                    });
+                section
+                    .Add(model => model.PackingList)
+                    .UseListEditor(list =>
+                    {
+                        list.AddText = "Add something to pack";
+                        list.EmptyText = "Nothing to pack yet";
+                        list.Placeholder = "e.g. Comfortable walking shoes";
+                    });
+            }
+        );
+    }
+
+    private static void ConfigureDictionaryEditorFields(
+        ResourceFieldsBuilder<DictionaryEditorGallery> fields
+    )
+    {
+        fields.AddSection(
+            "Defaults",
+            section =>
+            {
+                section.Description =
+                    "No UseEditor. A dictionary of strings, numbers or enums gets the dictionary editor; an enum key is a select of its members.";
+                section.Add(model => model.Notes);
+                section.Add(model => model.SeasonalPrices);
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section.Add(model => model.TitledNotes).Title = "Title override";
+                section.Add(model => model.ReadOnlyNotes);
+            }
+        );
+        fields.AddSection(
+            "DictionaryEditor settings",
+            section =>
+            {
+                section.Description =
+                    "UseDictionaryEditor with explicit settings. Turn on Skip client validation to see the server's checks.";
+                section
+                    .Add(model => model.LocalNames)
+                    .UseDictionaryEditor(dictionary =>
+                    {
+                        dictionary.EmptyText = "No translations yet. Pages use the English name.";
+                        dictionary.Key(key =>
+                        {
+                            key.Label = "Language";
+                            key.Casing = DictionaryEditorCasing.Lower;
+                            key.Pattern = "^[a-z]{2}$";
+                            key.PatternMessage = "Use a two-letter language code, like pt.";
+                        });
+                        dictionary.Value(value => value.Label = "Local name");
+                    });
+                section
+                    .Add(model => model.BaggageAllowance)
+                    .UseDictionaryEditor(dictionary =>
+                    {
+                        dictionary.Key(key => key.Label = "Cabin");
+                        dictionary.Value(value =>
+                        {
+                            value.Label = "Allowance";
+                            value.Min = 0;
+                            value.Max = 50;
+                            value.Suffix = "kg";
+                        });
+                    });
+                section
+                    .Add(model => model.GuidesByLanguage)
+                    .UseDictionaryEditor(dictionary =>
+                    {
+                        dictionary.Key(key =>
+                        {
+                            key.Label = "Language";
+                            key.UseItems([
+                                new ChoiceItem("en", "English"),
+                                new ChoiceItem("pt", "Portuguese"),
+                                new ChoiceItem("es", "Spanish"),
+                            ]);
+                        });
+                        dictionary.Value(value =>
+                        {
+                            value.Label = "Guide";
+                            value.UseResource<Guide>();
+                        });
+                    });
+                section
+                    .Add(model => model.TourPrices)
+                    .UseDictionaryEditor(dictionary =>
+                    {
+                        dictionary.MinItems = 1;
+                        dictionary.Numbered = true;
+                        dictionary.Key(key => key.Label = "Season");
+                        dictionary.Value(value =>
+                        {
+                            value.Label = "Price per traveller";
+                            value.Prefix = "€";
+                        });
+                    });
+            }
+        );
     }
 
     private static void ConfigureSliderFields(ResourceFieldsBuilder<SliderGallery> fields)

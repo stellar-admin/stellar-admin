@@ -216,6 +216,64 @@ public class EditorCheckTests
         await Assert.That(options.Problems).IsEmpty();
     }
 
+    [Test]
+    public async Task Run_WithListEditorOnTextProperty_UsesDefaultEditor()
+    {
+        // Arrange
+        using var provider = CreateProvider(fields =>
+            fields.Add(tour => tour.Airport).UseListEditor()
+        );
+
+        // Act
+        var options = GetOptions(provider);
+
+        // Assert
+        var problem = options.Problems.Single();
+        await Assert.That(options.Create!.Fields.Single().Editor).IsNull();
+        await Assert.That(problem.Kind).IsEqualTo(ConfigurationProblemKind.UnsuitableEditor);
+        await Assert.That(problem.Message).Contains("needs an array or list of strings or numbers");
+    }
+
+    [Test]
+    public async Task Run_WithDictionaryEditorOnListProperty_UsesListEditor()
+    {
+        // Arrange
+        using var provider = CreateProvider(fields =>
+            fields.Add(tour => tour.StopIds).UseDictionaryEditor()
+        );
+
+        // Act
+        var options = GetOptions(provider);
+
+        // Assert
+        var problem = options.Problems.Single();
+        await Assert.That(options.Create!.Fields.Single().Editor).IsTypeOf<ListEditor>();
+        await Assert.That(problem.Kind).IsEqualTo(ConfigurationProblemKind.UnsuitableEditor);
+    }
+
+    [Test]
+    public async Task Run_WithDictionaryKeyItemsOfAnotherValueType_UsesDefaultDictionaryEditor()
+    {
+        // Arrange
+        using var provider = CreateProvider(fields =>
+            fields
+                .Add(tour => tour.LevelNotes)
+                .UseDictionaryEditor(dictionary =>
+                    dictionary.Key(key => key.UseItems(new NumberItems()))
+                )
+        );
+
+        // Act
+        var options = GetOptions(provider);
+
+        // Assert
+        var problem = options.Problems.Single();
+        var editor = options.Create!.Fields.Single().Editor;
+        await Assert.That(editor).IsTypeOf<DictionaryEditor>();
+        await Assert.That(((DictionaryEditor)editor!).KeyPart.Source.ItemsLoader).IsNull();
+        await Assert.That(problem.Message).Contains("its key items' values are `Int32`");
+    }
+
     private static ServiceProvider CreateProvider(Action<ResourceFieldsBuilder<Tour>> fields)
     {
         var services = new ServiceCollection();
@@ -304,6 +362,8 @@ public class EditorCheckTests
         public bool? Guided { get; set; }
 
         public TourLevel Level { get; set; }
+
+        public Dictionary<TourLevel, string> LevelNotes { get; set; } = [];
 
         public List<int> StopIds { get; set; } = [];
     }

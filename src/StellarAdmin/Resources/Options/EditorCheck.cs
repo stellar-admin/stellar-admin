@@ -69,6 +69,19 @@ internal static class EditorCheck
                         ? "Use `SelectEditor`, `RadioGroupEditor` or `SegmentedControlEditor` for a nullable Boolean."
                         : $"Use an editor that suits a `{TypeName(propertyType)}` property."
                 );
+            case ListEditor when CollectionEditorTypes.ListElementType(propertyType) is null:
+                return (
+                    $"`{editor}` needs an array or list of strings or numbers, and `{field.FieldName}` is `{TypeName(propertyType)}`",
+                    $"Use an editor that suits a `{TypeName(propertyType)}` property."
+                );
+            case DictionaryEditor when CollectionEditorTypes.DictionaryTypes(propertyType) is null:
+                return (
+                    $"`{editor}` needs a dictionary with a string or enum key and a string, number or enum value, and `{field.FieldName}` is `{TypeName(propertyType)}`",
+                    $"Use an editor that suits a `{TypeName(propertyType)}` property."
+                );
+            case DictionaryEditor dictionary
+                when FindDictionaryItemsProblem(field, dictionary, propertyType) is { } problem:
+                return problem;
             case ChoiceEditor { ItemsLoader: null } when !HasPropertyChoices(propertyType):
                 return (
                     $"`{editor}` has no items, and only takes them from a non-flags enum or Boolean property",
@@ -85,6 +98,39 @@ internal static class EditorCheck
             default:
                 return FindValueProblem(field, propertyType);
         }
+    }
+
+    // Items whose values aren't the dictionary's key or value type can't select its keys or values
+    private static (string Reason, string Fix)? FindDictionaryItemsProblem(
+        FormFieldOptions field,
+        DictionaryEditor dictionary,
+        Type propertyType
+    )
+    {
+        var (keyType, valueType) = CollectionEditorTypes.DictionaryTypes(propertyType)!.Value;
+        foreach (
+            var (part, partType, name) in new[]
+            {
+                ((DictionaryEditorPart)dictionary.KeyPart, keyType, "key"),
+                (dictionary.ValuePart, valueType, "value"),
+            }
+        )
+        {
+            if (
+                part.Source.ItemsValueType is { } itemsType
+                && Unwrap(itemsType) != Unwrap(partType)
+            )
+            {
+                return (
+                    $"its {name} items' values are `{TypeName(itemsType)}`, and `{field.FieldName}` has `{TypeName(partType)}` {name}s",
+                    $"Give the {name}s items whose values are `{TypeName(Unwrap(partType))}`."
+                );
+            }
+        }
+
+        return null;
+
+        static Type Unwrap(Type type) => Nullable.GetUnderlyingType(type) ?? type;
     }
 
     // A source that searches with a value from the form needs one of its type, and a source that doesn't takes none

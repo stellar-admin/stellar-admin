@@ -86,7 +86,7 @@ In order of precedence:
 2. The display field's own text rendering after `UseBuiltInRendering()`.
 3. The template named by `[UIHint("Name")]`: `DisplayTemplates/Name.cshtml`, with the value as its model. A missing template throws.
 4. The default display for the property's data type, then its CLR type.
-5. Text rendering, which joins collections with commas and applies `[DisplayFormat]`. A related record of a registered resource shows its title, and a collection of them needs `BadgeDisplay`. Any other entity, collection of entities or class that doesn't override `ToString()` is left out with it or with no display, and a configuration problem is logged; show a property of the entity, or use `BadgeDisplay` with `UseText<TItem>` ([relationships](relationships.md#showing-related-values)).
+5. Text rendering, which joins other collections with commas and applies `[DisplayFormat]`. A related record of a registered resource shows its title, and a collection of them needs `BadgeDisplay`. Any other entity, collection of entities or class that doesn't override `ToString()` is left out with it or with no display, and a configuration problem is logged; show a property of the entity, or use `BadgeDisplay` with `UseText<TItem>` ([relationships](relationships.md#showing-related-values)).
 
 An empty value shows `EmptyText`, else `[DisplayFormat(NullDisplayText)]`, else a dash, unless the display renders empty values itself (`ImageDisplay` shows "No image").
 
@@ -105,7 +105,7 @@ In `StellarAdmin.Resources.Displays`; the same displays render index cells ([col
 | `EmailDisplay` | `[EmailAddress]` | `mailto:` link |
 | `PhoneDisplay` | `[Phone]` | `tel:` link |
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
-| `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant`), the same for every value; collections show one badge per item; a related record of a registered resource shows its title, and `UseText<TItem>(item => text)` sets each badge's text for other types ([relationships](relationships.md#showing-related-values)) |
+| `BadgeDisplay` | Lists of strings or numbers, and dictionaries the dictionary editor edits | `Variant` (`BadgeVariant`), the same for every value; collections show one badge per item, and dictionaries one per entry (`pt: Passeio por Lisboa`); `Limit` shows that many and the rest as a `+3` badge with them in its tooltip; long badges truncate. A related record of a registered resource shows its title, and `UseText<TItem>(item => text)` sets each badge's text for other types ([relationships](relationships.md#showing-related-values)) |
 | `ImageDisplay` | Never a default | The image as a figure, from a stored file name or URL: `ResolveUrl(...)`, `Size` (maximum height, default `Medium`, 15rem), `AspectRatio` (default `Original`), `Fit`, `Interaction` (default `Lightbox`); see [columns](columns.md#built-in-displays-in-cells) |
 | `IconDisplay` | Never a default | The icon a stored name refers to, with its name beside it; `ShowName = false` shows the name on hover only. A name that isn't a registered icon shows a dashed box |
 
