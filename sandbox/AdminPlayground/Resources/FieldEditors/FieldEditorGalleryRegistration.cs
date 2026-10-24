@@ -1760,9 +1760,8 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "The conditions below read these. They're decided as the form renders, so a change shows after saving.";
+                    "The condition below reads this. It's decided as the form renders, so a change shows after saving.";
                 section.Add(model => model.Confirmed).UseToggleEditor();
-                section.Add(model => model.HasDiscount).UseToggleEditor();
             }
         );
         fields.AddSection(
@@ -1782,7 +1781,6 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.Price)
                     .UseTextInputEditor(input => input.Prefix = "$")
                     .ReadOnly(model => model.Confirmed);
-                section.Add(model => model.DiscountCode).Disabled(model => !model.HasDiscount);
             }
         );
     }

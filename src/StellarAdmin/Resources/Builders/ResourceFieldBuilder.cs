@@ -213,44 +213,7 @@ public sealed class ResourceFieldBuilder<TResource>
     /// </remarks>
     public ResourceFieldBuilder<TResource> Disabled()
     {
-        _configuration.Add(options =>
-        {
-            options.IsAlwaysDisabled = true;
-            options.DisabledWhen = null;
-        });
-
-        return this;
-    }
-
-    /// <summary>
-    ///     Disables the field for the records that match a condition.
-    /// </summary>
-    /// <param name="predicate">
-    ///     A function that returns <see langword="true" /> for a record whose field is disabled.
-    /// </param>
-    /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="predicate" /> is <see langword="null" />.
-    /// </exception>
-    /// <remarks>
-    ///     <para>
-    ///         The condition is checked against the record as it loads, or the new model on a
-    ///         create form, before the posted values are bound, so a posted value never decides
-    ///         it. A form shown again with errors checks it against the model it shows.
-    ///     </para>
-    ///     <para>
-    ///         See <see cref="Disabled()" />.
-    ///     </para>
-    /// </remarks>
-    public ResourceFieldBuilder<TResource> Disabled(Func<TResource, bool> predicate)
-    {
-        ArgumentNullException.ThrowIfNull(predicate);
-
-        _configuration.Add(options =>
-        {
-            options.IsAlwaysDisabled = false;
-            options.DisabledWhen = model => predicate((TResource)model);
-        });
+        _configuration.Add(options => options.IsDisabled = true);
 
         return this;
     }

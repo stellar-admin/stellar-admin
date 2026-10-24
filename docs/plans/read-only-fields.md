@@ -115,10 +115,11 @@ The admin panel supports both states, with distinct roles, and every editor temp
 ### Decisions (Jerrie, 2026-10-24)
 
 - **Read-only**: the value matters, but can't be changed here. It looks normal, takes focus and posts. Sources: the property's metadata, and `.ReadOnly()` or `.ReadOnly(predicate)` on the field.
-- **Disabled**: the field doesn't apply right now. It fades, takes no focus and doesn't post. Sources: `.Disabled()` or `.Disabled(predicate)` on the field, and the dependent-field waiting state, which keeps its current behaviour.
+- **Disabled**: the field doesn't apply right now. It fades, takes no focus and doesn't post. Sources: `.Disabled()` on the field, and the dependent-field waiting state, which keeps its current behaviour.
 - Disabled wins when both apply. The server ignores posted values for both: binding leaves the field out, decided against the record as loaded (edit) or the new model (create), never against posted values.
-- Predicates take the record and come now. A re-rendered form evaluates them against the model it renders.
-- Disabled is decided on the server as the form renders. Reacting live to other fields' values in the browser is later work, likely on the dependent-fields mechanism.
+- A read-only predicate takes the record and comes now. A re-rendered form evaluates it against the model it renders.
+- `Disabled` takes no predicate (dropped after stage 2 was committed). Disabled means "doesn't apply right now", which usually follows what the user is changing on the form; a server-side check against the stored record would show the state as of the last save. The live version is the later work below, and its API may differ.
+- Reacting live to other fields' values in the browser is later work, likely on the dependent-fields mechanism.
 - Grids keep showing a read-only field's display value in place of an editor, now per row when a predicate decides it; a disabled field renders its editor disabled.
 
 ### Public API
@@ -128,17 +129,16 @@ The admin panel supports both states, with distinct roles, and every editor temp
 public ResourceFieldBuilder<TResource> ReadOnly();
 public ResourceFieldBuilder<TResource> ReadOnly(Func<TResource, bool> predicate);
 public ResourceFieldBuilder<TResource> Disabled();
-public ResourceFieldBuilder<TResource> Disabled(Func<TResource, bool> predicate);
 
-// FormFieldOptions: replaces the IsReadOnly property, which is unshipped
+// FormFieldOptions: IsReadOnly replaces the IsReadOnly property, which is unshipped
 public bool IsReadOnly(object model);
-public bool IsDisabled(object model);
+public bool IsDisabled { get; }
 
 // FormFieldProperties and FieldEditorView<TEditor>, for custom templates
 public bool IsDisabled { get; }
 ```
 
-The configuration checks that need editable fields (add another, dependencies, inline rows, image stores) treat only a field that is always read-only or disabled as not editable; a field a predicate decides is editable for them.
+The configuration checks that need editable fields (add another, dependencies, inline rows, image stores) treat only a disabled field, or one that is always read-only, as not editable; a field a read-only predicate decides is editable for them.
 
 ### Work
 
@@ -162,7 +162,7 @@ Built as agreed, with these decisions made while building:
 Verification (2026-10-24):
 
 - Tests: `tests/StellarAdmin.IntegrationTests/Resources/FieldStateTests.cs` covers binding (read-only, disabled, a predicate against the stored record, create, a read-only list from `.ReadOnly()` and from `[Editable(false)]`), rendering for eleven editors in both states, the radio group's state, precedence, a disabled lookup, and inline rows. With the metadata check removed, the `[Editable(false)]` list test fails: MVC binds the posted rows into a read-only collection property. Suites: StellarAdmin.Tests 333, StellarAdmin.IntegrationTests 717, StellarAdmin.EntityFrameworkCore.IntegrationTests 154, all passing.
-- Headless Chromium on the AdminPlayground galleries (every gallery has a `Disabled()` example; the new "Read-only and disabled" gallery shows predicates): every read-only example renders `readonly` at full contrast, focusable and posting; every disabled one is faded (0.5), unfocusable and not posting; no console errors. Light and dark screenshots of the new gallery, and of the lookup and multi-lookup galleries.
+- Headless Chromium on the AdminPlayground galleries (every gallery has a `Disabled()` example; the new "Read-only and disabled" gallery shows a read-only predicate): every read-only example renders `readonly` at full contrast, focusable and posting; every disabled one is faded (0.5), unfocusable and not posting; no console errors. Light and dark screenshots of the new gallery, and of the lookup and multi-lookup galleries.
 - Not checked: Firefox, Safari, screen readers, phone widths, an inline-row grid in the browser.
 
 Fixed after the stage 2 browser check: a disabled bound checkbox, switch or toggle posted `false` through the framework's hidden companion input, which it renders after the checkbox or at the end of the form, so a plain MVC form would clear a checked value. `CheckboxHiddenInput` (internal, UI library) leaves that input out when the checkbox is disabled. Tests in the input, switch and toggle tag helper tests fail without it; UI library tests 799 and admin integration tests 717 pass, and the AdminPlayground's disabled checkbox and switch no longer post.

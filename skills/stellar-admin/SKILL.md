@@ -25,7 +25,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Create and edit pages: layout, sections, validation, defaults, save and add another, custom models | `AllowCreate`, `AllowEdit`, `Fields`, `AddSection`, `Columns`, `UseFactory`, `EnableAddAnother` | [forms](references/forms.md) |
 | Edit and add small resources in the index grid's rows | `UseInlineRow`, `EditsField`, `InlineCreatePosition`, `InlineAddButton` | [inline-editing](references/inline-editing.md) |
 | Read-only values in forms, displays, display templates | `AddDisplayField`, `AddDetails`, `UseDisplay<TDisplay>` | [fields](references/fields.md) |
-| Read-only or disabled editable fields | `ReadOnly()`, `ReadOnly(predicate)`, `Disabled()`, `Disabled(predicate)` | [fields](references/fields.md#read-only-and-disabled-editable-fields) |
+| Read-only or disabled editable fields | `ReadOnly()`, `ReadOnly(predicate)`, `Disabled()` | [fields](references/fields.md#read-only-and-disabled-editable-fields) |
 | Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseRadioGroupEditor`, `UseSliderEditor` and the other `Use…Editor` methods, `UseEditor<TEditor>` for custom editors | [editors](references/editors.md) |
 | Images: thumbnails in the grid, photos on the view page, uploads | `ImageDisplay`, `ImageEditor`, `ResolveUrl`, `StoreImage` | [editors](references/editors.md#images), [columns](references/columns.md#built-in-displays-in-cells) |
 | Icons: a field that stores an icon's name, chosen from a picker | `IconEditor`, `IconDisplay` | [editors](references/editors.md#icons) |
@@ -198,7 +198,7 @@ These come from agents building real tasks without this skill. Each compiled or 
 - **The user menu needs ASP.NET Core authentication.** It shows only for a signed-in user, from their claims; an app without authentication, or an anonymous request, has no user menu. Don't build a placeholder menu in a view override.
 - **Log out signs out of the default authenticate scheme only.** With several schemes (a cookie and OpenID Connect, or Identity's external cookie), add them in order with `menu.Logout(logout => logout.AddAuthenticationScheme(...))`, or point the item at Identity UI's logout with `logout.Path = "~/Identity/Account/Logout"` ([sidebar](references/sidebar.md#log-out)).
 - **Host pages join the admin layout with `Layout = StellarAdminLayouts.Default`** and protect themselves with `[Authorize]`; a sidebar link's `RequireAuthorization` only hides the link ([sidebar](references/sidebar.md)).
-- **Values that are never edited are display fields.** Use `AddDisplayField`/`AddDetails`. `ReadOnly()` and `Disabled()` keep an editable field's editor; their conditions are decided as the form renders, not live in the browser ([fields](references/fields.md#read-only-and-disabled-editable-fields)).
+- **Values that are never edited are display fields.** Use `AddDisplayField`/`AddDetails`. `ReadOnly()` and `Disabled()` keep an editable field's editor; a `ReadOnly` condition is decided as the form renders, not live in the browser ([fields](references/fields.md#read-only-and-disabled-editable-fields)).
 - **New `DateOnly`/`DateTime` fields default to 0001-01-01**, and generated values (references, codes) don't come from hidden fields: set both in `create.UseFactory(() => new Booking { ... })`.
 - **EF `Contains` is case-sensitive on SQLite** (and on case-sensitive collations). Lower-case both sides in search predicates when that matters: `b.Reference.ToLower().Contains(term.ToLower())`.
 - **Form and view labels come from the property name** (`DepartureDate`) unless `[Display(Name = "Departure date")]` or the field's `Title` is set; index headers are humanized. Set `[Display(Name)]` on the model for consistent labels. A foreign key whose editor takes its items from a resource is labelled with that resource's singular label ("Customer").
@@ -215,7 +215,7 @@ Say so rather than inventing an API:
 - Form tabs and wizards.
 - Dashboards and widgets (the panel home page is a plain landing page).
 - File upload editors other than images (`ImageEditor`, and images in `RichTextEditor`), and deleting replaced or removed images: StellarAdmin never deletes them, so the app cleans up files no record references.
-- Making a field read-only or disabled live as other fields change in the browser (`ReadOnly` and `Disabled` conditions are decided as the form renders).
+- Making a field read-only or disabled as other fields change in the browser (a `ReadOnly` condition is decided as the form renders, and `Disabled()` takes no condition).
 - Before/after save hooks (use a custom create or edit handler).
 - Search and scope predicates for non-EF data sources (the data source reads `ResourceListRequest.Search` and `Scope`).
 - Displays with handlers in index columns (the column keeps its default display).

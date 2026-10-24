@@ -3,7 +3,7 @@ using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Areas.StellarAdmin;
 
-// Whether a field is read-only or disabled for a record. The property's metadata also makes a field read-only, as the
+// Whether a field is read-only for a record, or disabled. The property's metadata also makes a field read-only, as the
 // editor templates read it, except for a field with a binder, which edits the binder's value. Disabled wins.
 internal static class FieldStates
 {
@@ -12,7 +12,7 @@ internal static class FieldStates
         FormFieldOptions field,
         object model,
         IModelMetadataProvider metadataProvider
-    ) => !field.IsDisabled(model) && !IsReadOnly(field, model, metadataProvider);
+    ) => !field.IsDisabled && !IsReadOnly(field, model, metadataProvider);
 
     public static bool IsReadOnly(
         FormFieldOptions field,
@@ -27,7 +27,7 @@ internal static class FieldStates
         FormFieldOptions field,
         object model,
         IModelMetadataProvider metadataProvider
-    ) => field.IsDisabled(model) || !IsReadOnly(field, model, metadataProvider);
+    ) => field.IsDisabled || !IsReadOnly(field, model, metadataProvider);
 
     private static ModelMetadata? GetMetadata(
         FormFieldOptions field,

@@ -64,7 +64,7 @@ internal static class FieldEditorRenderer
                 Editor = field.Editor,
                 FieldName = field.FieldName,
                 IsBound = field.Binder is not null,
-                IsDisabled = field.IsDisabled(model),
+                IsDisabled = field.IsDisabled,
                 IsReadOnly = field.IsReadOnly(model),
                 Title = FieldLabels.Find(
                     field,

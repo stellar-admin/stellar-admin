@@ -31,7 +31,7 @@ public sealed record FormFieldProperties
     public string? FieldName { get; init; }
 
     /// <summary>
-    ///     Gets a value that indicates whether the field is disabled for the record.
+    ///     Gets a value that indicates whether the field is disabled.
     /// </summary>
     /// <value>
     ///     <see langword="true" /> if the field is disabled; otherwise, <see langword="false" />.

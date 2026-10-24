@@ -76,7 +76,7 @@ Details take `Description`, `Layout`, `Columns`, `ColumnSpan`, `ColumnStart`, `O
 
 ## Read-only and disabled editable fields
 
-An editable field can be read-only or disabled, always or for the records that match a condition:
+An editable field can be read-only, always or for the records that match a condition, or disabled:
 
 ```csharp
 resource.AllowEdit(edit => edit.Fields(fields =>
@@ -84,16 +84,15 @@ resource.AllowEdit(edit => edit.Fields(fields =>
     fields.Add(booking => booking.Reference).ReadOnly();
     fields.Add(booking => booking.Status);
     fields.Add(booking => booking.Price).ReadOnly(booking => booking.Status == BookingStatus.Confirmed);
-    fields.Add(booking => booking.HasDiscount);
-    fields.Add(booking => booking.DiscountCode).Disabled(booking => !booking.HasDiscount);
+    fields.Add(booking => booking.LegacyCode).Disabled();
 }));
 ```
 
 - **Read-only** means the value matters but can't be changed here. The editor looks normal, takes focus and posts its value. A property marked `[ReadOnly(true)]` or `[Editable(false)]`, or with no public setter, is also read-only, unless the field has a binder.
 - **Disabled** means the field doesn't apply. The editor is faded, takes no focus and doesn't post. A field that is both is disabled.
 - **The server ignores a posted value for either**, whatever the editor posts, including list, dictionary and lookup fields. Their validation errors are dropped too, since the user can't fix them.
-- **A condition is checked against the record as it loads**, or the new model on a create form, before the posted values are bound, so a posted value never decides it. A form shown again with errors checks it against the model it shows.
-- **Conditions are decided as the form renders.** A field doesn't become read-only or disabled live as other fields change in the browser; it does after saving. For items that depend on another field's value, use `DependsOn` ([relationships](relationships.md#items-that-depend-on-another-field)).
+- **A `ReadOnly` condition is checked against the record as it loads**, or the new model on a create form, before the posted values are bound, so a posted value never decides it. A form shown again with errors checks it against the model it shows.
+- **The condition is decided as the form renders.** A field doesn't become read-only live as other fields change in the browser; it does after saving. `Disabled()` takes no condition. For items that depend on another field's value, use `DependsOn` ([relationships](relationships.md#items-that-depend-on-another-field)).
 - In an inline editing row, a read-only field shows its value as the other rows do, and a disabled field renders its editor disabled ([inline editing](inline-editing.md)).
 - Prefer display fields for values that are never edited: they need no setter and format the value with a display.
 

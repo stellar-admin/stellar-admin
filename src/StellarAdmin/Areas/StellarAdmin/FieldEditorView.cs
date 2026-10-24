@@ -54,8 +54,7 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
     ///     Gets a value that indicates whether the field is disabled.
     /// </summary>
     /// <value>
-    ///     <see langword="true" /> if the field is disabled for the record; otherwise,
-    ///     <see langword="false" />.
+    ///     <see langword="true" /> if the field is disabled; otherwise, <see langword="false" />.
     /// </value>
     /// <remarks>
     ///     Render a disabled field's editor with <c>disabled</c>, so it doesn't post.
