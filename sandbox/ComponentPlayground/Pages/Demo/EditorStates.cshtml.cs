@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace ComponentPlayground.Pages.Demo;
 
 // The current normal, disabled and read-only states of every UI library editor, side by side,
-// for the read-only fields plan (docs/plans/read-only-fields.md).
+// for the read-only fields plan (docs/plans/archive/read-only-fields.md).
 public class EditorStates : PageModel
 {
     public EditorStatesModel Normal { get; set; } = new EditorStatesModel();

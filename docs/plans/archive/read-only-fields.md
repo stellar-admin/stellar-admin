@@ -1,6 +1,6 @@
 # Read-only and disabled states across the UI library
 
-Status: stage 1 built, verified and committed (2a1ca97, 2026-10-24). Stage 2 built and verified, not committed (2026-10-24).
+Status: completed (2026-10-24). Stage 1 in 2a1ca97; stage 2 in 3de3ed3, with the `Disabled` predicate dropped in 5d49d4c. The known gaps below are accepted until someone runs into them.
 
 Every UI library editor follows the web platform's read-only and disabled behaviour, so the two states mean the same thing on every component. The admin panel then chooses deliberately between them (stage 2).
 
