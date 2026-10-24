@@ -1,6 +1,6 @@
 # Array and dictionary editors
 
-Status: in progress. Approved 2026-10-24 with the five choices below; stage 1 (StellarAdmin.UI) built and committed 2026-10-24; stage 2 (admin panel) built 2026-10-24 and awaiting Jerrie's review. Prototype in `sandbox/html/array-dictionary-editors.html`.
+Status: completed (2026-10-24). Stage 1 (StellarAdmin.UI) built and committed 2026-10-24; stage 2 (admin panel) built and committed 2026-10-24 and accepted by Jerrie the same day. Prototype in `sandbox/html/array-dictionary-editors.html`.
 
 ## Summary
 
@@ -24,7 +24,7 @@ Settled with Jerrie during the prototype (2026-10-23 and 2026-10-24):
 - Drag and drop is our own, with pointer events and no library. It has the Sortable feel: the row lifts and follows the pointer, a slot shows where it lands, the other rows slide, and Escape cancels. Alt+↑/↓ moves the focused row.
 - No `EachItem` validation attribute. Apps that use the tag helpers without the admin panel get the browser checks; the server checks are theirs, as for any other input.
 - Not for many-to-many fields: those hold related records, not simple values. The stub's idea of using this editor for them is dropped.
-- Read-only for now uses the disabled select's fill with no add row, remove or handle. The look across all components is [read-only-fields](read-only-fields.md).
+- Read-only for now uses the disabled select's fill with no add row, remove or handle. The look across all components is [read-only-fields](../read-only-fields.md).
 
 Approved by Jerrie on 2026-10-24, with the plan:
 
@@ -185,7 +185,7 @@ The item sources live on `ChoiceEditor` today. Moving them into a part the selec
 - Inline row editing in the index grid. A list or dictionary field shows its display in an editing row.
 - Chips or tag input.
 - How an app stores a dictionary (EF Core needs a value converter or a JSON column); the editor only edits the property.
-- The read-only look across components ([read-only-fields](read-only-fields.md)).
+- The read-only look across components ([read-only-fields](../read-only-fields.md)).
 
 ## Stages
 

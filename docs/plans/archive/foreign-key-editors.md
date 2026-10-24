@@ -80,6 +80,6 @@ Checkpoint with Jerrie after step 1.
 
 ## Open
 
-- Built-in array and dictionary editors, for quickly entering a list of items or key-value pairs, get their own plan, [array-dictionary-editors](../array-dictionary-editors.md) (Jerrie, 2026-10-23). An array editor could then be the default for a many-to-many field whose related type isn't a resource.
+- Built-in array and dictionary editors, for quickly entering a list of items or key-value pairs, get their own plan, [array-dictionary-editors](array-dictionary-editors.md) (Jerrie, 2026-10-23). An array editor could then be the default for a many-to-many field whose related type isn't a resource.
 
 - There's no way to keep a number input for a foreign key to a registered resource, since no built-in editor renders one. Not needed unless someone asks.
