@@ -40,6 +40,7 @@ internal static class DemoNavigation
                 new DemoItem("Button Group", "/Demo/ButtonGroup"),
                 new DemoItem("Checkbox", "/Demo/Checkbox"),
                 new DemoItem("Image Upload", "/Demo/ImageUpload"),
+                new DemoItem("Editor States", "/Demo/EditorStates"),
                 new DemoItem("Field", "/Demo/Field"),
                 new DemoItem("Label", "/Demo/Label"),
                 new DemoItem("Input", "/Demo/Input"),

@@ -1,0 +1,462 @@
+@page
+@model ComponentPlayground.Pages.Demo.EditorStates
+@{
+    ViewData["Title"] = "Editor states";
+}
+
+@*
+    Each cell is its own form, so the line under it shows exactly what that control would post and
+    whether it is a tab stop. The read-only column passes readonly even to editors with no read-only
+    state, to show what that does today. "Admin panel" names what the admin panel renders for an
+    IsReadOnly field using that editor.
+*@
+
+<div class="es-toolbar">
+    <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Small" type="button" data-es-dark>Toggle dark</sa-button>
+    <sa-segmented-control name="es-density" value="default" aria-label="Density" data-es-density>
+        <sa-segmented-control-item value="compact">Compact</sa-segmented-control-item>
+        <sa-segmented-control-item value="default">Default</sa-segmented-control-item>
+        <sa-segmented-control-item value="comfortable">Comfortable</sa-segmented-control-item>
+    </sa-segmented-control>
+</div>
+
+<div class="es-table" data-es-table>
+    <div class="es-head">Editor</div>
+    <div class="es-head">Normal</div>
+    <div class="es-head">Disabled</div>
+    <div class="es-head">Read-only</div>
+
+    @* Input: text *@
+    <div class="es-name"><strong>Input · text</strong><span>readonly: native</span><span>Admin panel: readonly</span></div>
+    <form class="es-cell"><sa-input name="text-n" label="Tour name" value="Lisbon food walk"/></form>
+    <form class="es-cell"><sa-input name="text-d" label="Tour name" value="Lisbon food walk" disabled/></form>
+    <form class="es-cell"><sa-input name="text-r" label="Tour name" value="Lisbon food walk" readonly/></form>
+
+    @* Input: number *@
+    <div class="es-name"><strong>Input · number</strong><span>readonly: native</span><span>Admin panel: readonly</span></div>
+    <form class="es-cell"><sa-input name="number-n" type="number" label="Group size" value="12"/></form>
+    <form class="es-cell"><sa-input name="number-d" type="number" label="Group size" value="12" disabled/></form>
+    <form class="es-cell"><sa-input name="number-r" type="number" label="Group size" value="12" readonly/></form>
+
+    @* Input: date *@
+    <div class="es-name"><strong>Input · date</strong><span>readonly: native</span><span>Admin panel: readonly</span></div>
+    <form class="es-cell"><sa-input name="date-n" type="date" label="Departure" value="2026-11-14"/></form>
+    <form class="es-cell"><sa-input name="date-d" type="date" label="Departure" value="2026-11-14" disabled/></form>
+    <form class="es-cell"><sa-input name="date-r" type="date" label="Departure" value="2026-11-14" readonly/></form>
+
+    @* Input: time *@
+    <div class="es-name"><strong>Input · time</strong><span>readonly: native</span><span>Admin panel: readonly</span></div>
+    <form class="es-cell"><sa-input name="time-n" type="time" label="Meeting time" value="09:30"/></form>
+    <form class="es-cell"><sa-input name="time-d" type="time" label="Meeting time" value="09:30" disabled/></form>
+    <form class="es-cell"><sa-input name="time-r" type="time" label="Meeting time" value="09:30" readonly/></form>
+
+    @* Input: datetime-local *@
+    <div class="es-name"><strong>Input · datetime-local</strong><span>readonly: native</span><span>Admin panel: readonly</span></div>
+    <form class="es-cell"><sa-input name="datetime-n" type="datetime-local" label="Check-in" value="2026-11-14T15:00"/></form>
+    <form class="es-cell"><sa-input name="datetime-d" type="datetime-local" label="Check-in" value="2026-11-14T15:00" disabled/></form>
+    <form class="es-cell"><sa-input name="datetime-r" type="datetime-local" label="Check-in" value="2026-11-14T15:00" readonly/></form>
+
+    @* Input: file *@
+    <div class="es-name"><strong>Input · file</strong><span>readonly: not applicable to file inputs</span><span>Admin panel: not used</span></div>
+    <form class="es-cell"><sa-input name="file-n" type="file" label="Itinerary PDF"/></form>
+    <form class="es-cell"><sa-input name="file-d" type="file" label="Itinerary PDF" disabled/></form>
+    <form class="es-cell"><sa-input name="file-r" type="file" label="Itinerary PDF" readonly/></form>
+
+    @* Input group *@
+    <div class="es-name"><strong>Input group</strong><span>readonly: native, on the inner input</span><span>Admin panel: readonly (text input with affixes)</span></div>
+    <form class="es-cell">
+        <sa-input-group>
+            <sa-input-group-addon><sa-input-group-text>€</sa-input-group-text></sa-input-group-addon>
+            <sa-input-group-input name="group-n" value="1,250.00"/>
+            <sa-input-group-addon align="InputGroupAddonAlign.End"><sa-input-group-text>per traveller</sa-input-group-text></sa-input-group-addon>
+        </sa-input-group>
+    </form>
+    <form class="es-cell">
+        <sa-input-group>
+            <sa-input-group-addon><sa-input-group-text>€</sa-input-group-text></sa-input-group-addon>
+            <sa-input-group-input name="group-d" value="1,250.00" disabled/>
+            <sa-input-group-addon align="InputGroupAddonAlign.End"><sa-input-group-text>per traveller</sa-input-group-text></sa-input-group-addon>
+        </sa-input-group>
+    </form>
+    <form class="es-cell">
+        <sa-input-group>
+            <sa-input-group-addon><sa-input-group-text>€</sa-input-group-text></sa-input-group-addon>
+            <sa-input-group-input name="group-r" value="1,250.00" readonly/>
+            <sa-input-group-addon align="InputGroupAddonAlign.End"><sa-input-group-text>per traveller</sa-input-group-text></sa-input-group-addon>
+        </sa-input-group>
+    </form>
+
+    @* Input group: textarea *@
+    <div class="es-name"><strong>Input group · textarea</strong><span>readonly: native, on the inner textarea</span><span>Admin panel: not used</span></div>
+    <form class="es-cell">
+        <sa-input-group>
+            <sa-input-group-textarea name="grouptext-n">Vegetarian options at every stop.</sa-input-group-textarea>
+            <sa-input-group-addon align="InputGroupAddonAlign.Bottom"><sa-input-group-text>34 characters</sa-input-group-text></sa-input-group-addon>
+        </sa-input-group>
+    </form>
+    <form class="es-cell">
+        <sa-input-group>
+            <sa-input-group-textarea name="grouptext-d" disabled>Vegetarian options at every stop.</sa-input-group-textarea>
+            <sa-input-group-addon align="InputGroupAddonAlign.Bottom"><sa-input-group-text>34 characters</sa-input-group-text></sa-input-group-addon>
+        </sa-input-group>
+    </form>
+    <form class="es-cell">
+        <sa-input-group>
+            <sa-input-group-textarea name="grouptext-r" readonly>Vegetarian options at every stop.</sa-input-group-textarea>
+            <sa-input-group-addon align="InputGroupAddonAlign.Bottom"><sa-input-group-text>34 characters</sa-input-group-text></sa-input-group-addon>
+        </sa-input-group>
+    </form>
+
+    @* Textarea *@
+    <div class="es-name"><strong>Textarea</strong><span>readonly: native</span><span>Admin panel: readonly</span></div>
+    <form class="es-cell"><sa-textarea name="textarea-n" label="Notes" rows="3">Meet at the Rossio fountain.</sa-textarea></form>
+    <form class="es-cell"><sa-textarea name="textarea-d" label="Notes" rows="3" disabled>Meet at the Rossio fountain.</sa-textarea></form>
+    <form class="es-cell"><sa-textarea name="textarea-r" label="Notes" rows="3" readonly>Meet at the Rossio fountain.</sa-textarea></form>
+
+    @* Input OTP *@
+    <div class="es-name"><strong>Input OTP</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <form class="es-cell"><sa-input-otp name="otp-n" maxlength="6" value="482913" label="Booking code"/></form>
+    <form class="es-cell"><sa-input-otp name="otp-d" maxlength="6" value="482913" label="Booking code" disabled="true"/></form>
+    <form class="es-cell"><sa-input-otp name="otp-r" maxlength="6" value="482913" label="Booking code" readonly/></form>
+
+    @* Select *@
+    <div class="es-name"><strong>Select</strong><span>readonly: none (native select has no read-only state)</span><span>Admin panel: disabled</span></div>
+    <form class="es-cell">
+        <sa-select name="select-n" label="Cabin class">
+            <option value="economy">Economy</option>
+            <option value="business" selected>Business</option>
+            <option value="first">First</option>
+        </sa-select>
+    </form>
+    <form class="es-cell">
+        <sa-select name="select-d" label="Cabin class" disabled>
+            <option value="economy">Economy</option>
+            <option value="business" selected>Business</option>
+            <option value="first">First</option>
+        </sa-select>
+    </form>
+    <form class="es-cell">
+        <sa-select name="select-r" label="Cabin class" readonly>
+            <option value="economy">Economy</option>
+            <option value="business" selected>Business</option>
+            <option value="first">First</option>
+        </sa-select>
+    </form>
+
+    @* Checkbox *@
+    <div class="es-name"><strong>Checkbox</strong><span>readonly: none (ignored on checkboxes)</span><span>Admin panel: disabled</span></div>
+    <form class="es-cell"><sa-input type="checkbox" name="checkbox-n" value="true" label="Travel insurance" description="Covers cancellations" checked/></form>
+    <form class="es-cell"><sa-input type="checkbox" name="checkbox-d" value="true" label="Travel insurance" description="Covers cancellations" checked disabled/></form>
+    <form class="es-cell"><sa-input type="checkbox" name="checkbox-r" value="true" label="Travel insurance" description="Covers cancellations" checked readonly/></form>
+
+    @* Radio *@
+    <div class="es-name"><strong>Radio</strong><span>readonly: none (ignored on radios)</span><span>Admin panel: not used (radio group)</span></div>
+    @foreach (var (suffix, state) in new[] { ("n", ""), ("d", "disabled"), ("r", "readonly") })
+    {
+        <form class="es-cell">
+            <sa-field-group data-slot="radio-group">
+                @if (state == "disabled")
+                {
+                    <sa-input type="radio" name="@($"radio-{suffix}")" value="king" label="1 King" disabled/>
+                    <sa-input type="radio" name="@($"radio-{suffix}")" value="twin" label="2 Single" checked disabled/>
+                }
+                else if (state == "readonly")
+                {
+                    <sa-input type="radio" name="@($"radio-{suffix}")" value="king" label="1 King" readonly/>
+                    <sa-input type="radio" name="@($"radio-{suffix}")" value="twin" label="2 Single" checked readonly/>
+                }
+                else
+                {
+                    <sa-input type="radio" name="@($"radio-{suffix}")" value="king" label="1 King"/>
+                    <sa-input type="radio" name="@($"radio-{suffix}")" value="twin" label="2 Single" checked/>
+                }
+            </sa-field-group>
+        </form>
+    }
+
+    @* Checkbox group *@
+    <div class="es-name"><strong>Checkbox group</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <form class="es-cell">
+        <sa-checkbox-group name="cbgroup-n" values="@(["insurance"])" label="Extras">
+            <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
+            <sa-checkbox-group-item value="transfer" description="Airport pickup">Transfer</sa-checkbox-group-item>
+        </sa-checkbox-group>
+    </form>
+    <form class="es-cell">
+        <sa-checkbox-group name="cbgroup-d" values="@(["insurance"])" label="Extras" disabled="true">
+            <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
+            <sa-checkbox-group-item value="transfer" description="Airport pickup">Transfer</sa-checkbox-group-item>
+        </sa-checkbox-group>
+    </form>
+    <form class="es-cell">
+        <sa-checkbox-group name="cbgroup-r" values="@(["insurance"])" label="Extras" readonly>
+            <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
+            <sa-checkbox-group-item value="transfer" description="Airport pickup">Transfer</sa-checkbox-group-item>
+        </sa-checkbox-group>
+    </form>
+
+    @* Checkbox group: cards *@
+    <div class="es-name"><strong>Checkbox group · cards</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <form class="es-cell">
+        <sa-checkbox-group name="cbcards-n" values="@(["insurance"])" label="Extras" variant="CheckboxGroupVariant.ChoiceCard">
+            <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
+            <sa-checkbox-group-item value="transfer" description="Airport pickup">Transfer</sa-checkbox-group-item>
+        </sa-checkbox-group>
+    </form>
+    <form class="es-cell">
+        <sa-checkbox-group name="cbcards-d" values="@(["insurance"])" label="Extras" variant="CheckboxGroupVariant.ChoiceCard" disabled="true">
+            <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
+            <sa-checkbox-group-item value="transfer" description="Airport pickup">Transfer</sa-checkbox-group-item>
+        </sa-checkbox-group>
+    </form>
+    <form class="es-cell">
+        <sa-checkbox-group name="cbcards-r" values="@(["insurance"])" label="Extras" variant="CheckboxGroupVariant.ChoiceCard" readonly>
+            <sa-checkbox-group-item value="insurance" description="Protection for your trip">Insurance</sa-checkbox-group-item>
+            <sa-checkbox-group-item value="transfer" description="Airport pickup">Transfer</sa-checkbox-group-item>
+        </sa-checkbox-group>
+    </form>
+
+    @* Radio group *@
+    <div class="es-name"><strong>Radio group</strong><span>readonly: none</span><span>Admin panel: disabled (each item)</span></div>
+    <form class="es-cell">
+        <sa-radio-group name="radiogroup-n" value="express" label="Delivery">
+            <sa-radio-group-item value="standard" description="Arrives in five days">Standard</sa-radio-group-item>
+            <sa-radio-group-item value="express" description="Arrives tomorrow">Express</sa-radio-group-item>
+        </sa-radio-group>
+    </form>
+    <form class="es-cell">
+        <sa-radio-group name="radiogroup-d" value="express" label="Delivery" disabled="true">
+            <sa-radio-group-item value="standard" description="Arrives in five days">Standard</sa-radio-group-item>
+            <sa-radio-group-item value="express" description="Arrives tomorrow">Express</sa-radio-group-item>
+        </sa-radio-group>
+    </form>
+    <form class="es-cell">
+        <sa-radio-group name="radiogroup-r" value="express" label="Delivery" readonly>
+            <sa-radio-group-item value="standard" description="Arrives in five days">Standard</sa-radio-group-item>
+            <sa-radio-group-item value="express" description="Arrives tomorrow">Express</sa-radio-group-item>
+        </sa-radio-group>
+    </form>
+
+    @* Switch *@
+    <div class="es-name"><strong>Switch</strong><span>readonly: none (checkbox-backed)</span><span>Admin panel: disabled (Toggle editor)</span></div>
+    <form class="es-cell"><sa-switch name="switch-n" value="true" label="Pet friendly" checked/></form>
+    <form class="es-cell"><sa-switch name="switch-d" value="true" label="Pet friendly" checked disabled/></form>
+    <form class="es-cell"><sa-switch name="switch-r" value="true" label="Pet friendly" checked readonly/></form>
+
+    @* Toggle *@
+    <div class="es-name"><strong>Toggle</strong><span>readonly: none (checkbox-backed)</span><span>Admin panel: not used</span></div>
+    @foreach (var state in new[] { "", "disabled", "readonly" })
+    {
+        <form class="es-cell">
+            <div class="flex gap-2">
+                @if (state == "disabled")
+                {
+                    <sa-toggle name="toggle-d" value="true" checked disabled aria-label="Wishlist"><sa-icon name="heart"/></sa-toggle>
+                    <sa-toggle name="toggle-d2" value="true" variant="ToggleVariant.Outline" checked disabled aria-label="Pets"><sa-icon name="dog"/> Pets</sa-toggle>
+                }
+                else if (state == "readonly")
+                {
+                    <sa-toggle name="toggle-r" value="true" checked readonly aria-label="Wishlist"><sa-icon name="heart"/></sa-toggle>
+                    <sa-toggle name="toggle-r2" value="true" variant="ToggleVariant.Outline" checked readonly aria-label="Pets"><sa-icon name="dog"/> Pets</sa-toggle>
+                }
+                else
+                {
+                    <sa-toggle name="toggle-n" value="true" checked aria-label="Wishlist"><sa-icon name="heart"/></sa-toggle>
+                    <sa-toggle name="toggle-n2" value="true" variant="ToggleVariant.Outline" checked aria-label="Pets"><sa-icon name="dog"/> Pets</sa-toggle>
+                }
+            </div>
+        </form>
+    }
+
+    @* Toggle group *@
+    <div class="es-name"><strong>Toggle group</strong><span>readonly: none; disabled only per item</span><span>Admin panel: disabled (each item)</span></div>
+    <form class="es-cell">
+        <sa-toggle-group name="tgroup-n" value="list" label="Results view">
+            <sa-toggle-group-item value="list" aria-label="List view"><sa-icon name="list"/></sa-toggle-group-item>
+            <sa-toggle-group-item value="grid" aria-label="Grid view"><sa-icon name="layout-grid"/></sa-toggle-group-item>
+            <sa-toggle-group-item value="map" aria-label="Map view"><sa-icon name="map"/></sa-toggle-group-item>
+        </sa-toggle-group>
+    </form>
+    <form class="es-cell">
+        <sa-toggle-group name="tgroup-d" value="list" label="Results view">
+            <sa-toggle-group-item value="list" disabled="true" aria-label="List view"><sa-icon name="list"/></sa-toggle-group-item>
+            <sa-toggle-group-item value="grid" disabled="true" aria-label="Grid view"><sa-icon name="layout-grid"/></sa-toggle-group-item>
+            <sa-toggle-group-item value="map" disabled="true" aria-label="Map view"><sa-icon name="map"/></sa-toggle-group-item>
+        </sa-toggle-group>
+    </form>
+    <form class="es-cell">
+        <sa-toggle-group name="tgroup-r" value="list" label="Results view" readonly>
+            <sa-toggle-group-item value="list" aria-label="List view"><sa-icon name="list"/></sa-toggle-group-item>
+            <sa-toggle-group-item value="grid" aria-label="Grid view"><sa-icon name="layout-grid"/></sa-toggle-group-item>
+            <sa-toggle-group-item value="map" aria-label="Map view"><sa-icon name="map"/></sa-toggle-group-item>
+        </sa-toggle-group>
+    </form>
+
+    @* Segmented control *@
+    <div class="es-name"><strong>Segmented control</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <form class="es-cell">
+        <sa-segmented-control name="seg-n" value="Stays" label="Travel">
+            <sa-segmented-control-item value="Flights">Flights</sa-segmented-control-item>
+            <sa-segmented-control-item value="Stays">Stays</sa-segmented-control-item>
+            <sa-segmented-control-item value="Cars">Cars</sa-segmented-control-item>
+        </sa-segmented-control>
+    </form>
+    <form class="es-cell">
+        <sa-segmented-control name="seg-d" value="Stays" label="Travel" disabled="true">
+            <sa-segmented-control-item value="Flights">Flights</sa-segmented-control-item>
+            <sa-segmented-control-item value="Stays">Stays</sa-segmented-control-item>
+            <sa-segmented-control-item value="Cars">Cars</sa-segmented-control-item>
+        </sa-segmented-control>
+    </form>
+    <form class="es-cell">
+        <sa-segmented-control name="seg-r" value="Stays" label="Travel" readonly>
+            <sa-segmented-control-item value="Flights">Flights</sa-segmented-control-item>
+            <sa-segmented-control-item value="Stays">Stays</sa-segmented-control-item>
+            <sa-segmented-control-item value="Cars">Cars</sa-segmented-control-item>
+        </sa-segmented-control>
+    </form>
+
+    @* Slider *@
+    <div class="es-name"><strong>Slider</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <form class="es-cell"><sa-slider name="slider-n" value="60" max="100" label="Difficulty"/></form>
+    <form class="es-cell"><sa-slider name="slider-d" value="60" max="100" label="Difficulty" disabled="true"/></form>
+    <form class="es-cell"><sa-slider name="slider-r" value="60" max="100" label="Difficulty" readonly/></form>
+
+    @* Icon picker *@
+    <div class="es-name"><strong>Icon picker · picker</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <form class="es-cell">
+        <sa-icon-picker name="icon-n" value="ship" label="Tour icon">
+            <sa-icon name="ship"/><sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/>
+        </sa-icon-picker>
+    </form>
+    <form class="es-cell">
+        <sa-icon-picker name="icon-d" value="ship" label="Tour icon" disabled="true">
+            <sa-icon name="ship"/><sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/>
+        </sa-icon-picker>
+    </form>
+    <form class="es-cell">
+        <sa-icon-picker name="icon-r" value="ship" label="Tour icon" readonly>
+            <sa-icon name="ship"/><sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/>
+        </sa-icon-picker>
+    </form>
+
+    @* Icon picker: inline *@
+    <div class="es-name"><strong>Icon picker · inline</strong><span>readonly: none</span><span>Admin panel: disabled</span></div>
+    <form class="es-cell">
+        <sa-icon-picker name="iconinline-n" value="sailboat" layout="IconPickerLayout.Inline" label="Trip style">
+            <sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/><sa-icon name="tree-palm"/>
+        </sa-icon-picker>
+    </form>
+    <form class="es-cell">
+        <sa-icon-picker name="iconinline-d" value="sailboat" layout="IconPickerLayout.Inline" label="Trip style" disabled="true">
+            <sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/><sa-icon name="tree-palm"/>
+        </sa-icon-picker>
+    </form>
+    <form class="es-cell">
+        <sa-icon-picker name="iconinline-r" value="sailboat" layout="IconPickerLayout.Inline" label="Trip style" readonly>
+            <sa-icon name="sailboat"/><sa-icon name="mountain"/><sa-icon name="tent"/><sa-icon name="tree-palm"/>
+        </sa-icon-picker>
+    </form>
+
+    @* Image upload *@
+    <div class="es-name"><strong>Image upload</strong><span>readonly: none</span><span>Admin panel: disabled (no upload URL)</span></div>
+    <form class="es-cell"><sa-image-upload name="image-n" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" label="Cover photo"/></form>
+    <form class="es-cell"><sa-image-upload name="image-d" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" label="Cover photo" disabled="true"/></form>
+    <form class="es-cell"><sa-image-upload name="image-r" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" label="Cover photo" readonly/></form>
+
+    @* Image upload: compact *@
+    <div class="es-name"><strong>Image upload · compact</strong><span>readonly: none</span><span>Admin panel: disabled (no upload URL)</span></div>
+    <form class="es-cell"><sa-image-upload name="imagec-n" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" layout="ImageUploadLayout.Compact" label="Cover photo"/></form>
+    <form class="es-cell"><sa-image-upload name="imagec-d" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" layout="ImageUploadLayout.Compact" label="Cover photo" disabled="true"/></form>
+    <form class="es-cell"><sa-image-upload name="imagec-r" value="lisbon.jpg" src="/images/lisbon.jpg" upload-url="/upload" layout="ImageUploadLayout.Compact" label="Cover photo" readonly/></form>
+
+    @* Rich text editor *@
+    <div class="es-name"><strong>Rich text editor</strong><span>readonly: tag helper attribute</span><span>disabled: none (ignored)</span><span>Admin panel: readonly</span></div>
+    <form class="es-cell"><sa-rich-text-editor name="rte-n" label="Booking terms" rows="3" value="<p>Free cancellation up to <strong>14 days</strong> before departure.</p>"/></form>
+    <form class="es-cell"><sa-rich-text-editor name="rte-d" label="Booking terms" rows="3" disabled value="<p>Free cancellation up to <strong>14 days</strong> before departure.</p>"/></form>
+    <form class="es-cell"><sa-rich-text-editor name="rte-r" label="Booking terms" rows="3" readonly="true" value="<p>Free cancellation up to <strong>14 days</strong> before departure.</p>"/></form>
+
+    @* List editor *@
+    <div class="es-name"><strong>List editor</strong><span>readonly: tag helper attribute</span><span>disabled: none (ignored)</span><span>Admin panel: readonly</span></div>
+    <form class="es-cell"><sa-list-editor asp-for="Normal.Highlights"/></form>
+    <form class="es-cell"><sa-list-editor asp-for="Disabled.Highlights" disabled/></form>
+    <form class="es-cell"><sa-list-editor asp-for="ReadOnly.Highlights" readonly="true"/></form>
+
+    @* Dictionary editor *@
+    <div class="es-name"><strong>Dictionary editor</strong><span>readonly: tag helper attribute</span><span>disabled: none (ignored)</span><span>Admin panel: readonly</span></div>
+    <form class="es-cell"><sa-dictionary-editor asp-for="Normal.LocalNames" key-label="Language" value-label="Local name"/></form>
+    <form class="es-cell"><sa-dictionary-editor asp-for="Disabled.LocalNames" key-label="Language" value-label="Local name" disabled/></form>
+    <form class="es-cell"><sa-dictionary-editor asp-for="ReadOnly.LocalNames" key-label="Language" value-label="Local name" readonly="true"/></form>
+</div>
+
+<style>
+    .es-toolbar { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
+    .es-table { display: grid; grid-template-columns: 13rem repeat(3, minmax(0, 1fr)); gap: 0; }
+    .es-table > * { padding: 1rem; border-bottom: 1px solid var(--sa-color-line); min-width: 0; }
+    .es-head { font-weight: 600; font-size: 0.875rem; position: sticky; top: 0; z-index: 1; background: var(--sa-color-surface); }
+    .es-name { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.8125rem; color: var(--sa-color-ink-muted); }
+    .es-name strong { color: var(--sa-color-ink); font-size: 0.875rem; }
+    .es-cell { display: flex; flex-direction: column; gap: 0.75rem; }
+    .es-report { font: 0.6875rem/1.4 ui-monospace, monospace; color: var(--sa-color-ink-muted); overflow-wrap: anywhere; }
+    .es-report b { font-weight: 600; }
+    .es-report .es-no { color: var(--sa-color-danger-text); }
+    @@media (max-width: 64rem) {
+        .es-table { grid-template-columns: minmax(0, 1fr); }
+        .es-head { display: none; }
+        .es-cell::before { content: attr(data-es-state); font-size: 0.75rem; font-weight: 600; }
+        .es-table > .es-cell { border-bottom-style: dashed; }
+    }
+</style>
+
+@section Scripts {
+    <script type="module">
+        const states = ["Normal", "Disabled", "Read-only"];
+        const cells = [...document.querySelectorAll("[data-es-table] .es-cell")];
+        cells.forEach((cell, index) => {
+            cell.dataset.esState = states[index % 3];
+            cell.addEventListener("submit", event => event.preventDefault());
+        });
+
+        // What each cell's form would post, and whether anything in it takes keyboard focus
+        const focusable = "input:not([type=hidden]), select, textarea, button, [tabindex], [contenteditable=true]";
+
+        const escape = text => text.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+
+        function report(cell) {
+            let line = cell.querySelector(":scope > .es-report");
+            if (!line) {
+                line = document.createElement("div");
+                line.className = "es-report";
+                cell.append(line);
+            }
+            const posts = [...new FormData(cell)].map(([name, value]) =>
+                `${name}=${value instanceof File ? `[file ${value.name || "none"}]` : escape(JSON.stringify(value).slice(0, 60))}`);
+            const tabStops = [...cell.querySelectorAll(focusable)]
+                .filter(element => !element.closest(".es-report") && !element.matches(":disabled") && element.tabIndex >= 0
+                    && element.getClientRects().length > 0);
+            line.innerHTML = `<b>posts:</b> ${posts.length ? posts.join(", ") : '<span class="es-no">nothing</span>'}<br>`
+                + `<b>tab stops:</b> ${tabStops.length || '<span class="es-no">none</span>'}`;
+        }
+
+        const refresh = () => cells.forEach(report);
+        refresh();
+        document.addEventListener("input", refresh);
+        document.addEventListener("change", refresh);
+        // Custom elements and the rich text editor's bundle upgrade after the first pass
+        customElements.whenDefined("sel-collection-editor").then(refresh);
+        setTimeout(refresh, 500);
+        setTimeout(refresh, 2000);
+
+        document.querySelector("[data-es-dark]").addEventListener("click", () =>
+            document.documentElement.classList.toggle("dark"));
+        document.querySelector("[data-es-density]").addEventListener("change", event => {
+            const table = document.querySelector("[data-es-table]");
+            if (event.target.value === "default") {
+                table.removeAttribute("data-sa-density");
+            } else {
+                table.setAttribute("data-sa-density", event.target.value);
+            }
+            event.stopPropagation();
+        });
+    </script>
+}
