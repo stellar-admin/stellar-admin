@@ -398,6 +398,29 @@ When the reader needs to know whether each item in a list supports something, pu
 - Before: "These editors work in a cell: …" and "These editors don't work in a cell: …"
 - After: a table with the editor, its method, and `<Yes />` or `<No />` under "Works in a cell".
 
+### Don't describe a call the example right below makes obvious
+
+When the example that follows plainly shows a call, don't spell it out in the prose before it as well. Keep the sentence where the call isn't obvious from the example.
+
+- Before: "To add the page, call `AllowView()` on the resource. In its callback, call `Fields()` to add the page's fields. The example below adds a view page for bookings…"
+- After: "To add the page, call `AllowView()` on the resource. The example below adds a view page for bookings…"
+
+### State the condition, not "then"
+
+Don't make the reader work out what "then" follows from. Name the condition.
+
+- Before: "The index page then displays a view button, with an eye icon, on each row."
+- After: "When a view page is enabled, the index page displays a view button on each row."
+
+Leave out visual details the UI makes obvious, such as the icon on a button.
+
+### Describe configuration as what's enabled, not what people can do
+
+"People can" reads as a permission, which the reader may take to mean authorization. When a behavior depends on configuration, say what's enabled.
+
+- Before: "if people can [delete](/docs/admin/delete) records, a **Delete** button."
+- After: "if [deleting is enabled](/docs/admin/delete), a **Delete** button."
+
 ## Style
 
 Choices made on feel. Follow them, but they aren't rules to argue from.
