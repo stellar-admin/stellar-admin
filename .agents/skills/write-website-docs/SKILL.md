@@ -127,6 +127,11 @@ Prefer a verb that says what happens over "gets", "has" or "does".
 
 If a sentence moves to a different topic, start a new paragraph. In the introduction, replacing a page with your own view moved out of the paragraph about editors.
 
+Keep closely related points about one feature in the same paragraph. Two short paragraphs of one sentence each look odd.
+
+- Before: "StellarAdmin loads a panel's data the first time someone selects its tab." and "If you add only one panel, StellarAdmin displays it without tabs." as two paragraphs.
+- After: "StellarAdmin loads a panel's data the first time someone selects its tab. If you add only one panel, StellarAdmin displays it without tabs."
+
 ### Say what each package does
 
 Give each package's job, and don't make an optional package sound required.
@@ -311,12 +316,40 @@ When you name a label the reader sees on screen, such as a button, a tab or a me
 - After: "the **All** and **Pending** scopes", "the **Create** button"
 - Unchanged: "`CreateLabel` defaults to "Create"", because that's a string value.
 
+### Write keystrokes with `<kbd>`
+
+Put each key in a `<kbd>` element, named as it's printed on the keyboard, and join a combination with "+" and no spaces. Write the Mac key as "Command", and the Escape key as "Esc". Use "press" for keys.
+
+- Before: "Pressing Enter in an input, or Ctrl+Enter (Cmd+Enter on a Mac) in any field, saves the row. Pressing Escape cancels."
+- After: "Press `<kbd>Enter</kbd>` in an input, or `<kbd>Ctrl</kbd>+<kbd>Enter</kbd>` (`<kbd>Command</kbd>+<kbd>Enter</kbd>` on a Mac) in any field, to save the row. Press `<kbd>Esc</kbd>` to cancel."
+
 ### Don't use "display" as a verb next to a display
 
 A *display*, such as `NumberDisplay`, is what renders a value, the counterpart of an editor, as in ASP.NET's `DisplayFor()` and `EditorFor()`. When a sentence names a display, use "render" or "show" for the verb, so the reader doesn't have to work out which "display" is the noun. Call it a "display type" the first time a page mentions it.
 
 - Before: "`UseDisplay<TDisplay>()` | Displays the value with a different display."
 - After: "`UseDisplay<TDisplay>()` | Renders the value with a different display type."
+
+### Open a section with the problem it solves
+
+Say what situation the reader is in before what to do about it, so they know whether the section applies to them.
+
+- Before: "When the details need data that the row's record doesn't have, load the data when someone expands the row, so that the index page doesn't load it for every row."
+- After: "Your details may need data that isn't part of the row's record, such as related records or data from another service. Instead of loading this data for every row on the index page, StellarAdmin can load it only when someone expands a row."
+
+### Document each builder's settings where it's covered
+
+Don't refer the reader to another section's table for the settings a builder shares. Give the builder its own example and table, so the reader sees what's available without assembling it.
+
+- Before: "The `UseInlineRow()` callback of `AllowEdit()` takes the same `DimOtherRows` and `AfterSave` settings."
+- After: a "Configuring the edited row" section with its own example and a table of `DimOtherRows` and `AfterSave`.
+
+### Show yes/no comparisons as a table with ticks and crosses
+
+When the reader needs to know whether each item in a list supports something, put the items in a table, one row each, and use the `<Yes />` and `<No />` MDX components for the answer. They render a tick or a cross, with the word for screen readers.
+
+- Before: "These editors work in a cell: …" and "These editors don't work in a cell: …"
+- After: a table with the editor, its method, and `<Yes />` or `<No />` under "Works in a cell".
 
 ## Style
 
@@ -332,3 +365,4 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - Write "must", not "has to": "The default sort must be on a sortable column."
 - Prefer "display" over "show" for what appears on screen: "Radio groups and checkbox groups display their options in a single column." "Display" needs an object or the passive ("the media is displayed"), so rephrase rather than write "the option displays". Keep "show" where it pairs with "hide" or matches an API name like `ShowMedia`, and use "render" or "show" in a sentence that names a display type.
 - Prefer naming the things over a vague stand-in like "what to return", but go by what reads best: "StellarAdmin passes the requested search, scope, sort and page, and the keys of the records to return, via the properties of the `request` parameter", not "StellarAdmin passes what to return via the properties of the `request` parameter".
+- Write "rendered using" a partial view, not "rendered from": "The details are rendered using a partial view that you write."
