@@ -185,6 +185,34 @@ When you mention something another page explains, link to it there.
 - Before: "`UseResource<TResource>()` | The records of another resource."
 - After: "… using the [title and reference information](/docs/admin/titles-and-references) of that resource for the title, description and media."
 
+### Name the exact code element
+
+When the reader has to find something in their code, name the property, the parameter and the method, not a loose description of where it is.
+
+- Before: "StellarAdmin passes the sort and the page to its `ListAsync()` method in the request:"
+- After: "StellarAdmin passes the requested sort and page via the `Sort` and `Paging` properties of the `request` parameter when calling the `ListAsync()` method:"
+
+### Use one term for one thing
+
+Use the same word for a concept throughout a page, and use the API's word. Two words make the reader wonder whether there are two concepts.
+
+- Before: "the data source must implement sorting and pagination", on a page about `EnablePaging()`.
+- After: "the data source must implement sorting and paging"
+
+### Show the code for anything the reader implements
+
+When the reader writes code against a contract, such as a data source's `ListAsync()`, show it in an example as well as describing it. Prose alone leaves them to work out the code.
+
+- Before: a sentence naming `ResourceListRequest.Sort` and `ResourceListRequest.Paging`, then a link.
+- After: a table of what `Sort` and `Paging` hold, and an example that sorts and pages the records.
+
+### Examples must follow the API's own advice
+
+Readers copy examples, so an example that breaks a documented requirement spreads the bug.
+
+- Before: a data source that sorted suppliers by name only, although `ListAsync()` says to break ties with a unique key when paging.
+- After: `suppliers.OrderBy(supplier => supplier.Name).ThenBy(supplier => supplier.Code)`
+
 ## Style
 
 Choices made on feel. Follow them, but they aren't rules to argue from.
@@ -196,4 +224,5 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - Don't restate what happens if a step is skipped once the step already says to do it. This is judgement, not a rule: if something becomes a common installation issue, call it out more.
 - Avoid marketing words like "rapidly".
 - "Unless specified otherwise", not "Unless you say otherwise".
+- Write "must", not "has to": "The default sort must be on a sortable column."
 - Prefer "display" over "show" for what appears on screen: "Radio groups and checkbox groups display their options in a single column." "Display" needs an object or the passive ("the media is displayed"), so rephrase rather than write "the option displays". Keep "show" where it pairs with "hide" or matches an API name like `ShowMedia`.
