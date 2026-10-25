@@ -155,6 +155,18 @@ Name what to look for in the code, not only "the example below".
 
 - Added: "The example below defines `AddGuides()` in the `GuidesAdmin` class:"
 
+When the paragraph before the code block is about something else, give the intro its own paragraph.
+
+- Before: the recommendation to use `[Display]` and "The example below sets the label and the help text of `DepartureDate`:" in one paragraph.
+- After: the recommendation, then the intro as its own paragraph.
+
+### Show the full nesting when a setting applies at several levels
+
+When a setting can be made at several levels, such as every form, one form and one section, show one example from `AddStellarAdmin()` down to the deepest level. Keep only the calls that matter, and put a comment at each level. Separate one-line snippets leave the reader to work out where each line goes.
+
+- Before: `section.Layout = …`, `edit.SectionLayout = …` and `admin.ConfigureUI(…)` as three unrelated lines.
+- After: one `AddStellarAdmin()` example that sets the layout for every form, for the trip edit page and for its **Pricing** section, with "// Configures the layout for every form" and similar comments.
+
 ### Keep examples to the section's topic
 
 An example shows only what its section is about. Settings from other sections make the reader work out which part matters. Where the point is the result, show the result.
@@ -201,6 +213,13 @@ When you mention something another page explains, link to it there.
 - Before: "`UseResource<TResource>()` | The records of another resource."
 - After: "… using the [title and reference information](/docs/admin/titles-and-references) of that resource for the title, description and media."
 
+Put the link on a noun in the sentence, rather than ending with a bare "See [page]." A "see" that says why to follow the link is fine: "To change the defaults for every resource, see [global labels]."
+
+- Before: "To change how the form's sections look, set `SectionLayout`. See [layout](/docs/admin/form-layout#choosing-how-sections-look)."
+- After: "To change how the form's sections look, set `SectionLayout` to one of the [section layouts](/docs/admin/form-layout#choosing-how-sections-look)."
+- Before: "Lets people sort the grid by the column. See [sorting and paging](/docs/admin/sorting-and-paging)."
+- After: "Lets people [sort the grid](/docs/admin/sorting-and-paging) by the column."
+
 ### Name the exact code element
 
 When the reader has to find something in their code, name the property, the parameter and the method, not a loose description of where it is.
@@ -240,7 +259,7 @@ A specific element the reader writes is code, so write it as code: the StellarAd
 
 ### Make link text match the linked page's title
 
-The reader should recognize the page from the sidebar when they land on it.
+In a "see" reference, the reader should recognize the page from the sidebar when they land on it. A link on a noun inside a sentence uses the noun that fits the sentence instead, such as "[sort the grid]" for the sorting and paging page.
 
 - Before: "See [sidebar](/docs/admin/sidebar) for groups and ordering."
 - After: "See [sidebar and links](/docs/admin/sidebar) for groups and ordering.", the title of that page.
@@ -274,6 +293,34 @@ When a section switches from one type to another, the reader has to map one exam
 
 - Before: `TripExtra` in the table of defaults, then `Trip` with "tours" in the URLs and the code to change them.
 - After: `TripExtra` throughout, with the `"add-ons"` slug.
+
+### Say "prefer" and why when you recommend an option
+
+When one way of doing something is better than another, say "prefer" and give the reason in the same sentence.
+
+- Before: "The best fix is `[Display]` on the model, because validation messages use it too."
+- After: "To label a field, prefer the `[Display]` attribute on the property over setting `Title`, so that the label and the validation messages use the same name."
+
+### Explain a problem from its cause
+
+When you warn about a problem, say what causes it before the symptom and the fix. Without the cause, the reader can't tell whether their case is affected.
+
+- Before: "StellarAdmin calls the factory when it displays the create page, and again when someone saves it, so a value the factory generates is generated twice."
+- After: "StellarAdmin calls the factory twice: when someone opens the create page, and again when they save. A reference that the factory generates randomly therefore gets a different random value on each call."
+
+### Don't explain what the framework already documents
+
+Name the framework mechanism StellarAdmin uses, such as ASP.NET Core model validation, and cover only what StellarAdmin adds or changes. Point to tools that plug into the mechanism, so the reader knows they work.
+
+- Before: "It checks data annotations, such as `[Required]`, `[StringLength]`, `[Range]` and `[EmailAddress]`, and calls `Validate()` on a model that implements `IValidatableObject`."
+- After: "StellarAdmin runs ASP.NET Core model validation before it saves the record.", and a callout that validation libraries that plug into the pipeline, such as FluentValidation, work too.
+
+### Split a page that covers two subjects
+
+When a page covers two subjects that a reader looks for separately, make two pages. An intro that has to join them, such as "You can set the values a new record starts with, and add your own checks", is a sign.
+
+- Before: "Defaults and validation"
+- After: "Setting default values" and "Validating forms"
 
 ### Recommend the accepted practice first
 
@@ -366,3 +413,4 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - Prefer "display" over "show" for what appears on screen: "Radio groups and checkbox groups display their options in a single column." "Display" needs an object or the passive ("the media is displayed"), so rephrase rather than write "the option displays". Keep "show" where it pairs with "hide" or matches an API name like `ShowMedia`, and use "render" or "show" in a sentence that names a display type.
 - Prefer naming the things over a vague stand-in like "what to return", but go by what reads best: "StellarAdmin passes the requested search, scope, sort and page, and the keys of the records to return, via the properties of the `request` parameter", not "StellarAdmin passes what to return via the properties of the `request` parameter".
 - Write "rendered using" a partial view, not "rendered from": "The details are rendered using a partial view that you write."
+- Drop words that repeat what's already said: "StellarAdmin loads the related record", not "StellarAdmin loads the related record with the record".
