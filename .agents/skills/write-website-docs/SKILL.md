@@ -141,6 +141,10 @@ Put a sentence before each code block or screenshot that says what it shows, so 
 - Added: "The example below loads the options from a service registered with dependency injection."
 - Added: "Using the radio group editor with a property of type `TripDifficulty` will display the following:", before a screenshot.
 
+Name what to look for in the code, not only "the example below".
+
+- Added: "The example below defines `AddGuides()` in the `GuidesAdmin` class:"
+
 ### Keep examples to the section's topic
 
 An example shows only what its section is about. Settings from other sections make the reader work out which part matters. Where the point is the result, show the result.
@@ -212,6 +216,36 @@ Readers copy examples, so an example that breaks a documented requirement spread
 
 - Before: a data source that sorted suppliers by name only, although `ListAsync()` says to break ties with a unique key when paging.
 - After: `suppliers.OrderBy(supplier => supplier.Name).ThenBy(supplier => supplier.Code)`
+
+### Name a group of things by what it is, not by a code pattern
+
+A pattern like `sa-*` means nothing to a reader who hasn't met it. Where the reader may not know the pattern, such as in the admin panel docs, name the group by what it is, and link to it.
+
+- Before: "If you also write your own pages with `sa-*` components"
+- After: "If you also write your own pages with the [StellarAdmin.UI Tag Helpers](/docs/ui)"
+
+A specific element the reader writes is code, so write it as code: the StellarAdmin.UI docs name `<sa-button>`, because that's what goes in the page.
+
+### Make link text match the linked page's title
+
+The reader should recognize the page from the sidebar when they land on it.
+
+- Before: "See [sidebar](/docs/admin/sidebar) for groups and ordering."
+- After: "See [sidebar and links](/docs/admin/sidebar) for groups and ordering.", the title of that page.
+
+### Describe code with the right relationships
+
+Say what a member extends, and which type defines it. A loose description can say something false. A method with a body is "defined"; "declared" is for a signature with no body, such as on an interface.
+
+- Before: "`AddResources()` is defined as an extension method on the `AdminResources` class"
+- After: "`AddResources()` is an extension method on `StellarAdminBuilder`, defined in the `AdminResources` class."
+
+### Say what StellarAdmin doesn't do, when the reader must do it
+
+When the reader must act because StellarAdmin doesn't do something they might expect, say so, and what it means for them. Describing a state they never see doesn't tell them why they act.
+
+- Before: "A grid has no columns until you add them."
+- After: "StellarAdmin doesn't add columns automatically, so the grid displays only the columns you add."
 
 ## Style
 

@@ -15,6 +15,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [configured-row-details](configured-row-details.md) | proposed | Row-detail panels configured from display fields, like the view page, instead of hand-written partials. Carried over from info-lists decision 5. |
 | [grid-keyboard-navigation](grid-keyboard-navigation.md) | proposed | Keyboard navigation and shortcuts in the index grid. From the Voyager Travel session feedback. |
 | [display-defaults](display-defaults.md) | proposed | App-level configuration of the default displays, and display handlers in index columns. Carried over from info-lists decisions 90 and 129. |
+| [quick-start-project](quick-start-project.md) | proposed | A downloadable starter project for the admin panel quick start. Premise only; contents, distribution and database are open questions. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
 ## Retired implementation and research records
