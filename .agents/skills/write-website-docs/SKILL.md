@@ -133,6 +133,58 @@ Give each package's job, and don't make an optional package sound required.
 
 Leave requirements and setup details to the page that owns them. The introduction doesn't repeat ".NET 10 or later"; installation states it.
 
+### Introduce every code block and screenshot
+
+Put a sentence before each code block or screenshot that says what it shows, so the reader knows what to look for before reading it.
+
+- Added: "You can supply your own list of options by calling `UseItems()` in the editor's configuration callback."
+- Added: "The example below loads the options from a service registered with dependency injection."
+- Added: "Using the radio group editor with a property of type `TripDifficulty` will display the following:", before a screenshot.
+
+### Keep examples to the section's topic
+
+An example shows only what its section is about. Settings from other sections make the reader work out which part matters. Where the point is the result, show the result.
+
+- Before (in the enum section): a radio group example that also set `Appearance` and `Columns`.
+- After: a screenshot of the radio group the enum produces.
+
+### Write method names with parentheses
+
+In prose, write a method as `UseItems()`, so the reader sees it's a call. Tables of overloads keep their full signatures.
+
+- Before: "Anything else needs `UseItems` or `UseResource`."
+- After: "For anything else, you must call `UseItems()` or `UseResource()`."
+
+### Use the precise developer term
+
+Use the word a developer would use for the concept, not a loose everyday one.
+
+- Before: "`UseItems` has a few other forms"
+- After: "`UseItems()` has a few different overloads"
+- Before: "picking from a list"
+- After: "selecting from a list"
+
+### Make headings say what the section covers
+
+A reader scanning the page should know what a section is about from its heading alone.
+
+- Before: "Enums"
+- After: "Generating options for enums"
+
+### Phrase table cells to match the column heading
+
+Every cell in a column should read as a completion of its heading.
+
+- Before (under "Use it for"): "One value from a list of any length."
+- After: "Select one value from a list of any length."
+
+### Link to the page that explains a concept
+
+When you mention something another page explains, link to it there.
+
+- Before: "`UseResource<TResource>()` | The records of another resource."
+- After: "… using the [title and reference information](/docs/admin/titles-and-references) of that resource for the title, description and media."
+
 ## Style
 
 Choices made on feel. Follow them, but they aren't rules to argue from.
@@ -143,3 +195,5 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - "Run the application", not "Run the app".
 - Don't restate what happens if a step is skipped once the step already says to do it. This is judgement, not a rule: if something becomes a common installation issue, call it out more.
 - Avoid marketing words like "rapidly".
+- "Unless specified otherwise", not "Unless you say otherwise".
+- Prefer "display" over "show" for what appears on screen: "Radio groups and checkbox groups display their options in a single column." "Display" needs an object or the passive ("the media is displayed"), so rephrase rather than write "the option displays". Keep "show" where it pairs with "hide" or matches an API name like `ShowMedia`.
