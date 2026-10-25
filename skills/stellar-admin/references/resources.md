@@ -75,7 +75,7 @@ resource.Reference(reference => reference.UseDescription(customer => customer.Em
 
 ## Enabling pages
 
-Every page except the index is off until enabled. Each call takes its own callback and returns the resource builder, so call them as separate statements:
+Every page except the index is off until enabled. Each call takes its own callback and returns the resource builder, so the calls can be chained or written as separate statements:
 
 | Call | Adds | Needs |
 | --- | --- | --- |

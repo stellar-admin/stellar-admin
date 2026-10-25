@@ -167,6 +167,8 @@ Use the word a developer would use for the concept, not a loose everyday one.
 - After: "`UseItems()` has a few different overloads"
 - Before: "picking from a list"
 - After: "selecting from a list"
+- Before: "you switch on the other pages it needs"
+- After: "you enable the other pages it needs"
 
 ### Make headings say what the section covers
 
@@ -247,6 +249,50 @@ When the reader must act because StellarAdmin doesn't do something they might ex
 - Before: "A grid has no columns until you add them."
 - After: "StellarAdmin doesn't add columns automatically, so the grid displays only the columns you add."
 
+### Don't repeat the section name in a page title
+
+The sidebar lists a page's title under its section's name, so a title that repeats the section reads as a duplicate. Name what the reader does on the page. A single word, like "Delete", also reads oddly in the sidebar.
+
+- Before: "Resources", in the Resources section
+- After: "Defining resources"
+- Before: "Delete"
+- After: "Deleting records"
+
+### Use one example throughout a section
+
+When a section switches from one type to another, the reader has to map one example onto the other. Keep the same example for the whole section. If you want to showcase something the example can't, give it its own section.
+
+- Before: `TripExtra` in the table of defaults, then `Trip` with "tours" in the URLs and the code to change them.
+- After: `TripExtra` throughout, with the `"add-ons"` slug.
+
+### Recommend the accepted practice first
+
+When there are several ways to do something, lead with the one most developers should use. Put the alternatives and workarounds after it.
+
+- Before: a custom data source first, and a cascade delete last.
+- After: a cascade delete first, then keeping the foreign key constraint, then a custom data source for your own message.
+
+### State what's required before what's optional
+
+Say what the reader must do first, then what depends on their choices. Introduce a type that combines others after the reader has seen the parts.
+
+- Before: "A data source implements one interface for each page it supports. To support every page, implement `IResourceCrudDataSource<T>`, which combines them:"
+- After: "Every data source must implement `IResourceDataSource<T>`, which lists the records for the index page. For everything else you enable, the data source must also implement the matching interface:", with `IResourceCrudDataSource<T>` after the table.
+
+### Make a statement cover everything it's about
+
+When a statement covers several things, check that its wording fits each of them. Deleting is an action, not a page.
+
+- Before: "Each method takes a callback that configures the page."
+- After: "Each method takes a callback that configures the page or action."
+
+### Put braces in MDX prose in inline code
+
+MDX runs `{…}` in prose as JavaScript, so a placeholder like `{singular}` crashes the page with a `ReferenceError`. Put it in inline code, where it's text.
+
+- Before: patterns like "Create {singular}"
+- After: patterns like `Create {singular}`
+
 ## Style
 
 Choices made on feel. Follow them, but they aren't rules to argue from.
@@ -260,3 +306,4 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - "Unless specified otherwise", not "Unless you say otherwise".
 - Write "must", not "has to": "The default sort must be on a sortable column."
 - Prefer "display" over "show" for what appears on screen: "Radio groups and checkbox groups display their options in a single column." "Display" needs an object or the passive ("the media is displayed"), so rephrase rather than write "the option displays". Keep "show" where it pairs with "hide" or matches an API name like `ShowMedia`.
+- Prefer naming the things over a vague stand-in like "what to return", but go by what reads best: "StellarAdmin passes the requested search, scope, sort and page, and the keys of the records to return, via the properties of the `request` parameter", not "StellarAdmin passes what to return via the properties of the `request` parameter".
