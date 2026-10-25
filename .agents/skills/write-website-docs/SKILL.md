@@ -26,6 +26,11 @@ State a requirement or what something does plainly, as the first thing. No lead-
 - Before: "StellarAdmin gives you those pages without you writing them."
 - After: "StellarAdmin lets you quickly create these admin pages."
 
+Start with what the reader sees, and put the condition after it.
+
+- Before: "Depending on whether you have enabled the view page, the edit page or the delete action for your resource (by calling `AllowView()`, `AllowEdit()` or `AllowDelete()`), each row displays a view, edit or delete action."
+- After: "Each row displays a view, edit or delete action, depending on whether you've enabled the view page, the edit page or the delete action for your resource by calling `AllowView()`, `AllowEdit()` or `AllowDelete()`."
+
 ### One instruction per sentence
 
 Don't fold an optional step into a clause. Give it its own sentence, with its condition.
@@ -286,12 +291,32 @@ When a statement covers several things, check that its wording fits each of them
 - Before: "Each method takes a callback that configures the page."
 - After: "Each method takes a callback that configures the page or action."
 
+When a statement applies to only one case, say what happens in the others, so the reader doesn't have to infer it.
+
+- Before: "The filter, for an EF Core resource. Leave it out for a scope that displays every record."
+- After: "For an EF Core resource, the filter. Leave it out for a scope that displays every record. A custom data source takes no filter, because it filters the records itself."
+
 ### Put braces in MDX prose in inline code
 
 MDX runs `{…}` in prose as JavaScript, so a placeholder like `{singular}` crashes the page with a `ReferenceError`. Put it in inline code, where it's text.
 
 - Before: patterns like "Create {singular}"
 - After: patterns like `Create {singular}`
+
+### Write on-screen labels in bold
+
+When you name a label the reader sees on screen, such as a button, a tab or a menu item, write it in bold, capitalized as it appears. Use quotation marks for literal strings, such as a default value, and italics only to introduce a term.
+
+- Before: "the All and Pending scopes", "the Create button"
+- After: "the **All** and **Pending** scopes", "the **Create** button"
+- Unchanged: "`CreateLabel` defaults to "Create"", because that's a string value.
+
+### Don't use "display" as a verb next to a display
+
+A *display*, such as `NumberDisplay`, is what renders a value, the counterpart of an editor, as in ASP.NET's `DisplayFor()` and `EditorFor()`. When a sentence names a display, use "render" or "show" for the verb, so the reader doesn't have to work out which "display" is the noun. Call it a "display type" the first time a page mentions it.
+
+- Before: "`UseDisplay<TDisplay>()` | Displays the value with a different display."
+- After: "`UseDisplay<TDisplay>()` | Renders the value with a different display type."
 
 ## Style
 
@@ -305,5 +330,5 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - Avoid marketing words like "rapidly".
 - "Unless specified otherwise", not "Unless you say otherwise".
 - Write "must", not "has to": "The default sort must be on a sortable column."
-- Prefer "display" over "show" for what appears on screen: "Radio groups and checkbox groups display their options in a single column." "Display" needs an object or the passive ("the media is displayed"), so rephrase rather than write "the option displays". Keep "show" where it pairs with "hide" or matches an API name like `ShowMedia`.
+- Prefer "display" over "show" for what appears on screen: "Radio groups and checkbox groups display their options in a single column." "Display" needs an object or the passive ("the media is displayed"), so rephrase rather than write "the option displays". Keep "show" where it pairs with "hide" or matches an API name like `ShowMedia`, and use "render" or "show" in a sentence that names a display type.
 - Prefer naming the things over a vague stand-in like "what to return", but go by what reads best: "StellarAdmin passes the requested search, scope, sort and page, and the keys of the records to return, via the properties of the `request` parameter", not "StellarAdmin passes what to return via the properties of the `request` parameter".
