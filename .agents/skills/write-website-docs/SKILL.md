@@ -155,6 +155,11 @@ The same goes for a statement the overview already makes. The overview says Stel
 
 - Removed: "StellarAdmin doesn't choose `ImageDisplay` for a property, so call `UseDisplay()`:"
 
+Put a caveat the reader could miss in an `info` callout, instead of a sentence after the example.
+
+- Before: "Items and groups with an `Order` still come first.", after the sorting example.
+- After: an `info` callout: "Sorting by label only applies to the items and groups without an `Order`, which come after the ones with an `Order`."
+
 ### Introduce every code block and screenshot
 
 Put a sentence before each code block or screenshot that says what it shows, so the reader knows what to look for before reading it.
@@ -171,6 +176,15 @@ When the paragraph before the code block is about something else, give the intro
 
 - Before: the recommendation to use `[Display]` and "The example below sets the label and the help text of `DepartureDate`:" in one paragraph.
 - After: the recommendation, then the intro as its own paragraph.
+
+### Introduce every table with how its entries are used
+
+Put a sentence before each table that says where its entries go, so the reader knows how the rows relate to the call.
+
+- Before: "`BrandingLogo` has a method for each kind of logo:"
+- After: "To set the logo, set `Logo` to one of the following:"
+- Added: "The parameter passed to `Add()` can be one of the following:"
+- Added: "You can set the following optional properties in the `configure` callback:"
 
 ### Show the full nesting when a setting applies at several levels
 
@@ -568,6 +582,20 @@ When a page involves two things of the same kind, such as a field and the field 
 - Before: "Changing the text of a disabled field", "a field is disabled"
 - After: "Changing the text of a disabled dependent field", "a dependent field is disabled"
 
+### Describe what's on screen, not the person
+
+When something represents a person, such as the signed-in user, say what's displayed. "Displays them" reads as if the person were on screen.
+
+- Before: "When someone is signed in, StellarAdmin displays them at the bottom of the sidebar, with their avatar, name and email address. Clicking them opens the *user menu*…"
+- After: "When someone is signed in, the bottom of the sidebar displays their avatar, name and email address. Clicking these opens the *user menu*…"
+
+### Give the instruction, not StellarAdmin's reasoning
+
+Say what the reader does. Don't explain it with what StellarAdmin can't know. Say what StellarAdmin doesn't do only when the reader would expect it to (see "Say what StellarAdmin doesn't do, when the reader must do it").
+
+- Before: "StellarAdmin doesn't know which of your environments needs one, so call it only in those environments."
+- After: "Call it only in the environments that should display an indicator."
+
 ## Style
 
 Choices made on feel. Follow them, but they aren't rules to argue from.
@@ -590,3 +618,4 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - Write "such as", not "e.g.".
 - Keep page titles short. A title doesn't need to name everything on the page: "Links and emails" covers phone numbers too.
 - Describe a dependency with "depending on", and "use" a custom display rather than "write" one: "To vary a badge's variant depending on its value, use a custom display", not "To choose each badge's variant from its value, write a custom display."
+- Name the kind of element along with its label: "The **Log out** item posts to…", not "**Log out** posts to…".
