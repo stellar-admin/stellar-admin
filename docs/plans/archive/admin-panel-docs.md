@@ -1,6 +1,6 @@
 # Admin panel docs
 
-Status: drafted (2026-10-24); awaiting Jerrie's review. Nothing committed.
+Status: completed (2026-10-27). The 51 pages shipped in website 1d1a2f2e, then every admin page was rewritten with Jerrie's edits, and the rules from those edits became the [write-website-docs](../../../.agents/skills/write-website-docs/SKILL.md) skill. The StellarAdmin.UI guide pages were rewritten with the same rules in website 2f153410. The StellarAdmin.UI component pages were not rewritten, and demos and screenshots are still open (see Follow-ups).
 
 Public documentation for the StellarAdmin admin panel (the `StellarAdmin` and `StellarAdmin.EntityFrameworkCore` packages) on the website, as a second docs root next to StellarAdmin.UI. The website has no admin panel docs today; the consumer skills in `skills/stellar-admin` and `skills/stellar-admin-setup` are the closest existing description of the feature set.
 
@@ -8,9 +8,9 @@ Public documentation for the StellarAdmin admin panel (the `StellarAdmin` and `S
 
 1. A second root tab, "StellarAdmin", at `/docs/admin`, beside "StellarAdmin.UI". The UI docs are not restructured; panel pages link to them for theming and component details.
 2. Editors are documented on grouped pages, not one page per editor.
-3. Features the panel doesn't have (custom and bulk actions, filters, form tabs, dashboards and the rest of the [backlog](admin-panel-backlog.md)) are left out of the navigation. Pages may say in one sentence what isn't supported where a reader would look for it.
+3. Features the panel doesn't have (custom and bulk actions, filters, form tabs, dashboards and the rest of the [backlog](../admin-panel-backlog.md)) are left out of the navigation. Pages may say in one sentence what isn't supported where a reader would look for it.
 4. This pass is prose and code only: no demos or screenshots. The panel is a full application, so its visuals need a curated Voyager Travel sample app and a capture pipeline; that is follow-up work.
-5. Nothing is committed in either repository; Jerrie reviews and commits.
+5. Jerrie reviews each batch of pages before it is committed.
 
 ## Navigation
 
@@ -104,6 +104,7 @@ Scratch check app: `DocsCheck` in the session scratchpad (Voyager model, SQLite 
 - [x] Relationships (4 pages), compiled; lookups, create from lookup, dependent selects, lookup sources and badges run.
 - [x] Panel (6 pages), compiled; sidebar items, links (including the missing-action warning), provider items, branding, environment banner, home page override and host page run. User menu compiled only (the check app has no authentication).
 - [x] Security (1 page), Customization (5 pages) and Troubleshooting (2 pages), compiled; index and view overrides with slots, global labels, stylesheets and scripts run. Authorization compiled only.
+- [x] Rewrites (2026-10-24 to 2026-10-27): each section of the admin docs rewritten with Jerrie's edits, website 3078cd65 to 9bcf3aec, with the rules from each section added to write-website-docs (product d20a584 to 87e7303). StellarAdmin.UI guide pages in website 2f153410.
 - [x] Website checks (2026-10-24): `pnpm types:check`, `pnpm lint` and `pnpm build` pass. A link check over the 51 pages finds no missing pages, anchors or navigation entries. On a dev server (port 5310), all 51 pages return 200 with their titles; quick start and choices were screenshotted in headless Chromium and render with the StellarAdmin root in the sidebar. Servers stopped afterwards.
 
 ## Source disagreements (fixed 2026-10-25)
@@ -119,3 +120,4 @@ The consumer skills disagreed with the source in three places; Jerrie approved f
 - Done 2026-10-25: the UI docs' `agent-skills.mdx` points to the admin skills instead of saying there are none.
 - Done 2026-10-25: the header's Documentation link is a menu with both docs roots. Its links (like the root switcher's) only render when opened, so `vite.config.ts` now seeds the prerender crawl with `/` and `/docs/admin`.
 - Open: demos and screenshots (decision 4).
+- Open: the StellarAdmin.UI component pages (78) haven't been rewritten with the write-website-docs rules. A first attempt on the Layout pages (2026-10-27) was reverted. A rewrite has to keep the precise terms the old pages use, and each sentence has to describe the example next to it.
