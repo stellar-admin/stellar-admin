@@ -18,6 +18,10 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [quick-start-project](quick-start-project.md) | proposed | A downloadable starter project for the admin panel quick start. Premise only; contents, distribution and database are open questions. |
 | [global-labels-rework](global-labels-rework.md) | proposed | Better organized global labels, covering all the admin panel's text, and the docs page to match. Basics only. |
 | [tailwind-admin-panel](tailwind-admin-panel.md) | proposed | An example and docs for using Tailwind in custom pages and editors. Basics only. |
+| [home-page-panels](home-page-panels.md) | proposed | Panels and other elements added to the admin panel's home page without replacing it. Basics only. |
+| [overridable-partials](overridable-partials.md) | proposed | A catalogue of the partial views developers can override, more of them, and better docs. Basics only. |
+| [resource-page-panels](resource-page-panels.md) | proposed | Panels such as charts, chat widgets, partials or MVC and Razor Pages content on index pages, forms and view pages. Basics only. |
+| [row-detail-accordion](row-detail-accordion.md) | proposed | Row detail panels displayed as an accordion instead of tabs. Basics only. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
 ## Retired implementation and research records
