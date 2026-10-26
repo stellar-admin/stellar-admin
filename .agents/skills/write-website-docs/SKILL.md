@@ -146,6 +146,15 @@ Give each package's job, and don't make an optional package sound required.
 
 Leave requirements and setup details to the page that owns them. The introduction doesn't repeat ".NET 10 or later"; installation states it.
 
+On a page about a feature, such as a display type, describe what the feature can do, and leave a requirement and its failure case to the page about the task. Displaying related records states that a collection needs `BadgeDisplay`, so the Badges page doesn't.
+
+- Before: "To display a collection of related records, such as a trip's tags, call `UseDisplay<BadgeDisplay>()`. Without it, StellarAdmin leaves out the column or the field, and reports a configuration problem."
+- After: "You can display a collection of related records, such as a trip's tags, using `UseDisplay<BadgeDisplay>()`."
+
+The same goes for a statement the overview already makes. The overview says StellarAdmin never chooses `ImageDisplay`, so the Images page goes straight to the example.
+
+- Removed: "StellarAdmin doesn't choose `ImageDisplay` for a property, so call `UseDisplay()`:"
+
 ### Introduce every code block and screenshot
 
 Put a sentence before each code block or screenshot that says what it shows, so the reader knows what to look for before reading it.
@@ -196,6 +205,11 @@ Use the word a developer would use for the concept, not a loose everyday one.
 - After: "you enable the other pages it needs"
 - Before: "the fewest and the most records people can select"
 - After: "require a minimum or maximum number of related records to be selected"
+
+The same goes for page titles: name the type a developer looks for, not what people see on screen.
+
+- Before: "Yes or no, and enums"
+- After: "Booleans and enums"
 
 ### Make headings say what the section covers
 
@@ -527,6 +541,26 @@ When a delegate or a handler receives a value, say what the value contains. How 
 - Before: "The `destination` that the filter receives isn't the record people are editing. When StellarAdmin loads the options, it creates a new `Destination` with only the values…"
 - After: "The `destination` instance passed to the filter contains only the values…"
 
+### Say what a call is for, and let the example show its arguments
+
+When an example follows, say what the call achieves. Listing its type parameters and delegates in prose repeats the code.
+
+- Before: "call `UseText()` with the type of the records, and a function that returns the text of each badge"
+- After: "call `UseText()` to specify the text displayed inside the badge"
+
+### Say where something appears
+
+When StellarAdmin opens or displays something, say where, so the reader can picture it.
+
+- Before: "When people click the image, StellarAdmin opens a larger version."
+- After: "When people click the image, StellarAdmin opens a larger version in a popup."
+
+### Don't assume the reader used a related feature
+
+A reader can arrive at a page without using the feature next to it, such as an image display without the image editor. Don't phrase an instruction as reusing something they may not have.
+
+- Removed: "Use the same function you passed to the image editor"
+
 ### Qualify a noun when the page has two of the same kind
 
 When a page involves two things of the same kind, such as a field and the field it depends on, a bare noun could mean either. Use the qualified term.
@@ -554,3 +588,5 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - Describe what people see in plain words: "An inline grid of icons", not "A tile for each icon".
 - Drop words that repeat what's already said: "StellarAdmin loads the related record", not "StellarAdmin loads the related record with the record".
 - Write "such as", not "e.g.".
+- Keep page titles short. A title doesn't need to name everything on the page: "Links and emails" covers phone numbers too.
+- Describe a dependency with "depending on", and "use" a custom display rather than "write" one: "To vary a badge's variant depending on its value, use a custom display", not "To choose each badge's variant from its value, write a custom display."
