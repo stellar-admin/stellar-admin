@@ -49,6 +49,10 @@ Don't reassure the reader about something they weren't wondering about.
 
 - Removed: "You don't need to set it up to use the panel."
 
+Leave out pointers to things that aren't the page's subject, even to say they're elsewhere.
+
+- Removed, on the theming page: "How form sections look isn't part of the theme. To change it, see choosing how sections look."
+
 ### Give a reason for optional things
 
 When you suggest something optional, say why the reader might want it.
@@ -134,6 +138,8 @@ Keep closely related points about one feature in the same paragraph. Two short p
 
 - Before: "StellarAdmin loads a panel's data the first time someone selects its tab." and "If you add only one panel, StellarAdmin displays it without tabs." as two paragraphs.
 - After: "StellarAdmin loads a panel's data the first time someone selects its tab. If you add only one panel, StellarAdmin displays it without tabs."
+- Before: "Each setting is a function… Text you set on one resource… overrides the default for that resource." in one paragraph.
+- After: the override sentence in its own paragraph, because it's about the resource's own settings, not the function.
 
 ### Say what each package does
 
@@ -192,6 +198,20 @@ When a setting can be made at several levels, such as every form, one form and o
 
 - Before: `section.Layout = …`, `edit.SectionLayout = …` and `admin.ConfigureUI(…)` as three unrelated lines.
 - After: one `AddStellarAdmin()` example that sets the layout for every form, for the trip edit page and for its **Pricing** section, with "// Configures the layout for every form" and similar comments.
+
+### Show where each setting is set
+
+Before a table of properties, show code that sets one of them in the right callback, with the calls it's nested in. A table of names alone leaves the reader to guess where they go.
+
+- Before: a table of `CountText`, `DuplicateText` and `RemoveLabel` with their placeholders, and no code showing where they're set.
+- After: an example above the table that sets them in `labels.ListEditor(list => …)` inside `ConfigureResourceLabels()`.
+
+### Make every example stand on its own
+
+Readers jump straight to a section, so include the call each example goes in, even when an earlier section showed it.
+
+- Before (in "Adding fonts"): the two `admin.AddStylesheet(...)` lines on their own.
+- After: the same lines inside `builder.Services.AddStellarAdmin(admin => { … })`.
 
 ### Keep examples to the section's topic
 
@@ -259,6 +279,27 @@ When the reader has to find something in their code, name the property, the para
 
 - Before: "StellarAdmin passes the sort and the page to its `ListAsync()` method in the request:"
 - After: "StellarAdmin passes the requested sort and page via the `Sort` and `Paging` properties of the `request` parameter when calling the `ListAsync()` method:"
+
+### Describe a function's parameters exactly
+
+Say how many parameters a function takes, and which type has which properties. Don't present a parameter's properties as the parameters.
+
+- Before: "Each setting is a function that takes the resource's `SingularLabel` and `PluralLabel`, and returns the text."
+- After: "Each setting is a function that returns the text. Its parameter is a `ResourceLabelContext`, with the resource's `SingularLabel` and `PluralLabel`."
+
+### Name the specific items, not a vague group
+
+When a statement applies to some members of a group, name them.
+
+- Before: "Some list and dictionary texts change as people add and remove items."
+- After: a table naming each text, `CountText`, `DuplicateText`, `ItemLabel`, `MoveLabel` and `RemoveLabel`, with its placeholder and what replaces it.
+
+### Say which default is overridden
+
+When a setting overrides a default, say which default, so the reader knows where the two are set.
+
+- Before: "Text you set on one resource, such as `edit.Title` in `AllowEdit()`, overrides the default for that resource."
+- After: "Text you specify on a specific resource's configuration, such as `edit.Title` in `AllowEdit()`, overrides the global default for that resource."
 
 ### Use one term for one thing
 
@@ -619,3 +660,4 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - Keep page titles short. A title doesn't need to name everything on the page: "Links and emails" covers phone numbers too.
 - Describe a dependency with "depending on", and "use" a custom display rather than "write" one: "To vary a badge's variant depending on its value, use a custom display", not "To choose each badge's variant from its value, write a custom display."
 - Name the kind of element along with its label: "The **Log out** item posts to…", not "**Log out** posts to…".
+- Write "for all resources", not "for every resource": "To change the default text for all resources, call `ConfigureResourceLabels()`."
