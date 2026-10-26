@@ -194,6 +194,8 @@ Use the word a developer would use for the concept, not a loose everyday one.
 - After: "selecting from a list"
 - Before: "you switch on the other pages it needs"
 - After: "you enable the other pages it needs"
+- Before: "the fewest and the most records people can select"
+- After: "require a minimum or maximum number of related records to be selected"
 
 ### Make headings say what the section covers
 
@@ -310,6 +312,11 @@ When one way of doing something is better than another, say "prefer" and give th
 
 - Before: "The best fix is `[Display]` on the model, because validation messages use it too."
 - After: "To label a field, prefer the `[Display]` attribute on the property over setting `Title`, so that the label and the validation messages use the same name."
+
+When the advice has no alternative to prefer, phrase it as a suggestion, with the reason.
+
+- Before: "Set a `Title` on a field that reads through a navigation property, because…"
+- After: "We suggest you set a `Title` on a field that reads through a navigation property, because…"
 
 ### Explain a problem from its cause
 
@@ -474,6 +481,10 @@ Give the condition under which the reader needs the call. A condition for leavin
 - Before: "If the property stores the image's URL, leave `ResolveUrl()` out."
 - After: "If the property value isn't a URL the browser can load, specify a `ResolveUrl()` function that turns the property value into one."
 
+Don't explain what happens when the reader leaves out a call they'd have no reason to make.
+
+- Removed: "When you call the editor's method without `UseItems()`, the editor lists the records of the related resource:"
+
 ### Keep a page to its own subject
 
 Content about another feature belongs on that feature's page. Where the two must be configured together, keep one sentence that says so and links to the other page.
@@ -495,6 +506,34 @@ When StellarAdmin never picks an option by default, say that the option exists a
 - Before: "StellarAdmin never chooses `ImageDisplay` or `IconDisplay`, so you must choose them yourself."
 - After: "StellarAdmin also supports `ImageDisplay` and `IconDisplay`, which must be specified explicitly using `UseDisplay()`."
 
+### State a requirement before what happens if it's not met
+
+Say what the reader must do first, addressed to them, then what StellarAdmin does when they don't.
+
+- Before: "An editor that selects one value, such as a select, can't save several records. If the field uses one, StellarAdmin leaves the field off the form…"
+- After: "The editor you configure with a many-to-many navigation must support selecting multiple records. If you specify an editor that only supports selecting a single record, such as a select, StellarAdmin leaves the field off the form…"
+
+### Describe limitations as what's supported
+
+Say what StellarAdmin supports and what isn't supported. StellarAdmin doesn't edit records, people do, so it "allows editing".
+
+- Before: "StellarAdmin edits a many-to-many navigation… It can't edit these, and leaves the field off the form:"
+- After: "StellarAdmin allows editing a many-to-many navigation… The following is not supported:"
+
+### Describe what the reader's code receives, not how StellarAdmin builds it
+
+When a delegate or a handler receives a value, say what the value contains. How StellarAdmin creates it is an internal detail.
+
+- Before: "The `destination` that the filter receives isn't the record people are editing. When StellarAdmin loads the options, it creates a new `Destination` with only the values…"
+- After: "The `destination` instance passed to the filter contains only the values…"
+
+### Qualify a noun when the page has two of the same kind
+
+When a page involves two things of the same kind, such as a field and the field it depends on, a bare noun could mean either. Use the qualified term.
+
+- Before: "Changing the text of a disabled field", "a field is disabled"
+- After: "Changing the text of a disabled dependent field", "a dependent field is disabled"
+
 ## Style
 
 Choices made on feel. Follow them, but they aren't rules to argue from.
@@ -514,3 +553,4 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - Write "rendered using" a partial view, not "rendered from": "The details are rendered using a partial view that you write."
 - Describe what people see in plain words: "An inline grid of icons", not "A tile for each icon".
 - Drop words that repeat what's already said: "StellarAdmin loads the related record", not "StellarAdmin loads the related record with the record".
+- Write "such as", not "e.g.".
