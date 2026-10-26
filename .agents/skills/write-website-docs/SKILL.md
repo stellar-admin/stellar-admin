@@ -58,7 +58,10 @@ When you suggest something optional, say why the reader might want it.
 
 ### Callout types
 
-Use `info` for something the reader should know, and `idea` for something they might want to do.
+Use `info` for something the reader should know, `idea` for something they might want to do, and `warn` for what breaks when a required step is missing.
+
+- Before: "The image editor needs `StoreImage()`. Without it, StellarAdmin leaves the field off the form…", in the middle of a paragraph.
+- After: the same text in a `warn` callout.
 
 ### Say what a call does where you introduce it
 
@@ -241,6 +244,13 @@ When the reader writes code against a contract, such as a data source's `ListAsy
 - Before: a sentence naming `ResourceListRequest.Sort` and `ResourceListRequest.Paging`, then a link.
 - After: a table of what `Sort` and `Paging` hold, and an example that sorts and pages the records.
 
+This includes a delegate or a handler the reader writes. Say what it receives and what it must return, and show an implementation.
+
+- Before: "pass `StoreImage()` a function that saves the file", with no example of the function.
+- After: what the function receives and returns, and a `PhotoStore.SaveAsync()` that saves the file and returns its name.
+- Before: "write a *handler* that loads it. The handler derives from `FieldEditorHandler<TEditor>`…", in prose only.
+- After: an example handler, the editor that names it, and the template that reads `EditorData`.
+
 ### Examples must follow the API's own advice
 
 Readers copy examples, so an example that breaks a documented requirement spreads the bug.
@@ -421,6 +431,63 @@ Leave out visual details the UI makes obvious, such as the icon on a button.
 - Before: "if people can [delete](/docs/admin/delete) records, a **Delete** button."
 - After: "if [deleting is enabled](/docs/admin/delete), a **Delete** button."
 
+### Keep code lines short enough to read without scrolling
+
+A long line scrolls sideways in the code block, and the reader loses the end of it. When a call with a callback doesn't fit on one line, put the callback's body in a block.
+
+- Before: `fields.Add(trip => trip.Summary).UseTextareaEditor(textarea => textarea.ClassNames.Control = "trip-summary");`
+- After:
+
+  ```cs
+  fields.Add(trip => trip.Summary).UseTextareaEditor(textarea =>
+  {
+      textarea.ClassNames.Control = "trip-summary";
+  });
+  ```
+
+### Say which part of the UI a call configures
+
+When a call configures part of an editor or a page, name that part. A word like "keys" or "values" could mean the data instead.
+
+- Before: "call `Key()` and `Value()` to configure the keys and the values."
+- After: "call `Key()` and `Value()` to configure the key and the value columns of the editor."
+
+### Put setup outside StellarAdmin in a callout
+
+When the reader must do something outside StellarAdmin for a feature to work, such as configuring EF Core, put it in an `idea` callout so it stands out from how StellarAdmin behaves. A note that asks nothing of the reader stays in the prose.
+
+- Before: "EF Core doesn't map a dictionary property on its own. Store the dictionary in a JSON column, or give the property a value converter.", as a paragraph.
+- After: the same text in an `idea` callout.
+- Unchanged: "EF Core maps a list of strings or numbers as a primitive collection, so the property needs no extra configuration."
+
+### Start with the required call on its own
+
+Show the smallest example that works first. Then add each optional call in its own step, with the condition for using it, so the reader can tell what they need.
+
+- Before: the first image editor example set both `StoreImage()` and `ResolveUrl()`.
+- After: the first example sets only `StoreImage()`, and `ResolveUrl()` follows with its own example.
+
+### Say when an optional call is needed, not when to leave it out
+
+Give the condition under which the reader needs the call. A condition for leaving it out makes them reverse it.
+
+- Before: "If the property stores the image's URL, leave `ResolveUrl()` out."
+- After: "If the property value isn't a URL the browser can load, specify a `ResolveUrl()` function that turns the property value into one."
+
+### Keep a page to its own subject
+
+Content about another feature belongs on that feature's page. Where the two must be configured together, keep one sentence that says so and links to the other page.
+
+- Before: an `IconDisplay` example and a "Displaying the icon's name" section on the icon editor page.
+- After: both moved to the displays page.
+- Kept, on the image editor page: "To display the image in the grid or on the view page, use the `ImageDisplay` display type, with the same `ResolveUrl()` function."
+
+### Don't explain something by comparing it with another page
+
+The reader may not have read the other page, so a comparison with it confuses rather than explains.
+
+- Removed, on the rich text editor page: "The rich text editor has no `ResolveUrl()`, because the URL is stored in the HTML."
+
 ## Style
 
 Choices made on feel. Follow them, but they aren't rules to argue from.
@@ -431,9 +498,12 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - "Run the application", not "Run the app".
 - Don't restate what happens if a step is skipped once the step already says to do it. This is judgement, not a rule: if something becomes a common installation issue, call it out more.
 - Avoid marketing words like "rapidly".
+- Use American spelling: "color", "recognize", "behavior".
 - "Unless specified otherwise", not "Unless you say otherwise".
 - Write "must", not "has to": "The default sort must be on a sortable column."
+- When the paragraph before an example is long, put "The example below…" in its own paragraph.
 - Prefer "display" over "show" for what appears on screen: "Radio groups and checkbox groups display their options in a single column." "Display" needs an object or the passive ("the media is displayed"), so rephrase rather than write "the option displays". Keep "show" where it pairs with "hide" or matches an API name like `ShowMedia`, and use "render" or "show" in a sentence that names a display type.
 - Prefer naming the things over a vague stand-in like "what to return", but go by what reads best: "StellarAdmin passes the requested search, scope, sort and page, and the keys of the records to return, via the properties of the `request` parameter", not "StellarAdmin passes what to return via the properties of the `request` parameter".
 - Write "rendered using" a partial view, not "rendered from": "The details are rendered using a partial view that you write."
+- Describe what people see in plain words: "An inline grid of icons", not "A tile for each icon".
 - Drop words that repeat what's already said: "StellarAdmin loads the related record", not "StellarAdmin loads the related record with the record".
