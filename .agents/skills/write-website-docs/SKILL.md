@@ -87,6 +87,11 @@ Name the category the reader would search for.
 - Before: "most apps need an admin area."
 - After: "most apps need an admin area, often called an admin panel."
 
+Name a UI element with the common UI term, not the design's own name for it.
+
+- Before: "a pill at the bottom of every admin panel page displays how many there are"
+- After: "a floating notification is displayed at the bottom of every admin panel page"
+
 ### Keep overview pages at the concept level
 
 An introduction describes what you do, not the API details you'll meet later.
@@ -657,6 +662,27 @@ When the reader must set something up, say it's because StellarAdmin uses a stan
 
 - Before: "ASP.NET Core's authorization middleware checks the requirements, so your app must call `app.UseAuthorization()`."
 - After: "StellarAdmin uses standard ASP.NET Core authorization, so your app must set up authentication and authorization as usual, including calling `app.UseAuthorization()`."
+
+### Say what StellarAdmin does, not what it doesn't
+
+Start with what StellarAdmin does. Opening with something it doesn't do makes the reader start from a negative they weren't asking about.
+
+- Before: "When your configuration has a mistake, StellarAdmin doesn't stop your app from starting. It works around the mistake…"
+- After: "When your configuration has a mistake, StellarAdmin attempts to gracefully recover from or work around the mistake."
+
+### State a condition in the reader's terms
+
+Don't phrase a condition relative to an idea only StellarAdmin's design knows about. The reader can't tell when it applies.
+
+- Before: "When there's no smaller change, StellarAdmin makes the whole resource unavailable."
+- After: "When StellarAdmin cannot recover from a configuration mistake, it makes the resource unavailable."
+
+### Don't describe in detail a UI the reader sees when they open it
+
+Say what the UI is for. The reader sees its layout and contents when they open it.
+
+- Before: "Click the pill to open a panel that lists the lines of your code that configured each problem, with the problem below its line. Each problem says what you'll notice, why, what StellarAdmin does instead, and how to fix it."
+- After: "Click the notification to open a panel that lists the lines of your code that caused each problem, and how to fix it."
 
 ## Style
 
