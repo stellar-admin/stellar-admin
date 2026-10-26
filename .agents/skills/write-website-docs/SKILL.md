@@ -488,6 +488,13 @@ The reader may not have read the other page, so a comparison with it confuses ra
 
 - Removed, on the rich text editor page: "The rich text editor has no `ResolveUrl()`, because the URL is stored in the HTML."
 
+### Present an option StellarAdmin doesn't choose as available, with how to use it
+
+When StellarAdmin never picks an option by default, say that the option exists and name the call that uses it. "Never chooses" makes it sound like a limitation, and doesn't tell the reader what to call.
+
+- Before: "StellarAdmin never chooses `ImageDisplay` or `IconDisplay`, so you must choose them yourself."
+- After: "StellarAdmin also supports `ImageDisplay` and `IconDisplay`, which must be specified explicitly using `UseDisplay()`."
+
 ## Style
 
 Choices made on feel. Follow them, but they aren't rules to argue from.
