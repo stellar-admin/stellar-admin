@@ -637,6 +637,27 @@ Say what the reader does. Don't explain it with what StellarAdmin can't know. Sa
 - Before: "StellarAdmin doesn't know which of your environments needs one, so call it only in those environments."
 - After: "Call it only in the environments that should display an indicator."
 
+### Start with the default
+
+Before saying how to change something, say plainly what happens when the reader does nothing.
+
+- Before: "Anyone who can reach your app can use the admin panel until you require authorization."
+- After: "By default, your admin panel is unsecured and anyone who can access your application can access the admin panel."
+
+### Keep a problem and its fix in one paragraph
+
+Don't give the problem a short paragraph of its own, with the call that fixes it in the next. On the authorization page, the default moved into the paragraph that introduces `RequireAuthorization()`.
+
+- Before: "…until you require authorization. Make sure you do this before you deploy." followed by a new paragraph, "To require authorization for every page of the admin panel, call `RequireAuthorization()`…"
+- After: "By default, your admin panel is unsecured… To require authorization for the admin panel, call `RequireAuthorization()` in `AddStellarAdmin`."
+
+### Explain a requirement through the concept the reader knows
+
+When the reader must set something up, say it's because StellarAdmin uses a standard they already know, not because of the mechanism that runs it.
+
+- Before: "ASP.NET Core's authorization middleware checks the requirements, so your app must call `app.UseAuthorization()`."
+- After: "StellarAdmin uses standard ASP.NET Core authorization, so your app must set up authentication and authorization as usual, including calling `app.UseAuthorization()`."
+
 ## Style
 
 Choices made on feel. Follow them, but they aren't rules to argue from.
@@ -661,3 +682,5 @@ Choices made on feel. Follow them, but they aren't rules to argue from.
 - Describe a dependency with "depending on", and "use" a custom display rather than "write" one: "To vary a badge's variant depending on its value, use a custom display", not "To choose each badge's variant from its value, write a custom display."
 - Name the kind of element along with its label: "The **Log out** item posts to…", not "**Log out** posts to…".
 - Write "for all resources", not "for every resource": "To change the default text for all resources, call `ConfigureResourceLabels()`."
+- Don't add timing nudges like "Make sure you do this before you deploy."
+- Don't qualify what's already clear: "To require authorization for the admin panel", not "for every page of the admin panel".
