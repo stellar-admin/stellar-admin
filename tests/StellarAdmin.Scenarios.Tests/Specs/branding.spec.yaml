@@ -7,8 +7,17 @@ steps:
   - expectVisible: ".sa-sidebar-brand-mark > svg"
   - screenshot: branding
   - screenshot: { name: branding-brand, locator: "a:has(.sa-sidebar-brand-mark)" }
-  - annotate: { locator: "a:has(.sa-sidebar-brand-mark)", label: "Your title and logo" }
+  - annotate: { locator: ".sa-sidebar-brand-mark", style: circle, label: Icon logo, placement: bottom, arrow: true }
+  - annotate: { locator: ".sa-sidebar-brand-text", label: Title and subtitle, placement: right, arrow: true }
   - screenshot: branding-annotated
+  - clearAnnotations: true
+  - spotlight: "a:has(.sa-sidebar-brand-mark)"
+  - annotate: { locator: "a:has(.sa-sidebar-brand-mark)", style: none, label: Set with ConfigureBranding, placement: right, arrow: true }
+  - screenshot: branding-spotlight
+  - clearAnnotations: true
+  - annotate: { locator: ".sa-page-header-title", badge: auto }
+  - annotate: { locator: ".sa-card:has(.sa-card-title)", badge: auto }
+  - screenshot: branding-numbered
   - clearAnnotations: true
   - colorScheme: dark
   - screenshot: branding-dark

@@ -8,69 +8,8 @@ namespace StellarAdmin.Scenarios.Specs;
 // Reads a .spec.yaml file into steps; each step is a single-key mapping such as "- goto: /stellaradmin"
 public static class SpecLoader
 {
-    // Draws an outline around the element, with an optional numbered badge on its corner and a label
-    // below it (above it near the bottom of the viewport); overlays carry data-spec-annotation
-    private const string AnnotateScript = """
-        (element, { label, badge }) => {
-            const color = "#e11d48";
-            const box = element.getBoundingClientRect();
-            const left = box.left + window.scrollX;
-            const top = box.top + window.scrollY;
-            const add = (style, text) => {
-                const overlay = document.createElement("div");
-                overlay.dataset.specAnnotation = "";
-                overlay.textContent = text ?? "";
-                Object.assign(overlay.style, {
-                    position: "absolute",
-                    zIndex: "2147483647",
-                    pointerEvents: "none",
-                    boxSizing: "border-box",
-                    font: "600 13px/1.4 system-ui, sans-serif",
-                    color: "#fff",
-                    ...style,
-                });
-                document.body.append(overlay);
-
-                return overlay;
-            };
-
-            add({
-                left: `${left - 4}px`,
-                top: `${top - 4}px`,
-                width: `${box.width + 8}px`,
-                height: `${box.height + 8}px`,
-                border: `2px solid ${color}`,
-                borderRadius: "6px",
-            });
-
-            if (badge) {
-                add({
-                    left: `${left - 14}px`,
-                    top: `${top - 14}px`,
-                    width: "22px",
-                    height: "22px",
-                    borderRadius: "11px",
-                    background: color,
-                    textAlign: "center",
-                    lineHeight: "22px",
-                }, badge);
-            }
-
-            if (label) {
-                const note = add({
-                    left: `${left - 4}px`,
-                    padding: "3px 8px",
-                    borderRadius: "4px",
-                    background: color,
-                    whiteSpace: "nowrap",
-                }, label);
-                const below = box.bottom + 8 + note.offsetHeight <= window.innerHeight;
-                note.style.top = below
-                    ? `${top + box.height + 8}px`
-                    : `${top - 8 - note.offsetHeight}px`;
-            }
-        }
-        """;
+    // Defines window.specAnnotations, which annotate and spotlight draw with; safe to run again
+    private static readonly string AnnotationsScript = ReadAnnotationsScript();
 
     // Milliseconds an assertion or click retries before failing; a step can set its own timeout
     private const float DefaultTimeout = 1000;
@@ -143,10 +82,39 @@ public static class SpecLoader
         return page => page.GetByRole(role, new() { Name = name, Exact = name is not null });
     }
 
+    // An optional value that must be one of the allowed words
+    private static string? OneOf(
+        string path,
+        YamlMappingNode mapping,
+        string key,
+        params string[] allowed
+    )
+    {
+        var value = OptionalScalar(path, mapping, key);
+        if (value is not null && !allowed.Contains(value))
+        {
+            throw new SpecException(
+                path,
+                Line(mapping.Children[new YamlScalarNode(key)]),
+                $"'{key}' must be one of {string.Join(", ", allowed)}."
+            );
+        }
+
+        return value;
+    }
+
     private static string? OptionalScalar(string path, YamlMappingNode mapping, string key) =>
         mapping.Children.TryGetValue(new YamlScalarNode(key), out var value)
             ? Scalar(path, value)
             : null;
+
+    private static string ReadAnnotationsScript()
+    {
+        using var stream = typeof(SpecLoader).Assembly.GetManifestResourceStream("annotations.js")!;
+        using var reader = new StreamReader(stream);
+
+        return reader.ReadToEnd();
+    }
 
     private static string Scalar(string path, YamlNode node) =>
         node is YamlScalarNode { Value: { } value }
@@ -179,6 +147,7 @@ public static class SpecLoader
             "expectVisible" => ExpectVisible(Locator(path, value), timeout),
             "goto" => Goto(path, Line(node), Scalar(path, value)),
             "screenshot" => Screenshot(path, value, timeout),
+            "spotlight" => Spotlight(Locator(path, value), timeout),
             "viewport" => Viewport(path, value),
             _ => throw new SpecException(path, Line(node), $"Unknown step '{kind}'."),
         };
@@ -221,8 +190,8 @@ public static class SpecLoader
     private static Func<SpecRun, Task> Click(Func<IPage, ILocator> locate, float timeout) =>
         run => locate(run.Page).ClickAsync(new() { Timeout = timeout });
 
-    // { locator, label, badge }; the overlays stay until clearAnnotations, so a screenshot after this
-    // step includes them
+    // { locator, style, badge, label, placement, arrow, gap }; the overlays stay until clearAnnotations,
+    // so a screenshot after this step includes them. badge: auto numbers on from the badges already shown
     private static Func<SpecRun, Task> Annotate(string path, YamlNode value, float timeout)
     {
         if (value is not YamlMappingNode mapping)
@@ -231,12 +200,37 @@ public static class SpecLoader
         }
 
         var locate = Locator(path, Child(path, mapping, "locator"));
-        var label = OptionalScalar(path, mapping, "label");
-        var badge = OptionalScalar(path, mapping, "badge");
+        var options = new
+        {
+            style = OneOf(
+                path,
+                mapping,
+                "style",
+                "box",
+                "highlight",
+                "circle",
+                "underline",
+                "none"
+            ),
+            badge = OptionalScalar(path, mapping, "badge"),
+            label = OptionalScalar(path, mapping, "label"),
+            placement = OneOf(path, mapping, "placement", "top", "right", "bottom", "left"),
+            arrow = OneOf(path, mapping, "arrow", "true", "false") == "true",
+            gap = mapping.Children.ContainsKey(new YamlScalarNode("gap"))
+                ? Pixels(path, mapping, "gap")
+                : (int?)null,
+        };
 
-        return run =>
-            locate(run.Page)
-                .EvaluateAsync(AnnotateScript, new { label, badge }, new() { Timeout = timeout });
+        return async run =>
+        {
+            await run.Page.EvaluateAsync(AnnotationsScript);
+            await locate(run.Page)
+                .EvaluateAsync(
+                    "(element, options) => window.specAnnotations.annotate(element, options)",
+                    options,
+                    new() { Timeout = timeout }
+                );
+        };
     }
 
     private static Task ClearAnnotations(SpecRun run) =>
@@ -332,6 +326,18 @@ public static class SpecLoader
                         }
                     );
     }
+
+    // Dims the page except for every element the locator matches; annotations still draw on top
+    private static Func<SpecRun, Task> Spotlight(Func<IPage, ILocator> locate, float timeout) =>
+        async run =>
+        {
+            var locator = locate(run.Page);
+            await locator.First.WaitForAsync(new() { Timeout = timeout });
+            await run.Page.EvaluateAsync(AnnotationsScript);
+            await locator.EvaluateAllAsync<object?>(
+                "elements => window.specAnnotations.spotlight(elements)"
+            );
+        };
 
     // Resizes the page without reloading it, e.g. { width: 390, height: 844 }
     private static Func<SpecRun, Task> Viewport(string path, YamlNode value)
