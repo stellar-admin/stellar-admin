@@ -12,8 +12,6 @@ public sealed class BrandingScenario : Scenario
 
     public override string Description => "A title, subtitle and icon logo in the sidebar header.";
 
-    public override string Name => "branding";
-
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.ConfigureBranding(branding =>

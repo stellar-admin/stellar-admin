@@ -2,12 +2,14 @@ using StellarAdmin.ScenarioTesting.Hosting;
 using StellarAdmin.ScenarioTesting.Runner;
 using StellarAdmin.ScenarioTesting.Scenarios;
 
+var catalog = new ScenarioCatalog(typeof(Scenario).Assembly);
+
 if (args is ["--specs", .. var specArgs])
 {
-    return await RunSpecsAsync(specArgs);
+    return await RunSpecsAsync(catalog, specArgs);
 }
 
-if (args.Length == 0 || ScenarioCatalog.Find(args[0]) is not { } scenario)
+if (args.Length == 0 || catalog.Find(args[0]) is not { } scenario)
 {
     if (args.Length > 0)
     {
@@ -22,9 +24,10 @@ if (args.Length == 0 || ScenarioCatalog.Find(args[0]) is not { } scenario)
     );
     Console.WriteLine();
     Console.WriteLine("Scenarios:");
-    foreach (var item in ScenarioCatalog.All)
+    var width = catalog.All.Max(item => item.Name.Length);
+    foreach (var item in catalog.All)
     {
-        Console.WriteLine($"  {item.Name, -12} {item.Description}");
+        Console.WriteLine($"  {item.Name.PadRight(width)}  {item.Description}");
     }
 
     return args.Length == 0 ? 0 : 1;
@@ -38,7 +41,7 @@ return 0;
 
 // Runs spec files, or every spec in a folder, outside the test runner; screenshots save only with
 // --screenshots
-static async Task<int> RunSpecsAsync(string[] args)
+static async Task<int> RunSpecsAsync(ScenarioCatalog catalog, string[] args)
 {
     string? screenshotDirectory = null;
     var paths = new List<string>();
@@ -70,7 +73,11 @@ static async Task<int> RunSpecsAsync(string[] args)
         try
         {
             var completed = await SpecRunner.RunAsync(
-                SpecLoader.Load(path, Path.GetRelativePath(Environment.CurrentDirectory, path)),
+                SpecLoader.Load(
+                    catalog,
+                    path,
+                    Path.GetRelativePath(Environment.CurrentDirectory, path)
+                ),
                 browser,
                 screenshotDirectory
             );

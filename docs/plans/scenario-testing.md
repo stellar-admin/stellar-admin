@@ -52,6 +52,12 @@ Built (2026-10-27): the six tests in `tests/StellarAdmin.IntegrationTests/Sideba
 - Verified: 14 of 14 tests pass in the test project, and the seven sidebar specs pass through the Cli. A wrong attribute, count, title, pattern and meta value each failed with a clear message.
 - Selectors: the sidebar specs drop the header prefix where a brand class is already unique. A `within` step scopes its steps' locators to one element (a locator with neither selector nor role is that element). Verified: a wrong value inside `within` fails on its own line, a scoped locator doesn't find elements outside the scope, a bare locator outside `within` and `record` inside it are rejected.
 
+## Scenario discovery
+
+Built (2026-10-27): `ScenarioCatalog` is built from one or more assemblies and finds every concrete `Scenario` in them; the tests and the Cli pass the ScenarioTesting assembly, and `SpecLoader.Load` takes the catalog. A scenario's `Name` defaults to its class name in kebab case without "Scenario". `[ScenarioArguments(...)]` creates one scenario per attribute through the constructor, with the values appended to the name, so the wordmark layout scenarios are now `sidebar-branding-wordmark-layout-start` and `-fill` (specs renamed to match). Two scenarios with one name throw when the catalog is built.
+
+- Verified: the Cli lists the ten scenarios under the expected names; 14 of 14 tests pass on four runs. The first run after the build had one failure, which wasn't captured and didn't recur.
+
 Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 
 ## Later

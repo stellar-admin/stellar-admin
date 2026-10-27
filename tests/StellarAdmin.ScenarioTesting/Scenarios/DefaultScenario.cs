@@ -10,8 +10,6 @@ public sealed class DefaultScenario : Scenario
     public override string Description =>
         "Trips on the Voyager Travel data, with search, create, edit and delete.";
 
-    public override string Name => "default";
-
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.AddEfCoreResource<Trip>(resource =>

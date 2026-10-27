@@ -7,8 +7,6 @@ public sealed class SidebarBrandingImageLogoScenario : Scenario
 {
     public override string Description => "An image logo beside the title in the sidebar header.";
 
-    public override string Name => "sidebar-branding-image-logo";
-
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.ConfigureBranding(branding => branding.Logo = BrandingLogo.Image("~/img/logo.svg"));

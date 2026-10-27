@@ -8,8 +8,6 @@ public sealed class SidebarBrandingWordmarkScenario : Scenario
     public override string Description =>
         "A wordmark with a dark variant replaces the title in the sidebar header.";
 
-    public override string Name => "sidebar-branding-wordmark";
-
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.ConfigureBranding(branding =>

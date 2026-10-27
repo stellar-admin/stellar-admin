@@ -1,5 +1,5 @@
 # A wordmark with the fill layout renders that layout
-scenario: sidebar-branding-wordmark-fill
+scenario: sidebar-branding-wordmark-layout-fill
 steps:
   - goto: /stellaradmin
   - expectAttribute: { selector: img.sa-sidebar-brand-wordmark, attribute: data-layout, value: fill }

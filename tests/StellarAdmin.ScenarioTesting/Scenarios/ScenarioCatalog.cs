@@ -1,27 +1,62 @@
+using System.Reflection;
 using StellarAdmin.ScenarioTesting.Hosting;
-using StellarAdmin.ScenarioTesting.Scenarios.Sidebar;
-using StellarAdmin.Sidebar;
 
 namespace StellarAdmin.ScenarioTesting.Scenarios;
 
-public static class ScenarioCatalog
+// Every concrete Scenario in the assemblies, one per [ScenarioArguments] attribute on a class that has them
+public sealed class ScenarioCatalog
 {
-    public static IReadOnlyList<Scenario> All { get; } =
-    [
-        new DefaultScenario(),
-        new BrandingScenario(),
-        new StaffOnlyScenario(),
-        new SidebarBrandingNoneScenario(),
-        new SidebarBrandingTitleScenario(),
-        new SidebarBrandingIconLogoScenario(),
-        new SidebarBrandingImageLogoScenario(),
-        new SidebarBrandingWordmarkScenario(),
-        new SidebarBrandingWordmarkLayoutScenario(WordmarkLayout.Start),
-        new SidebarBrandingWordmarkLayoutScenario(WordmarkLayout.Fill),
-    ];
+    public ScenarioCatalog(params IEnumerable<Assembly> assemblies)
+    {
+        All =
+        [
+            .. assemblies
+                .Distinct()
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => type.IsSubclassOf(typeof(Scenario)) && !type.IsAbstract)
+                .SelectMany(Create)
+                .OrderBy(scenario => scenario.Name, StringComparer.Ordinal),
+        ];
 
-    public static Scenario? Find(string name) =>
+        if (
+            All.GroupBy(scenario => scenario.Name, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault(group => group.Count() > 1) is
+            { } duplicate
+        )
+        {
+            throw new InvalidOperationException(
+                $"Scenario name '{duplicate.Key}' is used by "
+                    + string.Join(
+                        " and ",
+                        duplicate.Select(scenario => scenario.GetType().FullName)
+                    )
+                    + "."
+            );
+        }
+    }
+
+    public IReadOnlyList<Scenario> All { get; }
+
+    public Scenario? Find(string name) =>
         All.FirstOrDefault(scenario =>
             string.Equals(scenario.Name, name, StringComparison.OrdinalIgnoreCase)
         );
+
+    private static IEnumerable<Scenario> Create(Type type)
+    {
+        var attributes = type.GetCustomAttributes<ScenarioArgumentsAttribute>().ToArray();
+        if (attributes.Length == 0)
+        {
+            yield return (Scenario)Activator.CreateInstance(type)!;
+            yield break;
+        }
+
+        foreach (var attribute in attributes)
+        {
+            var scenario = (Scenario)Activator.CreateInstance(type, attribute.Values)!;
+            scenario.Arguments = attribute.Values;
+
+            yield return scenario;
+        }
+    }
 }

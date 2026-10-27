@@ -7,8 +7,6 @@ public sealed class SidebarBrandingTitleScenario : Scenario
     public override string Description =>
         "A branding title, subtitle and link, on the sidebar header, app header and browser title.";
 
-    public override string Name => "sidebar-branding-title";
-
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.ConfigureBranding(branding =>

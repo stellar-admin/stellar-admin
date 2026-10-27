@@ -7,7 +7,5 @@ public sealed class SidebarBrandingNoneScenario : Scenario
     public override string Description =>
         "No branding: the sidebar header shows the title from the application name.";
 
-    public override string Name => "sidebar-branding-none";
-
     public override void ConfigureAdmin(StellarAdminBuilder admin) { }
 }

@@ -1,5 +1,7 @@
 using System.Reflection;
+using StellarAdmin.ScenarioTesting.Hosting;
 using StellarAdmin.ScenarioTesting.Runner;
+using StellarAdmin.ScenarioTesting.Scenarios;
 using StellarAdmin.ScenarioTesting.Tests.Infrastructure;
 
 namespace StellarAdmin.ScenarioTesting.Tests.Specs;
@@ -11,6 +13,8 @@ public class SpecTests
 {
     [ClassDataSource<BrowserFixture>(Shared = SharedType.PerTestSession)]
     public required BrowserFixture Browser { get; init; }
+
+    private static readonly ScenarioCatalog Scenarios = new(typeof(Scenario).Assembly);
 
     // The source folder, so edits to a spec take effect without a build
     private static readonly string ProjectDirectory = typeof(SpecTests)
@@ -30,7 +34,7 @@ public class SpecTests
     public async Task Spec_StepsPass(string file)
     {
         // Arrange
-        var spec = SpecLoader.Load(Path.Combine(ProjectDirectory, file), file);
+        var spec = SpecLoader.Load(Scenarios, Path.Combine(ProjectDirectory, file), file);
 
         // Act
         var completed = await SpecRunner.RunAsync(spec, Browser.Browser, ScreenshotDirectory());

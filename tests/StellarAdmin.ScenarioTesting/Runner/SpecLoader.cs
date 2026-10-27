@@ -16,8 +16,8 @@ public static class SpecLoader
     // Milliseconds an assertion or click retries before failing; a step can set its own timeout
     private const float DefaultTimeout = 1000;
 
-    // Errors name the file by displayPath, e.g. Specs/branding.spec.yaml; defaults to the file
-    public static Spec Load(string file, string? displayPath = null)
+    // Looks the scenario up in catalog. Errors name the file by displayPath, e.g. Specs/branding.spec.yaml; defaults to the file
+    public static Spec Load(ScenarioCatalog catalog, string file, string? displayPath = null)
     {
         var path = displayPath ?? file;
         var stream = new YamlStream();
@@ -33,7 +33,7 @@ public static class SpecLoader
 
         var scenarioName = Scalar(path, Child(path, root, "scenario"));
         var scenario =
-            ScenarioCatalog.Find(scenarioName)
+            catalog.Find(scenarioName)
             ?? throw new SpecException(path, Line(root), $"Unknown scenario '{scenarioName}'.");
 
         if (Child(path, root, "steps") is not YamlSequenceNode steps)

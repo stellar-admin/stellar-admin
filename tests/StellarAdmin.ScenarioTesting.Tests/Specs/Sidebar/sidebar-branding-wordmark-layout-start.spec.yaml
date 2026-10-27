@@ -1,5 +1,5 @@
 # A wordmark with the start layout renders that layout
-scenario: sidebar-branding-wordmark-start
+scenario: sidebar-branding-wordmark-layout-start
 steps:
   - goto: /stellaradmin
   - expectAttribute: { selector: img.sa-sidebar-brand-wordmark, attribute: data-layout, value: start }
