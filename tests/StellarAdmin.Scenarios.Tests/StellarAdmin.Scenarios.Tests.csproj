@@ -11,9 +11,14 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Microsoft.Playwright" />
     <PackageReference Include="TUnit" />
+    <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\StellarAdmin.Scenarios\StellarAdmin.Scenarios.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Specs\**\*.spec.yaml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

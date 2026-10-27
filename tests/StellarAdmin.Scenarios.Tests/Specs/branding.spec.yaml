@@ -1,0 +1,8 @@
+# The sidebar header shows the configured title, subtitle and icon
+scenario: branding
+steps:
+  - goto: /stellaradmin
+  - expectText: { selector: ".sa-sidebar-brand-title", text: Voyager Travel }
+  - expectText: { selector: ".sa-sidebar-brand-subtitle", text: Operations }
+  - expectVisible: ".sa-sidebar-brand-mark > svg"
+  - screenshot: branding
