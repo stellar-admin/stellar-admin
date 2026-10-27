@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Specs\annotations.js" LogicalName="annotations.js" />
+    <EmbeddedResource Include="Specs\cursor.js" LogicalName="cursor.js" />
   </ItemGroup>
 
   <ItemGroup>

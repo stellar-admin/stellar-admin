@@ -146,8 +146,13 @@ public static class SpecLoader
             "expectUrl" => ExpectUrl(Url(path, value), timeout),
             "expectVisible" => ExpectVisible(Locator(path, value), timeout),
             "goto" => Goto(path, Line(node), Scalar(path, value)),
+            "pause" => Pause(path, value),
+            "press" => Press(Scalar(path, value)),
+            "record" => Record(Scalar(path, value)),
+            "recordEnd" => RecordEnd,
             "screenshot" => Screenshot(path, value, timeout),
             "spotlight" => Spotlight(Locator(path, value), timeout),
+            "type" => Type(path, value, timeout),
             "viewport" => Viewport(path, value),
             _ => throw new SpecException(path, Line(node), $"Unknown step '{kind}'."),
         };
@@ -187,8 +192,12 @@ public static class SpecLoader
             ? Scalar(path, Child(path, mapping, "url"))
             : Scalar(path, value);
 
+    // While recording, the cursor glides to the element first
     private static Func<SpecRun, Task> Click(Func<IPage, ILocator> locate, float timeout) =>
-        run => locate(run.Page).ClickAsync(new() { Timeout = timeout });
+        run =>
+            run.Recording is { } recording
+                ? recording.ClickAsync(locate(run.Page), timeout)
+                : locate(run.Page).ClickAsync(new() { Timeout = timeout });
 
     // { locator, style, badge, label, placement, arrow, gap }; the overlays stay until clearAnnotations,
     // so a screenshot after this step includes them. badge: auto numbers on from the badges already shown
@@ -290,6 +299,40 @@ public static class SpecLoader
             }
         };
 
+    // Milliseconds to wait while recording, so a result stays on screen; does nothing otherwise
+    private static Func<SpecRun, Task> Pause(string path, YamlNode value)
+    {
+        if (
+            !int.TryParse(
+                Scalar(path, value),
+                NumberStyles.None,
+                CultureInfo.InvariantCulture,
+                out var milliseconds
+            )
+        )
+        {
+            throw new SpecException(path, Line(value), "'pause' must be whole milliseconds.");
+        }
+
+        return run =>
+            run.Recording is null ? Task.CompletedTask : run.Page.WaitForTimeoutAsync(milliseconds);
+    }
+
+    // A key or chord on the focused element, e.g. Enter or Control+K
+    private static Func<SpecRun, Task> Press(string key) =>
+        run => run.Page.Keyboard.PressAsync(key, new() { Delay = run.Recording is null ? 0 : 60 });
+
+    // Records the following steps until recordEnd as {name}.mp4 and {name}.gif; only when screenshots
+    // are saved
+    private static Func<SpecRun, Task> Record(string name) =>
+        run =>
+            run.ScreenshotDirectory is null || run.Recording is not null
+                ? Task.CompletedTask
+                : SpecRecording.StartAsync(run, name);
+
+    private static Task RecordEnd(SpecRun run) =>
+        run.Recording?.FinishAsync(run) ?? Task.CompletedTask;
+
     // A name captures the viewport; { name, locator } captures only that element, e.g.
     // { name: brand, locator: ".sa-sidebar-brand" }
     private static Func<SpecRun, Task> Screenshot(string path, YamlNode value, float timeout)
@@ -338,6 +381,25 @@ public static class SpecLoader
                 "elements => window.specAnnotations.spotlight(elements)"
             );
         };
+
+    // { locator, text } types into the element key by key; while recording, at a typing pace
+    private static Func<SpecRun, Task> Type(string path, YamlNode value, float timeout)
+    {
+        if (value is not YamlMappingNode mapping)
+        {
+            throw new SpecException(path, Line(value), "type needs a 'locator' and 'text'.");
+        }
+
+        var locate = Locator(path, Child(path, mapping, "locator"));
+        var text = Scalar(path, Child(path, mapping, "text"));
+
+        return run =>
+            locate(run.Page)
+                .PressSequentiallyAsync(
+                    text,
+                    new() { Delay = run.Recording is null ? 0 : 90, Timeout = timeout }
+                );
+    }
 
     // Resizes the page without reloading it, e.g. { width: 390, height: 844 }
     private static Func<SpecRun, Task> Viewport(string path, YamlNode value)

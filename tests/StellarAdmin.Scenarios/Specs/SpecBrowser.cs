@@ -42,6 +42,23 @@ public sealed class SpecBrowser : IAsyncDisposable
             }
         );
 
+    // Records video at the viewport size into directory; motion stays on, so transitions show
+    public Task<IBrowserContext> NewRecordingContextAsync(
+        string baseUrl,
+        PageViewportSizeResult viewport,
+        string directory
+    ) =>
+        _browser.NewContextAsync(
+            new()
+            {
+                BaseURL = baseUrl,
+                ColorScheme = ColorScheme.Light,
+                RecordVideoDir = directory,
+                RecordVideoSize = new() { Width = viewport.Width, Height = viewport.Height },
+                ViewportSize = new() { Width = viewport.Width, Height = viewport.Height },
+            }
+        );
+
     // Uses an installed Chromium instead of downloading Playwright's; null falls back to Playwright's
     private static string? FindChromium() =>
         Environment.GetEnvironmentVariable("STELLARADMIN_CHROMIUM")

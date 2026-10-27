@@ -14,7 +14,7 @@ public static class SpecRunner
         var (app, baseUrl) = await ScenarioHost.StartLoopbackAsync(spec.Scenario);
         await using var _ = app;
         await using var context = await browser.NewContextAsync(baseUrl);
-        var run = new SpecRun(await context.NewPageAsync(), screenshotDirectory);
+        var run = new SpecRun(browser, baseUrl, await context.NewPageAsync(), screenshotDirectory);
 
         var completed = 0;
         foreach (var step in spec.Steps)
@@ -34,6 +34,12 @@ public static class SpecRunner
             }
 
             completed++;
+        }
+
+        // A recording without recordEnd runs to the end of the spec
+        if (run.Recording is { } recording)
+        {
+            await recording.FinishAsync(run);
         }
 
         return completed;
