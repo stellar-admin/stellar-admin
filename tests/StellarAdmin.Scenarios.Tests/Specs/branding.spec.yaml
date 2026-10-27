@@ -6,5 +6,11 @@ steps:
   - expectText: { selector: ".sa-sidebar-brand-subtitle", text: Operations }
   - expectVisible: ".sa-sidebar-brand-mark > svg"
   - screenshot: branding
+  - screenshot: { name: branding-brand, locator: "a:has(.sa-sidebar-brand-mark)" }
   - colorScheme: dark
   - screenshot: branding-dark
+  - screenshot: { name: branding-brand-dark, locator: "a:has(.sa-sidebar-brand-mark)" }
+  - viewport: { width: 390, height: 844 }
+  - screenshot: branding-mobile-dark
+  - colorScheme: light
+  - screenshot: branding-mobile

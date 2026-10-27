@@ -112,7 +112,8 @@ public static class SpecLoader
             "expectUrl" => ExpectUrl(Url(path, value), timeout),
             "expectVisible" => ExpectVisible(Locator(path, value), timeout),
             "goto" => Goto(path, Line(node), Scalar(path, value)),
-            "screenshot" => Screenshot(Scalar(path, value)),
+            "screenshot" => Screenshot(path, value, timeout),
+            "viewport" => Viewport(path, value),
             _ => throw new SpecException(path, Line(node), $"Unknown step '{kind}'."),
         };
 
@@ -206,20 +207,77 @@ public static class SpecLoader
             }
         };
 
-    private static Func<SpecRun, Task> Screenshot(string name) =>
-        async run =>
+    // A name captures the viewport; { name, locator } captures only that element, e.g.
+    // { name: brand, locator: ".sa-sidebar-brand" }
+    private static Func<SpecRun, Task> Screenshot(string path, YamlNode value, float timeout)
+    {
+        if (value is not YamlMappingNode mapping)
         {
-            if (run.ScreenshotDirectory is null)
-            {
-                return;
-            }
+            var name = Scalar(path, value);
 
-            await run.Page.ScreenshotAsync(
-                new()
-                {
-                    Animations = ScreenshotAnimations.Disabled,
-                    Path = Path.Combine(run.ScreenshotDirectory, $"{name}.png"),
-                }
+            return run =>
+                run.ScreenshotDirectory is null
+                    ? Task.CompletedTask
+                    : run.Page.ScreenshotAsync(
+                        new()
+                        {
+                            Animations = ScreenshotAnimations.Disabled,
+                            Path = Path.Combine(run.ScreenshotDirectory, $"{name}.png"),
+                        }
+                    );
+        }
+
+        var elementName = Scalar(path, Child(path, mapping, "name"));
+        var locate = Locator(path, Child(path, mapping, "locator"));
+
+        return run =>
+            run.ScreenshotDirectory is null
+                ? Task.CompletedTask
+                : locate(run.Page)
+                    .ScreenshotAsync(
+                        new()
+                        {
+                            Animations = ScreenshotAnimations.Disabled,
+                            Path = Path.Combine(run.ScreenshotDirectory, $"{elementName}.png"),
+                            Timeout = timeout,
+                        }
+                    );
+    }
+
+    // Resizes the page without reloading it, e.g. { width: 390, height: 844 }
+    private static Func<SpecRun, Task> Viewport(string path, YamlNode value)
+    {
+        if (value is not YamlMappingNode mapping)
+        {
+            throw new SpecException(path, Line(value), "viewport needs 'width' and 'height'.");
+        }
+
+        var width = Pixels(path, mapping, "width");
+        var height = Pixels(path, mapping, "height");
+
+        return run => run.Page.SetViewportSizeAsync(width, height);
+    }
+
+    private static int Pixels(string path, YamlMappingNode mapping, string key)
+    {
+        var node = Child(path, mapping, key);
+        if (
+            !int.TryParse(
+                Scalar(path, node),
+                NumberStyles.None,
+                CultureInfo.InvariantCulture,
+                out var pixels
+            )
+            || pixels <= 0
+        )
+        {
+            throw new SpecException(
+                path,
+                Line(node),
+                $"'{key}' must be a positive whole number of pixels."
             );
-        };
+        }
+
+        return pixels;
+    }
 }
