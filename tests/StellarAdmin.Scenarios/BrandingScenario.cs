@@ -20,6 +20,6 @@ public sealed class BrandingScenario : Scenario
             branding.Subtitle = Subtitle;
             branding.Logo = BrandingLogo.Icon("compass");
         });
-        admin.AddTripResource();
+        admin.AddVoyagerTravelResources();
     }
 }

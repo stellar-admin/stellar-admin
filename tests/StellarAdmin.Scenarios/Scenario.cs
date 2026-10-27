@@ -2,7 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace StellarAdmin.Scenarios;
 
-// A named admin panel configuration that tests, screenshots and the scenario host all run
+// A named admin panel configuration that tests, screenshots and the scenario host all run, on its own copy
+// of the Voyager Travel database
 public abstract class Scenario
 {
     public abstract string Description { get; }

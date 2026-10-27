@@ -11,6 +11,6 @@ steps:
   - press: Enter
   - expectUrl: { url: /stellaradmin/trips, timeout: 3000 }
   - pause: 600
-  - click: { role: cell, name: Kyoto in autumn }
+  - click: { role: cell, name: Tokyo to Kyoto by Bullet Train }
   - pause: 800
   - recordEnd: true

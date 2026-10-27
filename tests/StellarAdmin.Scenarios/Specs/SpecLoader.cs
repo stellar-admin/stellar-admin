@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
+using StellarAdmin.Scenarios.Fixtures;
 using YamlDotNet.RepresentationModel;
 
 namespace StellarAdmin.Scenarios.Specs;
@@ -40,6 +41,13 @@ public static class SpecLoader
         }
 
         List<SpecStep> loaded = [.. steps.Select(step => Step(path, step))];
+
+        // A top-level user signs in before the first step
+        if (root.Children.TryGetValue(new YamlScalarNode("user"), out var user))
+        {
+            loaded.Insert(0, new("signIn", Line(user), SignIn(Scalar(path, user))));
+        }
+
         CheckRecordings(path, loaded);
 
         return new(path, scenario, loaded);
@@ -213,6 +221,7 @@ public static class SpecLoader
             "screenshot" => Screenshot(path, value, timeout),
             "scroll" => Scroll(Locator(path, value), timeout),
             "select" => Select(path, value, timeout),
+            "signIn" => SignIn(Scalar(path, value)),
             "spotlight" => Spotlight(Locator(path, value), timeout),
             "type" => Type(path, value, timeout),
             "uncheck" => Pointer(
@@ -498,6 +507,21 @@ public static class SpecLoader
             locator => locator.SelectOptionAsync(option, new() { Timeout = timeout })
         );
     }
+
+    // Signs in as the seeded user with this email through the scenario's sign-in page; the request shares the
+    // browser's cookies, so the next page loads signed in
+    private static Func<SpecRun, Task> SignIn(string email) =>
+        async run =>
+        {
+            var response = await run.Page.Context.APIRequest.GetAsync(
+                $"{ScenarioSignIn.SignInPath}?email={Uri.EscapeDataString(email)}",
+                new() { MaxRedirects = 0 }
+            );
+            if (response.Status != 302)
+            {
+                throw new InvalidOperationException($"No seeded user has the email '{email}'.");
+            }
+        };
 
     // Dims the page except for every element the locator matches; annotations still draw on top
     private static Func<SpecRun, Task> Spotlight(Func<IPage, ILocator> locate, float timeout) =>

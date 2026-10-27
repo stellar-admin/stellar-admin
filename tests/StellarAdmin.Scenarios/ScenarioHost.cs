@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using StellarAdmin.Scenarios.Fixtures;
 
 namespace StellarAdmin.Scenarios;
 
@@ -24,12 +25,17 @@ public static class ScenarioHost
                 EnvironmentName = Environments.Development,
             }
         );
+        builder.Services.AddVoyagerTravelDatabase();
+        builder.Services.AddScenarioSignIn();
         scenario.ConfigureServices(builder.Services);
         builder.Services.AddStellarAdmin(scenario.ConfigureAdmin);
         configureHost?.Invoke(builder);
 
         var app = builder.Build();
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.MapStaticAssets();
+        app.MapScenarioSignIn();
         app.MapStellarAdmin();
         app.MapGet("/", () => Results.Redirect(scenario.StartPath));
 

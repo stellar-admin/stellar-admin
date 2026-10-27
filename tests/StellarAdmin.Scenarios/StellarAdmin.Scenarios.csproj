@@ -10,6 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Microsoft.Playwright" />
     <PackageReference Include="YamlDotNet" />
   </ItemGroup>
@@ -21,5 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin\StellarAdmin.csproj" />
+    <ProjectReference Include="..\..\src\StellarAdmin.EntityFrameworkCore\StellarAdmin.EntityFrameworkCore.csproj" />
   </ItemGroup>
 </Project>

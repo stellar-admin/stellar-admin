@@ -3,7 +3,7 @@ namespace StellarAdmin.Scenarios;
 public static class ScenarioCatalog
 {
     public static IReadOnlyList<Scenario> All { get; } =
-    [new DefaultScenario(), new BrandingScenario()];
+    [new DefaultScenario(), new BrandingScenario(), new StaffOnlyScenario()];
 
     public static Scenario? Find(string name) =>
         All.FirstOrDefault(scenario =>

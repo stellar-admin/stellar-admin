@@ -1,4 +1,4 @@
-# The sidebar link opens the trips index with its rows
+# The sidebar link opens the trips index with the seeded rows, whatever other runs changed
 scenario: default
 steps:
   - goto: /stellaradmin
@@ -7,5 +7,5 @@ steps:
   - click: { role: link, name: Trips }
   - expectUrl: /stellaradmin/trips
   - expectText: { role: heading, name: Trips, text: Trips }
-  - expectVisible: { role: cell, name: Kyoto in autumn }
+  - expectVisible: { role: cell, name: Tokyo to Kyoto by Bullet Train }
   - screenshot: trips-index

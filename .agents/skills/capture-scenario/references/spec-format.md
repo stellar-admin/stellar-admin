@@ -9,8 +9,17 @@ steps:
   - goto: /stellaradmin
   - click: { role: link, name: Trips }
   - expectUrl: /stellaradmin/trips
-  - expectVisible: { role: cell, name: Kyoto in autumn }
+  - expectVisible: { role: cell, name: Tokyo to Kyoto by Bullet Train }
   - screenshot: trips-index
+```
+
+A top-level `user` signs in as a seeded user by email before the first step:
+
+```yaml
+scenario: staff-only
+user: priya@voyager.travel
+steps:
+  - goto: /stellaradmin
 ```
 
 Outputs are saved only when the run has a screenshot folder (`--screenshots <dir>` on the host, or `STELLARADMIN_SCREENSHOTS=1` for the tests). Without one, `screenshot`, `record`, `recordEnd` and `pause` do nothing and every other step still runs.
@@ -26,7 +35,7 @@ Steps that take an element take a locator:
 | `{ role: heading }` | The ARIA role. |
 | `{ role: link, name: Trips }` | The role with this exact accessible name. |
 
-Prefer roles and names, which read like the page. A table row's accessible name is all its cells joined, so select a row with `"tr:has-text('Kyoto in autumn')"`, not by role. A locator that matches several elements fails an action; narrow it.
+Prefer roles and names, which read like the page. A table row's accessible name is all its cells joined, so select a row with `"tr:has-text('Tokyo to Kyoto by Bullet Train')"`, not by role. A locator that matches several elements fails an action; narrow it.
 
 Any step whose value is a mapping can add `timeout` in milliseconds (default 1000): `{ role: dialog, timeout: 3000 }`.
 
@@ -37,6 +46,7 @@ Any step whose value is a mapping can add `timeout` in milliseconds (default 100
 | `goto` | A path, relative to the scenario's base URL. Fails unless the response is OK. |
 | `expectUrl` | The end of the URL, e.g. `/stellaradmin/trips`, or `{ url, timeout }`. |
 | `expectVisible` | A locator. |
+| `signIn` | A seeded user's email; signs in (or switches user) without a password. The next page loads signed in. |
 | `expectText` | A locator mapping plus the exact `text`: `{ role: heading, name: Trips, text: Trips }` or `{ selector: ".sa-sidebar-brand-title", text: Voyager Travel }`. |
 
 Assertions retry until the timeout, so they also wait for a state to settle.
@@ -58,7 +68,7 @@ Assertions retry until the timeout, so they also wait for a state to settle.
   - click: "button[commandfor='--command-palette']"
   - fill: { locator: "#--command-palette input", text: Trips }
   - press: Enter
-  # On a form (the trips fixture has none)
+  # On a form with a select and a checkbox
   - select: { locator: { role: combobox, name: Country }, option: Japan }
   - check: { role: checkbox, name: Featured }
 ```
@@ -149,7 +159,7 @@ steps:
   - press: Enter
   - expectUrl: { url: /stellaradmin/trips, timeout: 3000 }
   - pause: 600
-  - click: { role: cell, name: Kyoto in autumn }
+  - click: { role: cell, name: Tokyo to Kyoto by Bullet Train }
   - pause: 800
   - recordEnd: true
 ```

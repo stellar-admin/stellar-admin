@@ -1,0 +1,9 @@
+# A Viewer can't open the staff-only admin panel, and an Agent signed in partway through can
+scenario: staff-only
+user: viewer@voyager.travel
+steps:
+  - goto: /stellaradmin
+  - expectText: { role: heading, text: Access denied }
+  - signIn: kenji@voyager.travel
+  - goto: /stellaradmin/trips
+  - expectVisible: { role: cell, name: Tokyo to Kyoto by Bullet Train }

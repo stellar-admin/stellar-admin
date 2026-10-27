@@ -1,0 +1,8 @@
+# Log out in the user menu signs out, so the staff-only admin panel asks to sign in again
+scenario: staff-only
+user: priya@voyager.travel
+steps:
+  - goto: /stellaradmin
+  - click: "[popovertarget='sa-user-menu']"
+  - click: { role: menuitem, name: Log out }
+  - expectText: { role: heading, text: Sign in, timeout: 3000 }
