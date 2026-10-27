@@ -1,6 +1,6 @@
 ---
 name: capture-scenario
-description: Turn a plain-English description of what to show (a page, a state, an interaction) into a scenario (C#) and a spec (YAML) under tests/StellarAdmin.Scenarios*, run it, and check the screenshots, annotated images, MP4 clips and GIFs it saves. Use when a developer asks for screenshots, a recording or an annotated image of the admin panel, or wants a scenario or spec written.
+description: Turn a plain-English description of what to show (a page, a state, an interaction) into a scenario (C#) and a spec (YAML) under tests/StellarAdmin.ScenarioTesting*, run it, and check the screenshots, annotated images, MP4 clips and GIFs it saves. Use when a developer asks for screenshots, a recording or an annotated image of the admin panel, or wants a scenario or spec written.
 metadata:
   internal: true
 ---
@@ -15,36 +15,36 @@ Inspect Git status first and keep to the request: a capture does not authorize c
 
 | What | Where |
 | --- | --- |
-| Scenarios | `tests/StellarAdmin.Scenarios/<Name>Scenario.cs`, registered in `ScenarioCatalog.All` |
-| Fixture resources and data | `tests/StellarAdmin.Scenarios/Fixtures/` |
-| Voyager Travel model and seeder | `tests/StellarAdmin.Scenarios/VoyagerTravel/`, copied from the generator by `sync.sh`; don't edit |
-| Sign-in | `Fixtures/ScenarioSignIn.cs`: `/scenario/sign-in` lists the users in the interactive host |
-| Specs | `tests/StellarAdmin.Scenarios.Tests/Specs/<name>.spec.yaml` (each file is also a test) |
-| Spec runner and steps | `tests/StellarAdmin.Scenarios/Specs/` (`SpecLoader.cs` holds every step) |
-| Interactive host | `tests/StellarAdmin.Scenarios.Host` |
+| Scenarios | `tests/StellarAdmin.ScenarioTesting/Scenarios/<Name>Scenario.cs`, registered in `ScenarioCatalog.All` |
+| Scenario base class, host, database and sign-in | `tests/StellarAdmin.ScenarioTesting/Hosting/`; `ScenarioHost` adds the database and sign-in to every scenario |
+| Voyager Travel model and seeder | `tests/VoyagerTravel/` (its own project), copied from the generator by `sync.sh`; don't edit |
+| Sign-in | `Hosting/SignInSetup.cs`: `/scenario/sign-in` lists the users in the interactive host |
+| Specs | `tests/StellarAdmin.ScenarioTesting.Tests/Specs/<name>.spec.yaml` (each file is also a test) |
+| Spec runner and steps | `tests/StellarAdmin.ScenarioTesting/Runner/` (`SpecLoader.cs` holds every step) |
+| Command line (interactive host and spec runs) | `tests/StellarAdmin.ScenarioTesting.Cli` |
 
 ## Workflow
 
 1. **Pin down the capture.** From the description, decide: the admin configuration it needs, the pages and interactions, and the outputs (still PNG, element PNG, annotated PNG, MP4, GIF, dark mode, mobile width). Ask only when the description leaves a consequential choice open.
-2. **Choose or add a scenario.** Reuse one from `ScenarioCatalog.All` when its configuration fits. Otherwise add a `Scenario` subclass, following `BrandingScenario`: a lowercase `Name`, a one-sentence `Description`, `ConfigureAdmin` with the configuration being shown, and `StartPath` only if it isn't `/stellaradmin`. Register it in `ScenarioCatalog.All`. Content uses the fictitious Voyager Travel theme.
-3. **Check the data fits.** Every scenario runs on its own fresh in-memory copy of the seeded Voyager Travel database, so a spec can change data freely. `AddVoyagerTravelResources()` registers trips (search, create, edit, delete), destinations and countries; the database holds many more entities (bookings, travellers, guides and others) that aren't registered. The seeded staff can sign in by email (`admin@voyager.travel` is Admin; `priya@`, `tomas@`, `hannah@`, `kenji@`, `chloe@` and `liam@voyager.travel` are Agents; `viewer@voyager.travel` is a Viewer); `staff-only` requires an Admin or Agent. If the capture needs a resource that isn't registered, say so and ask before adding it.
-4. **Find the locators.** Read the Razor views and tag helpers for the markup, or start the scenario and fetch its HTML: `dotnet run --project tests/StellarAdmin.Scenarios.Host -- <scenario> --urls http://127.0.0.1:5207`. Never use port 5205. Stop the host when done.
+2. **Choose or add a scenario.** Reuse one from `ScenarioCatalog.All` when its configuration fits. Otherwise add a `Scenario` subclass, following `BrandingScenario`: a lowercase `Name`, a one-sentence `Description`, `ConfigureAdmin` with the configuration being shown and only the resources its specs use, and `StartPath` only if it isn't `/stellaradmin`. Register it in `ScenarioCatalog.All`. Content uses the fictitious Voyager Travel theme.
+3. **Check the data fits.** Every scenario runs on its own fresh in-memory copy of the seeded Voyager Travel database, so a spec can change data freely. Each scenario registers its own resources with `AddEfCoreResource<T>()` on the Voyager Travel model (trips, destinations, countries, bookings, travellers, guides and others). The seeded staff can sign in by email (`admin@voyager.travel` is Admin; `priya@`, `tomas@`, `hannah@`, `kenji@`, `chloe@` and `liam@voyager.travel` are Agents; `viewer@voyager.travel` is a Viewer); `staff-only` requires an Admin or Agent. If an existing scenario lacks a resource or column the capture needs, say so and ask before adding it.
+4. **Find the locators.** Read the Razor views and tag helpers for the markup, or start the scenario and fetch its HTML: `dotnet run --project tests/StellarAdmin.ScenarioTesting.Cli -- <scenario> --urls http://127.0.0.1:5207`. Never use port 5205. Stop the host when done.
 5. **Write the spec.** One file per capture, named for what it shows. Start with a comment line saying what it shows, `goto` the page and set up the state to show. Add an `expect*` step only where the page must settle before a `screenshot` (after a navigation, or a dialog opening); the capture is not a test. Wrap interactions to record in `record`…`recordEnd` with `pause` steps so results stay on screen.
 6. **Run it with outputs** from the repository root:
 
    ```sh
-   dotnet run --project tests/StellarAdmin.Scenarios.Host -- --specs tests/StellarAdmin.Scenarios.Tests/Specs/<name>.spec.yaml --screenshots artifacts/screenshots
+   dotnet run --project tests/StellarAdmin.ScenarioTesting.Cli -- --specs tests/StellarAdmin.ScenarioTesting.Tests/Specs/<name>.spec.yaml --screenshots artifacts/screenshots
    ```
 
    It prints `passed <name> (N steps)` or `failed <file>:<line>: <message>`. A failure names the spec line; fix the spec (usually a locator or a timeout) and rerun. `artifacts/` is ignored by Git.
 7. **Check the output yourself.** Open every PNG it saved. For a clip, view frames rather than trusting the file exists: `ffmpeg -loglevel error -i <clip>.mp4 -vf "fps=2,scale=640:-1,tile=4x3" <scratchpad>/<clip>-sheet.png`, then open the sheet. Check the cursor reaches each target, dialogs and results are on screen long enough, and annotations point at the right elements. Adjust `pause`, `hold`, `cursorSpeed` and `typeDelay` and rerun until it reads well.
-8. **Check the test run still passes.** The test project runs every spec in `Specs/`, captures included, without saving outputs: `dotnet run --project tests/StellarAdmin.Scenarios.Tests`. All must pass. Screenshot, record and pause steps do nothing in this mode; the other steps still run.
+8. **Check the test run still passes.** The test project runs every spec in `Specs/`, captures included, without saving outputs: `dotnet run --project tests/StellarAdmin.ScenarioTesting.Tests`. All must pass. Screenshot, record and pause steps do nothing in this mode; the other steps still run.
 9. **Report** the files added or changed and the output paths. Leave committing to the developer.
 
 ## Prerequisites
 
 - Chromium: `/usr/bin/chromium`, or the path in `STELLARADMIN_CHROMIUM`.
-- Recording needs Playwright's ffmpeg build. The runner's error names the install command (`pwsh bin/Debug/net10.0/playwright.ps1 install ffmpeg`, run in `tests/StellarAdmin.Scenarios.Host` or the tests project).
+- Recording needs Playwright's ffmpeg build. The runner's error names the install command (`pwsh bin/Debug/net10.0/playwright.ps1 install ffmpeg`, run in `tests/StellarAdmin.ScenarioTesting.Cli` or the tests project).
 - Cutting clips needs `ffmpeg` on the `PATH`.
 
 ## When a step is missing
