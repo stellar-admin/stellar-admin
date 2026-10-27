@@ -17,18 +17,4 @@ internal static class ScenarioApp
 
         return app;
     }
-
-    // Real server on a free loopback port, for the browser
-    public static async Task<(WebApplication App, string BaseUrl)> StartKestrelAsync(
-        Scenario scenario
-    )
-    {
-        var app = ScenarioHost.Create(
-            scenario,
-            configureHost: builder => builder.WebHost.UseUrls("http://127.0.0.1:0")
-        );
-        await app.StartAsync();
-
-        return (app, app.Urls.First());
-    }
 }

@@ -9,9 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
-    <PackageReference Include="Microsoft.Playwright" />
     <PackageReference Include="TUnit" />
-    <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Specs\**\*.spec.yaml" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Specs are read from source, never from a build copy that could be stale -->
+    <AssemblyMetadata Include="ProjectDirectory" Value="$(MSBuildProjectDirectory)" />
   </ItemGroup>
 </Project>

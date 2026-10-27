@@ -1,58 +1,39 @@
+using System.Reflection;
+using StellarAdmin.Scenarios.Specs;
 using StellarAdmin.Scenarios.Tests.Infrastructure;
 
 namespace StellarAdmin.Scenarios.Tests.Specs;
 
-// One test per Specs/*.spec.yaml file. Screenshot steps save only when STELLARADMIN_SCREENSHOTS is set:
+// One test per Specs/*.spec.yaml file, read from this project's source folder. Screenshot steps save only when
+// STELLARADMIN_SCREENSHOTS is set:
 // STELLARADMIN_SCREENSHOTS=1 dotnet run --project tests/StellarAdmin.Scenarios.Tests
 public class SpecTests
 {
     [ClassDataSource<BrowserFixture>(Shared = SharedType.PerTestSession)]
     public required BrowserFixture Browser { get; init; }
 
+    // The source folder, so edits to a spec take effect without a build
+    private static readonly string ProjectDirectory = typeof(SpecTests)
+        .Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+        .Single(attribute => attribute.Key == "ProjectDirectory")
+        .Value!;
+
+    // Paths relative to the project, e.g. Specs/branding.spec.yaml
     public static IEnumerable<TestDataRow<string>> Specs() =>
-        Directory
-            .EnumerateFiles(
-                Path.Combine(AppContext.BaseDirectory, "Specs"),
-                "*.spec.yaml",
-                SearchOption.AllDirectories
-            )
-            .Order()
-            .Select(file => Path.GetRelativePath(AppContext.BaseDirectory, file))
-            .Select(file => new TestDataRow<string>(
-                file,
-                DisplayName: Path.GetFileName(file).Replace(".spec.yaml", "")
-            ));
+        SpecFiles
+            .Find(Path.Combine(ProjectDirectory, "Specs"))
+            .Select(file => Path.GetRelativePath(ProjectDirectory, file))
+            .Select(file => new TestDataRow<string>(file, DisplayName: SpecFiles.Name(file)));
 
     [Test]
     [MethodDataSource(nameof(Specs))]
     public async Task Spec_StepsPass(string file)
     {
         // Arrange
-        var spec = SpecLoader.Load(file);
-        var (app, baseUrl) = await ScenarioApp.StartKestrelAsync(spec.Scenario);
-        await using var _ = app;
-        var run = new SpecRun(await Browser.NewPageAsync(baseUrl), ScreenshotDirectory());
+        var spec = SpecLoader.Load(Path.Combine(ProjectDirectory, file), file);
 
         // Act
-        var completed = 0;
-        foreach (var step in spec.Steps)
-        {
-            try
-            {
-                await step.RunAsync(run);
-            }
-            catch (Exception exception) when (exception is not SpecException)
-            {
-                throw new SpecException(
-                    spec.Path,
-                    step.Line,
-                    $"{step.Kind}: {exception.Message}",
-                    exception
-                );
-            }
-
-            completed++;
-        }
+        var completed = await SpecRunner.RunAsync(spec, Browser.Browser, ScreenshotDirectory());
 
         // Assert
         await Assert.That(completed).IsEqualTo(spec.Steps.Count);

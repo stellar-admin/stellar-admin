@@ -1,17 +1,22 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 using YamlDotNet.RepresentationModel;
 
-namespace StellarAdmin.Scenarios.Tests.Specs;
+namespace StellarAdmin.Scenarios.Specs;
 
 // Reads a .spec.yaml file into steps; each step is a single-key mapping such as "- goto: /stellaradmin"
-internal static class SpecLoader
+public static class SpecLoader
 {
-    // The path is relative to the test output, which mirrors the source folder
-    public static Spec Load(string path)
+    // Milliseconds an assertion or click retries before failing; a step can set its own timeout
+    private const float DefaultTimeout = 1000;
+
+    // Errors name the file by displayPath, e.g. Specs/branding.spec.yaml; defaults to the file
+    public static Spec Load(string file, string? displayPath = null)
     {
+        var path = displayPath ?? file;
         var stream = new YamlStream();
-        using (var reader = File.OpenText(Path.Combine(AppContext.BaseDirectory, path)))
+        using (var reader = File.OpenText(file))
         {
             stream.Load(reader);
         }
@@ -98,12 +103,13 @@ internal static class SpecLoader
         var entry = step.Children.Single();
         var kind = Scalar(path, entry.Key);
         var value = entry.Value;
+        var timeout = Timeout(path, value);
         Func<SpecRun, Task> run = kind switch
         {
-            "click" => Click(Locator(path, value)),
-            "expectText" => ExpectText(path, value),
-            "expectUrl" => ExpectUrl(Scalar(path, value)),
-            "expectVisible" => ExpectVisible(Locator(path, value)),
+            "click" => Click(Locator(path, value), timeout),
+            "expectText" => ExpectText(path, value, timeout),
+            "expectUrl" => ExpectUrl(Url(path, value), timeout),
+            "expectVisible" => ExpectVisible(Locator(path, value), timeout),
             "goto" => Goto(path, Line(node), Scalar(path, value)),
             "screenshot" => Screenshot(Scalar(path, value)),
             _ => throw new SpecException(path, Line(node), $"Unknown step '{kind}'."),
@@ -112,11 +118,43 @@ internal static class SpecLoader
         return new(kind, Line(node), run);
     }
 
-    private static Func<SpecRun, Task> Click(Func<IPage, ILocator> locate) =>
-        run => locate(run.Page).ClickAsync();
+    // A mapping value can set "timeout" in milliseconds, e.g. { role: dialog, timeout: 3000 }
+    private static float Timeout(string path, YamlNode value)
+    {
+        if (
+            value is not YamlMappingNode mapping
+            || OptionalScalar(path, mapping, "timeout") is not { } text
+        )
+        {
+            return DefaultTimeout;
+        }
+
+        if (
+            !float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var timeout)
+            || timeout <= 0
+        )
+        {
+            throw new SpecException(
+                path,
+                Line(value),
+                "'timeout' must be a positive number of milliseconds."
+            );
+        }
+
+        return timeout;
+    }
+
+    // A path, or { url, timeout } to change the timeout
+    private static string Url(string path, YamlNode value) =>
+        value is YamlMappingNode mapping
+            ? Scalar(path, Child(path, mapping, "url"))
+            : Scalar(path, value);
+
+    private static Func<SpecRun, Task> Click(Func<IPage, ILocator> locate, float timeout) =>
+        run => locate(run.Page).ClickAsync(new() { Timeout = timeout });
 
     // A locator mapping plus the exact text, e.g. { role: heading, text: Trips }
-    private static Func<SpecRun, Task> ExpectText(string path, YamlNode value)
+    private static Func<SpecRun, Task> ExpectText(string path, YamlNode value, float timeout)
     {
         if (value is not YamlMappingNode mapping)
         {
@@ -126,15 +164,19 @@ internal static class SpecLoader
         var locate = Locator(path, mapping);
         var text = Scalar(path, Child(path, mapping, "text"));
 
-        return run => Assertions.Expect(locate(run.Page)).ToHaveTextAsync(text);
+        return run =>
+            Assertions.Expect(locate(run.Page)).ToHaveTextAsync(text, new() { Timeout = timeout });
     }
 
     // Matches the end of the URL, so specs only need the path
-    private static Func<SpecRun, Task> ExpectUrl(string url) =>
-        run => Assertions.Expect(run.Page).ToHaveURLAsync(new Regex($"{Regex.Escape(url)}$"));
+    private static Func<SpecRun, Task> ExpectUrl(string url, float timeout) =>
+        run =>
+            Assertions
+                .Expect(run.Page)
+                .ToHaveURLAsync(new Regex($"{Regex.Escape(url)}$"), new() { Timeout = timeout });
 
-    private static Func<SpecRun, Task> ExpectVisible(Func<IPage, ILocator> locate) =>
-        run => Assertions.Expect(locate(run.Page)).ToBeVisibleAsync();
+    private static Func<SpecRun, Task> ExpectVisible(Func<IPage, ILocator> locate, float timeout) =>
+        run => Assertions.Expect(locate(run.Page)).ToBeVisibleAsync(new() { Timeout = timeout });
 
     private static Func<SpecRun, Task> Goto(string path, int line, string url) =>
         async run =>

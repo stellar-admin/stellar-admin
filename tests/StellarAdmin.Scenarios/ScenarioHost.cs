@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace StellarAdmin.Scenarios;
 
@@ -32,5 +34,23 @@ public static class ScenarioHost
         app.MapGet("/", () => Results.Redirect(scenario.StartPath));
 
         return app;
+    }
+
+    // Real server on a free loopback port for the browser; logs only warnings and errors
+    public static async Task<(WebApplication App, string BaseUrl)> StartLoopbackAsync(
+        Scenario scenario
+    )
+    {
+        var app = Create(
+            scenario,
+            configureHost: builder =>
+            {
+                builder.WebHost.UseUrls("http://127.0.0.1:0");
+                builder.Logging.SetMinimumLevel(LogLevel.Warning);
+            }
+        );
+        await app.StartAsync();
+
+        return (app, app.Urls.First());
     }
 }
