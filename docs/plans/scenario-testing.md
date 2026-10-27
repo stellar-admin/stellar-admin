@@ -58,6 +58,12 @@ Built (2026-10-27): `ScenarioCatalog` is built from one or more assemblies and f
 
 - Verified: the Cli lists the ten scenarios under the expected names; 14 of 14 tests pass on four runs. The first run after the build had one failure, which wasn't captured and didn't recur.
 
+## Cleanup
+
+Done (2026-10-28): removed the demo and placeholder specs `branding`, `command-palette`, `trip-edit` and `trips-index`, the `BrandingScenario` and its Cli launch profile; proper ones will replace them. Left: the auth specs on `staff-only`, the sidebar branding specs, and `default` as the Cli's default scenario with no specs. The sections above describe the earlier set.
+
+- Verified: 10 of 10 tests pass in the test project.
+
 Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 
 ## Later

@@ -16,7 +16,7 @@ public static class SpecLoader
     // Milliseconds an assertion or click retries before failing; a step can set its own timeout
     private const float DefaultTimeout = 1000;
 
-    // Looks the scenario up in catalog. Errors name the file by displayPath, e.g. Specs/branding.spec.yaml; defaults to the file
+    // Looks the scenario up in catalog. Errors name the file by displayPath, e.g. Specs/sign-in.spec.yaml; defaults to the file
     public static Spec Load(ScenarioCatalog catalog, string file, string? displayPath = null)
     {
         var path = displayPath ?? file;

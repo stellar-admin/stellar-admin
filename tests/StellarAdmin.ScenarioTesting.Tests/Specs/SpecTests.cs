@@ -22,7 +22,7 @@ public class SpecTests
         .Single(attribute => attribute.Key == "ProjectDirectory")
         .Value!;
 
-    // Paths relative to the project, e.g. Specs/branding.spec.yaml
+    // Paths relative to the project, e.g. Specs/sign-in.spec.yaml
     public static IEnumerable<TestDataRow<string>> Specs() =>
         SpecFiles
             .Find(Path.Combine(ProjectDirectory, "Specs"))

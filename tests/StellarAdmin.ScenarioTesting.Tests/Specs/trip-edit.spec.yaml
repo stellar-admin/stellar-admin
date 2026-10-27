@@ -1,8 +1,0 @@
-# Editing a trip saves the new title; other runs keep the seeded one (see trips-index)
-scenario: default
-steps:
-  - goto: /stellaradmin/trips/edit/1
-  - fill: { locator: { role: textbox, name: Title }, text: Tokyo to Kyoto by night train }
-  - click: { role: button, name: Save Trip }
-  - expectUrl: { url: /stellaradmin/trips, timeout: 3000 }
-  - expectVisible: { role: cell, name: Tokyo to Kyoto by night train }

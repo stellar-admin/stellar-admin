@@ -7,13 +7,6 @@
       "launchBrowser": true,
       "launchUrl": "stellaradmin",
       "applicationUrl": "http://localhost:5210"
-    },
-    "branding": {
-      "commandName": "Project",
-      "commandLineArgs": "branding",
-      "launchBrowser": true,
-      "launchUrl": "stellaradmin",
-      "applicationUrl": "http://localhost:5210"
     }
   }
 }

@@ -13,6 +13,6 @@ public static class SpecFiles
                 .Order(),
         ];
 
-    // The file name without .spec.yaml, e.g. trips-index
+    // The file name without .spec.yaml, e.g. sign-in
     public static string Name(string path) => Path.GetFileName(path)[..^Extension.Length];
 }
