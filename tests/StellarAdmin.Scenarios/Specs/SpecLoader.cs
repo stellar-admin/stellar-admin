@@ -8,6 +8,70 @@ namespace StellarAdmin.Scenarios.Specs;
 // Reads a .spec.yaml file into steps; each step is a single-key mapping such as "- goto: /stellaradmin"
 public static class SpecLoader
 {
+    // Draws an outline around the element, with an optional numbered badge on its corner and a label
+    // below it (above it near the bottom of the viewport); overlays carry data-spec-annotation
+    private const string AnnotateScript = """
+        (element, { label, badge }) => {
+            const color = "#e11d48";
+            const box = element.getBoundingClientRect();
+            const left = box.left + window.scrollX;
+            const top = box.top + window.scrollY;
+            const add = (style, text) => {
+                const overlay = document.createElement("div");
+                overlay.dataset.specAnnotation = "";
+                overlay.textContent = text ?? "";
+                Object.assign(overlay.style, {
+                    position: "absolute",
+                    zIndex: "2147483647",
+                    pointerEvents: "none",
+                    boxSizing: "border-box",
+                    font: "600 13px/1.4 system-ui, sans-serif",
+                    color: "#fff",
+                    ...style,
+                });
+                document.body.append(overlay);
+
+                return overlay;
+            };
+
+            add({
+                left: `${left - 4}px`,
+                top: `${top - 4}px`,
+                width: `${box.width + 8}px`,
+                height: `${box.height + 8}px`,
+                border: `2px solid ${color}`,
+                borderRadius: "6px",
+            });
+
+            if (badge) {
+                add({
+                    left: `${left - 14}px`,
+                    top: `${top - 14}px`,
+                    width: "22px",
+                    height: "22px",
+                    borderRadius: "11px",
+                    background: color,
+                    textAlign: "center",
+                    lineHeight: "22px",
+                }, badge);
+            }
+
+            if (label) {
+                const note = add({
+                    left: `${left - 4}px`,
+                    padding: "3px 8px",
+                    borderRadius: "4px",
+                    background: color,
+                    whiteSpace: "nowrap",
+                }, label);
+                const below = box.bottom + 8 + note.offsetHeight <= window.innerHeight;
+                note.style.top = below
+                    ? `${top + box.height + 8}px`
+                    : `${top - 8 - note.offsetHeight}px`;
+            }
+        }
+        """;
+
     // Milliseconds an assertion or click retries before failing; a step can set its own timeout
     private const float DefaultTimeout = 1000;
 
@@ -106,6 +170,8 @@ public static class SpecLoader
         var timeout = Timeout(path, value);
         Func<SpecRun, Task> run = kind switch
         {
+            "annotate" => Annotate(path, value, timeout),
+            "clearAnnotations" => ClearAnnotations,
             "click" => Click(Locator(path, value), timeout),
             "colorScheme" => ColorScheme(path, value),
             "expectText" => ExpectText(path, value, timeout),
@@ -154,6 +220,29 @@ public static class SpecLoader
 
     private static Func<SpecRun, Task> Click(Func<IPage, ILocator> locate, float timeout) =>
         run => locate(run.Page).ClickAsync(new() { Timeout = timeout });
+
+    // { locator, label, badge }; the overlays stay until clearAnnotations, so a screenshot after this
+    // step includes them
+    private static Func<SpecRun, Task> Annotate(string path, YamlNode value, float timeout)
+    {
+        if (value is not YamlMappingNode mapping)
+        {
+            throw new SpecException(path, Line(value), "annotate needs a 'locator'.");
+        }
+
+        var locate = Locator(path, Child(path, mapping, "locator"));
+        var label = OptionalScalar(path, mapping, "label");
+        var badge = OptionalScalar(path, mapping, "badge");
+
+        return run =>
+            locate(run.Page)
+                .EvaluateAsync(AnnotateScript, new { label, badge }, new() { Timeout = timeout });
+    }
+
+    private static Task ClearAnnotations(SpecRun run) =>
+        run.Page.EvaluateAsync(
+            "document.querySelectorAll('[data-spec-annotation]').forEach(overlay => overlay.remove())"
+        );
 
     // dark or light; sets the class the stylesheets follow on <html> without reloading the page
     private static Func<SpecRun, Task> ColorScheme(string path, YamlNode value)

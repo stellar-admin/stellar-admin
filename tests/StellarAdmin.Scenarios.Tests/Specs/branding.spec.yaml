@@ -7,6 +7,9 @@ steps:
   - expectVisible: ".sa-sidebar-brand-mark > svg"
   - screenshot: branding
   - screenshot: { name: branding-brand, locator: "a:has(.sa-sidebar-brand-mark)" }
+  - annotate: { locator: "a:has(.sa-sidebar-brand-mark)", label: "Your title and logo" }
+  - screenshot: branding-annotated
+  - clearAnnotations: true
   - colorScheme: dark
   - screenshot: branding-dark
   - screenshot: { name: branding-brand-dark, locator: "a:has(.sa-sidebar-brand-mark)" }
