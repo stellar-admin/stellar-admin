@@ -11,7 +11,7 @@ public abstract partial class Scenario
     public abstract string Description { get; }
 
     // The class name in kebab case without "Scenario", then any [ScenarioArguments] values, e.g.
-    // StaffOnlyScenario is staff-only
+    // SidebarBrandingTitleScenario is sidebar-branding-title
     public virtual string Name =>
         string.Join(
             '-',

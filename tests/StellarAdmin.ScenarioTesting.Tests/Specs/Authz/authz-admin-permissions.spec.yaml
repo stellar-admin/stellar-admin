@@ -1,0 +1,18 @@
+# An Admin sees Trips, Payments and the Audit log link, and can open Payments
+scenario: authorization
+user: admin@voyager.travel
+steps:
+  - goto: /stellaradmin
+  - within:
+      selector: main
+      steps:
+        - expectVisible: { role: link, name: Trips }
+        - expectVisible: { role: link, name: Payments }
+  - within:
+      selector: "[data-slot='sidebar-content']"
+      steps:
+        - expectVisible: { role: link, name: Trips }
+        - expectVisible: { role: link, name: Audit log }
+        - click: { role: link, name: Payments, timeout: 5000 }
+  - expectUrl: { url: /stellaradmin/payments, timeout: 3000 }
+  - expectText: { role: heading, name: Payments, text: Payments }

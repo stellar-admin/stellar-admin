@@ -1,0 +1,6 @@
+# A Viewer meets no role the admin panel requires, so the panel shows Access denied
+scenario: authorization
+user: viewer@voyager.travel
+steps:
+  - goto: /stellaradmin
+  - expectText: { role: heading, text: Access denied }

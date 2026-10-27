@@ -1,8 +1,0 @@
-# Opening a staff-only admin panel signed out goes to the sign-in page, and signing in comes back
-scenario: staff-only
-steps:
-  - goto: /stellaradmin
-  - expectText: { role: heading, text: Sign in }
-  - click: { role: link, name: Priya Nair }
-  - expectUrl: { url: /stellaradmin, timeout: 3000 }
-  - expectText: { selector: "#sa-user-menu .font-semibold", text: priya@voyager.travel }

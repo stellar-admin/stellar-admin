@@ -64,6 +64,12 @@ Done (2026-10-28): removed the demo and placeholder specs `branding`, `command-p
 
 - Verified: 10 of 10 tests pass in the test project.
 
+## Authorization specs
+
+Done (2026-10-28): `Scenarios/Authz/AuthorizationScenario` (`authorization`) replaces `staff-only`: the panel requires Admin or Agent, Payments and an Audit log sidebar link require Admin, and the home page lists resources instead of the setup checklist. Specs in `Specs/Authz/`: `authz-sign-in` (a deep link goes to sign-in and back), `authz-access-denied` (Viewer), `authz-sign-out` (user menu, Log out, panel asks to sign in again), `authz-agent-permissions` (no Payments or Audit log in the sidebar or home page; Payments directly is denied) and `authz-admin-permissions` (both shown; Payments opens). HTTP rules (401/403, policy combinations, logout schemes) stay in the integration tests.
+
+- Verified: 12 of 12 tests pass on four runs. The first Payments page load takes over a second, so its click has a 5 s timeout.
+
 Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 
 ## Later

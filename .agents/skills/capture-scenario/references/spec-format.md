@@ -16,7 +16,7 @@ steps:
 A top-level `user` signs in as a seeded user by email before the first step:
 
 ```yaml
-scenario: staff-only
+scenario: authorization
 user: priya@voyager.travel
 steps:
   - goto: /stellaradmin

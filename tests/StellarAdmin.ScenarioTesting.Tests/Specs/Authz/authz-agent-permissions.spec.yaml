@@ -1,0 +1,18 @@
+# An Agent sees Trips but not the Admin-only Payments and Audit log, and opening Payments directly is denied
+scenario: authorization
+user: priya@voyager.travel
+steps:
+  - goto: /stellaradmin
+  - within:
+      selector: "[data-slot='sidebar-content']"
+      steps:
+        - expectVisible: { role: link, name: Trips }
+        - expectCount: { role: link, name: Payments, count: 0 }
+        - expectCount: { role: link, name: Audit log, count: 0 }
+  - within:
+      selector: main
+      steps:
+        - expectVisible: { role: link, name: Trips }
+        - expectCount: { role: link, name: Payments, count: 0 }
+  - goto: /stellaradmin/payments
+  - expectText: { role: heading, text: Access denied }
