@@ -30,32 +30,20 @@ public sealed class SpecBrowser : IAsyncDisposable
         _playwright.Dispose();
     }
 
-    // Fixed viewport, light scheme and no motion, so screenshots are repeatable
-    public Task<IBrowserContext> NewContextAsync(string baseUrl) =>
+    // Fixed viewport, light scheme and no motion, so screenshots are repeatable; a video directory records
+    // the whole context at the viewport size
+    public Task<IBrowserContext> NewContextAsync(string baseUrl, string? videoDirectory = null) =>
         _browser.NewContextAsync(
             new()
             {
                 BaseURL = baseUrl,
                 ColorScheme = ColorScheme.Light,
+                RecordVideoDir = videoDirectory,
+                RecordVideoSize = videoDirectory is null
+                    ? null
+                    : new() { Width = 1280, Height = 800 },
                 ReducedMotion = ReducedMotion.Reduce,
                 ViewportSize = new() { Width = 1280, Height = 800 },
-            }
-        );
-
-    // Records video at the viewport size into directory; motion stays on, so transitions show
-    public Task<IBrowserContext> NewRecordingContextAsync(
-        string baseUrl,
-        PageViewportSizeResult viewport,
-        string directory
-    ) =>
-        _browser.NewContextAsync(
-            new()
-            {
-                BaseURL = baseUrl,
-                ColorScheme = ColorScheme.Light,
-                RecordVideoDir = directory,
-                RecordVideoSize = new() { Width = viewport.Width, Height = viewport.Height },
-                ViewportSize = new() { Width = viewport.Width, Height = viewport.Height },
             }
         );
 

@@ -2,22 +2,10 @@ using Microsoft.Playwright;
 
 namespace StellarAdmin.Scenarios.Specs;
 
-// What a step runs against; a null screenshot directory skips screenshot and recording steps. While a
-// recording runs, Page is the recorded page
-public sealed class SpecRun(
-    SpecBrowser browser,
-    string baseUrl,
-    IPage page,
-    string? screenshotDirectory
-)
+// What a step runs against; a null screenshot directory skips screenshot and record steps. Video is set
+// when screenshots are saved and the spec has record steps
+public sealed record SpecRun(IPage Page, string? ScreenshotDirectory, SpecVideo? Video = null)
 {
-    public SpecBrowser Browser { get; } = browser;
-
-    public string BaseUrl { get; } = baseUrl;
-
-    public IPage Page { get; set; } = page;
-
-    public SpecRecording? Recording { get; set; }
-
-    public string? ScreenshotDirectory { get; } = screenshotDirectory;
+    // The clip being recorded, if any
+    public SpecRecordOptions? Recording => Video?.Current;
 }

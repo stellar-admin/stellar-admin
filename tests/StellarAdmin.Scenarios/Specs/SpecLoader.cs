@@ -39,7 +39,41 @@ public static class SpecLoader
             throw new SpecException(path, Line(root), "'steps' must be a list.");
         }
 
-        return new(path, scenario, [.. steps.Select(step => Step(path, step))]);
+        List<SpecStep> loaded = [.. steps.Select(step => Step(path, step))];
+        CheckRecordings(path, loaded);
+
+        return new(path, scenario, loaded);
+    }
+
+    // A record runs until recordEnd or the end of the spec; clips cannot overlap
+    private static void CheckRecordings(string path, IEnumerable<SpecStep> steps)
+    {
+        int? open = null;
+        foreach (var step in steps)
+        {
+            if (step.Kind == "record")
+            {
+                if (open is not null)
+                {
+                    throw new SpecException(
+                        path,
+                        step.Line,
+                        $"The recording started on line {open} has not ended."
+                    );
+                }
+
+                open = step.Line;
+            }
+            else if (step.Kind == "recordEnd")
+            {
+                if (open is null)
+                {
+                    throw new SpecException(path, step.Line, "recordEnd needs a record before it.");
+                }
+
+                open = null;
+            }
+        }
     }
 
     private static YamlNode Child(string path, YamlMappingNode mapping, string key) =>
@@ -121,6 +155,17 @@ public static class SpecLoader
             ? value
             : throw new SpecException(path, Line(node), "Expected a single value.");
 
+    private static float Speed(string path, YamlNode node) =>
+        float.TryParse(
+            Scalar(path, node),
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
+            out var speed
+        )
+        && speed > 0
+            ? speed
+            : throw new SpecException(path, Line(node), "'cursorSpeed' must be a positive number.");
+
     private static SpecStep Step(string path, YamlNode node)
     {
         if (node is not YamlMappingNode { Children.Count: 1 } step)
@@ -148,7 +193,7 @@ public static class SpecLoader
             "goto" => Goto(path, Line(node), Scalar(path, value)),
             "pause" => Pause(path, value),
             "press" => Press(Scalar(path, value)),
-            "record" => Record(Scalar(path, value)),
+            "record" => Record(path, Line(node), value),
             "recordEnd" => RecordEnd,
             "screenshot" => Screenshot(path, value, timeout),
             "spotlight" => Spotlight(Locator(path, value), timeout),
@@ -195,9 +240,9 @@ public static class SpecLoader
     // While recording, the cursor glides to the element first
     private static Func<SpecRun, Task> Click(Func<IPage, ILocator> locate, float timeout) =>
         run =>
-            run.Recording is { } recording
-                ? recording.ClickAsync(locate(run.Page), timeout)
-                : locate(run.Page).ClickAsync(new() { Timeout = timeout });
+            run.Recording is null
+                ? locate(run.Page).ClickAsync(new() { Timeout = timeout })
+                : run.Video!.ClickAsync(locate(run.Page), timeout);
 
     // { locator, style, badge, label, placement, arrow, gap }; the overlays stay until clearAnnotations,
     // so a screenshot after this step includes them. badge: auto numbers on from the badges already shown
@@ -302,17 +347,7 @@ public static class SpecLoader
     // Milliseconds to wait while recording, so a result stays on screen; does nothing otherwise
     private static Func<SpecRun, Task> Pause(string path, YamlNode value)
     {
-        if (
-            !int.TryParse(
-                Scalar(path, value),
-                NumberStyles.None,
-                CultureInfo.InvariantCulture,
-                out var milliseconds
-            )
-        )
-        {
-            throw new SpecException(path, Line(value), "'pause' must be whole milliseconds.");
-        }
+        var milliseconds = Milliseconds(path, value, "pause");
 
         return run =>
             run.Recording is null ? Task.CompletedTask : run.Page.WaitForTimeoutAsync(milliseconds);
@@ -322,16 +357,34 @@ public static class SpecLoader
     private static Func<SpecRun, Task> Press(string key) =>
         run => run.Page.Keyboard.PressAsync(key, new() { Delay = run.Recording is null ? 0 : 60 });
 
-    // Records the following steps until recordEnd as {name}.mp4 and {name}.gif; only when screenshots
-    // are saved
-    private static Func<SpecRun, Task> Record(string name) =>
-        run =>
-            run.ScreenshotDirectory is null || run.Recording is not null
-                ? Task.CompletedTask
-                : SpecRecording.StartAsync(run, name);
+    // A clip name, or { name, gif, typeDelay, cursorSpeed, hold }: records the following steps until
+    // recordEnd as {name}.mp4, plus {name}.gif with gif: true. typeDelay is milliseconds per key (90),
+    // cursorSpeed scales the cursor's glide (1) and hold keeps the last frame for milliseconds (800).
+    // Recording happens only when screenshots are saved
+    private static Func<SpecRun, Task> Record(string path, int line, YamlNode value)
+    {
+        var options = value is YamlMappingNode mapping
+            ? new SpecRecordOptions(
+                Scalar(path, Child(path, mapping, "name")),
+                line,
+                OneOf(path, mapping, "gif", "true", "false") == "true",
+                mapping.Children.TryGetValue(new YamlScalarNode("typeDelay"), out var typeDelay)
+                    ? Milliseconds(path, typeDelay, "typeDelay")
+                    : 90,
+                mapping.Children.TryGetValue(new YamlScalarNode("cursorSpeed"), out var speed)
+                    ? Speed(path, speed)
+                    : 1,
+                mapping.Children.TryGetValue(new YamlScalarNode("hold"), out var hold)
+                    ? Milliseconds(path, hold, "hold")
+                    : 800
+            )
+            : new SpecRecordOptions(Scalar(path, value), line, false, 90, 1, 800);
+
+        return run => run.Video?.BeginAsync(run.Page, options) ?? Task.CompletedTask;
+    }
 
     private static Task RecordEnd(SpecRun run) =>
-        run.Recording?.FinishAsync(run) ?? Task.CompletedTask;
+        run.Recording is null ? Task.CompletedTask : run.Video!.EndAsync(run.Page);
 
     // A name captures the viewport; { name, locator } captures only that element, e.g.
     // { name: brand, locator: ".sa-sidebar-brand" }
@@ -382,7 +435,7 @@ public static class SpecLoader
             );
         };
 
-    // { locator, text } types into the element key by key; while recording, at a typing pace
+    // { locator, text } types into the element key by key; while recording, at the clip's typeDelay
     private static Func<SpecRun, Task> Type(string path, YamlNode value, float timeout)
     {
         if (value is not YamlMappingNode mapping)
@@ -397,7 +450,7 @@ public static class SpecLoader
             locate(run.Page)
                 .PressSequentiallyAsync(
                     text,
-                    new() { Delay = run.Recording is null ? 0 : 90, Timeout = timeout }
+                    new() { Delay = run.Recording?.TypeDelay ?? 0, Timeout = timeout }
                 );
     }
 
@@ -414,6 +467,16 @@ public static class SpecLoader
 
         return run => run.Page.SetViewportSizeAsync(width, height);
     }
+
+    private static int Milliseconds(string path, YamlNode node, string key) =>
+        int.TryParse(
+            Scalar(path, node),
+            NumberStyles.None,
+            CultureInfo.InvariantCulture,
+            out var milliseconds
+        )
+            ? milliseconds
+            : throw new SpecException(path, Line(node), $"'{key}' must be whole milliseconds.");
 
     private static int Pixels(string path, YamlMappingNode mapping, string key)
     {

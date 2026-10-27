@@ -2,7 +2,7 @@
 scenario: default
 steps:
   - goto: /stellaradmin
-  - record: command-palette
+  - record: { name: command-palette, gif: true }
   - pause: 400
   - click: "button[commandfor='--command-palette']"
   - pause: 300
