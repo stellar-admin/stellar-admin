@@ -48,6 +48,11 @@ Any step whose value is a mapping can add `timeout` in milliseconds (default 100
 | `expectVisible` | A locator. |
 | `signIn` | A seeded user's email; signs in (or switches user) without a password. The next page loads signed in. |
 | `expectText` | A locator mapping plus the exact `text`: `{ role: heading, name: Trips, text: Trips }` or `{ selector: ".sa-sidebar-brand-title", text: Voyager Travel }`. |
+| `expectAttribute` | A locator mapping plus `attribute` and `value`: `{ selector: "meta[name='description']", attribute: content, value: Voyager Travel }`. The element need not be visible. |
+| `expectCount` | A locator mapping plus `count`, the number of matching elements: `{ selector: ".sa-sidebar-brand-subtitle", count: 0 }` checks it is absent. |
+| `expectTitle` | The document title, e.g. `Trips - Voyager Travel`, or `{ text, timeout }`. |
+
+In `expectText`, `expectAttribute` and `expectTitle`, a value written `/pattern/` is a regular expression: `text: "/^Stellar Admin /"`.
 
 Assertions retry until the timeout, so they also wait for a state to settle.
 

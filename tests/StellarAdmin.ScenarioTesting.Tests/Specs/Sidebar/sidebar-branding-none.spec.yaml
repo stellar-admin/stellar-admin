@@ -1,0 +1,8 @@
+# With no branding, the sidebar header links home and shows the title from the application name, with no subtitle or logo
+scenario: sidebar-branding-none
+steps:
+  - goto: /stellaradmin
+  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button']", attribute: href, value: /stellaradmin }
+  - expectText: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-title", text: "/^Stellar Admin Scenario Testing /" }
+  - expectCount: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-subtitle", count: 0 }
+  - expectCount: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] :is(.sa-sidebar-brand-mark, img)", count: 0 }

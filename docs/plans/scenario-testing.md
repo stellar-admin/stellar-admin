@@ -43,6 +43,14 @@ Built (2026-10-27): ASP.NET Core Identity on the seeded users, added to every sc
 - All seven specs pass in the test project (8 of 8 tests with the TestServer branding test, run in parallel) and through the host. `trips-index` and the `command-palette` clip were checked by eye on the new data.
 - After the layout change: the seven specs pass in the test project and the Cli project builds. Not re-checked: spec runs through the Cli, and outputs by eye.
 
+## Pilot: integration tests as scenarios
+
+Built (2026-10-27): the six tests in `tests/StellarAdmin.IntegrationTests/Sidebar/SidebarBrandingTests.cs` (seven cases) as one scenario and spec each, in `Scenarios/Sidebar/` and `Specs/Sidebar/`. New steps `expectAttribute`, `expectCount` and `expectTitle`, and `/pattern/` values in text steps. The Start and Fill layout rows are two instances of one scenario class that takes the layout. `SidebarBrandingTests.cs` was deleted; `sidebar-branding-title` checks the home page, whose browser title is the branding title alone (the old test used a resource page, "Products - …").
+
+- The default title comes from the entry assembly's name, so it differs between the test project and the Cli; `sidebar-branding-none` matches `/^Stellar Admin Scenario Testing /`. Pinning `ApplicationName` doesn't work: MVC loads the assembly by that name.
+- Image and wordmark paths don't exist; the specs check attributes only.
+- Verified: 14 of 14 tests pass in the test project, and the seven sidebar specs pass through the Cli. A wrong attribute, count, title, pattern and meta value each failed with a clear message.
+
 Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 
 ## Later

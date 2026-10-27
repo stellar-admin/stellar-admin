@@ -164,6 +164,14 @@ public static class SpecLoader
             ? value
             : throw new SpecException(path, Line(node), "Expected a single value.");
 
+    // Text to match exactly, or /pattern/ for a regular expression
+    private static (string? Exact, Regex? Pattern) Text(string path, YamlNode node)
+    {
+        var text = Scalar(path, node);
+
+        return text is ['/', .. var pattern, '/'] ? (null, new Regex(pattern)) : (text, null);
+    }
+
     private static float Speed(string path, YamlNode node) =>
         float.TryParse(
             Scalar(path, node),
@@ -205,7 +213,10 @@ public static class SpecLoader
                 l => l.ClickAsync(new() { Timeout = timeout })
             ),
             "colorScheme" => ColorScheme(path, value),
+            "expectAttribute" => ExpectAttribute(path, value, timeout),
+            "expectCount" => ExpectCount(path, value, timeout),
             "expectText" => ExpectText(path, value, timeout),
+            "expectTitle" => ExpectTitle(path, value, timeout),
             "expectUrl" => ExpectUrl(Url(path, value), timeout),
             "expectVisible" => ExpectVisible(Locator(path, value), timeout),
             "fill" => Fill(path, value, timeout),
@@ -334,7 +345,62 @@ public static class SpecLoader
             );
     }
 
-    // A locator mapping plus the exact text, e.g. { role: heading, text: Trips }
+    // A locator mapping plus the attribute and its value, e.g. { selector: "a.brand", attribute: href,
+    // value: /home }; the element need not be visible
+    private static Func<SpecRun, Task> ExpectAttribute(string path, YamlNode value, float timeout)
+    {
+        if (value is not YamlMappingNode mapping)
+        {
+            throw new SpecException(
+                path,
+                Line(value),
+                "expectAttribute needs a locator, 'attribute' and 'value'."
+            );
+        }
+
+        var locate = Locator(path, mapping);
+        var attribute = Scalar(path, Child(path, mapping, "attribute"));
+        var (exact, pattern) = Text(path, Child(path, mapping, "value"));
+
+        return run =>
+            pattern is null
+                ? Assertions
+                    .Expect(locate(run.Page))
+                    .ToHaveAttributeAsync(attribute, exact!, new() { Timeout = timeout })
+                : Assertions
+                    .Expect(locate(run.Page))
+                    .ToHaveAttributeAsync(attribute, pattern, new() { Timeout = timeout });
+    }
+
+    // A locator mapping plus how many elements it matches, e.g. { selector: ".subtitle", count: 0 }
+    private static Func<SpecRun, Task> ExpectCount(string path, YamlNode value, float timeout)
+    {
+        if (value is not YamlMappingNode mapping)
+        {
+            throw new SpecException(path, Line(value), "expectCount needs a locator and 'count'.");
+        }
+
+        var locate = Locator(path, mapping);
+        var countNode = Child(path, mapping, "count");
+        if (
+            !int.TryParse(
+                Scalar(path, countNode),
+                NumberStyles.None,
+                CultureInfo.InvariantCulture,
+                out var count
+            )
+        )
+        {
+            throw new SpecException(path, Line(countNode), "'count' must be a whole number.");
+        }
+
+        return run =>
+            Assertions
+                .Expect(locate(run.Page))
+                .ToHaveCountAsync(count, new() { Timeout = timeout });
+    }
+
+    // A locator mapping plus the text, e.g. { role: heading, text: Trips }
     private static Func<SpecRun, Task> ExpectText(string path, YamlNode value, float timeout)
     {
         if (value is not YamlMappingNode mapping)
@@ -343,10 +409,32 @@ public static class SpecLoader
         }
 
         var locate = Locator(path, mapping);
-        var text = Scalar(path, Child(path, mapping, "text"));
+        var (exact, pattern) = Text(path, Child(path, mapping, "text"));
 
         return run =>
-            Assertions.Expect(locate(run.Page)).ToHaveTextAsync(text, new() { Timeout = timeout });
+            pattern is null
+                ? Assertions
+                    .Expect(locate(run.Page))
+                    .ToHaveTextAsync(exact!, new() { Timeout = timeout })
+                : Assertions
+                    .Expect(locate(run.Page))
+                    .ToHaveTextAsync(pattern, new() { Timeout = timeout });
+    }
+
+    // The document title, or { text, timeout }
+    private static Func<SpecRun, Task> ExpectTitle(string path, YamlNode value, float timeout)
+    {
+        var (exact, pattern) = Text(
+            path,
+            value is YamlMappingNode mapping ? Child(path, mapping, "text") : value
+        );
+
+        return run =>
+            pattern is null
+                ? Assertions.Expect(run.Page).ToHaveTitleAsync(exact!, new() { Timeout = timeout })
+                : Assertions
+                    .Expect(run.Page)
+                    .ToHaveTitleAsync(pattern, new() { Timeout = timeout });
     }
 
     // { locator, text } replaces the element's value at once; type types key by key instead

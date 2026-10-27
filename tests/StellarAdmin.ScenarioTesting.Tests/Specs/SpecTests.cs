@@ -6,7 +6,7 @@ namespace StellarAdmin.ScenarioTesting.Tests.Specs;
 
 // One test per Specs/*.spec.yaml file, read from this project's source folder. Screenshot steps save only when
 // STELLARADMIN_SCREENSHOTS is set:
-// STELLARADMIN_SCREENSHOTS=1 dotnet run --project tests/StellarAdmin.Scenarios.Tests
+// STELLARADMIN_SCREENSHOTS=1 dotnet run --project tests/StellarAdmin.ScenarioTesting.Tests
 public class SpecTests
 {
     [ClassDataSource<BrowserFixture>(Shared = SharedType.PerTestSession)]

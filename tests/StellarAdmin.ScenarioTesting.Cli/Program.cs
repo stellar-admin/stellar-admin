@@ -15,10 +15,10 @@ if (args.Length == 0 || ScenarioCatalog.Find(args[0]) is not { } scenario)
     }
 
     Console.WriteLine(
-        "Usage: dotnet run --project tests/StellarAdmin.Scenarios.Host -- <scenario>"
+        "Usage: dotnet run --project tests/StellarAdmin.ScenarioTesting.Cli -- <scenario>"
     );
     Console.WriteLine(
-        "       dotnet run --project tests/StellarAdmin.Scenarios.Host -- --specs <file|dir>... [--screenshots <dir>]"
+        "       dotnet run --project tests/StellarAdmin.ScenarioTesting.Cli -- --specs <file|dir>... [--screenshots <dir>]"
     );
     Console.WriteLine();
     Console.WriteLine("Scenarios:");

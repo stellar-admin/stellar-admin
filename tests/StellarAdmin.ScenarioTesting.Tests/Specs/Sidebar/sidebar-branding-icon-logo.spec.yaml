@@ -1,0 +1,6 @@
+# An icon logo shows beside the title in the sidebar header
+scenario: sidebar-branding-icon-logo
+steps:
+  - goto: /stellaradmin
+  - expectVisible: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-mark > svg"
+  - expectVisible: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-title"
