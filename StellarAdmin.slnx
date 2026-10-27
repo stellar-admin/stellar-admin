@@ -19,6 +19,9 @@
   <Folder Name="/tests/">
     <Project Path="tests/StellarAdmin.EntityFrameworkCore.IntegrationTests/StellarAdmin.EntityFrameworkCore.IntegrationTests.csproj" />
     <Project Path="tests/StellarAdmin.IntegrationTests/StellarAdmin.IntegrationTests.csproj" />
+    <Project Path="tests/StellarAdmin.Scenarios.Host/StellarAdmin.Scenarios.Host.csproj" />
+    <Project Path="tests/StellarAdmin.Scenarios.Tests/StellarAdmin.Scenarios.Tests.csproj" />
+    <Project Path="tests/StellarAdmin.Scenarios/StellarAdmin.Scenarios.csproj" />
     <Project Path="tests/StellarAdmin.Tests/StellarAdmin.Tests.csproj" />
     <Project Path="tests/StellarAdmin.UI.IntegrationTests/StellarAdmin.UI.IntegrationTests.csproj" />
     <Project Path="tests/StellarAdmin.UI.Tests/StellarAdmin.UI.Tests.csproj" />
