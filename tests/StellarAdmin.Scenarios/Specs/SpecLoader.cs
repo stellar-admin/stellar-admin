@@ -185,19 +185,41 @@ public static class SpecLoader
         {
             "annotate" => Annotate(path, value, timeout),
             "clearAnnotations" => ClearAnnotations,
-            "click" => Click(Locator(path, value), timeout),
+            "check" => Pointer(
+                Locator(path, value),
+                timeout,
+                l => l.CheckAsync(new() { Timeout = timeout })
+            ),
+            "click" => Pointer(
+                Locator(path, value),
+                timeout,
+                l => l.ClickAsync(new() { Timeout = timeout })
+            ),
             "colorScheme" => ColorScheme(path, value),
             "expectText" => ExpectText(path, value, timeout),
             "expectUrl" => ExpectUrl(Url(path, value), timeout),
             "expectVisible" => ExpectVisible(Locator(path, value), timeout),
+            "fill" => Fill(path, value, timeout),
             "goto" => Goto(path, Line(node), Scalar(path, value)),
+            "hover" => Pointer(
+                Locator(path, value),
+                timeout,
+                l => l.HoverAsync(new() { Timeout = timeout })
+            ),
             "pause" => Pause(path, value),
             "press" => Press(Scalar(path, value)),
             "record" => Record(path, Line(node), value),
             "recordEnd" => RecordEnd,
             "screenshot" => Screenshot(path, value, timeout),
+            "scroll" => Scroll(Locator(path, value), timeout),
+            "select" => Select(path, value, timeout),
             "spotlight" => Spotlight(Locator(path, value), timeout),
             "type" => Type(path, value, timeout),
+            "uncheck" => Pointer(
+                Locator(path, value),
+                timeout,
+                l => l.UncheckAsync(new() { Timeout = timeout })
+            ),
             "viewport" => Viewport(path, value),
             _ => throw new SpecException(path, Line(node), $"Unknown step '{kind}'."),
         };
@@ -236,13 +258,6 @@ public static class SpecLoader
         value is YamlMappingNode mapping
             ? Scalar(path, Child(path, mapping, "url"))
             : Scalar(path, value);
-
-    // While recording, the cursor glides to the element first
-    private static Func<SpecRun, Task> Click(Func<IPage, ILocator> locate, float timeout) =>
-        run =>
-            run.Recording is null
-                ? locate(run.Page).ClickAsync(new() { Timeout = timeout })
-                : run.Video!.ClickAsync(locate(run.Page), timeout);
 
     // { locator, style, badge, label, placement, arrow, gap }; the overlays stay until clearAnnotations,
     // so a screenshot after this step includes them. badge: auto numbers on from the badges already shown
@@ -324,6 +339,24 @@ public static class SpecLoader
             Assertions.Expect(locate(run.Page)).ToHaveTextAsync(text, new() { Timeout = timeout });
     }
 
+    // { locator, text } replaces the element's value at once; type types key by key instead
+    private static Func<SpecRun, Task> Fill(string path, YamlNode value, float timeout)
+    {
+        if (value is not YamlMappingNode mapping)
+        {
+            throw new SpecException(path, Line(value), "fill needs a 'locator' and 'text'.");
+        }
+
+        var locate = Locator(path, Child(path, mapping, "locator"));
+        var text = Scalar(path, Child(path, mapping, "text"));
+
+        return Pointer(
+            locate,
+            timeout,
+            locator => locator.FillAsync(text, new() { Timeout = timeout })
+        );
+    }
+
     // Matches the end of the URL, so specs only need the path
     private static Func<SpecRun, Task> ExpectUrl(string url, float timeout) =>
         run =>
@@ -342,6 +375,24 @@ public static class SpecLoader
             {
                 throw new SpecException(path, line, $"{url} returned {response?.Status}.");
             }
+        };
+
+    // While recording, the cursor glides to the element before click, hover, check, uncheck, fill and
+    // select act on it
+    private static Func<SpecRun, Task> Pointer(
+        Func<IPage, ILocator> locate,
+        float timeout,
+        Func<ILocator, Task> act
+    ) =>
+        async run =>
+        {
+            var locator = locate(run.Page);
+            if (run.Recording is not null)
+            {
+                await run.Video!.MoveToAsync(locator, timeout);
+            }
+
+            await act(locator);
         };
 
     // Milliseconds to wait while recording, so a result stays on screen; does nothing otherwise
@@ -421,6 +472,31 @@ public static class SpecLoader
                             Timeout = timeout,
                         }
                     );
+    }
+
+    // Scrolls the element into view; while recording, smoothly
+    private static Func<SpecRun, Task> Scroll(Func<IPage, ILocator> locate, float timeout) =>
+        run =>
+            run.Recording is null
+                ? locate(run.Page).ScrollIntoViewIfNeededAsync(new() { Timeout = timeout })
+                : SpecVideo.ScrollToAsync(locate(run.Page), timeout);
+
+    // { locator, option } picks the option of a <select> by its value or label
+    private static Func<SpecRun, Task> Select(string path, YamlNode value, float timeout)
+    {
+        if (value is not YamlMappingNode mapping)
+        {
+            throw new SpecException(path, Line(value), "select needs a 'locator' and 'option'.");
+        }
+
+        var locate = Locator(path, Child(path, mapping, "locator"));
+        var option = Scalar(path, Child(path, mapping, "option"));
+
+        return Pointer(
+            locate,
+            timeout,
+            locator => locator.SelectOptionAsync(option, new() { Timeout = timeout })
+        );
     }
 
     // Dims the page except for every element the locator matches; annotations still draw on top

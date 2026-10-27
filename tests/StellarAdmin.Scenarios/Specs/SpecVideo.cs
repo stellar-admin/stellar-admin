@@ -38,19 +38,6 @@ public sealed class SpecVideo
         _start = _clock.Elapsed;
     }
 
-    // Eases the cursor to the element's centre, rests briefly and clicks
-    public async Task ClickAsync(ILocator locator, float timeout)
-    {
-        await locator.WaitForAsync(new() { Timeout = timeout });
-        await locator.ScrollIntoViewIfNeededAsync(new() { Timeout = timeout });
-        var box =
-            await locator.BoundingBoxAsync(new() { Timeout = timeout })
-            ?? throw new InvalidOperationException("The element has no size.");
-        await MoveAsync(locator.Page, box.X + box.Width / 2, box.Y + box.Height / 2);
-        await locator.Page.WaitForTimeoutAsync(150);
-        await locator.ClickAsync(new() { Timeout = timeout });
-    }
-
     // Holds the last frame for the clip's hold time before the clip ends
     public async Task EndAsync(IPage page)
     {
@@ -61,6 +48,17 @@ public sealed class SpecVideo
 
         await page.EvaluateAsync("() => window.specCursor.hide()");
         await page.EmulateMediaAsync(new() { ReducedMotion = ReducedMotion.Reduce });
+    }
+
+    // Scrolls the element into view, eases the cursor to its centre and rests briefly before the step acts
+    public async Task MoveToAsync(ILocator locator, float timeout)
+    {
+        await ScrollToAsync(locator, timeout);
+        var box =
+            await locator.BoundingBoxAsync(new() { Timeout = timeout })
+            ?? throw new InvalidOperationException("The element has no size.");
+        await MoveAsync(locator.Page, box.X + box.Width / 2, box.Y + box.Height / 2);
+        await locator.Page.WaitForTimeoutAsync(150);
     }
 
     // Cuts the clips from the finished video with ffmpeg
@@ -92,6 +90,26 @@ public sealed class SpecVideo
                 );
             }
         }
+    }
+
+    // Smooth-scrolls the element to the middle of the view unless it is already in view; resolves when the
+    // scroll ends
+    public static async Task ScrollToAsync(ILocator locator, float timeout)
+    {
+        await locator.WaitForAsync(new() { Timeout = timeout });
+        await locator.EvaluateAsync(
+            """
+            element => new Promise(resolve => {
+              const rect = element.getBoundingClientRect();
+              if (rect.top >= 0 && rect.bottom <= innerHeight && rect.left >= 0 && rect.right <= innerWidth) {
+                return resolve();
+              }
+              addEventListener("scrollend", resolve, { capture: true, once: true });
+              setTimeout(resolve, 2000);
+              element.scrollIntoView({ behavior: "smooth", block: "center" });
+            })
+            """
+        );
     }
 
     private static Task<float[]?> CursorAsync(IPage page) =>
