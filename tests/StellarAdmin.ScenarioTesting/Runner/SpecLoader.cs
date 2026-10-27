@@ -92,14 +92,15 @@ public static class SpecLoader
 
     private static int Line(YamlNode node) => (int)node.Start.Line;
 
-    // A string is a CSS selector; a mapping has either selector, or role with an optional name
-    private static Func<IPage, ILocator> Locator(string path, YamlNode node)
+    // A string is a CSS selector; a mapping has either selector, or role with an optional name. Inside
+    // within, both search the scoped element, and a mapping with neither is the scoped element itself
+    private static Func<SpecRun, ILocator> Locator(string path, YamlNode node)
     {
         if (node is YamlScalarNode)
         {
             var selector = Scalar(path, node);
 
-            return page => page.Locator(selector);
+            return run => run.Scope?.Locator(selector) ?? run.Page.Locator(selector);
         }
 
         if (node is not YamlMappingNode mapping)
@@ -109,20 +110,33 @@ public static class SpecLoader
 
         if (OptionalScalar(path, mapping, "selector") is { } css)
         {
-            return page => page.Locator(css);
+            return run => run.Scope?.Locator(css) ?? run.Page.Locator(css);
         }
 
-        var roleName =
-            OptionalScalar(path, mapping, "role")
-            ?? throw new SpecException(path, Line(node), "A locator needs 'selector' or 'role'.");
+        if (OptionalScalar(path, mapping, "role") is not { } roleName)
+        {
+            var line = Line(node);
+
+            return run =>
+                run.Scope
+                ?? throw new SpecException(
+                    path,
+                    line,
+                    "A locator needs 'selector' or 'role' outside within."
+                );
+        }
+
         if (!Enum.TryParse<AriaRole>(roleName, ignoreCase: true, out var role))
         {
             throw new SpecException(path, Line(node), $"Unknown ARIA role '{roleName}'.");
         }
 
         var name = OptionalScalar(path, mapping, "name");
+        var exact = name is not null;
 
-        return page => page.GetByRole(role, new() { Name = name, Exact = name is not null });
+        return run =>
+            run.Scope?.GetByRole(role, new() { Name = name, Exact = exact })
+            ?? run.Page.GetByRole(role, new() { Name = name, Exact = exact });
     }
 
     // An optional value that must be one of the allowed words
@@ -242,6 +256,7 @@ public static class SpecLoader
                 l => l.UncheckAsync(new() { Timeout = timeout })
             ),
             "viewport" => Viewport(path, value),
+            "within" => Within(path, value),
             _ => throw new SpecException(path, Line(node), $"Unknown step '{kind}'."),
         };
 
@@ -314,7 +329,7 @@ public static class SpecLoader
         return async run =>
         {
             await run.Page.EvaluateAsync(AnnotationsScript);
-            await locate(run.Page)
+            await locate(run)
                 .EvaluateAsync(
                     "(element, options) => window.specAnnotations.annotate(element, options)",
                     options,
@@ -365,10 +380,10 @@ public static class SpecLoader
         return run =>
             pattern is null
                 ? Assertions
-                    .Expect(locate(run.Page))
+                    .Expect(locate(run))
                     .ToHaveAttributeAsync(attribute, exact!, new() { Timeout = timeout })
                 : Assertions
-                    .Expect(locate(run.Page))
+                    .Expect(locate(run))
                     .ToHaveAttributeAsync(attribute, pattern, new() { Timeout = timeout });
     }
 
@@ -395,9 +410,7 @@ public static class SpecLoader
         }
 
         return run =>
-            Assertions
-                .Expect(locate(run.Page))
-                .ToHaveCountAsync(count, new() { Timeout = timeout });
+            Assertions.Expect(locate(run)).ToHaveCountAsync(count, new() { Timeout = timeout });
     }
 
     // A locator mapping plus the text, e.g. { role: heading, text: Trips }
@@ -414,10 +427,10 @@ public static class SpecLoader
         return run =>
             pattern is null
                 ? Assertions
-                    .Expect(locate(run.Page))
+                    .Expect(locate(run))
                     .ToHaveTextAsync(exact!, new() { Timeout = timeout })
                 : Assertions
-                    .Expect(locate(run.Page))
+                    .Expect(locate(run))
                     .ToHaveTextAsync(pattern, new() { Timeout = timeout });
     }
 
@@ -462,8 +475,10 @@ public static class SpecLoader
                 .Expect(run.Page)
                 .ToHaveURLAsync(new Regex($"{Regex.Escape(url)}$"), new() { Timeout = timeout });
 
-    private static Func<SpecRun, Task> ExpectVisible(Func<IPage, ILocator> locate, float timeout) =>
-        run => Assertions.Expect(locate(run.Page)).ToBeVisibleAsync(new() { Timeout = timeout });
+    private static Func<SpecRun, Task> ExpectVisible(
+        Func<SpecRun, ILocator> locate,
+        float timeout
+    ) => run => Assertions.Expect(locate(run)).ToBeVisibleAsync(new() { Timeout = timeout });
 
     private static Func<SpecRun, Task> Goto(string path, int line, string url) =>
         async run =>
@@ -478,13 +493,13 @@ public static class SpecLoader
     // While recording, the cursor glides to the element before click, hover, check, uncheck, fill and
     // select act on it
     private static Func<SpecRun, Task> Pointer(
-        Func<IPage, ILocator> locate,
+        Func<SpecRun, ILocator> locate,
         float timeout,
         Func<ILocator, Task> act
     ) =>
         async run =>
         {
-            var locator = locate(run.Page);
+            var locator = locate(run);
             if (run.Recording is not null)
             {
                 await run.Video!.MoveToAsync(locator, timeout);
@@ -561,7 +576,7 @@ public static class SpecLoader
         return run =>
             run.ScreenshotDirectory is null
                 ? Task.CompletedTask
-                : locate(run.Page)
+                : locate(run)
                     .ScreenshotAsync(
                         new()
                         {
@@ -573,11 +588,11 @@ public static class SpecLoader
     }
 
     // Scrolls the element into view; while recording, smoothly
-    private static Func<SpecRun, Task> Scroll(Func<IPage, ILocator> locate, float timeout) =>
+    private static Func<SpecRun, Task> Scroll(Func<SpecRun, ILocator> locate, float timeout) =>
         run =>
             run.Recording is null
-                ? locate(run.Page).ScrollIntoViewIfNeededAsync(new() { Timeout = timeout })
-                : SpecVideo.ScrollToAsync(locate(run.Page), timeout);
+                ? locate(run).ScrollIntoViewIfNeededAsync(new() { Timeout = timeout })
+                : SpecVideo.ScrollToAsync(locate(run), timeout);
 
     // { locator, option } picks the option of a <select> by its value or label
     private static Func<SpecRun, Task> Select(string path, YamlNode value, float timeout)
@@ -613,10 +628,10 @@ public static class SpecLoader
         };
 
     // Dims the page except for every element the locator matches; annotations still draw on top
-    private static Func<SpecRun, Task> Spotlight(Func<IPage, ILocator> locate, float timeout) =>
+    private static Func<SpecRun, Task> Spotlight(Func<SpecRun, ILocator> locate, float timeout) =>
         async run =>
         {
-            var locator = locate(run.Page);
+            var locator = locate(run);
             await locator.First.WaitForAsync(new() { Timeout = timeout });
             await run.Page.EvaluateAsync(AnnotationsScript);
             await locator.EvaluateAllAsync<object?>(
@@ -636,7 +651,7 @@ public static class SpecLoader
         var text = Scalar(path, Child(path, mapping, "text"));
 
         return run =>
-            locate(run.Page)
+            locate(run)
                 .PressSequentiallyAsync(
                     text,
                     new() { Delay = run.Recording?.TypeDelay ?? 0, Timeout = timeout }
@@ -655,6 +670,55 @@ public static class SpecLoader
         var height = Pixels(path, mapping, "height");
 
         return run => run.Page.SetViewportSizeAsync(width, height);
+    }
+
+    // { <locator>, steps }: runs the steps with their locators searching inside the element, e.g.
+    // { selector: "[data-slot='sidebar-header']", steps: [...] }; within steps can nest
+    private static Func<SpecRun, Task> Within(string path, YamlNode value)
+    {
+        if (
+            value is not YamlMappingNode mapping
+            || Child(path, mapping, "steps") is not YamlSequenceNode steps
+        )
+        {
+            throw new SpecException(
+                path,
+                Line(value),
+                "within needs a locator and a 'steps' list."
+            );
+        }
+
+        var locate = Locator(path, mapping);
+        List<SpecStep> loaded = [.. steps.Select(step => Step(path, step))];
+        if (loaded.FirstOrDefault(step => step.Kind is "record" or "recordEnd") is { } recording)
+        {
+            throw new SpecException(
+                path,
+                recording.Line,
+                $"{recording.Kind} can't be inside within."
+            );
+        }
+
+        return async run =>
+        {
+            var scoped = run with { Scope = locate(run) };
+            foreach (var step in loaded)
+            {
+                try
+                {
+                    await step.RunAsync(scoped);
+                }
+                catch (Exception exception) when (exception is not SpecException)
+                {
+                    throw new SpecException(
+                        path,
+                        step.Line,
+                        $"{step.Kind}: {exception.Message}",
+                        exception
+                    );
+                }
+            }
+        };
     }
 
     private static int Milliseconds(string path, YamlNode node, string key) =>

@@ -2,7 +2,10 @@
 scenario: sidebar-branding-none
 steps:
   - goto: /stellaradmin
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button']", attribute: href, value: /stellaradmin }
-  - expectText: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-title", text: "/^Stellar Admin Scenario Testing /" }
-  - expectCount: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-subtitle", count: 0 }
-  - expectCount: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] :is(.sa-sidebar-brand-mark, img)", count: 0 }
+  - within:
+      selector: "[data-slot='sidebar-header'] a"
+      steps:
+        - expectAttribute: { attribute: href, value: /stellaradmin }
+        - expectText: { selector: .sa-sidebar-brand-title, text: "/^Stellar Admin Scenario Testing /" }
+        - expectCount: { selector: .sa-sidebar-brand-subtitle, count: 0 }
+        - expectCount: { selector: ":is(.sa-sidebar-brand-mark, img)", count: 0 }

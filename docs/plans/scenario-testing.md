@@ -50,6 +50,7 @@ Built (2026-10-27): the six tests in `tests/StellarAdmin.IntegrationTests/Sideba
 - The default title comes from the entry assembly's name, so it differs between the test project and the Cli; `sidebar-branding-none` matches `/^Stellar Admin Scenario Testing /`. Pinning `ApplicationName` doesn't work: MVC loads the assembly by that name.
 - Image and wordmark paths don't exist; the specs check attributes only.
 - Verified: 14 of 14 tests pass in the test project, and the seven sidebar specs pass through the Cli. A wrong attribute, count, title, pattern and meta value each failed with a clear message.
+- Selectors: the sidebar specs drop the header prefix where a brand class is already unique. A `within` step scopes its steps' locators to one element (a locator with neither selector nor role is that element). Verified: a wrong value inside `within` fails on its own line, a scoped locator doesn't find elements outside the scope, a bare locator outside `within` and `record` inside it are rejected.
 
 Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 

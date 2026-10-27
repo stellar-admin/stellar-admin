@@ -2,11 +2,17 @@
 scenario: sidebar-branding-wordmark
 steps:
   - goto: /stellaradmin
-  - expectCount: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-wordmark", count: 2 }
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-wordmark[data-scheme='light']", attribute: src, value: /img/wordmark.svg }
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-wordmark[data-scheme='light']", attribute: alt, value: Voyager Travel }
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-wordmark[data-scheme='light']", attribute: data-layout, value: center }
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-wordmark[data-scheme='dark']", attribute: src, value: /img/wordmark-dark.svg }
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-wordmark[data-scheme='dark']", attribute: alt, value: Voyager Travel }
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-wordmark[data-scheme='dark']", attribute: data-layout, value: center }
-  - expectCount: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-text", count: 0 }
+  - expectCount: { selector: img.sa-sidebar-brand-wordmark, count: 2 }
+  - within:
+      selector: "img.sa-sidebar-brand-wordmark[data-scheme='light']"
+      steps:
+        - expectAttribute: { attribute: src, value: /img/wordmark.svg }
+        - expectAttribute: { attribute: alt, value: Voyager Travel }
+        - expectAttribute: { attribute: data-layout, value: center }
+  - within:
+      selector: "img.sa-sidebar-brand-wordmark[data-scheme='dark']"
+      steps:
+        - expectAttribute: { attribute: src, value: /img/wordmark-dark.svg }
+        - expectAttribute: { attribute: alt, value: Voyager Travel }
+        - expectAttribute: { attribute: data-layout, value: center }
+  - expectCount: { selector: .sa-sidebar-brand-text, count: 0 }

@@ -2,4 +2,4 @@
 scenario: sidebar-branding-wordmark-start
 steps:
   - goto: /stellaradmin
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-wordmark", attribute: data-layout, value: start }
+  - expectAttribute: { selector: img.sa-sidebar-brand-wordmark, attribute: data-layout, value: start }

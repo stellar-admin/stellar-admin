@@ -35,7 +35,19 @@ Steps that take an element take a locator:
 | `{ role: heading }` | The ARIA role. |
 | `{ role: link, name: Trips }` | The role with this exact accessible name. |
 
-Prefer roles and names, which read like the page. A table row's accessible name is all its cells joined, so select a row with `"tr:has-text('Tokyo to Kyoto by Bullet Train')"`, not by role. A locator that matches several elements fails an action; narrow it.
+Prefer roles and names, which read like the page. A table row's accessible name is all its cells joined, so select a row with `"tr:has-text('Tokyo to Kyoto by Bullet Train')"`, not by role. A locator that matches several elements fails an action; narrow it. Don't prefix a selector with its container when it is already unique on the page: `.sa-sidebar-brand-title`, not `[data-slot='sidebar-header'] .sa-sidebar-brand-title`.
+
+### within
+
+`within` runs its steps with their locators searching inside one element, for markup that repeats on the page or several checks on one element. Inside it, a locator mapping with neither `selector` nor `role` is the element itself. `within` can nest; `record` and `recordEnd` can't be inside it.
+
+```yaml
+- within:
+    selector: "img.sa-sidebar-brand-wordmark[data-scheme='dark']"
+    steps:
+      - expectAttribute: { attribute: src, value: /img/wordmark-dark.svg }
+      - expectAttribute: { attribute: alt, value: Voyager Travel }
+```
 
 Any step whose value is a mapping can add `timeout` in milliseconds (default 1000): `{ role: dialog, timeout: 3000 }`.
 

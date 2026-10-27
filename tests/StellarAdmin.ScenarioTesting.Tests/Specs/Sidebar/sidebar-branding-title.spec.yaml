@@ -2,9 +2,9 @@
 scenario: sidebar-branding-title
 steps:
   - goto: /stellaradmin
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button']", attribute: href, value: /home }
-  - expectText: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-title", text: Voyager Travel }
-  - expectText: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-subtitle", text: Admin Console }
+  - expectAttribute: { selector: "[data-slot='sidebar-header'] a", attribute: href, value: /home }
+  - expectText: { selector: .sa-sidebar-brand-title, text: Voyager Travel }
+  - expectText: { selector: .sa-sidebar-brand-subtitle, text: Admin Console }
   - expectTitle: Voyager Travel
   - expectAttribute: { selector: "meta[name='description']", attribute: content, value: Voyager Travel }
   - expectText: { selector: "[data-slot='app-header'] .font-medium", text: Voyager Travel }

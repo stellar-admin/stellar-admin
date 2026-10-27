@@ -2,6 +2,6 @@
 scenario: sidebar-branding-image-logo
 steps:
   - goto: /stellaradmin
-  - expectAttribute: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-logo", attribute: src, value: /img/logo.svg }
-  - expectCount: { selector: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] img.sa-sidebar-brand-logo[data-scheme]", count: 0 }
-  - expectVisible: "[data-slot='sidebar-header'] [data-slot='sidebar-menu-button'] .sa-sidebar-brand-title"
+  - expectAttribute: { selector: img.sa-sidebar-brand-logo, attribute: src, value: /img/logo.svg }
+  - expectCount: { selector: "img.sa-sidebar-brand-logo[data-scheme]", count: 0 }
+  - expectVisible: .sa-sidebar-brand-title
