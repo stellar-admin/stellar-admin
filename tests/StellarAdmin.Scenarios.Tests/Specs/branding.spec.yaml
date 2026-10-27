@@ -6,3 +6,5 @@ steps:
   - expectText: { selector: ".sa-sidebar-brand-subtitle", text: Operations }
   - expectVisible: ".sa-sidebar-brand-mark > svg"
   - screenshot: branding
+  - colorScheme: dark
+  - screenshot: branding-dark

@@ -107,6 +107,7 @@ public static class SpecLoader
         Func<SpecRun, Task> run = kind switch
         {
             "click" => Click(Locator(path, value), timeout),
+            "colorScheme" => ColorScheme(path, value),
             "expectText" => ExpectText(path, value, timeout),
             "expectUrl" => ExpectUrl(Url(path, value), timeout),
             "expectVisible" => ExpectVisible(Locator(path, value), timeout),
@@ -152,6 +153,23 @@ public static class SpecLoader
 
     private static Func<SpecRun, Task> Click(Func<IPage, ILocator> locate, float timeout) =>
         run => locate(run.Page).ClickAsync(new() { Timeout = timeout });
+
+    // dark or light; sets the class the stylesheets follow on <html> without reloading the page
+    private static Func<SpecRun, Task> ColorScheme(string path, YamlNode value)
+    {
+        var scheme = Scalar(path, value);
+        if (scheme is not ("dark" or "light"))
+        {
+            throw new SpecException(path, Line(value), "'colorScheme' must be dark or light.");
+        }
+
+        var other = scheme == "dark" ? "light" : "dark";
+
+        return run =>
+            run.Page.EvaluateAsync(
+                $"document.documentElement.classList.remove('{other}'); document.documentElement.classList.add('{scheme}')"
+            );
+    }
 
     // A locator mapping plus the exact text, e.g. { role: heading, text: Trips }
     private static Func<SpecRun, Task> ExpectText(string path, YamlNode value, float timeout)
