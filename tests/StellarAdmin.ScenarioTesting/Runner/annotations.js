@@ -162,7 +162,9 @@
         badge(b, badgeValue);
       }
       if (labelText) {
-        label(b, labelText, placement, gap ?? 56, arrow);
+        // A circle is drawn outside the element, so the label and its arrow keep clear of the circle
+        const target = style === "circle" ? { x: b.x - 10, y: b.y - 8, w: b.w + 20, h: b.h + 16 } : b;
+        label(target, labelText, placement, gap ?? 56, arrow);
       }
     },
 
