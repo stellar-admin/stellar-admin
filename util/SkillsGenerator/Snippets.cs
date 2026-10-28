@@ -4,7 +4,7 @@ namespace SkillsGenerator;
 
 /// <summary>
 /// Extracts usage snippets from docs sample partials. The snippet extraction is a faithful port of
-/// <c>DocsSamplesGenerator.Generator.GenerateDemoPartialSourceFileAsync</c>: skip leading
+/// <c>StellarAdmin.Cli.Docs.DemoGenerator.GenerateDemoPartialSourceFileAsync</c>: skip leading
 /// <c>@</c>-directives and blank lines, drop <c>&lt;!--strip ... --&gt;</c> blocks, begin capturing at
 /// <c>&lt;!-- code begin --&gt;</c> (dedenting by the marker column), and stop at <c>&lt;!-- code end --&gt;</c>.
 /// </summary>

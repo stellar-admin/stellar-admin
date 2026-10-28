@@ -5,7 +5,7 @@ using StellarAdmin.Resources;
 using StellarAdmin.ScenarioTesting.Hosting;
 using VoyagerTravel.Models;
 
-namespace DocsSamplesGenerator.Captures.ChoiceEditors;
+namespace StellarAdmin.Cli.Docs.Screenshots.ChoiceEditors;
 
 // The seeded trip's difficulty is a number, so the create page edits a form model with the docs' enum instead
 public sealed class ChoiceEditorsRadioEnumScenario : Scenario

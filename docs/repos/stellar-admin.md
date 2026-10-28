@@ -129,7 +129,7 @@ util/theme-check/presets/<name>.css
 │   │                         _NavigationLayout render the picker, the theme link and
 │   │                         window.saThemeFonts (read by theme-fonts.js)
 │   ├── ComponentPlayground   same reader (linked Compile); serves /presets/, renders its picker
-│   └── DocsSamplesGenerator  exports into the website's public/demo/ui/:
+│   └── StellarAdmin.Cli      docs generate demos exports into the website's public/demo/ui/:
 │                               assets/presets/<name>.css   (fetched from /presets/)
 │                               assets/presets/presets.json (name, label, description)
 │                               *.html, default theme only (light/dark sync, default font)
@@ -153,7 +153,7 @@ PRs run this automatically (`.github/workflows/vrt.yml`): an ephemeral base-vs-h
 
 The admin shell and resource layer live in `src/StellarAdmin/`, with the EF Core integration in `src/StellarAdmin.EntityFrameworkCore/`. Register the application with `AddStellarAdmin(admin => ...)`; its assets use `_content/StellarAdmin/` (`stellar-admin-panel.css` and `stellar-admin-panel.js`). The admin panel links `stellar-admin.css` and then each stylesheet registered with `admin.AddStylesheet(...)`, in registration order; a theme variable stylesheet (`~/css/theme.css`) and a web font link are both added that way. The admin panel's own Tailwind build (`src/StellarAdmin/Client/css/client.css`) imports the adapter, so its utilities follow the tokens. `sandbox/AdminPlayground/` demonstrates host-owned Identity user and role resources. `admin.RequireAuthorization(...)` and `resource.RequireAuthorization(...)` mirror the framework's endpoint overloads. `MapStellarAdmin` applies them as endpoint metadata, returns the route's convention builder, and the resource sidebar provider hides links the current user cannot open. Resource routes use lowercase kebab-case plural slugs by default, overridable through `AddResource<TResource>(slug)`, and the admin panel route lowercases generated controller and action segments without affecting host routes; see `docs/development.md`. The playground requires a signed-in user and restricts users and roles to administrators. The former dedicated Identity package designs in `docs/design/identity-configuration.md` and `docs/design/identity-user-forms.md` are retained as superseded history.
 
-`docs/DocsSamples/` includes DataGrid. `docs/DocsSamplesGenerator/` exports website demos. Admin panel HTTP integration tests use an in-process host and private in-memory source. EF Core HTTP integration tests use an in-process host with private in-memory SQLite databases; neither suite needs AdminPlayground or its database. See [development and verification](../development.md).
+`docs/DocsSamples/` includes DataGrid. `tools/StellarAdmin.Cli/` (`docs generate`) exports website demos and admin docs screenshots. Admin panel HTTP integration tests use an in-process host and private in-memory source. EF Core HTTP integration tests use an in-process host with private in-memory SQLite databases; neither suite needs AdminPlayground or its database. See [development and verification](../development.md).
 
 ```bash
 dotnet build StellarAdmin.slnx

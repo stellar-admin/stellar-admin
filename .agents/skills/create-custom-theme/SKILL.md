@@ -23,7 +23,7 @@ A fixture is one file, `util/theme-check/presets/<name>.css`; adding a theme is 
 
 Review in the real samples. DocsSamples and ComponentPlayground read the folder at startup, so restart them; open DocsSamples on port 5206 (never 5205) with `?theme=<name>&mode=light|dark`, starting with `/Showcase/ThemeShowcase`. Then run the [theme checks](../../../util/theme-check/README.md) over the fixtures, light and dark: `contrast.mjs` must report no text failures, and review its faint parts and pill corners against the base theme's. Use `screenshots.mjs` for a visual sweep. Stop every server you start.
 
-The website's theme builder sees a fixture only after `dotnet run --project docs/DocsSamplesGenerator` exports it and the website commits the output (`assets/presets/`). Run the export only when the task includes the website. The consumer theme skill's theme variable reference copies Ledger, Ops and Soft as worked examples: when one of those changes, update its copy there.
+The website's theme builder sees a fixture only after `dotnet run --project tools/StellarAdmin.Cli -- docs generate demos` exports it and the website commits the output (`assets/presets/`). Run the export only when the task includes the website. The consumer theme skill's theme variable reference copies Ledger, Ops and Soft as worked examples: when one of those changes, update its copy there.
 
 ## Add a theme variable
 

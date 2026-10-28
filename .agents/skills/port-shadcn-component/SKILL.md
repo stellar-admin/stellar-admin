@@ -137,10 +137,10 @@ Check desktop and mobile widths, light and dark (`?mode=dark`), in the default t
 
 ## Phase 5 — website docs
 
-Register each partial in `docs/DocsSamplesGenerator/Generator.cs` as a `new("<Component>/_<Name>")` entry in `DemoPartials`, alphabetically, then run it:
+Register each partial in `tools/StellarAdmin.Cli/Docs/DemoGenerator.cs` as a `new("<Component>/_<Name>")` entry in `DemoPartials`, alphabetically, then run it:
 
 ```bash
-dotnet run --project docs/DocsSamplesGenerator
+dotnet run --project tools/StellarAdmin.Cli -- docs generate demos
 ```
 
 The generator regenerates all demos, and SVG attribute order plus antiforgery tokens can differ between runs. Record pre-existing edits first. Run `bash .agents/skills/port-shadcn-component/scripts/classify-generator-output.sh ../website` from the product repository for a read-only classification, then review the actual diffs. Normalized equality can hide real SVG edits and must never trigger automatic restores. Use isolated worktrees or a pre-generation snapshot if output cleanup is needed; preserve existing edits. Check that the exported `stellar-admin.css` changed only by the new component's rules.

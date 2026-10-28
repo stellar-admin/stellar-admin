@@ -2,7 +2,7 @@
 
 ## Code audit — 2026-09-18
 
-Current status: **proposed**. The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. The experiment is complete; actual homepage integration and a general Razor fragment export remain unimplemented. Current workflow: `docs/design/inline-website-examples.md`; current generator: `docs/DocsSamplesGenerator/Generator.cs`. Website inspected read-only.
+Current status: **proposed**. The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. The experiment is complete; actual homepage integration and a general Razor fragment export remain unimplemented. Current workflow: `docs/design/inline-website-examples.md`; current generator: `tools/StellarAdmin.Cli/Docs/DemoGenerator.cs`. Website inspected read-only.
 
 This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
 

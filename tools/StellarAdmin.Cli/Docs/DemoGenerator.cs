@@ -1,33 +1,23 @@
-﻿using System.Buffers.Binary;
-using System.Runtime.CompilerServices;
-using System.Text.Encodings.Web;
+﻿using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using DocsSamples;
-using StellarAdmin.ScenarioTesting.Runner;
-using StellarAdmin.ScenarioTesting.Scenarios;
 using StellarAdmin.UI.Icons;
 
-namespace DocsSamplesGenerator;
+namespace StellarAdmin.Cli.Docs;
 
 /// <summary>
 /// Generates the DocsSamples documentation artifacts (rendered demo HTML, source-code includes, and
 /// downloaded static assets) and writes them into the sibling <c>website</c> project.
 /// </summary>
-internal sealed partial class Generator
+internal sealed partial class DemoGenerator
 {
-    private static readonly string RepoRootFolder = GetRepoRootFolder();
-
-    // Generator.cs lives at <repoRoot>/docs/DocsSamplesGenerator/, so the repo root is two directories
-    // up from this source file. [CallerFilePath] is resolved at compile time, which keeps this correct
-    // regardless of the working directory the CLI is launched from.
-    private static string GetRepoRootFolder([CallerFilePath] string sourceFilePath = "") =>
-        Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "..", ".."));
-
     // The theme fixtures (util/theme-check/presets) the samples serve from /presets/, exported for the
     // theme builder's presets. "default" is the token stylesheet alone, with no preset.
-    private static readonly IReadOnlyList<ThemeFixture> Themes = ThemeFixtures.Load(RepoRootFolder);
+    private static readonly IReadOnlyList<ThemeFixture> Themes = ThemeFixtures.Load(
+        DocsPaths.RepoRoot
+    );
 
     private static readonly string[] PresetNames =
     [
@@ -108,34 +98,27 @@ internal sealed partial class Generator
 
     /// <summary>Content root of the DocsSamples web project, used to host it in-memory.</summary>
     public static readonly string DocsSamplesContentRoot = Path.Combine(
-        RepoRootFolder,
+        DocsPaths.RepoRoot,
         "docs",
         "DocsSamples"
     );
 
     private static readonly string PageSourceCodeFolder = Path.Combine(
-        RepoRootFolder,
+        DocsPaths.RepoRoot,
         "docs",
         "DocsSamples",
         "Pages"
     );
 
-    private static readonly string DocsProjectRootFolder = Environment.GetEnvironmentVariable(
-        "STELLARADMIN_WEBSITE_DIR"
-    )
-        is { Length: > 0 } websiteDir
-        ? Path.GetFullPath(websiteDir)
-        : Path.GetFullPath(Path.Combine(RepoRootFolder, "..", "website"));
-
     private static readonly string RenderedPagesOutputFolder = Path.Combine(
-        DocsProjectRootFolder,
+        DocsPaths.WebsiteRoot,
         "public",
         "demo",
         "ui"
     );
 
     private static readonly string PagesSourceCodeOutputFolder = Path.Combine(
-        DocsProjectRootFolder,
+        DocsPaths.WebsiteRoot,
         "content",
         "docs",
         "ui",
@@ -144,43 +127,11 @@ internal sealed partial class Generator
     );
 
     private static readonly string DownloadedAssetsOutputFolder = Path.Combine(
-        DocsProjectRootFolder,
+        DocsPaths.WebsiteRoot,
         "public",
         "demo",
         "ui",
         "assets"
-    );
-
-    // The admin panel screenshots the capture specs save
-    private static readonly string CapturesOutputFolder = Path.Combine(
-        DocsProjectRootFolder,
-        "public",
-        "images",
-        "admin",
-        "generated"
-    );
-
-    // Each generated screenshot's size by name, which the website's Capture component reads
-    private static readonly string CapturesManifestFile = Path.Combine(
-        DocsProjectRootFolder,
-        "src",
-        "generated",
-        "captures.json"
-    );
-
-    // The docs pages, which place the screenshots with <Capture name="..."> tags
-    private static readonly string DocsContentFolder = Path.Combine(
-        DocsProjectRootFolder,
-        "content",
-        "docs"
-    );
-
-    // The scenarios and specs the admin panel screenshots are captured from, read from source
-    private static readonly string CapturesSourceFolder = Path.Combine(
-        RepoRootFolder,
-        "docs",
-        "DocsSamplesGenerator",
-        "Captures"
     );
 
     // The icon picker demos' icons endpoint, and the static copy of its response that the exported
@@ -203,91 +154,11 @@ internal sealed partial class Generator
 
     /// <summary>
     /// Deletes previously generated output so renamed/removed demos don't leave orphaned files behind.
-    /// Only the three top-level output trees are cleared; the assets folder is nested inside
+    /// Only the two top-level output trees are cleared; the assets folder is nested inside
     /// <see cref="RenderedPagesOutputFolder"/> and is removed along with it.
     /// </summary>
-    public void CleanOutputFolders()
-    {
-        foreach (
-            var folder in new[]
-            {
-                RenderedPagesOutputFolder,
-                PagesSourceCodeOutputFolder,
-                CapturesOutputFolder,
-            }
-        )
-        {
-            if (Directory.Exists(folder))
-                Directory.Delete(folder, recursive: true);
-        }
-    }
-
-    /// <summary>
-    /// Runs every capture spec in Captures against its scenario and saves its screenshots into the
-    /// website's generated admin images.
-    /// </summary>
-    public async Task<int> CaptureScenariosAsync()
-    {
-        var catalog = new ScenarioCatalog(typeof(Generator).Assembly);
-        var specs = SpecFiles.Find(CapturesSourceFolder);
-
-        await using var browser = await SpecBrowser.LaunchAsync();
-        foreach (var file in specs)
-        {
-            await SpecRunner.RunAsync(
-                SpecLoader.Load(catalog, file, Path.GetRelativePath(RepoRootFolder, file)),
-                browser,
-                CapturesOutputFolder
-            );
-        }
-
-        WriteCapturesManifest();
-
-        return specs.Count;
-    }
-
-    /// <summary>Deletes the previously captured screenshots, for a run that only captures them.</summary>
-    public void CleanCapturesOutputFolder()
-    {
-        if (Directory.Exists(CapturesOutputFolder))
-            Directory.Delete(CapturesOutputFolder, recursive: true);
-    }
-
-    /// <summary>
-    /// Matches the docs pages' Capture placeholders against the screenshots the capture specs save.
-    /// </summary>
-    public CaptureCheck CheckCaptures() =>
-        CaptureCheck.Run(DocsContentFolder, CapturesSourceFolder, RepoRootFolder);
-
-    // Width and height from each PNG's IHDR chunk, which starts every PNG at byte 16
-    private static void WriteCapturesManifest()
-    {
-        var images = new SortedDictionary<string, object>(StringComparer.Ordinal);
-        if (Directory.Exists(CapturesOutputFolder))
-        {
-            foreach (var file in Directory.EnumerateFiles(CapturesOutputFolder, "*.png"))
-            {
-                var header = new byte[24];
-                using (var stream = File.OpenRead(file))
-                {
-                    stream.ReadExactly(header);
-                }
-
-                images[Path.GetFileNameWithoutExtension(file)] = new
-                {
-                    width = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(16)),
-                    height = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(20)),
-                };
-            }
-        }
-
-        Directory.CreateDirectory(Path.GetDirectoryName(CapturesManifestFile)!);
-        File.WriteAllText(
-            CapturesManifestFile,
-            JsonSerializer.Serialize(images, new JsonSerializerOptions { WriteIndented = true })
-                + "\n"
-        );
-    }
+    public static void Clean() =>
+        DocsPaths.Delete(RenderedPagesOutputFolder, PagesSourceCodeOutputFolder);
 
     /// <summary>Downloads the demo assets that live at fixed, known URLs.</summary>
     public async Task DownloadFixedStaticAssetsAsync(HttpClient client)

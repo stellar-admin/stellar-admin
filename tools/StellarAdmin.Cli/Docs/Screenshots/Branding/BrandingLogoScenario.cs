@@ -2,7 +2,7 @@ using StellarAdmin;
 using StellarAdmin.ScenarioTesting.Hosting;
 using StellarAdmin.Sidebar;
 
-namespace DocsSamplesGenerator.Captures.Branding;
+namespace StellarAdmin.Cli.Docs.Screenshots.Branding;
 
 // One scenario per kind of logo, e.g. branding-logo-icon. A wordmark has no subtitle, which it doesn't display
 [ScenarioArguments("none")]

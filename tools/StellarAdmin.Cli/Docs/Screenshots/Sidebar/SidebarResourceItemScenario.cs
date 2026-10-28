@@ -3,7 +3,7 @@ using StellarAdmin.EntityFrameworkCore;
 using StellarAdmin.ScenarioTesting.Hosting;
 using VoyagerTravel.Models;
 
-namespace DocsSamplesGenerator.Captures.Sidebar;
+namespace StellarAdmin.Cli.Docs.Screenshots.Sidebar;
 
 public sealed class SidebarResourceItemScenario : Scenario
 {

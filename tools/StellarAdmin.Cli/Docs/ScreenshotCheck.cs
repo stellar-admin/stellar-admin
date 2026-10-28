@@ -2,10 +2,10 @@ using System.Text.RegularExpressions;
 using StellarAdmin.ScenarioTesting.Runner;
 using YamlDotNet.RepresentationModel;
 
-namespace DocsSamplesGenerator;
+namespace StellarAdmin.Cli.Docs;
 
-// A <Capture> on a docs page, and the screenshot names it shows: its name, or name-<variant> for each variant
-internal sealed record CapturePlaceholder(
+// A <Screenshot> on a docs page, and the screenshot names it shows: its name, or name-<variant> for each variant
+internal sealed record ScreenshotPlaceholder(
     string Page,
     int Line,
     string Name,
@@ -13,17 +13,17 @@ internal sealed record CapturePlaceholder(
     IReadOnlyList<string> Images
 );
 
-// A screenshot a capture spec saves
-internal sealed record CaptureShot(string Spec, string Name);
+// A screenshot a spec saves
+internal sealed record SpecScreenshot(string Spec, string Name);
 
-// Matches the docs pages' <Capture> placeholders against the capture specs' screenshots. A placeholder image
+// Matches the docs pages' <Screenshot> placeholders against the specs' screenshots. A placeholder image
 // is open when no spec saves it; a shot is unused when no page shows it. {name}-dark is a placeholder's dark
 // version, not a separate image.
-internal sealed partial class CaptureCheck
+internal sealed partial class ScreenshotCheck
 {
-    private CaptureCheck(
-        IReadOnlyList<CapturePlaceholder> placeholders,
-        IReadOnlyList<CaptureShot> shots
+    private ScreenshotCheck(
+        IReadOnlyList<ScreenshotPlaceholder> placeholders,
+        IReadOnlyList<SpecScreenshot> shots
     )
     {
         var shotNames = shots.Select(shot => shot.Name).ToHashSet();
@@ -51,11 +51,15 @@ internal sealed partial class CaptureCheck
         ];
     }
 
-    public IReadOnlyList<(CapturePlaceholder Placeholder, List<string> Missing)> Open { get; }
+    public IReadOnlyList<(ScreenshotPlaceholder Placeholder, List<string> Missing)> Open { get; }
 
-    public IReadOnlyList<CaptureShot> Unused { get; }
+    public IReadOnlyList<SpecScreenshot> Unused { get; }
 
-    public static CaptureCheck Run(string docsFolder, string specsFolder, string repoRootFolder) =>
+    public static ScreenshotCheck Run(
+        string docsFolder,
+        string specsFolder,
+        string repoRootFolder
+    ) =>
         new(
             FindPlaceholders(docsFolder),
             [
@@ -63,7 +67,7 @@ internal sealed partial class CaptureCheck
                     .Find(specsFolder)
                     .SelectMany(file =>
                         FindShots(file)
-                            .Select(name => new CaptureShot(
+                            .Select(name => new SpecScreenshot(
                                 Path.GetRelativePath(repoRootFolder, file),
                                 name
                             ))
@@ -75,9 +79,9 @@ internal sealed partial class CaptureCheck
     public static string VariantSlug(string variant) =>
         NonSlugCharacters().Replace(variant.ToLowerInvariant(), "-").Trim('-');
 
-    private static List<CapturePlaceholder> FindPlaceholders(string docsFolder)
+    private static List<ScreenshotPlaceholder> FindPlaceholders(string docsFolder)
     {
-        List<CapturePlaceholder> placeholders = [];
+        List<ScreenshotPlaceholder> placeholders = [];
         foreach (
             var file in Directory
                 .EnumerateFiles(docsFolder, "*.mdx", SearchOption.AllDirectories)
@@ -85,7 +89,7 @@ internal sealed partial class CaptureCheck
         )
         {
             var text = File.ReadAllText(file);
-            foreach (Match tag in CaptureTag().Matches(text))
+            foreach (Match tag in ScreenshotTag().Matches(text))
             {
                 var name = Attribute(tag.Value, "name");
                 if (name is null)
@@ -151,8 +155,8 @@ internal sealed partial class CaptureCheck
             ? match.Groups[1].Value
             : null;
 
-    [GeneratedRegex(@"<Capture\b[^>]*?/>", RegexOptions.Singleline)]
-    private static partial Regex CaptureTag();
+    [GeneratedRegex(@"<Screenshot\b[^>]*?/>", RegexOptions.Singleline)]
+    private static partial Regex ScreenshotTag();
 
     [GeneratedRegex(@"\bvariants=\{\[(.*?)\]\}", RegexOptions.Singleline)]
     private static partial Regex VariantsAttribute();

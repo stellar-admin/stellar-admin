@@ -2,7 +2,7 @@ using StellarAdmin;
 using StellarAdmin.ScenarioTesting.Hosting;
 using StellarAdmin.Sidebar;
 
-namespace DocsSamplesGenerator.Captures.Branding;
+namespace StellarAdmin.Cli.Docs.Screenshots.Branding;
 
 // One scenario per layout, e.g. branding-wordmark-layout-fill
 [ScenarioArguments(WordmarkLayout.Center)]

@@ -4,7 +4,7 @@ using StellarAdmin.ScenarioTesting.Hosting;
 using StellarAdmin.Sidebar;
 using VoyagerTravel.Models;
 
-namespace DocsSamplesGenerator.Captures.Sidebar;
+namespace StellarAdmin.Cli.Docs.Screenshots.Sidebar;
 
 public sealed class SidebarMissingLinkScenario : Scenario
 {

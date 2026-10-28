@@ -88,6 +88,12 @@ Done (2026-10-28): docs pages place admin screenshots with `<Capture name alt to
 - Verified: `captures` runs all 14 specs (1 open, 0 unused); every image checked by eye; website `types:check` and `build` pass, `lint` fails only on two untouched files' formatting; the branding and environment indicator pages checked in a dev server, and the open placeholder renders.
 - Candidates for later batches: the docs audit of 2026-10-28 (in the conversation, not recorded here) lists about 100 spots; the larger ones need host support (Razor views, pages and partials in the scenario host).
 
+## StellarAdmin CLI
+
+Done (2026-10-28): the generator moved to `tools/StellarAdmin.Cli`, a Spectre.Console.Cli app (help text names it `stellar`) with area-first commands: `docs generate [demos|screenshots]`, `docs check` and `docs clean [demos|screenshots]`. `generate` deletes its own output first unless given `--keep-output`; `--spec <name>` (repeatable) captures only those screenshot specs and keeps the others. Docs captures are now screenshots: `Captures/` is `Docs/Screenshots/`, `CaptureCheck` is `ScreenshotCheck`, and on the website `<Capture>` is `<Screenshot>` and `captures.json` is `screenshots.json`. `DemoGenerator` and `ScreenshotGenerator` each own their output paths and `Clean`. Spectre.Console went from 0.57.1 to 0.57.2, which Spectre.Console.Cli 0.57.2 requires. The scenario CLI (`tests/StellarAdmin.ScenarioTesting.Cli`) is to fold in later as a `scenarios` area.
+
+- Verified: the CLI builds; help, the `--spec` validation errors, `docs generate` (all 14 specs, 1 open, 0 unused), `docs generate screenshots --spec branding-logo-icon`, and `docs clean screenshots` followed by `docs generate screenshots` all run. The screenshots came out byte-identical; the demos differ only by per-run IDs and antiforgery tokens. Website `oxfmt` and `oxlint` pass on `mdx.tsx`. The scenario tests were not re-run (the ScenarioTesting projects didn't change).
+
 ## CI
 
 Done (2026-10-28): `ci.yml` and `release.yml` run the scenario tests with `STELLARADMIN_CHROMIUM` set to the runner's preinstalled `/usr/bin/google-chrome`. No spec records, so ffmpeg isn't installed.

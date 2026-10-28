@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "docs generate": {
+      "commandName": "Project",
+      "commandLineArgs": "docs generate"
+    },
+    "docs generate demos": {
+      "commandName": "Project",
+      "commandLineArgs": "docs generate demos"
+    },
+    "docs generate screenshots": {
+      "commandName": "Project",
+      "commandLineArgs": "docs generate screenshots"
+    }
+  }
+}

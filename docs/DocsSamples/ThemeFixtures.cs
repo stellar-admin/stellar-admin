@@ -18,7 +18,7 @@ public sealed record ThemeFixture(
 /// <summary>
 /// Reads the theme fixtures in util/theme-check/presets, the one source of the themes the samples'
 /// pickers, the docs export and the website's theme builder offer. DocsSamples, ComponentPlayground
-/// and the DocsSamplesGenerator share this file.
+/// and StellarAdmin.Cli share this file.
 /// </summary>
 public static partial class ThemeFixtures
 {

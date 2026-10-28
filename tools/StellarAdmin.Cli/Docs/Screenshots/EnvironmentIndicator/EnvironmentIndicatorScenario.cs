@@ -4,7 +4,7 @@ using StellarAdmin.ScenarioTesting.Hosting;
 using StellarAdmin.Sidebar;
 using VoyagerTravel.Models;
 
-namespace DocsSamplesGenerator.Captures.EnvironmentIndicator;
+namespace StellarAdmin.Cli.Docs.Screenshots.EnvironmentIndicator;
 
 // One scenario per kind of indicator, e.g. environment-indicator-banner: the docs' live banner and staging
 // stripe, and a staging frame

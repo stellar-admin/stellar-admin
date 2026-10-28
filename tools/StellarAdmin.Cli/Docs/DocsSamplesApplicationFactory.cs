@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 
-namespace DocsSamplesGenerator;
+namespace StellarAdmin.Cli.Docs;
 
 /// <summary>
 /// Hosts the DocsSamples site in-memory so the generator can render pages over an

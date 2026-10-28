@@ -1,7 +1,7 @@
 using StellarAdmin;
 using StellarAdmin.ScenarioTesting.Hosting;
 
-namespace DocsSamplesGenerator.Captures;
+namespace StellarAdmin.Cli.Docs.Screenshots;
 
 public sealed class SetupChecklistScenario : Scenario
 {
