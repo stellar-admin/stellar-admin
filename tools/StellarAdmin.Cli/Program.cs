@@ -1,5 +1,6 @@
 using Spectre.Console.Cli;
 using StellarAdmin.Cli.Docs;
+using StellarAdmin.Cli.Scenarios;
 
 namespace StellarAdmin.Cli;
 
@@ -60,6 +61,38 @@ public static class Program
                                 );
                         }
                     );
+                }
+            );
+            config.AddBranch(
+                "scenarios",
+                scenarios =>
+                {
+                    scenarios.SetDescription(
+                        "Host the test and docs scenarios, and run specs against them."
+                    );
+                    scenarios
+                        .AddCommand<ListCommand>("list")
+                        .WithDescription("List every scenario.");
+                    scenarios
+                        .AddCommand<StartCommand>("start")
+                        .WithDescription("Host a scenario until Ctrl+C.")
+                        .WithExample(
+                            "scenarios",
+                            "start",
+                            "default",
+                            "--urls",
+                            "http://127.0.0.1:5207"
+                        );
+                    scenarios
+                        .AddCommand<RunCommand>("run")
+                        .WithDescription("Run spec files, or every spec in folders.")
+                        .WithExample(
+                            "scenarios",
+                            "run",
+                            "tests/StellarAdmin.ScenarioTesting.Tests/Specs",
+                            "--output",
+                            "artifacts/screenshots"
+                        );
                 }
             );
         });

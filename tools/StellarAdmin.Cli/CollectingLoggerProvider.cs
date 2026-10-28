@@ -1,7 +1,8 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using Spectre.Console;
 
-namespace StellarAdmin.Cli.Docs;
+namespace StellarAdmin.Cli;
 
 // Holds a host's log messages until the caller prints them
 internal sealed class CollectingLoggerProvider : ILoggerProvider
@@ -10,14 +11,16 @@ internal sealed class CollectingLoggerProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName) => new Logger(messages);
 
-    // The messages logged since the last call
-    public List<(LogLevel Level, string Message)> Drain()
+    // Prints the messages logged since the last call, each labelled with the spec that logged it
+    public void Print(string spec)
     {
-        List<(LogLevel Level, string Message)> drained = [];
         while (messages.TryDequeue(out var message))
-            drained.Add(message);
-
-        return drained;
+        {
+            var color = message.Level >= LogLevel.Error ? "red" : "yellow";
+            AnsiConsole.MarkupLineInterpolated(
+                $"[{color}]{message.Level}[/] {spec}: {message.Message}"
+            );
+        }
     }
 
     public void Dispose() { }

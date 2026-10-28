@@ -12,6 +12,17 @@
     "docs generate screenshots": {
       "commandName": "Project",
       "commandLineArgs": "docs generate screenshots"
+    },
+    "scenarios list": {
+      "commandName": "Project",
+      "commandLineArgs": "scenarios list"
+    },
+    "scenarios start default": {
+      "commandName": "Project",
+      "commandLineArgs": "scenarios start default",
+      "launchBrowser": true,
+      "launchUrl": "stellaradmin",
+      "applicationUrl": "http://localhost:5210"
     }
   }
 }

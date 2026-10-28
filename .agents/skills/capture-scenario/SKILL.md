@@ -21,11 +21,11 @@ Inspect Git status first and keep to the request: a capture does not authorize c
 | Sign-in | `Hosting/SignInSetup.cs`: `/scenario/sign-in` lists the users in the interactive host |
 | Specs | `tests/StellarAdmin.ScenarioTesting.Tests/Specs/<name>.spec.yaml` (each file is also a test) |
 | Spec runner and steps | `tests/StellarAdmin.ScenarioTesting/Runner/` (`SpecLoader.cs` holds every step) |
-| Command line (interactive host and spec runs) | `tests/StellarAdmin.ScenarioTesting.Cli` |
+| Command line (interactive host and spec runs) | `tools/StellarAdmin.Cli`: `scenarios list`, `scenarios start` and `scenarios run` |
 
 ## Docs screenshots
 
-Screenshots for the website's admin docs have their own scenarios and specs in `tools/StellarAdmin.Cli/Docs/Screenshots/`, in a folder per docs page (`Screenshots/Branding/`). The CLI's catalog holds only the scenarios in its own assembly, so a docs screenshot can't use a test scenario, and the test project doesn't run these specs. Static files a scenario links to, such as logos, go in `tools/StellarAdmin.Cli/wwwroot/`.
+Screenshots for the website's admin docs have their own scenarios and specs in `tools/StellarAdmin.Cli/Docs/Screenshots/`, in a folder per docs page (`Screenshots/Branding/`). `docs generate screenshots` uses only the scenarios in the CLI's own assembly, so a docs screenshot can't use a test scenario, and the test project doesn't run these specs. The `scenarios` commands see both. Static files a scenario links to, such as logos, go in `tools/StellarAdmin.Cli/wwwroot/`.
 
 A docs page asks for a screenshot with a placeholder that the website renders as the image once it exists:
 
@@ -47,12 +47,12 @@ The page shows `{name}.png`, or `{name}-{variant}.png` for each variant (the var
 1. **Pin down the capture.** From the description, decide: the admin configuration it needs, the pages and interactions, and the outputs (still PNG, element PNG, annotated PNG, MP4, GIF, dark mode, mobile width). Ask only when the description leaves a consequential choice open.
 2. **Choose or add a scenario.** Reuse one in `Scenarios/` when its configuration fits. Otherwise add a `Scenario` subclass, following `SidebarBrandingTitleScenario`: a one-sentence `Description`, `ConfigureAdmin` with the configuration being shown and only the resources its specs use, and `StartPath` only if it isn't `/stellaradmin`. The class name gives the spec's `scenario` name in kebab case without "Scenario" (`SidebarBrandingTitleScenario` is `sidebar-branding-title`); a class with `[ScenarioArguments(...)]` attributes gives one scenario per attribute, with the values appended (`sidebar-branding-wordmark-layout-start`). Content uses the fictitious Voyager Travel theme.
 3. **Check the data fits.** Every scenario runs on its own fresh in-memory copy of the seeded Voyager Travel database, so a spec can change data freely. Each scenario registers its own resources with `AddEfCoreResource<T>()` on the Voyager Travel model (trips, destinations, countries, bookings, travellers, guides and others). Call `index.EnablePaging()` on every resource's index: paging is off by default, and some tables have thousands of rows (Payments has about 13,000), which makes pages slow enough to time out on CI. Leave it off only when the spec is about an unpaged index, such as checking that every record shows. The seeded staff can sign in by email (`admin@voyager.travel` is Admin; `priya@`, `tomas@`, `hannah@`, `kenji@`, `chloe@` and `liam@voyager.travel` are Agents; `viewer@voyager.travel` is a Viewer); `authorization` requires an Admin or Agent for the panel and an Admin for Payments. If an existing scenario lacks a resource or column the capture needs, say so and ask before adding it.
-4. **Find the locators.** Read the Razor views and tag helpers for the markup, or start the scenario and fetch its HTML: `dotnet run --project tests/StellarAdmin.ScenarioTesting.Cli -- <scenario> --urls http://127.0.0.1:5207`. Never use port 5205. Stop the host when done.
+4. **Find the locators.** Read the Razor views and tag helpers for the markup, or start the scenario and fetch its HTML: `dotnet run --project tools/StellarAdmin.Cli -- scenarios start <scenario> --urls http://127.0.0.1:5207` (`scenarios list` names them all). Never use port 5205. Stop the host when done.
 5. **Write the spec.** One file per capture, named for what it shows. Start with a comment line saying what it shows, `goto` the page and set up the state to show. Add an `expect*` step only where the page must settle before a `screenshot` (after a navigation, or a dialog opening); the capture is not a test. Wrap interactions to record in `record`…`recordEnd` with `pause` steps so results stay on screen.
 6. **Run it with outputs** from the repository root:
 
    ```sh
-   dotnet run --project tests/StellarAdmin.ScenarioTesting.Cli -- --specs tests/StellarAdmin.ScenarioTesting.Tests/Specs/<name>.spec.yaml --screenshots artifacts/screenshots
+   dotnet run --project tools/StellarAdmin.Cli -- scenarios run tests/StellarAdmin.ScenarioTesting.Tests/Specs/<name>.spec.yaml --output artifacts/screenshots
    ```
 
    It prints `passed <name> (N steps)` or `failed <file>:<line>: <message>`. A failure names the spec line; fix the spec (usually a locator or a timeout) and rerun. `artifacts/` is ignored by Git.
@@ -63,12 +63,12 @@ The page shows `{name}.png`, or `{name}-{variant}.png` for each variant (the var
 ## Prerequisites
 
 - Chromium: `/usr/bin/chromium`, or the path in `STELLARADMIN_CHROMIUM`.
-- Recording needs Playwright's ffmpeg build. The runner's error names the install command (`pwsh bin/Debug/net10.0/playwright.ps1 install ffmpeg`, run in `tests/StellarAdmin.ScenarioTesting.Cli` or the tests project).
+- Recording needs Playwright's ffmpeg build. The runner's error names the install command (`pwsh bin/Debug/net10.0/playwright.ps1 install ffmpeg`, run in `tools/StellarAdmin.Cli` or the tests project).
 - Cutting clips needs `ffmpeg` on the `PATH`.
 
 ## When a step is missing
 
-If the description needs an interaction or assertion no step covers, add the step rather than working around it: a case in the `Step` switch in `SpecLoader.cs` (kept alphabetical) and a private method that parses the value and returns the step's `Func<SpecRun, Task>`. Pointer actions go through `Pointer(...)` so the cursor glides to them while recording. Errors throw `SpecException` with the spec's line. Add the step to the [spec format reference](references/spec-format.md) and verify it on a spec, with and without `--screenshots`. Tell the developer you added it.
+If the description needs an interaction or assertion no step covers, add the step rather than working around it: a case in the `Step` switch in `SpecLoader.cs` (kept alphabetical) and a private method that parses the value and returns the step's `Func<SpecRun, Task>`. Pointer actions go through `Pointer(...)` so the cursor glides to them while recording. Errors throw `SpecException` with the spec's line. Add the step to the [spec format reference](references/spec-format.md) and verify it on a spec, with and without `--output`. Tell the developer you added it.
 
 ## Limits
 

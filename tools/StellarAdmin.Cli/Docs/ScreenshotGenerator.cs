@@ -144,12 +144,7 @@ internal static class ScreenshotGenerator
                 }
             );
 
-            foreach (var (level, message) in log.Drain())
-            {
-                var color = level >= LogLevel.Error ? "red" : "yellow";
-                AnsiConsole.MarkupLineInterpolated($"[{color}]{level}[/] {name}: {message}");
-            }
-
+            log.Print(name);
             task.Increment(1);
         }
 

@@ -6,6 +6,6 @@ steps:
       selector: "[data-slot='sidebar-header'] a"
       steps:
         - expectAttribute: { attribute: href, value: /stellaradmin }
-        - expectText: { selector: .sa-sidebar-brand-title, text: "/^Stellar Admin Scenario Testing /" }
+        - expectText: { selector: .sa-sidebar-brand-title, text: "/^Stellar Admin /" }
         - expectCount: { selector: .sa-sidebar-brand-subtitle, count: 0 }
         - expectCount: { selector: ":is(.sa-sidebar-brand-mark, img)", count: 0 }

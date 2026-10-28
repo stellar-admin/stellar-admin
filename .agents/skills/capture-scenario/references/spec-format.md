@@ -22,7 +22,7 @@ steps:
   - goto: /stellaradmin
 ```
 
-Outputs are saved only when the run has a screenshot folder (`--screenshots <dir>` on the host, or `STELLARADMIN_SCREENSHOTS=1` for the tests). Without one, `screenshot`, `record`, `recordEnd` and `pause` do nothing and every other step still runs.
+Outputs are saved only when the run has a screenshot folder (`--output <dir>` on `scenarios run`, or `STELLARADMIN_SCREENSHOTS=1` for the tests). Without one, `screenshot`, `record`, `recordEnd` and `pause` do nothing and every other step still runs.
 
 ## Locators
 
