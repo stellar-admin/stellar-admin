@@ -79,6 +79,10 @@ Done (2026-10-28): `docs/DocsSamplesGenerator` runs every spec in its `Captures/
 
 Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 
+## CI
+
+Done (2026-10-28): `ci.yml` and `release.yml` run the scenario tests with `STELLARADMIN_CHROMIUM` set to the runner's preinstalled `/usr/bin/google-chrome`. No spec records, so ffmpeg isn't installed.
+
 ## Later
 
-- CI: install Chromium and ffmpeg, run the scenario tests.
+- CI: install ffmpeg once a spec records a clip.
