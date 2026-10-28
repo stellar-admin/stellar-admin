@@ -40,7 +40,7 @@ The page shows `{name}.png`, or `{name}-{variant}.png` for each variant (the var
 3. **Capture** with `dotnet run --project tools/StellarAdmin.Cli -- docs generate screenshots --spec <name>`, once per spec name (the file name without `.spec.yaml`), or without `--spec` for every spec. It writes the PNGs to the website's `public/images/admin/generated/` and rewrites `src/generated/screenshots.json` (each image's size, which the placeholder reads), then reports what is still open. A run without `--spec` deletes the folder first; a `--spec` run keeps the other screenshots. Check every image by eye: crops should end near their content (a `viewport` step shortens the window) and show the Voyager Travel title, not the default app name.
 4. To change a screenshot, change its scenario or spec and capture again; the `todo` is not read once a spec exists. To rename one, rename both the screenshot and the placeholder, then capture without `--spec` so the old image goes.
 
-`docs generate` with no target generates the demos too, and `docs clean screenshots` deletes the screenshots and the manifest.
+`docs generate all` generates the demos too, and `docs clean screenshots` deletes the screenshots and the manifest.
 
 ## Workflow
 

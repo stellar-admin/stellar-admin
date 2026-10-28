@@ -1,9 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "docs generate": {
+    "docs generate all": {
       "commandName": "Project",
-      "commandLineArgs": "docs generate"
+      "commandLineArgs": "docs generate all"
     },
     "docs generate demos": {
       "commandName": "Project",

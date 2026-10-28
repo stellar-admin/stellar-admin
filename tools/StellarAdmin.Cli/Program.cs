@@ -23,9 +23,11 @@ public static class Program
                         generate =>
                         {
                             generate.SetDescription(
-                                "Generate the UI component demos and the admin panel screenshots, deleting each one's existing output first."
+                                "Generate the UI component demos or the admin panel screenshots, deleting the existing output first."
                             );
-                            generate.SetDefaultCommand<GenerateCommand>();
+                            generate
+                                .AddCommand<GenerateAllCommand>("all")
+                                .WithDescription("Generate the demos, then the screenshots.");
                             generate
                                 .AddCommand<GenerateDemosCommand>("demos")
                                 .WithDescription("Generate the UI component demos.");
@@ -49,8 +51,10 @@ public static class Program
                         "clean",
                         clean =>
                         {
-                            clean.SetDescription("Delete the generated demos and screenshots.");
-                            clean.SetDefaultCommand<CleanCommand>();
+                            clean.SetDescription("Delete the generated demos or screenshots.");
+                            clean
+                                .AddCommand<CleanAllCommand>("all")
+                                .WithDescription("Delete the generated demos and screenshots.");
                             clean
                                 .AddCommand<CleanDemosCommand>("demos")
                                 .WithDescription("Delete the generated demos.");

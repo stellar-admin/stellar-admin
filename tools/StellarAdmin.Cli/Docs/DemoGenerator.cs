@@ -163,7 +163,8 @@ internal sealed partial class DemoGenerator
 
     // Renders every demo partial and its source include, and downloads the assets they use. Deletes the
     // existing demos first, unless keepOutput, so renamed or removed ones don't leave files behind.
-    public static async Task GenerateAsync(bool keepOutput)
+    // Returns whether every step succeeded
+    public static async Task<bool> GenerateAsync(bool keepOutput)
     {
         AnsiConsole.Write(new Rule("[bold]StellarAdmin.UI docs demos[/]").LeftJustified());
         AnsiConsole.MarkupLineInterpolated(
@@ -174,70 +175,57 @@ internal sealed partial class DemoGenerator
         using var factory = new DocsSamplesApplicationFactory(DocsSamplesContentRoot);
         using var client = factory.CreateClient();
 
-        await AnsiConsole
-            .Status()
-            .StartAsync(
-                "Cleaning existing demos...",
-                async ctx =>
+        var runner = new StepRunner();
+        if (!keepOutput)
+        {
+            runner.Add(
+                "Clean existing demos",
+                () =>
                 {
-                    if (!keepOutput)
-                    {
-                        Clean();
-                        AnsiConsole.MarkupLine("[green]✓[/] Cleaned existing demos.");
-                    }
-
-                    ctx.Status("Downloading fixed static assets...");
-                    await generator.DownloadFixedStaticAssetsAsync(client);
-                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded fixed static assets.");
-
-                    ctx.Status("Downloading dynamic static assets...");
-                    await generator.DownloadDynamicStaticAssetsAsync(client);
-                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded dynamic static assets.");
-
-                    ctx.Status("Downloading preset stylesheets...");
-                    await generator.DownloadPresetStylesheetsAsync(client);
-                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded preset stylesheets.");
-
-                    ctx.Status("Downloading demo icons...");
-                    await generator.DownloadDemoIconsAsync(client);
-                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded demo icons.");
-
-                    ctx.Status("Downloading theme variable manifest...");
-                    await generator.DownloadThemeVariableManifestAsync(client);
-                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded theme variable manifest.");
+                    Clean();
+                    return Task.CompletedTask;
                 }
             );
+        }
 
-        await AnsiConsole
-            .Progress()
-            .Columns(
-                new TaskDescriptionColumn(),
-                new ProgressBarColumn(),
-                new PercentageColumn(),
-                new RemainingTimeColumn(),
-                new SpinnerColumn()
+        return await runner
+            .Add(
+                "Download fixed static assets",
+                () => generator.DownloadFixedStaticAssetsAsync(client)
             )
-            .StartAsync(async ctx =>
-            {
-                var task = ctx.AddTask("[green]Generating demos[/]", maxValue: DemoPartials.Length);
-
-                foreach (var partial in DemoPartials)
+            .Add(
+                "Download dynamic static assets",
+                () => generator.DownloadDynamicStaticAssetsAsync(client)
+            )
+            .Add(
+                "Download preset stylesheets",
+                () => generator.DownloadPresetStylesheetsAsync(client)
+            )
+            .Add("Download demo icons", () => generator.DownloadDemoIconsAsync(client))
+            .Add(
+                "Download theme variable manifest",
+                () => generator.DownloadThemeVariableManifestAsync(client)
+            )
+            .Add(
+                "Generate demos",
+                async step =>
                 {
-                    await generator.GenerateDemoPartialSourceFileAsync(partial.Name);
-                    await generator.RenderDemoPartialOutputAsync(
-                        client,
-                        partial.Name,
-                        partial.Layout,
-                        partial.OutputFileName
-                    );
-
-                    task.Increment(1);
+                    step.SetTotal(DemoPartials.Length);
+                    foreach (var partial in DemoPartials)
+                    {
+                        step.Detail = partial.Name;
+                        await generator.GenerateDemoPartialSourceFileAsync(partial.Name);
+                        await generator.RenderDemoPartialOutputAsync(
+                            client,
+                            partial.Name,
+                            partial.Layout,
+                            partial.OutputFileName
+                        );
+                        step.Increment();
+                    }
                 }
-            });
-
-        AnsiConsole.MarkupLineInterpolated(
-            $"[green]✓[/] Generated {DemoPartials.Length} demo partials."
-        );
+            )
+            .RunAsync();
     }
 
     /// <summary>Downloads the demo assets that live at fixed, known URLs.</summary>

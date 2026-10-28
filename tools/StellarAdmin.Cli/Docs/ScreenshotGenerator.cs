@@ -1,7 +1,6 @@
 using System.Buffers.Binary;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Spectre.Console;
 using StellarAdmin.ScenarioTesting.Runner;
 using StellarAdmin.ScenarioTesting.Scenarios;
 
@@ -52,65 +51,70 @@ internal static class ScreenshotGenerator
         return ([.. names.Except(all)], all);
     }
 
-    // Captures every spec's screenshots, or only the named specs', rewrites the manifest and reports what
+    // Captures every spec's screenshots, or only the named specs', rewrites the manifest and checks what
     // is still open. A run of every spec deletes the existing screenshots first, unless keepOutput, so
-    // renamed or removed ones don't leave files behind; a run of named specs keeps the others.
-    public static async Task GenerateAsync(bool keepOutput, IReadOnlyCollection<string> specNames)
+    // renamed or removed ones don't leave files behind; a run of named specs keeps the others. Returns
+    // whether every step succeeded.
+    public static async Task<bool> GenerateAsync(
+        bool keepOutput,
+        IReadOnlyCollection<string> specNames
+    )
     {
+        var runner = new StepRunner();
         if (!keepOutput && specNames.Count == 0)
         {
-            Clean();
-            AnsiConsole.MarkupLine("[green]✓[/] Cleaned existing screenshots.");
+            runner.Add(
+                "Clean existing screenshots",
+                () =>
+                {
+                    Clean();
+                    return Task.CompletedTask;
+                }
+            );
         }
 
-        var specs = FindSpecs(specNames);
-        await AnsiConsole
-            .Progress()
-            .Columns(
-                new TaskDescriptionColumn(),
-                new ProgressBarColumn(),
-                new PercentageColumn(),
-                new RemainingTimeColumn(),
-                new SpinnerColumn()
+        return await runner
+            .Add("Capture screenshots", step => RunSpecsAsync(FindSpecs(specNames), step))
+            .Add(
+                "Write screenshot manifest",
+                () =>
+                {
+                    WriteManifest();
+                    return Task.CompletedTask;
+                }
             )
-            .StartAsync(ctx =>
-                RunSpecsAsync(
-                    specs,
-                    ctx.AddTask("[green]Capturing screenshots[/]", maxValue: specs.Count)
-                )
-            );
-        WriteManifest();
-        AnsiConsole.MarkupLineInterpolated($"[green]✓[/] Captured {specs.Count} screenshot specs.");
-
-        Report();
+            .Add("Check screenshots", Check)
+            .RunAsync();
     }
 
     public static void Clean() => DocsPaths.Delete(OutputFolder, ManifestFile);
 
-    // Lists the docs' placeholders no spec captures and the screenshots no page shows. These are reported,
-    // not errors: a page can wait for its screenshot.
-    public static void Report()
+    // Checks the screenshots on their own, as docs check
+    public static Task<bool> CheckAsync() =>
+        new StepRunner().Add("Check screenshots", Check).RunAsync();
+
+    // Lists the docs' placeholders no spec captures and the screenshots no page shows, under the step.
+    // These are warnings, not errors: a page can wait for its screenshot.
+    private static Task Check(StepRunner.Step step)
     {
         var check = ScreenshotCheck.Run(DocsContentFolder, SourceFolder, DocsPaths.RepoRoot);
         foreach (var (placeholder, missing) in check.Open)
         {
-            AnsiConsole.MarkupLineInterpolated(
-                $"[yellow]Open screenshot[/] {placeholder.Name} ([grey]{placeholder.Page}:{placeholder.Line}[/]): no spec saves {string.Join(", ", missing)}"
+            step.Warn(
+                $"Open screenshot {placeholder.Name} ({placeholder.Page}:{placeholder.Line}): no spec saves {string.Join(", ", missing)}"
             );
             if (placeholder.Todo is { } todo)
-                AnsiConsole.MarkupLineInterpolated($"    [grey]{todo}[/]");
+                step.Log($"  {todo}");
         }
 
         foreach (var screenshot in check.Unused)
-        {
-            AnsiConsole.MarkupLineInterpolated(
-                $"[yellow]Unused screenshot[/] {screenshot.Name} ([grey]{screenshot.Spec}[/]): no Screenshot shows it"
+            step.Warn(
+                $"Unused screenshot {screenshot.Name} ({screenshot.Spec}): no Screenshot shows it"
             );
-        }
 
-        AnsiConsole.MarkupLineInterpolated(
-            $"[green]✓[/] Checked screenshots: {check.Open.Count} open, {check.Unused.Count} unused."
-        );
+        step.Log($"{check.Open.Count} open, {check.Unused.Count} unused");
+
+        return Task.CompletedTask;
     }
 
     // The spec files to run: every spec, or the ones named (the file name without .spec.yaml)
@@ -121,18 +125,19 @@ internal static class ScreenshotGenerator
                 .Where(spec => names.Count == 0 || names.Contains(SpecFiles.Name(spec))),
         ];
 
-    // Runs each spec against its scenario and saves its screenshots. Each host's log messages are printed
-    // after its spec, since a host writing to the console would garble the progress display.
-    private static async Task RunSpecsAsync(IReadOnlyList<string> specs, ProgressTask task)
+    // Runs each spec against its scenario and saves its screenshots. Each host's log messages are shown as
+    // the step's warnings, since a host writing to the console would garble the step's line.
+    private static async Task RunSpecsAsync(IReadOnlyList<string> specs, StepRunner.Step step)
     {
         var catalog = new ScenarioCatalog(typeof(ScreenshotGenerator).Assembly);
         var log = new CollectingLoggerProvider();
 
+        step.SetTotal(specs.Count);
         await using var browser = await SpecBrowser.LaunchAsync();
         foreach (var file in specs)
         {
             var name = SpecFiles.Name(file);
-            task.Description = $"[green]Capturing[/] {Markup.Escape(name)}";
+            step.Detail = name;
             await SpecRunner.RunAsync(
                 SpecLoader.Load(catalog, file, Path.GetRelativePath(DocsPaths.RepoRoot, file)),
                 browser,
@@ -144,11 +149,11 @@ internal static class ScreenshotGenerator
                 }
             );
 
-            log.Print(name);
-            task.Increment(1);
-        }
+            foreach (var (level, message) in log.Drain())
+                step.Warn($"{level} {name}: {message}");
 
-        task.Description = "[green]Capturing screenshots[/]";
+            step.Increment();
+        }
     }
 
     // Width and height from each PNG's IHDR chunk, which starts every PNG at byte 16

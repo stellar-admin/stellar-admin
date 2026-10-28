@@ -11,7 +11,6 @@ internal sealed class GenerateDemosCommand : AsyncCommand<GenerateSettings>
         CancellationToken cancellationToken
     )
     {
-        await DemoGenerator.GenerateAsync(settings.KeepOutput);
-        return 0;
+        return await DemoGenerator.GenerateAsync(settings.KeepOutput) ? 0 : 1;
     }
 }

@@ -13,8 +13,7 @@ internal sealed class GenerateScreenshotsCommand : AsyncCommand<GenerateScreensh
         CancellationToken cancellationToken
     )
     {
-        await ScreenshotGenerator.GenerateAsync(settings.KeepOutput, settings.Specs);
-        return 0;
+        return await ScreenshotGenerator.GenerateAsync(settings.KeepOutput, settings.Specs) ? 0 : 1;
     }
 
     public sealed class Settings : GenerateSettings
