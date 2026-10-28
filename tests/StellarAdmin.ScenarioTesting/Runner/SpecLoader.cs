@@ -13,8 +13,13 @@ public static class SpecLoader
     // Defines window.specAnnotations, which annotate and spotlight draw with; safe to run again
     private static readonly string AnnotationsScript = ReadAnnotationsScript();
 
-    // Milliseconds an assertion or click retries before failing; a step can set its own timeout
-    private const float DefaultTimeout = 1000;
+    // Milliseconds an assertion or click retries before failing; a step can set its own timeout. Longer on CI,
+    // where the runner is busy with every test assembly at once
+    private static readonly float DefaultTimeout = string.IsNullOrEmpty(
+        Environment.GetEnvironmentVariable("CI")
+    )
+        ? 1000
+        : 5000;
 
     // Looks the scenario up in catalog. Errors name the file by displayPath, e.g. Specs/sign-in.spec.yaml; defaults to the file
     public static Spec Load(ScenarioCatalog catalog, string file, string? displayPath = null)

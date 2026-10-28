@@ -49,7 +49,7 @@ Prefer roles and names, which read like the page. A table row's accessible name 
       - expectAttribute: { attribute: alt, value: Voyager Travel }
 ```
 
-Any step whose value is a mapping can add `timeout` in milliseconds (default 1000): `{ role: dialog, timeout: 3000 }`.
+Any step whose value is a mapping can add `timeout` in milliseconds (default 1000, or 5000 when the `CI` environment variable is set): `{ role: dialog, timeout: 3000 }`.
 
 ## Navigation and assertions
 

@@ -83,6 +83,8 @@ Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 
 Done (2026-10-28): `ci.yml` and `release.yml` run the scenario tests with `STELLARADMIN_CHROMIUM` set to the runner's preinstalled `/usr/bin/google-chrome`. No spec records, so ffmpeg isn't installed.
 
+- The first CI run failed one click (`authz-sign-in`) at the 1 s timeout on the busy runner; the default step timeout is now 5 s when `CI` is set, 1 s otherwise.
+
 ## Later
 
 - CI: install ffmpeg once a spec records a clip.
