@@ -1,8 +1,10 @@
-# A trip's tags as a checkbox group of cards, with the trip's own tags checked, in light and dark
+# The difficulty as a radio group of cards in three columns, each with its title and description, Moderate
+# selected, in light and dark
 scenario: choice-editors-cards
 steps:
-  - viewport: { width: 1280, height: 640 }
-  - goto: /stellaradmin/trips/edit/1
-  - screenshot: choice-editors-cards
+  # A short window, so the page crop ends below the form
+  - viewport: { width: 1280, height: 360 }
+  - goto: /stellaradmin/trips/create
+  - screenshot: { name: choice-editors-cards, locator: main }
   - colorScheme: dark
-  - screenshot: choice-editors-cards-dark
+  - screenshot: { name: choice-editors-cards-dark, locator: main }

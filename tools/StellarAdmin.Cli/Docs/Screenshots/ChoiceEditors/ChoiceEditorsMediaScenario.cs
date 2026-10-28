@@ -11,7 +11,7 @@ namespace StellarAdmin.Cli.Docs.Screenshots.ChoiceEditors;
 public sealed class ChoiceEditorsMediaScenario : Scenario
 {
     public override string Description =>
-        "A trip create page with the transport as a segmented control of options with icons.";
+        "A trip create page with the transport as a toggle group of options with icons.";
 
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
@@ -27,8 +27,8 @@ public sealed class ChoiceEditorsMediaScenario : Scenario
                 create.Fields(fields =>
                     fields
                         .Add(form => form.Transport)
-                        .UseSegmentedControlEditor(segmented =>
-                            segmented.UseItems([
+                        .UseToggleGroupEditor(toggle =>
+                            toggle.UseItems([
                                 new ChoiceItem("Plane", "Plane")
                                 {
                                     Media = new ItemMedia.Icon("plane"),
@@ -51,7 +51,7 @@ public sealed class ChoiceEditorsMediaScenario : Scenario
 
 public sealed class TripTransportForm
 {
-    public string Transport { get; set; } = "Train";
+    public string Transport { get; set; } = "";
 }
 
 // The capture only shows the form, which is never saved

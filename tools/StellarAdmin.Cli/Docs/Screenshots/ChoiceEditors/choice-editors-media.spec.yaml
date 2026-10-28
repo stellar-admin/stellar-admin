@@ -1,4 +1,4 @@
-# The transport segmented control with an icon beside each option, Train selected, in light and dark
+# The transport toggle group with an icon beside each option, none selected, in light and dark
 scenario: choice-editors-media
 steps:
   # A short window, so the page crop ends below the form
