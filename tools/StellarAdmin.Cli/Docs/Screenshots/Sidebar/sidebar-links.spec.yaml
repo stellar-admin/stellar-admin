@@ -1,0 +1,10 @@
+# The sidebar with links to the host's pages in the Sales group and a help site link, boxed, in light and dark
+scenario: sidebar-links
+steps:
+  # A short window, so the sidebar crop ends below its last item
+  - viewport: { width: 1280, height: 290 }
+  - goto: /stellaradmin
+  - annotate: { locator: ".sa-sidebar-menu-item:has-text('Help center')" }
+  - screenshot: { name: sidebar-links, locator: .sa-sidebar-inner }
+  - colorScheme: dark
+  - screenshot: { name: sidebar-links-dark, locator: .sa-sidebar-inner }

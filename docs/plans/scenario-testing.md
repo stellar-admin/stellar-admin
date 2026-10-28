@@ -6,7 +6,7 @@ Browser tests of the admin panel driven by **scenarios** (a named admin panel co
 
 ## Built
 
-- `tests/StellarAdmin.ScenarioTesting`: `Hosting/` (`Scenario`, `ScenarioHost`, and the database and sign-in every scenario gets; the browser tests and the interactive host share one app), `Scenarios/` (`ScenarioCatalog` and the scenarios), and the spec runner in `Runner/`.
+- `tests/StellarAdmin.ScenarioTesting`: `Hosting/` (`Scenario`, `ScenarioApplicationFactory`, `ScenarioHost`, and the database and sign-in every scenario gets; the browser tests and the interactive host share one app, `tests/StellarAdmin.ScenarioTesting.Host`), `Scenarios/` (`ScenarioCatalog` and the scenarios), and the spec runner in `Runner/`.
 - Spec steps: `goto`, `expectUrl`, `expectVisible`, `expectText`, `click`, `hover`, `check`, `uncheck`, `fill`, `type`, `select`, `press`, `scroll`, `colorScheme`, `viewport`, `screenshot` (viewport or element), `annotate`, `clearAnnotations`, `spotlight`, `record`, `recordEnd` and `pause`.
 - Recording: the whole run is recorded and each `record`…`recordEnd` stretch is cut into an MP4 (and an optional GIF) with a drawn cursor, ripples and pacing options.
 - `tests/StellarAdmin.ScenarioTesting.Tests` runs every spec in `Specs/` as a test; outputs save only with `STELLARADMIN_SCREENSHOTS=1`.
@@ -25,13 +25,13 @@ Browser tests of the admin panel driven by **scenarios** (a named admin panel co
 Built (2026-10-27): every scenario runs on the Voyager Travel database, on EF Core with SQLite. The read-only trips fixture was removed. Each scenario registers only the resources its specs use: `default` has trips with search, create, edit and delete; `branding` and `staff-only` a trips index. Without a Destination resource, the trip form's `DestinationId` is a plain number input.
 
 - `tests/VoyagerTravel` is its own project holding the model, `ApplicationDbContext` and seeder from `voyager-travel-generator`, copied as-is by `sync.sh` (the generator stays the single source). The only change is the seed's anchor day, fixed at 2026-10-18 instead of the day it runs, so dates don't move between runs.
-- `Hosting/DatabaseSetup.cs`: the template is created and seeded once per process in a private in-memory database (about 7 s) and never written. Each app gets its own copy through SQLite's backup API (a few milliseconds) in a named shared-cache in-memory database, held open until the app's services are disposed. `ScenarioHost` adds it to every scenario. Every spec run starts from the same data, and parallel runs share nothing.
+- `Hosting/DatabaseSetup.cs`: the template is created and seeded once per process in a private in-memory database (about 7 s) and never written. Each app gets its own copy through SQLite's backup API (a few milliseconds) in a named shared-cache in-memory database, held open until the app's services are disposed. `ScenarioApplicationFactory` adds it to every scenario. Every spec run starts from the same data, and parallel runs share nothing.
 - Specs: `trip-edit` changes a trip's title; `trips-index` checks the seeded title is still there.
 - Packages added: Bogus 35.6.5, Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.11, and Microsoft.EntityFrameworkCore.Sqlite in the scenarios project.
 
 ## Login
 
-Built (2026-10-27): ASP.NET Core Identity on the seeded users, added to every scenario by `ScenarioHost` (`Hosting/SignInSetup.cs`).
+Built (2026-10-27): ASP.NET Core Identity on the seeded users, added to every scenario by `ScenarioApplicationFactory` (`Hosting/SignInSetup.cs`).
 
 - `/scenario/sign-in` lists the users and signs one in by email with Identity's cookie, no password; it is Identity's login path, and `/scenario/access-denied` its access-denied path. Log out in the user menu signs out of Identity's cookie.
 - Specs sign in with a top-level `user: <email>` key, or a `signIn: <email>` step to switch users partway.
@@ -84,7 +84,7 @@ Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 Done (2026-10-28): docs pages place admin screenshots with `<Capture name alt todo? variants?>` (website `src/components/mdx.tsx`). It shows `/images/admin/generated/{name}.png` (or `{name}-{variant}` per variant, side by side and captioned), with `{name}-dark` in dark mode, sized from `src/generated/captures.json`, which the generator writes after capturing. Until the image exists it shows the `todo` in a dashed box in development and nothing in production. The generator takes `captures` (capture only) and `captures --check` (report only) and reports open placeholders (no spec saves the image) and unused shots (no page shows them) after every run. The `capture-scenario` skill covers the workflow.
 
 - First batch, in `Captures/` folders per page: branding (header, the four logo kinds, the three wordmark layouts), sidebar (resource item, red missing link), environment indicator (stripe, frame, banner) and choices (enum radio group, on a form model since the seeded difficulty is an `int`). Logos are the sandbox SVGs in the generator's `wwwroot/img/`. The setup checklist pages now use `<Capture>` too.
-- Open: `sidebar-links` needs a real Razor Page and MVC action in the scenario host.
+- Done (2026-10-28): `sidebar-links`, on the host app's `/Admin/Departures` page and `Invoices` action (see [Host app](#host-app)). `sidebar-missing-link` now links to `/Admin/Reports`, which the host doesn't have.
 - Verified: `captures` runs all 14 specs (1 open, 0 unused); every image checked by eye; website `types:check` and `build` pass, `lint` fails only on two untouched files' formatting; the branding and environment indicator pages checked in a dev server, and the open placeholder renders.
 - Candidates for later batches: the docs audit of 2026-10-28 (in the conversation, not recorded here) lists about 100 spots; the larger ones need host support (Razor views, pages and partials in the scenario host).
 
@@ -101,6 +101,13 @@ Done (2026-10-28): the generator moved to `tools/StellarAdmin.Cli`, a Spectre.Co
 - Run profiles in `Properties/launchSettings.json`: `help` first, so a bare `dotnet run` only shows help, then `docs generate all`, `docs generate demos`, `docs generate screenshots`, `scenarios list`, `scenarios start default`, `skills generate` and `skills check`.
 - Verified (subcommands): the CLI builds; `docs generate` runs both (14 specs, 1 open, 0 unused); `docs clean screenshots` runs; `--keep-output` parses before and after the subcommand; `--spec` on `demos` is an unknown option. The website came out unchanged once the per-run demo IDs and tokens were discarded.
 - Verified: the CLI builds; help, the `--spec` validation errors, `docs generate` (all 14 specs, 1 open, 0 unused), `docs generate screenshots --spec branding-logo-icon`, and `docs clean screenshots` followed by `docs generate screenshots` all run. The screenshots came out byte-identical; the demos differ only by per-run IDs and antiforgery tokens. Website `oxfmt` and `oxlint` pass on `mdx.tsx`. The scenario tests were not re-run (the ScenarioTesting projects didn't change).
+
+## Host app
+
+Done (2026-10-28): scenarios run in `tests/StellarAdmin.ScenarioTesting.Host`, a plain web app whose `Program.cs` adds only MVC and Razor Pages and maps static assets, its pages and the default route. It has `Pages/Admin/Departures.cshtml`, an `InvoicesController` and the logos in `wwwroot/img/` (moved from the CLI). `Hosting/ScenarioApplicationFactory` is a `WebApplicationFactory` of it on Kestrel: its test services add the database, sign-in, the scenario's services and `AddStellarAdmin(scenario.ConfigureAdmin)`, and a startup filter puts routing, authentication, the sign-in endpoints, `MapStellarAdmin()` and the `/` redirect in front of the host's pipeline. The content root is the host project's folder, from assembly metadata, since only test projects get Mvc.Testing's content root manifest. `ScenarioHost` has `RunAsync` for `scenarios start` and `StartLoopback` for spec runs. The CLI and the scenario test project are back on the plain SDK; the host's build output brings the static assets manifest.
+
+- `scenarios start` waits for the host to shut down rather than for Ctrl+C, so SIGTERM stops it too.
+- Verified: the solution builds; 12 of 12 test specs pass through `scenarios run` and `dotnet test`; `docs generate screenshots` runs 16 specs, the 12 unchanged ones byte-identical to the website's, `sidebar-links` and `sidebar-missing-link` checked by eye; `scenarios start default --urls http://127.0.0.1:5207` serves `/`, `/stellaradmin`, `/Admin/Departures`, `/Invoices` and `/img/logo.svg`, and stops on SIGINT and SIGTERM with exit 0; the `scenarios start default` run profile listens on its `applicationUrl`, port 5210; `docs generate demos` into a scratch folder matches the website apart from per-run IDs and tokens.
 
 ## CI
 

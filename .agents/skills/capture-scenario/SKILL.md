@@ -16,7 +16,8 @@ Inspect Git status first and keep to the request: a capture does not authorize c
 | What | Where |
 | --- | --- |
 | Scenarios | `tests/StellarAdmin.ScenarioTesting/Scenarios/<Name>Scenario.cs`, found by `ScenarioCatalog` |
-| Scenario base class, host, database and sign-in | `tests/StellarAdmin.ScenarioTesting/Hosting/`; `ScenarioHost` adds the database and sign-in to every scenario |
+| Scenario base class, host, database and sign-in | `tests/StellarAdmin.ScenarioTesting/Hosting/`; `ScenarioApplicationFactory` runs the host app with the database, sign-in and admin panel of the scenario |
+| Host app: its own pages, controllers and static files | `tests/StellarAdmin.ScenarioTesting.Host/`, a plain web app the scenarios run in |
 | Voyager Travel model and seeder | `tests/VoyagerTravel/` (its own project), copied from the generator by `sync.sh`; don't edit |
 | Sign-in | `Hosting/SignInSetup.cs`: `/scenario/sign-in` lists the users in the interactive host |
 | Specs | `tests/StellarAdmin.ScenarioTesting.Tests/Specs/<name>.spec.yaml` (each file is also a test) |
@@ -25,7 +26,7 @@ Inspect Git status first and keep to the request: a capture does not authorize c
 
 ## Docs screenshots
 
-Screenshots for the website's admin docs have their own scenarios and specs in `tools/StellarAdmin.Cli/Docs/Screenshots/`, in a folder per docs page (`Screenshots/Branding/`). `docs generate screenshots` uses only the scenarios in the CLI's own assembly, so a docs screenshot can't use a test scenario, and the test project doesn't run these specs. The `scenarios` commands see both. Static files a scenario links to, such as logos, go in `tools/StellarAdmin.Cli/wwwroot/`.
+Screenshots for the website's admin docs have their own scenarios and specs in `tools/StellarAdmin.Cli/Docs/Screenshots/`, in a folder per docs page (`Screenshots/Branding/`). `docs generate screenshots` uses only the scenarios in the CLI's own assembly, so a docs screenshot can't use a test scenario, and the test project doesn't run these specs. The `scenarios` commands see both. Pages, controllers and static files a scenario links to, such as `/Admin/Departures` or logos, go in the host app, `tests/StellarAdmin.ScenarioTesting.Host/`. Every scenario shares it.
 
 A docs page asks for a screenshot with a placeholder that the website renders as the image once it exists:
 

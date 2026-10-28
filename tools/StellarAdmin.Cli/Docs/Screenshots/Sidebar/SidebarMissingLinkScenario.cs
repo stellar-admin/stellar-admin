@@ -35,12 +35,12 @@ public sealed class SidebarMissingLinkScenario : Scenario
             });
         });
         admin.AddSidebarLink(
-            "Departures this week",
-            SidebarLinkTarget.Page("/Admin/Departures"),
+            "Reports",
+            SidebarLinkTarget.Page("/Admin/Reports"),
             link =>
             {
                 link.Group = "Sales";
-                link.Icon = "calendar";
+                link.Icon = "chart-bar";
             }
         );
     }

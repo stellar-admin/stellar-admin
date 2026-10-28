@@ -4,7 +4,7 @@ steps:
   # A short window, so the sidebar crop ends below its last item
   - viewport: { width: 1280, height: 340 }
   - goto: /stellaradmin
-  - annotate: { locator: ".sa-sidebar-menu-item:has-text('Departures this week')" }
+  - annotate: { locator: ".sa-sidebar-menu-item:has-text('Reports')" }
   - screenshot: { name: sidebar-missing-link, locator: .sa-sidebar-inner }
   - colorScheme: dark
   - screenshot: { name: sidebar-missing-link-dark, locator: .sa-sidebar-inner }

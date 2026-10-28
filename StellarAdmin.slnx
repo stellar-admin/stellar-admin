@@ -20,6 +20,7 @@
     <Project Path="tests/StellarAdmin.IntegrationTests/StellarAdmin.IntegrationTests.csproj" />
     <Project Path="tests/StellarAdmin.ScenarioTesting.Tests/StellarAdmin.ScenarioTesting.Tests.csproj" />
     <Project Path="tests/StellarAdmin.ScenarioTesting/StellarAdmin.ScenarioTesting.csproj" />
+    <Project Path="tests/StellarAdmin.ScenarioTesting.Host/StellarAdmin.ScenarioTesting.Host.csproj" />
     <Project Path="tests/StellarAdmin.Tests/StellarAdmin.Tests.csproj" />
     <Project Path="tests/StellarAdmin.UI.IntegrationTests/StellarAdmin.UI.IntegrationTests.csproj" />
     <Project Path="tests/StellarAdmin.UI.Tests/StellarAdmin.UI.Tests.csproj" />

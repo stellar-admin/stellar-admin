@@ -17,8 +17,8 @@ public static class SpecRunner
         Action<ILoggingBuilder>? configureLogging = null
     )
     {
-        var (app, baseUrl) = await ScenarioHost.StartLoopbackAsync(spec.Scenario, configureLogging);
-        await using var _ = app;
+        var (host, baseUrl) = ScenarioHost.StartLoopback(spec.Scenario, configureLogging);
+        await using var _ = host;
 
         // Only a spec with record steps records, and only when screenshots are saved
         var record = spec.Steps.FirstOrDefault(step => step.Kind == "record");

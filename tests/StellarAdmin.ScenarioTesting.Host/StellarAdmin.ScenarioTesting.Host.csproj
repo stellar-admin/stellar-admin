@@ -1,0 +1,19 @@
+<!-- The app the scenarios run in. Its own pages and static files stand in for a host application's; the
+     scenario hosts add the admin panel through WebApplicationFactory. -->
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Referenced for their static web assets, which this app's manifest lists -->
+    <ProjectReference Include="..\..\src\StellarAdmin\StellarAdmin.csproj" />
+    <ProjectReference Include="..\..\src\StellarAdmin.EntityFrameworkCore\StellarAdmin.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- WebApplicationFactory's content root, since only test projects get Mvc.Testing's content root manifest -->
+    <AssemblyMetadata Include="ProjectDirectory" Value="$(MSBuildProjectDirectory)" />
+  </ItemGroup>
+</Project>

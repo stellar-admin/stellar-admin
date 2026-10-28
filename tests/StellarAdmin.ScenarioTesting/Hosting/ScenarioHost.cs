@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Builder;
+using System.Net;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -8,57 +8,52 @@ namespace StellarAdmin.ScenarioTesting.Hosting;
 
 public static class ScenarioHost
 {
-    // Builds the same application for browser tests and the interactive host; callers
-    // choose the server through configureHost
-    public static WebApplication Create(
+    // Hosts the scenario on urls, or Kestrel's default address, until the host shuts down, such as on
+    // Ctrl+C; started gets the addresses it listens on
+    public static async Task RunAsync(
         Scenario scenario,
-        string[]? args = null,
-        Action<WebApplicationBuilder>? configureHost = null
+        string? urls,
+        Action<IReadOnlyCollection<string>> started
     )
     {
-        var builder = WebApplication.CreateBuilder(
-            new WebApplicationOptions
+        await using var factory = new ScenarioApplicationFactory(
+            scenario,
+            builder =>
             {
-                Args = args ?? [],
-                // Development serves the referenced projects' static web assets from the build output
-                EnvironmentName = Environments.Development,
+                if (urls is not null)
+                    builder.UseUrls(urls);
             }
         );
-        builder.Services.AddVoyagerTravelDatabase();
-        builder.Services.AddScenarioSignIn();
-        scenario.ConfigureServices(builder.Services);
-        builder.Services.AddStellarAdmin(scenario.ConfigureAdmin);
-        configureHost?.Invoke(builder);
+        factory.UseKestrel();
+        factory.StartServer();
+        started(factory.Addresses);
 
-        var app = builder.Build();
-        app.UseAuthentication();
-        app.UseAuthorization();
-        app.MapStaticAssets();
-        app.MapScenarioSignIn();
-        app.MapStellarAdmin();
-        app.MapGet("/", () => Results.Redirect(scenario.StartPath));
-
-        return app;
+        var stopping = new TaskCompletionSource();
+        using var _ = factory
+            .Services.GetRequiredService<IHostApplicationLifetime>()
+            .ApplicationStopping.Register(() => stopping.TrySetResult());
+        await stopping.Task;
     }
 
     // Real server on a free loopback port for the browser; logs only warnings and errors, to the
     // providers configureLogging leaves
-    public static async Task<(WebApplication App, string BaseUrl)> StartLoopbackAsync(
+    public static (IAsyncDisposable Host, string BaseUrl) StartLoopback(
         Scenario scenario,
         Action<ILoggingBuilder>? configureLogging = null
     )
     {
-        var app = Create(
+        var factory = new ScenarioApplicationFactory(
             scenario,
-            configureHost: builder =>
-            {
-                builder.WebHost.UseUrls("http://127.0.0.1:0");
-                builder.Logging.SetMinimumLevel(LogLevel.Warning);
-                configureLogging?.Invoke(builder.Logging);
-            }
+            builder =>
+                builder.ConfigureLogging(logging =>
+                {
+                    logging.SetMinimumLevel(LogLevel.Warning);
+                    configureLogging?.Invoke(logging);
+                })
         );
-        await app.StartAsync();
+        factory.UseKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        factory.StartServer();
 
-        return (app, app.Urls.First());
+        return (factory, factory.Addresses.First());
     }
 }

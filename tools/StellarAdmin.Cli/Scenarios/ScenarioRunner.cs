@@ -31,15 +31,16 @@ internal static class ScenarioRunner
         AnsiConsole.Write(table);
     }
 
-    // Hosts the scenario until Ctrl+C, on urls or the host's default address
-    public static async Task StartAsync(Scenario scenario, string? urls)
-    {
-        var app = ScenarioHost.Create(scenario, urls is null ? [] : ["--urls", urls]);
-        AnsiConsole.MarkupLineInterpolated(
-            $"Running scenario [green]{scenario.Name}[/]: {scenario.Description}"
+    // Hosts the scenario on urls, or Kestrel's default address, until it shuts down, such as on Ctrl+C
+    public static Task StartAsync(Scenario scenario, string? urls) =>
+        ScenarioHost.RunAsync(
+            scenario,
+            urls,
+            addresses =>
+                AnsiConsole.MarkupLineInterpolated(
+                    $"Running scenario [green]{scenario.Name}[/] on {string.Join(", ", addresses)}: {scenario.Description}"
+                )
         );
-        await app.RunAsync();
-    }
 
     // Runs the spec files, and every spec in the folders, saving their screenshots and clips to
     // outputFolder when it's given. Every spec runs even when one fails. Returns whether they all passed.

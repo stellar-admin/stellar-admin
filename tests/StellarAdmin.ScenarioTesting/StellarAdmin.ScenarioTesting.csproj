@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Microsoft.Playwright" />
     <PackageReference Include="YamlDotNet" />
@@ -23,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin\StellarAdmin.csproj" />
     <ProjectReference Include="..\..\src\StellarAdmin.EntityFrameworkCore\StellarAdmin.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\StellarAdmin.ScenarioTesting.Host\StellarAdmin.ScenarioTesting.Host.csproj" />
     <ProjectReference Include="..\VoyagerTravel\VoyagerTravel.csproj" />
   </ItemGroup>
 </Project>
