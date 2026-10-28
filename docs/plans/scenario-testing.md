@@ -11,7 +11,7 @@ Browser tests of the admin panel driven by **scenarios** (a named admin panel co
 - Recording: the whole run is recorded and each `record`…`recordEnd` stretch is cut into an MP4 (and an optional GIF) with a drawn cursor, ripples and pacing options.
 - `tests/StellarAdmin.ScenarioTesting.Tests` runs every spec in `Specs/` as a test; outputs save only with `STELLARADMIN_SCREENSHOTS=1`.
 - `tools/StellarAdmin.Cli` `scenarios` commands: `list`, `start <scenario> [--urls <url>]` hosts one interactively, and `run <file|dir>... [--output <dir>]` runs specs.
-- The `capture-scenario` development skill writes, runs and checks a scenario and spec from a plain-English description.
+- The `write-scenario-specs` development skill writes, runs and checks a scenario and spec from a plain-English description; `write-docs-screenshot-specs` does it for the docs pages' open `<Screenshot>` placeholders and generates their images.
 - Layout (2026-10-27): `tests/VoyagerTravel` holds the copied model; the runner folder is `Runner/` because a `SpecRunner` namespace would hide the `SpecRunner` class. The TestServer branding test was removed: `branding.spec.yaml` checks the same title, subtitle and icon.
 
 ## Verified
@@ -81,7 +81,7 @@ Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 
 ## Docs capture placeholders
 
-Done (2026-10-28): docs pages place admin screenshots with `<Capture name alt todo? variants?>` (website `src/components/mdx.tsx`). It shows `/images/admin/generated/{name}.png` (or `{name}-{variant}` per variant, side by side and captioned), with `{name}-dark` in dark mode, sized from `src/generated/captures.json`, which the generator writes after capturing. Until the image exists it shows the `todo` in a dashed box in development and nothing in production. The generator takes `captures` (capture only) and `captures --check` (report only) and reports open placeholders (no spec saves the image) and unused shots (no page shows them) after every run. The `capture-scenario` skill covers the workflow.
+Done (2026-10-28): docs pages place admin screenshots with `<Capture name alt todo? variants?>` (website `src/components/mdx.tsx`). It shows `/images/admin/generated/{name}.png` (or `{name}-{variant}` per variant, side by side and captioned), with `{name}-dark` in dark mode, sized from `src/generated/captures.json`, which the generator writes after capturing. Until the image exists it shows the `todo` in a dashed box in development and nothing in production. The generator takes `captures` (capture only) and `captures --check` (report only) and reports open placeholders (no spec saves the image) and unused shots (no page shows them) after every run. The `capture-scenario` skill covered the workflow (now `write-docs-screenshot-specs`).
 
 - First batch, in `Captures/` folders per page: branding (header, the four logo kinds, the three wordmark layouts), sidebar (resource item, red missing link), environment indicator (stripe, frame, banner) and choices (enum radio group, on a form model since the seeded difficulty is an `int`). Logos are the sandbox SVGs in the generator's `wwwroot/img/`. The setup checklist pages now use `<Capture>` too.
 - Done (2026-10-28): `sidebar-links`, on the host app's `/Admin/Departures` page and `Invoices` action (see [Host app](#host-app)). `sidebar-missing-link` now links to `/Admin/Reports`, which the host doesn't have.
@@ -92,6 +92,7 @@ Done (2026-10-28): docs pages place admin screenshots with `<Capture name alt to
 - Verified: `docs generate screenshots` runs all 22 specs (0 open, 0 unused), the earlier images byte-identical; every new image and both GIFs (as frame sheets) checked by eye; website `types:check` and `build` pass, and the built search page uses `search.gif` and `search-dark.gif`.
 - Done (2026-10-28): the `screenshot` step takes a `margin` (pixels, or `{ top, right, bottom, left }`) to include the area around an element. The delete confirmations are window shots over the dimmed grid; `columns-settings` shows the whole grid card with the title, and `sorting-and-paging-pager` the last rows above the pager. New: `sorting-and-paging-sortable` (annotated sort indicators; the example now uses `BookedAt` and `TotalAmount`), `choice-editors-media` (the example's `train` icon, which Lucide lacks, is now `train-front`) and `choice-editors-cards`.
 - Verified: `docs generate screenshots` runs all 25 specs (0 open, 0 unused, 0 misnamed); the changed and new images checked by eye; the scenario tests pass (12); website `types:check` passes.
+- Done (2026-10-28): `capture-scenario` is renamed `write-scenario-specs`, and its docs screenshots section is now its own skill, `write-docs-screenshot-specs`.
 
 ## StellarAdmin CLI
 
@@ -119,7 +120,7 @@ Done (2026-10-28): scenarios run in `tests/StellarAdmin.ScenarioTesting.Host`, a
 Done (2026-10-28): `ci.yml` and `release.yml` run the scenario tests with `STELLARADMIN_CHROMIUM` set to the runner's preinstalled `/usr/bin/google-chrome`. No spec records, so ffmpeg isn't installed.
 
 - The first CI run failed one click (`authz-sign-in`) at the 1 s timeout on the busy runner; the default step timeout is now 5 s when `CI` is set, 1 s otherwise.
-- The second run failed the Payments click at 5 s: paging is off by default, so the Payments index rendered about 13,000 rows (3 MB, 0.8 s locally). Every scenario resource now enables paging, the Payments click lost its 5 s timeout, and the `capture-scenario` skill says to enable paging unless the spec is about an unpaged index. Verified: 12 of 12 tests pass locally with `CI=true`; CI not yet re-run.
+- The second run failed the Payments click at 5 s: paging is off by default, so the Payments index rendered about 13,000 rows (3 MB, 0.8 s locally). Every scenario resource now enables paging, the Payments click lost its 5 s timeout, and the `capture-scenario` skill (now `write-scenario-specs`) says to enable paging unless the spec is about an unpaged index. Verified: 12 of 12 tests pass locally with `CI=true`; CI not yet re-run.
 
 ## Later
 

@@ -1,6 +1,6 @@
 # The top of the bookings grid sorted by Booked At, with the sort indicators of both sortable columns marked,
 # in light and dark
-scenario: sorting-and-paging-pager
+scenario: sorting-and-paging-sortable
 steps:
   - goto: /stellaradmin/bookings?sortBy=BookedAt&sortDirection=asc
   - annotate: { locator: "[data-slot='data-grid-sort-link'][href*='sortBy=BookedAt'] svg", style: circle, label: Sorted ascending, placement: top, arrow: true, gap: 40 }
