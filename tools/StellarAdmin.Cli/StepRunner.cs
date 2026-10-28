@@ -47,7 +47,9 @@ internal sealed class StepRunner
         if (!AnsiConsole.Profile.Capabilities.Interactive)
         {
             error = await CompleteAsync(Start(run, step));
-            AnsiConsole.MarkupLine($"{Status(error)} {Markup.Escape(title.TrimEnd())}");
+            AnsiConsole.MarkupLine(
+                $"{Status(error is null && !step.Failed)} {Markup.Escape(title.TrimEnd())}"
+            );
         }
         else
         {
@@ -65,7 +67,7 @@ internal sealed class StepRunner
 
                     error = await CompleteAsync(work);
                     step.Detail = "";
-                    ctx.UpdateTarget(Line(title, step, Status(error)));
+                    ctx.UpdateTarget(Line(title, step, Status(error is null && !step.Failed)));
                 });
         }
 
@@ -76,7 +78,7 @@ internal sealed class StepRunner
         if (error is not null)
             AnsiConsole.WriteException(error, ExceptionFormats.ShortenEverything);
 
-        return error is null;
+        return error is null && !step.Failed;
     }
 
     // A step that throws before it returns its task fails like one whose task faults
@@ -106,7 +108,7 @@ internal sealed class StepRunner
         }
     }
 
-    private static string Status(Exception? error) => error is null ? "[green]✓[/]" : "[red]✗[/]";
+    private static string Status(bool succeeded) => succeeded ? "[green]✓[/]" : "[red]✗[/]";
 
     // The status markup, the title, the bar and percentage when the step has a total, and the detail
     private static Markup Line(string title, Step step, string status)
@@ -135,6 +137,8 @@ internal sealed class StepRunner
 
         internal List<(string Color, string Message)> Messages { get; } = [];
 
+        internal bool Failed { get; private set; }
+
         // Grey text at the end of the line, such as the item being worked on
         public string Detail { get; set; } = "";
 
@@ -148,5 +152,13 @@ internal sealed class StepRunner
         public void Log(string message) => Messages.Add(("grey", message));
 
         public void Warn(string message) => Messages.Add(("yellow", message));
+
+        // Fails the step once it finishes, without stopping its work, so a step can report each of several
+        // failures; an exception fails it straight away
+        public void Error(string message)
+        {
+            Messages.Add(("red", message));
+            Failed = true;
+        }
     }
 }

@@ -11,7 +11,7 @@ internal sealed class RunCommand : AsyncCommand<RunCommand.Settings>
         CommandContext context,
         Settings settings,
         CancellationToken cancellationToken
-    ) => await ScenarioRunner.RunAsync(settings.Paths, settings.Output) == 0 ? 0 : 1;
+    ) => await ScenarioRunner.RunAsync(settings.Paths, settings.Output) ? 0 : 1;
 
     public sealed class Settings : CommandSettings
     {

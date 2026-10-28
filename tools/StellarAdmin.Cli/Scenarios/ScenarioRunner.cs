@@ -42,8 +42,8 @@ internal static class ScenarioRunner
     }
 
     // Runs the spec files, and every spec in the folders, saving their screenshots and clips to
-    // outputFolder when it's given. Returns the number that failed.
-    public static async Task<int> RunAsync(IEnumerable<string> paths, string? outputFolder)
+    // outputFolder when it's given. Every spec runs even when one fails. Returns whether they all passed.
+    public static Task<bool> RunAsync(IEnumerable<string> paths, string? outputFolder)
     {
         List<string> specs =
         [
@@ -53,52 +53,31 @@ internal static class ScenarioRunner
         ];
         var output = outputFolder is null ? null : Path.GetFullPath(outputFolder);
 
-        var failed = await AnsiConsole
-            .Progress()
-            .Columns(
-                new TaskDescriptionColumn(),
-                new ProgressBarColumn(),
-                new PercentageColumn(),
-                new RemainingTimeColumn(),
-                new SpinnerColumn()
-            )
-            .StartAsync(ctx =>
-                RunSpecsAsync(
-                    specs,
-                    output,
-                    ctx.AddTask("[green]Running specs[/]", maxValue: specs.Count)
-                )
-            );
-
-        if (failed == 0)
-            AnsiConsole.MarkupLineInterpolated($"[green]✓[/] {specs.Count} specs passed.");
-        else
-            AnsiConsole.MarkupLineInterpolated(
-                $"[red]✗[/] {failed} of {specs.Count} specs failed."
-            );
-
-        return failed;
+        return new StepRunner()
+            .Add("Run specs", step => RunSpecsAsync(specs, output, step))
+            .RunAsync();
     }
 
     private static string Source(Scenario scenario) =>
         scenario.GetType().Assembly == typeof(Scenario).Assembly ? "tests" : "docs";
 
-    // Each host's log messages are printed after its spec, since a host writing to the console would
-    // garble the progress display
-    private static async Task<int> RunSpecsAsync(
+    // Each host's log messages are shown as the step's warnings, since a host writing to the console would
+    // garble the step's line
+    private static async Task RunSpecsAsync(
         IReadOnlyList<string> specs,
         string? output,
-        ProgressTask task
+        StepRunner.Step step
     )
     {
         var log = new CollectingLoggerProvider();
         var failed = 0;
 
+        step.SetTotal(specs.Count);
         await using var browser = await SpecBrowser.LaunchAsync();
         foreach (var file in specs)
         {
             var name = SpecFiles.Name(file);
-            task.Description = $"[green]Running[/] {Markup.Escape(name)}";
+            step.Detail = name;
             try
             {
                 var completed = await SpecRunner.RunAsync(
@@ -115,21 +94,28 @@ internal static class ScenarioRunner
                         logging.AddProvider(log);
                     }
                 );
-                log.Print(name);
-                AnsiConsole.MarkupLineInterpolated($"[green]passed[/] {name} ({completed} steps)");
+                Report(log, name, step);
+                step.Log($"passed {name} ({completed} steps)");
             }
             catch (SpecException exception)
             {
-                log.Print(name);
-                AnsiConsole.MarkupLineInterpolated($"[red]failed[/] {exception.Message}");
+                Report(log, name, step);
+                step.Error($"failed {exception.Message}");
                 failed++;
             }
 
-            task.Increment(1);
+            step.Increment();
         }
 
-        task.Description = "[green]Running specs[/]";
+        if (failed == 0)
+            step.Log($"{specs.Count} specs passed");
+        else
+            step.Error($"{failed} of {specs.Count} specs failed");
+    }
 
-        return failed;
+    private static void Report(CollectingLoggerProvider log, string name, StepRunner.Step step)
+    {
+        foreach (var (level, message) in log.Drain())
+            step.Warn($"{level} {name}: {message}");
     }
 }
