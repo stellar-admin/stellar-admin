@@ -8,7 +8,7 @@ npm test --prefix build/skill-validation
 npm run check --prefix build/skill-validation
 ```
 
-CI runs these commands on every pull request and push to master. Dependencies are pinned in `package-lock.json`; the checker performs no network requests. The separate SkillsGenerator drift check still verifies generated component references.
+CI runs these commands on every pull request and push to master. Dependencies are pinned in `package-lock.json`; the checker performs no network requests. The separate `stellar skills check` drift check still verifies generated component references.
 
 Each immediate directory under `skills/` containing `SKILL.md` is an installable bundle. Directories containing only future product references are skipped. The check fails if no installable skills are found.
 

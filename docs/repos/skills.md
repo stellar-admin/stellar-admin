@@ -17,13 +17,13 @@ The Claude plugin manifests and installation README have been removed. Installat
 ## Source ownership and validation
 
 - `skills/stellar-admin-ui/references/components/*.md` and its `components-index.md` are generated only from `StellarAdmin.UI`.
-- `util/SkillsGenerator` generates the UI catalog with curated samples. The admin panel's page tag helpers (`sa-index-page`, `sa-form-page`, `sa-view-page`) are documented by hand in the stellar-admin skill's `references/customization.md`, not generated.
+- `stellar skills generate` (in `tools/StellarAdmin.Cli/Skills/`) generates the UI catalog with curated samples. The admin panel's page tag helpers (`sa-index-page`, `sa-form-page`, `sa-view-page`) are documented by hand in the stellar-admin skill's `references/customization.md`, not generated.
 - Component regions between `<!-- structure:begin -->` and `<!-- structure:end -->` are hand-authored and preserved by generation.
 - Other reference guides and `SKILL.md` files are handwritten. Keep them consistent with the website and actual public APIs. Forms, layout, and theming remain reference documents within the UI skill.
 
 Consumer bundle validation runs in CI through `build/skill-validation/check.mjs`. Run `npm ci --prefix build/skill-validation --ignore-scripts --no-audit --no-fund`, `npm test --prefix build/skill-validation`, and `npm run check --prefix build/skill-validation` locally. It checks metadata, licenses, bundled references, relative Markdown links and heading anchors within each installable skill. Reference-only product folders are skipped. See [validator guidance](../../build/skill-validation/README.md).
 
-Run `dotnet run --project util/SkillsGenerator` and then `dotnet run --project util/SkillsGenerator -- --check` from the product repository. No sibling checkouts are needed. Validate skill frontmatter, relative links, product ownership, and referenced tag names after changes. Do not promise automatic activation solely from file extensions.
+Run `dotnet run --project tools/StellarAdmin.Cli -- skills generate` and then `dotnet run --project tools/StellarAdmin.Cli -- skills check` from the product repository. No sibling checkouts are needed. Validate skill frontmatter, relative links, product ownership, and referenced tag names after changes. Do not promise automatic activation solely from file extensions.
 
 ## Compatibility maintenance
 

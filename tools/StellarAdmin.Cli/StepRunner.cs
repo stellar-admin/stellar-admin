@@ -36,36 +36,38 @@ internal sealed class StepRunner
     }
 
     // A Live line this redraws for the spinner. Spectre's Progress pads each display with a blank line
-    // above and below, which leaves gaps between the steps.
+    // above and below, which leaves gaps between the steps. Without an interactive console, such as when
+    // output is piped or in CI, a redrawn line would be written out again on every redraw, so the step's
+    // line is printed once, without its bar, when it finishes.
     private static async Task<bool> RunStepAsync(string title, Func<Step, Task> run)
     {
         var step = new Step();
         Exception? error = null;
 
-        await AnsiConsole
-            .Live(Line(title, step, $"[yellow]{Spinner.Frames[0]}[/]"))
-            .StartAsync(async ctx =>
-            {
-                var work = run(step);
-                for (var frame = 0; !work.IsCompleted; frame++)
+        if (!AnsiConsole.Profile.Capabilities.Interactive)
+        {
+            error = await CompleteAsync(Start(run, step));
+            AnsiConsole.MarkupLine($"{Status(error)} {Markup.Escape(title.TrimEnd())}");
+        }
+        else
+        {
+            await AnsiConsole
+                .Live(Line(title, step, $"[yellow]{Spinner.Frames[0]}[/]"))
+                .StartAsync(async ctx =>
                 {
-                    var spinner = Spinner.Frames[frame % Spinner.Frames.Count];
-                    ctx.UpdateTarget(Line(title, step, $"[yellow]{spinner}[/]"));
-                    await Task.WhenAny(work, Task.Delay(Spinner.Interval));
-                }
+                    var work = Start(run, step);
+                    for (var frame = 0; !work.IsCompleted; frame++)
+                    {
+                        var spinner = Spinner.Frames[frame % Spinner.Frames.Count];
+                        ctx.UpdateTarget(Line(title, step, $"[yellow]{spinner}[/]"));
+                        await Task.WhenAny(work, Task.Delay(Spinner.Interval));
+                    }
 
-                try
-                {
-                    await work;
-                }
-                catch (Exception exception)
-                {
-                    error = exception;
-                }
-
-                step.Detail = "";
-                ctx.UpdateTarget(Line(title, step, error is null ? "[green]✓[/]" : "[red]✗[/]"));
-            });
+                    error = await CompleteAsync(work);
+                    step.Detail = "";
+                    ctx.UpdateTarget(Line(title, step, Status(error)));
+                });
+        }
 
         // The line has stopped updating, so printing is safe
         foreach (var (color, message) in step.Messages)
@@ -76,6 +78,35 @@ internal sealed class StepRunner
 
         return error is null;
     }
+
+    // A step that throws before it returns its task fails like one whose task faults
+    private static Task Start(Func<Step, Task> run, Step step)
+    {
+        try
+        {
+            return run(step);
+        }
+        catch (Exception exception)
+        {
+            return Task.FromException(exception);
+        }
+    }
+
+    // The step's exception, or null when it succeeded
+    private static async Task<Exception?> CompleteAsync(Task work)
+    {
+        try
+        {
+            await work;
+            return null;
+        }
+        catch (Exception exception)
+        {
+            return exception;
+        }
+    }
+
+    private static string Status(Exception? error) => error is null ? "[green]✓[/]" : "[red]✗[/]";
 
     // The status markup, the title, the bar and percentage when the step has a total, and the detail
     private static Markup Line(string title, Step step, string status)

@@ -158,11 +158,11 @@ Then run `pnpm lint`, `pnpm types:check`, and `pnpm build` from `../website/`.
 
 ## Phase 6 — skills reference
 
-Add curated examples to `util/SkillsGenerator/skills.examples.json` — the partials that best teach the component, including at least one real composition. Paths must match the `Pages/` tree; missing files are skipped **silently**.
+Add curated examples to `tools/StellarAdmin.Cli/Skills/skills.examples.json` — the partials that best teach the component, including at least one real composition. Paths must match the `Pages/` tree; missing files are skipped **silently**.
 
 ```bash
-dotnet run --project util/SkillsGenerator
-dotnet run --project util/SkillsGenerator -- --check   # must report no drift
+dotnet run --project tools/StellarAdmin.Cli -- skills generate
+dotnet run --project tools/StellarAdmin.Cli -- skills check   # must report no drift
 ```
 
 Under `skills/stellar-admin-ui/references/`, `components/*.md` and `components-index.md` are generated from the UI library. Only marked `<!-- structure:begin -->` / `<!-- structure:end -->` regions inside component files are hand-authored and preserved. The other reference guides are handwritten; keep them consistent with the public docs.
@@ -170,7 +170,7 @@ Under `skills/stellar-admin-ui/references/`, `components/*.md` and `components-i
 ## Phase 7 — verify and hand over
 
 - No unresolved `sa-*` elements in the rendered HTML. A tag helper that fails to match leaks its custom element into the output, and nothing else will tell you.
-- `dotnet build` clean with 0 warnings; `pnpm lint` clean; `SkillsGenerator --check` reports no drift.
+- `dotnet build` clean with 0 warnings; `pnpm lint` clean; `skills check` reports no drift.
 - Screenshot the DocsSamples page and the built docs page.
 - Every server stopped, ports free.
 

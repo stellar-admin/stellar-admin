@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SkillsGenerator;
+namespace StellarAdmin.Cli.Skills;
 
 /// <summary>
 /// Parses the tag-helper C# sources into <see cref="ComponentInfo"/> models using Roslyn syntax

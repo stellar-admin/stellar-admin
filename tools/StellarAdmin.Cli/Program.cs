@@ -1,6 +1,7 @@
 using Spectre.Console.Cli;
 using StellarAdmin.Cli.Docs;
 using StellarAdmin.Cli.Scenarios;
+using StellarAdmin.Cli.Skills;
 
 namespace StellarAdmin.Cli;
 
@@ -96,6 +97,23 @@ public static class Program
                             "tests/StellarAdmin.ScenarioTesting.Tests/Specs",
                             "--output",
                             "artifacts/screenshots"
+                        );
+                }
+            );
+            config.AddBranch(
+                "skills",
+                skills =>
+                {
+                    skills.SetDescription("Generate the consumer skills' component references.");
+                    skills
+                        .AddCommand<GenerateSkillsCommand>("generate")
+                        .WithDescription(
+                            "Regenerate the UI skill's component references and index."
+                        );
+                    skills
+                        .AddCommand<CheckSkillsCommand>("check")
+                        .WithDescription(
+                            "Fail when a component reference differs from what generate would write."
                         );
                 }
             );

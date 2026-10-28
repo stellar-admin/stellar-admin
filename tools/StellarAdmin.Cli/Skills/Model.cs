@@ -1,4 +1,4 @@
-namespace SkillsGenerator;
+namespace StellarAdmin.Cli.Skills;
 
 /// <summary>A public enum discovered in the tag-helper sources.</summary>
 internal sealed record EnumInfo(string Name, IReadOnlyList<EnumMember> Members);

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace SkillsGenerator;
+namespace StellarAdmin.Cli.Skills;
 
 /// <summary>
 /// Renders <see cref="ComponentInfo"/> models into the per-component reference markdown and the

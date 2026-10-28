@@ -48,7 +48,7 @@ Commands below run from the product repository root unless a working directory i
 | OSS CSS/JS | `npm run build` and `npm run check` in `src/StellarAdmin.UI/Client/`; exercise changed states in the browser. Run `build:css` directly for CSS changes because MSBuild has historically hidden client failures. |
 | Admin panel | Build `src/StellarAdmin/StellarAdmin.csproj`. EF Core is included with resource listing and CRUD. AdminPlayground demonstrates Identity users and roles through ordinary resources. |
 | Website app/MDX | `pnpm lint`, `pnpm types:check`, and `pnpm build` in `../website/`; inspect changed pages. |
-| Consumer references | `dotnet run --project util/SkillsGenerator`, then `dotnet run --project util/SkillsGenerator -- --check`. |
+| Consumer references | `dotnet run --project tools/StellarAdmin.Cli -- skills generate`, then `dotnet run --project tools/StellarAdmin.Cli -- skills check`. |
 | Release tooling | Run the **Release verification** workflow in GitHub Actions; see [release verification](../build/README.md) for inputs and cutover status. |
 | Shared conventions | Edit the single source in `docs/conventions/`; check references in the repository guides. |
 | Agent docs/skills | Check imports, symlinks, frontmatter, relative links, and commands; confirm discovery in fresh sessions when the agent is available. |

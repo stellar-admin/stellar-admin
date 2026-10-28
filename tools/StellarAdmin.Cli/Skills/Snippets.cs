@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace SkillsGenerator;
+namespace StellarAdmin.Cli.Skills;
 
 /// <summary>
 /// Extracts usage snippets from docs sample partials. The snippet extraction is a faithful port of

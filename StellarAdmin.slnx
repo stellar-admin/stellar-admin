@@ -29,7 +29,6 @@
     <Project Path="tools/StellarAdmin.Cli/StellarAdmin.Cli.csproj" />
   </Folder>
   <Folder Name="/util/">
-    <Project Path="util/SkillsGenerator/SkillsGenerator.csproj" />
   </Folder>
   <Folder Name="/workflows/">
     <File Path=".github/workflows/ci.yml" />

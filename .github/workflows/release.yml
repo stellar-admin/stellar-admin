@@ -125,7 +125,7 @@ jobs:
         run: dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
 
       - name: Check consumer reference drift
-        run: dotnet run --project util/SkillsGenerator --no-build --configuration Release -- --check
+        run: dotnet run --project tools/StellarAdmin.Cli --no-build --no-launch-profile --configuration Release -- skills check
 
       - name: Smoke-test packages as a consumer
         run: build/smoke-test.sh "$VERSION" "$ARTIFACTS_DIR"

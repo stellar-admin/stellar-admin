@@ -51,7 +51,7 @@ jobs:
       run: dotnet build --no-restore --configuration Release
 
     - name: Check consumer reference drift
-      run: dotnet run --project util/SkillsGenerator --no-build --configuration Release -- --check
+      run: dotnet run --project tools/StellarAdmin.Cli --no-build --no-launch-profile --configuration Release -- skills check
 
     - name: Run all .NET tests
       env:

@@ -23,6 +23,14 @@
       "launchBrowser": true,
       "launchUrl": "stellaradmin",
       "applicationUrl": "http://localhost:5210"
+    },
+    "skills generate": {
+      "commandName": "Project",
+      "commandLineArgs": "skills generate"
+    },
+    "skills check": {
+      "commandName": "Project",
+      "commandLineArgs": "skills check"
     }
   }
 }

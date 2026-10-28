@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SkillsGenerator;
+namespace StellarAdmin.Cli.Skills;
 
 /// <summary>
 /// Extracts <c>&lt;summary&gt;</c> text and a "default value" hint from a declaration's XML
