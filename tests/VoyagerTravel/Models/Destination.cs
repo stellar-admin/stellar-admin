@@ -19,6 +19,12 @@ public class Destination
 
     public List<Destination> ChildDestinations { get; set; } = [];
 
+    public int? CityId { get; set; }
+
+    public City? City { get; set; }
+
+    public bool RequiresAirport { get; set; }
+
     [MaxLength(300)]
     public string? Summary { get; set; }
 

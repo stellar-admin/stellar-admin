@@ -41,6 +41,7 @@ public static class DatabaseSeeder
         context.AddRange(data.Users);
         context.AddRange(data.UserRoles);
         context.AddRange(data.Countries);
+        context.AddRange(data.Cities);
         context.AddRange(data.Destinations);
         context.AddRange(data.Tags);
         context.AddRange(data.Languages);
@@ -121,7 +122,14 @@ public static class DatabaseSeeder
             ],
         };
 
+        private static readonly string[] SourceAirports = ["LHR", "MAN", "DUB", "JFK", "LAX", "YYZ", "SYD", "FRA", "AMS"];
+
+        private static readonly string[] BrandColors = ["#0e7490", "#b45309", "#15803d", "#7c3aed", "#be123c", "#1d4ed8", "#a16207", "#0f766e"];
+
         private readonly Faker faker = CreateFaker("en");
+
+        // Draws the values of properties added after the first release, so the existing data stays the same.
+        private readonly Faker extras = new("en") { Random = new Randomizer(20261029) };
         private readonly Dictionary<string, Faker> localeFakers = [];
         private readonly HashSet<string> emails = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Destination> destinationsBySlug = [];
@@ -132,6 +140,7 @@ public static class DatabaseSeeder
         public List<ApplicationUser> Users { get; } = [];
         public List<IdentityUserRole<string>> UserRoles { get; } = [];
         public List<Country> Countries { get; } = [];
+        public List<City> Cities { get; } = [];
         public List<Destination> Destinations { get; } = [];
         public List<TripTag> Tags { get; } = [];
         public List<Language> Languages { get; } = [];
@@ -167,6 +176,7 @@ public static class DatabaseSeeder
             GenerateReviews();
             GenerateRoomAllocations();
             GenerateInvoices();
+            GenerateBookingUpdates();
         }
 
         private static Faker CreateFaker(string locale) => new(locale) { Random = new Randomizer(20261018) };
@@ -219,6 +229,11 @@ public static class DatabaseSeeder
                 Countries.Add(new Country { IsoCode = isoCode, Name = name, Continent = continent });
             }
 
+            foreach (var (countryCode, name, hasAirport) in Catalog.Cities)
+            {
+                Cities.Add(new City { Name = name, Country = Country(countryCode), HasAirport = hasAirport });
+            }
+
             foreach (var seed in Catalog.Destinations)
             {
                 var destination = new Destination
@@ -230,6 +245,8 @@ public static class DatabaseSeeder
                     HeroImageUrl = $"/images/destinations/{seed.Slug}.webp",
                     Climate = seed.Climate,
                     IsFeatured = seed.IsFeatured,
+                    City = Cities.Single(city => city.Country.IsoCode == seed.CountryCode && city.Name == Catalog.DestinationCities[seed.Slug]),
+                    RequiresAirport = Catalog.AirportDestinations.Contains(seed.Slug),
                 };
                 destinationsBySlug[seed.Slug] = destination;
                 Destinations.Add(destination);
@@ -249,6 +266,7 @@ public static class DatabaseSeeder
         {
             var english = Languages.Single(language => language.Code == "en");
             var locales = new[] { "en_GB", "en_US", "es", "it", "fr", "de", "pt_PT", "en_AU", "en_ZA", "nl" };
+            var homes = new[] { ("GB", "LHR"), ("US", "JFK"), ("ES", "MAD"), ("IT", "FCO"), ("FR", "CDG"), ("DE", "FRA"), ("PT", "LIS"), ("AU", "SYD"), ("ZA", "CPT"), ("NL", "AMS") };
 
             for (var i = 1; i <= 25; i++)
             {
@@ -258,9 +276,11 @@ public static class DatabaseSeeder
                 var languages = new List<Language> { english };
                 languages.AddRange(faker.PickRandom(Languages.Where(language => language != english), faker.Random.Int(1, 3)));
                 var years = faker.Random.Int(1, 14);
+                var (homeCountry, homeAirport) = homes[(i - 1) % homes.Length];
 
                 Guides.Add(new Guide
                 {
+                    Id = i,
                     FirstName = firstName,
                     LastName = lastName,
                     Email = UniqueEmail(faker.Internet.Email(firstName, lastName, "voyager.travel")),
@@ -270,6 +290,9 @@ public static class DatabaseSeeder
                     HiredOn = today.AddDays(-faker.Random.Int(180, 365 * years + 180)),
                     IsActive = faker.Random.Bool(0.9f),
                     Languages = languages,
+                    HomeAirport = homeAirport,
+                    Country = Country(homeCountry),
+                    BadgeCode = extras.Random.Replace("####"),
                 });
             }
         }
@@ -388,7 +411,12 @@ public static class DatabaseSeeder
                     Destination = destination,
                     TripType = seed.TripType,
                     DurationDays = seed.DurationDays,
-                    Difficulty = seed.Difficulty,
+                    Difficulty = seed.Difficulty switch
+                    {
+                        1 => TripDifficulty.Easy,
+                        2 or 3 => TripDifficulty.Moderate,
+                        _ => TripDifficulty.Challenging,
+                    },
                     BasePrice = seed.BasePrice,
                     MaxGroupSize = seed.TripType switch
                     {
@@ -402,7 +430,32 @@ public static class DatabaseSeeder
                     IsPublished = faker.Random.Bool(0.9f),
                     Tags = Tags.Where(tag => seed.Tags.Contains(tag.Name)).ToList(),
                     Guides = faker.PickRandom(Guides, faker.Random.Int(2, 3)).ToList(),
+                    Summary = seed.Pitch,
+                    Highlights = seed.Highlights.ToList(),
+                    Transport = seed.TripType == TripType.Cruise ? "Ship" : seed.Tags.Contains("Train Journey") ? "Train" : "Plane",
+                    Icon = seed.TripType switch
+                    {
+                        TripType.Adventure => "mountain",
+                        TripType.Cultural => "landmark",
+                        TripType.Wellness => "leaf",
+                        TripType.Cruise => "ship",
+                        TripType.CityBreak => "building",
+                        TripType.Wildlife => "paw-print",
+                        _ => "utensils",
+                    },
+                    BrandColor = extras.PickRandom(BrandColors),
+                    DepartureAirports = extras.PickRandom(SourceAirports, extras.Random.Int(1, 3)).ToList(),
+                    BaggageAllowance = seed.Tags.Contains("Luxury")
+                        ? new() { ["Economy"] = 23, ["Business"] = 32, ["First"] = 40 }
+                        : new() { ["Economy"] = seed.Tags.Contains("Budget") ? 20 : 23, ["Business"] = 32 },
                 };
+                trip.LeadGuide = extras.Random.Bool(0.85f) ? trip.Guides[0] : null;
+                trip.GuidesByLanguage["en"] = trip.Guides[0].Id;
+                if (trip.Guides[1].Languages.FirstOrDefault(language => language.Code != "en") is { } language)
+                {
+                    trip.GuidesByLanguage[language.Code] = trip.Guides[1].Id;
+                }
+
                 Trips.Add(trip);
 
                 // The first stay is in the trip's destination; longer trips move on to a second one nearby.
@@ -748,6 +801,15 @@ public static class DatabaseSeeder
                             : AllocationStatus.Requested,
                     });
                 }
+            }
+        }
+
+        private void GenerateBookingUpdates()
+        {
+            foreach (var booking in Bookings.Where(_ => extras.Random.Bool(0.3f)))
+            {
+                var updatedAt = booking.BookedAt.AddDays(extras.Random.Int(1, 60)).AddMinutes(extras.Random.Int(0, 600));
+                booking.UpdatedAt = updatedAt < Now ? updatedAt : null;
             }
         }
 

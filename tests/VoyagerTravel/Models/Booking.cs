@@ -22,6 +22,8 @@ public class Booking
 
     public DateTime BookedAt { get; set; }
 
+    public DateTime? UpdatedAt { get; set; }
+
     public BookingStatus Status { get; set; } = BookingStatus.Pending;
 
     [Precision(10, 2)]

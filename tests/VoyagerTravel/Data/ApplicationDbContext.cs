@@ -1,5 +1,8 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VoyagerTravel.Models;
 
 namespace VoyagerTravel.Data;
@@ -17,6 +20,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<BookingAddOn> BookingAddOns => Set<BookingAddOn>();
 
     public DbSet<BookingPassenger> BookingPassengers => Set<BookingPassenger>();
+
+    public DbSet<City> Cities => Set<City>();
 
     public DbSet<Country> Countries => Set<Country>();
 
@@ -62,6 +67,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(builder);
 
+        builder.Entity<Trip>().HasOne(trip => trip.LeadGuide).WithMany(guide => guide.LedTrips);
+        builder.Entity<Trip>().HasMany(trip => trip.Guides).WithMany(guide => guide.Trips);
+        builder.Entity<Trip>().Property(trip => trip.BaggageAllowance).HasConversion(DictionaryConverter, DictionaryComparer);
+        builder.Entity<Trip>().Property(trip => trip.GuidesByLanguage).HasConversion(DictionaryConverter, DictionaryComparer);
+
         // Deleting a record that others still point to fails, unless the others belong to it.
         var foreignKeys = builder.Model.GetEntityTypes()
             .Where(entityType => entityType.ClrType.Namespace == typeof(Trip).Namespace)
@@ -80,11 +90,21 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<Departure>().HasOne(departure => departure.LeadGuide).WithMany(guide => guide.LedDepartures);
     }
 
+    private static readonly ValueConverter<Dictionary<string, int>, string> DictionaryConverter = new(
+        dictionary => JsonSerializer.Serialize(dictionary, (JsonSerializerOptions?)null),
+        json => JsonSerializer.Deserialize<Dictionary<string, int>>(json, (JsonSerializerOptions?)null) ?? new Dictionary<string, int>());
+
+    private static readonly ValueComparer<Dictionary<string, int>> DictionaryComparer = new(
+        (left, right) => left!.Count == right!.Count && !left.Except(right).Any(),
+        dictionary => dictionary.Aggregate(0, (hash, entry) => HashCode.Combine(hash, entry.Key, entry.Value)),
+        dictionary => new Dictionary<string, int>(dictionary));
+
     private void RefreshBookingVersions()
     {
         foreach (var entry in ChangeTracker.Entries<Booking>().Where(entry => entry.State == EntityState.Modified))
         {
             entry.Entity.Version = Guid.NewGuid();
+            entry.Entity.UpdatedAt = DateTime.UtcNow;
         }
     }
 }

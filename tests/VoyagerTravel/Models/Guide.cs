@@ -31,9 +31,21 @@ public class Guide
 
     public bool IsActive { get; set; } = true;
 
+    [MaxLength(3)]
+    public string? HomeAirport { get; set; }
+
+    public int? CountryId { get; set; }
+
+    public Country? Country { get; set; }
+
+    [MaxLength(4)]
+    public string? BadgeCode { get; set; }
+
     public List<Language> Languages { get; set; } = [];
 
     public List<Trip> Trips { get; set; } = [];
 
     public List<Departure> LedDepartures { get; set; } = [];
+
+    public List<Trip> LedTrips { get; set; } = [];
 }

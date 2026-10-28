@@ -17,4 +17,6 @@ public class Country
     public Continent Continent { get; set; }
 
     public List<Destination> Destinations { get; set; } = [];
+
+    public List<City> Cities { get; set; } = [];
 }

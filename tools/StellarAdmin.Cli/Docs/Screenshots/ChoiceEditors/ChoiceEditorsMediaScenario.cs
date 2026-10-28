@@ -1,13 +1,11 @@
 using StellarAdmin;
 using StellarAdmin.EntityFrameworkCore;
-using StellarAdmin.Resources;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.ScenarioTesting.Hosting;
 using VoyagerTravel.Models;
 
 namespace StellarAdmin.Cli.Docs.Screenshots.ChoiceEditors;
 
-// The seeded trip has no transport, so the create page edits a form model with one instead
 public sealed class ChoiceEditorsMediaScenario : Scenario
 {
     public override string Description =>
@@ -23,10 +21,10 @@ public sealed class ChoiceEditorsMediaScenario : Scenario
                 index.EnablePaging();
                 index.Columns(columns => columns.Add(trip => trip.Title));
             });
-            resource.AllowCreate<TripTransportForm, TripTransportFormHandler>(create =>
+            resource.AllowCreate(create =>
                 create.Fields(fields =>
                     fields
-                        .Add(form => form.Transport)
+                        .Add(trip => trip.Transport)
                         .UseToggleGroupEditor(toggle =>
                             toggle.UseItems([
                                 new ChoiceItem("Plane", "Plane")
@@ -47,18 +45,4 @@ public sealed class ChoiceEditorsMediaScenario : Scenario
             );
         });
     }
-}
-
-public sealed class TripTransportForm
-{
-    public string Transport { get; set; } = "";
-}
-
-// The capture only shows the form, which is never saved
-public sealed class TripTransportFormHandler : IResourceCreateHandler<TripTransportForm>
-{
-    public Task<ResourceOperationResult> CreateAsync(
-        TripTransportForm model,
-        CancellationToken cancellationToken
-    ) => Task.FromResult(ResourceOperationResult.Success());
 }

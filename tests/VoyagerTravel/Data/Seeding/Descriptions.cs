@@ -148,14 +148,12 @@ internal static class Descriptions
         [TripType.Culinary] = ("Come hungry. Every day has something to taste, from market stalls and family kitchens to producers who have spent generations perfecting their craft.", "Cooking classes, tastings and producer visits"),
     };
 
-    private static readonly (string Label, string Detail)[] Difficulties =
-    [
-        ("Easy", "Gentle walking on mostly level ground, suitable for anyone in reasonable health."),
-        ("Moderate", "A few hours on foot most days, with some stairs and uneven paths."),
-        ("Active", "Long days with hikes or rides of up to five hours. A good level of fitness helps."),
-        ("Challenging", "Demanding days over rough terrain or at altitude. Regular exercise beforehand is strongly recommended."),
-        ("Strenuous", "Long, demanding days with big climbs, often at altitude, for experienced and very fit travellers."),
-    ];
+    private static readonly Dictionary<TripDifficulty, (string Label, string Detail)> Difficulties = new()
+    {
+        [TripDifficulty.Easy] = ("Easy", "Gentle walking on mostly level ground, suitable for anyone in reasonable health."),
+        [TripDifficulty.Moderate] = ("Moderate", "A few hours on foot most days, with some stairs and uneven paths."),
+        [TripDifficulty.Challenging] = ("Challenging", "Demanding days over rough terrain or at altitude. Regular exercise beforehand is strongly recommended."),
+    };
 
     public static string ClimateNote(Climate climate) => Climates[climate].Note;
 
@@ -176,7 +174,7 @@ internal static class Descriptions
     public static string Trip(TripSeed seed, Trip trip, List<(Accommodation Accommodation, int Nights)> stays, IReadOnlyList<ItineraryDay> days)
     {
         var style = TripStyles[trip.TripType];
-        var (label, detail) = Difficulties[trip.Difficulty - 1];
+        var (label, detail) = Difficulties[trip.Difficulty];
         var nights = stays.Sum(stay => stay.Nights);
         var included = new List<string>
         {
