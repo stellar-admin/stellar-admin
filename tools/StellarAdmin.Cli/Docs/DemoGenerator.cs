@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using DocsSamples;
+using Spectre.Console;
 using StellarAdmin.UI.Icons;
 
 namespace StellarAdmin.Cli.Docs;
@@ -159,6 +160,85 @@ internal sealed partial class DemoGenerator
     /// </summary>
     public static void Clean() =>
         DocsPaths.Delete(RenderedPagesOutputFolder, PagesSourceCodeOutputFolder);
+
+    // Renders every demo partial and its source include, and downloads the assets they use. Deletes the
+    // existing demos first, unless keepOutput, so renamed or removed ones don't leave files behind.
+    public static async Task GenerateAsync(bool keepOutput)
+    {
+        AnsiConsole.Write(new Rule("[bold]StellarAdmin.UI docs demos[/]").LeftJustified());
+        AnsiConsole.MarkupLineInterpolated(
+            $"Hosting DocsSamples from: [grey]{DocsSamplesContentRoot}[/]"
+        );
+
+        var generator = new DemoGenerator();
+        using var factory = new DocsSamplesApplicationFactory(DocsSamplesContentRoot);
+        using var client = factory.CreateClient();
+
+        await AnsiConsole
+            .Status()
+            .StartAsync(
+                "Cleaning existing demos...",
+                async ctx =>
+                {
+                    if (!keepOutput)
+                    {
+                        Clean();
+                        AnsiConsole.MarkupLine("[green]✓[/] Cleaned existing demos.");
+                    }
+
+                    ctx.Status("Downloading fixed static assets...");
+                    await generator.DownloadFixedStaticAssetsAsync(client);
+                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded fixed static assets.");
+
+                    ctx.Status("Downloading dynamic static assets...");
+                    await generator.DownloadDynamicStaticAssetsAsync(client);
+                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded dynamic static assets.");
+
+                    ctx.Status("Downloading preset stylesheets...");
+                    await generator.DownloadPresetStylesheetsAsync(client);
+                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded preset stylesheets.");
+
+                    ctx.Status("Downloading demo icons...");
+                    await generator.DownloadDemoIconsAsync(client);
+                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded demo icons.");
+
+                    ctx.Status("Downloading theme variable manifest...");
+                    await generator.DownloadThemeVariableManifestAsync(client);
+                    AnsiConsole.MarkupLine("[green]✓[/] Downloaded theme variable manifest.");
+                }
+            );
+
+        await AnsiConsole
+            .Progress()
+            .Columns(
+                new TaskDescriptionColumn(),
+                new ProgressBarColumn(),
+                new PercentageColumn(),
+                new RemainingTimeColumn(),
+                new SpinnerColumn()
+            )
+            .StartAsync(async ctx =>
+            {
+                var task = ctx.AddTask("[green]Generating demos[/]", maxValue: DemoPartials.Length);
+
+                foreach (var partial in DemoPartials)
+                {
+                    await generator.GenerateDemoPartialSourceFileAsync(partial.Name);
+                    await generator.RenderDemoPartialOutputAsync(
+                        client,
+                        partial.Name,
+                        partial.Layout,
+                        partial.OutputFileName
+                    );
+
+                    task.Increment(1);
+                }
+            });
+
+        AnsiConsole.MarkupLineInterpolated(
+            $"[green]✓[/] Generated {DemoPartials.Length} demo partials."
+        );
+    }
 
     /// <summary>Downloads the demo assets that live at fixed, known URLs.</summary>
     public async Task DownloadFixedStaticAssetsAsync(HttpClient client)

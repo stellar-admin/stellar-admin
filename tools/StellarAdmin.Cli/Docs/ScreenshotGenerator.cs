@@ -1,5 +1,7 @@
 using System.Buffers.Binary;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using Spectre.Console;
 using StellarAdmin.ScenarioTesting.Runner;
 using StellarAdmin.ScenarioTesting.Scenarios;
 
@@ -41,14 +43,6 @@ internal static class ScreenshotGenerator
         "docs"
     );
 
-    // The spec files to run: every spec, or the ones named (the file name without .spec.yaml)
-    public static IReadOnlyList<string> FindSpecs(IReadOnlyCollection<string> names) =>
-        [
-            .. SpecFiles
-                .Find(SourceFolder)
-                .Where(spec => names.Count == 0 || names.Contains(SpecFiles.Name(spec))),
-        ];
-
     // The names no spec has, and every spec's name for the error that lists them
     public static (IReadOnlyList<string> Unknown, IReadOnlyList<string> All) MatchSpecNames(
         IEnumerable<string> names
@@ -58,28 +52,109 @@ internal static class ScreenshotGenerator
         return ([.. names.Except(all)], all);
     }
 
-    // Runs each spec against its scenario, saves its screenshots and rewrites the manifest
-    public static async Task GenerateAsync(IReadOnlyList<string> specs)
+    // Captures every spec's screenshots, or only the named specs', rewrites the manifest and reports what
+    // is still open. A run of every spec deletes the existing screenshots first, unless keepOutput, so
+    // renamed or removed ones don't leave files behind; a run of named specs keeps the others.
+    public static async Task GenerateAsync(bool keepOutput, IReadOnlyCollection<string> specNames)
     {
-        var catalog = new ScenarioCatalog(typeof(ScreenshotGenerator).Assembly);
-
-        await using var browser = await SpecBrowser.LaunchAsync();
-        foreach (var file in specs)
+        if (!keepOutput && specNames.Count == 0)
         {
-            await SpecRunner.RunAsync(
-                SpecLoader.Load(catalog, file, Path.GetRelativePath(DocsPaths.RepoRoot, file)),
-                browser,
-                OutputFolder
-            );
+            Clean();
+            AnsiConsole.MarkupLine("[green]✓[/] Cleaned existing screenshots.");
         }
 
+        var specs = FindSpecs(specNames);
+        await AnsiConsole
+            .Progress()
+            .Columns(
+                new TaskDescriptionColumn(),
+                new ProgressBarColumn(),
+                new PercentageColumn(),
+                new RemainingTimeColumn(),
+                new SpinnerColumn()
+            )
+            .StartAsync(ctx =>
+                RunSpecsAsync(
+                    specs,
+                    ctx.AddTask("[green]Capturing screenshots[/]", maxValue: specs.Count)
+                )
+            );
         WriteManifest();
+        AnsiConsole.MarkupLineInterpolated($"[green]✓[/] Captured {specs.Count} screenshot specs.");
+
+        Report();
     }
 
     public static void Clean() => DocsPaths.Delete(OutputFolder, ManifestFile);
 
-    public static ScreenshotCheck Check() =>
-        ScreenshotCheck.Run(DocsContentFolder, SourceFolder, DocsPaths.RepoRoot);
+    // Lists the docs' placeholders no spec captures and the screenshots no page shows. These are reported,
+    // not errors: a page can wait for its screenshot.
+    public static void Report()
+    {
+        var check = ScreenshotCheck.Run(DocsContentFolder, SourceFolder, DocsPaths.RepoRoot);
+        foreach (var (placeholder, missing) in check.Open)
+        {
+            AnsiConsole.MarkupLineInterpolated(
+                $"[yellow]Open screenshot[/] {placeholder.Name} ([grey]{placeholder.Page}:{placeholder.Line}[/]): no spec saves {string.Join(", ", missing)}"
+            );
+            if (placeholder.Todo is { } todo)
+                AnsiConsole.MarkupLineInterpolated($"    [grey]{todo}[/]");
+        }
+
+        foreach (var screenshot in check.Unused)
+        {
+            AnsiConsole.MarkupLineInterpolated(
+                $"[yellow]Unused screenshot[/] {screenshot.Name} ([grey]{screenshot.Spec}[/]): no Screenshot shows it"
+            );
+        }
+
+        AnsiConsole.MarkupLineInterpolated(
+            $"[green]✓[/] Checked screenshots: {check.Open.Count} open, {check.Unused.Count} unused."
+        );
+    }
+
+    // The spec files to run: every spec, or the ones named (the file name without .spec.yaml)
+    private static IReadOnlyList<string> FindSpecs(IReadOnlyCollection<string> names) =>
+        [
+            .. SpecFiles
+                .Find(SourceFolder)
+                .Where(spec => names.Count == 0 || names.Contains(SpecFiles.Name(spec))),
+        ];
+
+    // Runs each spec against its scenario and saves its screenshots. Each host's log messages are printed
+    // after its spec, since a host writing to the console would garble the progress display.
+    private static async Task RunSpecsAsync(IReadOnlyList<string> specs, ProgressTask task)
+    {
+        var catalog = new ScenarioCatalog(typeof(ScreenshotGenerator).Assembly);
+        var log = new CollectingLoggerProvider();
+
+        await using var browser = await SpecBrowser.LaunchAsync();
+        foreach (var file in specs)
+        {
+            var name = SpecFiles.Name(file);
+            task.Description = $"[green]Capturing[/] {Markup.Escape(name)}";
+            await SpecRunner.RunAsync(
+                SpecLoader.Load(catalog, file, Path.GetRelativePath(DocsPaths.RepoRoot, file)),
+                browser,
+                OutputFolder,
+                logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddProvider(log);
+                }
+            );
+
+            foreach (var (level, message) in log.Drain())
+            {
+                var color = level >= LogLevel.Error ? "red" : "yellow";
+                AnsiConsole.MarkupLineInterpolated($"[{color}]{level}[/] {name}: {message}");
+            }
+
+            task.Increment(1);
+        }
+
+        task.Description = "[green]Capturing screenshots[/]";
+    }
 
     // Width and height from each PNG's IHDR chunk, which starts every PNG at byte 16
     private static void WriteManifest()

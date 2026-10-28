@@ -1,37 +1,16 @@
-using System.ComponentModel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace StellarAdmin.Cli.Docs;
 
-// Deletes the generated demos, screenshots or both from the website checkout
-internal sealed class CleanCommand : Command<CleanCommand.Settings>
+// docs clean: the demos and the screenshots
+internal sealed class CleanCommand : Command
 {
-    public override int Execute(
-        CommandContext context,
-        Settings settings,
-        CancellationToken cancellationToken
-    )
+    public override int Execute(CommandContext context, CancellationToken cancellationToken)
     {
-        if (settings.Output is null or DocsOutput.Demos)
-        {
-            DemoGenerator.Clean();
-            AnsiConsole.MarkupLine("[green]✓[/] Deleted the generated demos.");
-        }
-
-        if (settings.Output is null or DocsOutput.Screenshots)
-        {
-            ScreenshotGenerator.Clean();
-            AnsiConsole.MarkupLine("[green]✓[/] Deleted the generated screenshots.");
-        }
-
+        DemoGenerator.Clean();
+        ScreenshotGenerator.Clean();
+        AnsiConsole.MarkupLine("[green]✓[/] Deleted the generated demos and screenshots.");
         return 0;
-    }
-
-    public sealed class Settings : CommandSettings
-    {
-        [CommandArgument(0, "[output]")]
-        [Description("demos or screenshots. Deletes both when left out.")]
-        public DocsOutput? Output { get; init; }
     }
 }

@@ -41,9 +41,11 @@ public static class ScenarioHost
         return app;
     }
 
-    // Real server on a free loopback port for the browser; logs only warnings and errors
+    // Real server on a free loopback port for the browser; logs only warnings and errors, to the
+    // providers configureLogging leaves
     public static async Task<(WebApplication App, string BaseUrl)> StartLoopbackAsync(
-        Scenario scenario
+        Scenario scenario,
+        Action<ILoggingBuilder>? configureLogging = null
     )
     {
         var app = Create(
@@ -52,6 +54,7 @@ public static class ScenarioHost
             {
                 builder.WebHost.UseUrls("http://127.0.0.1:0");
                 builder.Logging.SetMinimumLevel(LogLevel.Warning);
+                configureLogging?.Invoke(builder.Logging);
             }
         );
         await app.StartAsync();

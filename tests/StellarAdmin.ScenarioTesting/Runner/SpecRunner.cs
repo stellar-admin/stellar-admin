@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using StellarAdmin.ScenarioTesting.Hosting;
 
@@ -7,14 +8,16 @@ namespace StellarAdmin.ScenarioTesting.Runner;
 // both; a failing step throws SpecException with the spec's file and line
 public static class SpecRunner
 {
-    // A null screenshot directory skips screenshot and record steps; returns the number of steps run
+    // A null screenshot directory skips screenshot and record steps; configureLogging changes where the
+    // scenario's host logs. Returns the number of steps run.
     public static async Task<int> RunAsync(
         Spec spec,
         SpecBrowser browser,
-        string? screenshotDirectory = null
+        string? screenshotDirectory = null,
+        Action<ILoggingBuilder>? configureLogging = null
     )
     {
-        var (app, baseUrl) = await ScenarioHost.StartLoopbackAsync(spec.Scenario);
+        var (app, baseUrl) = await ScenarioHost.StartLoopbackAsync(spec.Scenario, configureLogging);
         await using var _ = app;
 
         // Only a spec with record steps records, and only when screenshots are saved
