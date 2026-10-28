@@ -13,6 +13,6 @@ steps:
       steps:
         - expectVisible: { role: link, name: Trips }
         - expectVisible: { role: link, name: Audit log }
-        - click: { role: link, name: Payments, timeout: 5000 }
+        - click: { role: link, name: Payments }
   - expectUrl: { url: /stellaradmin/payments, timeout: 3000 }
   - expectText: { role: heading, name: Payments, text: Payments }

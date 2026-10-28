@@ -17,6 +17,7 @@ public sealed class DefaultScenario : Scenario
             resource.UseTitle(trip => trip.Title);
             resource.Index(index =>
             {
+                index.EnablePaging();
                 index.EnableSearch(term => trip => trip.Title.Contains(term));
                 index.Columns(columns =>
                 {

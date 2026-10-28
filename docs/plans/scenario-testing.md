@@ -84,6 +84,7 @@ Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 Done (2026-10-28): `ci.yml` and `release.yml` run the scenario tests with `STELLARADMIN_CHROMIUM` set to the runner's preinstalled `/usr/bin/google-chrome`. No spec records, so ffmpeg isn't installed.
 
 - The first CI run failed one click (`authz-sign-in`) at the 1 s timeout on the busy runner; the default step timeout is now 5 s when `CI` is set, 1 s otherwise.
+- The second run failed the Payments click at 5 s: paging is off by default, so the Payments index rendered about 13,000 rows (3 MB, 0.8 s locally). Every scenario resource now enables paging, the Payments click lost its 5 s timeout, and the `capture-scenario` skill says to enable paging unless the spec is about an unpaged index. Verified: 12 of 12 tests pass locally with `CI=true`; CI not yet re-run.
 
 ## Later
 
