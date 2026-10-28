@@ -295,7 +295,7 @@ public static class SpecLoader
             ? Scalar(path, Child(path, mapping, "url"))
             : Scalar(path, value);
 
-    // { locator, style, badge, label, placement, arrow, gap }; the overlays stay until clearAnnotations,
+    // { locator, style, badge, label, placement, arrow, gap, padding }; the overlays stay until clearAnnotations,
     // so a screenshot after this step includes them. badge: auto numbers on from the badges already shown
     private static Func<SpecRun, Task> Annotate(string path, YamlNode value, float timeout)
     {
@@ -323,6 +323,9 @@ public static class SpecLoader
             arrow = OneOf(path, mapping, "arrow", "true", "false") == "true",
             gap = mapping.Children.ContainsKey(new YamlScalarNode("gap"))
                 ? Pixels(path, mapping, "gap")
+                : (int?)null,
+            padding = mapping.Children.ContainsKey(new YamlScalarNode("padding"))
+                ? Pixels(path, mapping, "padding")
                 : (int?)null,
         };
 

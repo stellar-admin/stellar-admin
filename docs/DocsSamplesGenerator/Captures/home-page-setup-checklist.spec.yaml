@@ -5,7 +5,7 @@ steps:
   - expectVisible: { role: heading, name: Welcome to StellarAdmin }
   # Collapse the first step, which opens with its code, so the whole checklist shows
   - click: "[commandfor='--setup-step-resource']"
-  - annotate: { locator: ".sa-card:has(.sa-checklist)" }
+  - annotate: { locator: ".sa-card:has(.sa-checklist)", padding: 10 }
   - screenshot: home-page-setup-checklist
   - colorScheme: dark
   - screenshot: home-page-setup-checklist-dark

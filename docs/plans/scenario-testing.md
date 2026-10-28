@@ -75,6 +75,7 @@ Done (2026-10-28): `Scenarios/Authz/AuthorizationScenario` (`authorization`) rep
 Done (2026-10-28): `docs/DocsSamplesGenerator` runs every spec in its `Captures/` folder after the demos, against the scenarios in its own assembly, and saves the screenshots to the website's `public/images/admin/generated/`, which `CleanOutputFolders` now clears. The generator uses the Web SDK, so it has the static assets manifest the scenario hosts map. `SetupChecklistScenario` (`setup-checklist`) has no resources and the Voyager Travel branding; `home-page-setup-checklist` collapses the first step and draws a box around the checklist, in light and dark. The images are not yet used on the website.
 
 - Verified: the generator run writes both images, checked by eye. The scenario tests were not re-run (the ScenarioTesting project didn't change).
+- `annotate` takes `padding` (pixels between the element and the mark, default 4); the checklist capture uses 10. Verified: the regenerated images, by eye. The scenario tests were not re-run.
 
 Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 

@@ -117,7 +117,7 @@ Assertions retry until the timeout, so they also wait for a state to settle.
 
 Annotations draw over the page and stay until `clearAnnotations: true`, so every screenshot after them includes them.
 
-`annotate` takes `{ locator, style, badge, label, placement, arrow, gap }`:
+`annotate` takes `{ locator, style, badge, label, placement, arrow, gap, padding }`:
 
 | Key | Values |
 | --- | --- |
@@ -128,6 +128,7 @@ Annotations draw over the page and stay until `clearAnnotations: true`, so every
 | `placement` | Where the label goes: `top`, `right`, `bottom` or `left`. Without one it goes below, or above when there's no room. |
 | `arrow` | `true` draws an arrow from the label to the element. |
 | `gap` | Pixels between the element and a label with an arrow (default 56). |
+| `padding` | Pixels between the element and the mark; badges and labels follow the padded mark (default 4). |
 
 `spotlight` takes a locator and dims the page except for every element it matches; annotations still draw on top.
 

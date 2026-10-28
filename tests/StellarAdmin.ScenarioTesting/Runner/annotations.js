@@ -155,8 +155,8 @@
   }
 
   window.specAnnotations = {
-    annotate(element, { style, badge: badgeValue, label: labelText, placement, arrow, gap }) {
-      const b = box(element, 4);
+    annotate(element, { style, badge: badgeValue, label: labelText, placement, arrow, gap, padding }) {
+      const b = box(element, padding ?? 4);
       mark(b, style ?? "box");
       if (badgeValue) {
         badge(b, badgeValue);
