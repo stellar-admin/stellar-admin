@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -159,6 +160,21 @@ internal sealed partial class Generator
         "generated"
     );
 
+    // Each generated screenshot's size by name, which the website's Capture component reads
+    private static readonly string CapturesManifestFile = Path.Combine(
+        DocsProjectRootFolder,
+        "src",
+        "generated",
+        "captures.json"
+    );
+
+    // The docs pages, which place the screenshots with <Capture name="..."> tags
+    private static readonly string DocsContentFolder = Path.Combine(
+        DocsProjectRootFolder,
+        "content",
+        "docs"
+    );
+
     // The scenarios and specs the admin panel screenshots are captured from, read from source
     private static readonly string CapturesSourceFolder = Path.Combine(
         RepoRootFolder,
@@ -225,7 +241,52 @@ internal sealed partial class Generator
             );
         }
 
+        WriteCapturesManifest();
+
         return specs.Count;
+    }
+
+    /// <summary>Deletes the previously captured screenshots, for a run that only captures them.</summary>
+    public void CleanCapturesOutputFolder()
+    {
+        if (Directory.Exists(CapturesOutputFolder))
+            Directory.Delete(CapturesOutputFolder, recursive: true);
+    }
+
+    /// <summary>
+    /// Matches the docs pages' Capture placeholders against the screenshots the capture specs save.
+    /// </summary>
+    public CaptureCheck CheckCaptures() =>
+        CaptureCheck.Run(DocsContentFolder, CapturesSourceFolder, RepoRootFolder);
+
+    // Width and height from each PNG's IHDR chunk, which starts every PNG at byte 16
+    private static void WriteCapturesManifest()
+    {
+        var images = new SortedDictionary<string, object>(StringComparer.Ordinal);
+        if (Directory.Exists(CapturesOutputFolder))
+        {
+            foreach (var file in Directory.EnumerateFiles(CapturesOutputFolder, "*.png"))
+            {
+                var header = new byte[24];
+                using (var stream = File.OpenRead(file))
+                {
+                    stream.ReadExactly(header);
+                }
+
+                images[Path.GetFileNameWithoutExtension(file)] = new
+                {
+                    width = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(16)),
+                    height = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(20)),
+                };
+            }
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(CapturesManifestFile)!);
+        File.WriteAllText(
+            CapturesManifestFile,
+            JsonSerializer.Serialize(images, new JsonSerializerOptions { WriteIndented = true })
+                + "\n"
+        );
     }
 
     /// <summary>Downloads the demo assets that live at fixed, known URLs.</summary>

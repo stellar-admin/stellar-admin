@@ -1,0 +1,10 @@
+# The difficulty radio group of an enum with descriptions, Moderate selected, in light and dark
+scenario: choice-editors-radio-enum
+steps:
+  # A short window, so the page crop ends below the form
+  - viewport: { width: 1280, height: 480 }
+  - goto: /stellaradmin/trips/create
+  - click: { role: radio, name: Moderate }
+  - screenshot: { name: choice-editors-radio-enum, locator: main }
+  - colorScheme: dark
+  - screenshot: { name: choice-editors-radio-enum-dark, locator: main }

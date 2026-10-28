@@ -1,0 +1,7 @@
+# The trips index with the banner environment indicator, in light and dark
+scenario: environment-indicator-banner
+steps:
+  - goto: /stellaradmin/trips
+  - screenshot: environment-indicator-banner
+  - colorScheme: dark
+  - screenshot: environment-indicator-banner-dark

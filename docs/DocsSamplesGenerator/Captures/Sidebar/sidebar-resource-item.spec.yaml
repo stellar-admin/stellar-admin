@@ -1,0 +1,10 @@
+# The sidebar with All bookings first in the Sales group, boxed, in light and dark
+scenario: sidebar-resource-item
+steps:
+  # A short window, so the sidebar crop ends below its last item
+  - viewport: { width: 1280, height: 420 }
+  - goto: /stellaradmin
+  - annotate: { locator: ".sa-sidebar-menu-item:has-text('All bookings')" }
+  - screenshot: { name: sidebar-resource-item, locator: .sa-sidebar-inner }
+  - colorScheme: dark
+  - screenshot: { name: sidebar-resource-item-dark, locator: .sa-sidebar-inner }

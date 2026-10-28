@@ -1,0 +1,7 @@
+# The sidebar header with the image logo, in light and dark
+scenario: branding-logo-image
+steps:
+  - goto: /stellaradmin
+  - screenshot: { name: branding-logo-image, locator: .sa-sidebar-header }
+  - colorScheme: dark
+  - screenshot: { name: branding-logo-image-dark, locator: .sa-sidebar-header }

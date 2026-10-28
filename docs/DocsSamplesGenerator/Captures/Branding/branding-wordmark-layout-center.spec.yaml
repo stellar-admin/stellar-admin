@@ -1,0 +1,7 @@
+# The sidebar header with the wordmark in the center layout, in light and dark
+scenario: branding-wordmark-layout-center
+steps:
+  - goto: /stellaradmin
+  - screenshot: { name: branding-wordmark-layout-center, locator: .sa-sidebar-header }
+  - colorScheme: dark
+  - screenshot: { name: branding-wordmark-layout-center-dark, locator: .sa-sidebar-header }

@@ -1,0 +1,7 @@
+# The trips index with the stripe environment indicator, in light and dark
+scenario: environment-indicator-stripe
+steps:
+  - goto: /stellaradmin/trips
+  - screenshot: environment-indicator-stripe
+  - colorScheme: dark
+  - screenshot: environment-indicator-stripe-dark

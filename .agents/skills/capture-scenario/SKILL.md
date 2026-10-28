@@ -23,6 +23,25 @@ Inspect Git status first and keep to the request: a capture does not authorize c
 | Spec runner and steps | `tests/StellarAdmin.ScenarioTesting/Runner/` (`SpecLoader.cs` holds every step) |
 | Command line (interactive host and spec runs) | `tests/StellarAdmin.ScenarioTesting.Cli` |
 
+## Docs captures
+
+Screenshots for the website's admin docs have their own scenarios and specs in `docs/DocsSamplesGenerator/Captures/`, in a folder per docs page (`Captures/Branding/`). The generator's catalog holds only the scenarios in its own assembly, so a docs capture can't use a test scenario, and the test project doesn't run these specs. Static files a scenario links to, such as logos, go in `docs/DocsSamplesGenerator/wwwroot/`.
+
+A docs page asks for a screenshot with a placeholder that the website renders as the image once it exists:
+
+```mdx
+<Capture name="branding-logo" alt="The top of the sidebar with each kind of logo" variants={["No logo", "Icon", "Wordmark"]} todo="Sidebar header crops of each kind of logo." />
+```
+
+The page shows `{name}.png`, or `{name}-{variant}.png` for each variant (the variant in lower case, with each run of other characters as `-`: `branding-logo-no-logo`), and `{name}-dark.png` in dark mode when it exists. `todo` is the brief; `alt` describes the image.
+
+1. **List the open placeholders** from the repository root: `dotnet run --project docs/DocsSamplesGenerator -- captures --check`. A placeholder is open while no capture spec has a `screenshot` step with its image's name; it lists the page and line, the missing names and the `todo`. A shot no page shows is reported as unused. Work only on the placeholders you were asked to capture.
+2. **Write the scenario and spec** for each, as in the workflow below, with the screenshot names the placeholder expects and a `-dark` shot of each after `colorScheme: dark`. A scenario configures what the page's code example shows, with Voyager Travel branding. Where the seeded model makes that impossible, use a form model or other scenario-only types, or tell the developer the docs example has to change to match.
+3. **Capture** with `dotnet run --project docs/DocsSamplesGenerator -- captures`. It replaces the website's `public/images/admin/generated/` and writes `src/generated/captures.json` (each image's size, which the placeholder reads), then reports what is still open. Check every image by eye: crops should end near their content (a `viewport` step shortens the window) and show the Voyager Travel title, not the default app name.
+4. To change a captured image, change its scenario or spec and capture again; the `todo` is not read once a spec exists. To rename one, rename both the screenshot and the placeholder.
+
+The full generator run (no arguments) captures too, after the demos.
+
 ## Workflow
 
 1. **Pin down the capture.** From the description, decide: the admin configuration it needs, the pages and interactions, and the outputs (still PNG, element PNG, annotated PNG, MP4, GIF, dark mode, mobile width). Ask only when the description leaves a consequential choice open.

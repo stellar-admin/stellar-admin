@@ -79,6 +79,15 @@ Done (2026-10-28): `docs/DocsSamplesGenerator` runs every spec in its `Captures/
 
 Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 
+## Docs capture placeholders
+
+Done (2026-10-28): docs pages place admin screenshots with `<Capture name alt todo? variants?>` (website `src/components/mdx.tsx`). It shows `/images/admin/generated/{name}.png` (or `{name}-{variant}` per variant, side by side and captioned), with `{name}-dark` in dark mode, sized from `src/generated/captures.json`, which the generator writes after capturing. Until the image exists it shows the `todo` in a dashed box in development and nothing in production. The generator takes `captures` (capture only) and `captures --check` (report only) and reports open placeholders (no spec saves the image) and unused shots (no page shows them) after every run. The `capture-scenario` skill covers the workflow.
+
+- First batch, in `Captures/` folders per page: branding (header, the four logo kinds, the three wordmark layouts), sidebar (resource item, red missing link), environment indicator (stripe, frame, banner) and choices (enum radio group, on a form model since the seeded difficulty is an `int`). Logos are the sandbox SVGs in the generator's `wwwroot/img/`. The setup checklist pages now use `<Capture>` too.
+- Open: `sidebar-links` needs a real Razor Page and MVC action in the scenario host.
+- Verified: `captures` runs all 14 specs (1 open, 0 unused); every image checked by eye; website `types:check` and `build` pass, `lint` fails only on two untouched files' formatting; the branding and environment indicator pages checked in a dev server, and the open placeholder renders.
+- Candidates for later batches: the docs audit of 2026-10-28 (in the conversation, not recorded here) lists about 100 spots; the larger ones need host support (Razor views, pages and partials in the scenario host).
+
 ## CI
 
 Done (2026-10-28): `ci.yml` and `release.yml` run the scenario tests with `STELLARADMIN_CHROMIUM` set to the runner's preinstalled `/usr/bin/google-chrome`. No spec records, so ffmpeg isn't installed.
