@@ -1,0 +1,10 @@
+# The branding title names the sidebar header, the app header and the browser title; the subtitle and link show in the sidebar header
+scenario: sidebar-branding-title
+steps:
+  - goto: /stellaradmin
+  - expectAttribute: { selector: "[data-slot='sidebar-header'] a", attribute: href, value: /home }
+  - expectText: { selector: .sa-sidebar-brand-title, text: Voyager Travel }
+  - expectText: { selector: .sa-sidebar-brand-subtitle, text: Admin Console }
+  - expectTitle: Voyager Travel
+  - expectAttribute: { selector: "meta[name='description']", attribute: content, value: Voyager Travel }
+  - expectText: { selector: "[data-slot='app-header'] .font-medium", text: Voyager Travel }

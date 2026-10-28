@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "default": {
+      "commandName": "Project",
+      "commandLineArgs": "default",
+      "launchBrowser": true,
+      "launchUrl": "stellaradmin",
+      "applicationUrl": "http://localhost:5210"
+    }
+  }
+}

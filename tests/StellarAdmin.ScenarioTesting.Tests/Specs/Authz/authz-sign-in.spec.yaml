@@ -1,0 +1,8 @@
+# Opening an admin panel page signed out goes to the sign-in page, and signing in comes back to that page
+scenario: authorization
+steps:
+  - goto: /stellaradmin/trips
+  - expectText: { role: heading, text: Sign in }
+  - click: { role: link, name: Priya Nair }
+  - expectUrl: { url: /stellaradmin/trips, timeout: 3000 }
+  - expectVisible: { role: cell, name: Tokyo to Kyoto by Bullet Train }

@@ -119,6 +119,9 @@ jobs:
           done
 
       - name: Run all .NET tests
+        env:
+          # The scenario tests drive the runner's preinstalled Chrome
+          STELLARADMIN_CHROMIUM: /usr/bin/google-chrome
         run: dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
 
       - name: Check consumer reference drift

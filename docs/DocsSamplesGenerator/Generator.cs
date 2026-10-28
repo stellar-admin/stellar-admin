@@ -4,6 +4,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using DocsSamples;
+using StellarAdmin.ScenarioTesting.Runner;
+using StellarAdmin.ScenarioTesting.Scenarios;
 using StellarAdmin.UI.Icons;
 
 namespace DocsSamplesGenerator;
@@ -148,6 +150,23 @@ internal sealed partial class Generator
         "assets"
     );
 
+    // The admin panel screenshots the capture specs save
+    private static readonly string CapturesOutputFolder = Path.Combine(
+        DocsProjectRootFolder,
+        "public",
+        "images",
+        "admin",
+        "generated"
+    );
+
+    // The scenarios and specs the admin panel screenshots are captured from, read from source
+    private static readonly string CapturesSourceFolder = Path.Combine(
+        RepoRootFolder,
+        "docs",
+        "DocsSamplesGenerator",
+        "Captures"
+    );
+
     // The icon picker demos' icons endpoint, and the static copy of its response that the exported
     // demos load instead, since they have no server.
     private const string DemoIconsUrl = "/IconPicker?handler=Icons";
@@ -168,16 +187,45 @@ internal sealed partial class Generator
 
     /// <summary>
     /// Deletes previously generated output so renamed/removed demos don't leave orphaned files behind.
-    /// Only the two top-level output trees are cleared; the assets folder is nested inside
+    /// Only the three top-level output trees are cleared; the assets folder is nested inside
     /// <see cref="RenderedPagesOutputFolder"/> and is removed along with it.
     /// </summary>
     public void CleanOutputFolders()
     {
-        foreach (var folder in new[] { RenderedPagesOutputFolder, PagesSourceCodeOutputFolder })
+        foreach (
+            var folder in new[]
+            {
+                RenderedPagesOutputFolder,
+                PagesSourceCodeOutputFolder,
+                CapturesOutputFolder,
+            }
+        )
         {
             if (Directory.Exists(folder))
                 Directory.Delete(folder, recursive: true);
         }
+    }
+
+    /// <summary>
+    /// Runs every capture spec in Captures against its scenario and saves its screenshots into the
+    /// website's generated admin images.
+    /// </summary>
+    public async Task<int> CaptureScenariosAsync()
+    {
+        var catalog = new ScenarioCatalog(typeof(Generator).Assembly);
+        var specs = SpecFiles.Find(CapturesSourceFolder);
+
+        await using var browser = await SpecBrowser.LaunchAsync();
+        foreach (var file in specs)
+        {
+            await SpecRunner.RunAsync(
+                SpecLoader.Load(catalog, file, Path.GetRelativePath(RepoRootFolder, file)),
+                browser,
+                CapturesOutputFolder
+            );
+        }
+
+        return specs.Count;
     }
 
     /// <summary>Downloads the demo assets that live at fixed, known URLs.</summary>

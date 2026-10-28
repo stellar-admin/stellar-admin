@@ -1,0 +1,11 @@
+# The user menu shows who is signed in, and Log out signs out, so the admin panel asks to sign in again
+scenario: authorization
+user: priya@voyager.travel
+steps:
+  - goto: /stellaradmin
+  - expectText: { selector: "#sa-user-menu .font-semibold", text: priya@voyager.travel }
+  - click: "[popovertarget='sa-user-menu']"
+  - click: { role: menuitem, name: Log out }
+  - expectText: { role: heading, text: Sign in, timeout: 3000 }
+  - goto: /stellaradmin
+  - expectText: { role: heading, text: Sign in }

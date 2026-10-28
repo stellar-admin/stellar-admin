@@ -1,0 +1,18 @@
+# A wordmark with a dark variant replaces the title with a light and a dark image, both centred and named by the title
+scenario: sidebar-branding-wordmark
+steps:
+  - goto: /stellaradmin
+  - expectCount: { selector: img.sa-sidebar-brand-wordmark, count: 2 }
+  - within:
+      selector: "img.sa-sidebar-brand-wordmark[data-scheme='light']"
+      steps:
+        - expectAttribute: { attribute: src, value: /img/wordmark.svg }
+        - expectAttribute: { attribute: alt, value: Voyager Travel }
+        - expectAttribute: { attribute: data-layout, value: center }
+  - within:
+      selector: "img.sa-sidebar-brand-wordmark[data-scheme='dark']"
+      steps:
+        - expectAttribute: { attribute: src, value: /img/wordmark-dark.svg }
+        - expectAttribute: { attribute: alt, value: Voyager Travel }
+        - expectAttribute: { attribute: data-layout, value: center }
+  - expectCount: { selector: .sa-sidebar-brand-text, count: 0 }

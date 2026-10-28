@@ -54,4 +54,7 @@ jobs:
       run: dotnet run --project util/SkillsGenerator --no-build --configuration Release -- --check
 
     - name: Run all .NET tests
+      env:
+        # The scenario tests drive the runner's preinstalled Chrome
+        STELLARADMIN_CHROMIUM: /usr/bin/google-chrome
       run: dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
