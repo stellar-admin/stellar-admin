@@ -1,0 +1,10 @@
+# The bookings index with the Pending scope selected, in light and dark
+scenario: scopes-tabs
+steps:
+  # A short window, so the shot shows the tabs and the first rows
+  - viewport: { width: 1280, height: 420 }
+  - goto: /stellaradmin/bookings?scope=pending
+  - annotate: { locator: ".sa-tabs-list:has-text('Confirmed')" }
+  - screenshot: scopes-tabs
+  - colorScheme: dark
+  - screenshot: scopes-tabs-dark

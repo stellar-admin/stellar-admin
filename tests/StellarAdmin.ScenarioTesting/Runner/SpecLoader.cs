@@ -559,7 +559,8 @@ public static class SpecLoader
         run.Recording is null ? Task.CompletedTask : run.Video!.EndAsync(run.Page);
 
     // A name captures the viewport; { name, locator } captures only that element, e.g.
-    // { name: brand, locator: ".sa-sidebar-brand" }
+    // { name: brand, locator: ".sa-sidebar-brand" }, and { name, locator, margin } the element and the area
+    // around it
     private static Func<SpecRun, Task> Screenshot(string path, YamlNode value, float timeout)
     {
         if (value is not YamlMappingNode mapping)
@@ -580,19 +581,77 @@ public static class SpecLoader
 
         var elementName = Scalar(path, Child(path, mapping, "name"));
         var locate = Locator(path, Child(path, mapping, "locator"));
+        if (!mapping.Children.ContainsKey(new YamlScalarNode("margin")))
+        {
+            return run =>
+                run.ScreenshotDirectory is null
+                    ? Task.CompletedTask
+                    : locate(run)
+                        .ScreenshotAsync(
+                            new()
+                            {
+                                Animations = ScreenshotAnimations.Disabled,
+                                Path = Path.Combine(run.ScreenshotDirectory, $"{elementName}.png"),
+                                Timeout = timeout,
+                            }
+                        );
+        }
 
-        return run =>
-            run.ScreenshotDirectory is null
-                ? Task.CompletedTask
-                : locate(run)
-                    .ScreenshotAsync(
-                        new()
-                        {
-                            Animations = ScreenshotAnimations.Disabled,
-                            Path = Path.Combine(run.ScreenshotDirectory, $"{elementName}.png"),
-                            Timeout = timeout,
-                        }
-                    );
+        var (top, right, bottom, left) = Margin(path, mapping);
+
+        // The element's box grown by the margin, kept inside the page
+        return async run =>
+        {
+            if (run.ScreenshotDirectory is null)
+                return;
+
+            var locator = locate(run);
+            await locator.ScrollIntoViewIfNeededAsync(new() { Timeout = timeout });
+            var box =
+                await locator.BoundingBoxAsync(new() { Timeout = timeout })
+                ?? throw new SpecException(path, Line(mapping), "The element has no size.");
+            var size = await run.Page.EvaluateAsync<int[]>(
+                "() => [document.documentElement.scrollWidth, document.documentElement.scrollHeight]"
+            );
+            var scroll = await run.Page.EvaluateAsync<float[]>("() => [scrollX, scrollY]");
+            var x = Math.Max(0, box.X + scroll[0] - left);
+            var y = Math.Max(0, box.Y + scroll[1] - top);
+            await run.Page.ScreenshotAsync(
+                new()
+                {
+                    Animations = ScreenshotAnimations.Disabled,
+                    Clip = new()
+                    {
+                        X = x,
+                        Y = y,
+                        Width = Math.Min(size[0], box.X + scroll[0] + box.Width + right) - x,
+                        Height = Math.Min(size[1], box.Y + scroll[1] + box.Height + bottom) - y,
+                    },
+                    FullPage = true,
+                    Path = Path.Combine(run.ScreenshotDirectory, $"{elementName}.png"),
+                }
+            );
+        };
+    }
+
+    // margin: 20 on every side, or { top, right, bottom, left }, each 0 when left out
+    private static (int Top, int Right, int Bottom, int Left) Margin(
+        string path,
+        YamlMappingNode mapping
+    )
+    {
+        var node = Child(path, mapping, "margin");
+        if (node is not YamlMappingNode sides)
+        {
+            var all = Pixels(path, mapping, "margin");
+
+            return (all, all, all, all);
+        }
+
+        return (Side("top"), Side("right"), Side("bottom"), Side("left"));
+
+        int Side(string side) =>
+            sides.Children.ContainsKey(new YamlScalarNode(side)) ? Pixels(path, sides, side) : 0;
     }
 
     // Scrolls the element into view; while recording, smoothly

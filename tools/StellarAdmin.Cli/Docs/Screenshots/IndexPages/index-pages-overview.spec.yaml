@@ -1,0 +1,7 @@
+# The bookings index page with its columns, search box, scopes and pager, in light and dark
+scenario: index-pages-overview
+steps:
+  - goto: /stellaradmin/bookings
+  - screenshot: index-pages-overview
+  - colorScheme: dark
+  - screenshot: index-pages-overview-dark

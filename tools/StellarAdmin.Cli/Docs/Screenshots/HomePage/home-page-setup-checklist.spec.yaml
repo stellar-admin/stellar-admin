@@ -1,5 +1,5 @@
 # The home page's setup checklist, boxed, in light and dark
-scenario: setup-checklist
+scenario: home-page-setup-checklist
 steps:
   - goto: /stellaradmin
   - expectVisible: { role: heading, name: Welcome to StellarAdmin }

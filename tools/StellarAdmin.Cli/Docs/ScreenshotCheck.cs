@@ -13,7 +13,7 @@ internal sealed record ScreenshotPlaceholder(
     IReadOnlyList<string> Images
 );
 
-// A screenshot a spec saves
+// A screenshot or GIF a spec saves
 internal sealed record SpecScreenshot(string Spec, string Name);
 
 // Matches the docs pages' <Screenshot> placeholders against the specs' screenshots. A placeholder image
@@ -79,7 +79,7 @@ internal sealed partial class ScreenshotCheck
     public static string VariantSlug(string variant) =>
         NonSlugCharacters().Replace(variant.ToLowerInvariant(), "-").Trim('-');
 
-    private static List<ScreenshotPlaceholder> FindPlaceholders(string docsFolder)
+    public static List<ScreenshotPlaceholder> FindPlaceholders(string docsFolder)
     {
         List<ScreenshotPlaceholder> placeholders = [];
         foreach (
@@ -117,8 +117,9 @@ internal sealed partial class ScreenshotCheck
         return placeholders;
     }
 
-    // Every screenshot step's name, at any depth, so steps inside within are found too
-    private static IEnumerable<string> FindShots(string specFile)
+    // Every screenshot step's name, and every record step's that saves a GIF, at any depth, so steps inside
+    // within are found too
+    public static IEnumerable<string> FindShots(string specFile)
     {
         var stream = new YamlStream();
         using (var reader = File.OpenText(specFile))
@@ -143,7 +144,23 @@ internal sealed partial class ScreenshotCheck
                                 ) && name is YamlScalarNode { Value: { } value } => [value],
                             _ => [],
                         }
-                        : Shots(child.Value)
+                    : child.Key is YamlScalarNode { Value: "record" }
+                        ? child.Value switch
+                        {
+                            YamlMappingNode record
+                                when record.Children.TryGetValue(
+                                    new YamlScalarNode("gif"),
+                                    out var gif
+                                )
+                                    && gif is YamlScalarNode { Value: "true" }
+                                    && record.Children.TryGetValue(
+                                        new YamlScalarNode("name"),
+                                        out var name
+                                    )
+                                    && name is YamlScalarNode { Value: { } value } => [value],
+                            _ => [],
+                        }
+                    : Shots(child.Value)
                 ),
                 YamlSequenceNode sequence => sequence.Children.SelectMany(Shots),
                 _ => [],

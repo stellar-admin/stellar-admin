@@ -5,13 +5,16 @@ using StellarAdmin.Sidebar;
 namespace StellarAdmin.Cli.Docs.Screenshots.Branding;
 
 // One scenario per kind of logo, e.g. branding-logo-icon. A wordmark has no subtitle, which it doesn't display
-[ScenarioArguments("none")]
+[ScenarioArguments("no-logo")]
 [ScenarioArguments("icon")]
 [ScenarioArguments("image")]
 [ScenarioArguments("wordmark")]
 public sealed class BrandingLogoScenario(string logo) : Scenario
 {
-    public override string Description => $"The Voyager Travel branding with the {logo} logo.";
+    public override string Description =>
+        logo == "no-logo"
+            ? "The Voyager Travel branding without a logo."
+            : $"The Voyager Travel branding with the {logo} logo.";
 
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {

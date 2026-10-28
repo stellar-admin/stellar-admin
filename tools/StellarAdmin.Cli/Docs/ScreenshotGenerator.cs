@@ -94,7 +94,8 @@ internal static class ScreenshotGenerator
         new StepRunner().Add("Check screenshots", Check).RunAsync();
 
     // Lists the docs' placeholders no spec captures and the screenshots no page shows, under the step.
-    // These are warnings, not errors: a page can wait for its screenshot.
+    // These are warnings, not errors: a page can wait for its screenshot. A name that doesn't start with its
+    // docs page is an error.
     private static Task Check(StepRunner.Step step)
     {
         var check = ScreenshotCheck.Run(DocsContentFolder, SourceFolder, DocsPaths.RepoRoot);
@@ -112,7 +113,26 @@ internal static class ScreenshotGenerator
                 $"Unused screenshot {screenshot.Name} ({screenshot.Spec}): no Screenshot shows it"
             );
 
-        step.Log($"{check.Open.Count} open, {check.Unused.Count} unused");
+        // Names that break the rule fail the check, so the folders stay sorted by page
+        var docsScenarios = new ScenarioCatalog(typeof(ScreenshotGenerator).Assembly).All.Where(
+            scenario =>
+                scenario
+                    .GetType()
+                    .Namespace?.StartsWith(typeof(ScreenshotGenerator).Namespace + ".Screenshots")
+                == true
+        );
+        var misnamed = ScreenshotNames.Check(
+            DocsContentFolder,
+            SourceFolder,
+            DocsPaths.RepoRoot,
+            docsScenarios
+        );
+        foreach (var problem in misnamed)
+            step.Error(problem);
+
+        step.Log(
+            $"{check.Open.Count} open, {check.Unused.Count} unused, {misnamed.Count} misnamed"
+        );
 
         return Task.CompletedTask;
     }
@@ -154,27 +174,44 @@ internal static class ScreenshotGenerator
 
             step.Increment();
         }
+
+        // The docs show a recording's GIF, not its MP4
+        foreach (var clip in Directory.EnumerateFiles(OutputFolder, "*.mp4"))
+            File.Delete(clip);
     }
 
-    // Width and height from each PNG's IHDR chunk, which starts every PNG at byte 16
+    // Width and height from each PNG's IHDR chunk, which starts every PNG at byte 16, and from each GIF's
+    // logical screen size at byte 6. A GIF's entry also says it is one, so the website asks for .gif.
     private static void WriteManifest()
     {
         var images = new SortedDictionary<string, object>(StringComparer.Ordinal);
         if (Directory.Exists(OutputFolder))
         {
-            foreach (var file in Directory.EnumerateFiles(OutputFolder, "*.png"))
+            foreach (var file in Directory.EnumerateFiles(OutputFolder))
             {
+                var extension = Path.GetExtension(file);
+                if (extension is not (".png" or ".gif"))
+                    continue;
+
                 var header = new byte[24];
                 using (var stream = File.OpenRead(file))
                 {
                     stream.ReadExactly(header);
                 }
 
-                images[Path.GetFileNameWithoutExtension(file)] = new
-                {
-                    width = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(16)),
-                    height = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(20)),
-                };
+                images[Path.GetFileNameWithoutExtension(file)] =
+                    extension == ".gif"
+                        ? new
+                        {
+                            width = (int)BinaryPrimitives.ReadUInt16LittleEndian(header.AsSpan(6)),
+                            height = (int)BinaryPrimitives.ReadUInt16LittleEndian(header.AsSpan(8)),
+                            format = "gif",
+                        }
+                        : new
+                        {
+                            width = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(16)),
+                            height = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(20)),
+                        };
             }
         }
 

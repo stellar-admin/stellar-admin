@@ -1,9 +1,9 @@
 using StellarAdmin;
 using StellarAdmin.ScenarioTesting.Hosting;
 
-namespace StellarAdmin.Cli.Docs.Screenshots;
+namespace StellarAdmin.Cli.Docs.Screenshots.HomePage;
 
-public sealed class SetupChecklistScenario : Scenario
+public sealed class HomePageSetupChecklistScenario : Scenario
 {
     public override string Description =>
         "No resources, so the home page shows the setup checklist with only the branding done.";

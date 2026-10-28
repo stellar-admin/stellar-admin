@@ -1,0 +1,10 @@
+# The delete confirmation with the custom text over the bookings grid, in light and dark
+scenario: delete-confirmation-custom
+steps:
+  - viewport: { width: 1280, height: 600 }
+  - goto: /stellaradmin/bookings
+  - click: "tr:has-text('VB-101459') button[aria-label='Delete Booking']"
+  - expectVisible: "#--delete-confirmation-dialog"
+  - screenshot: delete-confirmation-custom
+  - colorScheme: dark
+  - screenshot: delete-confirmation-custom-dark

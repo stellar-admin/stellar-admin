@@ -1,0 +1,8 @@
+# A trip's tags as a checkbox group of cards, with the trip's own tags checked, in light and dark
+scenario: choice-editors-cards
+steps:
+  - viewport: { width: 1280, height: 640 }
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: choice-editors-cards
+  - colorScheme: dark
+  - screenshot: choice-editors-cards-dark

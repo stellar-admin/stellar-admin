@@ -1,0 +1,21 @@
+# Typing a traveller's name filters the bookings as you type, in light and dark
+scenario: search-as-you-type
+steps:
+  - goto: /stellaradmin/bookings
+  - record: { name: search-as-you-type, gif: true, typeDelay: 120 }
+  - pause: 500
+  - click: "#index-page-search input"
+  - type: { locator: "#index-page-search input", text: Walker }
+  - expectVisible: { selector: "tr:has-text('Marion Walker')", timeout: 3000 }
+  - pause: 1200
+  - recordEnd: true
+  - colorScheme: dark
+  - fill: { locator: "#index-page-search input", text: "" }
+  - expectVisible: { selector: "tr:has-text('Zola Parisian')", timeout: 3000 }
+  - record: { name: search-as-you-type-dark, gif: true, typeDelay: 120 }
+  - pause: 500
+  - click: "#index-page-search input"
+  - type: { locator: "#index-page-search input", text: Walker }
+  - expectVisible: { selector: "tr:has-text('Marion Walker')", timeout: 3000 }
+  - pause: 1200
+  - recordEnd: true

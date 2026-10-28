@@ -103,10 +103,12 @@ Assertions retry until the timeout, so they also wait for a state to settle.
 | --- | --- |
 | `screenshot` | A name: saves the viewport as `{name}.png`. |
 | `screenshot` | `{ name, locator }`: saves only that element. |
+| `screenshot` | `{ name, locator, margin }`: saves the element and the area around it, kept inside the page. `margin` is pixels on every side, or `{ top, right, bottom, left }` with each side 0 when left out. |
 
 ```yaml
   - screenshot: branding
   - screenshot: { name: branding-brand, locator: "a:has(.sa-sidebar-brand-mark)" }
+  - screenshot: { name: branding-sidebar, locator: ".sa-sidebar-header", margin: { right: 40, bottom: 20 } }
   - colorScheme: dark
   - screenshot: branding-dark
   - viewport: { width: 390, height: 844 }

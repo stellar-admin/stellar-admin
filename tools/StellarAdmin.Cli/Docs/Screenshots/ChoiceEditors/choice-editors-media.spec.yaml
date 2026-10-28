@@ -1,0 +1,9 @@
+# The transport segmented control with an icon beside each option, Train selected, in light and dark
+scenario: choice-editors-media
+steps:
+  # A short window, so the page crop ends below the form
+  - viewport: { width: 1280, height: 320 }
+  - goto: /stellaradmin/trips/create
+  - screenshot: { name: choice-editors-media, locator: main }
+  - colorScheme: dark
+  - screenshot: { name: choice-editors-media-dark, locator: main }

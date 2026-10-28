@@ -1,0 +1,7 @@
+# The grid's pager with the page sizes and the last rows above it, in light and dark
+scenario: sorting-and-paging-pager
+steps:
+  - goto: /stellaradmin/bookings
+  - screenshot: { name: sorting-and-paging-pager, locator: "[data-slot='card-footer']", margin: { top: 100, right: 20, bottom: 20, left: 20 } }
+  - colorScheme: dark
+  - screenshot: { name: sorting-and-paging-pager-dark, locator: "[data-slot='card-footer']", margin: { top: 100, right: 20, bottom: 20, left: 20 } }

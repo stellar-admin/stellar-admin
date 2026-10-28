@@ -46,6 +46,10 @@ public sealed class SpecVideo
         _clips.Add((options, _start, _clock.Elapsed));
         Current = null;
 
+        // The video starts a little after the clock, so a clip is cut slightly late; waiting keeps the
+        // next steps, such as a colour scheme switch or the cursor hiding, out of its last frames
+        await page.WaitForTimeoutAsync(500);
+
         await page.EvaluateAsync("() => window.specCursor.hide()");
         await page.EmulateMediaAsync(new() { ReducedMotion = ReducedMotion.Reduce });
     }
