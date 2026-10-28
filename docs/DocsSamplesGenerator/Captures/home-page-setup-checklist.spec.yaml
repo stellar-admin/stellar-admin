@@ -1,0 +1,11 @@
+# The home page's setup checklist, boxed, in light and dark
+scenario: setup-checklist
+steps:
+  - goto: /stellaradmin
+  - expectVisible: { role: heading, name: Welcome to StellarAdmin }
+  # Collapse the first step, which opens with its code, so the whole checklist shows
+  - click: "[commandfor='--setup-step-resource']"
+  - annotate: { locator: ".sa-card:has(.sa-checklist)" }
+  - screenshot: home-page-setup-checklist
+  - colorScheme: dark
+  - screenshot: home-page-setup-checklist-dark

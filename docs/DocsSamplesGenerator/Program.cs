@@ -82,6 +82,11 @@ public static class Program
             AnsiConsole.MarkupLineInterpolated(
                 $"[green]✓[/] Generated {Generator.DemoPartials.Length} demo partials."
             );
+
+            var captures = await AnsiConsole
+                .Status()
+                .StartAsync("Capturing scenarios...", _ => generator.CaptureScenariosAsync());
+            AnsiConsole.MarkupLineInterpolated($"[green]✓[/] Captured {captures} scenario specs.");
             return 0;
         }
         catch (Exception ex)

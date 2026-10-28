@@ -70,9 +70,14 @@ Done (2026-10-28): `Scenarios/Authz/AuthorizationScenario` (`authorization`) rep
 
 - Verified: 12 of 12 tests pass on four runs. The first Payments page load takes over a second, so its click has a 5 s timeout.
 
+## Docs captures in the generator
+
+Done (2026-10-28): `docs/DocsSamplesGenerator` runs every spec in its `Captures/` folder after the demos, against the scenarios in its own assembly, and saves the screenshots to the website's `public/images/admin/generated/`, which `CleanOutputFolders` now clears. The generator uses the Web SDK, so it has the static assets manifest the scenario hosts map. `SetupChecklistScenario` (`setup-checklist`) has no resources and the Voyager Travel branding; `home-page-setup-checklist` collapses the first step and draws a box around the checklist, in light and dark. The images are not yet used on the website.
+
+- Verified: the generator run writes both images, checked by eye. The scenario tests were not re-run (the ScenarioTesting project didn't change).
+
 Open: trip prices show as `3890.0`. Seeding cost if test processes multiply.
 
 ## Later
 
-- Move docs captures into the DocsSamples generator.
 - CI: install Chromium and ffmpeg, run the scenario tests.
