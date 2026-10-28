@@ -139,13 +139,21 @@
       left: [b.x - 3, b.y + b.h / 2],
       right: [b.x + b.w + 3, b.y + b.h / 2],
     }[side];
-    // Leaves the label and meets the target square-on, bending in between
-    const dx = (to[0] - from[0]) / 2;
-    const dy = (to[1] - from[1]) / 2;
+    // Leaves the label and bends towards the target, then runs straight into the arrowhead so the line
+    // meets it square-on
+    const straight = 14;
+    const end = {
+      top: [to[0], to[1] - straight],
+      bottom: [to[0], to[1] + straight],
+      left: [to[0] - straight, to[1]],
+      right: [to[0] + straight, to[1]],
+    }[side];
+    const dx = (end[0] - from[0]) / 2;
+    const dy = (end[1] - from[1]) / 2;
     const c1 = vertical ? [from[0], from[1] + dy] : [from[0] + dx, from[1]];
-    const c2 = vertical ? [to[0], to[1] - dy] : [to[0] - dx, to[1]];
+    const c2 = vertical ? [end[0], end[1] - dy] : [end[0] - dx, end[1]];
     draw("path", {
-      d: `M${from[0]} ${from[1]} C${c1[0]} ${c1[1]} ${c2[0]} ${c2[1]} ${to[0]} ${to[1]}`,
+      d: `M${from[0]} ${from[1]} C${c1[0]} ${c1[1]} ${c2[0]} ${c2[1]} ${end[0]} ${end[1]} L${to[0]} ${to[1]}`,
       fill: "none",
       stroke: color,
       "stroke-width": 2,
