@@ -1,0 +1,8 @@
+# The trips grid with the Trips link in the sidebar, in light and dark
+scenario: quick-start-trips
+steps:
+  - viewport: { width: 1280, height: 640 }
+  - goto: /stellaradmin/trips
+  - screenshot: quick-start-trips
+  - colorScheme: dark
+  - screenshot: quick-start-trips-dark

@@ -1,0 +1,8 @@
+# The departure create form, with the trip lookup and a start date 30 days from today, in light and dark
+scenario: quick-start-departures-create
+steps:
+  - viewport: { width: 1280, height: 560 }
+  - goto: /stellaradmin/departures/create
+  - screenshot: quick-start-departures-create
+  - colorScheme: dark
+  - screenshot: quick-start-departures-create-dark

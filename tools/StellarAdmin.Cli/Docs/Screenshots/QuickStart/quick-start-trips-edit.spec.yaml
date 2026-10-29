@@ -1,0 +1,8 @@
+# A trip's edit form, in light and dark
+scenario: quick-start-trips-edit
+steps:
+  - viewport: { width: 1280, height: 560 }
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: quick-start-trips-edit
+  - colorScheme: dark
+  - screenshot: quick-start-trips-edit-dark

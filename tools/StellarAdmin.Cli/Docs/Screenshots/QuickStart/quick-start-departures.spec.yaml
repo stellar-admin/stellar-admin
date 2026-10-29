@@ -1,0 +1,8 @@
+# The departures grid with the search box, sorted by start date, in light and dark
+scenario: quick-start-departures
+steps:
+  - viewport: { width: 1280, height: 640 }
+  - goto: /stellaradmin/departures
+  - screenshot: quick-start-departures
+  - colorScheme: dark
+  - screenshot: quick-start-departures-dark
