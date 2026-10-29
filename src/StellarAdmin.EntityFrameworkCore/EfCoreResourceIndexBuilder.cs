@@ -29,7 +29,7 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
     ///     No panels are added, a panel has no name, or two panels have the same name.
     /// </exception>
     /// <remarks>
-    ///     Two or more panels are shown as tabs.
+    ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout.
     /// </remarks>
     public ResourceRowDetailsBuilder<TEntity> EnableRowDetails(
         Action<EfCoreRowDetailPanelsBuilder<TEntity>> panels
@@ -112,7 +112,7 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
     ///     No panels are added, a panel has no name, or two panels have the same name.
     /// </exception>
     /// <remarks>
-    ///     Two or more panels are shown as tabs.
+    ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout.
     /// </remarks>
     public EfCoreResourceIndexBuilder<TEntity> EnableRowDetails(
         Action<EfCoreRowDetailPanelsBuilder<TEntity>> panels,

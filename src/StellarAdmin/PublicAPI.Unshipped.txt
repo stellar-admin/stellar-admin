@@ -2113,3 +2113,24 @@ virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetDescriptio
 virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetIcon(TItem item) -> string?
 virtual StellarAdmin.Resources.Editors.LookupSource<TItem, TValue>.GetImage(TItem item) -> string?
 StellarAdmin.Resources.Editors.LookupSource.LookupSource() -> void
+static StellarAdmin.Resources.ResourceRowDetailPanelLayout.Accordion() -> StellarAdmin.Resources.AccordionResourceRowDetailPanelLayout!
+static StellarAdmin.Resources.ResourceRowDetailPanelLayout.Accordion(StellarAdmin.Resources.ResourceRowDetailAccordionExpandMode expandMode) -> StellarAdmin.Resources.AccordionResourceRowDetailPanelLayout!
+static StellarAdmin.Resources.ResourceRowDetailPanelLayout.Tabs(StellarAdmin.Resources.ResourceRowDetailTabStyle style) -> StellarAdmin.Resources.TabsResourceRowDetailPanelLayout!
+static StellarAdmin.Resources.ResourceRowDetailPanelLayout.Tabs() -> StellarAdmin.Resources.TabsResourceRowDetailPanelLayout!
+StellarAdmin.Resources.AccordionResourceRowDetailPanelLayout
+StellarAdmin.Resources.AccordionResourceRowDetailPanelLayout.ExpandMode.get -> StellarAdmin.Resources.ResourceRowDetailAccordionExpandMode
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder.Icon.set -> void
+StellarAdmin.Resources.Builders.ResourceRowDetailsBuilder<TResource>.PanelLayout.set -> void
+StellarAdmin.Resources.Options.ResourceRowDetailPanelOptions.Icon.get -> string?
+StellarAdmin.Resources.Options.ResourceRowDetailsOptions.PanelLayout.get -> StellarAdmin.Resources.ResourceRowDetailPanelLayout!
+StellarAdmin.Resources.ResourceRowDetailAccordionExpandMode
+StellarAdmin.Resources.ResourceRowDetailAccordionExpandMode.Multiple = 1 -> StellarAdmin.Resources.ResourceRowDetailAccordionExpandMode
+StellarAdmin.Resources.ResourceRowDetailAccordionExpandMode.Single = 0 -> StellarAdmin.Resources.ResourceRowDetailAccordionExpandMode
+StellarAdmin.Resources.ResourceRowDetailPanelLayout
+StellarAdmin.Resources.ResourceRowDetailTabStyle
+StellarAdmin.Resources.ResourceRowDetailTabStyle.Default = 0 -> StellarAdmin.Resources.ResourceRowDetailTabStyle
+StellarAdmin.Resources.ResourceRowDetailTabStyle.Line = 1 -> StellarAdmin.Resources.ResourceRowDetailTabStyle
+StellarAdmin.Resources.TabsResourceRowDetailPanelLayout
+StellarAdmin.Resources.TabsResourceRowDetailPanelLayout.Style.get -> StellarAdmin.Resources.ResourceRowDetailTabStyle
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Add(string! title, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Add<THandler>(string! title, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>!

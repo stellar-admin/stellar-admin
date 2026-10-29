@@ -6,6 +6,20 @@ namespace StellarAdmin.Tests.Resources.Builders;
 public class ResourceRowDetailPanelBuilderTests
 {
     [Test]
+    public async Task Icon_WhenSet_SetsPanelIcon()
+    {
+        // Arrange
+        var panels = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
+        var sut = panels.Add("Pricing", "_Pricing");
+
+        // Act
+        sut.Icon = "tag";
+
+        // Assert
+        await Assert.That(panels.Panels.Single().Icon).IsEqualTo("tag");
+    }
+
+    [Test]
     public async Task Name_WhenSet_ReplacesNameFromTitle()
     {
         // Arrange

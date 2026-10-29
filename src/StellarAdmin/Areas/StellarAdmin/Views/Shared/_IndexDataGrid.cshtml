@@ -212,14 +212,20 @@
                         <partial name="@panel.PartialName" model="Html.GridItem<object>()" />
                     }
                 }
-                else
+                else if (rowDetails.PanelLayout is TabsResourceRowDetailPanelLayout tabs)
                 {
                     row++;
                     <sa-tabs>
-                        <sa-tab-list variant="TabListVariant.Line">
+                        <sa-tab-list variant="@(tabs.Style == ResourceRowDetailTabStyle.Line ? TabListVariant.Line : TabListVariant.Default)">
                             @foreach (var panel in rowDetails.Panels)
                             {
-                                <sa-tab for="@($"--resource-row-detail-{row}-{panel.Name}")">@panel.Title</sa-tab>
+                                <sa-tab for="@($"--resource-row-detail-{row}-{panel.Name}")">
+                                    @if (!string.IsNullOrWhiteSpace(panel.Icon))
+                                    {
+                                        <sa-icon name="@panel.Icon" />
+                                    }
+                                    @panel.Title
+                                </sa-tab>
                             }
                         </sa-tab-list>
                         @for (var index = 0; index < rowDetails.Panels.Count; index++)
@@ -244,6 +250,35 @@
                             }
                         }
                     </sa-tabs>
+                }
+                else
+                {
+                    row++;
+                    @* The panels start closed. With one open at a time, the row's items share a name *@
+                    var single = rowDetails.PanelLayout is AccordionResourceRowDetailPanelLayout { ExpandMode: ResourceRowDetailAccordionExpandMode.Single };
+                    <sa-accordion variant="AccordionVariant.Contained">
+                        @foreach (var panel in rowDetails.Panels)
+                        {
+                            <sa-accordion-item name="@(single ? $"--resource-row-detail-{row}" : null)">
+                                <sa-accordion-item-title icon="@panel.Icon">@panel.Title</sa-accordion-item-title>
+                                <sa-accordion-item-content>
+                                    @if (panel.LoadsOnDemand)
+                                    {
+                                        @* Loads when the panel is first opened *@
+                                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), panel = panel.Name })"
+                                             hx-trigger='toggle once from:"closest details"'
+                                             hx-target="this" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
+                                            <partial name="_IndexRowDetailLoading" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <partial name="@panel.PartialName" model="Html.GridItem<object>()" />
+                                    }
+                                </sa-accordion-item-content>
+                            </sa-accordion-item>
+                        }
+                    </sa-accordion>
                 }
             </div>
         </sa-data-grid-row-detail>

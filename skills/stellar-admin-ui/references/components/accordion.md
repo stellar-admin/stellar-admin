@@ -17,6 +17,24 @@ Renders a vertical stack of items that each expand to show their content.
 | `<sa-accordion-item-content>` | Renders the content of an accordion item, shown when the item is expanded. |
 | `<sa-accordion-item-title>` | Renders the title of an accordion item, which expands and collapses the item when clicked. |
 
+## Attributes
+
+### `<sa-accordion>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `variant` | `AccordionVariant` | `Default` | `Default`, `Contained` |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
+> In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
+
+### `<sa-accordion-item-title>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `icon` | `string` | `null` | — |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
 ## Examples
 
 *From `Pages/Accordion/_Intro.cshtml`*

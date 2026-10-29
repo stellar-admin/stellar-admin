@@ -2,7 +2,8 @@ using StellarAdmin.Diagnostics;
 
 namespace StellarAdmin.Resources.Options;
 
-// Row details that load when a row expands need a handler that names their model, and find the row by its key
+// Row details that load when a row expands need a handler that names their model, and find the row by its key;
+// a panel layout made with an undefined value falls back to the default
 internal static class RowDetailsCheck
 {
     public static void Run<TResource>(ResourceOptions<TResource> options)
@@ -34,6 +35,19 @@ internal static class RowDetailsCheck
         if (rowDetails.Panels.Count == 0)
         {
             options.Index.RowDetails = null;
+
+            return;
+        }
+
+        if (rowDetails.PanelLayout.Problem is { } problem)
+        {
+            rowDetails.PanelLayout = ResourceRowDetailPanelLayout.Accordion();
+            options.Report(
+                ConfigurationProblemKind.InvalidValue,
+                $"The row detail panels are shown in an accordion because {problem.Cause}.",
+                problem.Fix,
+                rowDetails.PanelLayoutSource
+            );
         }
     }
 

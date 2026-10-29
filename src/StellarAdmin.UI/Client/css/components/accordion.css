@@ -1,5 +1,6 @@
 /* Accordion: <sa-accordion>, a column of <details> items whose summary is the trigger.
-   Replaces: .sa-accordion, .sa-accordion-item, .sa-accordion-trigger, .sa-accordion-trigger-icon,
+   Replaces: .sa-accordion, .sa-accordion-variant-contained, .sa-accordion-item, .sa-accordion-trigger,
+   .sa-accordion-trigger-label, .sa-accordion-trigger-media, .sa-accordion-trigger-icon,
    .sa-accordion-content, .sa-accordion-content-inner */
 
 @layer sa.components {
@@ -42,6 +43,31 @@
       pointer-events: none;
     }
   }
+  /* A title with an icon: the icon on a tile, the content indented to line up with the title */
+  .sa-accordion-trigger-label {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(2.5 * var(--sa-unit));
+  }
+  .sa-accordion-trigger-media {
+    display: inline-grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: var(--sa-control-h-xs);
+    height: var(--sa-control-h-xs);
+    border-radius: var(--sa-radius-control-sm);
+    background: var(--sa-color-tint);
+    color: var(--sa-color-ink-muted);
+    & > svg {
+      width: calc(var(--sa-control-icon) * 0.85);
+      height: calc(var(--sa-control-icon) * 0.85);
+    }
+  }
+  .sa-accordion-item:has(> .sa-accordion-trigger .sa-accordion-trigger-media)
+    > .sa-accordion-content > .sa-accordion-content-inner {
+    padding-inline-start: calc(2.5 * var(--sa-unit) + var(--sa-control-h-xs));
+  }
+
   .sa-accordion-trigger-icon {
     color: var(--sa-color-ink-muted);
     & > svg {
@@ -67,6 +93,32 @@
       &:hover { color: var(--sa-color-ink); }
     }
     & p:not(:last-child) { margin-bottom: calc(4 * var(--sa-unit)); }
+  }
+
+  /* Contained: the items in one bordered box, each title on a muted band */
+  .sa-accordion-variant-contained {
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    background: var(--sa-color-surface);
+    overflow: hidden;
+    & > .sa-accordion-item > .sa-accordion-trigger {
+      align-items: center;
+      padding-inline: calc(3 * var(--sa-unit));
+      border-radius: 0;
+      background: var(--sa-color-surface-subtle);
+      &:hover {
+        text-decoration: none;
+        color: var(--sa-color-ink);
+      }
+    }
+    & > .sa-accordion-item[open] > .sa-accordion-trigger { border-bottom-color: var(--sa-color-line); }
+    & > .sa-accordion-item > .sa-accordion-content > .sa-accordion-content-inner {
+      padding: calc(3 * var(--sa-unit));
+    }
+    & > .sa-accordion-item:has(> .sa-accordion-trigger .sa-accordion-trigger-media)
+      > .sa-accordion-content > .sa-accordion-content-inner {
+      padding-inline-start: calc(5.5 * var(--sa-unit) + var(--sa-control-h-xs));
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

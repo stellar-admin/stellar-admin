@@ -1,8 +1,10 @@
 using AdminPlayground.Data;
 using StellarAdmin;
 using StellarAdmin.EntityFrameworkCore;
+using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.UI;
 
 namespace AdminPlayground.Resources.Products;
 
@@ -99,8 +101,8 @@ internal static class ProductResourceRegistration
                     search => search.Placeholder = "Search products..."
                 );
                 index.DefaultSortBy(product => product.Name);
-                // Pricing loads when a row first expands, with one query for that product. Overview renders with
-                // the index, and Related loads when its tab is first shown
+                // Pricing loads when it's first opened, with one query for that product. Overview renders with
+                // the index, and Related loads when it's first opened
                 index.EnableRowDetails(panels =>
                 {
                     panels.Add(
@@ -111,10 +113,15 @@ internal static class ProductResourceRegistration
                             product.Details.Sku,
                             product.Category != null ? product.Category.Name : null,
                             product.Price
-                        )
+                        ),
+                        panel => panel.Icon = "tag"
                     );
-                    panels.Add("Overview", "_ProductOverview");
-                    panels.Add<RelatedProductsHandler>("Related", "_RelatedProducts");
+                    panels.Add("Overview", "_ProductOverview", panel => panel.Icon = "package");
+                    panels.Add<RelatedProductsHandler>(
+                        "Related",
+                        "_RelatedProducts",
+                        panel => panel.Icon = "link"
+                    );
                 });
                 index.EnablePaging(paging =>
                 {

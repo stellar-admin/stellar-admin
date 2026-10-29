@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
+using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.UI;
 
@@ -251,12 +252,213 @@ public class ResourceRowDetailsTests
     }
 
     [Test]
-    public async Task Panels_RenderTabsForEachRow()
+    public async Task Panels_ByDefault_RenderClosedContainedAccordionForEachRow()
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new([new(7, "Notebook", 8.50m), new(8, "Pencil", 1.25m)]),
-            ConfigurePanels
+            resource => ConfigurePanels(resource)
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var content = document.QuerySelectorAll("[data-slot='table-row-detail-content']")[1];
+        await Assert.That(content.QuerySelector("sel-tabs")).IsNull();
+        await Assert
+            .That(content.RequiredElement("[data-slot='accordion']").GetAttribute("data-variant"))
+            .IsEqualTo("contained");
+        await Assert
+            .That(content.TextContents("details > summary"))
+            .IsEquivalentTo(["Notes", "Summary", "Archived notes"]);
+        await Assert.That(content.QuerySelector("details[open]")).IsNull();
+        await Assert.That(content.QuerySelector("details[name]")).IsNull();
+        await Assert
+            .That(content.RequiredElement("[data-test='summary']").TextContent)
+            .IsEqualTo("Summary for Pencil");
+    }
+
+    [Test]
+    public async Task Panels_InAccordion_LoadOnDemandPanelsWhenFirstOpened()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource => ConfigurePanels(resource)
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var loaders = document.QuerySelectorAll("details [hx-get]");
+        await Assert
+            .That(loaders.Select(loader => loader.GetAttribute("hx-get")))
+            .IsEquivalentTo([
+                "/stellaradmin/products/rowdetail/7?panel=notes",
+                "/stellaradmin/products/rowdetail/7?panel=archived-notes",
+            ]);
+        await Assert
+            .That(loaders.Select(loader => loader.GetAttribute("hx-trigger")).Distinct())
+            .IsEquivalentTo(["toggle once from:\"closest details\""]);
+    }
+
+    [Test]
+    public async Task Panels_InSingleAccordion_ShareNameWithinRow()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m), new(8, "Pencil", 1.25m)]),
+            resource =>
+                ConfigurePanels(
+                    resource,
+                    ResourceRowDetailPanelLayout.Accordion(
+                        ResourceRowDetailAccordionExpandMode.Single
+                    )
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var rows = document.QuerySelectorAll("[data-slot='table-row-detail-content']");
+        await Assert
+            .That(rows[0].QuerySelectorAll("details").Select(item => item.GetAttribute("name")))
+            .IsEquivalentTo([
+                "--resource-row-detail-1",
+                "--resource-row-detail-1",
+                "--resource-row-detail-1",
+            ]);
+        await Assert
+            .That(rows[1].RequiredElement("details").GetAttribute("name"))
+            .IsEqualTo("--resource-row-detail-2");
+    }
+
+    [Test]
+    [Arguments(ResourceRowDetailTabStyle.Default, "default")]
+    [Arguments(ResourceRowDetailTabStyle.Line, "line")]
+    public async Task Panels_AsTabs_RenderTabListInStyle(
+        ResourceRowDetailTabStyle style,
+        string variant
+    )
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource => ConfigurePanels(resource, ResourceRowDetailPanelLayout.Tabs(style))
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        await Assert.That(document.QuerySelector("[data-slot='accordion']")).IsNull();
+        await Assert
+            .That(document.RequiredElement("[data-slot='tabs-list']").GetAttribute("data-variant"))
+            .IsEqualTo(variant);
+    }
+
+    [Test]
+    public async Task Panels_WithUndefinedLayout_UseAccordionAndLogProblem()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+                ConfigurePanels(
+                    resource,
+                    ResourceRowDetailPanelLayout.Tabs((ResourceRowDetailTabStyle)7)
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(document.QuerySelector("sel-tabs")).IsNull();
+        await Assert.That(document.QuerySelector("[data-slot='accordion']")).IsNotNull();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The row detail panels are shown in an accordion because the layout's tab style 7 isn't a ResourceRowDetailTabStyle value"
+                    )
+                )
+            )
+            .IsTrue();
+    }
+
+    [Test]
+    public async Task PanelIcon_RendersOnAccordionTitle()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+                resource.Index(index =>
+                    index.EnableRowDetails(panels =>
+                    {
+                        panels.Add("Summary", "_ProductSummary").Icon = "tag";
+                        panels.Add("Details", "_ProductSummary");
+                    })
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var titles = document.QuerySelectorAll("details > summary");
+        await Assert.That(titles[0].QuerySelector(".sa-accordion-trigger-media > svg")).IsNotNull();
+        await Assert.That(titles[1].QuerySelector(".sa-accordion-trigger-media")).IsNull();
+    }
+
+    [Test]
+    public async Task PanelIcon_RendersOnTab()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+                resource.Index(index =>
+                    index.EnableRowDetails(
+                        panels =>
+                        {
+                            panels.Add("Summary", "_ProductSummary").Icon = "tag";
+                            panels.Add("Details", "_ProductSummary");
+                        },
+                        details => details.PanelLayout = ResourceRowDetailPanelLayout.Tabs()
+                    )
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var tabs = document.QuerySelectorAll("[role='tab']");
+        await Assert.That(tabs[0].QuerySelector("svg")).IsNotNull();
+        await Assert.That(tabs[1].QuerySelector("svg")).IsNull();
+        await Assert.That(tabs[0].TextContent.Trim()).IsEqualTo("Summary");
+    }
+
+    [Test]
+    public async Task Panels_AsTabs_RenderTabsForEachRow()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m), new(8, "Pencil", 1.25m)]),
+            resource => ConfigurePanels(resource, ResourceRowDetailPanelLayout.Tabs())
         );
         using var client = sut.GetTestClient();
 
@@ -281,12 +483,12 @@ public class ResourceRowDetailsTests
     }
 
     [Test]
-    public async Task Panels_LoadFirstPanelOnExpandAndOthersWhenShown()
+    public async Task Panels_AsTabs_LoadFirstPanelOnExpandAndOthersWhenShown()
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new([new(7, "Notebook", 8.50m)]),
-            ConfigurePanels
+            resource => ConfigurePanels(resource, ResourceRowDetailPanelLayout.Tabs())
         );
         using var client = sut.GetTestClient();
 
@@ -319,7 +521,7 @@ public class ResourceRowDetailsTests
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new([new(7, "Notebook", 8.50m)]),
-            ConfigurePanels
+            resource => ConfigurePanels(resource)
         );
         using var client = sut.GetTestClient();
 
@@ -343,7 +545,7 @@ public class ResourceRowDetailsTests
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new([new(7, "Notebook", 8.50m)]),
-            ConfigurePanels
+            resource => ConfigurePanels(resource)
         );
         using var client = sut.GetTestClient();
 
@@ -418,16 +620,28 @@ public class ResourceRowDetailsTests
             .IsTrue();
     }
 
-    private static void ConfigurePanels(ResourceBuilder<Product> resource)
+    private static void ConfigurePanels(
+        ResourceBuilder<Product> resource,
+        ResourceRowDetailPanelLayout? layout = null
+    )
     {
         resource.UseKey(product => product.Id);
         resource.Index(index =>
-            index.EnableRowDetails(panels =>
-            {
-                panels.Add<ProductNotesHandler>("Notes", "_ProductNotes");
-                panels.Add("Summary", "_ProductSummary");
-                panels.Add<ProductNotesHandler>("Archived notes", "_ProductNotes");
-            })
+            index.EnableRowDetails(
+                panels =>
+                {
+                    panels.Add<ProductNotesHandler>("Notes", "_ProductNotes");
+                    panels.Add("Summary", "_ProductSummary");
+                    panels.Add<ProductNotesHandler>("Archived notes", "_ProductNotes");
+                },
+                details =>
+                {
+                    if (layout is not null)
+                    {
+                        details.PanelLayout = layout;
+                    }
+                }
+            )
         );
     }
 

@@ -1,3 +1,4 @@
+using StellarAdmin.Diagnostics;
 using StellarAdmin.UI;
 
 namespace StellarAdmin.Resources.Options;
@@ -59,10 +60,20 @@ public sealed class ResourceRowDetailsOptions
     public DataGridRowDetailInset Inset { get; internal set; } = DataGridRowDetailInset.Aligned;
 
     /// <summary>
+    ///     Gets how a row's details display two or more panels.
+    /// </summary>
+    /// <value>
+    ///     The layout. The default is an accordion with any number of panels open at once.
+    /// </value>
+    public ResourceRowDetailPanelLayout PanelLayout { get; internal set; } =
+        ResourceRowDetailPanelLayout.Accordion();
+
+    /// <summary>
     ///     Gets the content displayed in a row's details.
     /// </summary>
     /// <value>
-    ///     The panels, in display order. More than one panel is shown as tabs.
+    ///     The panels, in display order. More than one panel is shown as
+    ///     <see cref="PanelLayout" /> sets.
     /// </value>
     public IReadOnlyList<ResourceRowDetailPanelOptions> Panels => MutablePanels;
 
@@ -89,4 +100,6 @@ public sealed class ResourceRowDetailsOptions
     public DataGridRowDetailToggle Toggle { get; internal set; } = DataGridRowDetailToggle.Start;
 
     internal List<ResourceRowDetailPanelOptions> MutablePanels { get; } = [];
+
+    internal ConfigurationSource? PanelLayoutSource { get; set; }
 }

@@ -8,10 +8,19 @@ namespace StellarAdmin.Resources.Options;
 public sealed class ResourceRowDetailPanelOptions
 {
     /// <summary>
-    ///     Gets a value that indicates whether the content loads when the row expands.
+    ///     Gets the name of the icon shown before the panel's title.
     /// </summary>
     /// <value>
-    ///     <see langword="true" /> if the content loads when the row expands; otherwise,
+    ///     The icon name, or <see langword="null" /> for no icon. The default is
+    ///     <see langword="null" />.
+    /// </value>
+    public string? Icon { get; internal set; }
+
+    /// <summary>
+    ///     Gets a value that indicates whether the content loads when it's shown.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the content loads when it's shown; otherwise,
     ///     <see langword="false" />.
     /// </value>
     /// <remarks>
@@ -21,7 +30,7 @@ public sealed class ResourceRowDetailPanelOptions
     public bool LoadsOnDemand => Loader is not null;
 
     /// <summary>
-    ///     Gets the name that identifies the panel among a row's tabs.
+    ///     Gets the name that identifies the panel among a row's panels.
     /// </summary>
     /// <value>
     ///     The name, or <see langword="null" /> when the panel is the only one.
@@ -34,10 +43,10 @@ public sealed class ResourceRowDetailPanelOptions
     public string PartialName { get; }
 
     /// <summary>
-    ///     Gets the label of the panel's tab.
+    ///     Gets the title of the panel's accordion item or tab.
     /// </summary>
     /// <value>
-    ///     The label, or <see langword="null" /> when the panel is the only one.
+    ///     The title, or <see langword="null" /> when the panel is the only one.
     /// </value>
     public string? Title { get; }
 

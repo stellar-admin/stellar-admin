@@ -379,7 +379,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <param name="panels">A delegate that adds the panels.</param>
     /// <returns>A builder that configures the rows.</returns>
     /// <remarks>
-    ///     Two or more panels are shown as tabs. No panels, a panel without a name, or two panels with the same name are configuration
+    ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout. No panels, a panel without a name, or two panels with the same name are configuration
     ///     problems. A panel without a name, and the later panel with a repeated name, are left
     ///     out, and without panels rows don't expand.
     /// </remarks>
@@ -404,7 +404,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <param name="configure">A delegate that configures the rows.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     Two or more panels are shown as tabs. No panels, a panel without a name, or two panels with the same name are configuration
+    ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout. No panels, a panel without a name, or two panels with the same name are configuration
     ///     problems. A panel without a name, and the later panel with a repeated name, are left
     ///     out, and without panels rows don't expand.
     /// </remarks>

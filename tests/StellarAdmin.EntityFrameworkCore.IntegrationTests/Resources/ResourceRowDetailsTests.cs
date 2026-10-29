@@ -93,6 +93,46 @@ public class ResourceRowDetailsTests
             .Contains("<p data-test=\"pricing\">Apple, 20, Technology</p>");
     }
 
+    [Test]
+    public async Task ProjectedPanelWithConfigure_RendersConfiguredPanel()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.Index(index =>
+                index.EnableRowDetails(panels =>
+                {
+                    panels.Add(
+                        "Pricing",
+                        "_ProductPricing",
+                        product => new ProductPricing(
+                            product.Name,
+                            product.Price,
+                            product.Category != null ? product.Category.Name : null
+                        ),
+                        panel =>
+                        {
+                            panel.Name = "prices";
+                            panel.Icon = "tag";
+                        }
+                    );
+                    panels.Add(
+                        "Summary",
+                        "_ProductPricing",
+                        product => new ProductPricing(product.Name, product.Price, null)
+                    );
+                })
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var html = await client.GetStringAsync("/stellaradmin/products");
+
+        // Assert
+        await Assert.That(html).Contains("/stellaradmin/products/rowdetail/2?panel=prices");
+        await Assert.That(html).Contains("sa-accordion-trigger-media");
+    }
+
     private static void ConfigureProjectedDetails(EfCoreResourceBuilder<Product> resource) =>
         resource.Index(index =>
             index.EnableRowDetails(

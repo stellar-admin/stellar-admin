@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
 
@@ -73,6 +74,35 @@ public sealed class ResourceRowDetailsBuilder<TResource>
     public DataGridRowDetailInset Inset
     {
         set => Configure(options => options.Inset = value);
+    }
+
+    /// <summary>
+    ///     Sets how a row's details display two or more panels.
+    /// </summary>
+    /// <value>
+    ///     The layout, from <see cref="ResourceRowDetailPanelLayout.Accordion()" /> or
+    ///     <see cref="ResourceRowDetailPanelLayout.Tabs()" />. The default is an accordion with
+    ///     any number of panels open at once.
+    /// </value>
+    /// <remarks>
+    ///     A layout made with a value that isn't defined is a configuration problem, and the
+    ///     default is used.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
+    public ResourceRowDetailPanelLayout PanelLayout
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            var source = ConfigurationSource.Capture();
+            Configure(options =>
+            {
+                options.PanelLayout = value;
+                options.PanelLayoutSource = source;
+            });
+        }
     }
 
     /// <summary>

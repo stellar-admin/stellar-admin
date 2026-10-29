@@ -578,6 +578,7 @@ internal sealed partial class DemoGenerator
     /// <summary>The demo partials to render and emit source includes for.</summary>
     public static readonly DemoPartial[] DemoPartials =
     [
+        new("Accordion/_Contained"),
         new("Accordion/_Disabled"),
         new("Accordion/_Intro"),
         new("Accordion/_Open"),

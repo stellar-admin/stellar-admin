@@ -57,6 +57,40 @@ public class ResourceRowDetailPanelsBuilderTests
         await Assert.That(registration.Lifetime).IsEqualTo(ServiceLifetime.Scoped);
     }
 
+    [Test]
+    public async Task Add_WithConfigure_ConfiguresPanelAndReturnsBuilder()
+    {
+        // Arrange
+        var sut = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
+
+        // Act
+        var result = sut.Add("Summary", "_ProductSummary", panel => panel.Icon = "receipt");
+
+        // Assert
+        await Assert.That(result).IsSameReferenceAs(sut);
+        await Assert.That(sut.Panels.Single().Icon).IsEqualTo("receipt");
+        await Assert.That(sut.Panels.Single().LoadsOnDemand).IsFalse();
+    }
+
+    [Test]
+    public async Task Add_WithHandlerAndConfigure_ConfiguresPanelAndReturnsBuilder()
+    {
+        // Arrange
+        var sut = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
+
+        // Act
+        var result = sut.Add<ProductNotesHandler>(
+            "Notes",
+            "_ProductNotes",
+            panel => panel.Name = "notes-panel"
+        );
+
+        // Assert
+        await Assert.That(result).IsSameReferenceAs(sut);
+        await Assert.That(sut.Panels.Single().Name).IsEqualTo("notes-panel");
+        await Assert.That(sut.Panels.Single().LoadsOnDemand).IsTrue();
+    }
+
     public sealed class Product
     {
         public int Id { get; set; }
