@@ -192,6 +192,39 @@ public class ResourceLookupTests
     }
 
     [Test]
+    public async Task Create_WithKeyOfZero_ShowsChooseButton()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowCreate(create =>
+            {
+                create.UseFactory(() => new Product { CategoryId = 0 });
+                create.Fields(fields =>
+                {
+                    fields.Add(product => product.Name);
+                    fields
+                        .Add(product => product.CategoryId)
+                        .UseLookupSheetEditor(options => ConfigureItems(options, _ => { }));
+                });
+            })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/create");
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(document.QuerySelector("#Entity_CategoryId-selected")!.HasAttribute("hidden"))
+            .IsTrue();
+        await Assert
+            .That(document.QuerySelector("#Entity_CategoryId-empty")!.HasAttribute("hidden"))
+            .IsFalse();
+    }
+
+    [Test]
     public async Task Search_MatchesTextIgnoringCase()
     {
         // Arrange

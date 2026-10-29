@@ -488,6 +488,29 @@ public class LookupSheetEditorTests
     }
 
     [Test]
+    public async Task UnsetValue_ShowsChooseButtonAndHidesSelection()
+    {
+        // Arrange
+        await using var sut = await CreateLookupFieldsHost(
+            fields =>
+                fields.Add(model => model.PrimaryCategoryId).UseLookupSheetEditor(UseCategories),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(document.RequiredElement("#Entity_PrimaryCategoryId-selected").HasAttribute("hidden"))
+            .IsTrue();
+        await Assert
+            .That(document.RequiredElement("#Entity_PrimaryCategoryId-empty").HasAttribute("hidden"))
+            .IsFalse();
+    }
+
+    [Test]
     public async Task LookupButtons_OpenSheet()
     {
         // Arrange

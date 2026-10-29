@@ -47,7 +47,8 @@ internal static class LookupSourceItems
         var items = await find(values, cancellationToken);
         var mediaType = LookupSourceShape.For(source.GetType()).MediaType;
 
-        // A value the source no longer has is still displayed, so the selection stays visible
+        // A value the source no longer has is still displayed, so the selection stays visible. A value type's default,
+        // such as a new record's key of 0, is no selection
         return values
             .Select(current =>
                 items.FirstOrDefault(item =>
@@ -55,11 +56,13 @@ internal static class LookupSourceItems
                 )
                     is { } item
                     ? CreateChoice(source, item, mediaType)
+                    : IsUnset(current) ? null
                     : new ChoiceItem(
                         FormatValue(current),
                         Convert.ToString(current, CultureInfo.InvariantCulture) ?? ""
                     )
             )
+            .OfType<ChoiceItem>()
             .ToArray();
     }
 
@@ -117,6 +120,9 @@ internal static class LookupSourceItems
     // Selected values are posted with the form, which binds them in the current culture
     private static string FormatValue<TValue>(TValue current) =>
         Convert.ToString(current, CultureInfo.CurrentCulture) ?? "";
+
+    private static bool IsUnset<TValue>(TValue current) =>
+        typeof(TValue).IsValueType && EqualityComparer<TValue>.Default.Equals(current, default!);
 
     private static IReadOnlyList<TValue> ReadValues<TValue>(FieldEditorContext context) =>
         context.Value switch

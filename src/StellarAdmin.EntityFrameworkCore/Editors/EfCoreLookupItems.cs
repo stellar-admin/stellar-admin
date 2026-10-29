@@ -93,7 +93,8 @@ internal sealed class EfCoreLookupItems<TEntity, TValue>
             .Select(_projection)
             .ToListAsync(cancellationToken);
 
-        // A value the entity set no longer has is still displayed, so the selection stays visible
+        // A value the entity set no longer has is still displayed, so the selection stays visible. A value type's
+        // default, such as a new entity's key of 0, is no selection
         return values
             .Select(current =>
                 rows.FirstOrDefault(row =>
@@ -101,11 +102,13 @@ internal sealed class EfCoreLookupItems<TEntity, TValue>
                 )
                     is { } row
                     ? CreateItem(row)
+                    : IsUnset(current) ? null
                     : new ChoiceItem(
                         FormatValue(current),
                         Convert.ToString(current, CultureInfo.InvariantCulture) ?? ""
                     )
             )
+            .OfType<ChoiceItem>()
             .ToArray();
     }
 
@@ -214,6 +217,9 @@ internal sealed class EfCoreLookupItems<TEntity, TValue>
 
         return paths;
     }
+
+    private static bool IsUnset(TValue current) =>
+        typeof(TValue).IsValueType && EqualityComparer<TValue>.Default.Equals(current, default!);
 
     private static IReadOnlyList<TValue> ReadValues(FieldEditorContext context) =>
         context.Value switch

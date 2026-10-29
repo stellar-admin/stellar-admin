@@ -61,14 +61,17 @@ internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceIte
         var result = await GetDataSource(services)
             .ListAsync(new ResourceListRequest { Keys = keys }, cancellationToken);
 
-        // A value the data source no longer has is still displayed, so the selection stays visible
+        // A value the data source no longer has is still displayed, so the selection stays visible. A value type's
+        // default, such as a new record's key of 0, is no selection
         return values
             .Select(
                 (value, index) =>
                     result.Items.FirstOrDefault(record => _key(record) == keys[index]) is { } record
                         ? CreateItem(record)
-                        : new ChoiceItem(FormatValue(value), keys[index])
+                    : IsUnset(value) ? null
+                    : new ChoiceItem(FormatValue(value), keys[index])
             )
+            .OfType<ChoiceItem>()
             .ToArray();
     }
 
@@ -118,6 +121,9 @@ internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceIte
     // Selected values are posted with the form, which binds them in the current culture
     private static string FormatValue(object? value) =>
         Convert.ToString(value, CultureInfo.CurrentCulture) ?? "";
+
+    private static bool IsUnset(object value) =>
+        value.GetType().IsValueType && value.Equals(Activator.CreateInstance(value.GetType()));
 
     private static IReadOnlyList<object> ReadValues(object? value) =>
         value switch
