@@ -1,6 +1,31 @@
 @page
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><title>Departures this week</title></head>
-<body><h1>Departures this week</h1></body>
-</html>
+@model StellarAdmin.ScenarioTesting.Host.Pages.Admin.DeparturesModel
+@using StellarAdmin
+@addTagHelper *, StellarAdmin.UI
+@{
+    Layout = StellarAdminLayouts.Default;
+    ViewData["Title"] = "Departures this week";
+}
+
+<sa-page-container>
+    <sa-page-header>
+        <sa-page-header-title>Departures this week</sa-page-header-title>
+    </sa-page-header>
+    <sa-table>
+        <sa-table-header>
+            <sa-table-row>
+                <sa-table-head>Reference</sa-table-head>
+                <sa-table-head>Departs</sa-table-head>
+            </sa-table-row>
+        </sa-table-header>
+        <sa-table-body>
+            @foreach (var booking in Model.Departures)
+            {
+                <sa-table-row>
+                    <sa-table-cell>@booking.Reference</sa-table-cell>
+                    <sa-table-cell>@booking.Departure.StartDate.ToString("d MMM yyyy")</sa-table-cell>
+                </sa-table-row>
+            }
+        </sa-table-body>
+    </sa-table>
+</sa-page-container>

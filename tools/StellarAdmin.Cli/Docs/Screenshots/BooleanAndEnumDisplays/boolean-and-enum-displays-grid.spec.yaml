@@ -1,0 +1,8 @@
+# The trips grid with Live or Draft in the Published column, and the difficulty, with the page title, in light and dark
+scenario: boolean-and-enum-displays-grid
+steps:
+  # Page 8 has two drafts among the published trips
+  - goto: /stellaradmin/trips?page=8
+  - screenshot: { name: boolean-and-enum-displays-grid, locator: "#index-page-grid", margin: { top: 72, right: 32, bottom: 32, left: 32 } }
+  - colorScheme: dark
+  - screenshot: { name: boolean-and-enum-displays-grid-dark, locator: "#index-page-grid", margin: { top: 72, right: 32, bottom: 32, left: 32 } }

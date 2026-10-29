@@ -1,0 +1,8 @@
+# A trip's edit page with the group size slider, in light and dark
+scenario: inputs-slider
+steps:
+  - viewport: { width: 1280, height: 400 }
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: inputs-slider
+  - colorScheme: dark
+  - screenshot: inputs-slider-dark

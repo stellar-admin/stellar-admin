@@ -1,0 +1,7 @@
+# The bookings grid with each booking's traveller, with the page title, in light and dark
+scenario: related-values-traveller
+steps:
+  - goto: /stellaradmin/bookings
+  - screenshot: { name: related-values-traveller, locator: "#index-page-grid", margin: { top: 72, right: 32, bottom: 32, left: 32 } }
+  - colorScheme: dark
+  - screenshot: { name: related-values-traveller-dark, locator: "#index-page-grid", margin: { top: 72, right: 32, bottom: 32, left: 32 } }

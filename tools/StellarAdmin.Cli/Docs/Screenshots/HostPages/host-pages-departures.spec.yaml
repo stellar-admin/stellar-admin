@@ -1,0 +1,8 @@
+# The host's Departures this week page inside the admin panel, in light and dark
+scenario: host-pages-departures
+steps:
+  - viewport: { width: 1280, height: 480 }
+  - goto: /Admin/Departures
+  - screenshot: host-pages-departures
+  - colorScheme: dark
+  - screenshot: host-pages-departures-dark

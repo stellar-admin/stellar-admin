@@ -1,0 +1,9 @@
+# A booking's edit page with read-only and disabled fields, in light and dark
+scenario: fields-read-only-disabled
+steps:
+  - viewport: { width: 1280, height: 520 }
+  # Booking 7 has special requests, so the disabled field shows faded text
+  - goto: /stellaradmin/bookings/edit/7
+  - screenshot: fields-read-only-disabled
+  - colorScheme: dark
+  - screenshot: fields-read-only-disabled-dark

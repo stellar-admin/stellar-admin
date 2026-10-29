@@ -1,0 +1,8 @@
+# A guide's edit page with the badge code input, in light and dark
+scenario: inputs-code
+steps:
+  - viewport: { width: 1280, height: 470 }
+  - goto: /stellaradmin/guides/edit/1
+  - screenshot: inputs-code
+  - colorScheme: dark
+  - screenshot: inputs-code-dark

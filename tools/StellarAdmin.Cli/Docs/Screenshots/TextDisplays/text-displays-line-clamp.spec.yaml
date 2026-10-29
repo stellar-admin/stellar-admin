@@ -1,0 +1,7 @@
+# The trips grid with summaries cut off after 2 lines, with the page title, in light and dark
+scenario: text-displays-line-clamp
+steps:
+  - goto: /stellaradmin/trips
+  - screenshot: { name: text-displays-line-clamp, locator: "#index-page-grid", margin: { top: 72, right: 32, bottom: 32, left: 32 } }
+  - colorScheme: dark
+  - screenshot: { name: text-displays-line-clamp-dark, locator: "#index-page-grid", margin: { top: 72, right: 32, bottom: 32, left: 32 } }
