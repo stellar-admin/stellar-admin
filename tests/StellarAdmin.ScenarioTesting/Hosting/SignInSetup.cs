@@ -1,9 +1,11 @@
 using System.Net;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using VoyagerTravel.Data;
 
 namespace StellarAdmin.ScenarioTesting.Hosting;
@@ -20,7 +22,8 @@ public static class SignInSetup
     {
         services
             .AddIdentity<ApplicationUser, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddClaimsPrincipalFactory<DisplayNameClaimsPrincipalFactory>();
         services.ConfigureApplicationCookie(cookie =>
         {
             cookie.LoginPath = SignInPath;
@@ -89,5 +92,26 @@ public static class SignInSetup
         }
 
         return Page("Sign in", $"<ul>{string.Concat(items)}</ul>");
+    }
+
+    // Names the signed-in user by their display name rather than their user name, which is their email
+    private sealed class DisplayNameClaimsPrincipalFactory(
+        UserManager<ApplicationUser> users,
+        RoleManager<IdentityRole> roles,
+        IOptions<IdentityOptions> options
+    ) : UserClaimsPrincipalFactory<ApplicationUser, IdentityRole>(users, roles, options)
+    {
+        protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ApplicationUser user)
+        {
+            var identity = await base.GenerateClaimsAsync(user);
+            if (identity.FindFirst(identity.NameClaimType) is { } name)
+            {
+                identity.RemoveClaim(name);
+            }
+
+            identity.AddClaim(new Claim(identity.NameClaimType, user.DisplayName));
+
+            return identity;
+        }
     }
 }

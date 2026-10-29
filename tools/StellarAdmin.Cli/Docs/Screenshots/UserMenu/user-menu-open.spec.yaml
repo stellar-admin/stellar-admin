@@ -1,0 +1,11 @@
+# The bottom of the sidebar with the user menu open to its right, in light and dark
+scenario: user-menu-open
+user: priya@voyager.travel
+steps:
+  # A short window, so the crop shows little of the page beside the menu
+  - viewport: { width: 1280, height: 360 }
+  - goto: /stellaradmin
+  - click: "[popovertarget='sa-user-menu']"
+  - screenshot: { name: user-menu-open, locator: "[data-sidebar='footer']", margin: { top: 110, right: 250, bottom: 8, left: 8 } }
+  - colorScheme: dark
+  - screenshot: { name: user-menu-open-dark, locator: "[data-sidebar='footer']", margin: { top: 110, right: 250, bottom: 8, left: 8 } }
