@@ -1,0 +1,8 @@
+# The trip edit page with the trip's tags as chips in the multi-lookup, in light and dark
+scenario: many-to-many-multi-lookup
+steps:
+  - viewport: { width: 1280, height: 480 }
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: many-to-many-multi-lookup
+  - colorScheme: dark
+  - screenshot: many-to-many-multi-lookup-dark

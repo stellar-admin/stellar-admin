@@ -1,0 +1,9 @@
+# Tokyo's edit page with its hero image in the dropzone layout, in light and dark
+scenario: image-editor-layout-dropzone
+steps:
+  - viewport: { width: 1280, height: 640 }
+  - goto: /stellaradmin/destinations/edit/2
+  - expectVisible: "img[src$='tokyo.webp']"
+  - screenshot: image-editor-layout-dropzone
+  - colorScheme: dark
+  - screenshot: image-editor-layout-dropzone-dark

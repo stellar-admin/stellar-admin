@@ -1,0 +1,10 @@
+# The trip edit page with the icon picker open, in light and dark
+scenario: icon-editor-picker
+steps:
+  - viewport: { width: 1280, height: 720 }
+  - goto: /stellaradmin/trips/edit/1
+  - click: "[data-slot='icon-picker-trigger']"
+  - expectVisible: { selector: "[data-slot='icon-picker-popover'] [role='option'] >> nth=0", timeout: 5000 }
+  - screenshot: icon-editor-picker
+  - colorScheme: dark
+  - screenshot: icon-editor-picker-dark

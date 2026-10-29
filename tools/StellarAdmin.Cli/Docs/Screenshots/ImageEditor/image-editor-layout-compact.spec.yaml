@@ -1,0 +1,9 @@
+# Tokyo's edit page with its hero image in the compact layout, in light and dark
+scenario: image-editor-layout-compact
+steps:
+  - viewport: { width: 1280, height: 440 }
+  - goto: /stellaradmin/destinations/edit/2
+  - expectVisible: "img[src$='tokyo.webp']"
+  - screenshot: image-editor-layout-compact
+  - colorScheme: dark
+  - screenshot: image-editor-layout-compact-dark

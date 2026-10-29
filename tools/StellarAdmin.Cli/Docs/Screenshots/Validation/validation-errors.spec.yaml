@@ -1,0 +1,12 @@
+# The trip edit form after saving an empty code and a group size of 60, with the errors, in light and dark
+scenario: validation-errors
+steps:
+  - viewport: { width: 1280, height: 560 }
+  - goto: /stellaradmin/trips/edit/1
+  - fill: { locator: { role: textbox, name: Code }, text: "" }
+  - fill: { locator: { role: spinbutton, name: Max group size }, text: "60" }
+  - click: { role: button, name: Save Trip }
+  - expectVisible: { selector: "text=The Code field is required.", timeout: 3000 }
+  - screenshot: validation-errors
+  - colorScheme: dark
+  - screenshot: validation-errors-dark

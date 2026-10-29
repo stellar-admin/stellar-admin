@@ -1,0 +1,9 @@
+# Tokyo's edit page with its hero image in the attachment layout, in light and dark
+scenario: image-editor-layout-attachment
+steps:
+  - viewport: { width: 1280, height: 440 }
+  - goto: /stellaradmin/destinations/edit/2
+  - expectVisible: "img[src$='tokyo.webp']"
+  - screenshot: image-editor-layout-attachment
+  - colorScheme: dark
+  - screenshot: image-editor-layout-attachment-dark

@@ -1,0 +1,8 @@
+# The trip edit page with the description in the rich text editor, in light and dark
+scenario: rich-text-editor-trip
+steps:
+  - viewport: { width: 1280, height: 640 }
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: rich-text-editor-trip
+  - colorScheme: dark
+  - screenshot: rich-text-editor-trip-dark

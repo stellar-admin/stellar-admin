@@ -1,0 +1,38 @@
+# Choosing Japan in the country lookup enables the city lookup, whose sheet then lists only Japan's cities, in light and dark
+scenario: dependent-fields-cities
+steps:
+  - goto: /stellaradmin/destinations/create
+  - record: { name: dependent-fields-cities, gif: true }
+  - pause: 600
+  - click: { role: button, name: Choose country }
+  - expectVisible: { selector: "[role='option']:has-text('Argentina')", timeout: 3000 }
+  - pause: 500
+  - type: { locator: { role: combobox }, text: Japan }
+  - expectVisible: { selector: "[role='option']:has-text('Japan')", timeout: 3000 }
+  - pause: 600
+  - click: "[role='option']:has-text('Japan')"
+  - pause: 700
+  - click: { role: button, name: Choose city }
+  - expectVisible: { selector: "[role='option']:has-text('Kyoto')", timeout: 3000 }
+  - pause: 1200
+  - click: "[role='option']:has-text('Kyoto')"
+  - pause: 1200
+  - recordEnd: true
+  - colorScheme: dark
+  - goto: /stellaradmin/destinations/create
+  - record: { name: dependent-fields-cities-dark, gif: true }
+  - pause: 600
+  - click: { role: button, name: Choose country }
+  - expectVisible: { selector: "[role='option']:has-text('Argentina')", timeout: 3000 }
+  - pause: 500
+  - type: { locator: { role: combobox }, text: Japan }
+  - expectVisible: { selector: "[role='option']:has-text('Japan')", timeout: 3000 }
+  - pause: 600
+  - click: "[role='option']:has-text('Japan')"
+  - pause: 700
+  - click: { role: button, name: Choose city }
+  - expectVisible: { selector: "[role='option']:has-text('Kyoto')", timeout: 3000 }
+  - pause: 1200
+  - click: "[role='option']:has-text('Kyoto')"
+  - pause: 1200
+  - recordEnd: true

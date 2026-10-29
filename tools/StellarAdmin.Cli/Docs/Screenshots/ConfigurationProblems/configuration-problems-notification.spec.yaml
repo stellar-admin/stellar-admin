@@ -1,0 +1,14 @@
+# The configuration problems notification at the bottom of the trips grid, and the panel it opens, in light and dark
+scenario: configuration-problems-notification
+steps:
+  - viewport: { width: 1280, height: 600 }
+  - goto: /stellaradmin/trips
+  - screenshot: { name: configuration-problems-notification, locator: ".sa-configuration-problems-trigger", margin: 48 }
+  - colorScheme: dark
+  - screenshot: { name: configuration-problems-notification-dark, locator: ".sa-configuration-problems-trigger", margin: 48 }
+  - colorScheme: light
+  - click: .sa-configuration-problems-trigger
+  - expectVisible: "#configuration-problems"
+  - screenshot: configuration-problems-panel
+  - colorScheme: dark
+  - screenshot: configuration-problems-panel-dark

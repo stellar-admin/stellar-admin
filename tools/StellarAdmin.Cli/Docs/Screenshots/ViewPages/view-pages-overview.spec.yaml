@@ -1,0 +1,8 @@
+# A booking's view page with its Trip and Traveller sections, in light and dark
+scenario: view-pages-overview
+steps:
+  - viewport: { width: 1280, height: 560 }
+  - goto: /stellaradmin/bookings/view/1
+  - screenshot: view-pages-overview
+  - colorScheme: dark
+  - screenshot: view-pages-overview-dark

@@ -1,0 +1,8 @@
+# The trips grid from the introduction's example, with the Trips link in the sidebar, in light and dark
+scenario: index-overview
+steps:
+  - viewport: { width: 1280, height: 600 }
+  - goto: /stellaradmin/trips
+  - screenshot: index-overview
+  - colorScheme: dark
+  - screenshot: index-overview-dark

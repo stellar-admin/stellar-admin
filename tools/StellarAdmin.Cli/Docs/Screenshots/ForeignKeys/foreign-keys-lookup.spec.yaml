@@ -1,0 +1,11 @@
+# The booking create page with the traveller lookup's sheet open, searched for Walker, in light and dark
+scenario: foreign-keys-lookup
+steps:
+  - viewport: { width: 1280, height: 640 }
+  - goto: /stellaradmin/bookings/create
+  - click: { role: button, name: Choose traveller }
+  - fill: { locator: { role: combobox }, text: Walker }
+  - expectVisible: { selector: "[role='option']:has-text('Marion Walker')", timeout: 3000 }
+  - screenshot: foreign-keys-lookup
+  - colorScheme: dark
+  - screenshot: foreign-keys-lookup-dark
