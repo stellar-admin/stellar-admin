@@ -1,0 +1,8 @@
+# The highlights of Tokyo to Kyoto by Bullet Train in a numbered list editor, with the Add highlight button, in light
+# and dark
+scenario: list-and-dictionary-editors-list
+steps:
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: { name: list-and-dictionary-editors-list, locator: "[data-slot='field']:has(label:text-is('Highlights'))", margin: 24 }
+  - colorScheme: dark
+  - screenshot: { name: list-and-dictionary-editors-list-dark, locator: "[data-slot='field']:has(label:text-is('Highlights'))", margin: 24 }

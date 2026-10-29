@@ -11,6 +11,8 @@
     <!-- Referenced for their static web assets, which this app's manifest lists -->
     <ProjectReference Include="..\..\src\StellarAdmin\StellarAdmin.csproj" />
     <ProjectReference Include="..\..\src\StellarAdmin.EntityFrameworkCore\StellarAdmin.EntityFrameworkCore.csproj" />
+    <!-- For the models of the admin views in Areas/StellarAdmin -->
+    <ProjectReference Include="..\VoyagerTravel\VoyagerTravel.csproj" />
   </ItemGroup>
   <ItemGroup>
     <!-- WebApplicationFactory's content root, since only test projects get Mvc.Testing's content root manifest -->

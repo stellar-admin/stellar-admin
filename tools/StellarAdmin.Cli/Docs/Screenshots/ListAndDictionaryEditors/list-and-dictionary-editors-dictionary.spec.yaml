@@ -1,0 +1,8 @@
+# The baggage allowance of Tokyo to Kyoto by Bullet Train in a dictionary editor with Cabin and Allowance columns,
+# in light and dark
+scenario: list-and-dictionary-editors-dictionary
+steps:
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: { name: list-and-dictionary-editors-dictionary, locator: "[data-slot='field']:has(label:text-is('BaggageAllowance'))", margin: 24 }
+  - colorScheme: dark
+  - screenshot: { name: list-and-dictionary-editors-dictionary-dark, locator: "[data-slot='field']:has(label:text-is('BaggageAllowance'))", margin: 24 }

@@ -1,0 +1,7 @@
+# The Trip section of the trip edit page in the Card layout, in light and dark
+scenario: form-layout-section-layout-card
+steps:
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: { name: form-layout-section-layout-card, locator: "section[data-slot='form-section']:has(h2:text-is('Trip'))", margin: { top: 12, right: 24, bottom: 24, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: form-layout-section-layout-card-dark, locator: "section[data-slot='form-section']:has(h2:text-is('Trip'))", margin: { top: 12, right: 24, bottom: 24, left: 24 } }

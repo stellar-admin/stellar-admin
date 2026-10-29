@@ -1,0 +1,17 @@
+# The highlights after saving a trip whose second highlight is its title, with the error under that row, in light
+# and dark
+scenario: list-and-dictionary-editors-row-error
+steps:
+  - goto: /stellaradmin/trips/create
+  - fill: { locator: { role: textbox, name: Title }, text: Lisbon & the Algarve }
+  - click: { role: button, name: Add item }
+  - fill: { locator: "input[aria-label='Item 1']", text: Tram 28 through Alfama }
+  - click: { role: button, name: Add item }
+  - fill: { locator: "input[aria-label='Item 2']", text: Lisbon & the Algarve }
+  - click: { role: button, name: Add item }
+  - fill: { locator: "input[aria-label='Item 3']", text: Benagil sea caves }
+  - click: { role: button, name: Create Trip }
+  - expectVisible: { selector: "text=A highlight can't be the trip's name.", timeout: 5000 }
+  - screenshot: { name: list-and-dictionary-editors-row-error, locator: "[data-slot='field']:has(label:text-is('Highlights'))", margin: 24 }
+  - colorScheme: dark
+  - screenshot: { name: list-and-dictionary-editors-row-error-dark, locator: "[data-slot='field']:has(label:text-is('Highlights'))", margin: 24 }

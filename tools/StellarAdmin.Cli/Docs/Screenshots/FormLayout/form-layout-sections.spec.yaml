@@ -1,0 +1,10 @@
+# The whole window: the trip edit page with the Trip section in two columns and the Pricing section in three, in
+# light and dark
+scenario: form-layout-sections
+steps:
+  # A shorter window, so the shot ends below the buttons
+  - viewport: { width: 1280, height: 640 }
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: form-layout-sections
+  - colorScheme: dark
+  - screenshot: form-layout-sections-dark

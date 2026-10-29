@@ -1,0 +1,8 @@
+@model BookingHistory
+
+<ul class="space-y-1 text-sm">
+    @foreach (var change in Model.Changes)
+    {
+        <li><span class="text-muted-foreground">@change.At.ToString("d MMM yyyy")</span> @change.Description</li>
+    }
+</ul>
