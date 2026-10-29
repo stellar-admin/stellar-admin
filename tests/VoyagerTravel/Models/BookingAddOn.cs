@@ -19,5 +19,6 @@ public class BookingAddOn
     public int Quantity { get; set; } = 1;
 
     [Precision(10, 2)]
+    [Display(Name = "Unit price")]
     public decimal UnitPrice { get; set; }
 }

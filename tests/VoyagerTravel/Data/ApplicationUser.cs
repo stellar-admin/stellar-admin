@@ -6,5 +6,6 @@ namespace VoyagerTravel.Data;
 public class ApplicationUser : IdentityUser
 {
     [MaxLength(100)]
+    [Display(Name = "Display name")]
     public string DisplayName { get; set; } = string.Empty;
 }

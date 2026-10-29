@@ -1,4 +1,4 @@
-# The top of the bookings grid sorted by Booked At, with the sort indicators of both sortable columns marked,
+# The top of the bookings grid sorted by Booked at, with the sort indicators of both sortable columns marked,
 # in light and dark
 scenario: sorting-and-paging-sortable
 steps:

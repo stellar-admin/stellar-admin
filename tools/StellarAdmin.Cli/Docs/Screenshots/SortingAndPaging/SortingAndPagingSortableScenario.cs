@@ -8,7 +8,7 @@ namespace StellarAdmin.Cli.Docs.Screenshots.SortingAndPaging;
 public sealed class SortingAndPagingSortableScenario : Scenario
 {
     public override string Description =>
-        "The bookings grid with sortable Booked At and Total Amount columns.";
+        "The bookings grid with sortable Booked at and Total amount columns.";
 
     public override string StartPath => "/stellaradmin/bookings";
 

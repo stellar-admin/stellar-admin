@@ -13,6 +13,7 @@ public class ItineraryDay
     public Trip Trip { get; set; } = null!;
 
     [Range(1, 60)]
+    [Display(Name = "Day number")]
     public int DayNumber { get; set; }
 
     [MaxLength(120)]

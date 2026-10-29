@@ -17,10 +17,13 @@ public class SupplierInvoice
     public Departure? Departure { get; set; }
 
     [MaxLength(30)]
+    [Display(Name = "Invoice number")]
     public required string InvoiceNumber { get; set; }
 
+    [Display(Name = "Issued on")]
     public DateOnly IssuedOn { get; set; }
 
+    [Display(Name = "Due on")]
     public DateOnly DueOn { get; set; }
 
     [Precision(10, 2)]

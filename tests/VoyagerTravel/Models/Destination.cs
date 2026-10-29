@@ -13,16 +13,20 @@ public class Destination
 
     public Country Country { get; set; } = null!;
 
+    [Display(Name = "Parent destination")]
     public int? ParentDestinationId { get; set; }
 
+    [Display(Name = "Parent destination")]
     public Destination? ParentDestination { get; set; }
 
+    [Display(Name = "Child destinations")]
     public List<Destination> ChildDestinations { get; set; } = [];
 
     public int? CityId { get; set; }
 
     public City? City { get; set; }
 
+    [Display(Name = "Requires airport")]
     public bool RequiresAirport { get; set; }
 
     [MaxLength(300)]
@@ -31,10 +35,12 @@ public class Destination
     public string? Description { get; set; }
 
     [MaxLength(500)]
+    [Display(Name = "Hero image URL")]
     public string? HeroImageUrl { get; set; }
 
     public Climate Climate { get; set; }
 
+    [Display(Name = "Featured")]
     public bool IsFeatured { get; set; }
 
     public List<Trip> Trips { get; set; } = [];

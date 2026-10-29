@@ -19,9 +19,11 @@ public class RoomAllocation
     public int Nights { get; set; }
 
     [Range(1, 40)]
+    [Display(Name = "Rooms reserved")]
     public int RoomsReserved { get; set; }
 
     [Precision(10, 2)]
+    [Display(Name = "Cost per room night")]
     public decimal CostPerRoomNight { get; set; }
 
     public AllocationStatus Status { get; set; } = AllocationStatus.Requested;

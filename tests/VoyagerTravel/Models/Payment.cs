@@ -16,9 +16,11 @@ public class Payment
 
     public PaymentMethod Method { get; set; }
 
+    [Display(Name = "Paid at")]
     public DateTime PaidAt { get; set; }
 
     [MaxLength(40)]
+    [Display(Name = "Provider reference")]
     public string? ProviderReference { get; set; }
 
     public PaymentStatus Status { get; set; } = PaymentStatus.Succeeded;

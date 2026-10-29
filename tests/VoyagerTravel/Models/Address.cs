@@ -16,8 +16,10 @@ public class Address
     public required string City { get; set; }
 
     [MaxLength(20)]
+    [Display(Name = "Postal code")]
     public string? PostalCode { get; set; }
 
     [MaxLength(2)]
+    [Display(Name = "Country code")]
     public required string CountryCode { get; set; }
 }

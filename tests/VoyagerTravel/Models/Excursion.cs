@@ -19,13 +19,16 @@ public class Excursion
     public required string Name { get; set; }
 
     [Precision(4, 1)]
+    [Display(Name = "Duration (hours)")]
     public decimal DurationHours { get; set; }
 
     [Precision(10, 2)]
     public decimal Price { get; set; }
 
     [MaxLength(500)]
+    [Display(Name = "Image URL")]
     public string? ImageUrl { get; set; }
 
+    [Display(Name = "Active")]
     public bool IsActive { get; set; } = true;
 }

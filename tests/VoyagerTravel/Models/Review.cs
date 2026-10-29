@@ -23,7 +23,9 @@ public class Review
     [MaxLength(4000)]
     public string? Body { get; set; }
 
+    [Display(Name = "Submitted at")]
     public DateTime SubmittedAt { get; set; }
 
+    [Display(Name = "Approved")]
     public bool IsApproved { get; set; }
 }

@@ -13,5 +13,6 @@ public class City
 
     public Country Country { get; set; } = null!;
 
+    [Display(Name = "Has airport")]
     public bool HasAirport { get; set; }
 }

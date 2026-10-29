@@ -20,21 +20,27 @@ public class Booking
 
     public Departure Departure { get; set; } = null!;
 
+    [Display(Name = "Booked at")]
     public DateTime BookedAt { get; set; }
 
+    [Display(Name = "Updated at")]
     public DateTime? UpdatedAt { get; set; }
 
     public BookingStatus Status { get; set; } = BookingStatus.Pending;
 
     [Precision(10, 2)]
+    [Display(Name = "Total amount")]
     public decimal TotalAmount { get; set; }
 
     [MaxLength(1000)]
+    [Display(Name = "Special requests")]
     public string? SpecialRequests { get; set; }
 
     [MaxLength(450)]
+    [Display(Name = "Assigned agent")]
     public string? AssignedAgentId { get; set; }
 
+    [Display(Name = "Assigned agent")]
     public ApplicationUser? AssignedAgent { get; set; }
 
     [ConcurrencyCheck]
@@ -44,5 +50,6 @@ public class Booking
 
     public List<Payment> Payments { get; set; } = [];
 
+    [Display(Name = "Add-ons")]
     public List<BookingAddOn> AddOns { get; set; } = [];
 }

@@ -12,6 +12,7 @@ public class Country
     public required string Name { get; set; }
 
     [MaxLength(2)]
+    [Display(Name = "ISO code")]
     public required string IsoCode { get; set; }
 
     public Continent Continent { get; set; }
