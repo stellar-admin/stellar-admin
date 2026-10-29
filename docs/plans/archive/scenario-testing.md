@@ -1,6 +1,6 @@
 # Scenario testing
 
-Status: in progress (2026-10-27), on branch `scenario-testing-poc`.
+Status: completed (2026-10-29), merged into `master`. New docs screenshots and moving the existing integration tests to scenarios are ongoing work, not tracked here.
 
 Browser tests of the admin panel driven by **scenarios** (a named admin panel configuration in C#) and **specs** (YAML step lists run against one scenario). The same runner saves screenshots, annotated images and video clips, but the focus is tests; docs captures will probably move into the DocsSamples generator later, so test and capture specs are not split now.
 
@@ -121,6 +121,14 @@ Done (2026-10-28): `ci.yml` and `release.yml` run the scenario tests with `STELL
 
 - The first CI run failed one click (`authz-sign-in`) at the 1 s timeout on the busy runner; the default step timeout is now 5 s when `CI` is set, 1 s otherwise.
 - The second run failed the Payments click at 5 s: paging is off by default, so the Payments index rendered about 13,000 rows (3 MB, 0.8 s locally). Every scenario resource now enables paging, the Payments click lost its 5 s timeout, and the `capture-scenario` skill (now `write-scenario-specs`) says to enable paging unless the spec is about an unpaged index. Verified: 12 of 12 tests pass locally with `CI=true`; CI not yet re-run.
+
+## Later batches and closing (2026-10-29)
+
+- Docs screenshots for inline editing, row details (with booking partials and models in the host app), form layout, list and dictionary editors (b867771), the user menu (0891ecb; signed-in users are named by their display name and the host has an Identity manage page) and the quick start (7e00a48).
+- The Voyager Travel model was synced twice: the extended model, used in the choice editor shots (caad048), and sentence-case `[Display]` names on every multi-word property (04811d3), which changed the dictionary spec's locator to "Baggage allowance".
+- Annotation arrows point at a circle's edge and run straight into the arrowhead (53a5560, 9b90d08).
+- Verified: `docs check` shows 44 specs with 0 open, 0 unused and 0 misnamed; 12 of 12 scenario tests pass, though the pointer step and `authz-sign-in` occasionally fail and pass on rerun.
+- The quick start create screenshot's date is today plus 30 days, so it changes on every regeneration.
 
 ## Later
 

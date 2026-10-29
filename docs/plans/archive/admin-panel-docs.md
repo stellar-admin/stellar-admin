@@ -1,6 +1,6 @@
 # Admin panel docs
 
-Status: completed (2026-10-27). The 51 pages shipped in website 1d1a2f2e, then every admin page was rewritten with Jerrie's edits, and the rules from those edits became the [write-website-docs](../../../.agents/skills/write-website-docs/SKILL.md) skill. The StellarAdmin.UI guide pages were rewritten with the same rules in website 2f153410. The StellarAdmin.UI component pages were not rewritten, and demos and screenshots are still open (see Follow-ups).
+Status: completed (2026-10-27). The 51 pages shipped in website 1d1a2f2e, then every admin page was rewritten with Jerrie's edits, and the rules from those edits became the [write-website-docs](../../../.agents/skills/write-website-docs/SKILL.md) skill. The StellarAdmin.UI guide pages were rewritten with the same rules in website 2f153410. The StellarAdmin.UI component pages were not rewritten (closed 2026-10-29), and the docs screenshots were captured through scenario specs (see Follow-ups). Closed 2026-10-29.
 
 Public documentation for the StellarAdmin admin panel (the `StellarAdmin` and `StellarAdmin.EntityFrameworkCore` packages) on the website, as a second docs root next to StellarAdmin.UI. The website has no admin panel docs today; the consumer skills in `skills/stellar-admin` and `skills/stellar-admin-setup` are the closest existing description of the feature set.
 
@@ -119,5 +119,5 @@ The consumer skills disagreed with the source in three places; Jerrie approved f
 
 - Done 2026-10-25: the UI docs' `agent-skills.mdx` points to the admin skills instead of saying there are none.
 - Done 2026-10-25: the header's Documentation link is a menu with both docs roots. Its links (like the root switcher's) only render when opened, so `vite.config.ts` now seeds the prerender crawl with `/` and `/docs/admin`.
-- Open: demos and screenshots (decision 4).
-- Open: the StellarAdmin.UI component pages (78) haven't been rewritten with the write-website-docs rules. A first attempt on the Layout pages (2026-10-27) was reverted. A rewrite has to keep the precise terms the old pages use, and each sentence has to describe the example next to it.
+- Done 2026-10-29: every `<Screenshot>` placeholder has its image, from the scenario specs in `tools/StellarAdmin.Cli/Docs/Screenshots/` (see [scenario-testing](scenario-testing.md)). New screenshots and demos are ongoing work, not tracked here.
+- Closed (2026-10-29): rewriting the StellarAdmin.UI component pages (78) with the write-website-docs rules. A first attempt on the Layout pages (2026-10-27) gave poor results and was reverted, so the pages stay as they are.
