@@ -226,10 +226,15 @@ public static class SpecLoader
                 timeout,
                 l => l.CheckAsync(new() { Timeout = timeout })
             ),
+            // A click doesn't wait for the navigation it starts, so its timeout covers only the click; the
+            // next step waits for the new page
             "click" => Pointer(
                 Locator(path, value),
                 timeout,
-                l => l.ClickAsync(new() { Timeout = timeout })
+                // Playwright marks NoWaitAfter obsolete because it will become the default; drop it then
+#pragma warning disable CS0612
+                l => l.ClickAsync(new() { Timeout = timeout, NoWaitAfter = true })
+#pragma warning restore CS0612
             ),
             "colorScheme" => ColorScheme(path, value),
             "expectAttribute" => ExpectAttribute(path, value, timeout),
