@@ -8,10 +8,13 @@ using VoyagerTravel.Models;
 
 namespace StellarAdmin.Cli.Docs.Screenshots.RowDetails;
 
-public sealed class RowDetailsTabsScenario : Scenario
+// One scenario per panel layout, e.g. row-details-tabs
+[ScenarioArguments("accordion")]
+[ScenarioArguments("tabs")]
+public sealed class RowDetailsScenario(string layout) : Scenario
 {
     public override string Description =>
-        "The bookings grid with row details in Summary, Pricing and History tabs.";
+        $"The bookings grid with row details in Summary, Pricing and History panels, shown as {layout}.";
 
     public override string StartPath => "/stellaradmin/bookings";
 
@@ -25,20 +28,27 @@ public sealed class RowDetailsTabsScenario : Scenario
             resource.Index(index =>
             {
                 index.Columns(columns => RowDetailsBookings.AddColumns(columns));
-                index.EnableRowDetails(panels =>
-                {
-                    panels.Add("Summary", "_BookingSummary");
-                    panels.Add(
-                        "Pricing",
-                        "_BookingPricing",
-                        booking => new BookingPricing(
-                            booking.TotalAmount,
-                            booking.Passengers.Count,
-                            booking.Departure.Trip.BasePrice
-                        )
-                    );
-                    panels.Add<BookingHistoryHandler>("History", "_BookingHistory");
-                });
+                index.EnableRowDetails(
+                    panels =>
+                    {
+                        panels.Add("Summary", "_BookingSummary");
+                        panels.Add(
+                            "Pricing",
+                            "_BookingPricing",
+                            booking => new BookingPricing(
+                                booking.TotalAmount,
+                                booking.Passengers.Count,
+                                booking.Departure.Trip.BasePrice
+                            )
+                        );
+                        panels.Add<BookingHistoryHandler>("History", "_BookingHistory");
+                    },
+                    details =>
+                        details.PanelLayout =
+                            layout == "tabs"
+                                ? ResourceRowDetailPanelLayout.Tabs()
+                                : ResourceRowDetailPanelLayout.Accordion()
+                );
                 // Ten rows, so the grid crop stays short
                 index.EnablePaging(paging => paging.PageSize = 10);
             })

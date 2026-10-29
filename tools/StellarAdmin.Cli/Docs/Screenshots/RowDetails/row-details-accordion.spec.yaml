@@ -1,0 +1,12 @@
+# VB-100553 expanded to its Summary, Pricing and History panels in an accordion, with Pricing open, in light and dark
+scenario: row-details-accordion
+steps:
+  - goto: /stellaradmin/bookings
+  - click: "tr:has-text('VB-100553') button[data-slot='table-row-detail-toggle']"
+  - click: "[data-slot='table-row-detail'][data-state='open'] summary:has-text('Pricing')"
+  - expectVisible: { selector: "text=Trip price", timeout: 3000 }
+  # Parks the pointer on the sidebar, which stays put when the shot scrolls the page
+  - hover: .sa-sidebar-brand-title
+  - screenshot: { name: row-details-accordion, locator: "#index-page-grid", margin: { top: 72, right: 32, bottom: 32, left: 32 } }
+  - colorScheme: dark
+  - screenshot: { name: row-details-accordion-dark, locator: "#index-page-grid", margin: { top: 72, right: 32, bottom: 32, left: 32 } }

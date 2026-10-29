@@ -34,7 +34,8 @@ Done on 2026-10-30:
 
 - The `configure` overloads: `StellarAdmin.Tests` (340), `StellarAdmin.IntegrationTests` (719) and `StellarAdmin.EntityFrameworkCore.IntegrationTests` (156) pass, and the AdminPlayground's Products panels, which use all three on the EF Core builder, build.
 
+- Screenshots: `RowDetailsTabsScenario` became `RowDetailsScenario`, run as `row-details-accordion` and `row-details-tabs`. Each has a spec, and the tabs section of `row-details.mdx` has a `row-details-tabs` placeholder. A full `docs generate screenshots` run reports 0 open, 0 unused and 0 misnamed.
+
 Outstanding:
 
-- The website's `row-details-accordion` screenshot placeholder needs a scenario and spec. The old `row-details-tabs` images in the website are now unused.
 - Browser checks of the tabs layouts and `Single` in the real admin panel are covered by the integration tests' markup, not yet clicked through.
