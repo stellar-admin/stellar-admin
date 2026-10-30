@@ -49,8 +49,15 @@ The other tests in both `ResourceRowDetailsTests.cs` files are deleted, and so i
 
 ## Found
 
-- **Expanding a row after the session ends shows the sign-in page inside the row.** The row detail request is redirected to the sign-in page, and the row renders it. The old integration test used a test scheme that answers 401, so it didn't show this. Not fixed; the authorization spec checks the redirect only.
+- **Expanding a row after the session ends showed the sign-in page inside the row.** The row detail request was redirected to the sign-in page, and the row rendered it. The old integration test used a test scheme that answers 401, so it didn't show this. Fixed, see below.
 - The accordion's on-demand loaders swap themselves out (`hx-swap="outerHTML"`), so removing `once` from their trigger doesn't make them load again; the tabs' loaders do, and the tabs spec fails without `once`.
+
+## Refused htmx requests reload the page
+
+Built (2026-10-30): `HtmxAuthorizationResultHandler` (`Infrastructure/Authorization/`) wraps the registered `IAuthorizationMiddlewareResultHandler`, which `AddStellarAdmin()` moves to a keyed service with the same lifetime. A challenged or forbidden request to an endpoint `MapStellarAdmin()` marked with `StellarAdminEndpointMetadata`, with `HX-Request` and without `HX-Boosted`, gets a 204 with `HX-Refresh: true`, so htmx reloads the page and the app's own challenge or access denied response handles it. Everything else goes to the wrapped handler. An app handler registered after `AddStellarAdmin()` replaces it; the website's authorization page says so in a warning. The bundled htmx 4.0.0 reloads on `HX-Refresh` whatever the status.
+
+- `row-details-authorization` now checks that the page ends on `/scenario/sign-in?ReturnUrl=%2Fstellaradmin%2Fbookings` and the row detail request got a 204.
+- `HtmxAuthorizationTests`: a challenged and a forbidden htmx request get the refresh; a plain and a boosted request keep the 401; an htmx request to a host endpoint keeps the 401; an app handler registered before `AddStellarAdmin()` still answers other refused requests.
 
 ## Verification
 
@@ -59,3 +66,4 @@ Done on 2026-10-30:
 - The 11 specs pass through `scenarios run`, and `StellarAdmin.ScenarioTesting.Tests` passes 23 of 23 on three runs.
 - With `once` removed from the tab trigger, `row-details-panels-tabs` fails on its Pricing request count. A wrong status and a wrong count each failed with a message naming the URL, the expected and the actual value.
 - `StellarAdmin.IntegrationTests` (698) and `StellarAdmin.EntityFrameworkCore.IntegrationTests` (151) pass, 21 and 5 cases fewer.
+- After the refresh handler: `StellarAdmin.Tests` (340), `StellarAdmin.IntegrationTests` (704), `StellarAdmin.EntityFrameworkCore.IntegrationTests` (151) and `StellarAdmin.ScenarioTesting.Tests` (23) pass. Without the `Decorate` call, the two refresh tests fail and the other four pass. The website wasn't built.

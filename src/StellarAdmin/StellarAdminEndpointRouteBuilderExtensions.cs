@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticAssets.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Infrastructure.Authorization;
 using StellarAdmin.Infrastructure.Routing;
 using StellarAdmin.Resources;
 
@@ -56,6 +57,9 @@ public static class StellarAdminEndpointRouteBuilderExtensions
             // Authorization is endpoint metadata, so the host's authorization middleware enforces it
             // before MVC runs. Conventions run when the endpoints are built, after configuration is final.
             route.Add(builder => AddAuthorizationMetadata(builder, endpoints.ServiceProvider));
+
+            // Lets the authorization result handler tell the admin panel's requests apart from the app's
+            route.Add(builder => builder.Metadata.Add(StellarAdminEndpointMetadata.Instance));
 
             // asp-append-version reads the fingerprinted URLs of the layout's script and stylesheets
             // from the static asset metadata on the page's endpoint, and without it falls back to a

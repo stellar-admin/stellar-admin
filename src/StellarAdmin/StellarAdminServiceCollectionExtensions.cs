@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using StellarAdmin.Areas.StellarAdmin.Controllers;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Home;
+using StellarAdmin.Infrastructure.Authorization;
 using StellarAdmin.Infrastructure.Icons;
 using StellarAdmin.Infrastructure.Routing;
 using StellarAdmin.Resources;
@@ -33,6 +34,8 @@ public static class StellarAdminServiceCollectionExtensions
         public StellarAdminBuilder AddStellarAdmin()
         {
             services.AddMvc();
+            // After AddMvc, which registers the framework's handler that this wraps
+            HtmxAuthorizationResultHandler.Decorate(services);
             services.AddHttpContextAccessor();
             services.Configure<RouteOptions>(options =>
                 options.ConstraintMap[LowercaseParameterTransformer.Name] =
