@@ -17,7 +17,7 @@ internal sealed class HomePageOptions
     // The widgets as configured, then, once checked, those that can be shown
     public List<WidgetOptions> Widgets { get; } = [];
 
-    public HomePageOptions() => _widgetProblems = new(() => WidgetsCheck.Run(Widgets, Page));
+    public HomePageOptions() => _widgetProblems = new(() => WidgetsCheck.Run(Widgets, Page, false));
 
     public IReadOnlyList<WidgetOptions> GetCheckedWidgets()
     {

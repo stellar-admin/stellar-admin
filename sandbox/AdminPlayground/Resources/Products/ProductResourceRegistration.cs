@@ -1,3 +1,4 @@
+using AdminPlayground.Dashboard;
 using AdminPlayground.Data;
 using StellarAdmin;
 using StellarAdmin.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.UI;
+using StellarAdmin.Widgets;
 
 namespace AdminPlayground.Resources.Products;
 
@@ -127,6 +129,29 @@ internal static class ProductResourceRegistration
                 {
                     paging.PageSize = 10;
                     paging.PageSizes = [10, 25, 50];
+                });
+                // A price summary of the listed products above the grid, which follows the scope and search, and the
+                // top categories beside it
+                index.Widgets(widgets =>
+                {
+                    widgets.Add<ProductPriceSummaryHandler>(
+                        "Price summary",
+                        "_ProductPriceSummaryWidget",
+                        widget =>
+                            widget.Parameters(context => new ProductPriceSummaryParameters(
+                                context.Scope,
+                                context.Search
+                            ))
+                    );
+                    widgets.Add<TopCategoriesHandler>(
+                        "Top categories",
+                        "_TopCategoriesWidget",
+                        widget =>
+                        {
+                            widget.Placement = WidgetPlacement.Aside;
+                            widget.Parameters(_ => new TopCategoriesParameters(Count: 5));
+                        }
+                    );
                 });
                 index.Columns(columns =>
                 {

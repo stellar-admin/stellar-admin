@@ -27,6 +27,7 @@ using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
 using StellarAdmin.UI.Icons;
 using StellarAdmin.UI.Toasts;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin.Areas.StellarAdmin.Controllers;
 
@@ -36,6 +37,7 @@ internal sealed class ResourceController<TResource>(
     IOptions<ResourceOptions<TResource>> options,
     IOptions<ResourceLabelOptions> labelOptions,
     ICompositeViewEngine viewEngine,
+    WidgetRenderer widgets,
     ILogger<ResourceController<TResource>> logger
 ) : Controller
 {
@@ -54,6 +56,10 @@ internal sealed class ResourceController<TResource>(
     private const string AddAnotherAction = "add-another";
     private const string AddAnotherTempDataKey = "StellarAdminAddAnother";
 
+    // The ids of the index page's grid and search box, which tell a request for the grid alone from a search
+    private const string IndexGridId = "index-page-data-grid";
+    private const string IndexSearchInputId = "index-page-search-input";
+
     // Shown when a create or update handler throws
     private const string SaveFailedMessage = "This record couldn't be saved. Try again.";
 
@@ -69,6 +75,9 @@ internal sealed class ResourceController<TResource>(
     private readonly ResourceOptions<TResource> _resourceOptions = options.Value;
 
     // An inline operation has no page, so neither its links nor its routes are available
+    // Names the index page in its widgets' protected parameters
+    private string IndexWidgetPage => $"{ControllerContext.ActionDescriptor.ControllerName}/index";
+
     private bool HasCreatePage => _resourceOptions.Create is { InlineRow: null };
     private bool HasEditPage =>
         _resourceOptions.Edit is { InlineRow: null } && _resourceOptions.KeySelector is not null;
@@ -582,7 +591,13 @@ internal sealed class ResourceController<TResource>(
             return BadRequest();
         }
 
-        return await IndexView(query, request, cancellationToken);
+        // A request for the grid alone, such as another page or sort, leaves the widgets as they are; a search renders
+        // them again, since their delegates receive it
+        var renderWidgets =
+            !Request.Headers["HX-Target"].ToString().EndsWith($"#{IndexGridId}")
+            || Request.Headers["HX-Source"].ToString().EndsWith($"#{IndexSearchInputId}");
+
+        return await IndexView(query, request, cancellationToken, renderWidgets: renderWidgets);
     }
 
     [HttpGet]
@@ -1034,6 +1049,21 @@ internal sealed class ResourceController<TResource>(
 
         return Json(new { value, url }, ImageUploadJsonOptions);
     }
+
+    // An index widget's content, loaded after the page has rendered or again when it refreshes
+    [HttpGet]
+    public Task<IActionResult> Widget(
+        [FromRoute] string? id,
+        CancellationToken cancellationToken
+    ) =>
+        widgets.LoadAsync(
+            this,
+            _resourceOptions.Index.Widgets,
+            IndexWidgetPage,
+            id,
+            CreateWidgetUrl,
+            cancellationToken
+        );
 
     // A size as the image upload's script writes it, such as 5 MB or 640 KB
     private static string FormatFileSize(long bytes) =>
@@ -1567,6 +1597,9 @@ internal sealed class ResourceController<TResource>(
         return ResourceView(nameof(Create), model);
     }
 
+    private string CreateWidgetUrl(string name, string? parameters) =>
+        Url.Action(nameof(Widget), new { id = name, p = parameters })!;
+
     private async Task<IActionResult> EditRowView(
         string id,
         object resource,
@@ -1853,7 +1886,8 @@ internal sealed class ResourceController<TResource>(
         ResourceListRequest request,
         CancellationToken cancellationToken,
         bool redirectOutOfRange = true,
-        Action<IReadOnlyList<TResource>>? loaded = null
+        Action<IReadOnlyList<TResource>>? loaded = null,
+        bool renderWidgets = true
     )
     {
         var result = await dataSource.ListAsync(request, cancellationToken);
@@ -1913,6 +1947,11 @@ internal sealed class ResourceController<TResource>(
         }
 
         loaded?.Invoke(result.Items);
+        ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
+            request,
+            renderWidgets,
+            cancellationToken
+        );
 
         return ResourceView(
             nameof(Index),
@@ -1986,7 +2025,8 @@ internal sealed class ResourceController<TResource>(
             request,
             cancellationToken,
             redirectOutOfRange: false,
-            loaded: items => shown = items.Any(item => _resourceOptions.KeySelector!(item) == key)
+            loaded: items => shown = items.Any(item => _resourceOptions.KeySelector!(item) == key),
+            renderWidgets: false
         );
 
         var labels = CreateLabelContext();
@@ -2024,6 +2064,45 @@ internal sealed class ResourceController<TResource>(
         }
 
         return view;
+    }
+
+    // The widgets by placement, rendered for the index's search and scope. A request that doesn't render them still has
+    // their placements, since the search box it renders replaces them on a search.
+    private async Task<IndexWidgetsViewModel> RenderWidgetsAsync(
+        ResourceListRequest request,
+        bool render,
+        CancellationToken cancellationToken
+    )
+    {
+        var context = new IndexWidgetContext<TResource>(HttpContext, request.Scope, request.Search);
+
+        return new(
+            await RenderAsync(WidgetPlacement.Top),
+            await RenderAsync(WidgetPlacement.Aside),
+            await RenderAsync(WidgetPlacement.Bottom)
+        );
+
+        async Task<IReadOnlyList<WidgetViewModel>?> RenderAsync(WidgetPlacement placement)
+        {
+            var placed = _resourceOptions
+                .Index.Widgets.Where(widget => widget.Placement == placement)
+                .ToArray();
+
+            if (placed.Length == 0)
+            {
+                return null;
+            }
+
+            return !render
+                ? []
+                : await widgets.RenderAsync(
+                    placed,
+                    context,
+                    IndexWidgetPage,
+                    CreateWidgetUrl,
+                    cancellationToken
+                );
+        }
     }
 
     private PartialViewResult RowsView(object model) => PartialView("_IndexDataGrid", model);

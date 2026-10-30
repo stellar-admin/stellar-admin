@@ -7,7 +7,13 @@ internal static class WidgetsCheck
 {
     private static readonly TimeSpan ShortestRefreshInterval = TimeSpan.FromSeconds(1);
 
-    public static List<ConfigurationProblem> Run(List<WidgetOptions> widgets, string page)
+    // A page without placements, like the home page, shows every widget in one grid. The problems of a resource's
+    // widgets get the resource when they're listed, so its page is null.
+    public static List<ConfigurationProblem> Run(
+        List<WidgetOptions> widgets,
+        string? page,
+        bool hasPlacements
+    )
     {
         var problems = new List<ConfigurationProblem>();
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -22,7 +28,7 @@ internal static class WidgetsCheck
             }
 
             problems.AddRange(
-                ResetSettings(widget)
+                ResetSettings(widget, hasPlacements)
                     .Select(setting => setting with { Resource = page, Source = widget.Source })
             );
         }
@@ -116,7 +122,10 @@ internal static class WidgetsCheck
         return null;
     }
 
-    private static IEnumerable<ConfigurationProblem> ResetSettings(WidgetOptions widget)
+    private static IEnumerable<ConfigurationProblem> ResetSettings(
+        WidgetOptions widget,
+        bool hasPlacements
+    )
     {
         if (widget.Span is < 1 or > WidgetOptions.DefaultSpan)
         {
@@ -127,6 +136,17 @@ internal static class WidgetsCheck
             );
 
             widget.Span = WidgetOptions.DefaultSpan;
+        }
+
+        if (!hasPlacements && widget.Placement != WidgetPlacement.Top)
+        {
+            yield return new(
+                ConfigurationProblemKind.IgnoredWidgetSetting,
+                $"The `{widget.Name}` widget is shown in the page's grid because the page has no `{widget.Placement}` placement.",
+                "Remove the widget's `Placement`."
+            );
+
+            widget.Placement = WidgetPlacement.Top;
         }
 
         if (widget.Loader is null && widget.ParametersType is not null)

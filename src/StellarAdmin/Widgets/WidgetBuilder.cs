@@ -30,6 +30,22 @@ public sealed class WidgetBuilder<TContext>
     }
 
     /// <summary>
+    ///     Sets where the widget is shown on a resource's page.
+    /// </summary>
+    /// <value>
+    ///     The placement. The default is <see cref="WidgetPlacement.Top" />.
+    /// </value>
+    /// <remarks>
+    ///     Widgets in a placement are shown in the order they're added. The home page has one
+    ///     grid of widgets, so a placement other than <see cref="WidgetPlacement.Top" /> there is
+    ///     a configuration problem, and the widget is shown in the grid.
+    /// </remarks>
+    public WidgetPlacement Placement
+    {
+        set => _options.Placement = value;
+    }
+
+    /// <summary>
     ///     Sets how often the widget loads again while the page is open.
     /// </summary>
     /// <value>

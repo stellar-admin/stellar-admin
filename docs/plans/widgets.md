@@ -1,6 +1,6 @@
 # Widgets
 
-Status: phase 1 implemented (2026-10-30), uncommitted on the `widgets` branches of the product and the website. Phases 2 to 4 not started.
+Status: phase 1 implemented and committed (2026-10-30); phase 2 implemented (2026-10-30), uncommitted, on the `widgets` branches of the product and the website. Phases 3 and 4 not started.
 
 Let developers place widgets on the admin panel's pages: the home page, a resource's index page, its view page and its create and edit forms. A widget is a self-contained block such as a stat, a chart, an activity heatmap, a list of recent records, a callout or a chat box. Examples are a chart of recent sign-ups above the customers grid, or a login activity graph (like GitHub's contribution graph) at the top of a customer's view page.
 
@@ -155,9 +155,23 @@ Choices made while implementing. Jerrie confirmed (2026-10-30) the resource link
 
 Not done in phase 1: the website screenshot for the new page (an open `<Screenshot>` placeholder, `home-page-widgets`), and a scenario spec for it.
 
+## Phase 2 as built
+
+- **`index.Widgets(...)` is on `ResourceIndexBuilderBase`**, so EF Core resources get it too. Its widgets are checked with the resource's other checks and reported under the resource.
+- **`IndexWidgetContext<TResource>` derives from `WidgetContext`** and adds only `Search` (trimmed, or `null`) and `Scope` (the selected scope's id, or `null` without scopes). There's no `ResourceWidgetContext` and no sort or page: nothing needed the resource's metadata yet, and widgets don't render again when the sort or page changes, so those values would go stale.
+- **Widgets render again when the search or scope changes; sorting, paging and inline saves leave them alone** (decided here; the open question). A scope tab already reloads the page. The search box's `hx-select-oob` adds the widget regions, and the index action renders widgets unless the request targets the grid (`HX-Target`) from something other than the search box (`HX-Source`). Lazy widgets come back as placeholders and load again.
+- **`Placement`** (`WidgetPlacement.Top`, `Aside`, `Bottom`; default `Top`) is on the shared `WidgetBuilder`. On the home page anything but `Top` is `IgnoredWidgetSetting`, and the widget goes in the grid.
+- **Regions:** `#index-page-widgets-top`, `-aside` and `-bottom` render when a widget is configured for that placement, and are `hidden` when the user sees none of them, so a search can fill them. With aside widgets, the grid and a 20rem column sit in `.sa-widgets-aside`, which becomes two columns from a 56rem container (`:has()` drops the column when it's hidden); narrower, the column goes below the grid. The grid's markup moved to `_IndexPageGrid.cshtml`, and the search input got the id `index-page-search-input`.
+- **The widget list reaches `_IndexPage` through `ViewData`** (`ViewDataKeys.Widgets`), not `IResourceIndexPageViewModel`, so the public view model is unchanged and overridden index views that use `<sa-index-page>` get widgets.
+- **Endpoint:** `GET {slug}/widget/{name}`, a `Widget` action on the resource controller; the payload's page purpose is `{controller}/index`, so a home payload is refused there.
+- AdminPlayground: the Products index has a **Price summary** (top, follows scope and search) and **Top categories** (aside, with its picker); `_TopCategoriesWidget` moved to `Areas/StellarAdmin/Views/Shared/`.
+
+Not done in phase 2: the website screenshot (`index-page-widgets` placeholder) and its scenario spec.
+
 ## Open questions
 
-- Whether index widgets refresh when the grid's search or scope changes (phase 2).
+- Whether index widgets should load again after an inline save or a delete changes the records. They don't now.
+- Where top widgets sit on the index page, and whether they should follow the search and scope at all (Jerrie 2026-10-30: unsure about widgets between the search and scopes and the grid; kept as built until everything is in place). `IndexWidgetContext` stays `Search` and `Scope` until this is settled.
 
 ## Verification
 
@@ -168,5 +182,13 @@ Phase 1 (2026-10-30):
 - AdminPlayground home dashboard (`sandbox/AdminPlayground/Dashboard/`, partials in `Areas/StellarAdmin/Views/Home/`): checked headless at 1440 and 390 px on port 5206 in light mode: all four widgets load, the **Top categories** picker swaps the widget in place and keeps its value, the **Team** widget polls every 30 seconds, no console errors. A query bug in the playground's handler showed the error cell working. Dark mode, Firefox and Safari not checked.
 - Consumer skill: `skills/stellar-admin/references/widgets.md`, task table and not-supported list; `build/skill-validation` check passes.
 - Website: `content/docs/admin/widgets.mdx`, `home-page.mdx` updated, nav entry; `pnpm types:check` passes. Not rendered in a browser.
+
+Phase 2 (2026-10-30):
+
+- `tests/StellarAdmin.IntegrationTests/Resources/ResourceIndexWidgetTests.cs`, 9 tests: placements around the grid; no regions without widgets; a hidden region a search fills; the context's search and scope; a search renders widgets and a grid request doesn't, and keeps the search box's regions; a handler widget loads from the resource with the search; a home payload is refused by the resource; an unknown widget 404s; problems reported for the resource. `HomePageWidgetTests` also checks that a `Placement` on the home page is reported.
+- `dotnet test StellarAdmin.slnx`: 2066 passed, 0 failed.
+- AdminPlayground Products index checked headless on port 5206 at 1440 and 390 px in light mode: both widgets load; the aside column is 320px beside the grid at 1440 and below it at 390; paging kept the widget elements; a search replaced them with the filtered summary; the aside picker swapped in place; the **Under 50** scope reloaded the summary; no console errors. This check caught that the search box swapped in by a paging request had lost the widget regions, now fixed and tested. Dark mode, Firefox and Safari not checked.
+- Consumer skill: `references/widgets.md` (index pages section, `Placement`), `index-pages.md` and `SKILL.md`; `build/skill-validation` passes.
+- Website: new `content/docs/admin/index-page-widgets.mdx` in the Index Pages group, links from `index-pages.mdx`, `row-details.mdx` and `widgets.mdx`; `pnpm types:check` passes. Not rendered in a browser.
 
 The prototypes are point-in-time concept pages and are not library code.

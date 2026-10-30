@@ -52,6 +52,9 @@ public static class ViewDataKeys
     // The widget whose partial view renders, so its forms can request it again
     internal const string Widget = "StellarAdminWidget";
 
+    // The index page's widgets, when its request renders them
+    internal const string Widgets = "StellarAdminWidgets";
+
     // The stack level of the create sheet a form renders in, so its lookups bind and open the next level
     internal const string SheetLevel = "StellarAdminSheetLevel";
 }

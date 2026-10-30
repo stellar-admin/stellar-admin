@@ -663,6 +663,7 @@ StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.Sa
 StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.Title.set -> void
 StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.ViewLabel.set -> void
+StellarAdmin.Resources.Builders.ResourceIndexBuilderBase<TResource, TBuilder>.Widgets(System.Action<StellarAdmin.Widgets.WidgetsBuilder<StellarAdmin.Widgets.IndexWidgetContext<TResource>!>!>! configure) -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder
 StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.CancelLabel.set -> void
 StellarAdmin.Resources.Builders.ResourceIndexLabelsBuilder.CreatedMessage.set -> void
@@ -1921,6 +1922,9 @@ StellarAdmin.WidgetFormTagHelper
 StellarAdmin.WidgetFormTagHelper.ViewContext.get -> Microsoft.AspNetCore.Mvc.Rendering.ViewContext!
 StellarAdmin.WidgetFormTagHelper.ViewContext.set -> void
 StellarAdmin.WidgetFormTagHelper.WidgetFormTagHelper() -> void
+StellarAdmin.Widgets.IndexWidgetContext<TResource>
+StellarAdmin.Widgets.IndexWidgetContext<TResource>.Scope.get -> string?
+StellarAdmin.Widgets.IndexWidgetContext<TResource>.Search.get -> string?
 StellarAdmin.Widgets.IWidgetHandler<TModel>
 StellarAdmin.Widgets.IWidgetHandler<TModel>.LoadAsync(StellarAdmin.Widgets.WidgetLoadContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TModel?>!
 StellarAdmin.Widgets.IWidgetHandler<TParameters, TModel>
@@ -1928,6 +1932,7 @@ StellarAdmin.Widgets.IWidgetHandler<TParameters, TModel>.LoadAsync(TParameters p
 StellarAdmin.Widgets.WidgetBuilder<TContext>
 StellarAdmin.Widgets.WidgetBuilder<TContext>.Inline.set -> void
 StellarAdmin.Widgets.WidgetBuilder<TContext>.Parameters<TParameters>(System.Func<TContext!, TParameters>! parameters) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetBuilder<TContext>.Placement.set -> void
 StellarAdmin.Widgets.WidgetBuilder<TContext>.RefreshInterval.set -> void
 StellarAdmin.Widgets.WidgetBuilder<TContext>.RequireAuthorization() -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
 StellarAdmin.Widgets.WidgetBuilder<TContext>.RequireAuthorization(Microsoft.AspNetCore.Authorization.AuthorizationPolicy! policy) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
@@ -1946,6 +1951,10 @@ StellarAdmin.Widgets.WidgetLoadContext
 StellarAdmin.Widgets.WidgetLoadContext.HttpContext.get -> Microsoft.AspNetCore.Http.HttpContext!
 StellarAdmin.Widgets.WidgetLoadContext.Name.get -> string!
 StellarAdmin.Widgets.WidgetLoadContext.User.get -> System.Security.Claims.ClaimsPrincipal!
+StellarAdmin.Widgets.WidgetPlacement
+StellarAdmin.Widgets.WidgetPlacement.Aside = 1 -> StellarAdmin.Widgets.WidgetPlacement
+StellarAdmin.Widgets.WidgetPlacement.Bottom = 2 -> StellarAdmin.Widgets.WidgetPlacement
+StellarAdmin.Widgets.WidgetPlacement.Top = 0 -> StellarAdmin.Widgets.WidgetPlacement
 StellarAdmin.Widgets.WidgetsBuilder<TContext>
 StellarAdmin.Widgets.WidgetsBuilder<TContext>.Add(string! name, string! partialName) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
 StellarAdmin.Widgets.WidgetsBuilder<TContext>.Add(string! name, string! partialName, System.Action<StellarAdmin.Widgets.WidgetBuilder<TContext!>!>! configure) -> StellarAdmin.Widgets.WidgetsBuilder<TContext!>!

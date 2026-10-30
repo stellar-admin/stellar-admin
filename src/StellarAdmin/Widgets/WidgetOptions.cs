@@ -22,6 +22,8 @@ internal sealed class WidgetOptions(string name, string partialName, WidgetLoade
 
     public string PartialName { get; } = partialName;
 
+    public WidgetPlacement Placement { get; set; }
+
     public TimeSpan? RefreshInterval { get; set; }
 
     public Func<WidgetContext, bool>? ShowWhen { get; set; }

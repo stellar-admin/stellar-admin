@@ -1,5 +1,16 @@
 @using StellarAdmin.Resources
 @model IResourceIndexPageViewModel
+@{
+    // The widgets' regions, which a search replaces along with the grid. Only the index's own request renders them.
+    var widgets = ViewData[ViewDataKeys.Widgets] as IndexWidgetsViewModel;
+    var widgetRegions = widgets is null
+        ? []
+        : new[] { (widgets.Top, "#index-page-widgets-top"), (widgets.Aside, "#index-page-widgets-aside"), (widgets.Bottom, "#index-page-widgets-bottom") }
+            .Where(region => region.Item1 is not null)
+            .Select(region => region.Item2)
+            .ToArray();
+    var searchOob = string.Join(", ", (Model.Scopes.Count > 0 ? new[] { "#index-page-scopes" } : []).Concat(widgetRegions));
+}
 
 <sa-page-container>
     <sa-page-header>
@@ -46,7 +57,8 @@
                     @if (Model.Search is { } search)
                     {
                         <sa-input-group id="index-page-search" class="w-full sm:w-64">
-                            <sa-input-group-input placeholder="@search.Placeholder"
+                            <sa-input-group-input id="index-page-search-input"
+                                                  placeholder="@search.Placeholder"
                                                   aria-label="@search.Placeholder"
                                                   autofocus=""
                                                   value="@search.Term"
@@ -63,7 +75,7 @@
                                                   hx-swap="outerHTML"
                                                   hx-target="#index-page-data-grid"
                                                   hx-select="#index-page-data-grid"
-                                                  hx-select-oob="@(Model.Scopes.Count > 0 ? "#index-page-scopes" : null)"
+                                                  hx-select-oob="@(searchOob.Length > 0 ? searchOob : null)"
                                                   hx-push-url="true" />
                             <sa-input-group-addon>
                                 <sa-icon name="search" />
@@ -74,15 +86,34 @@
             </sa-page-header-nav>
         }
     </sa-page-header>
-    <div id="index-page-data-grid"
-         hx-boost:inherited="true"
-         hx-target:inherited="#index-page-data-grid"
-         hx-select:inherited="#index-page-data-grid"
-         hx-swap:inherited="outerHTML"
-         hx-select-oob:inherited="#index-page-search, #index-page-scopes">
-        @Html.ValidationSummary(excludePropertyErrors: true)
-        <partial name="_IndexDataGrid" />
-    </div>
+    @if (widgets?.Top is { } top)
+    {
+        <div id="index-page-widgets-top" hidden="@(top.Count == 0)">
+            <partial name="_Widgets" model="top" />
+        </div>
+    }
+    @if (widgets?.Aside is { } aside)
+    {
+        @* The grid with a column of widgets beside it, or below it when the page is narrow *@
+        <div class="sa-widgets-aside">
+            <div class="sa-widgets-aside-grid">
+                <partial name="_IndexPageGrid" />
+                <div id="index-page-widgets-aside" class="sa-widgets-column" hidden="@(aside.Count == 0)">
+                    <partial name="_Widgets" model="aside" />
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <partial name="_IndexPageGrid" />
+    }
+    @if (widgets?.Bottom is { } bottom)
+    {
+        <div id="index-page-widgets-bottom" hidden="@(bottom.Count == 0)">
+            <partial name="_Widgets" model="bottom" />
+        </div>
+    }
     @if (Model.Delete is not null)
     {
         <partial name="_IndexDeleteDialog" model="Model.Delete" />

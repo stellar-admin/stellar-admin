@@ -1,6 +1,6 @@
 # Index pages
 
-The index page lists a resource's records in a grid. Everything is configured in `resource.Index(index => ...)`. Columns are in [columns](columns.md), and editing and adding in the grid's rows in [inline editing](inline-editing.md).
+The index page lists a resource's records in a grid. Everything is configured in `resource.Index(index => ...)`. Columns are in [columns](columns.md), editing and adding in the grid's rows in [inline editing](inline-editing.md), and blocks above, beside or below the grid in [widgets](widgets.md#index-pages).
 
 ## Contents
 
@@ -138,7 +138,7 @@ index.EnableRowDetails(panels =>
 - A handler's partial takes the model its `IResourceRowDetailHandler<TModel>` names. Give each model its own handler: one that implements the interface for no model, or for two, is a configuration problem, and its panel is left out.
 - Put the partials in `Areas/StellarAdmin/Views/{slug}/` or `Areas/StellarAdmin/Views/Shared/`, with an area `_ViewImports.cshtml` ([customization](customization.md#view-imports)).
 - The callback overloads configure presentation: `details => { details.Emphasis = DataGridRowDetailEmphasis.Rail; details.ExpandMode = DataGridRowDetailExpandMode.Single; details.RowClick = true; }`. Other settings: `Animate`, `Divider` (`DataGridRowDetailDivider`), `Inset`, `Toggle`, `PanelLayout`. The `DataGridRowDetail*` enums are in `StellarAdmin.UI`.
-- Row details are for per-row information. Content for the whole page, such as a summary above the grid, belongs in an index override ([customization](customization.md#add-content-to-a-generated-page)).
+- Row details are for per-row information. Content for the whole page, such as a summary above the grid, belongs in a [widget](widgets.md#index-pages).
 
 ## Custom data sources
 

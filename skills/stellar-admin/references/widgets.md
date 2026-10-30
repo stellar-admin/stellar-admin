@@ -1,8 +1,8 @@
 # Widgets
 
-Widgets are blocks on the panel's home page, such as stats, a chart, a list of recent records or quick links. A widget is a partial view, optionally with a handler that loads its model. The partial view renders the whole widget, including its card, heading and any controls.
+Widgets are blocks on the panel's home page and on resources' index pages, such as stats, a chart, a list of recent records or quick links. A widget is a partial view, optionally with a handler that loads its model. The partial view renders the whole widget, including its card, heading and any controls.
 
-Widgets are only on the home page for now; resource pages don't have them yet.
+View, create and edit pages don't have widgets yet.
 
 ## Contents
 
@@ -12,6 +12,7 @@ Widgets are only on the home page for now; resource pages don't have them yet.
 - [Inputs](#inputs)
 - [Widget settings](#widget-settings)
 - [The home page](#the-home-page)
+- [Index pages](#index-pages)
 - [Mistakes](#mistakes)
 
 ## Adding widgets
@@ -129,6 +130,7 @@ A widget can have its own controls, such as a period picker. Mark the properties
 | `Span` | 12 | Columns of the 12-column grid, 1 to 12. The grid responds to its own width: narrow, every widget spans the row; medium, spans up to 6 take half. |
 | `Inline` | `false` | Runs the handler while the page renders instead of after it. Inline handlers run one after another, since they share the request's services. |
 | `RefreshInterval` | none | Loads the widget again on this interval, at least one second. A failed refresh keeps what the widget showed. Widgets without a handler don't refresh. |
+| `Placement` | `Top` | Index pages only: `WidgetPlacement.Top` above the grid, `Aside` in a column beside it, `Bottom` below it. See [index pages](#index-pages). |
 | `ShowWhen(context => ...)` | shown | Hides the widget when the delegate returns `false`, when the page renders. |
 | `RequireAuthorization(...)` | none | The same overloads as resources. A user who doesn't meet them doesn't see the widget, and its URL returns 404. |
 
@@ -139,6 +141,34 @@ Widgets in a row share its height, so cards line up.
 - Outside Development, or with `ShowSetupChecklist = false`, the home page shows the widgets the user can see in place of its links to the resources. A user who sees no widgets gets the links.
 - In Development, the setup checklist shows above the widgets.
 
+## Index pages
+
+`Widgets(...)` on a resource's `Index(...)` adds widgets to its index page. The delegates get an `IndexWidgetContext<TResource>`, which adds the grid's `Search` (trimmed, or `null`) and `Scope` (the active scope's id, or `null` without scopes) to the page's context.
+
+```csharp
+admin.AddEfCoreResource<Booking>(resource =>
+{
+    resource.Index(index =>
+    {
+        index.EnableSearch(term => booking => booking.Reference.Contains(term));
+        index.Widgets(widgets =>
+        {
+            widgets.Add<BookingTotalsHandler>("Totals", "_BookingTotalsWidget", widget =>
+                widget.Parameters(context => new BookingTotalsParameters(context.Scope, context.Search)));
+            widgets.Add<UpcomingDeparturesHandler>("Upcoming departures", "_UpcomingDeparturesWidget", widget =>
+                widget.Placement = WidgetPlacement.Aside);
+        });
+    });
+});
+```
+
+- `Top` widgets sit between the page header and the grid, `Bottom` widgets below the grid, both in a 12-column grid. `Aside` widgets stack in a 20rem column beside the grid once the page is about 56rem wide, and below the grid when narrower; `Span` doesn't matter there.
+- The widgets render again when the search changes, and with the page when the scope changes, so `Parameters` and `ShowWhen` see the new values. Paging and sorting leave them as they are.
+- The handler gets only what `Parameters` passes: to cover the records the grid lists, pass `Scope` and `Search` and apply the same filters in the handler.
+- Partial views resolve from `Areas/StellarAdmin/Views/{slug}/`, then `Areas/StellarAdmin/Views/Shared/`, then `Views/Shared/`. A partial used on the home page and an index page goes in `Shared`.
+- A widget without a handler gets the `IndexWidgetContext<TResource>` as its model.
+- Index widgets load from `{slug}/widget/{name}`, which the resource's authorization covers as well as the widget's own.
+
 ## Mistakes
 
 These are [configuration problems](configuration-problems.md): the widget is left out, or the setting is reset, and the problem is listed and logged.
@@ -147,4 +177,5 @@ These are [configuration problems](configuration-problems.md): the widget is lef
 - A handler that implements no widget handler interface, or more than one.
 - `Parameters` that don't match the handler, or are missing.
 - `Parameters` or `RefreshInterval` on a widget without a handler (ignored).
+- A `Placement` other than `Top` on the home page (shown in the grid).
 - A `Span` outside 1 to 12 (12), or a `RefreshInterval` under one second (no refresh).

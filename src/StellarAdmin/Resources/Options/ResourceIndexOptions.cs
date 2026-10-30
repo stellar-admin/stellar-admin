@@ -1,4 +1,5 @@
 using StellarAdmin.Diagnostics;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin.Resources.Options;
 
@@ -165,4 +166,7 @@ public sealed class ResourceIndexOptions
     internal ConfigurationSource? DefaultSortSource { get; set; }
 
     internal List<DataGridColumnOptions> MutableColumns { get; } = [];
+
+    // The widgets as configured, then, once checked, those that can be shown
+    internal List<WidgetOptions> Widgets { get; } = [];
 }

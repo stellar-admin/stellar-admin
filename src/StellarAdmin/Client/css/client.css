@@ -1087,4 +1087,27 @@
     .sa-widget-error .sa-empty {
         padding: 0;
     }
+
+    /* A column of widgets beside a page's content, once the page is wide enough for both; below it otherwise. A
+       column whose widgets the user doesn't see is hidden, and the content takes the whole width. */
+    .sa-widgets-aside {
+        container-type: inline-size;
+        container-name: sa-widgets-aside;
+    }
+
+    .sa-widgets-aside-grid {
+        display: grid;
+        gap: calc(4 * var(--sa-unit));
+        align-items: start;
+
+        & > * {
+            min-width: 0;
+        }
+    }
+
+    @container sa-widgets-aside (min-width: 56rem) {
+        .sa-widgets-aside-grid:has(> .sa-widgets-column:not([hidden])) {
+            grid-template-columns: minmax(0, 1fr) 20rem;
+        }
+    }
 }

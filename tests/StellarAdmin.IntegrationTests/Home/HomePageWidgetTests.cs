@@ -466,6 +466,7 @@ public class HomePageWidgetTests
                 widget =>
                 {
                     widget.Parameters(_ => 1);
+                    widget.Placement = WidgetPlacement.Aside;
                     widget.RefreshInterval = TimeSpan.FromMinutes(1);
                 }
             );
@@ -486,7 +487,13 @@ public class HomePageWidgetTests
         await Assert
             .That(logs.ConfigurationProblems.Select(problem => problem.EventId.Name))
             .IsEquivalentTo(
-                ["InvalidValue", "InvalidValue", "IgnoredWidgetSetting", "IgnoredWidgetSetting"],
+                [
+                    "InvalidValue",
+                    "InvalidValue",
+                    "IgnoredWidgetSetting",
+                    "IgnoredWidgetSetting",
+                    "IgnoredWidgetSetting",
+                ],
                 CollectionOrdering.Any
             );
     }

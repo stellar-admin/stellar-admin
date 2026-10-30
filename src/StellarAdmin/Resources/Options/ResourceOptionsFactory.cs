@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.UI.Icons;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin.Resources.Options;
 
@@ -82,5 +83,6 @@ internal sealed class ResourceOptionsFactory<TResource>(
         RowDetailsCheck.Run(options);
         AddAnotherCheck.Run(options);
         ResourceIndexCheck.Run(options);
+        options.Problems.AddRange(WidgetsCheck.Run(options.Index.Widgets, null, true));
     }
 }

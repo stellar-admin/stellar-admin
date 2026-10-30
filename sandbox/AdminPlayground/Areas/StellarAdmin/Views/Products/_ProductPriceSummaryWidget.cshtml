@@ -1,0 +1,23 @@
+@model ProductPriceSummary
+<sa-card>
+    <sa-card-content>
+        <dl class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Products listed</dt>
+                <dd class="text-2xl font-semibold tabular-nums">@Model.Products</dd>
+            </div>
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Lowest price</dt>
+                <dd class="text-2xl font-semibold tabular-nums">@Model.Lowest.ToString("0.00")</dd>
+            </div>
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Average price</dt>
+                <dd class="text-2xl font-semibold tabular-nums">@Model.Average.ToString("0.00")</dd>
+            </div>
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Highest price</dt>
+                <dd class="text-2xl font-semibold tabular-nums">@Model.Highest.ToString("0.00")</dd>
+            </div>
+        </dl>
+    </sa-card-content>
+</sa-card>

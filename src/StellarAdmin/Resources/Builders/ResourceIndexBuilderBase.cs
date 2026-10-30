@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin.Resources.Builders;
 
@@ -418,6 +419,31 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(EnableRowDetails(panels));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Configures the widgets shown on the index page.
+    /// </summary>
+    /// <param name="configure">A delegate that adds the widgets.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     A widget's <c>Placement</c> shows it above the grid, beside it or below it. The page
+    ///     renders its widgets again when the search changes.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public TBuilder Widgets(Action<WidgetsBuilder<IndexWidgetContext<TResource>>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var widgets = new List<WidgetOptions>();
+        configure(new(Services, widgets));
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            options.Index.Widgets.AddRange(widgets)
+        );
 
         return (TBuilder)this;
     }
