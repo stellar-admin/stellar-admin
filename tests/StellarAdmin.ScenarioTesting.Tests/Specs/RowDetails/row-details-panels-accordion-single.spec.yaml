@@ -1,0 +1,24 @@
+# Opening a panel closes the open panel in the same row, and leaves other rows alone
+scenario: row-details-panels-accordion-single
+steps:
+  - goto: /stellaradmin/bookings
+  - click: { selector: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']", timeout: 5000 }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - click: "summary:has-text('Pricing')"
+        - expectVisible: "details[open] > summary:has-text('Pricing')"
+        - click: "summary:has-text('History')"
+        - expectVisible: "details[open] > summary:has-text('History')"
+        - expectCount: { selector: "details[open]", count: 1 }
+  - click: "tr:has-text('VB-100621') [data-slot='table-row-detail-toggle']"
+  - within:
+      selector: "tr:has-text('VB-100621') + tr[data-slot='table-row-detail']"
+      steps:
+        - click: "summary:has-text('Summary')"
+        - expectVisible: "details[open] > summary:has-text('Summary')"
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectVisible: "details[open] > summary:has-text('History')"
+        - expectCount: { selector: "details[open]", count: 1 }

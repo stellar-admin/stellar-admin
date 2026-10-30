@@ -1,0 +1,9 @@
+# A row expanded after the session ends is refused: Identity's cookie sends the request to sign in
+scenario: row-details-authorization
+user: admin@voyager.travel
+steps:
+  - goto: /stellaradmin/bookings
+  - signOut: true
+  - click: { selector: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']", timeout: 5000 }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/1, count: 1, status: 302 }
+  - expectRequests: { url: "/^\\/scenario\\/sign-in\\?/", count: 1, status: 200 }

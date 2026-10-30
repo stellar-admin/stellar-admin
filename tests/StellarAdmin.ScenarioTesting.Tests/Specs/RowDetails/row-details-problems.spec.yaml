@@ -1,0 +1,27 @@
+# Each row details mistake is listed as a configuration problem, and the admin panel works around it
+scenario: row-details-problems
+steps:
+  - goto: /stellaradmin/bookings
+  - click: { selector: .sa-configuration-problems-trigger, timeout: 5000 }
+  - within:
+      selector: "#configuration-problems"
+      steps:
+        - expectVisible: ".sa-configuration-problem-message:has-text('BookingHistoryAndPricingHandler implements IResourceRowDetailHandler<TModel> for more than one model')"
+        - expectVisible: ".sa-configuration-problem-message:has-text('shown in an accordion because the layout')"
+        - expectVisible: ".sa-configuration-problem-message:has-text('because BookingHistoryService')"
+        - expectVisible: ".sa-configuration-problem-message:has-text('which needs a resource key')"
+  - press: Escape
+  # The two-model History panel is left out, and the others fall back to the accordion
+  - click: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']"
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectCount: { selector: "[data-slot='tabs-list']", count: 0 }
+        - expectCount: { selector: "summary", count: 2 }
+        - expectCount: { selector: "summary:has-text('History')", count: 0 }
+  # Trips and partners rows don't expand
+  - goto: /stellaradmin/trips
+  - expectCount: { selector: "[data-slot='table-row-detail-toggle']", count: 0 }
+  - goto: /stellaradmin/partners
+  - expectVisible: "td:has-text('Alpine Rail Tours')"
+  - expectCount: { selector: "[data-slot='table-row-detail-toggle']", count: 0 }

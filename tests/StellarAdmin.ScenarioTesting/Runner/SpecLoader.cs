@@ -239,6 +239,7 @@ public static class SpecLoader
             "colorScheme" => ColorScheme(path, value),
             "expectAttribute" => ExpectAttribute(path, value, timeout),
             "expectCount" => ExpectCount(path, value, timeout),
+            "expectRequests" => ExpectRequests(path, value, timeout),
             "expectText" => ExpectText(path, value, timeout),
             "expectTitle" => ExpectTitle(path, value, timeout),
             "expectUrl" => ExpectUrl(Url(path, value), timeout),
@@ -258,6 +259,7 @@ public static class SpecLoader
             "scroll" => Scroll(Locator(path, value), timeout),
             "select" => Select(path, value, timeout),
             "signIn" => SignIn(Scalar(path, value)),
+            "signOut" => SignOut,
             "spotlight" => Spotlight(Locator(path, value), timeout),
             "type" => Type(path, value, timeout),
             "uncheck" => Pointer(
@@ -409,21 +411,64 @@ public static class SpecLoader
         }
 
         var locate = Locator(path, mapping);
-        var countNode = Child(path, mapping, "count");
-        if (
-            !int.TryParse(
-                Scalar(path, countNode),
-                NumberStyles.None,
-                CultureInfo.InvariantCulture,
-                out var count
-            )
-        )
-        {
-            throw new SpecException(path, Line(countNode), "'count' must be a whole number.");
-        }
+        var count = WholeNumber(path, Child(path, mapping, "count"), "count");
 
         return run =>
             Assertions.Expect(locate(run)).ToHaveCountAsync(count, new() { Timeout = timeout });
+    }
+
+    // { url, count, status }: how many requests the spec's pages have made to the URL, and optionally the
+    // status every one of them got. url is the exact path and query, e.g. /stellaradmin/bookings/rowdetail/7,
+    // or /pattern/ searched for in them
+    private static Func<SpecRun, Task> ExpectRequests(string path, YamlNode value, float timeout)
+    {
+        if (value is not YamlMappingNode mapping)
+        {
+            throw new SpecException(path, Line(value), "expectRequests needs 'url' and 'count'.");
+        }
+
+        var (exact, pattern) = Text(path, Child(path, mapping, "url"));
+        var count = WholeNumber(path, Child(path, mapping, "count"), "count");
+        int? status = mapping.Children.TryGetValue(new YamlScalarNode("status"), out var statusNode)
+            ? WholeNumber(path, statusNode, "status")
+            : null;
+        var url = exact ?? $"/{pattern}/";
+
+        return async run =>
+        {
+            var requests = await run.Requests.WaitForAsync(
+                run.Page,
+                target => pattern?.IsMatch(target) ?? target == exact,
+                count,
+                timeout
+            );
+            if (requests.Count != count)
+            {
+                throw new SpecException(
+                    path,
+                    Line(value),
+                    $"expectRequests: expected {count} requests to {url}, but there were {requests.Count}."
+                );
+            }
+
+            if (status is null)
+            {
+                return;
+            }
+
+            foreach (var request in requests)
+            {
+                var response = await request.ResponseAsync();
+                if (response?.Status != status)
+                {
+                    throw new SpecException(
+                        path,
+                        Line(value),
+                        $"expectRequests: expected status {status} from {url}, but got {response?.Status.ToString(CultureInfo.InvariantCulture) ?? "no response"}."
+                    );
+                }
+            }
+        };
     }
 
     // A locator mapping plus the text, e.g. { role: heading, text: Trips }
@@ -699,6 +744,9 @@ public static class SpecLoader
             }
         };
 
+    // true; ends the session by clearing the browser's cookies, as if it expired, without leaving the page
+    private static Task SignOut(SpecRun run) => run.Page.Context.ClearCookiesAsync();
+
     // Dims the page except for every element the locator matches; annotations still draw on top
     private static Func<SpecRun, Task> Spotlight(Func<SpecRun, ILocator> locate, float timeout) =>
         async run =>
@@ -825,4 +873,14 @@ public static class SpecLoader
 
         return pixels;
     }
+
+    private static int WholeNumber(string path, YamlNode node, string key) =>
+        int.TryParse(
+            Scalar(path, node),
+            NumberStyles.None,
+            CultureInfo.InvariantCulture,
+            out var number
+        )
+            ? number
+            : throw new SpecException(path, Line(node), $"'{key}' must be a whole number.");
 }

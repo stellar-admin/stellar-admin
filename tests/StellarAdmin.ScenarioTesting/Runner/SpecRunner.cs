@@ -91,9 +91,11 @@ public static class SpecRunner
         SpecStep? record
     )
     {
+        // Before the page opens, so its first request is recorded
+        var requests = new SpecRequests(context);
         if (screenshotDirectory is null || record is null)
         {
-            return new(await context.NewPageAsync(), screenshotDirectory);
+            return new(await context.NewPageAsync(), requests, screenshotDirectory);
         }
 
         await SpecVideo.InstallAsync(context);
@@ -101,7 +103,7 @@ public static class SpecRunner
         {
             var page = await context.NewPageAsync();
 
-            return new(page, screenshotDirectory, new SpecVideo());
+            return new(page, requests, screenshotDirectory, new SpecVideo());
         }
         catch (PlaywrightException exception) when (exception.Message.Contains("ffmpeg"))
         {

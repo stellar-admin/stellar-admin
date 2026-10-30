@@ -1,0 +1,16 @@
+# A booking's summary renders hidden below its row with the page, shows when its toggle expands it, and hides again
+scenario: row-details-inline
+steps:
+  - goto: /stellaradmin/bookings
+  - expectCount: { selector: "tbody [data-slot='table-row-detail-toggle']", count: 10 }
+  - expectCount: { selector: "tr[data-slot='table-row-detail']", count: 10 }
+  - expectCount: { selector: "tr[data-slot='table-row-detail']:visible", count: 0 }
+  - click: { selector: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']", timeout: 5000 }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectText: { selector: "[data-slot='display-field']:has-text('Booked at') dd", text: "3 May 2025, 21:33" }
+  - expectCount: { selector: "tr[data-slot='table-row-detail']:visible", count: 1 }
+  - expectRequests: { url: /rowdetail/, count: 0 }
+  - click: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']"
+  - expectCount: { selector: "tr[data-slot='table-row-detail']:visible", count: 0 }

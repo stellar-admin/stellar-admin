@@ -5,44 +5,10 @@ using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
+// The row detail endpoint's answers to keys the index page never requests; what people see is covered by
+// the row details specs in StellarAdmin.ScenarioTesting.Tests
 public class ResourceRowDetailsTests
 {
-    [Test]
-    public async Task ProjectedDetails_RenderLoaderForTheEntityKey()
-    {
-        // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(ConfigureProjectedDetails);
-        using var client = sut.GetTestClient();
-
-        // Act
-        using var response = await client.GetAsync("/stellaradmin/products");
-        var html = await response.Content.ReadAsStringAsync();
-
-        // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        await Assert.That(html).Contains("hx-get=\"/stellaradmin/products/rowdetail/2\"");
-        await Assert.That(html).DoesNotContain("data-test=\"pricing\"");
-    }
-
-    [Test]
-    [Arguments("2", "Apple, 20, Technology")]
-    [Arguments("1", "Zebra, 10, Office")]
-    public async Task ProjectedDetails_RowDetailRendersProjection(string id, string expected)
-    {
-        // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(ConfigureProjectedDetails);
-        using var client = sut.GetTestClient();
-
-        // Act
-        using var response = await client.GetAsync($"/stellaradmin/products/rowdetail/{id}");
-
-        // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains($"<p data-test=\"pricing\">{expected}</p>");
-    }
-
     [Test]
     [Arguments("99")]
     [Arguments("not-a-number")]
@@ -58,79 +24,6 @@ public class ResourceRowDetailsTests
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
-    }
-
-    [Test]
-    public async Task ProjectedPanel_RowDetailRendersProjection()
-    {
-        // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(index =>
-                index.EnableRowDetails(panels =>
-                    panels.Add(
-                        "Pricing",
-                        "_ProductPricing",
-                        product => new ProductPricing(
-                            product.Name,
-                            product.Price,
-                            product.Category != null ? product.Category.Name : null
-                        )
-                    )
-                )
-            )
-        );
-        using var client = sut.GetTestClient();
-
-        // Act
-        using var response = await client.GetAsync(
-            "/stellaradmin/products/rowdetail/2?panel=pricing"
-        );
-
-        // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains("<p data-test=\"pricing\">Apple, 20, Technology</p>");
-    }
-
-    [Test]
-    public async Task ProjectedPanelWithConfigure_RendersConfiguredPanel()
-    {
-        // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(index =>
-                index.EnableRowDetails(panels =>
-                {
-                    panels.Add(
-                        "Pricing",
-                        "_ProductPricing",
-                        product => new ProductPricing(
-                            product.Name,
-                            product.Price,
-                            product.Category != null ? product.Category.Name : null
-                        ),
-                        panel =>
-                        {
-                            panel.Name = "prices";
-                            panel.Icon = "tag";
-                        }
-                    );
-                    panels.Add(
-                        "Summary",
-                        "_ProductPricing",
-                        product => new ProductPricing(product.Name, product.Price, null)
-                    );
-                })
-            )
-        );
-        using var client = sut.GetTestClient();
-
-        // Act
-        var html = await client.GetStringAsync("/stellaradmin/products");
-
-        // Assert
-        await Assert.That(html).Contains("/stellaradmin/products/rowdetail/2?panel=prices");
-        await Assert.That(html).Contains("sa-accordion-trigger-media");
     }
 
     private static void ConfigureProjectedDetails(EfCoreResourceBuilder<Product> resource) =>

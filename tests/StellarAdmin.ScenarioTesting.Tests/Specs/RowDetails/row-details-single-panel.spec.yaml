@@ -1,0 +1,11 @@
+# A single panel shows its content without an accordion or tabs
+scenario: row-details-single-panel
+steps:
+  - goto: /stellaradmin/bookings
+  - click: { selector: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']", timeout: 5000 }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectText: { selector: "[data-slot='display-field']:has-text('Booked at') dd", text: "3 May 2025, 21:33" }
+        - expectCount: { selector: "[data-slot='accordion']", count: 0 }
+        - expectCount: { selector: "[data-slot='tabs-list']", count: 0 }

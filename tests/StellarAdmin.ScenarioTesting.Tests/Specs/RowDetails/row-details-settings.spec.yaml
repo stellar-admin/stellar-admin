@@ -1,0 +1,17 @@
+# Clicking anywhere in a row expands it and collapses the row expanded before; there are no toggles, and the settings reach the grid
+scenario: row-details-settings
+steps:
+  - goto: /stellaradmin/bookings
+  - expectCount: { selector: "[data-slot='table-row-detail-toggle']", count: 0 }
+  - within:
+      selector: "[data-slot='table-interactivity']"
+      steps:
+        - expectAttribute: { attribute: data-emphasis, value: rail }
+        - expectAttribute: { attribute: data-divider, value: full-width }
+        - expectAttribute: { attribute: data-inset, value: bleed }
+        - expectAttribute: { attribute: data-animate, value: "false" }
+  - click: { selector: "td:has-text('VB-101459')", timeout: 5000 }
+  - expectVisible: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+  - click: "td:has-text('VB-100621')"
+  - expectVisible: "tr:has-text('VB-100621') + tr[data-slot='table-row-detail']"
+  - expectCount: { selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']:visible", count: 0 }

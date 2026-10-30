@@ -1,0 +1,6 @@
+# The panels' tabs use the line style
+scenario: row-details-panels-tabs-line
+steps:
+  - goto: /stellaradmin/bookings
+  - click: { selector: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']", timeout: 5000 }
+  - expectAttribute: { selector: "tr:has-text('VB-101459') + tr [data-slot='tabs-list']", attribute: data-variant, value: line }

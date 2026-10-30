@@ -1,0 +1,39 @@
+# An expanded booking shows its panels as tabs with History selected and loaded; Pricing loads once, when its tab is first selected, and each row keeps its own tab
+scenario: row-details-panels-tabs
+steps:
+  - goto: /stellaradmin/bookings
+  - expectRequests: { url: /rowdetail/, count: 0 }
+  - click: { selector: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']", timeout: 5000 }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectCount: { selector: "[data-slot='accordion']", count: 0 }
+        - expectAttribute: { selector: "[data-slot='tabs-list']", attribute: data-variant, value: default }
+        - expectAttribute: { role: tab, name: History, attribute: aria-selected, value: "true" }
+        - expectVisible: "li:has-text('Deposit paid')"
+        - expectCount: { selector: "[role='tab']:has-text('Pricing') svg", count: 1 }
+        - expectCount: { selector: "[role='tab']:has-text('History') svg", count: 0 }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/1?panel=history, count: 1, status: 200 }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/1?panel=prices, count: 0 }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - click: { role: tab, name: Pricing }
+        - expectText: { selector: "[data-slot='display-field']:has-text('Travelers') dd", text: "2" }
+        - click: { role: tab, name: History }
+        - click: { role: tab, name: Pricing }
+        - expectAttribute: { role: tab, name: Pricing, attribute: aria-selected, value: "true" }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/1?panel=prices, count: 1, status: 200 }
+  - click: "tr:has-text('VB-100299') [data-slot='table-row-detail-toggle']"
+  - within:
+      selector: "tr:has-text('VB-100299') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectAttribute: { role: tab, name: History, attribute: aria-selected, value: "true" }
+        - click: { role: tab, name: Summary }
+        - expectAttribute: { role: tab, name: Summary, attribute: aria-selected, value: "true" }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectAttribute: { role: tab, name: Pricing, attribute: aria-selected, value: "true" }
+        - expectText: { selector: "[data-slot='display-field']:has-text('Travelers') dd", text: "2" }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/5?panel=history, count: 1, status: 200 }

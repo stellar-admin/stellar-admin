@@ -1,0 +1,18 @@
+# The handler's history loads into an expanded row without the page layout; a booking it can't find says so
+scenario: row-details-handler
+steps:
+  - goto: /stellaradmin/bookings
+  - expectRequests: { url: /rowdetail/, count: 0 }
+  - click: { selector: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']", timeout: 5000 }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectVisible: "li:has-text('Deposit paid')"
+  - expectCount: { selector: "[data-slot='sidebar']", count: 1 }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/1, count: 1, status: 200 }
+  - click: "tr:has-text('VB-100621') [data-slot='table-row-detail-toggle']"
+  - within:
+      selector: "tr:has-text('VB-100621') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectVisible: "text=This record no longer exists."
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/2, count: 1, status: 404 }

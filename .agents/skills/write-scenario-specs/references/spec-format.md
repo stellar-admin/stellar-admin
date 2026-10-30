@@ -59,12 +59,14 @@ Any step whose value is a mapping can add `timeout` in milliseconds (default 100
 | `expectUrl` | The end of the URL, e.g. `/stellaradmin/trips`, or `{ url, timeout }`. |
 | `expectVisible` | A locator. |
 | `signIn` | A seeded user's email; signs in (or switches user) without a password. The next page loads signed in. |
+| `signOut` | `true`. Ends the session by clearing the browser's cookies, as if it expired, without leaving the page. |
 | `expectText` | A locator mapping plus the exact `text`: `{ role: heading, name: Trips, text: Trips }` or `{ selector: ".sa-sidebar-brand-title", text: Voyager Travel }`. |
 | `expectAttribute` | A locator mapping plus `attribute` and `value`: `{ selector: "meta[name='description']", attribute: content, value: Voyager Travel }`. The element need not be visible. |
 | `expectCount` | A locator mapping plus `count`, the number of matching elements: `{ selector: ".sa-sidebar-brand-subtitle", count: 0 }` checks it is absent. |
 | `expectTitle` | The document title, e.g. `Trips - Voyager Travel`, or `{ text, timeout }`. |
+| `expectRequests` | `{ url, count, status }`: how many requests the spec's pages have made since the spec started to `url`, the exact path and query (`/stellaradmin/bookings/rowdetail/1?panel=prices`) or a `/pattern/` searched for in them, and optionally the `status` every one of them got: `{ url: /rowdetail/, count: 0 }` checks nothing was requested. It waits up to the timeout for the count, after letting the page run its pending work, so it can check that something loads only once. |
 
-In `expectText`, `expectAttribute` and `expectTitle`, a value written `/pattern/` is a regular expression: `text: "/^Stellar Admin /"`.
+In `expectText`, `expectAttribute`, `expectTitle` and `expectRequests`, a value written `/pattern/` is a regular expression: `text: "/^Stellar Admin /"`.
 
 Assertions retry until the timeout, so they also wait for a state to settle.
 

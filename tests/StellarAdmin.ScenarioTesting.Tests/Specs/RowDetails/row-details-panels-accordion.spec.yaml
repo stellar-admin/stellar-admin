@@ -1,0 +1,32 @@
+# An expanded booking's History, Summary and Pricing panels start closed in a contained accordion; the panels that load on demand load once, when first opened, and several stay open
+scenario: row-details-panels-accordion
+steps:
+  - goto: /stellaradmin/bookings
+  - click: { selector: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']", timeout: 5000 }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectAttribute: { selector: "[data-slot='accordion']", attribute: data-variant, value: contained }
+        - expectCount: { selector: "[data-slot='tabs-list']", count: 0 }
+        - expectText: { selector: "summary >> nth=0", text: History }
+        - expectText: { selector: "summary >> nth=1", text: Summary }
+        - expectText: { selector: "summary >> nth=2", text: Pricing }
+        - expectCount: { selector: "details[open]", count: 0 }
+        - expectCount: { selector: "summary:has-text('Pricing') .sa-accordion-trigger-media > svg", count: 1 }
+        - expectCount: { selector: "summary:has-text('History') .sa-accordion-trigger-media", count: 0 }
+        - expectCount: { selector: "dd:has-text('3 May 2025, 21:33')", count: 1 }
+  - expectRequests: { url: /rowdetail/, count: 0 }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - click: "summary:has-text('Pricing')"
+        - expectText: { selector: "[data-slot='display-field']:has-text('Travelers') dd", text: "2" }
+        - click: "summary:has-text('History')"
+        - expectVisible: "li:has-text('Deposit paid')"
+        - expectCount: { selector: "details[open]", count: 2 }
+        - click: "summary:has-text('Pricing')"
+        - expectCount: { selector: "details[open]", count: 1 }
+        - click: "summary:has-text('Pricing')"
+        - expectCount: { selector: "details[open]", count: 2 }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/1?panel=prices, count: 1, status: 200 }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/1?panel=history, count: 1, status: 200 }

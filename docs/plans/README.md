@@ -21,6 +21,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [overridable-partials](overridable-partials.md) | proposed | A catalogue of the partial views developers can override, more of them, and better docs. Basics only. |
 | [resource-page-panels](resource-page-panels.md) | proposed | Panels such as charts, chat widgets, partials or MVC and Razor Pages content on index pages, forms and view pages. Basics only. |
 | [row-detail-accordion](row-detail-accordion.md) | implemented, awaiting review | Row detail panels as a contained accordion, the new default, with `PanelLayout` choosing tabs or an accordion and panel icons. |
+| [row-details-scenario-migration](row-details-scenario-migration.md) | implemented, awaiting review | The row details integration tests as scenarios and specs, with an `expectRequests` step; tests of URLs the UI never requests stay integration tests. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
 ## Retired implementation and research records

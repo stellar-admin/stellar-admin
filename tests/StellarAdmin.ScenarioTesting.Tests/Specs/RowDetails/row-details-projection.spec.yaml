@@ -1,0 +1,19 @@
+# Each expanded booking loads its own pricing, and only when it expands
+scenario: row-details-projection
+steps:
+  - goto: /stellaradmin/bookings
+  - expectRequests: { url: /rowdetail/, count: 0 }
+  - click: { selector: "tr:has-text('VB-101459') [data-slot='table-row-detail-toggle']", timeout: 5000 }
+  - within:
+      selector: "tr:has-text('VB-101459') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectText: { selector: "[data-slot='display-field']:has-text('Total') dd", text: "9340.0" }
+        - expectText: { selector: "[data-slot='display-field']:has-text('Travelers') dd", text: "2" }
+  - click: "tr:has-text('VB-100299') [data-slot='table-row-detail-toggle']"
+  - within:
+      selector: "tr:has-text('VB-100299') + tr[data-slot='table-row-detail']"
+      steps:
+        - expectText: { selector: "[data-slot='display-field']:has-text('Total') dd", text: "4670.0" }
+        - expectText: { selector: "[data-slot='display-field']:has-text('Travelers') dd", text: "1" }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/1, count: 1, status: 200 }
+  - expectRequests: { url: /stellaradmin/bookings/rowdetail/5, count: 1, status: 200 }
