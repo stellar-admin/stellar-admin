@@ -1,8 +1,8 @@
 # Row details integration tests as scenarios
 
-Status: implemented, awaiting review (2026-10-30).
+Status: completed (2026-10-30), reviewed by Jerrie.
 
-Move the row details integration tests to scenarios and specs, as the sidebar branding and authorization pilots did in [scenario-testing](archive/scenario-testing.md).
+Move the row details integration tests to scenarios and specs, as the sidebar branding and authorization pilots did in [scenario-testing](scenario-testing.md).
 
 ## Rule
 

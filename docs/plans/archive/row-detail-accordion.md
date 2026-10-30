@@ -1,6 +1,6 @@
 # Row detail panels as an accordion
 
-Status: implemented, awaiting review (2026-10-30).
+Status: completed (2026-10-30).
 
 Show a row's detail panels as a contained accordion, and make that the default for two or more panels. Tabs stay available, in either tab style.
 
@@ -36,6 +36,5 @@ Done on 2026-10-30:
 
 - Screenshots: `RowDetailsTabsScenario` became `RowDetailsScenario`, run as `row-details-accordion` and `row-details-tabs`. Each has a spec, and the tabs section of `row-details.mdx` has a `row-details-tabs` placeholder. A full `docs generate screenshots` run reports 0 open, 0 unused and 0 misnamed.
 
-Outstanding:
-
-- Browser checks of the tabs layouts and `Single` in the real admin panel are covered by the integration tests' markup, not yet clicked through.
+- The tabs layouts and `Single` are covered in a browser by the row details specs (see [row-details-scenario-migration](row-details-scenario-migration.md)). Jerrie reviewed the work and checked it visually.
+- The tabs code example in `row-details.mdx` adds the Pricing panel, matching the `row-details-tabs` screenshot.
