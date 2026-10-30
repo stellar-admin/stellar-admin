@@ -1,0 +1,11 @@
+@model IReadOnlyList<WidgetViewModel>
+
+@* A page's widgets in a 12-column grid that collapses with the width it has *@
+<div class="sa-widgets" data-slot="widgets">
+    <div class="sa-widgets-grid">
+        @foreach (var widget in Model)
+        {
+            <partial name="_Widget" model="widget" />
+        }
+    </div>
+</div>

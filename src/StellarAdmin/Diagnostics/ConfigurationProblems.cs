@@ -79,6 +79,7 @@ internal sealed class ConfigurationProblems(
     private ConfigurationProblem[] FindProblems()
     {
         var problems = new List<ConfigurationProblem>(options.Problems);
+        problems.AddRange(options.HomePage.WidgetProblems);
         foreach (var resource in resources)
         {
             var label = resource.ResolveSidebarItem(services).Label;

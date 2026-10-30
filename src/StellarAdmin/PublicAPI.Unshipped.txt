@@ -122,6 +122,7 @@ override StellarAdmin.Resources.ResourceSort.ToString() -> string!
 override StellarAdmin.Resources.ResourceValidationError.Equals(object? obj) -> bool
 override StellarAdmin.Resources.ResourceValidationError.GetHashCode() -> int
 override StellarAdmin.Resources.ResourceValidationError.ToString() -> string!
+override StellarAdmin.WidgetFormTagHelper.Process(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> void
 static StellarAdmin.Areas.StellarAdmin.FormFieldProperties.operator !=(StellarAdmin.Areas.StellarAdmin.FormFieldProperties? left, StellarAdmin.Areas.StellarAdmin.FormFieldProperties? right) -> bool
 static StellarAdmin.Areas.StellarAdmin.FormFieldProperties.operator ==(StellarAdmin.Areas.StellarAdmin.FormFieldProperties? left, StellarAdmin.Areas.StellarAdmin.FormFieldProperties? right) -> bool
 static StellarAdmin.Areas.StellarAdmin.GridEditorHtmlHelperExtensions.GridEditorAsync(this Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper! html, StellarAdmin.Resources.Options.FormFieldOptions! field, object! model) -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Html.IHtmlContent!>!
@@ -395,6 +396,7 @@ StellarAdmin.FormPageTagHelper
 StellarAdmin.FormPageTagHelper.FormPageTagHelper(Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine! viewEngine) -> void
 StellarAdmin.FormPageTagHelper.Model.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel!
 StellarAdmin.FormPageTagHelper.Model.set -> void
+StellarAdmin.Home.HomePageBuilder.Widgets(System.Action<StellarAdmin.Widgets.WidgetsBuilder<StellarAdmin.Widgets.WidgetContext!>!>! configure) -> StellarAdmin.Home.HomePageBuilder!
 StellarAdmin.IndexPageTagHelper
 StellarAdmin.IndexPageTagHelper.IndexPageTagHelper(Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine! viewEngine) -> void
 StellarAdmin.IndexPageTagHelper.Model.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel!
@@ -1915,6 +1917,40 @@ StellarAdmin.ViewPageTagHelper
 StellarAdmin.ViewPageTagHelper.Model.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceViewPageViewModel!
 StellarAdmin.ViewPageTagHelper.Model.set -> void
 StellarAdmin.ViewPageTagHelper.ViewPageTagHelper(Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine! viewEngine) -> void
+StellarAdmin.WidgetFormTagHelper
+StellarAdmin.WidgetFormTagHelper.ViewContext.get -> Microsoft.AspNetCore.Mvc.Rendering.ViewContext!
+StellarAdmin.WidgetFormTagHelper.ViewContext.set -> void
+StellarAdmin.WidgetFormTagHelper.WidgetFormTagHelper() -> void
+StellarAdmin.Widgets.IWidgetHandler<TModel>
+StellarAdmin.Widgets.IWidgetHandler<TModel>.LoadAsync(StellarAdmin.Widgets.WidgetLoadContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TModel?>!
+StellarAdmin.Widgets.IWidgetHandler<TParameters, TModel>
+StellarAdmin.Widgets.IWidgetHandler<TParameters, TModel>.LoadAsync(TParameters parameters, StellarAdmin.Widgets.WidgetLoadContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TModel?>!
+StellarAdmin.Widgets.WidgetBuilder<TContext>
+StellarAdmin.Widgets.WidgetBuilder<TContext>.Inline.set -> void
+StellarAdmin.Widgets.WidgetBuilder<TContext>.Parameters<TParameters>(System.Func<TContext!, TParameters>! parameters) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetBuilder<TContext>.RefreshInterval.set -> void
+StellarAdmin.Widgets.WidgetBuilder<TContext>.RequireAuthorization() -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetBuilder<TContext>.RequireAuthorization(Microsoft.AspNetCore.Authorization.AuthorizationPolicy! policy) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetBuilder<TContext>.RequireAuthorization(params Microsoft.AspNetCore.Authorization.IAuthorizeData![]! authorizeData) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetBuilder<TContext>.RequireAuthorization(params string![]! policyNames) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetBuilder<TContext>.RequireAuthorization(System.Action<Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!>! configurePolicy) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetBuilder<TContext>.ShowWhen(System.Func<TContext!, bool>! predicate) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetBuilder<TContext>.Span.set -> void
+StellarAdmin.Widgets.WidgetContext
+StellarAdmin.Widgets.WidgetContext.HttpContext.get -> Microsoft.AspNetCore.Http.HttpContext!
+StellarAdmin.Widgets.WidgetContext.Services.get -> System.IServiceProvider!
+StellarAdmin.Widgets.WidgetContext.User.get -> System.Security.Claims.ClaimsPrincipal!
+StellarAdmin.Widgets.WidgetInputAttribute
+StellarAdmin.Widgets.WidgetInputAttribute.WidgetInputAttribute() -> void
+StellarAdmin.Widgets.WidgetLoadContext
+StellarAdmin.Widgets.WidgetLoadContext.HttpContext.get -> Microsoft.AspNetCore.Http.HttpContext!
+StellarAdmin.Widgets.WidgetLoadContext.Name.get -> string!
+StellarAdmin.Widgets.WidgetLoadContext.User.get -> System.Security.Claims.ClaimsPrincipal!
+StellarAdmin.Widgets.WidgetsBuilder<TContext>
+StellarAdmin.Widgets.WidgetsBuilder<TContext>.Add(string! name, string! partialName) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetsBuilder<TContext>.Add(string! name, string! partialName, System.Action<StellarAdmin.Widgets.WidgetBuilder<TContext!>!>! configure) -> StellarAdmin.Widgets.WidgetsBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetsBuilder<TContext>.Add<THandler>(string! name, string! partialName) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!
+StellarAdmin.Widgets.WidgetsBuilder<TContext>.Add<THandler>(string! name, string! partialName, System.Action<StellarAdmin.Widgets.WidgetBuilder<TContext!>!>! configure) -> StellarAdmin.Widgets.WidgetsBuilder<TContext!>!
 virtual StellarAdmin.Resources.Displays.FieldDisplay.RendersEmptyValue.get -> bool
 virtual StellarAdmin.Resources.Editors.FieldEditor.ClassNames.get -> StellarAdmin.Resources.Editors.EditorClassNames!
 virtual StellarAdmin.Resources.Editors.ItemMedia.EqualityContract.get -> System.Type!

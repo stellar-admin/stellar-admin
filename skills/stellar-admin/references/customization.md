@@ -48,7 +48,7 @@ Add a view named after the action in a folder named by the resource's **slug**: 
 
 ## Home page
 
-In Development, the panel's home page (`/stellaradmin`) is a setup checklist: it shows which of resources, protection, name and logo, user menu, theme and sidebar the app has configured, with the code and instructions for a coding agent for each step. In other environments it links to the resources the user can open, or says the panel has no pages yet.
+In Development, the panel's home page (`/stellaradmin`) is a setup checklist: it shows which of resources, protection, name and logo, user menu, theme and sidebar the app has configured, with the code and instructions for a coding agent for each step. In other environments it links to the resources the user can open, or says the panel has no pages yet. With [widgets](widgets.md), it shows the widgets in place of the links, and in Development below the checklist.
 
 Turn the checklist off to show the same page as other environments in Development:
 

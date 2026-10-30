@@ -1,0 +1,58 @@
+@model WidgetViewModel
+
+@*
+    A widget's cell in the grid. A lazy widget's placeholder loads the widget once the page has rendered, and the
+    response replaces the whole cell. A loaded widget with a refresh interval loads again on that interval; a failed
+    refresh keeps what it shows. A failed load shows an error with a retry.
+*@
+@{
+    var refresh = Model is { State: WidgetState.Loaded, RefreshInterval: { } interval, Url: not null }
+        ? $"every {Math.Max(1, (int)Math.Round(interval.TotalSeconds))}s"
+        : null;
+    var trigger = Model.State == WidgetState.Loading ? "load" : refresh;
+    var keep = refresh is null ? null : "swap:none";
+}
+<div class="sa-widget" data-slot="widget" data-span="@Model.Span" data-state="@Model.State.ToString().ToLowerInvariant()"
+     data-widget="@Model.Name" aria-busy="@(Model.State == WidgetState.Loading ? "true" : null)"
+     hx-get="@(trigger is null ? null : Model.Url)" hx-trigger="@trigger" hx-target="@(trigger is null ? null : "this")"
+     hx-swap="@(trigger is null ? null : "outerHTML")" hx-select="" hx-select-oob="" hx-push-url="false"
+     hx-status:4xx="@keep" hx-status:5xx="@keep">
+    @switch (Model.State)
+    {
+        case WidgetState.Loading:
+            <sa-card class="sa-widget-placeholder">
+                <sa-card-content>
+                    <div class="sa-widget-skeleton" aria-hidden="true">
+                        <sa-skeleton class="h-4 w-1/3" />
+                        <sa-skeleton class="h-8 w-1/2" />
+                        <sa-skeleton class="h-4 w-2/3" />
+                    </div>
+                </sa-card-content>
+            </sa-card>
+            break;
+        case WidgetState.Failed:
+            <sa-card class="sa-widget-error">
+                <sa-card-content>
+                    <sa-empty class="border-0">
+                        <sa-empty-header>
+                            <sa-empty-media variant="EmptyMediaVariant.Icon">
+                                <sa-icon name="circle-alert" />
+                            </sa-empty-media>
+                            <sa-empty-title>Something went wrong</sa-empty-title>
+                            <sa-empty-description>This widget could not be loaded.</sa-empty-description>
+                        </sa-empty-header>
+                        <sa-empty-content>
+                            <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Small"
+                                       hx-get="@Model.Url" hx-target="closest [data-slot='widget']" hx-swap="outerHTML"
+                                       hx-select="" hx-select-oob="" hx-push-url="false">Try again</sa-button>
+                        </sa-empty-content>
+                    </sa-empty>
+                </sa-card-content>
+            </sa-card>
+            break;
+        default:
+            <partial name="@Model.PartialName" model="Model.Model"
+                     view-data="@(new ViewDataDictionary(ViewData) { [ViewDataKeys.Widget] = Model })" />
+            break;
+    }
+</div>

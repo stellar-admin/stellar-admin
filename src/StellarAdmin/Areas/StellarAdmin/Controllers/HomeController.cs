@@ -7,6 +7,7 @@ using StellarAdmin.Infrastructure.Authorization;
 using StellarAdmin.Infrastructure.Icons;
 using StellarAdmin.Resources;
 using StellarAdmin.Sidebar;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin.Areas.StellarAdmin.Controllers;
 
@@ -16,11 +17,23 @@ internal sealed class HomeController(
     BrandingResolver branding,
     IEnumerable<ResourceRegistration> resources,
     StellarAdminOptions options,
+    WidgetRenderer widgets,
     IServiceProvider services
 ) : Controller
 {
-    public async Task<IActionResult> Index()
+    // Names the home page in its widgets' protected parameters
+    private const string WidgetPage = "home";
+
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
+        var rendered = await widgets.RenderAsync(
+            options.HomePage.GetCheckedWidgets(),
+            new(HttpContext),
+            WidgetPage,
+            CreateWidgetUrl,
+            cancellationToken
+        );
+
         // Null outside Development and when the checklist is turned off, without detecting anything
         if (await setup.ResolveAsync(HttpContext) is { } status)
         {
@@ -31,10 +44,18 @@ internal sealed class HomeController(
                 status.ThemeStylesheet is { } path ? StylesheetName(path) : null
             );
 
-            return View(new HomePageViewModel(branding.Title, checklist, []));
+            return View(new HomePageViewModel(branding.Title, checklist, [], rendered));
         }
 
-        return View(new HomePageViewModel(branding.Title, null, await GetResourceLinksAsync()));
+        // Widgets take the place of the links to the resources, which the sidebar has too
+        return View(
+            new HomePageViewModel(
+                branding.Title,
+                null,
+                rendered.Count > 0 ? [] : await GetResourceLinksAsync(),
+                rendered
+            )
+        );
     }
 
     // Every registered icon for the icon editor's picker. The URL carries the icons' version, so the
@@ -72,6 +93,21 @@ internal sealed class HomeController(
         return File(body, "application/json");
     }
 
+    // A widget's content, loaded after the page has rendered or again when it refreshes
+    [HttpGet]
+    public Task<IActionResult> Widget(
+        [FromRoute] string? id,
+        CancellationToken cancellationToken
+    ) =>
+        widgets.LoadAsync(
+            this,
+            options.HomePage.GetCheckedWidgets(),
+            WidgetPage,
+            id,
+            CreateWidgetUrl,
+            cancellationToken
+        );
+
     private static bool Accepts(IList<StringWithQualityHeaderValue> encodings, string encoding) =>
         encodings.Any(accepted =>
             string.Equals(accepted.Value.Value, encoding, StringComparison.OrdinalIgnoreCase)
@@ -84,6 +120,18 @@ internal sealed class HomeController(
 
         return withoutQuery[(withoutQuery.LastIndexOf('/') + 1)..];
     }
+
+    private string CreateWidgetUrl(string name, string? parameters) =>
+        Url.Action(
+            nameof(Widget),
+            "Home",
+            new
+            {
+                area = "StellarAdmin",
+                id = name,
+                p = parameters,
+            }
+        )!;
 
     // The resources the sidebar shows the current user, in the sidebar's order
     private async Task<IReadOnlyList<HomeResourceLinkViewModel>> GetResourceLinksAsync()

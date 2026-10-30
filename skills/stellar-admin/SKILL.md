@@ -37,6 +37,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
 | Show the environment (live, staging, local) on every page | `EnableEnvironmentIndicator`, `EnvironmentIndicator.Stripe`/`Frame`/`Banner`, `EnvironmentColor` | [customization](references/customization.md#environment-indicator) |
 | Sign-in, roles, per-resource and per-link access | `RequireAuthorization` | [authorization](references/authorization.md) |
+| Home page widgets: stats, lists and links, loaded by handlers, with parameters, inputs and refresh | `ConfigureHomePage(home => home.Widgets(...))`, `IWidgetHandler<TModel>`, `Parameters`, `[WidgetInput]`, `<sa-widget-form>` | [widgets](references/widgets.md) |
 | Configuration mistakes: what the panel does, the Development indicator, logs, failing tests on problems | `ConfigureDiagnostics`, `ShowIndicator`, `ThrowOnProblems` | [configuration-problems](references/configuration-problems.md) |
 | Replace or extend a generated page, the home page and its setup checklist, global labels, template overrides | `Areas/StellarAdmin/Views/{slug}/Index.cshtml`, `sa-index-page`, `ConfigureHomePage`, `ConfigureResourceLabels` | [customization](references/customization.md) |
 
@@ -213,7 +214,7 @@ Say so rather than inventing an API:
 - Index filters other than scope tabs.
 - Changing the user menu's "Log out" text, and hiding user menu items by authorization (replace `_SidebarUserMenu.cshtml` for either).
 - Form tabs and wizards.
-- Dashboards and widgets (the panel home page is a plain landing page).
+- Widgets on resource pages (index, view, create and edit); [widgets](references/widgets.md) are only on the home page.
 - File upload editors other than images (`ImageEditor`, and images in `RichTextEditor`), and deleting replaced or removed images: StellarAdmin never deletes them, so the app cleans up files no record references.
 - Making a field read-only or disabled as other fields change in the browser (a `ReadOnly` condition is decided as the form renders, and `Disabled()` takes no condition).
 - Before/after save hooks (use a custom create or edit handler).

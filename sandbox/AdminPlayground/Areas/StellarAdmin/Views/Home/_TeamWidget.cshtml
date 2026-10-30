@@ -1,0 +1,20 @@
+@model TeamSummary
+<sa-card>
+    <sa-card-header>
+        <sa-card-title>Team</sa-card-title>
+        <sa-card-description>Refreshes every 30 seconds</sa-card-description>
+    </sa-card-header>
+    <sa-card-content>
+        <dl class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Users</dt>
+                <dd class="text-2xl font-semibold tabular-nums">@Model.Users</dd>
+            </div>
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Departments</dt>
+                <dd class="text-2xl font-semibold tabular-nums">@Model.Departments</dd>
+            </div>
+        </dl>
+    </sa-card-content>
+    <sa-card-footer class="text-xs text-muted-foreground">Checked at @Model.CheckedAt.ToString("HH:mm:ss")</sa-card-footer>
+</sa-card>

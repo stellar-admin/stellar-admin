@@ -11,6 +11,7 @@ using StellarAdmin.Infrastructure.Routing;
 using StellarAdmin.Resources;
 using StellarAdmin.Sidebar;
 using StellarAdmin.UI;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin;
 
@@ -52,6 +53,9 @@ public static class StellarAdminServiceCollectionExtensions
             services.TryAddSingleton<IconCatalog>();
             services.TryAddSingleton<IRichTextSanitizer, RichTextSanitizer>();
             services.TryAddSingleton(new EntityCandidateScanner(services));
+            services.AddDataProtection();
+            services.TryAddSingleton<WidgetParameters>();
+            services.TryAddSingleton<WidgetRenderer>();
 
             var admin = new StellarAdminBuilder(services, GetOrCreateOptions(services));
             admin.AddApplicationPart(typeof(StellarAdminServiceCollectionExtensions).Assembly);

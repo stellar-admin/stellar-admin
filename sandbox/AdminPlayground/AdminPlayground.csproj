@@ -44,6 +44,7 @@
     <ClientInput Include="../../src/StellarAdmin.UI/Client/css/tailwind-adapter.css" />
     <ClientInput Include="Client/package.json" />
     <ClientInput Include="Resources/**/*.cs" />
+    <ClientInput Include="Areas/StellarAdmin/Views/**/*.cshtml" />
   </ItemGroup>
 
   <!-- Declared at execution time, as in StellarAdmin, so Rider doesn't strip the

@@ -416,7 +416,7 @@ public sealed class StellarAdminBuilder
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(new HomePageBuilder(_options.HomePage));
+        configure(new HomePageBuilder(_options.HomePage, Services));
 
         return this;
     }

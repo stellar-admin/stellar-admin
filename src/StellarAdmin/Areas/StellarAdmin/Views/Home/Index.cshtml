@@ -1,10 +1,26 @@
 @model HomePageViewModel
 
-@* In Development the home page is a setup checklist; elsewhere, and when the checklist is turned off, it links to the
-   resources. An application replaces the whole page with its own Areas/StellarAdmin/Views/Home/Index.cshtml. *@
+@* In Development the home page is a setup checklist, above any widgets; elsewhere, and when the checklist is turned
+   off, it shows the widgets, or links to the resources when the user sees none. An application replaces the whole
+   page with its own Areas/StellarAdmin/Views/Home/Index.cshtml. *@
 @if (Model.Checklist is { } checklist)
 {
     <partial name="_SetupChecklist" model="checklist" />
+    @if (Model.Widgets.Count > 0)
+    {
+        <sa-page-container>
+            <partial name="_Widgets" model="Model.Widgets" />
+        </sa-page-container>
+    }
+}
+else if (Model.Widgets.Count > 0)
+{
+    <sa-page-container>
+        <sa-page-header>
+            <sa-page-header-title>@Model.Title</sa-page-header-title>
+        </sa-page-header>
+        <partial name="_Widgets" model="Model.Widgets" />
+    </sa-page-container>
 }
 else
 {

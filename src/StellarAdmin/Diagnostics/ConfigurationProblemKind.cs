@@ -72,4 +72,11 @@ internal enum ConfigurationProblemKind
 
     // Logged by StellarAdmin.UI's icon options
     SkippedIconMapping = 1090,
+
+    BlankWidgetName = 1100,
+    RepeatedWidgetName = 1101,
+    BlankWidgetPartial = 1102,
+    UnusableWidgetHandler = 1103,
+    MismatchedWidgetParameters = 1104,
+    IgnoredWidgetSetting = 1105,
 }

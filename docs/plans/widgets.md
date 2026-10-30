@@ -1,6 +1,6 @@
 # Widgets
 
-Status: planned (2026-10-30). Concepts explored and the approach decided; phase 1 not started.
+Status: phase 1 implemented (2026-10-30), uncommitted on the `widgets` branches of the product and the website. Phases 2 to 4 not started.
 
 Let developers place widgets on the admin panel's pages: the home page, a resource's index page, its view page and its create and edit forms. A widget is a self-contained block such as a stat, a chart, an activity heatmap, a list of recent records, a callout or a chat box. Examples are a chart of recent sign-ups above the customers grid, or a login activity graph (like GitHub's contribution graph) at the top of a customer's view page.
 
@@ -136,12 +136,37 @@ Widgets can have their own inputs, such as a 30d/90d picker. The partial renders
 3. **View, create and edit pages.** `RecordWidgetContext` and `CreateWidgetContext`, the placements on each page, and the sticky aside on forms.
 4. **Predefined widgets.** Stats first (value, change, note, sparkline or goal, several stats in one card), built on the same handler mechanism. A chart widget waits for a chart component; a records list could follow [configured-row-details](configured-row-details.md).
 
+## Phase 1 as built
+
+Choices made while implementing. Jerrie confirmed (2026-10-30) the resource links, deferring `Placement`, documenting empty strings and having no stale marker:
+
+- **Widgets replace the home page's resource links** when the user sees at least one widget; a user who sees none gets the links. In Development the checklist shows above the widgets, which sit in a full-width page container below the checklist's medium one.
+- **Inputs go through `<sa-widget-form>`** (a tag helper in the `StellarAdmin` assembly), which renders a form with `hx-get` to the widget's URL, triggered on change and submit. The widget's URL reaches it through `ViewData`. No context property.
+- **The widget's response replaces its whole cell**, which carries the new URL: after an input changes, the payload is signed again with the bound values, so a refresh keeps the picker's value.
+- **`Placement` is left for phase 2**, since the home page ignores it and nothing could test it.
+- **`WidgetContext` has `HttpContext`, `User` and `Services`** only; the current URL and the page kind are not added (the URL is on `HttpContext.Request`, the page is implied by the context type).
+- **A widget without a handler ignores `Parameters` and `RefreshInterval`**, reported as `IgnoredWidgetSetting`; it never refreshes, since on record pages its context can't be rebuilt.
+- **Responses:** an unknown widget or one the user may not see returns 404; parameters that are missing, changed, from another widget or fail binding return 400 with the error cell; a throwing handler is logged and returns 500 with the error cell (an inline one renders the error cell in the page); a handler returning `null` returns `HX-Reswap: delete`, which removes the cell.
+- **An empty string binds as `null`,** so a non-nullable `string` parameter that can be empty fails MVC's implicit `[Required]` and the widget shows its error. Documented (declare it `string?`) rather than changed.
+- **A failed refresh keeps the content without a stale marker.** Loaded cells that refresh carry htmx 4's `hx-status:4xx`/`hx-status:5xx="swap:none"`; no client script was needed.
+- **Payload:** System.Text.Json of the handler's `TParameters`, flattened into keys for a value provider (invariant culture), protected with purposes `StellarAdmin.Widgets`, the page (`home`) and the widget's name. `AddStellarAdmin` now calls `AddDataProtection()`.
+- **Configuration problems** 1100 to 1105: `BlankWidgetName`, `RepeatedWidgetName` (names compare ignoring case), `BlankWidgetPartial`, `UnusableWidgetHandler`, `MismatchedWidgetParameters`, `IgnoredWidgetSetting`; a bad `Span` or a `RefreshInterval` under one second is `InvalidValue`. The home page's widgets are checked once, when problems are listed or the page first renders, and appear under "Home page".
+- **Grid CSS** is in the panel's `client.css`: 12 columns, a widget spans the row below a 34rem container, spans up to 6 take half from 34rem, and own spans from 56rem. Rows stretch so cards line up.
+
+Not done in phase 1: the website screenshot for the new page (an open `<Screenshot>` placeholder, `home-page-widgets`), and a scenario spec for it.
+
 ## Open questions
 
-- Whether the home page still shows the resource links when it has widgets (phase 1).
-- How the partial gets its widget URL for inputs and retries: a context property or a tag helper (phase 1).
 - Whether index widgets refresh when the grid's search or scope changes (phase 2).
 
 ## Verification
 
-None yet. The prototypes are point-in-time concept pages and are not library code.
+Phase 1 (2026-10-30):
+
+- `tests/StellarAdmin.IntegrationTests/Home/HomePageWidgetTests.cs`, 17 tests: widgets replace links; links when no widget is visible; checklist above widgets; lazy placeholder then load; inline; refresh trigger; parameters reach the handler; `[WidgetInput]` changes only marked properties and survives a refresh; invalid input 400; empty and tampered payloads 400; another widget's payload 400; `null` hides (inline) and deletes (lazy); throwing handler shows the error with retry and logs; authorization hides and 404s; unusable widgets and settings reported. Positional records bind through the two value providers.
+- `dotnet test StellarAdmin.slnx`: 2057 passed, 0 failed, across the six test projects.
+- AdminPlayground home dashboard (`sandbox/AdminPlayground/Dashboard/`, partials in `Areas/StellarAdmin/Views/Home/`): checked headless at 1440 and 390 px on port 5206 in light mode: all four widgets load, the **Top categories** picker swaps the widget in place and keeps its value, the **Team** widget polls every 30 seconds, no console errors. A query bug in the playground's handler showed the error cell working. Dark mode, Firefox and Safari not checked.
+- Consumer skill: `skills/stellar-admin/references/widgets.md`, task table and not-supported list; `build/skill-validation` check passes.
+- Website: `content/docs/admin/widgets.mdx`, `home-page.mdx` updated, nav entry; `pnpm types:check` passes. Not rendered in a browser.
+
+The prototypes are point-in-time concept pages and are not library code.

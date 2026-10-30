@@ -49,6 +49,9 @@ public static class ViewDataKeys
     // The form whose fields a grid row edits ("edit" or "create"), so its lookups open that form's lookup sheet
     internal const string LookupForm = "StellarAdminLookupForm";
 
+    // The widget whose partial view renders, so its forms can request it again
+    internal const string Widget = "StellarAdminWidget";
+
     // The stack level of the create sheet a form renders in, so its lookups bind and open the next level
     internal const string SheetLevel = "StellarAdminSheetLevel";
 }

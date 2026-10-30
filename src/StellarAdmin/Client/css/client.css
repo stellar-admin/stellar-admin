@@ -1034,4 +1034,57 @@
             animation: none;
         }
     }
+
+    /* Widgets: a 12-column grid that collapses with the width it has, not the window's. A widget spans all of a
+       narrow grid, half of a medium one for spans up to 6, and its own span from 56rem. Widgets in a row share its
+       height, so their cards line up. */
+    .sa-widgets {
+        container-type: inline-size;
+        container-name: sa-widgets;
+    }
+
+    .sa-widgets-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: calc(4 * var(--sa-unit));
+
+        & > .sa-widget {
+            grid-column: span 12;
+            min-width: 0;
+        }
+    }
+
+    @container sa-widgets (min-width: 34rem) {
+        .sa-widgets-grid > .sa-widget:is([data-span="1"], [data-span="2"], [data-span="3"], [data-span="4"], [data-span="5"], [data-span="6"]) {
+            grid-column: span 6;
+        }
+    }
+
+    @container sa-widgets (min-width: 56rem) {
+        .sa-widgets-grid > .sa-widget[data-span="1"] { grid-column: span 1; }
+        .sa-widgets-grid > .sa-widget[data-span="2"] { grid-column: span 2; }
+        .sa-widgets-grid > .sa-widget[data-span="3"] { grid-column: span 3; }
+        .sa-widgets-grid > .sa-widget[data-span="4"] { grid-column: span 4; }
+        .sa-widgets-grid > .sa-widget[data-span="5"] { grid-column: span 5; }
+        .sa-widgets-grid > .sa-widget[data-span="7"] { grid-column: span 7; }
+        .sa-widgets-grid > .sa-widget[data-span="8"] { grid-column: span 8; }
+        .sa-widgets-grid > .sa-widget[data-span="9"] { grid-column: span 9; }
+        .sa-widgets-grid > .sa-widget[data-span="10"] { grid-column: span 10; }
+        .sa-widgets-grid > .sa-widget[data-span="11"] { grid-column: span 11; }
+    }
+
+    /* A widget renders its own surface; the cell only stacks what the partial view renders */
+    .sa-widget {
+        display: grid;
+        gap: calc(4 * var(--sa-unit));
+    }
+
+    .sa-widget-skeleton {
+        display: grid;
+        gap: calc(3 * var(--sa-unit));
+    }
+
+    .sa-widget-error .sa-empty {
+        padding: 0;
+    }
 }

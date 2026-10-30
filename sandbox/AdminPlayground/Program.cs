@@ -1,3 +1,4 @@
+using AdminPlayground.Dashboard;
 using AdminPlayground.Data;
 using AdminPlayground.Resources.Amenities;
 using AdminPlayground.Resources.Categories;
@@ -77,6 +78,7 @@ builder.Services.AddStellarAdmin(admin =>
         });
     });
 
+    admin.AddHomeDashboard();
     admin.AddUserResource();
     admin.AddRoleResource();
     admin.AddDepartmentResource();

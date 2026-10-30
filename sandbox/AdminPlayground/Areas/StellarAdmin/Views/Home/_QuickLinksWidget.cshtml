@@ -1,0 +1,16 @@
+@model WidgetContext
+@* No handler: renders with the page, with the page's context as its model *@
+<sa-card>
+    <sa-card-header>
+        <sa-card-title>Quick links</sa-card-title>
+        <sa-card-description>Hello, @(Model.User.Identity?.Name ?? "guest")</sa-card-description>
+    </sa-card-header>
+    <sa-card-content class="flex flex-col gap-2">
+        <sa-button-link variant="ButtonVariant.Outline" asp-area="StellarAdmin" asp-controller="products" asp-action="Create">
+            <sa-icon name="plus" /> Add a product
+        </sa-button-link>
+        <sa-button-link variant="ButtonVariant.Outline" asp-area="StellarAdmin" asp-controller="categories" asp-action="Create">
+            <sa-icon name="plus" /> Add a category
+        </sa-button-link>
+    </sa-card-content>
+</sa-card>
