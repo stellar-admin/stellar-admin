@@ -1,6 +1,6 @@
 # View pages
 
-`resource.AllowView(view => ...)` adds a read-only detail page at `/{slug}/view/{id}` and a View (eye icon) action on each index row.
+`resource.AllowView(view => ...)` adds a read-only detail page at `/{slug}/view/{id}` and a View (eye icon) action on each index row. Blocks above, beside or below the fields, such as related stats, are [widgets](widgets.md#view-create-and-edit-pages).
 
 ```csharp
 resource.AllowView(view =>

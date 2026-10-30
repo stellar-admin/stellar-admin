@@ -2,7 +2,7 @@
 @model IResourceIndexPageViewModel
 @{
     // The widgets' regions, which a search replaces along with the grid. Only the index's own request renders them.
-    var widgets = ViewData[ViewDataKeys.Widgets] as IndexWidgetsViewModel;
+    var widgets = ViewData[ViewDataKeys.Widgets] as PageWidgetsViewModel;
     var widgetRegions = widgets is null
         ? []
         : new[] { (widgets.Top, "#index-page-widgets-top"), (widgets.Aside, "#index-page-widgets-aside"), (widgets.Bottom, "#index-page-widgets-bottom") }

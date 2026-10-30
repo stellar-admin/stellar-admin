@@ -60,6 +60,11 @@ internal sealed class ResourceController<TResource>(
     private const string IndexGridId = "index-page-data-grid";
     private const string IndexSearchInputId = "index-page-search-input";
 
+    // The pages a widget's request names, besides the index
+    private const string WidgetPageCreate = "create";
+    private const string WidgetPageEdit = "edit";
+    private const string WidgetPageView = "view";
+
     // Shown when a create or update handler throws
     private const string SaveFailedMessage = "This record couldn't be saved. Try again.";
 
@@ -75,12 +80,11 @@ internal sealed class ResourceController<TResource>(
     private readonly ResourceOptions<TResource> _resourceOptions = options.Value;
 
     // An inline operation has no page, so neither its links nor its routes are available
-    // Names the index page in its widgets' protected parameters
-    private string IndexWidgetPage => $"{ControllerContext.ActionDescriptor.ControllerName}/index";
-
     private bool HasCreatePage => _resourceOptions.Create is { InlineRow: null };
     private bool HasEditPage =>
         _resourceOptions.Edit is { InlineRow: null } && _resourceOptions.KeySelector is not null;
+    private bool HasViewPage =>
+        _resourceOptions.View is not null && _resourceOptions.KeySelector is not null;
 
     [HttpGet]
     public async Task<IActionResult> Create(CancellationToken cancellationToken)
@@ -921,6 +925,12 @@ internal sealed class ResourceController<TResource>(
 
         var labels = CreateLabelContext();
         var fields = view.Fields;
+        ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
+            view.Widgets,
+            CreateWidgetContext(typeof(RecordWidgetContext<>), view.ModelType, id, resource),
+            WidgetPageView,
+            cancellationToken
+        );
 
         return ResourceView(
             ViewActionName,
@@ -1050,20 +1060,37 @@ internal sealed class ResourceController<TResource>(
         return Json(new { value, url }, ImageUploadJsonOptions);
     }
 
-    // An index widget's content, loaded after the page has rendered or again when it refreshes
+    // A widget's content, loaded after its page has rendered or again when it refreshes. The page is the view, create
+    // or edit page, or the index without one.
     [HttpGet]
-    public Task<IActionResult> Widget(
+    public async Task<IActionResult> Widget(
         [FromRoute] string? id,
+        [FromQuery] string? page,
         CancellationToken cancellationToken
-    ) =>
-        widgets.LoadAsync(
+    )
+    {
+        var configured = page switch
+        {
+            null => _resourceOptions.Index.Widgets,
+            WidgetPageView when HasViewPage => _resourceOptions.View!.Widgets,
+            WidgetPageCreate when HasCreatePage => _resourceOptions.Create!.Widgets,
+            WidgetPageEdit when HasEditPage => _resourceOptions.Edit!.Widgets,
+            _ => null,
+        };
+        if (configured is null)
+        {
+            return NotFound();
+        }
+
+        return await widgets.LoadAsync(
             this,
-            _resourceOptions.Index.Widgets,
-            IndexWidgetPage,
+            configured,
+            GetWidgetPage(page),
             id,
-            CreateWidgetUrl,
+            (name, parameters) => CreateWidgetUrl(page, name, parameters),
             cancellationToken
         );
+    }
 
     // A size as the image upload's script writes it, such as 5 MB or 640 KB
     private static string FormatFileSize(long bytes) =>
@@ -1593,12 +1620,30 @@ internal sealed class ResourceController<TResource>(
             ? addAnother.Label ?? _labelOptions.Create.AddAnotherLabel(CreateLabelContext())
             : null;
         model.FocusFirstField = focusFirstField;
+        ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
+            _resourceOptions.Create.Widgets,
+            CreateWidgetContext(typeof(CreateWidgetContext<>), _resourceOptions.Create.ModelType),
+            WidgetPageCreate,
+            cancellationToken
+        );
 
         return ResourceView(nameof(Create), model);
     }
 
-    private string CreateWidgetUrl(string name, string? parameters) =>
-        Url.Action(nameof(Widget), new { id = name, p = parameters })!;
+    // Names the page in its widgets' protected parameters, so one page's parameters are refused by another's widget
+    private string GetWidgetPage(string? page) =>
+        $"{ControllerContext.ActionDescriptor.ControllerName}/{page ?? "index"}";
+
+    private string CreateWidgetUrl(string? page, string name, string? parameters) =>
+        Url.Action(
+            nameof(Widget),
+            new
+            {
+                id = name,
+                page,
+                p = parameters,
+            }
+        )!;
 
     private async Task<IActionResult> EditRowView(
         string id,
@@ -1636,6 +1681,12 @@ internal sealed class ResourceController<TResource>(
         var displayData = await PrepareDisplaysAsync(
             edit.DisplayFields,
             resource,
+            cancellationToken
+        );
+        ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
+            edit.Widgets,
+            CreateWidgetContext(typeof(RecordWidgetContext<>), edit.ModelType, id, resource),
+            WidgetPageEdit,
             cancellationToken
         );
 
@@ -1948,9 +1999,11 @@ internal sealed class ResourceController<TResource>(
 
         loaded?.Invoke(result.Items);
         ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
-            request,
-            renderWidgets,
-            cancellationToken
+            _resourceOptions.Index.Widgets,
+            new IndexWidgetContext<TResource>(HttpContext, request.Scope, request.Search),
+            null,
+            cancellationToken,
+            renderWidgets
         );
 
         return ResourceView(
@@ -2066,16 +2119,16 @@ internal sealed class ResourceController<TResource>(
         return view;
     }
 
-    // The widgets by placement, rendered for the index's search and scope. A request that doesn't render them still has
-    // their placements, since the search box it renders replaces them on a search.
-    private async Task<IndexWidgetsViewModel> RenderWidgetsAsync(
-        ResourceListRequest request,
-        bool render,
-        CancellationToken cancellationToken
+    // The page's widgets by placement. An index request that doesn't render them still has their placements, since
+    // the search box it renders replaces them on a search.
+    private async Task<PageWidgetsViewModel> RenderWidgetsAsync(
+        IReadOnlyList<WidgetOptions> configured,
+        WidgetContext context,
+        string? page,
+        CancellationToken cancellationToken,
+        bool render = true
     )
     {
-        var context = new IndexWidgetContext<TResource>(HttpContext, request.Scope, request.Search);
-
         return new(
             await RenderAsync(WidgetPlacement.Top),
             await RenderAsync(WidgetPlacement.Aside),
@@ -2084,9 +2137,7 @@ internal sealed class ResourceController<TResource>(
 
         async Task<IReadOnlyList<WidgetViewModel>?> RenderAsync(WidgetPlacement placement)
         {
-            var placed = _resourceOptions
-                .Index.Widgets.Where(widget => widget.Placement == placement)
-                .ToArray();
+            var placed = configured.Where(widget => widget.Placement == placement).ToArray();
 
             if (placed.Length == 0)
             {
@@ -2098,12 +2149,23 @@ internal sealed class ResourceController<TResource>(
                 : await widgets.RenderAsync(
                     placed,
                     context,
-                    IndexWidgetPage,
-                    CreateWidgetUrl,
+                    GetWidgetPage(page),
+                    (name, parameters) => CreateWidgetUrl(page, name, parameters),
                     cancellationToken
                 );
         }
     }
+
+    // The context of a create, view or edit page's widgets, whose type is closed over the page's model
+    private WidgetContext CreateWidgetContext(Type context, Type modelType, params object[] args) =>
+        (WidgetContext)
+            Activator.CreateInstance(
+                context.MakeGenericType(modelType),
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null,
+                [HttpContext, .. args],
+                null
+            )!;
 
     private PartialViewResult RowsView(object model) => PartialView("_IndexDataGrid", model);
 

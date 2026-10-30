@@ -3,6 +3,7 @@
 
 @{
     var layout = Model.SectionLayout ?? FormsOptions.Value.SectionLayout;
+    var widgets = ViewData[ViewDataKeys.Widgets] as PageWidgetsViewModel;
 }
 
 <sa-page-container width="PageContainerWidth.Large" class="sa-resource-view" data-form-layout="@layout.GetDataAttributeText()">
@@ -26,12 +27,46 @@
 
     @Html.ValidationSummary(excludePropertyErrors: true)
 
-    <sa-slot-outlet name="pre-view-fields"/>
+    @if (widgets?.Top is { Count: > 0 } top)
+    {
+        <div id="view-page-widgets-top">
+            <partial name="_Widgets" model="top" />
+        </div>
+    }
 
-    <partial name="_FormFields" for="@Model.Entity"
-             view-data='new ViewDataDictionary(ViewData) { [ViewDataKeys.FormFields] = Array.Empty<FormFieldOptions>(), [ViewDataKeys.FormItems] = Model.Items, [ViewDataKeys.FormColumns] = Model.Columns, [ViewDataKeys.FormSectionLayout] = layout, [ViewDataKeys.DisplayData] = Model.DisplayData }'/>
+    @{
+        Func<object?, object> fields = @<text>
+            <sa-slot-outlet name="pre-view-fields"/>
 
-    <sa-slot-outlet name="post-view-fields"/>
+            <partial name="_FormFields" for="@Model.Entity"
+                     view-data='new ViewDataDictionary(ViewData) { [ViewDataKeys.FormFields] = Array.Empty<FormFieldOptions>(), [ViewDataKeys.FormItems] = Model.Items, [ViewDataKeys.FormColumns] = Model.Columns, [ViewDataKeys.FormSectionLayout] = layout, [ViewDataKeys.DisplayData] = Model.DisplayData }'/>
+
+            <sa-slot-outlet name="post-view-fields"/>
+        </text>;
+    }
+    @if (widgets?.Aside is { Count: > 0 } aside)
+    {
+        @* The fields with a column of widgets beside them, or below them when the page is narrow *@
+        <div class="sa-widgets-aside">
+            <div class="sa-widgets-aside-grid">
+                <div>@fields(null)</div>
+                <div id="view-page-widgets-aside" class="sa-widgets-column">
+                    <partial name="_Widgets" model="aside" />
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @fields(null)
+    }
+
+    @if (widgets?.Bottom is { Count: > 0 } bottom)
+    {
+        <div id="view-page-widgets-bottom">
+            <partial name="_Widgets" model="bottom" />
+        </div>
+    }
 </sa-page-container>
 @if (Model.Delete is not null)
 {

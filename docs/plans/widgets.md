@@ -1,6 +1,6 @@
 # Widgets
 
-Status: phase 1 implemented and committed (2026-10-30); phase 2 implemented (2026-10-30), uncommitted, on the `widgets` branches of the product and the website. Phases 3 and 4 not started.
+Status: phases 1 and 2 implemented and committed (2026-10-30); phase 3 implemented (2026-10-30), uncommitted, on the `widgets` branches of the product and the website. Phase 4 not started.
 
 Let developers place widgets on the admin panel's pages: the home page, a resource's index page, its view page and its create and edit forms. A widget is a self-contained block such as a stat, a chart, an activity heatmap, a list of recent records, a callout or a chat box. Examples are a chart of recent sign-ups above the customers grid, or a login activity graph (like GitHub's contribution graph) at the top of a customer's view page.
 
@@ -168,6 +168,19 @@ Not done in phase 1: the website screenshot for the new page (an open `<Screensh
 
 Not done in phase 2: the website screenshot (`index-page-widgets` placeholder) and its scenario spec.
 
+## Phase 3 as built
+
+- **`Widgets(...)` is on `ResourceViewBuilder<TModel>`, `ResourceCreateBuilder<TModel>` and `ResourceEditBuilder<TModel>`**, typed by the page's model, so a page with its own model and handler gets that model. The builders now take the service collection, to register handlers. The widgets are stored on the page's options and checked with the resource's other checks.
+- **`RecordWidgetContext<TModel>`** (view and edit) has `Key` and `Record`; **`CreateWidgetContext<TModel>`** adds nothing yet, but keeps room to add without a breaking change. Both derive from `WidgetContext` directly; there's still no `ResourceWidgetContext`. When an edit form is shown again for invalid values, `Record` has the submitted values.
+- **Regions:** `#view-page-widgets-{top,aside,bottom}` and `#form-page-widgets-{top,aside,bottom}`, rendered only when the user sees a widget there, since nothing on these pages renders widgets again. The aside uses the index's `.sa-widgets-aside` layout around the fields, or around the `<form>`, so widgets (and their `<sa-widget-form>`) are outside the edit form. The page container stays `Large` (72rem), which leaves about 47rem for the form beside the 20rem column at 1440px.
+- **The form's aside is sticky** (`data-sticky`, `top: 4 units`), only in the two-column layout. The view page's aside isn't.
+- **Endpoint:** the same `Widget` action, with `?page=view`, `create` or `edit` (none for the index). An unknown page, or a page the resource doesn't have, is 404. The payload's page purpose is `{controller}/{page}`, so one page's parameters are refused by another page's widget of the same name.
+- **A create or edit form with `UseInlineRow()`** has no page, so its widgets are reported as `IgnoredWidgetSetting` (one per widget) and removed.
+- **The widget list reaches the views through `ViewData`**, as on the index; `IndexWidgetsViewModel` is now `PageWidgetsViewModel`. The create sheet of a lookup shows no widgets.
+- AdminPlayground: the Products view and edit pages have **Category prices** (aside, a handler that hides it for a product without a category), and the create page has a **Category tip** (top, no handler).
+
+Not done in phase 3: the website screenshots (`view-page-widgets` and `form-widgets` placeholders) and their scenario specs.
+
 ## Open questions
 
 - Whether index widgets should load again after an inline save or a delete changes the records. They don't now.
@@ -190,5 +203,13 @@ Phase 2 (2026-10-30):
 - AdminPlayground Products index checked headless on port 5206 at 1440 and 390 px in light mode: both widgets load; the aside column is 320px beside the grid at 1440 and below it at 390; paging kept the widget elements; a search replaced them with the filtered summary; the aside picker swapped in place; the **Under 50** scope reloaded the summary; no console errors. This check caught that the search box swapped in by a paging request had lost the widget regions, now fixed and tested. Dark mode, Firefox and Safari not checked.
 - Consumer skill: `references/widgets.md` (index pages section, `Placement`), `index-pages.md` and `SKILL.md`; `build/skill-validation` passes.
 - Website: new `content/docs/admin/index-page-widgets.mdx` in the Index Pages group, links from `index-pages.mdx`, `row-details.mdx` and `widgets.mdx`; `pnpm types:check` passes. Not rendered in a browser.
+
+Phase 3 (2026-10-30):
+
+- `tests/StellarAdmin.IntegrationTests/Resources/ResourceRecordWidgetTests.cs`, 10 tests: view placements around the fields with the record in the context; no regions without widgets; the edit aside is sticky, beside and outside the form; an invalid edit gives widgets the submitted values; the create page shows its own widgets and not the edit page's; a handler widget loads from the view page with the record's parameters; another page's parameters are refused (400); a page the resource doesn't have, or an unknown page, is 404; inline row widgets are reported and left out.
+- `dotnet test StellarAdmin.slnx`: 2076 passed, 0 failed.
+- AdminPlayground Products checked headless on port 5206 at 1440 and 390 px in light mode: Category prices loads on the view and edit pages, 320px beside the fields or form at 1440 and below them at 390; scrolling the edit page at 1440 keeps the column 16px from the top while the form scrolls past; the create page shows the tip above the form; no console errors. Dark mode, Firefox and Safari not checked.
+- Consumer skill: `references/widgets.md` (view, create and edit section, `Placement`, the inline row mistake), `view-pages.md`, `forms.md` and `SKILL.md`; `build/skill-validation` passes.
+- Website: new `content/docs/admin/view-page-widgets.mdx` (View Pages group) and `form-widgets.mdx` (Forms group), links from `view-pages.mdx`, `forms.mdx` and `widgets.mdx`; `pnpm types:check` passes. Not rendered in a browser.
 
 The prototypes are point-in-time concept pages and are not library code.

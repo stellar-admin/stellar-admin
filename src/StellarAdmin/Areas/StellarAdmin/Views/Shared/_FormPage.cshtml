@@ -3,6 +3,7 @@
 
 @{
     var layout = Model.SectionLayout ?? FormsOptions.Value.SectionLayout;
+    var widgets = ViewData[ViewDataKeys.Widgets] as PageWidgetsViewModel;
 }
 
 <sa-page-container width="PageContainerWidth.Large" class="sa-resource-form" data-form-layout="@layout.GetDataAttributeText()">
@@ -14,33 +15,68 @@
         }
     </sa-page-header>
 
-    @* Ctrl+Enter or Cmd+Enter submits the form, and Ctrl+Shift+Enter or Cmd+Shift+Enter saves and adds another. After
-       adding another, the form focuses its first field *@
-    <form method="post" data-resource-form data-focus-first-field="@(Model.FocusFirstField ? "true" : "false")">
-        <sa-field-group>
-            @Html.ValidationSummary(excludePropertyErrors: true)
+    @if (widgets?.Top is { Count: > 0 } top)
+    {
+        <div id="form-page-widgets-top">
+            <partial name="_Widgets" model="top" />
+        </div>
+    }
 
-            <sa-slot-outlet name="pre-form-fields"/>
+    @{
+        Func<object?, object> form = @<text>
+            @* Ctrl+Enter or Cmd+Enter submits the form, and Ctrl+Shift+Enter or Cmd+Shift+Enter saves and adds another. After
+               adding another, the form focuses its first field *@
+            <form method="post" data-resource-form data-focus-first-field="@(Model.FocusFirstField ? "true" : "false")">
+                <sa-field-group>
+                    @Html.ValidationSummary(excludePropertyErrors: true)
 
-            <partial name="_FormFields" for="@Model.Entity"
-                     view-data='new ViewDataDictionary(ViewData) { [ViewDataKeys.FormFields] = Model.Fields, [ViewDataKeys.FormItems] = Model.Items, [ViewDataKeys.FormColumns] = Model.Columns, [ViewDataKeys.FormSectionLayout] = layout, [ViewDataKeys.DisplayData] = Model.DisplayData, [ViewDataKeys.EditorData] = Model.EditorData, [ViewDataKeys.EditorTemplates] = Model.EditorTemplates }'/>
+                    <sa-slot-outlet name="pre-form-fields"/>
 
-            <sa-slot-outlet name="post-form-fields"/>
+                    <partial name="_FormFields" for="@Model.Entity"
+                             view-data='new ViewDataDictionary(ViewData) { [ViewDataKeys.FormFields] = Model.Fields, [ViewDataKeys.FormItems] = Model.Items, [ViewDataKeys.FormColumns] = Model.Columns, [ViewDataKeys.FormSectionLayout] = layout, [ViewDataKeys.DisplayData] = Model.DisplayData, [ViewDataKeys.EditorData] = Model.EditorData, [ViewDataKeys.EditorTemplates] = Model.EditorTemplates }'/>
 
-            <div class="sa-resource-form-footer">
-                <sa-slot-outlet name="form-leading-actions"/>
-                <div class="sa-resource-form-actions">
-                    <sa-slot-outlet name="pre-form-actions"/>
-                    <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="form-cancel">Cancel</sa-button-link>
-                    @if (Model.AddAnotherLabel is { } addAnotherLabel)
-                    {
-                        <sa-button type="submit" name="after" value="add-another" variant="ButtonVariant.Outline"
-                                   data-form-add-another aria-keyshortcuts="Control+Shift+Enter Meta+Shift+Enter">@addAnotherLabel</sa-button>
-                    }
-                    <sa-button type="submit" data-form-submit aria-keyshortcuts="Control+Enter Meta+Enter">@Model.SubmitLabel</sa-button>
-                    <sa-slot-outlet name="post-form-actions"/>
+                    <sa-slot-outlet name="post-form-fields"/>
+
+                    <div class="sa-resource-form-footer">
+                        <sa-slot-outlet name="form-leading-actions"/>
+                        <div class="sa-resource-form-actions">
+                            <sa-slot-outlet name="pre-form-actions"/>
+                            <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="form-cancel">Cancel</sa-button-link>
+                            @if (Model.AddAnotherLabel is { } addAnotherLabel)
+                            {
+                                <sa-button type="submit" name="after" value="add-another" variant="ButtonVariant.Outline"
+                                           data-form-add-another aria-keyshortcuts="Control+Shift+Enter Meta+Shift+Enter">@addAnotherLabel</sa-button>
+                            }
+                            <sa-button type="submit" data-form-submit aria-keyshortcuts="Control+Enter Meta+Enter">@Model.SubmitLabel</sa-button>
+                            <sa-slot-outlet name="post-form-actions"/>
+                        </div>
+                    </div>
+                </sa-field-group>
+            </form>
+        </text>;
+    }
+    @if (widgets?.Aside is { Count: > 0 } aside)
+    {
+        @* The form with a column of widgets beside it, which stays in view as the form scrolls, or below it when the
+           page is narrow. The widgets are outside the form, since their own inputs are forms. *@
+        <div class="sa-widgets-aside">
+            <div class="sa-widgets-aside-grid">
+                <div>@form(null)</div>
+                <div id="form-page-widgets-aside" class="sa-widgets-column" data-sticky>
+                    <partial name="_Widgets" model="aside" />
                 </div>
             </div>
-        </sa-field-group>
-    </form>
+        </div>
+    }
+    else
+    {
+        @form(null)
+    }
+
+    @if (widgets?.Bottom is { Count: > 0 } bottom)
+    {
+        <div id="form-page-widgets-bottom">
+            <partial name="_Widgets" model="bottom" />
+        </div>
+    }
 </sa-page-container>

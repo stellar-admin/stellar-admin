@@ -1,6 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin.Resources.Builders;
 
@@ -11,6 +13,7 @@ namespace StellarAdmin.Resources.Builders;
 public sealed class ResourceEditBuilder<TModel>
 {
     private readonly Action<Action<ResourceEditOptions<TModel>>> _configure;
+    private readonly IServiceCollection _services;
 
     /// <summary>
     ///     Sets the layout of the form's sections.
@@ -45,8 +48,14 @@ public sealed class ResourceEditBuilder<TModel>
         set => _configure(options => options.Title = value);
     }
 
-    internal ResourceEditBuilder(Action<Action<ResourceEditOptions<TModel>>> configure) =>
+    internal ResourceEditBuilder(
+        IServiceCollection services,
+        Action<Action<ResourceEditOptions<TModel>>> configure
+    )
+    {
+        _services = services;
         _configure = configure;
+    }
 
     /// <summary>
     ///     Configures the form's fields.
@@ -102,6 +111,33 @@ public sealed class ResourceEditBuilder<TModel>
         ArgumentNullException.ThrowIfNull(configure);
 
         configure(UseInlineRow());
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures the widgets shown on the edit page.
+    /// </summary>
+    /// <param name="configure">A delegate that adds the widgets.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     A widget's <c>Placement</c> shows it above the form, beside it or below it. Widgets
+    ///     beside the form stay in view as the form scrolls. The widgets' delegates receive the
+    ///     record the form edits. A resource whose rows are edited inline has no edit page, so
+    ///     its edit widgets are a configuration problem, and aren't shown.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceEditBuilder<TModel> Widgets(
+        Action<WidgetsBuilder<RecordWidgetContext<TModel>>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var widgets = new List<WidgetOptions>();
+        configure(new(_services, widgets));
+        _configure(options => options.Widgets.AddRange(widgets));
 
         return this;
     }

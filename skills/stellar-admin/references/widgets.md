@@ -1,8 +1,6 @@
 # Widgets
 
-Widgets are blocks on the panel's home page and on resources' index pages, such as stats, a chart, a list of recent records or quick links. A widget is a partial view, optionally with a handler that loads its model. The partial view renders the whole widget, including its card, heading and any controls.
-
-View, create and edit pages don't have widgets yet.
+Widgets are blocks on the panel's home page and on resources' index, view, create and edit pages, such as stats, a chart, a list of recent records or quick links. A widget is a partial view, optionally with a handler that loads its model. The partial view renders the whole widget, including its card, heading and any controls.
 
 ## Contents
 
@@ -13,6 +11,7 @@ View, create and edit pages don't have widgets yet.
 - [Widget settings](#widget-settings)
 - [The home page](#the-home-page)
 - [Index pages](#index-pages)
+- [View, create and edit pages](#view-create-and-edit-pages)
 - [Mistakes](#mistakes)
 
 ## Adding widgets
@@ -130,7 +129,7 @@ A widget can have its own controls, such as a period picker. Mark the properties
 | `Span` | 12 | Columns of the 12-column grid, 1 to 12. The grid responds to its own width: narrow, every widget spans the row; medium, spans up to 6 take half. |
 | `Inline` | `false` | Runs the handler while the page renders instead of after it. Inline handlers run one after another, since they share the request's services. |
 | `RefreshInterval` | none | Loads the widget again on this interval, at least one second. A failed refresh keeps what the widget showed. Widgets without a handler don't refresh. |
-| `Placement` | `Top` | Index pages only: `WidgetPlacement.Top` above the grid, `Aside` in a column beside it, `Bottom` below it. See [index pages](#index-pages). |
+| `Placement` | `Top` | Resource pages only: `WidgetPlacement.Top` above the grid, fields or form, `Aside` in a column beside it, `Bottom` below it. See [index pages](#index-pages) and [view, create and edit pages](#view-create-and-edit-pages). |
 | `ShowWhen(context => ...)` | shown | Hides the widget when the delegate returns `false`, when the page renders. |
 | `RequireAuthorization(...)` | none | The same overloads as resources. A user who doesn't meet them doesn't see the widget, and its URL returns 404. |
 
@@ -169,6 +168,40 @@ admin.AddEfCoreResource<Booking>(resource =>
 - A widget without a handler gets the `IndexWidgetContext<TResource>` as its model.
 - Index widgets load from `{slug}/widget/{name}`, which the resource's authorization covers as well as the widget's own.
 
+## View, create and edit pages
+
+`Widgets(...)` on `AllowView(...)`, `AllowCreate(...)` and `AllowEdit(...)` adds widgets to those pages. Each page has its own widgets, and a name only needs to be unique on its page. On the view and edit pages, the delegates get a `RecordWidgetContext<TModel>`, which adds the record's `Key` and the page's model as `Record`; `TModel` is the page's model, so a page with its own model and handler gets that model. On the create page, they get a `CreateWidgetContext<TModel>`, which adds nothing to the page's context, since there's no record yet.
+
+```csharp
+admin.AddEfCoreResource<Customer>(resource =>
+{
+    resource.AllowView(view => view
+        .Fields(fields => fields.Add(customer => customer.Name))
+        .Widgets(widgets =>
+            widgets.Add<LoginActivityHandler>("Login activity", "_LoginActivityWidget", widget =>
+            {
+                widget.Parameters(context => new LoginActivityParameters(context.Record.Id));
+                widget.ShowWhen(context => context.Record.LastLoginAt is not null);
+            })));
+
+    resource.AllowEdit(edit => edit
+        .Fields(fields => fields.Add(customer => customer.Name))
+        .Widgets(widgets =>
+            widgets.Add<UpcomingTripHandler>("Upcoming trip", "_UpcomingTripWidget", widget =>
+            {
+                widget.Placement = WidgetPlacement.Aside;
+                widget.Parameters(context => new UpcomingTripParameters(context.Record.Id));
+            })));
+});
+```
+
+- `Top` widgets sit between the page header and the fields or form, `Bottom` widgets below them, both in a 12-column grid. `Aside` widgets stack in a 20rem column beside the fields or form once the page is about 56rem wide, and below them when narrower. Beside a create or edit form, the column stays in view as the form scrolls.
+- The widgets are outside the form, so `<sa-widget-form>` works in them and their controls aren't submitted with the form.
+- When an edit form is shown again because its values aren't valid, `Record` has the submitted values.
+- Pass the record's key, not the record, in `Parameters`: they travel in the widget's URL. The handler loads what it needs.
+- Partial views resolve as on index pages, from `Areas/StellarAdmin/Views/{slug}/` first. A widget without a handler gets the page's context as its model, so it can show the record without a handler.
+- These widgets load from `{slug}/widget/{name}?page=view` (or `create`, `edit`), which the resource's authorization covers as well as the widget's own. Another page's parameters are refused.
+
 ## Mistakes
 
 These are [configuration problems](configuration-problems.md): the widget is left out, or the setting is reset, and the problem is listed and logged.
@@ -178,4 +211,5 @@ These are [configuration problems](configuration-problems.md): the widget is lef
 - `Parameters` that don't match the handler, or are missing.
 - `Parameters` or `RefreshInterval` on a widget without a handler (ignored).
 - A `Placement` other than `Top` on the home page (shown in the grid).
+- Widgets on a create or edit form that `UseInlineRow()` puts in the index grid, which has no create or edit page (left out).
 - A `Span` outside 1 to 12 (12), or a `RefreshInterval` under one second (no refresh).

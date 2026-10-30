@@ -499,65 +499,71 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     private ResourceCreateBuilder<TModel> CreateBuilder<TModel>(ConfigurationSource? source) =>
-        new(configure =>
-            Services.Configure<ResourceOptions<TResource>>(options =>
-            {
-                // The create model was selected again since this builder was created
-                if (options.Create is not ResourceCreateOptions<TModel> create)
+        new(
+            Services,
+            configure =>
+                Services.Configure<ResourceOptions<TResource>>(options =>
                 {
-                    options.Report(
-                        ConfigurationProblemKind.StaleModelBuilder,
-                        $"This create configuration for `{typeof(TModel).Name}` isn't applied because another create model was selected later.",
-                        "Remove this configuration, or configure the create page with the model it uses.",
-                        source
-                    );
+                    // The create model was selected again since this builder was created
+                    if (options.Create is not ResourceCreateOptions<TModel> create)
+                    {
+                        options.Report(
+                            ConfigurationProblemKind.StaleModelBuilder,
+                            $"This create configuration for `{typeof(TModel).Name}` isn't applied because another create model was selected later.",
+                            "Remove this configuration, or configure the create page with the model it uses.",
+                            source
+                        );
 
-                    return;
-                }
+                        return;
+                    }
 
-                configure(create);
-            })
+                    configure(create);
+                })
         );
 
     private ResourceEditBuilder<TModel> EditBuilder<TModel>(ConfigurationSource? source) =>
-        new(configure =>
-            Services.Configure<ResourceOptions<TResource>>(options =>
-            {
-                // The edit model was selected again since this builder was created
-                if (options.Edit is not ResourceEditOptions<TModel> edit)
+        new(
+            Services,
+            configure =>
+                Services.Configure<ResourceOptions<TResource>>(options =>
                 {
-                    options.Report(
-                        ConfigurationProblemKind.StaleModelBuilder,
-                        $"This edit configuration for `{typeof(TModel).Name}` isn't applied because another edit model was selected later.",
-                        "Remove this configuration, or configure the edit page with the model it uses.",
-                        source
-                    );
+                    // The edit model was selected again since this builder was created
+                    if (options.Edit is not ResourceEditOptions<TModel> edit)
+                    {
+                        options.Report(
+                            ConfigurationProblemKind.StaleModelBuilder,
+                            $"This edit configuration for `{typeof(TModel).Name}` isn't applied because another edit model was selected later.",
+                            "Remove this configuration, or configure the edit page with the model it uses.",
+                            source
+                        );
 
-                    return;
-                }
+                        return;
+                    }
 
-                configure(edit);
-            })
+                    configure(edit);
+                })
         );
 
     private ResourceViewBuilder<TModel> ViewBuilder<TModel>(ConfigurationSource? source) =>
-        new(configure =>
-            Services.Configure<ResourceOptions<TResource>>(options =>
-            {
-                // The view model was selected again since this builder was created
-                if (options.View is not ResourceViewOptions<TModel> view)
+        new(
+            Services,
+            configure =>
+                Services.Configure<ResourceOptions<TResource>>(options =>
                 {
-                    options.Report(
-                        ConfigurationProblemKind.StaleModelBuilder,
-                        $"This view configuration for `{typeof(TModel).Name}` isn't applied because another view model was selected later.",
-                        "Remove this configuration, or configure the view page with the model it uses.",
-                        source
-                    );
+                    // The view model was selected again since this builder was created
+                    if (options.View is not ResourceViewOptions<TModel> view)
+                    {
+                        options.Report(
+                            ConfigurationProblemKind.StaleModelBuilder,
+                            $"This view configuration for `{typeof(TModel).Name}` isn't applied because another view model was selected later.",
+                            "Remove this configuration, or configure the view page with the model it uses.",
+                            source
+                        );
 
-                    return;
-                }
+                        return;
+                    }
 
-                configure(view);
-            })
+                    configure(view);
+                })
         );
 }

@@ -542,6 +542,7 @@ StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.Title.set -> void
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseFactory(System.Func<TModel>! factory) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseInlineRow() -> StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseInlineRow(System.Action<StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.Widgets(System.Action<StellarAdmin.Widgets.WidgetsBuilder<StellarAdmin.Widgets.CreateWidgetContext<TModel>!>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder
 StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder.AddAnotherLabel.set -> void
 StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder.SubmitLabel.set -> void
@@ -589,6 +590,7 @@ StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.SubmitLabel.set -> v
 StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.Title.set -> void
 StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.UseInlineRow() -> StellarAdmin.Resources.Builders.ResourceInlineEditBuilder!
 StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.UseInlineRow(System.Action<StellarAdmin.Resources.Builders.ResourceInlineEditBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>!
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.Widgets(System.Action<StellarAdmin.Widgets.WidgetsBuilder<StellarAdmin.Widgets.RecordWidgetContext<TModel>!>!>! configure) -> StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder
 StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder.SubmitLabel.set -> void
 StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder.Title.set -> void
@@ -744,6 +746,7 @@ StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>
 StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>.Fields(System.Action<StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>.SectionLayout.set -> void
 StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>.Widgets(System.Action<StellarAdmin.Widgets.WidgetsBuilder<StellarAdmin.Widgets.RecordWidgetContext<TModel>!>!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>
 StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TModel, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!
 StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TModel, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceDisplayFieldBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewFieldsBuilder<TModel>!
@@ -1922,6 +1925,7 @@ StellarAdmin.WidgetFormTagHelper
 StellarAdmin.WidgetFormTagHelper.ViewContext.get -> Microsoft.AspNetCore.Mvc.Rendering.ViewContext!
 StellarAdmin.WidgetFormTagHelper.ViewContext.set -> void
 StellarAdmin.WidgetFormTagHelper.WidgetFormTagHelper() -> void
+StellarAdmin.Widgets.CreateWidgetContext<TModel>
 StellarAdmin.Widgets.IndexWidgetContext<TResource>
 StellarAdmin.Widgets.IndexWidgetContext<TResource>.Scope.get -> string?
 StellarAdmin.Widgets.IndexWidgetContext<TResource>.Search.get -> string?
@@ -1929,6 +1933,9 @@ StellarAdmin.Widgets.IWidgetHandler<TModel>
 StellarAdmin.Widgets.IWidgetHandler<TModel>.LoadAsync(StellarAdmin.Widgets.WidgetLoadContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TModel?>!
 StellarAdmin.Widgets.IWidgetHandler<TParameters, TModel>
 StellarAdmin.Widgets.IWidgetHandler<TParameters, TModel>.LoadAsync(TParameters parameters, StellarAdmin.Widgets.WidgetLoadContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TModel?>!
+StellarAdmin.Widgets.RecordWidgetContext<TModel>
+StellarAdmin.Widgets.RecordWidgetContext<TModel>.Key.get -> string!
+StellarAdmin.Widgets.RecordWidgetContext<TModel>.Record.get -> TModel
 StellarAdmin.Widgets.WidgetBuilder<TContext>
 StellarAdmin.Widgets.WidgetBuilder<TContext>.Inline.set -> void
 StellarAdmin.Widgets.WidgetBuilder<TContext>.Parameters<TParameters>(System.Func<TContext!, TParameters>! parameters) -> StellarAdmin.Widgets.WidgetBuilder<TContext!>!

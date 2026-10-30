@@ -1,0 +1,27 @@
+@model ProductCategoryPrices
+<sa-card>
+    <sa-card-header>
+        <sa-card-title>@Model.Category prices</sa-card-title>
+        <sa-card-description>@Model.Products @(Model.Products == 1 ? "product" : "products") in the category</sa-card-description>
+    </sa-card-header>
+    <sa-card-content>
+        <dl class="flex flex-col gap-2 text-sm">
+            <div class="flex items-center justify-between gap-4">
+                <dt class="text-muted-foreground">This product</dt>
+                <dd class="font-medium tabular-nums">@Model.Price.ToString("0.00")</dd>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+                <dt class="text-muted-foreground">Lowest</dt>
+                <dd class="tabular-nums">@Model.Lowest.ToString("0.00")</dd>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+                <dt class="text-muted-foreground">Average</dt>
+                <dd class="tabular-nums">@Model.Average.ToString("0.00")</dd>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+                <dt class="text-muted-foreground">Highest</dt>
+                <dd class="tabular-nums">@Model.Highest.ToString("0.00")</dd>
+            </div>
+        </dl>
+    </sa-card-content>
+</sa-card>

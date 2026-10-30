@@ -1,5 +1,6 @@
 using StellarAdmin.Diagnostics;
 using StellarAdmin.UI;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin.Resources.Options;
 
@@ -63,6 +64,9 @@ public abstract class ResourceFormOptions : IFormScope
     internal List<FormItemOptions> MutableItems { get; } = [];
 
     internal ConfigurationSource? Source { get; set; }
+
+    // The widgets as configured, then, once checked, those that can be shown
+    internal List<WidgetOptions> Widgets { get; } = [];
 
     IList<FormItemOptions> IFormScope.Items => MutableItems;
 

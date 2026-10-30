@@ -28,65 +28,73 @@ internal static class ProductResourceRegistration
                 item.Order = 10;
             });
             resource.AllowCreate(create =>
-                create.Fields(fields =>
-                {
-                    fields.Add(product => product.Name);
-                    fields.Add(product => product.Price);
-                    fields.Add(product => product.Details.Sku);
-                    fields.Add(product => product.CategoryId).UseLookupSheetEditor(UseCategories);
-                    fields.Add(product => product.Tags).UseMultiLookupSheetEditor(UseTags);
-                })
+                create
+                    .Fields(fields =>
+                    {
+                        fields.Add(product => product.Name);
+                        fields.Add(product => product.Price);
+                        fields.Add(product => product.Details.Sku);
+                        fields
+                            .Add(product => product.CategoryId)
+                            .UseLookupSheetEditor(UseCategories);
+                        fields.Add(product => product.Tags).UseMultiLookupSheetEditor(UseTags);
+                    })
+                    // A tip above the form, which has no handler, so it renders with the page
+                    .Widgets(widgets => widgets.Add("Category tip", "_ProductCreateTipWidget"))
             );
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
-                {
-                    fields.Add(product => product.Name);
-                    fields.Add(product => product.Price);
-                    fields.Add(product => product.Details.Sku);
-                    // No editor: the foreign key gets a lookup sheet of the category resource
-                    fields.Add(product => product.CategoryId);
-                    fields.AddDisplayField(
-                        product => string.Join(", ", product.Tags.Select(t => t.Name)),
-                        field => field.Title = "Tags (2)"
-                    );
-                    fields
-                        .Add(product => product.Tags)
-                        .UseCheckboxGroupEditor(checkboxes =>
-                        {
-                            checkboxes.Appearance = CheckboxGroupAppearance.Cards;
-                            checkboxes.Columns(2);
-                        });
-                })
+                    {
+                        fields.Add(product => product.Name);
+                        fields.Add(product => product.Price);
+                        fields.Add(product => product.Details.Sku);
+                        // No editor: the foreign key gets a lookup sheet of the category resource
+                        fields.Add(product => product.CategoryId);
+                        fields.AddDisplayField(
+                            product => string.Join(", ", product.Tags.Select(t => t.Name)),
+                            field => field.Title = "Tags (2)"
+                        );
+                        fields
+                            .Add(product => product.Tags)
+                            .UseCheckboxGroupEditor(checkboxes =>
+                            {
+                                checkboxes.Appearance = CheckboxGroupAppearance.Cards;
+                                checkboxes.Columns(2);
+                            });
+                    })
+                    // The category's prices beside the form, which stay in view as the form scrolls
+                    .Widgets(widgets => AddCategoryPricesWidget(widgets))
             );
             resource.AllowView(view =>
                 view.Fields(fields =>
-                {
-                    fields.AddSection(
-                        "Product",
-                        section =>
-                        {
-                            section.Columns(2);
-                            section.Add(product => product.Name);
-                            section.Add(product => product.Category);
-                            section.Add(
-                                product => string.Join(", ", product.Tags.Select(t => t.Name)),
-                                field => field.Title = "Tags (2)"
-                            );
-                            section.Add(product => product.Tags).UseDisplay<BadgeDisplay>();
-                        }
-                    );
-                    fields.AddSection(
-                        "Pricing",
-                        section =>
-                        {
-                            section.Columns(2);
-                            section
-                                .Add(product => product.Price)
-                                .UseDisplay<NumberDisplay>(number => number.Format = "0.00");
-                            section.Add(product => product.Details.Sku);
-                        }
-                    );
-                })
+                    {
+                        fields.AddSection(
+                            "Product",
+                            section =>
+                            {
+                                section.Columns(2);
+                                section.Add(product => product.Name);
+                                section.Add(product => product.Category);
+                                section.Add(
+                                    product => string.Join(", ", product.Tags.Select(t => t.Name)),
+                                    field => field.Title = "Tags (2)"
+                                );
+                                section.Add(product => product.Tags).UseDisplay<BadgeDisplay>();
+                            }
+                        );
+                        fields.AddSection(
+                            "Pricing",
+                            section =>
+                            {
+                                section.Columns(2);
+                                section
+                                    .Add(product => product.Price)
+                                    .UseDisplay<NumberDisplay>(number => number.Format = "0.00");
+                                section.Add(product => product.Details.Sku);
+                            }
+                        );
+                    })
+                    .Widgets(widgets => AddCategoryPricesWidget(widgets))
             );
             resource.AllowDelete();
             resource.Index(index =>
@@ -187,6 +195,23 @@ internal static class ProductResourceRegistration
             });
         });
     }
+
+    // The view and edit pages compare the product's price with its category's, beside the fields. A product without
+    // a category has nothing to compare, so the handler hides the widget.
+    private static void AddCategoryPricesWidget(
+        WidgetsBuilder<RecordWidgetContext<Product>> widgets
+    ) =>
+        widgets.Add<ProductCategoryPricesHandler>(
+            "Category prices",
+            "_ProductCategoryPricesWidget",
+            widget =>
+            {
+                widget.Placement = WidgetPlacement.Aside;
+                widget.Parameters(context => new ProductCategoryPricesParameters(
+                    context.Record.Id
+                ));
+            }
+        );
 
     // The items come from the category resource, which the foreign key names. New opens its create form, and selects
     // the category it creates

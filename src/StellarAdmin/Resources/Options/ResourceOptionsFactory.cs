@@ -84,5 +84,52 @@ internal sealed class ResourceOptionsFactory<TResource>(
         AddAnotherCheck.Run(options);
         ResourceIndexCheck.Run(options);
         options.Problems.AddRange(WidgetsCheck.Run(options.Index.Widgets, null, true));
+        if (options.View is { } view)
+        {
+            options.Problems.AddRange(WidgetsCheck.Run(view.Widgets, null, true));
+        }
+
+        CheckFormWidgets(options, options.Create, "create");
+        CheckFormWidgets(options, options.Edit, "edit");
+    }
+
+    // A form in the index grid has no page, so its widgets have nowhere to show
+    private static void CheckFormWidgets(
+        ResourceOptions<TResource> options,
+        ResourceFormOptions? form,
+        string page
+    )
+    {
+        if (form is null)
+        {
+            return;
+        }
+
+        if (
+            form
+            is ResourceCreateOptions { InlineRow: not null }
+                or ResourceEditOptions { InlineRow: not null }
+        )
+        {
+            foreach (var widget in form.Widgets)
+            {
+                options.Problems.Add(
+                    new ConfigurationProblem(
+                        ConfigurationProblemKind.IgnoredWidgetSetting,
+                        $"The `{widget.Name}` widget isn't shown because the resource's {page} form is in the index grid, which has no {page} page.",
+                        $"Remove the {page} page's widgets, or remove `UseInlineRow()`."
+                    ) with
+                    {
+                        Source = widget.Source,
+                    }
+                );
+            }
+
+            form.Widgets.Clear();
+
+            return;
+        }
+
+        options.Problems.AddRange(WidgetsCheck.Run(form.Widgets, null, true));
     }
 }

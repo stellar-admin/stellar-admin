@@ -1,6 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin.Resources.Builders;
 
@@ -11,6 +13,7 @@ namespace StellarAdmin.Resources.Builders;
 public sealed class ResourceCreateBuilder<TModel>
 {
     private readonly Action<Action<ResourceCreateOptions<TModel>>> _configure;
+    private readonly IServiceCollection _services;
 
     /// <summary>
     ///     Sets the layout of the form's sections.
@@ -46,8 +49,14 @@ public sealed class ResourceCreateBuilder<TModel>
         set => _configure(options => options.Title = value);
     }
 
-    internal ResourceCreateBuilder(Action<Action<ResourceCreateOptions<TModel>>> configure) =>
+    internal ResourceCreateBuilder(
+        IServiceCollection services,
+        Action<Action<ResourceCreateOptions<TModel>>> configure
+    )
+    {
+        _services = services;
         _configure = configure;
+    }
 
     /// <summary>
     ///     Adds a button that saves the new resource and starts the next one.
@@ -163,6 +172,33 @@ public sealed class ResourceCreateBuilder<TModel>
         ArgumentNullException.ThrowIfNull(configure);
 
         configure(UseInlineRow());
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures the widgets shown on the create page.
+    /// </summary>
+    /// <param name="configure">A delegate that adds the widgets.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     A widget's <c>Placement</c> shows it above the form, beside it or below it. Widgets
+    ///     beside the form stay in view as the form scrolls. A resource whose rows are created
+    ///     inline has no create page, so its create widgets are a configuration problem, and
+    ///     aren't shown.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceCreateBuilder<TModel> Widgets(
+        Action<WidgetsBuilder<CreateWidgetContext<TModel>>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var widgets = new List<WidgetOptions>();
+        configure(new(_services, widgets));
+        _configure(options => options.Widgets.AddRange(widgets));
 
         return this;
     }

@@ -1109,5 +1109,11 @@
         .sa-widgets-aside-grid:has(> .sa-widgets-column:not([hidden])) {
             grid-template-columns: minmax(0, 1fr) 20rem;
         }
+
+        /* Beside a form, the column stays in view as the form scrolls */
+        .sa-widgets-aside-grid > .sa-widgets-column[data-sticky] {
+            position: sticky;
+            top: calc(4 * var(--sa-unit));
+        }
     }
 }

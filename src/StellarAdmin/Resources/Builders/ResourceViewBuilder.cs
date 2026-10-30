@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
+using StellarAdmin.Widgets;
 
 namespace StellarAdmin.Resources.Builders;
 
@@ -10,6 +12,7 @@ namespace StellarAdmin.Resources.Builders;
 public sealed class ResourceViewBuilder<TModel>
 {
     private readonly Action<Action<ResourceViewOptions<TModel>>> _configure;
+    private readonly IServiceCollection _services;
 
     /// <summary>
     ///     Sets the layout of the page's sections.
@@ -39,8 +42,14 @@ public sealed class ResourceViewBuilder<TModel>
         set => _configure(options => options.Title = value);
     }
 
-    internal ResourceViewBuilder(Action<Action<ResourceViewOptions<TModel>>> configure) =>
+    internal ResourceViewBuilder(
+        IServiceCollection services,
+        Action<Action<ResourceViewOptions<TModel>>> configure
+    )
+    {
+        _services = services;
         _configure = configure;
+    }
 
     /// <summary>
     ///     Configures the page's fields.
@@ -59,6 +68,31 @@ public sealed class ResourceViewBuilder<TModel>
                 _configure(options => action(options))
             )
         );
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures the widgets shown on the view page.
+    /// </summary>
+    /// <param name="configure">A delegate that adds the widgets.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     A widget's <c>Placement</c> shows it above the page's fields, beside them or below
+    ///     them. The widgets' delegates receive the record the page shows.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceViewBuilder<TModel> Widgets(
+        Action<WidgetsBuilder<RecordWidgetContext<TModel>>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var widgets = new List<WidgetOptions>();
+        configure(new(_services, widgets));
+        _configure(options => options.Widgets.AddRange(widgets));
 
         return this;
     }
