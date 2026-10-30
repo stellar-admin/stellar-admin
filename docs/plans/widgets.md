@@ -1,6 +1,6 @@
 # Widgets
 
-Status: phases 1 and 2 implemented and committed (2026-10-30); phase 3 implemented (2026-10-30), uncommitted, on the `widgets` branches of the product and the website. Phase 4 not started.
+Status: phases 1 to 3 implemented and committed (2026-10-30) on the `widgets` branches of the product and the website. Predefined widgets moved to their own plan, [predefined-widgets](predefined-widgets.md) (2026-10-30). Open questions and the docs screenshots remain.
 
 Let developers place widgets on the admin panel's pages: the home page, a resource's index page, its view page and its create and edit forms. A widget is a self-contained block such as a stat, a chart, an activity heatmap, a list of recent records, a callout or a chat box. Examples are a chart of recent sign-ups above the customers grid, or a login activity graph (like GitHub's contribution graph) at the top of a customer's view page.
 
@@ -134,7 +134,8 @@ Widgets can have their own inputs, such as a 30d/90d picker. The partial renders
 1. **Core and the home page.** Handler interfaces, contexts, the widget builders, signed parameters and `[WidgetInput]` binding, lazy and inline rendering, refresh, `ShowWhen`, authorization, configuration problems, the loading and error placeholders, the grid CSS, and `home.Widgets(...)`. Tests mirror the source projects (TUnit). An AdminPlayground home dashboard, the website docs page, and the consumer skills reference.
 2. **Index pages.** `index.Widgets(...)` with `IndexWidgetContext` and the `Top`, `Aside` and `Bottom` placements. Decide whether widgets should refresh when the grid's search or scope changes.
 3. **View, create and edit pages.** `RecordWidgetContext` and `CreateWidgetContext`, the placements on each page, and the sticky aside on forms.
-4. **Predefined widgets.** Stats first (value, change, note, sparkline or goal, several stats in one card), built on the same handler mechanism. A chart widget waits for a chart component; a records list could follow [configured-row-details](configured-row-details.md).
+
+Predefined widgets, once phase 4, are in [predefined-widgets](predefined-widgets.md).
 
 ## Phase 1 as built
 
