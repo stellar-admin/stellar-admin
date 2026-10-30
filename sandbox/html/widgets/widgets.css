@@ -1,0 +1,389 @@
+/* Widgets prototype: candidate styles (sandbox only).
+   Everything under @layer sa.components is written as the library would write it, reading only theme
+   variables and tokens. The proto-* rules at the bottom are prototype chrome and are not extracted. */
+
+@layer sa.components {
+  /* ------------------------------------------------------------------------------------------ */
+  /* Widget grid: a 12-column grid that collapses with the space it has, not the viewport        */
+  /* ------------------------------------------------------------------------------------------ */
+  .sa-widgets {
+    container-type: inline-size;
+    container-name: sa-widgets;
+  }
+  .sa-widgets-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: calc(4 * var(--sa-unit));
+    align-items: start;
+    & > * { grid-column: span 12; min-width: 0; }
+  }
+  .sa-widgets-grid[data-stretch] { align-items: stretch; }
+  @container sa-widgets (min-width: 34rem) {
+    .sa-widgets-grid > :is([data-span="3"], [data-span="4"]) { grid-column: span 6; }
+    .sa-widgets-grid > [data-span="6"] { grid-column: span 6; }
+  }
+  @container sa-widgets (min-width: 56rem) {
+    .sa-widgets-grid > [data-span="3"] { grid-column: span 3; }
+    .sa-widgets-grid > [data-span="4"] { grid-column: span 4; }
+    .sa-widgets-grid > [data-span="5"] { grid-column: span 5; }
+    .sa-widgets-grid > [data-span="7"] { grid-column: span 7; }
+    .sa-widgets-grid > [data-span="8"] { grid-column: span 8; }
+    .sa-widgets-grid > [data-span="9"] { grid-column: span 9; }
+  }
+
+  /* A slot that holds widgets beside the page's main content (index grid, details, form). */
+  .sa-widgets-aside {
+    display: grid;
+    gap: calc(4 * var(--sa-unit));
+    align-items: start;
+  }
+  @media (min-width: 64rem) {
+    .sa-widgets-aside { grid-template-columns: minmax(0, 1fr) 20rem; }
+    .sa-widgets-aside[data-side="start"] { grid-template-columns: 20rem minmax(0, 1fr); }
+    .sa-widgets-aside > .sa-widgets-column[data-sticky] { position: sticky; top: calc(4 * var(--sa-unit)); }
+  }
+  .sa-widgets-column { display: grid; gap: calc(4 * var(--sa-unit)); align-content: start; min-width: 0; }
+
+  .sa-widgets-section { display: grid; gap: calc(3 * var(--sa-unit)); }
+  .sa-widgets-section-title {
+    margin: 0;
+    font-family: var(--sa-section-label-font, inherit);
+    font-size: var(--sa-text-xs);
+    font-weight: var(--sa-section-label-weight, 600);
+    letter-spacing: var(--sa-section-label-tracking, 0.04em);
+    text-transform: var(--sa-section-label-transform, uppercase);
+    color: var(--sa-color-ink-muted);
+  }
+
+  /* ------------------------------------------------------------------------------------------ */
+  /* Widget: a card with a compact header, a body and an optional footer                         */
+  /* ------------------------------------------------------------------------------------------ */
+  .sa-widget.sa-card { gap: calc(3 * var(--sa-unit)); padding-block: calc(4 * var(--sa-unit)); }
+  .sa-widget > .sa-card-header,
+  .sa-widget > .sa-card-content,
+  .sa-widget > .sa-card-footer { padding-inline: calc(4 * var(--sa-unit)); }
+  .sa-widget > .sa-card-header { gap: calc(0.5 * var(--sa-unit)); }
+  .sa-widget .sa-card-title { font-size: var(--sa-text-sm); }
+  .sa-widget .sa-card-description { font-size: var(--sa-text-xs); }
+  .sa-widget > .sa-card-content[data-flush] { padding-inline: 0; }
+  .sa-widget > .sa-card-footer {
+    padding-top: calc(3 * var(--sa-unit));
+    border-top: var(--sa-border-width) solid var(--sa-color-line);
+    font-size: var(--sa-text-xs);
+    color: var(--sa-color-ink-muted);
+    justify-content: space-between;
+    gap: calc(2 * var(--sa-unit));
+  }
+  .sa-widget-updated { display: inline-flex; align-items: center; gap: calc(1.5 * var(--sa-unit)); }
+  .sa-widget-updated::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--sa-color-success);
+  }
+  .sa-widget[data-state="stale"] .sa-widget-updated::before { background: var(--sa-color-warning); }
+
+  /* ------------------------------------------------------------------------------------------ */
+  /* Stat                                                                                        */
+  /* ------------------------------------------------------------------------------------------ */
+  .sa-stat {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "label icon" "value value" "meta meta" "chart chart";
+    align-items: center;
+    row-gap: calc(1 * var(--sa-unit));
+    padding: calc(4 * var(--sa-unit));
+    min-width: 0;
+  }
+  .sa-stat-label { grid-area: label; font-size: var(--sa-text-sm); color: var(--sa-color-ink-muted); }
+  .sa-stat-icon {
+    grid-area: icon;
+    display: inline-grid; place-items: center;
+    width: var(--sa-control-h-xs); height: var(--sa-control-h-xs);
+    border-radius: var(--sa-radius-control-sm);
+    background: var(--sa-color-tint);
+    color: var(--sa-color-ink-muted);
+    & > svg { width: calc(var(--sa-control-icon) * 0.9); height: calc(var(--sa-control-icon) * 0.9); }
+  }
+  .sa-stat-value {
+    grid-area: value;
+    font-family: var(--sa-font-heading, inherit);
+    font-size: calc(var(--sa-text-base) * 1.6);
+    font-weight: var(--sa-weight-heading, 600);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    color: var(--sa-color-ink);
+  }
+  .sa-stat-meta {
+    grid-area: meta;
+    display: flex; flex-wrap: wrap; align-items: center; gap: calc(1.5 * var(--sa-unit));
+    font-size: var(--sa-text-xs);
+    color: var(--sa-color-ink-muted);
+  }
+  .sa-stat-delta {
+    display: inline-flex; align-items: center; gap: 2px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    & > svg { width: 14px; height: 14px; }
+  }
+  .sa-stat-delta[data-trend="up"] { color: var(--sa-color-success); }
+  .sa-stat-delta[data-trend="down"] { color: var(--sa-color-danger-text); }
+  .sa-stat-delta[data-trend="flat"] { color: var(--sa-color-ink-muted); }
+  .sa-stat-chart { grid-area: chart; margin-top: calc(2 * var(--sa-unit)); height: 40px; }
+  .sa-stat .sa-progress-root { grid-area: chart; margin-top: calc(2 * var(--sa-unit)); }
+
+  /* Stat with the sparkline beside the value (one row, for tight strips). */
+  .sa-stat[data-layout="inline"] {
+    grid-template-columns: minmax(0, 1fr) 96px;
+    grid-template-areas: "label chart" "value chart" "meta chart";
+    & .sa-stat-chart { margin-top: 0; height: 44px; align-self: center; }
+    & .sa-stat-icon { display: none; }
+  }
+
+  /* Stats as cards in a row, or several stats in one card divided by rules. */
+  .sa-stat.sa-card { padding: calc(4 * var(--sa-unit)); gap: 0; display: grid; }
+  .sa-stat-group {
+    display: grid;
+    grid-template-columns: repeat(var(--_stats, 4), minmax(0, 1fr));
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    & > .sa-stat + .sa-stat { border-inline-start: var(--sa-border-width) solid var(--sa-color-line); }
+  }
+  @container sa-widgets (max-width: 46rem) {
+    .sa-stat-group { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sa-stat-group > .sa-stat:nth-child(odd) { border-inline-start: 0; }
+    .sa-stat-group > .sa-stat:nth-child(n + 3) { border-top: var(--sa-border-width) solid var(--sa-color-line); }
+  }
+
+  /* Stats inline in the page header area: no cards, just numbers. */
+  .sa-stat-bar {
+    display: flex; flex-wrap: wrap; gap: calc(2 * var(--sa-unit)) calc(8 * var(--sa-unit));
+    & .sa-stat { padding: 0; row-gap: 0; }
+    & .sa-stat-value { font-size: calc(var(--sa-text-base) * 1.25); }
+    & .sa-stat-label { font-size: var(--sa-text-xs); }
+  }
+
+  /* ------------------------------------------------------------------------------------------ */
+  /* Charts (drawn by the prototype script; the library has no chart component yet)              */
+  /* ------------------------------------------------------------------------------------------ */
+  .sa-widget, .sa-chart {
+    --sa-chart-1: var(--sa-color-accent);
+    --sa-chart-2: color-mix(in oklab, var(--sa-color-accent) 45%, var(--sa-color-surface));
+    --sa-chart-3: var(--sa-color-info);
+    --sa-chart-4: var(--sa-color-warning);
+    --sa-chart-5: var(--sa-color-success);
+  }
+  .sa-chart {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    & svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    & .grid { stroke: var(--sa-color-line); stroke-width: 1; shape-rendering: crispEdges; }
+    & .axis { fill: var(--sa-color-ink-muted); font-size: 11px; font-family: var(--sa-font-sans); font-variant-numeric: tabular-nums; }
+    & .s1 { stroke: var(--sa-chart-1); } & .f1 { fill: var(--sa-chart-1); }
+    & .s2 { stroke: var(--sa-chart-2); } & .f2 { fill: var(--sa-chart-2); }
+    & .s3 { stroke: var(--sa-chart-3); } & .f3 { fill: var(--sa-chart-3); }
+    & .s4 { stroke: var(--sa-chart-4); } & .f4 { fill: var(--sa-chart-4); }
+    & .s5 { stroke: var(--sa-chart-5); } & .f5 { fill: var(--sa-chart-5); }
+    & .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+    & .area { opacity: 0.14; }
+    & .guide { stroke: var(--sa-color-ink-muted); stroke-dasharray: 3 3; }
+    & .dot { stroke: var(--sa-color-surface); stroke-width: 2; }
+  }
+  .sa-chart[data-size="sm"] { height: 140px; }
+  .sa-chart[data-size="md"] { height: 220px; }
+  .sa-chart[data-size="lg"] { height: 280px; }
+  .sa-chart-tooltip {
+    position: absolute; pointer-events: none; z-index: 2;
+    padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+    border-radius: var(--sa-radius-control-sm);
+    background: var(--sa-color-surface-raised);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    box-shadow: var(--sa-shadow-overlay);
+    font-size: var(--sa-text-xs);
+    white-space: nowrap;
+    color: var(--sa-color-ink);
+    & b { font-variant-numeric: tabular-nums; }
+    & .k { color: var(--sa-color-ink-muted); }
+  }
+  .sa-chart-legend {
+    display: flex; flex-wrap: wrap; gap: calc(1 * var(--sa-unit)) calc(4 * var(--sa-unit));
+    font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted);
+    & > span { display: inline-flex; align-items: center; gap: calc(1.5 * var(--sa-unit)); }
+    & i { width: 8px; height: 8px; border-radius: 2px; background: var(--_c); }
+  }
+
+  /* Contribution-style heatmap. */
+  .sa-heatmap {
+    --_cell: 11px;
+    --_gap: 3px;
+    display: grid;
+    gap: calc(2 * var(--sa-unit));
+    min-width: 0;
+  }
+  .sa-heatmap-scroll { overflow-x: auto; padding-bottom: 2px; }
+  /* Cells grow to fill the widget and keep a minimum size, scrolling when the widget is narrow. */
+  .sa-heatmap-body {
+    display: grid; grid-template-columns: auto minmax(calc(var(--_weeks) * (var(--_cell) + var(--_gap))), 1fr);
+    gap: var(--_gap) calc(1.5 * var(--sa-unit));
+  }
+  .sa-heatmap-months {
+    grid-column: 2;
+    display: grid; grid-template-columns: repeat(var(--_weeks), minmax(0, 1fr)); column-gap: var(--_gap);
+    font-size: 10px; color: var(--sa-color-ink-muted); height: 14px;
+    & > span { white-space: nowrap; overflow: visible; }
+  }
+  .sa-heatmap-days {
+    display: grid; grid-template-rows: repeat(7, minmax(0, 1fr)); row-gap: var(--_gap);
+    font-size: 10px; color: var(--sa-color-ink-muted);
+    & > span { display: flex; align-items: center; }
+  }
+  .sa-heatmap-cells {
+    display: grid; grid-auto-flow: column;
+    grid-template-columns: repeat(var(--_weeks), minmax(0, 1fr));
+    grid-template-rows: repeat(7, auto); gap: var(--_gap);
+    & > i {
+      aspect-ratio: 1;
+      max-height: 18px;
+      border-radius: 2px;
+      background: var(--sa-color-tint);
+      outline: 1px solid color-mix(in oklab, var(--sa-color-ink) 6%, transparent);
+      outline-offset: -1px;
+    }
+    & > i[data-l="1"] { background: color-mix(in oklab, var(--sa-color-accent) 28%, var(--sa-color-surface)); }
+    & > i[data-l="2"] { background: color-mix(in oklab, var(--sa-color-accent) 52%, var(--sa-color-surface)); }
+    & > i[data-l="3"] { background: color-mix(in oklab, var(--sa-color-accent) 76%, var(--sa-color-surface)); }
+    & > i[data-l="4"] { background: var(--sa-color-accent); }
+    & > i[data-empty] { visibility: hidden; }
+    & > i:hover { outline: 2px solid var(--sa-color-ink); }
+  }
+  .sa-heatmap-footer {
+    display: flex; justify-content: space-between; align-items: center; gap: calc(2 * var(--sa-unit));
+    font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted);
+  }
+  .sa-heatmap-legend {
+    display: inline-flex; align-items: center; gap: 3px;
+    & > i { width: var(--_cell); height: var(--_cell); border-radius: 2px; }
+  }
+
+  /* Ranked list with proportional bars (top destinations, countries). */
+  .sa-bar-list { display: grid; gap: calc(1.5 * var(--sa-unit)); margin: 0; padding: 0; list-style: none; }
+  .sa-bar-list-item {
+    position: relative;
+    display: flex; justify-content: space-between; gap: calc(3 * var(--sa-unit));
+    padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+    font-size: var(--sa-text-sm);
+    isolation: isolate;
+    &::before {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      width: var(--_w);
+      border-radius: var(--sa-radius-control-sm);
+      background: color-mix(in oklab, var(--sa-color-accent) 14%, transparent);
+    }
+    & > b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--sa-color-ink-muted); }
+  }
+
+  /* Compact lists inside widgets reuse sa-item; the widget removes its outer padding. */
+  .sa-widget-list { display: grid; margin: 0; padding: 0; list-style: none; }
+  .sa-widget-list > li + li { border-top: var(--sa-border-width) solid var(--sa-color-line); }
+  .sa-widget-list .sa-item { border-radius: 0; padding-inline: calc(4 * var(--sa-unit)); }
+  .sa-widget-list .sa-item-title { font-size: var(--sa-text-sm); }
+  .sa-widget-list .sa-item-description { font-size: var(--sa-text-xs); }
+  .sa-widget-list .sa-item-actions { font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); font-variant-numeric: tabular-nums; }
+
+  /* Mini table inside a widget: the table bleeds to the card edges. */
+  .sa-widget .sa-table-container { border: 0; }
+  .sa-widget .sa-table-head:first-child, .sa-widget .sa-table-cell:first-child { padding-inline-start: calc(4 * var(--sa-unit)); }
+  .sa-widget .sa-table-head:last-child, .sa-widget .sa-table-cell:last-child { padding-inline-end: calc(4 * var(--sa-unit)); }
+  .sa-num { text-align: end; font-variant-numeric: tabular-nums; }
+
+  /* Quick actions. */
+  .sa-quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: calc(2 * var(--sa-unit)); }
+  .sa-quick-actions > .sa-button { justify-content: flex-start; }
+
+  /* Collapsible widget region (insights above an index grid). */
+  .sa-widgets-collapsible { display: grid; gap: calc(3 * var(--sa-unit)); }
+  .sa-widgets-collapsible:not([open]) > .sa-widgets { display: none; }
+  .sa-widgets-collapsible > summary {
+    display: inline-flex; align-items: center; gap: calc(1.5 * var(--sa-unit));
+    width: fit-content; cursor: pointer; list-style: none;
+    font-size: var(--sa-text-sm); font-weight: 500; color: var(--sa-color-ink-muted);
+    &::-webkit-details-marker { display: none; }
+    & > svg { width: 16px; height: 16px; transition: rotate var(--sa-motion-fast, 150ms) ease; }
+    &:hover { color: var(--sa-color-ink); }
+  }
+  .sa-widgets-collapsible[open] > summary > svg.chev { rotate: 90deg; }
+
+  /* Chat box widget. */
+  .sa-widget-chat { display: grid; gap: calc(3 * var(--sa-unit)); max-height: 320px; overflow: auto; }
+  .sa-widget-compose { display: flex; gap: calc(2 * var(--sa-unit)); }
+
+  /* Customer summary at the top of a sidebar. */
+  .sa-profile { display: flex; align-items: center; gap: calc(3 * var(--sa-unit)); }
+  .sa-profile-name { font-weight: 600; font-size: var(--sa-text-sm); }
+  .sa-profile-meta { font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); }
+  .sa-kv { display: grid; grid-template-columns: auto 1fr; gap: calc(2 * var(--sa-unit)) calc(4 * var(--sa-unit)); margin: 0; font-size: var(--sa-text-sm); }
+  .sa-kv > dt { color: var(--sa-color-ink-muted); }
+  .sa-kv > dd { margin: 0; text-align: end; font-variant-numeric: tabular-nums; }
+
+  /* Loading: the skeleton shown while a lazy widget's content is fetched. */
+  .sa-widget-skeleton { display: grid; gap: calc(2.5 * var(--sa-unit)); }
+  .sa-widget-skeleton > .sa-skeleton { height: 12px; }
+  .sa-widget-skeleton > .sa-skeleton[data-h="chart"] { height: 140px; }
+  .sa-widget-skeleton > .sa-skeleton[data-h="value"] { height: 28px; width: 50%; }
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Prototype chrome (not extracted)                                                               */
+/* ---------------------------------------------------------------------------------------------- */
+.proto-controls {
+  position: fixed; right: 16px; bottom: 16px; z-index: 60;
+  width: 330px; max-height: calc(100vh - 32px); overflow: auto;
+  font-size: 13px; color: var(--sa-color-ink);
+  background: var(--sa-color-surface-raised);
+  border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container);
+  box-shadow: var(--sa-shadow-overlay);
+  font-family: var(--sa-font-sans);
+}
+.proto-controls > header {
+  position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 12px; background: inherit; border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+  font-weight: 600;
+}
+.proto-controls[data-collapsed] > :not(header) { display: none; }
+.proto-controls[data-collapsed] > header { border-bottom: 0; }
+.proto-controls h3 { margin: 0; padding: 10px 12px 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--sa-color-ink-muted); }
+.proto-controls .rows { display: grid; grid-template-columns: 70px 1fr; gap: 6px 10px; align-items: center; padding: 4px 12px 8px; }
+.proto-controls .rows > span { color: var(--sa-color-ink-muted); }
+.proto-controls .group { display: flex; flex-wrap: wrap; gap: 2px; padding: 2px; border-radius: var(--sa-radius-control-sm); background: var(--sa-color-tint); width: fit-content; }
+.proto-controls .group.stack { display: grid; width: auto; }
+.proto-controls button {
+  font: inherit; font-size: 12px; padding: 3px 8px; cursor: pointer; color: inherit; text-align: start;
+  background: transparent; border: 0; border-radius: calc(var(--sa-radius-control-sm) - 2px);
+}
+.proto-controls .group button[aria-pressed="true"] { background: var(--sa-color-surface); box-shadow: var(--sa-shadow-control); font-weight: 600; }
+.proto-controls header button { border: var(--sa-border-width) solid var(--sa-color-line); }
+.proto-controls nav { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 4px 12px 8px; }
+.proto-controls nav a { color: var(--sa-color-ink-muted); text-decoration: none; }
+.proto-controls nav a[aria-current="page"] { color: var(--sa-color-ink); font-weight: 600; text-decoration: underline; }
+.proto-controls .note { margin: 0; padding: 4px 12px 12px; color: var(--sa-color-ink-muted); line-height: 1.45; }
+.proto-controls .note b { color: var(--sa-color-ink); }
+
+[data-proto-variant]:not([data-proto-active]) { display: none !important; }
+/* The playground's configuration problems pill is not part of the prototype. */
+.sa-configuration-problems { display: none; }
+
+.proto-slot-labels [data-proto-slot] { position: relative; outline: 2px dashed color-mix(in oklab, var(--sa-color-accent) 60%, transparent); outline-offset: 6px; border-radius: 4px; }
+.proto-slot-labels [data-proto-slot]::after {
+  content: attr(data-proto-slot);
+  position: absolute; top: -18px; left: 0; z-index: 5;
+  padding: 1px 6px; border-radius: 4px;
+  font: 600 10px/1.4 var(--sa-font-mono, monospace); letter-spacing: .02em;
+  background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent, #fff);
+}
+
+.proto-gallery-section { display: grid; gap: 12px; margin-bottom: 40px; }
+.proto-gallery-section > h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.proto-gallery-section > p { margin: 0; font-size: 13px; color: var(--sa-color-ink-muted); max-width: 90ch; }

@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Widgets prototype, gallery of widget kinds and states. Shell from the AdminPlayground home page (2026-10-30). -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Widgets: gallery</title>
+    <meta name="description" content="Voyager Travel">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&amp;family=Lexend:wght@400..700&amp;family=IBM+Plex+Sans:wght@400..700&amp;family=Figtree:wght@400..700&amp;display=swap" />
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css" />
+    <link rel="stylesheet" href="../AdminPlayground/wwwroot/css/playground.css" />
+    <link rel="stylesheet" id="theme-css" />
+    <link rel="stylesheet" href="widgets/widgets.css" />
+    <script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+</head>
+<body>
+
+<sel-sidebar id="--sa-sidebar-9c423f555123ee76caf7cba045dfcd36c348114c99e73c72a75aade5bb009d4522765" data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem; --sidebar-width-mobile: 18rem" class="sa-sidebar-wrapper">
+    
+<div data-slot="sidebar" data-variant="sidebar" data-side="left" data-state="expanded" data-mobile="closed" data-collapsible="" data-collapsible-config="offcanvas" class="sa-sidebar"><button aria-label="Close sidebar" class="sa-sidebar-backdrop" data-slot="sidebar-backdrop" type="button"></button><div class="sa-sidebar-gap" data-slot="sidebar-gap"></div><div class="sa-sidebar-container" data-slot="sidebar-container"><div class="sa-sidebar-inner" data-sidebar="sidebar" data-slot="sidebar-inner">
+    <div data-slot="sidebar-header" data-sidebar="header" class="sa-sidebar-header">
+        
+<ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+    <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+        <a href="widgets-home.html" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="lg" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-lg sa-sidebar-menu-button-variant-default">
+                    <span class="sa-sidebar-brand-mark" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path></svg>
+                    </span>
+                <span class="sa-sidebar-brand-text">
+                    <span class="sa-sidebar-brand-title">Voyager Travel</span>
+                        <span class="sa-sidebar-brand-subtitle">Admin Playground</span>
+                </span>
+        </a>
+    </li>
+</ul>
+
+
+        <button commandfor="--command-palette" command="show-modal" class="sa-button sa-button-variant-outline sa-button-size-default w-full justify-between text-muted-foreground" data-slot="button">
+            <span class="flex items-center gap-2">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                Search...
+            </span>
+            <kbd id="--command-palette-shortcut" aria-hidden="true" data-slot="kbd-group" class="sa-kbd-group">
+                <kbd data-slot="kbd" class="sa-kbd">Ctrl</kbd>
+                <kbd data-slot="kbd" class="sa-kbd">K</kbd>
+            </kbd>
+        </button>
+    </div>
+
+    <div data-slot="sidebar-content" data-sidebar="content" class="sa-sidebar-content">
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Identity</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/departments" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M12 6h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M16 6h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path><path d="M8 6h.01"></path><path d="M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path><rect height="20" rx="2" width="16" x="4" y="2"></rect></svg>
+                <span>Departments</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Commerce</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/products" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></svg>
+                <span>Products</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/categories" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.172 2a2 2 0 0 1 1.414.586l6.71 6.71a2.4 2.4 0 0 1 0 3.408l-4.592 4.592a2.4 2.4 0 0 1-3.408 0l-6.71-6.71A2 2 0 0 1 6 9.172V3a1 1 0 0 1 1-1z"></path><path d="M2 7v6.172a2 2 0 0 0 .586 1.414l6.71 6.71a2.4 2.4 0 0 0 3.191.193"></path><circle cx="10.5" cy="6.5" fill="currentColor" r=".5"></circle></svg>
+                <span>Categories</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="widgets-index.html" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2v2"></path><path d="M7 21v-2a2 2 0 012-2h6a2 2 0 012 2v2"></path><path d="M8 2v2"></path><circle cx="12" cy="10" r="3"></circle><rect height="18" rx="2" width="18" x="3" y="3"></rect></svg>
+                <span>Customers</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/tags" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" fill="currentColor" r=".5"></circle></svg>
+                <span>Tags</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/destinations" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>Destinations</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/trips" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg>
+                <span>Trips</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/guides" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg>
+                <span>Guides</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/amenities" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                <span>Amenities</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/Reports" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                <span>Sales report</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Field editors</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/text-input" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Text input</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/select" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Select</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/lookup" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Lookup</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/airports" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Airports</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/multi-lookup" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Multi lookup</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/radio-group" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Radio group</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/checkbox-group" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Checkbox group</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/segmented-control" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Segmented control</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/toggle-group" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Toggle group</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/textarea" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Textarea</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/checkbox" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Checkbox</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/toggle" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Toggle</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/date-time" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Date and time</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/list-editor" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>List editor</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/dictionary-editor" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Dictionary editor</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/slider" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Slider</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/image" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Image</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/icon" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Icon</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/one-time-code" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>One-time code</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/field-states" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Read-only and disabled</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Form layouts</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-columns" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Columns</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-spans" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Spans</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-sections" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Sections and groups</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-section-layouts" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Section layouts</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-mixed-editors" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Mixed editors</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-display-fields" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Display fields</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-display-columns" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Display columns</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-destinations" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Destinations</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Trips</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/excursions" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"></path><path d="M15 5.764v15"></path><path d="M9 3.236v15"></path></svg>
+                <span>Excursions</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+            <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+                <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                    <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/Home/Privacy" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Privacy policy</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank" rel="noopener noreferrer" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>ASP.NET Core docs</span>
+            </a>
+        </li>
+                    </ul>
+                </div>
+            </div>
+    </div>
+
+</div></div></div>
+
+
+<sel-dialog><dialog id="--command-palette" aria-labelledby="--command-palette-title" aria-describedby="--command-palette-description" data-slot="dialog-content" class="sa-dialog-content sa-command-dialog"><div class="sa-dialog-header sr-only" data-slot="dialog-header"><h2 class="sa-dialog-title" data-slot="dialog-title" id="--command-palette-title">Search</h2><p class="sa-dialog-description" data-slot="dialog-description" id="--command-palette-description">Search for a page to open.</p></div>
+    <sel-command id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734" data-slot="command" data-filter="client" class="sa-command">
+        <div class="sa-command-input-wrapper" data-slot="command-input-wrapper"><div class="sa-input-group sa-command-input-group" data-slot="input-group" role="group"><input placeholder="Search..." type="text" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-input" aria-controls="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list" role="combobox" aria-autocomplete="list" aria-expanded="true" autocomplete="off" autocorrect="off" spellcheck="false" data-slot="command-input" class="sa-command-input"><div class="sa-input-group-addon sa-input-group-addon-align-start" data-align="start" data-slot="input-group-addon" role="group"><svg class="sa-command-input-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg></div></div></div>
+        <div id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list" role="listbox" aria-label="Suggestions" tabindex="-1" data-slot="command-list" class="sa-command-list">
+            <div role="presentation" hidden="" data-slot="command-empty" class="sa-command-empty">No results found.</div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div role="group">
+                <a href="/Home/Privacy" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" class="sa-command-item">
+                    Privacy policy
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank" rel="noopener noreferrer" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" class="sa-command-item">
+                    ASP.NET Core docs
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-1-heading">Identity</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-1-heading" role="group">
+                <a href="/stellaradmin/departments" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Identity" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M12 6h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M16 6h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path><path d="M8 6h.01"></path><path d="M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path><rect height="20" rx="2" width="16" x="4" y="2"></rect></svg>
+                    Departments
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-2-heading">Commerce</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-2-heading" role="group">
+                <a href="/stellaradmin/products" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></svg>
+                    Products
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/categories" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.172 2a2 2 0 0 1 1.414.586l6.71 6.71a2.4 2.4 0 0 1 0 3.408l-4.592 4.592a2.4 2.4 0 0 1-3.408 0l-6.71-6.71A2 2 0 0 1 6 9.172V3a1 1 0 0 1 1-1z"></path><path d="M2 7v6.172a2 2 0 0 0 .586 1.414l6.71 6.71a2.4 2.4 0 0 0 3.191.193"></path><circle cx="10.5" cy="6.5" fill="currentColor" r=".5"></circle></svg>
+                    Categories
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="widgets-index.html" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2v2"></path><path d="M7 21v-2a2 2 0 012-2h6a2 2 0 012 2v2"></path><path d="M8 2v2"></path><circle cx="12" cy="10" r="3"></circle><rect height="18" rx="2" width="18" x="3" y="3"></rect></svg>
+                    Customers
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/tags" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" fill="currentColor" r=".5"></circle></svg>
+                    Tags
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/destinations" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    Destinations
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/trips" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg>
+                    Trips
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/guides" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg>
+                    Guides
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/amenities" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                    Amenities
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/Reports" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                    Sales report
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-3-heading">Field editors</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-3-heading" role="group">
+                <a href="/stellaradmin/text-input" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Text input
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/select" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Select
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/lookup" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Lookup
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/airports" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Airports
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/multi-lookup" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Multi lookup
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/radio-group" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Radio group
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/checkbox-group" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Checkbox group
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/segmented-control" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Segmented control
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/toggle-group" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Toggle group
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/textarea" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Textarea
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/checkbox" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Checkbox
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/toggle" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Toggle
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/date-time" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Date and time
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/list-editor" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    List editor
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/dictionary-editor" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Dictionary editor
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/slider" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Slider
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/image" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Image
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/icon" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Icon
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/one-time-code" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    One-time code
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/field-states" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Read-only and disabled
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-4-heading">Form layouts</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-4-heading" role="group">
+                <a href="/stellaradmin/form-columns" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Columns
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-spans" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Spans
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-sections" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Sections and groups
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-section-layouts" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Section layouts
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-mixed-editors" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Mixed editors
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-display-fields" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Display fields
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-display-columns" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Display columns
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-destinations" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Destinations
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-5-heading">Trips</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-5-heading" role="group">
+                <a href="/stellaradmin/excursions" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Trips" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"></path><path d="M15 5.764v15"></path><path d="M9 3.236v15"></path></svg>
+                    Excursions
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+        </div>
+    </sel-command>
+</dialog></sel-dialog>
+
+
+
+
+
+
+
+    <main data-slot="sidebar-inset" class="sa-sidebar-inset">
+        <header data-slot="app-header" class="sa-app-header">
+            <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-9c423f555123ee76caf7cba045dfcd36c348114c99e73c72a75aade5bb009d4522765" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
+            <div data-slot="separator" class="sa-separator sa-separator-vertical sa-app-header-separator" role="separator" aria-orientation="vertical" data-orientation="vertical"></div>
+            <span class="text-sm font-medium">Voyager Travel</span>
+        </header>
+<div data-slot="page-container" data-width="full" class="sa-page-container sa-page-container-width-full"><header data-slot="page-header" class="sa-page-header"><h1 data-slot="page-header-title" class="sa-page-header-title">Widget gallery</h1><p data-slot="page-header-description" class="sa-page-header-description">Widget kinds and states, on one page.</p></header><div class="proto-gallery"><section class="proto-gallery-section"><h2>Stats</h2><p>Plain, with a change, with a sparkline, against a goal, and several stats in one card.</p><div class="sa-widgets"><div class="sa-widgets-grid"><div data-slot="card" class="sa-stat sa-card sa-widget" data-span="3" data-lazy><div class="sa-stat-label">Bookings</div><div class="sa-stat-value">1,284</div></div><div data-slot="card" class="sa-stat sa-card sa-widget" data-span="3" data-lazy><div class="sa-stat-label">Bookings</div><div class="sa-stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg></div><div class="sa-stat-value">1,284</div><div class="sa-stat-meta"><span class="sa-stat-delta" data-trend="up"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"></path><path d="m22 7-8.5 8.5-5-5L2 17"></path></svg>+12.4%</span><span>vs last month</span></div></div><div data-slot="card" class="sa-stat sa-card sa-widget" data-span="3" data-lazy><div class="sa-stat-label">Bookings</div><div class="sa-stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg></div><div class="sa-stat-value">1,284</div><div class="sa-stat-meta"><span class="sa-stat-delta" data-trend="up"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"></path><path d="m22 7-8.5 8.5-5-5L2 17"></path></svg>+12.4%</span><span>vs last month</span></div><div class="sa-stat-chart sa-chart" data-chart="spark" data-series="[849, 903, 1045, 1076, 1118, 1179, 1144, 1187, 1258, 1368, 1311, 1303]"></div></div><div data-slot="card" class="sa-stat sa-card sa-widget" data-span="3" data-lazy><div class="sa-stat-label">Quarterly target</div><div class="sa-stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></div><div class="sa-stat-value">$1.12M</div><div class="sa-stat-meta"><span>of $1.5M</span></div><div data-slot="progress" class="sa-progress-root"><span data-slot="progress-label" class="sa-progress-label">Progress</span><span data-slot="progress-value" class="sa-progress-value">75%</span><div class="sa-progress-track" data-slot="progress-track"><div class="sa-progress-indicator" data-slot="progress-indicator" style="inset-inline-start: 0px; height: inherit; width: 75%;"></div></div></div></div><div data-span="12" data-slot="card" class="sa-card sa-stat-group sa-widget" style="--_stats:3"><div class="sa-stat" data-layout="inline"><div class="sa-stat-label">Revenue</div><div class="sa-stat-value">$412,890</div><div class="sa-stat-meta"><span class="sa-stat-delta" data-trend="up"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"></path><path d="m22 7-8.5 8.5-5-5L2 17"></path></svg>+8.1%</span><span>vs Sep</span></div><div class="sa-stat-chart sa-chart" data-chart="spark" data-series="[264888, 282636, 327840, 338412, 352416, 372348, 362328, 376644, 399696, 434916, 418032, 416436]"></div></div><div class="sa-stat" data-layout="inline"><div class="sa-stat-label">Refunds</div><div class="sa-stat-value">$8,120</div><div class="sa-stat-meta"><span class="sa-stat-delta" data-trend="down"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 17h6v-6"></path><path d="m22 17-8.5-8.5-5 5L2 7"></path></svg>+22%</span><span>vs Sep</span></div><div class="sa-stat-chart sa-chart" data-chart="spark" data-series="[6552, 7138, 7320, 7234, 6835, 7230, 7395, 7906, 7954, 8478, 8405, 8968]"></div></div><div class="sa-stat" data-layout="inline"><div class="sa-stat-label">Margin</div><div class="sa-stat-value">21.4%</div><div class="sa-stat-meta"><span class="sa-stat-delta" data-trend="flat"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg>0.0 pts</span><span>vs Sep</span></div><div class="sa-stat-chart sa-chart" data-chart="spark" data-series="[21, 21, 21, 21, 20, 20, 20, 20, 21, 21, 21, 21]"></div></div></div></div></div></section><section class="proto-gallery-section"><h2>Charts</h2><p>Drawn here with inline SVG; the library has no chart component yet. Hover for values; colors come from the theme's accent and status colors.</p><div class="sa-widgets"><div class="sa-widgets-grid"><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="6" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Area</div><div data-slot="card-description" class="sa-card-description">Two series, comparison dashed</div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-chart" data-chart="area" data-series="[[264888, 282636, 327840, 338412, 352416, 372348, 362328, 376644, 399696, 434916, 418032, 416436], [241374, 259881, 281593, 312140, 330534, 359873, 335614, 337551, 368152, 381091, 409145, 389937]]" data-format="money" data-size="md" data-labels="[&quot;Nov&quot;, &quot;Dec&quot;, &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;]" data-names="[&quot;This year&quot;, &quot;Last year&quot;]"></div><div class="sa-chart-legend"><span style="--_c:var(--sa-chart-1)"><i></i>This year</span><span style="--_c:var(--sa-chart-2)"><i></i>Last year</span></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="6" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Bars</div><div data-slot="card-description" class="sa-card-description">Bookings per month</div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-chart" data-chart="bar" data-series="[[849, 903, 1045, 1076, 1118, 1179, 1144, 1187, 1258, 1368, 1311, 1303]]" data-format="int" data-size="md" data-labels="[&quot;Nov&quot;, &quot;Dec&quot;, &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;]" data-names="[&quot;Bookings&quot;]"></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="6" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Stacked bars</div><div data-slot="card-description" class="sa-card-description">By channel</div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-chart" data-chart="stacked" data-series="[[270, 303, 329, 336, 312, 357, 404, 416, 426, 405, 355, 350], [223, 200, 168, 214, 194, 170, 188, 182, 219, 204, 246, 238], [109, 129, 147, 132, 138, 137, 140, 127, 117, 116, 107, 108]]" data-format="int" data-size="md" data-labels="[&quot;Nov&quot;, &quot;Dec&quot;, &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;]" data-names="[&quot;Website&quot;, &quot;Partners&quot;, &quot;Phone&quot;]"></div><div class="sa-chart-legend"><span style="--_c:var(--sa-chart-1)"><i></i>Website</span><span style="--_c:var(--sa-chart-2)"><i></i>Partners</span><span style="--_c:var(--sa-chart-3)"><i></i>Phone</span></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="6" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Lines</div><div data-slot="card-description" class="sa-card-description">Searches per day</div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-chart" data-chart="line" data-series="[[54, 50, 49, 51, 47, 43, 40, 43, 39, 42, 44, 40, 41, 40, 39, 45, 41, 35, 41, 40, 36, 34, 33, 39, 35, 32, 33, 34, 40, 44], [38, 35, 33, 37, 37, 40, 36, 36, 40, 40, 44, 48, 47, 42, 45, 41, 36, 39, 42, 46, 50, 48, 44, 40, 45, 41, 38, 33, 29, 24]]" data-format="int" data-size="md" data-labels="[&quot;Oct 1&quot;, &quot;Oct 2&quot;, &quot;Oct 3&quot;, &quot;Oct 4&quot;, &quot;Oct 5&quot;, &quot;Oct 6&quot;, &quot;Oct 7&quot;, &quot;Oct 8&quot;, &quot;Oct 9&quot;, &quot;Oct 10&quot;, &quot;Oct 11&quot;, &quot;Oct 12&quot;, &quot;Oct 13&quot;, &quot;Oct 14&quot;, &quot;Oct 15&quot;, &quot;Oct 16&quot;, &quot;Oct 17&quot;, &quot;Oct 18&quot;, &quot;Oct 19&quot;, &quot;Oct 20&quot;, &quot;Oct 21&quot;, &quot;Oct 22&quot;, &quot;Oct 23&quot;, &quot;Oct 24&quot;, &quot;Oct 25&quot;, &quot;Oct 26&quot;, &quot;Oct 27&quot;, &quot;Oct 28&quot;, &quot;Oct 29&quot;, &quot;Oct 30&quot;]" data-names="[&quot;Kyoto&quot;, &quot;Lisbon&quot;]"></div><div class="sa-chart-legend"><span style="--_c:var(--sa-chart-1)"><i></i>Kyoto</span><span style="--_c:var(--sa-chart-2)"><i></i>Lisbon</span></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Donut</div><div data-slot="card-description" class="sa-card-description">Share of bookings</div></div><div data-slot="card-content" class="sa-card-content"><div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap"><div class="sa-chart" data-chart="donut" data-series="[612, 344, 198, 130]" data-names="[&quot;Website&quot;, &quot;Partners&quot;, &quot;Phone&quot;, &quot;Walk-in&quot;]" data-caption="bookings" style="height:150px;width:150px;flex:none"></div><div class="sa-chart-legend" data-for-donut style="display:grid;gap:8px"></div></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Ranked bars</div><div data-slot="card-description" class="sa-card-description">Top destinations</div></div><div data-slot="card-content" class="sa-card-content"><ul class="sa-bar-list" role="list"><li class="sa-bar-list-item" style="--_w:100%"><span>Kyoto, Japan</span><b>412</b></li><li class="sa-bar-list-item" style="--_w:86%"><span>Lisbon, Portugal</span><b>356</b></li><li class="sa-bar-list-item" style="--_w:73%"><span>Cape Town, South Africa</span><b>301</b></li><li class="sa-bar-list-item" style="--_w:46%"><span>Valparaíso, Chile</span><b>188</b></li><li class="sa-bar-list-item" style="--_w:34%"><span>Reykjavík, Iceland</span><b>141</b></li></ul></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Progress list</div><div data-slot="card-description" class="sa-card-description">Seats filled</div></div><div data-slot="card-content" class="sa-card-content"><div data-slot="progress" class="sa-progress-root"><span data-slot="progress-label" class="sa-progress-label">Kyoto · Nov</span><span data-slot="progress-value" class="sa-progress-value">14 of 16</span><div class="sa-progress-track" data-slot="progress-track"><div class="sa-progress-indicator" data-slot="progress-indicator" style="inset-inline-start: 0px; height: inherit; width: 87%;"></div></div></div><div style='height:12px'></div><div data-slot="progress" class="sa-progress-root"><span data-slot="progress-label" class="sa-progress-label">Lisbon · Nov</span><span data-slot="progress-value" class="sa-progress-value">9 of 12</span><div class="sa-progress-track" data-slot="progress-track"><div class="sa-progress-indicator" data-slot="progress-indicator" style="inset-inline-start: 0px; height: inherit; width: 75%;"></div></div></div><div style='height:12px'></div><div data-slot="progress" class="sa-progress-root"><span data-slot="progress-label" class="sa-progress-label">Reykjavík · Nov</span><span data-slot="progress-value" class="sa-progress-value">6 of 10</span><div class="sa-progress-track" data-slot="progress-track"><div class="sa-progress-indicator" data-slot="progress-indicator" style="inset-inline-start: 0px; height: inherit; width: 60%;"></div></div></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="12" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Heatmap</div><div data-slot="card-description" class="sa-card-description">Bookings per day, contribution style</div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-heatmap" data-seed="19" data-unit="bookings" data-busy="0.45" data-weeks="53"></div></div></div></div></div></section><section class="proto-gallery-section"><h2>Lists and records</h2><p>Widgets that show records: lists, a mini table, a timeline, and a chat with its own form.</p><div class="sa-widgets"><div class="sa-widgets-grid"><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Records list</div><div data-slot="card-description" class="sa-card-description">Latest sign-ups</div><div data-slot="card-action" class="sa-card-action"><a href="#" class="text-sm">View all</a></div></div><div data-slot="card-content" class="sa-card-content" data-flush><ul class="sa-widget-list" role="list"><li><div data-slot="item" data-variant="default" data-size="sm" class="sa-item sa-item-size-sm sa-item-variant-default"><div data-slot="item-media" data-variant="default" class="sa-item-media sa-item-media-variant-default"><span data-slot="avatar" data-size="sm" class="sa-avatar"><span data-slot="avatar-fallback" class="sa-avatar-fallback">AO</span></span></div><div data-slot="item-content" class="sa-item-content"><div data-slot="item-title" class="sa-item-title">Amara Okafor</div><p data-slot="item-description" class="sa-item-description">amara.okafor@example.com</p></div><div data-slot="item-actions" class="sa-item-actions">Oct 28</div></div></li><li><div data-slot="item" data-variant="default" data-size="sm" class="sa-item sa-item-size-sm sa-item-variant-default"><div data-slot="item-media" data-variant="default" class="sa-item-media sa-item-media-variant-default"><span data-slot="avatar" data-size="sm" class="sa-avatar"><span data-slot="avatar-fallback" class="sa-avatar-fallback">KW</span></span></div><div data-slot="item-content" class="sa-item-content"><div data-slot="item-title" class="sa-item-title">Kenji Watanabe</div><p data-slot="item-description" class="sa-item-description">kenji.watanabe@example.com</p></div><div data-slot="item-actions" class="sa-item-actions">Oct 27</div></div></li><li><div data-slot="item" data-variant="default" data-size="sm" class="sa-item sa-item-size-sm sa-item-variant-default"><div data-slot="item-media" data-variant="default" class="sa-item-media sa-item-media-variant-default"><span data-slot="avatar" data-size="sm" class="sa-avatar"><span data-slot="avatar-fallback" class="sa-avatar-fallback">LF</span></span></div><div data-slot="item-content" class="sa-item-content"><div data-slot="item-title" class="sa-item-title">Lucía Fernández</div><p data-slot="item-description" class="sa-item-description">lucia.fernandez@example.com</p></div><div data-slot="item-actions" class="sa-item-actions">Oct 27</div></div></li><li><div data-slot="item" data-variant="default" data-size="sm" class="sa-item sa-item-size-sm sa-item-variant-default"><div data-slot="item-media" data-variant="default" class="sa-item-media sa-item-media-variant-default"><span data-slot="avatar" data-size="sm" class="sa-avatar"><span data-slot="avatar-fallback" class="sa-avatar-fallback">PR</span></span></div><div data-slot="item-content" class="sa-item-content"><div data-slot="item-title" class="sa-item-title">Priya Raman</div><p data-slot="item-description" class="sa-item-description">priya.raman@example.com</p></div><div data-slot="item-actions" class="sa-item-actions">Oct 26</div></div></li></ul></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="8" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Mini table</div><div data-slot="card-description" class="sa-card-description">Recent bookings</div></div><div data-slot="card-content" class="sa-card-content" data-flush><div class="sa-table-container" data-slot="table-container"><table class="sa-table" data-slot="table"><thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking</th><th class="sa-table-head" data-slot="table-head">Customer</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head" data-slot="table-head">Status</th><th class="sa-table-head sa-num" data-slot="table-head">Total</th></tr></thead><tbody class="sa-table-body" data-slot="table-body"><tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell"><a href="#">VT-2491</a></td><td class="sa-table-cell" data-slot="table-cell">Kenji Watanabe</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge sa-badge-variant-secondary">Confirmed</span></td><td class="sa-table-cell sa-num" data-slot="table-cell">$4,820</td></tr><tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell"><a href="#">VT-2490</a></td><td class="sa-table-cell" data-slot="table-cell">Amara Okafor</td><td class="sa-table-cell" data-slot="table-cell">Lisbon, Portugal</td><td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge sa-badge-variant-outline">Pending</span></td><td class="sa-table-cell sa-num" data-slot="table-cell">$2,140</td></tr><tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell"><a href="#">VT-2489</a></td><td class="sa-table-cell" data-slot="table-cell">Emma Wilson</td><td class="sa-table-cell" data-slot="table-cell">Cape Town, South Africa</td><td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge sa-badge-variant-secondary">Confirmed</span></td><td class="sa-table-cell sa-num" data-slot="table-cell">$3,390</td></tr><tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell"><a href="#">VT-2488</a></td><td class="sa-table-cell" data-slot="table-cell">Daniel Kim</td><td class="sa-table-cell" data-slot="table-cell">Reykjavík, Iceland</td><td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge sa-badge-variant-destructive">Cancelled</span></td><td class="sa-table-cell sa-num" data-slot="table-cell">$2,760</td></tr></tbody></table></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Timeline</div><div data-slot="card-description" class="sa-card-description">Upcoming departures</div></div><div data-slot="card-content" class="sa-card-content"><ol role="list" data-slot="timeline" data-size="sm" data-marker="dot" data-media-style="disc" data-time-placement="end" class="sa-timeline"><li data-slot="timeline-item" data-rail="solid" class="sa-timeline-item"><div class="sa-timeline-item-title" data-slot="timeline-item-title">Kyoto, Japan · 14 travellers</div><time class="sa-timeline-item-time" data-slot="timeline-item-time">Nov 2</time><p class="sa-timeline-item-description" data-slot="timeline-item-description">Guide: Mika Tanaka</p></li><li data-slot="timeline-item" data-rail="solid" class="sa-timeline-item"><div class="sa-timeline-item-title" data-slot="timeline-item-title">Lisbon, Portugal · 9 travellers</div><time class="sa-timeline-item-time" data-slot="timeline-item-time">Nov 4</time><p class="sa-timeline-item-description" data-slot="timeline-item-description">Guide: João Silva</p></li><li data-slot="timeline-item" data-rail="solid" class="sa-timeline-item"><div class="sa-timeline-item-title" data-slot="timeline-item-title">Cape Town · 22 travellers</div><time class="sa-timeline-item-time" data-slot="timeline-item-time">Nov 9</time><p class="sa-timeline-item-description" data-slot="timeline-item-description">Guide: Thabo Nkosi</p></li><li data-slot="timeline-item" data-rail="solid" class="sa-timeline-item"><div class="sa-timeline-item-title" data-slot="timeline-item-title">Reykjavík, Iceland · 6 travellers</div><time class="sa-timeline-item-time" data-slot="timeline-item-time">Nov 12</time><p class="sa-timeline-item-description" data-slot="timeline-item-description">Waiting for 2 payments</p></li></ol></div></div><div data-span="4" class="sa-widgets-column"><div data-slot="card" data-size="default" class="sa-card sa-widget" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Messages</div><div data-slot="card-description" class="sa-card-description">Support conversation</div><div data-slot="card-action" class="sa-card-action"><span data-slot="badge" class="sa-badge sa-badge-variant-default">1 unread</span></div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-widget-chat"><div data-slot="message" data-align="start" class="sa-message"><div data-slot="message-avatar" class="sa-message-avatar"><span data-slot="avatar" data-size="sm" class="sa-avatar"><span data-slot="avatar-fallback" class="sa-avatar-fallback">AO</span></span></div><div data-slot="message-content" class="sa-message-content"><div data-slot="bubble" data-variant="secondary" data-align="start" class="sa-bubble sa-bubble-variant-secondary"><div data-slot="bubble-content" class="sa-bubble-content">Hi! Can I add my sister to the Lisbon trip?</div></div></div></div><div data-slot="message" data-align="end" class="sa-message"><div data-slot="message-avatar" class="sa-message-avatar"><span data-slot="avatar" data-size="sm" class="sa-avatar"><span data-slot="avatar-fallback" class="sa-avatar-fallback">MT</span></span></div><div data-slot="message-content" class="sa-message-content"><div data-slot="bubble" data-variant="default" data-align="start" class="sa-bubble sa-bubble-variant-default"><div data-slot="bubble-content" class="sa-bubble-content">Of course. I&#x27;ve held a seat for her until Friday.</div></div></div></div><div data-slot="message" data-align="start" class="sa-message"><div data-slot="message-avatar" class="sa-message-avatar"><span data-slot="avatar" data-size="sm" class="sa-avatar"><span data-slot="avatar-fallback" class="sa-avatar-fallback">AO</span></span></div><div data-slot="message-content" class="sa-message-content"><div data-slot="bubble" data-variant="secondary" data-align="start" class="sa-bubble sa-bubble-variant-secondary"><div data-slot="bubble-content" class="sa-bubble-content">Amazing, thank you. I&#x27;ll pay tonight.</div></div></div></div></div><div style="height:12px"></div><div class="sa-widget-compose"><input class="sa-input" data-slot="input" placeholder="Reply to Amara…"><button type="button" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default">Send</button></div></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4" data-static><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Quick actions</div><div data-slot="card-description" class="sa-card-description">Links and shortcuts</div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-quick-actions"><button type="button" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-default"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>New booking</button><button type="button" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-default"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>Add customer</button><button type="button" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-default"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"></path><path d="M15 5.764v15"></path><path d="M9 3.236v15"></path></svg>Add trip</button><button type="button" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-default"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>Export report</button></div></div></div></div></div></section><section class="proto-gallery-section"><h2>Content</h2><p>Callouts and arbitrary content: a partial, or a page loaded from a URL.</p><div class="sa-widgets"><div class="sa-widgets-grid"><div data-span="6"><div data-slot="alert" role="alert" class="sa-alert sa-alert-variant-default"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg><div data-slot="alert-title" class="sa-alert-title">3 bookings need attention</div><div data-slot="alert-description" class="sa-alert-description"><p>Payments for Reykjavík (Nov 12) are overdue. Guides are confirmed.</p></div><div data-slot="alert-action" class="sa-alert-action"><button type="button" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-xs">Review</button></div></div></div><div data-span="6"><div data-slot="alert" role="alert" class="sa-alert sa-alert-variant-default"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg><div data-slot="alert-title" class="sa-alert-title">New: partner bookings</div><div data-slot="alert-description" class="sa-alert-description"><p>Partner agencies can now book directly. Commission is shown on each booking.</p></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4"><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Custom HTML</div><div data-slot="card-description" class="sa-card-description">From a partial</div></div><div data-slot="card-content" class="sa-card-content"><p class="text-sm" style="margin:0">Any partial view, view component, MVC action or Razor Page can be a widget. This one is plain text with a <a href="#">link</a>.</p></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="8"><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Embedded page</div><div data-slot="card-description" class="sa-card-description">Loaded from a URL</div></div><div data-slot="card-content" class="sa-card-content"><div style="height:120px;border-radius:var(--sa-radius-inner);background:repeating-linear-gradient(45deg,var(--sa-color-tint),var(--sa-color-tint) 8px,transparent 8px,transparent 16px);display:grid;place-items:center;color:var(--sa-color-ink-muted);font-size:12px">/reports/occupancy (Razor Page, loaded with htmx)</div></div></div></div></div></section><section class="proto-gallery-section"><h2>States</h2><p>Loading, empty, error, polling and stale. Use <b>Simulate lazy load</b> in the panel to see the loading pass.</p><div class="sa-widgets"><div class="sa-widgets-grid"><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4" data-static><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Loading</div><div data-slot="card-description" class="sa-card-description">Skeleton while lazy content loads</div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-widget-skeleton"><div class="sa-skeleton" data-h="value" data-slot="skeleton"></div><div class="sa-skeleton" data-h="chart" data-slot="skeleton"></div></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4" data-static><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Empty</div><div data-slot="card-description" class="sa-card-description">Nothing to show</div></div><div data-slot="card-content" class="sa-card-content"><div data-slot="empty" class="sa-empty border-0"><div data-slot="empty-header" class="sa-empty-header"><div data-slot="empty-icon" data-variant="icon" class="sa-empty-media sa-empty-media-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg></div><div data-slot="empty-title" class="sa-empty-title">No bookings yet</div><div data-slot="empty-description" class="sa-empty-description">Bookings appear here once customers start booking.</div></div></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="4" data-static><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Error</div><div data-slot="card-description" class="sa-card-description">Failed to load</div></div><div data-slot="card-content" class="sa-card-content"><div data-slot="empty" class="sa-empty border-0"><div data-slot="empty-header" class="sa-empty-header"><div data-slot="empty-icon" data-variant="icon" class="sa-empty-media sa-empty-media-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg></div><div data-slot="empty-title" class="sa-empty-title">Couldn&#x27;t load this widget</div><div data-slot="empty-description" class="sa-empty-description">The report service timed out.</div></div><div data-slot="empty-content" class="sa-empty-content"><button type="button" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>Try again</button></div></div></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="6" data-lazy><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Polling</div><div data-slot="card-description" class="sa-card-description">Live searches, refreshes every 30 s</div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-chart" data-chart="bar" data-series="[[11, 8, 5, 9, 10, 12, 12, 11, 13, 14, 17, 18, 22, 21, 18, 14, 17, 13, 15, 16, 12, 14, 10, 13, 17, 14, 16, 19, 15, 17]]" data-format="int" data-size="sm" data-labels="[&quot;0:00&quot;, &quot;1:00&quot;, &quot;2:00&quot;, &quot;3:00&quot;, &quot;4:00&quot;, &quot;5:00&quot;, &quot;6:00&quot;, &quot;7:00&quot;, &quot;8:00&quot;, &quot;9:00&quot;, &quot;10:00&quot;, &quot;11:00&quot;, &quot;12:00&quot;, &quot;13:00&quot;, &quot;14:00&quot;, &quot;15:00&quot;, &quot;16:00&quot;, &quot;17:00&quot;, &quot;18:00&quot;, &quot;19:00&quot;, &quot;20:00&quot;, &quot;21:00&quot;, &quot;22:00&quot;, &quot;23:00&quot;, &quot;24:00&quot;, &quot;25:00&quot;, &quot;26:00&quot;, &quot;27:00&quot;, &quot;28:00&quot;, &quot;29:00&quot;]" data-names="[&quot;Searches&quot;]"></div></div><div data-slot="card-footer" class="sa-card-footer"><span class="sa-widget-updated">Updated just now</span></div></div><div data-slot="card" data-size="default" class="sa-card sa-widget" data-span="6" data-lazy data-state="stale"><div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">Stale</div><div data-slot="card-description" class="sa-card-description">Last refresh failed</div></div><div data-slot="card-content" class="sa-card-content"><div class="sa-chart" data-chart="bar" data-series="[[13, 9, 6, 4, 6, 8, 12, 8, 7, 2, 1, 1, 1, 1, 2, 3, 1, 2, 5, 1, 4, 6, 4, 1, 6, 4, 1, 1, 4, 6]]" data-format="int" data-size="sm" data-labels="[&quot;0:00&quot;, &quot;1:00&quot;, &quot;2:00&quot;, &quot;3:00&quot;, &quot;4:00&quot;, &quot;5:00&quot;, &quot;6:00&quot;, &quot;7:00&quot;, &quot;8:00&quot;, &quot;9:00&quot;, &quot;10:00&quot;, &quot;11:00&quot;, &quot;12:00&quot;, &quot;13:00&quot;, &quot;14:00&quot;, &quot;15:00&quot;, &quot;16:00&quot;, &quot;17:00&quot;, &quot;18:00&quot;, &quot;19:00&quot;, &quot;20:00&quot;, &quot;21:00&quot;, &quot;22:00&quot;, &quot;23:00&quot;, &quot;24:00&quot;, &quot;25:00&quot;, &quot;26:00&quot;, &quot;27:00&quot;, &quot;28:00&quot;, &quot;29:00&quot;]" data-names="[&quot;Searches&quot;]"></div></div><div data-slot="card-footer" class="sa-card-footer"><span class="sa-widget-updated">Updated 14 min ago</span><a href="#" class="sa-link" style="color:inherit">Refresh</a></div></div></div></div></section></div></div>
+</main>
+
+        
+
+<div class="sa-configuration-problems">
+    <button type="button" class="sa-configuration-problems-trigger" commandfor="configuration-problems" command="show-modal">
+        <span class="sa-configuration-problems-counts">
+                <span class="sa-configuration-problems-count" data-level="error" title="1 error">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M4.929 4.929 19.07 19.071"></path></svg>1
+                </span>
+                <span class="sa-configuration-problems-count" data-level="warning" title="4 warnings">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>4
+                </span>
+                <span class="sa-configuration-problems-count" data-level="info" title="1 info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>1
+                </span>
+        </span>
+        Configuration problems
+    </button>
+</div>
+
+<sel-dialog><dialog id="configuration-problems" aria-labelledby="configuration-problems-title" style="width: min(34rem, 100vw); max-width: none" data-slot="sheet-content" data-side="right" class="sa-sheet-content"><button type="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close" commandfor="configuration-problems" command="close" data-slot="button"><svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span class="sr-only">Close</span></button><div class="sa-sheet-body">
+    <div data-slot="sheet-header" class="sa-sheet-header">
+        <h2 id="configuration-problems-title" data-slot="sheet-title" class="sa-sheet-title">Configuration problems</h2>
+        <p data-slot="sheet-description" class="sa-sheet-description">The admin panel kept running and worked around these. Fix them before you deploy.</p>
+    </div>
+    <div class="sa-configuration-problems-list">
+            <section class="sa-configuration-problems-file">
+                <div class="sa-configuration-problems-file-head">
+                    <h3 class="sa-configuration-problems-location" title="/home/jerriep/projects/stellar-admin/stellar-admin/sandbox/AdminPlayground/Resources/Excursions/ExcursionResourceRegistration.cs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 12.5 8 15l2 2.5"></path><path d="m14 12.5 2 2.5-2 2.5"></path></svg>
+                        <span class="sa-configuration-problems-path">
+                            <span class="sa-configuration-problems-directory"><bdi>Resources/Excursions/</bdi></span>
+                            <span class="sa-configuration-problems-file-name">ExcursionResourceRegistration.cs</span>
+                        </span>
+                    </h3>
+        <span class="sa-configuration-problems-badges">
+                <span class="sa-configuration-problems-badge" data-level="error" title="1 error">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M4.929 4.929 19.07 19.071"></path></svg>1
+                </span>
+                <span class="sa-configuration-problems-badge" data-level="warning" title="4 warnings">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>4
+                </span>
+                <span class="sa-configuration-problems-badge" data-level="info" title="1 info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>1
+                </span>
+        </span>
+                </div>
+                <div class="sa-configuration-problems-lines">
+                            <span class="sa-configuration-problems-number">31</span>
+                            <span class="sa-configuration-problems-code">            <span class="sa-configuration-problems-comment">// Computed without a title: left out</span></span>
+                            <span class="sa-configuration-problems-number" data-level="warning">32</span>
+                            <span class="sa-configuration-problems-code" data-level="warning">            columns.Add(excursion =&gt; excursion.Price * 1.2m);</span>
+        <div class="sa-configuration-problem" data-level="warning">
+            <p class="sa-configuration-problem-message">
+                <span class="sr-only">Warning: </span>This column isn&#x27;t shown because it&#x27;s computed, so it has no property name to use as its title.
+            </p>
+            <p class="sa-configuration-problem-fix">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
+                <span>Give the column a <code>Title</code>.</span>
+            </p>
+        </div>
+                            <span class="sa-configuration-problems-number">33</span>
+                            <span class="sa-configuration-problems-code">        });</span>
+                            <div class="sa-configuration-problems-gap" aria-hidden="true">⋯</div>
+                            <span class="sa-configuration-problems-number">35</span>
+                            <span class="sa-configuration-problems-code">        <span class="sa-configuration-problems-comment">// Price isn&#x27;t sortable: ignored</span></span>
+                            <span class="sa-configuration-problems-number" data-level="warning">36</span>
+                            <span class="sa-configuration-problems-code" data-level="warning">        index.DefaultSortBy(excursion =&gt; excursion.Price);</span>
+        <div class="sa-configuration-problem" data-level="warning">
+            <p class="sa-configuration-problem-message">
+                <span class="sr-only">Warning: </span>The list isn&#x27;t sorted by <code>Price</code> because its column isn&#x27;t sortable. It uses the data source&#x27;s order instead.
+            </p>
+            <p class="sa-configuration-problem-fix">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
+                <span>Make the <code>Price</code> column sortable, or sort by another column.</span>
+            </p>
+        </div>
+                            <span class="sa-configuration-problems-number">37</span>
+                            <span class="sa-configuration-problems-code"></span>
+                            <div class="sa-configuration-problems-gap" aria-hidden="true">⋯</div>
+                            <span class="sa-configuration-problems-number">40</span>
+                            <span class="sa-configuration-problems-code">        {</span>
+                            <span class="sa-configuration-problems-number" data-level="info">41</span>
+                            <span class="sa-configuration-problems-code" data-level="info">            paging.PageSize = 15;</span>
+        <div class="sa-configuration-problem" data-level="info">
+            <p class="sa-configuration-problem-message">
+                <span class="sr-only">Info: </span>The page size <code>15</code> isn&#x27;t one of the <code>PageSizes</code>, so the list adds it to them.
+            </p>
+            <p class="sa-configuration-problem-fix">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
+                <span>Add <code>15</code> to <code>PageSizes</code>, or set <code>PageSize</code> to one of them.</span>
+            </p>
+        </div>
+                            <span class="sa-configuration-problems-number">42</span>
+                            <span class="sa-configuration-problems-code">            paging.PageSizes = [10, 25];</span>
+                            <div class="sa-configuration-problems-gap" aria-hidden="true">⋯</div>
+                            <span class="sa-configuration-problems-number">46</span>
+                            <span class="sa-configuration-problems-code">    <span class="sa-configuration-problems-comment">// The data source can&#x27;t create: there is no create page</span></span>
+                            <span class="sa-configuration-problems-number" data-level="warning">47</span>
+                            <span class="sa-configuration-problems-code" data-level="warning">    resource.AllowCreate(create =&gt;</span>
+        <div class="sa-configuration-problem" data-level="warning">
+            <p class="sa-configuration-problem-message">
+                <span class="sr-only">Warning: </span>Excursions can&#x27;t be created because <code>ExcursionDataSource</code> can&#x27;t create them. There&#x27;s no New button, and the create page returns 404.
+            </p>
+            <p class="sa-configuration-problem-fix">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
+                <span>Implement <code>IResourceCreateHandler</code> on <code>ExcursionDataSource</code>.</span>
+            </p>
+        </div>
+                            <span class="sa-configuration-problems-number">48</span>
+                            <span class="sa-configuration-problems-code">        create.Fields(fields =&gt; fields.Add(excursion =&gt; excursion.Name))</span>
+                            <div class="sa-configuration-problems-gap" aria-hidden="true">⋯</div>
+                            <span class="sa-configuration-problems-number">53</span>
+                            <span class="sa-configuration-problems-code"><span class="sa-configuration-problems-comment">// /stellaradmin/excursion-bookings</span></span>
+                            <span class="sa-configuration-problems-number" data-level="error">54</span>
+                            <span class="sa-configuration-problems-code" data-level="error">admin.AddEfCoreResource&lt;ExcursionBooking&gt;();</span>
+        <div class="sa-configuration-problem" data-level="error">
+            <p class="sa-configuration-problem-message">
+                <span class="sr-only">Error: </span>Excursion bookings is hidden, and its pages return 404, because no registered DbContext maps <code>ExcursionBooking</code>.
+            </p>
+            <p class="sa-configuration-problem-fix">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
+                <span>Add a <code>DbSet&lt;ExcursionBooking&gt;</code> to a DbContext registered with <code>AddDbContext</code>.</span>
+            </p>
+        </div>
+                            <span class="sa-configuration-problems-number">55</span>
+                            <span class="sa-configuration-problems-code"></span>
+                            <span class="sa-configuration-problems-number">56</span>
+                            <span class="sa-configuration-problems-code"><span class="sa-configuration-problems-comment">// A blank page name: the link is left out</span></span>
+                            <span class="sa-configuration-problems-number" data-level="warning">57</span>
+                            <span class="sa-configuration-problems-code" data-level="warning">admin.AddSidebarLink(<span class="sa-configuration-problems-string">&quot;Excursion report&quot;</span>, SidebarLinkTarget.Page(<span class="sa-configuration-problems-string">&quot; &quot;</span>));</span>
+        <div class="sa-configuration-problem" data-level="warning">
+            <p class="sa-configuration-problem-message">
+                <span class="sr-only">Warning: </span><code>Excursion report</code> isn&#x27;t in the sidebar because its page name is blank.
+            </p>
+            <p class="sa-configuration-problem-fix">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
+                <span>Pass the name of a Razor page to <code>SidebarLinkTarget.Page</code>.</span>
+            </p>
+        </div>
+                            <span class="sa-configuration-problems-number">58</span>
+                            <span class="sa-configuration-problems-code">}</span>
+                </div>
+            </section>
+    </div>
+    <div data-slot="sheet-footer" class="sa-sheet-footer">
+        <p class="sa-configuration-problems-footnote">Only Development shows this. Every environment logs each problem once at startup, at its level, from <code>StellarAdmin.Configuration</code>.</p>
+    </div>
+</div></dialog></sel-dialog>
+
+
+
+</sel-sidebar>
+
+<sel-toaster data-slot="toaster" duration="5000" limit="3"><template data-slot="toast-template"><div aria-modal="false" class="sa-toast" data-slot="toast" role="dialog" tabindex="0"><div class="sa-toast-content" data-slot="toast-content"><span class="sa-toast-icon" data-slot="toast-icon"><svg data-toast-icon="success" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m16 9-5.5 5.5L8 12"></path></svg><svg data-toast-icon="info" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><svg data-toast-icon="warning" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg><svg data-toast-icon="error" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 9-6 6"></path><path d="M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z"></path><path d="m9 9 6 6"></path></svg><svg data-toast-icon="loading" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg></span><div class="sa-toast-text" data-slot="toast-text"><div class="sa-toast-title" data-slot="toast-title"></div><div class="sa-toast-description" data-slot="toast-description"></div></div><a data-slot="toast-action" class="sa-button sa-button-variant-outline sa-button-size-sm sa-toast-action"></a><button type="button" data-slot="toast-close" aria-label="Close toast" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-toast-close"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div></div></template><div aria-atomic="false" aria-label="Notifications" aria-live="polite" aria-relevant="additions text" class="sa-toast-viewport" data-position="bottom-right" data-slot="toast-viewport" popover="manual" role="region" tabindex="-1"><div aria-live="assertive" class="sr-only" data-slot="toast-announcer"></div></div></sel-toaster>
+
+<template id="admin-sheet-template">
+    
+
+<admin-remote-sheet class="contents">
+    <sel-dialog><dialog id="admin-sheet" class="sa-sheet-content sa-sheet-stack-level" data-slot="sheet-content" data-side="right"><button type="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close" commandfor="admin-sheet" command="close" data-slot="button"><svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span class="sr-only">Close</span></button><div class="sa-sheet-body">
+        <div id="admin-sheet-content" class="contents" data-sheet="content">
+            <div data-slot="sheet-header" class="sa-sheet-header">
+    <h2 data-slot="sheet-title" class="sa-sheet-title">
+        <div class="sa-skeleton h-5 w-2/5" data-slot="skeleton"></div>
+    </h2>
+</div>
+<div class="flex flex-col gap-3 px-6 pb-6" aria-hidden="true">
+    <div class="sa-skeleton h-9 w-full" data-slot="skeleton"></div>
+        <div class="flex items-center gap-3 py-1.5">
+            <div class="sa-skeleton size-8 shrink-0 rounded-md" data-slot="skeleton"></div>
+            <div class="flex flex-1 flex-col gap-1.5">
+                <div class="sa-skeleton h-3.5 w-2/5" data-slot="skeleton"></div>
+                <div class="sa-skeleton h-3 w-3/5" data-slot="skeleton"></div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 py-1.5">
+            <div class="sa-skeleton size-8 shrink-0 rounded-md" data-slot="skeleton"></div>
+            <div class="flex flex-1 flex-col gap-1.5">
+                <div class="sa-skeleton h-3.5 w-2/5" data-slot="skeleton"></div>
+                <div class="sa-skeleton h-3 w-3/5" data-slot="skeleton"></div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 py-1.5">
+            <div class="sa-skeleton size-8 shrink-0 rounded-md" data-slot="skeleton"></div>
+            <div class="flex flex-1 flex-col gap-1.5">
+                <div class="sa-skeleton h-3.5 w-2/5" data-slot="skeleton"></div>
+                <div class="sa-skeleton h-3 w-3/5" data-slot="skeleton"></div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 py-1.5">
+            <div class="sa-skeleton size-8 shrink-0 rounded-md" data-slot="skeleton"></div>
+            <div class="flex flex-1 flex-col gap-1.5">
+                <div class="sa-skeleton h-3.5 w-2/5" data-slot="skeleton"></div>
+                <div class="sa-skeleton h-3 w-3/5" data-slot="skeleton"></div>
+            </div>
+        </div>
+</div>
+
+        </div>
+        <template data-sheet="loading">
+            <div data-slot="sheet-header" class="sa-sheet-header">
+    <h2 data-slot="sheet-title" class="sa-sheet-title">
+        <div class="sa-skeleton h-5 w-2/5" data-slot="skeleton"></div>
+    </h2>
+</div>
+<div class="flex flex-col gap-3 px-6 pb-6" aria-hidden="true">
+    <div class="sa-skeleton h-9 w-full" data-slot="skeleton"></div>
+        <div class="flex items-center gap-3 py-1.5">
+            <div class="sa-skeleton size-8 shrink-0 rounded-md" data-slot="skeleton"></div>
+            <div class="flex flex-1 flex-col gap-1.5">
+                <div class="sa-skeleton h-3.5 w-2/5" data-slot="skeleton"></div>
+                <div class="sa-skeleton h-3 w-3/5" data-slot="skeleton"></div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 py-1.5">
+            <div class="sa-skeleton size-8 shrink-0 rounded-md" data-slot="skeleton"></div>
+            <div class="flex flex-1 flex-col gap-1.5">
+                <div class="sa-skeleton h-3.5 w-2/5" data-slot="skeleton"></div>
+                <div class="sa-skeleton h-3 w-3/5" data-slot="skeleton"></div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 py-1.5">
+            <div class="sa-skeleton size-8 shrink-0 rounded-md" data-slot="skeleton"></div>
+            <div class="flex flex-1 flex-col gap-1.5">
+                <div class="sa-skeleton h-3.5 w-2/5" data-slot="skeleton"></div>
+                <div class="sa-skeleton h-3 w-3/5" data-slot="skeleton"></div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 py-1.5">
+            <div class="sa-skeleton size-8 shrink-0 rounded-md" data-slot="skeleton"></div>
+            <div class="flex flex-1 flex-col gap-1.5">
+                <div class="sa-skeleton h-3.5 w-2/5" data-slot="skeleton"></div>
+                <div class="sa-skeleton h-3 w-3/5" data-slot="skeleton"></div>
+            </div>
+        </div>
+</div>
+
+        </template>
+        <template data-sheet="error">
+            <div class="sa-empty border-0" data-slot="empty">
+                <div data-slot="empty-header" class="sa-empty-header">
+                    <div data-slot="empty-icon" data-variant="icon" class="sa-empty-media sa-empty-media-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+                    </div>
+                    <div data-slot="empty-title" class="sa-empty-title">Something went wrong</div>
+                    <div data-slot="empty-description" class="sa-empty-description">The content could not be loaded.</div>
+                </div>
+                <div data-slot="empty-content" class="sa-empty-content">
+                    <button type="button" data-sheet="retry" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-sm">Try again</button>
+                </div>
+            </div>
+        </template>
+    </div></dialog></sel-dialog>
+</admin-remote-sheet>
+
+</template>
+<script type="module" src="widgets/widgets.js"></script>
+</body>
+</html>

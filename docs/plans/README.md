@@ -17,9 +17,8 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [quick-start-project](quick-start-project.md) | proposed | A downloadable starter project for the admin panel quick start. Premise only; contents, distribution and database are open questions. |
 | [global-labels-rework](global-labels-rework.md) | proposed | Better organized global labels, covering all the admin panel's text, and the docs page to match. Basics only. |
 | [tailwind-admin-panel](tailwind-admin-panel.md) | proposed | An example and docs for using Tailwind in custom pages and editors. Basics only. |
-| [home-page-panels](home-page-panels.md) | proposed | Panels and other elements added to the admin panel's home page without replacing it. Basics only. |
 | [overridable-partials](overridable-partials.md) | proposed | A catalogue of the partial views developers can override, more of them, and better docs. Basics only. |
-| [resource-page-panels](resource-page-panels.md) | proposed | Panels such as charts, chat widgets, partials or MVC and Razor Pages content on index pages, forms and view pages. Basics only. |
+| [widgets](widgets.md) | planned | Widgets placed on the home page and a resource's index, view, create and edit pages: a partial with an optional handler (like row details), typed parameters built from a per-page context and signed into the lazy-load URL, handler widgets loaded lazily and partial-only ones inline. Merges the home page panels and resource page panels plans. Widgets render their own cards; the panel adds only loading and error placeholders. Prototypes in `sandbox/html/widgets-*.html`. Phase 1 (core and the home page) not started. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
 ## Retired implementation and research records
