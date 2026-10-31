@@ -1,0 +1,10 @@
+@model RecordWidgetContext<Booking>
+
+<sa-card>
+    <sa-card-header>
+        <sa-card-title>Notes</sa-card-title>
+    </sa-card-header>
+    <sa-card-content>
+        <p>@(Model.Record.SpecialRequests ?? "No special requests")</p>
+    </sa-card-content>
+</sa-card>

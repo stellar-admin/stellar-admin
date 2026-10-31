@@ -1,0 +1,15 @@
+@model WidgetContext
+
+<sa-card>
+    <sa-card-header>
+        <sa-card-title>Quick links</sa-card-title>
+    </sa-card-header>
+    <sa-card-content>
+        <sa-group>
+            <sa-button-link variant="ButtonVariant.Outline" asp-area="StellarAdmin"
+                            asp-controller="bookings" asp-action="Create">New booking</sa-button-link>
+            <sa-button-link variant="ButtonVariant.Outline" asp-area="StellarAdmin"
+                            asp-controller="trips" asp-action="Index">All trips</sa-button-link>
+        </sa-group>
+    </sa-card-content>
+</sa-card>

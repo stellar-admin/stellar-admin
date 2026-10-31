@@ -1,0 +1,10 @@
+# The home page with four widgets in two rows, in light and dark
+scenario: widgets-home-page
+steps:
+  - viewport: { width: 1440, height: 760 }
+  - goto: /stellaradmin
+  - expectVisible: { selector: ".sa-card-title:has-text('Upcoming departures')", timeout: 5000 }
+  - expectVisible: { selector: ".sa-card-title:has-text('Revenue')", timeout: 5000 }
+  - screenshot: widgets-home-page
+  - colorScheme: dark
+  - screenshot: widgets-home-page-dark

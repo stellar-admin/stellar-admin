@@ -1,0 +1,26 @@
+@model IReadOnlyList<OtherBooking>
+
+<sa-card>
+    <sa-card-header>
+        <sa-card-title>Other bookings</sa-card-title>
+        <sa-card-description>By the same traveller</sa-card-description>
+    </sa-card-header>
+    <sa-card-content>
+        @if (Model.Count == 0)
+        {
+            <p class="text-sm text-muted-foreground">This is the traveller's only booking.</p>
+        }
+        else
+        {
+            <ol class="flex flex-col gap-2 text-sm">
+                @foreach (var booking in Model)
+                {
+                    <li class="flex items-center justify-between gap-2">
+                        <span>@booking.Trip</span>
+                        <span class="tabular-nums text-muted-foreground">@booking.Reference</span>
+                    </li>
+                }
+            </ol>
+        }
+    </sa-card-content>
+</sa-card>

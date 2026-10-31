@@ -1,0 +1,16 @@
+@model BookingTotals
+
+<sa-card>
+    <sa-card-content>
+        <sa-grid columns="2">
+            <div class="flex flex-col gap-1">
+                <span class="text-sm text-muted-foreground">Bookings listed</span>
+                <span class="tabular-nums" style="font-size: 1.5rem; font-weight: 600">@Model.Count</span>
+            </div>
+            <div class="flex flex-col gap-1">
+                <span class="text-sm text-muted-foreground">Total value</span>
+                <span class="tabular-nums" style="font-size: 1.5rem; font-weight: 600">@Model.Amount.ToString("C0")</span>
+            </div>
+        </sa-grid>
+    </sa-card-content>
+</sa-card>

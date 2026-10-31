@@ -1,0 +1,29 @@
+@model IReadOnlyList<UpcomingDeparture>
+
+<sa-card>
+    <sa-card-header>
+        <sa-card-title>Upcoming departures</sa-card-title>
+        <sa-card-description>Travellers booked of each departure's places</sa-card-description>
+    </sa-card-header>
+    <sa-card-content>
+        @if (Model.Count == 0)
+        {
+            <p class="text-sm text-muted-foreground">No departures are coming up.</p>
+        }
+        else
+        {
+            <ol class="flex flex-col gap-2 text-sm">
+                @foreach (var departure in Model)
+                {
+                    <li class="flex items-center justify-between gap-2">
+                        <span class="flex flex-col">
+                            <span class="font-medium">@departure.Trip</span>
+                            <span class="text-muted-foreground">@departure.StartDate.ToString("d MMM yyyy")</span>
+                        </span>
+                        <sa-badge variant="BadgeVariant.Secondary">@departure.Booked / @departure.Capacity</sa-badge>
+                    </li>
+                }
+            </ol>
+        }
+    </sa-card-content>
+</sa-card>

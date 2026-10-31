@@ -1,0 +1,9 @@
+# A trip's edit page with its upcoming departures beside the form, in light and dark
+scenario: form-widgets-trip
+steps:
+  - viewport: { width: 1440, height: 760 }
+  - goto: /stellaradmin/trips/edit/1
+  - expectVisible: { selector: ".sa-card-title:has-text('Upcoming departures')", timeout: 5000 }
+  - screenshot: form-widgets-trip
+  - colorScheme: dark
+  - screenshot: form-widgets-trip-dark

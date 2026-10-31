@@ -1,0 +1,9 @@
+# A booking's view page with the traveller's other bookings beside its fields, in light and dark
+scenario: view-page-widgets-booking
+steps:
+  - viewport: { width: 1440, height: 760 }
+  - goto: /stellaradmin/bookings/view/1
+  - expectVisible: { selector: ".sa-card-title:has-text('Other bookings')", timeout: 5000 }
+  - screenshot: view-page-widgets-booking
+  - colorScheme: dark
+  - screenshot: view-page-widgets-booking-dark
