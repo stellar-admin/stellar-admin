@@ -1,6 +1,6 @@
 # Page layout
 
-Status: index page planned (2026-10-31). POC in `sandbox/html/page-layout.html`; no library changes yet. The view, create and edit pages are a later pass.
+Status: index page implemented, docs screenshots outstanding (2026-10-31). POC in `sandbox/html/page-layout.html`. The view, create and edit pages are a later pass.
 
 A top-to-bottom rethink of the resource pages' layout (index, view, create and edit), so that everything a page can hold fits together: the page title, subtitle and actions, and on the index page the scopes, search, filters, grid and widgets. Everything is open, including moving the title and actions into the app header. It settles where the index page's top widgets go and whether they follow the search, scope and filters, the open question in [widgets](widgets.md).
 
@@ -62,6 +62,8 @@ Phase 1 implemented (2026-10-31, uncommitted). Beyond the bullets above: it re-f
 - The filter bar's row: the layout leaves the row under the scopes for the filter bar from the `stellar-admin-filters` worktree, which renders there when that work merges (and shares the search's row when there are no scopes). Until then the row is not rendered.
 - Widgets: no change to their placement; aside widgets line up with the card's top because the scopes are now inside it.
 - Tests and checks: update the index page's rendering tests; CDP screenshots at 390, 768 and 1440px with no scopes, three and seven, with and without search and widgets; the docs screenshots of the index page that the move changes, through write-docs-screenshot-specs.
+
+Phase 2 implemented (2026-10-31, uncommitted). The card and its controls are in the new `_IndexPageList.cshtml` partial, which also computes the search's out-of-band regions; the CSS is in `Client/css/client.css` (`sa-resource-index-list`, `sa-resource-index-controls`, `sa-resource-index-search`). The scopes' row is recognized with `:has(> .sa-tabs)`, not an attribute, because Razor rendered `data-scopes="False"` inside the card's content instead of leaving it out. Verified: `StellarAdmin.IntegrationTests` (741, with a new test that the scopes and search render in the card above the grid and the widget test's aside check updated) and `StellarAdmin.EntityFrameworkCore.IntegrationTests` (151) pass; CDP screenshots on the `index-pages-overview` scenario (two scopes and search) at 1440, 768 and 390px and on `default` (search only) at 1440 and 390px, with five scopes added in the page: the More menu takes the scopes that don't fit, typing in the search keeps focus and swaps the grid inside the card, and picking a scope keeps one card and the page never scrolls sideways. Outstanding: regenerating the docs screenshots of the index page. Found, not caused by this change: the search box empties after a search and then a scope click, recorded in [index page refreshing](index-page-refreshing.md).
 
 ### Not in this plan
 

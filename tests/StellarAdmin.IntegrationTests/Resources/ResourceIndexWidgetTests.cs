@@ -49,7 +49,9 @@ public class ResourceIndexWidgetTests
                 "index-page-widgets-bottom: Below",
             ]);
         var grid = document.RequiredElement("#index-page-data-grid");
-        await Assert.That(grid.ParentElement!.ClassName).IsEqualTo("sa-widgets-aside-grid");
+        await Assert
+            .That(grid.Closest(".sa-resource-index-list")!.ParentElement!.ClassName)
+            .IsEqualTo("sa-widgets-aside-grid");
         await Assert
             .That(
                 document.RequiredElement("#index-page-widgets-bottom").CompareDocumentPosition(grid)

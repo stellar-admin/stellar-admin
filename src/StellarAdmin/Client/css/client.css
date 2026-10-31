@@ -24,6 +24,79 @@
         white-space: nowrap;
     }
 
+    /* The index page's list as one card: the scopes and the search in a row above the grid, which drops its own card
+       frame. The scopes' indicator sits on the row's divider. A narrow card puts the search under the scopes; the
+       card's width alone decides, so pages with different scopes look the same at a given width. */
+    .sa-card.sa-resource-index-list {
+        container: sa-resource-index-list / inline-size;
+        gap: 0;
+        padding-block: 0;
+
+        & .sa-card.sa-data-grid {
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+    }
+
+    .sa-resource-index-controls {
+        display: flex;
+        align-items: center;
+        gap: calc(3 * var(--sa-unit)) calc(4 * var(--sa-unit));
+        padding: calc(3 * var(--sa-unit)) var(--_card-p);
+        border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+
+        &:has(> .sa-tabs) {
+            padding-block: 0;
+        }
+
+        & > .sa-tabs {
+            flex: 1;
+            align-self: stretch;
+        }
+
+        & .sa-tabs-list {
+            height: auto;
+            padding: 0;
+            gap: calc(6 * var(--sa-unit));
+        }
+
+        & .sa-tabs-trigger {
+            height: auto;
+            padding: calc(3.5 * var(--sa-unit)) 0 calc(3 * var(--sa-unit));
+            border: 0;
+        }
+    }
+
+    .sa-resource-index-controls .sa-tabs[data-orientation="horizontal"] .sa-tabs-trigger::after {
+        bottom: calc(-1 * var(--sa-border-width));
+    }
+
+    .sa-resource-index-search {
+        flex: none;
+        width: 16rem;
+        margin-inline-start: auto;
+    }
+
+    @container sa-resource-index-list (width < 44rem) {
+        .sa-resource-index-controls:has(> .sa-tabs) {
+            flex-wrap: wrap;
+            padding-bottom: calc(3 * var(--sa-unit));
+
+            /* The scopes run edge to edge with their own divider */
+            & > .sa-tabs {
+                flex-basis: calc(100% + 2 * var(--_card-p));
+                margin-inline: calc(-1 * var(--_card-p));
+                padding-inline: var(--_card-p);
+                border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+            }
+        }
+
+        .sa-resource-index-search {
+            width: 100%;
+        }
+    }
+
     :is(.sa-resource-form, .sa-resource-view):is([data-form-layout="split"], [data-form-layout="stacked"]) > :is(.sa-resource-form-header, .sa-resource-view-header) {
         border-bottom: var(--sa-border-width) solid var(--sa-color-line);
         padding-bottom: calc(5 * var(--sa-unit));

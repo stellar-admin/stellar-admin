@@ -1,0 +1,65 @@
+@using StellarAdmin.Resources
+@model IResourceIndexPageViewModel
+@{
+    // The widgets' regions, which a search replaces along with the grid. Only the index's own request renders them.
+    var widgets = ViewData[ViewDataKeys.Widgets] as PageWidgetsViewModel;
+    var widgetRegions = widgets is null
+        ? []
+        : new[] { (widgets.Top, "#index-page-widgets-top"), (widgets.Aside, "#index-page-widgets-aside"), (widgets.Bottom, "#index-page-widgets-bottom") }
+            .Where(region => region.Item1 is not null)
+            .Select(region => region.Item2)
+            .ToArray();
+    var searchOob = string.Join(", ", (Model.Scopes.Count > 0 ? new[] { "#index-page-scopes" } : []).Concat(widgetRegions));
+}
+
+@* The list as one card: the scopes and the search above the grid. The search stays outside the grid its typing replaces *@
+<sa-card class="sa-resource-index-list">
+    @if (Model.Search is not null || Model.Scopes.Count > 0)
+    {
+        <div class="sa-resource-index-controls">
+            @if (Model.Scopes.Count > 0)
+            {
+                <sa-tab-list id="index-page-scopes" variant="TabListVariant.Line" aria-label="Scopes" hx-boost:inherited="true">
+                    @foreach (var scope in Model.Scopes)
+                    {
+                        <sa-tab-link active="scope.IsActive" asp-action="Index" asp-route-id="@((string?)null)"
+                                     asp-route-scope="@scope.QueryValue" asp-route-search="@Model.Query.Search"
+                                     asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection"
+                                     asp-route-pageSize="@Model.Query.PageSize">
+                            @scope.Title
+                        </sa-tab-link>
+                    }
+                </sa-tab-list>
+            }
+            @if (Model.Search is { } search)
+            {
+                <sa-input-group id="index-page-search" class="sa-resource-index-search">
+                    <sa-input-group-input id="index-page-search-input"
+                                          placeholder="@search.Placeholder"
+                                          aria-label="@search.Placeholder"
+                                          autofocus=""
+                                          value="@search.Term"
+                                          name="search"
+                                          hx-get="@Url.Action("Index", new
+                                                  {
+                                                      id = (string?)null,
+                                                      scope = Model.Query.Scope,
+                                                      sortBy = Model.Query.SortBy,
+                                                      sortDirection = Model.Query.SortDirection,
+                                                      pageSize = Model.Query.PageSize
+                                                  })"
+                                          hx-trigger="input changed delay:400ms"
+                                          hx-swap="outerHTML"
+                                          hx-target="#index-page-data-grid"
+                                          hx-select="#index-page-data-grid"
+                                          hx-select-oob="@(searchOob.Length > 0 ? searchOob : null)"
+                                          hx-push-url="true" />
+                    <sa-input-group-addon>
+                        <sa-icon name="search" />
+                    </sa-input-group-addon>
+                </sa-input-group>
+            }
+        </div>
+    }
+    <partial name="_IndexPageGrid" />
+</sa-card>

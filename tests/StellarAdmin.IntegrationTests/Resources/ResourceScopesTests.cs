@@ -47,6 +47,31 @@ public class ResourceScopesTests
     }
 
     [Test]
+    public async Task ScopesAndSearch_RenderInTheListCardAboveTheGrid()
+    {
+        // Arrange
+        var state = CreateState();
+        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureScopes);
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var controls = document.RequiredElement(
+            ".sa-resource-index-list > .sa-resource-index-controls"
+        );
+        await Assert
+            .That(controls.Children.Select(child => child.Id))
+            .IsEquivalentTo(["index-page-scopes", "index-page-search"]);
+        await Assert
+            .That(controls.RequiredElement("[data-slot='tabs-list']").GetAttribute("data-variant"))
+            .IsEqualTo("line");
+        await Assert.That(controls.NextElementSibling?.Id).IsEqualTo("index-page-data-grid");
+        await Assert.That(document.QuerySelector("[data-slot='page-header-nav']")).IsNull();
+    }
+
+    [Test]
     public async Task DisabledScopes_IgnoreSelectionAndHideTabs()
     {
         // Arrange
