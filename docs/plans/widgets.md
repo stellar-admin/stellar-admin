@@ -1,6 +1,6 @@
 # Widgets
 
-Status: phases 1 to 3 implemented and committed (2026-10-30) on the `widgets` branches of the product and the website. Predefined widgets moved to their own plan, [predefined-widgets](predefined-widgets.md) (2026-10-30). Open questions and the docs screenshots remain.
+Status: phases 1 to 3 implemented and committed (2026-10-30) on the `widgets` branches of the product and the website. Predefined widgets moved to their own plan, [predefined-widgets](predefined-widgets.md) (2026-10-30). Open questions remain. The docs screenshots were added (2026-10-31): `widgets-home-page`, `index-page-widgets-bookings`, `view-page-widgets-booking` and `form-widgets-trip`, on the Voyager Travel scenarios in `tools/StellarAdmin.Cli/Docs/Screenshots/`.
 
 Let developers place widgets on the admin panel's pages: the home page, a resource's index page, its view page and its create and edit forms. A widget is a self-contained block such as a stat, a chart, an activity heatmap, a list of recent records, a callout or a chat box. Examples are a chart of recent sign-ups above the customers grid, or a login activity graph (like GitHub's contribution graph) at the top of a customer's view page.
 
@@ -154,7 +154,7 @@ Choices made while implementing. Jerrie confirmed (2026-10-30) the resource link
 - **Configuration problems** 1100 to 1105: `BlankWidgetName`, `RepeatedWidgetName` (names compare ignoring case), `BlankWidgetPartial`, `UnusableWidgetHandler`, `MismatchedWidgetParameters`, `IgnoredWidgetSetting`; a bad `Span` or a `RefreshInterval` under one second is `InvalidValue`. The home page's widgets are checked once, when problems are listed or the page first renders, and appear under "Home page".
 - **Grid CSS** is in the panel's `client.css`: 12 columns, a widget spans the row below a 34rem container, spans up to 6 take half from 34rem, and own spans from 56rem. Rows stretch so cards line up.
 
-Not done in phase 1: the website screenshot for the new page (an open `<Screenshot>` placeholder, `home-page-widgets`), and a scenario spec for it.
+Not done in phase 1: the website screenshot for the new page (an open `<Screenshot>` placeholder, `home-page-widgets`), and a scenario spec for it. Done 2026-10-31.
 
 ## Phase 2 as built
 
@@ -167,7 +167,7 @@ Not done in phase 1: the website screenshot for the new page (an open `<Screensh
 - **Endpoint:** `GET {slug}/widget/{name}`, a `Widget` action on the resource controller; the payload's page purpose is `{controller}/index`, so a home payload is refused there.
 - AdminPlayground: the Products index has a **Price summary** (top, follows scope and search) and **Top categories** (aside, with its picker); `_TopCategoriesWidget` moved to `Areas/StellarAdmin/Views/Shared/`.
 
-Not done in phase 2: the website screenshot (`index-page-widgets` placeholder) and its scenario spec.
+Not done in phase 2: the website screenshot (`index-page-widgets` placeholder) and its scenario spec. Done 2026-10-31.
 
 ## Phase 3 as built
 
@@ -180,7 +180,7 @@ Not done in phase 2: the website screenshot (`index-page-widgets` placeholder) a
 - **The widget list reaches the views through `ViewData`**, as on the index; `IndexWidgetsViewModel` is now `PageWidgetsViewModel`. The create sheet of a lookup shows no widgets.
 - AdminPlayground: the Products view and edit pages have **Category prices** (aside, a handler that hides it for a product without a category), and the create page has a **Category tip** (top, no handler).
 
-Not done in phase 3: the website screenshots (`view-page-widgets` and `form-widgets` placeholders) and their scenario specs.
+Not done in phase 3: the website screenshots (`view-page-widgets` and `form-widgets` placeholders) and their scenario specs. Done 2026-10-31.
 
 ## Open questions
 
