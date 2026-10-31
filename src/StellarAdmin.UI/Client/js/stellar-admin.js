@@ -11,6 +11,7 @@ import "./web-components/sel-message-scroller.js";
 import "./web-components/sel-questionnaire.js";
 import "./web-components/sel-sidebar.js";
 import "./web-components/sel-slider.js";
+import "./web-components/sel-tab-list.js";
 import "./web-components/sel-table.js";
 import "./web-components/sel-tabs.js";
 import "./web-components/sel-toaster.js";

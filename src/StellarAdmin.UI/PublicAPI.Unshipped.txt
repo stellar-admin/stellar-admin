@@ -2483,9 +2483,16 @@ StellarAdmin.UI.TabListOrientation.Vertical = 1 -> StellarAdmin.UI.TabListOrient
 StellarAdmin.UI.TabListTagHelper
 StellarAdmin.UI.TabListTagHelper.Orientation.get -> StellarAdmin.UI.TabListOrientation?
 StellarAdmin.UI.TabListTagHelper.Orientation.set -> void
-StellarAdmin.UI.TabListTagHelper.TabListTagHelper() -> void
+StellarAdmin.UI.TabListTagHelper.MoreLabel.get -> string?
+StellarAdmin.UI.TabListTagHelper.MoreLabel.set -> void
+StellarAdmin.UI.TabListTagHelper.Overflow.get -> StellarAdmin.UI.TabListOverflow?
+StellarAdmin.UI.TabListTagHelper.Overflow.set -> void
+StellarAdmin.UI.TabListTagHelper.TabListTagHelper(Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.Icons.IconOptions!>! iconOptions) -> void
 StellarAdmin.UI.TabListTagHelper.Variant.get -> StellarAdmin.UI.TabListVariant?
 StellarAdmin.UI.TabListTagHelper.Variant.set -> void
+StellarAdmin.UI.TabListOverflow
+StellarAdmin.UI.TabListOverflow.Menu = 0 -> StellarAdmin.UI.TabListOverflow
+StellarAdmin.UI.TabListOverflow.None = 1 -> StellarAdmin.UI.TabListOverflow
 StellarAdmin.UI.TabListVariant
 StellarAdmin.UI.TabListVariant.Default = 0 -> StellarAdmin.UI.TabListVariant
 StellarAdmin.UI.TabListVariant.Line = 1 -> StellarAdmin.UI.TabListVariant

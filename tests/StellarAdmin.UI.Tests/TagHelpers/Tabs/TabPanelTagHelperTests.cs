@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+using StellarAdmin.UI.Icons;
 using StellarAdmin.UI.Tests.Support;
 
 namespace StellarAdmin.UI.Tests.TagHelpers.Tabs;
@@ -87,7 +89,10 @@ public class TabPanelTagHelperTests
                     context,
                     "summary",
                     async panel =>
-                        await TagHelperRenderer.RenderChildAsync(new TabListTagHelper(), panel)
+                        await TagHelperRenderer.RenderChildAsync(
+                            new TabListTagHelper(Options.Create(new IconOptions())),
+                            panel
+                        )
                 )
         );
 

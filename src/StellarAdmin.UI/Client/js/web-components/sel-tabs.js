@@ -11,7 +11,8 @@ const TAB = '[role="tab"]';
  * htmx adds need no re-initialization.
  *
  * The arrow keys move between the enabled tabs along the list's `aria-orientation`
- * (Home and End jump to the first and last) and select the tab they move to.
+ * (Home and End jump to the first and last) and select the tab they move to. They skip
+ * hidden tabs, which a `sel-tab-list` offers in its More menu instead.
  *
  * Selecting a tab raises a bubbling `tabhide` event on the panel it hides, then
  * `tabshow` on the panel it shows (detail: `{ tab, panel }`), after the change, so
@@ -124,7 +125,8 @@ export class Tabs extends HTMLElement {
     const vertical = list?.getAttribute("aria-orientation") === "vertical";
     const rtl = getComputedStyle(target).direction === "rtl";
     const tabs = this.tabs.filter((tab) => tab.closest('[role="tablist"]') === list);
-    const enabled = tabs.filter((tab) => !this.#isDisabled(tab));
+    // A tab that its sel-tab-list moved into the More menu is hidden
+    const enabled = tabs.filter((tab) => !tab.hidden && !this.#isDisabled(tab));
     const index = enabled.indexOf(target);
     if (enabled.length === 0) return;
 

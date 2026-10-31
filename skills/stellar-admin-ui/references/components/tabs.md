@@ -53,7 +53,9 @@ Renders a tab that shows its panel when selected.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
+| `more-label` | `string` | — | — |
 | `orientation` | `TabListOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
+| `overflow` | `TabListOverflow` | `Menu` | `Menu`, `None` |
 | `variant` | `TabListVariant` | `Default` | `Default`, `Line` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

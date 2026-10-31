@@ -1,0 +1,148 @@
+/* Page layout prototype: candidate styles (sandbox only).
+   The rules under @layer sa.components are written as the library would write them, reading only theme variables
+   and tokens. The pl-proto-* rules at the bottom are prototype chrome and are not extracted. */
+
+@layer sa.components {
+  /* Filter bar pills, copied from the filters worktree's sandbox/html/filter-bar.html (static here: no menu) */
+  .sa-filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: calc(1.5 * var(--sa-unit)); min-width: 0; }
+  .sa-filter-bar-end { display: flex; align-items: center; gap: calc(1.5 * var(--sa-unit)); margin-inline-start: auto; }
+  .sa-filter-bar-trigger .sa-kbd { margin-inline-start: calc(0.5 * var(--sa-unit)); }
+  .sa-filter-chip {
+    --_bg: var(--sa-color-surface);
+    display: inline-flex;
+    align-items: stretch;
+    max-width: 100%;
+    height: var(--sa-control-h-sm);
+    overflow: hidden;
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
+    border-radius: var(--sa-radius-control-sm);
+    background: var(--_bg);
+    box-shadow: var(--sa-shadow-control);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-xs);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .sa-filter-chip-part {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(1.5 * var(--sa-unit));
+    min-width: 0;
+    padding-inline: calc(2 * var(--sa-unit));
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    & + & { border-inline-start: var(--sa-border-width) solid var(--sa-color-line); }
+    &:hover { background: var(--sa-color-hover); }
+    & > svg { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+  }
+  .sa-filter-chip-field { font-weight: 500; & > svg { color: var(--sa-color-ink-muted); } }
+  .sa-filter-chip-op { color: var(--sa-color-ink-muted); }
+  .sa-filter-chip-value { font-weight: 500; }
+  .sa-filter-chip-remove { padding-inline: calc(1.5 * var(--sa-unit)); color: var(--sa-color-ink-muted); }
+
+}
+
+/* ---------- Design candidates (prototype classes, pl-*; renamed to sa-* when one is extracted) ---------- */
+@layer sa.components {
+  /* Rhythm: header, then the widgets, then the list, with more room before the list than inside the header */
+  .pl-page { gap: calc(6 * var(--sa-unit)); }
+  .pl-page > .sa-widgets + * { margin-top: calc(2 * var(--sa-unit)); }
+
+  /* Shared list parts */
+  .pl-search { width: min(20rem, 100%); flex-shrink: 0; }
+
+  /* A chart widget's content */
+  .pl-chart { display: block; width: 100%; height: 7.5rem; fill: var(--sa-color-accent); }
+  .pl-chart-axis { display: flex; justify-content: space-between; margin-top: calc(2 * var(--sa-unit)); color: var(--sa-color-ink-muted); font-size: var(--sa-text-xs); }
+
+  /* A: the list is one panel; its scopes, toolbar, table and footer share the card */
+  .pl-panel .sa-table-container { border-top: var(--sa-border-width) solid var(--sa-color-line); }
+  .pl-panel-toolbar {
+    display: flex;
+    align-items: flex-start;
+    gap: calc(2 * var(--sa-unit)) calc(3 * var(--sa-unit));
+    padding: calc(3 * var(--sa-unit)) var(--_card-p);
+  }
+  .pl-panel-toolbar + .pl-panel-toolbar { padding-top: 0; }
+  /* The filter bar fills the space left of the search and wraps within it; centred on the search's first line */
+  .pl-panel-toolbar > .sa-filter-bar { flex: 1; min-height: var(--sa-control-h); }
+  .pl-tools { display: flex; flex: none; align-items: center; gap: calc(2 * var(--sa-unit)); margin-inline-start: auto; }
+  .pl-tools .pl-search { width: 16rem; }
+
+  /* A count beside a scope's name */
+  .pl-tab-count {
+    min-width: calc(5 * var(--sa-unit));
+    padding: 0 calc(1.5 * var(--sa-unit));
+    border-radius: var(--sa-radius-round);
+    background: var(--sa-color-tint);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
+    font-weight: 500;
+    line-height: calc(5 * var(--sa-unit));
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  [aria-selected="true"] > .pl-tab-count { background: color-mix(in oklab, var(--sa-color-ink) 10%, transparent); color: var(--sa-color-ink); }
+
+  /* Underline: tabs across the top of the panel; the indicator sits on the panel's divider */
+  .pl-scopes-underline { padding-inline: var(--_card-p); border-bottom: var(--sa-border-width) solid var(--sa-color-line); overflow-x: auto; }
+  .pl-scopes-underline .sa-tabs-list { height: auto !important; padding: 0; gap: calc(6 * var(--sa-unit)); }
+  .pl-scopes-underline .sa-tabs-trigger { height: auto; padding: calc(3.5 * var(--sa-unit)) 0 calc(3 * var(--sa-unit)); border: 0; gap: calc(2 * var(--sa-unit)); }
+  .pl-scopes-underline .sa-tabs-trigger::after { bottom: calc(-1 * var(--sa-border-width)) !important; height: 2px; }
+
+  /* Search in the scope row: the scopes on the left, the tools on the right, one divider under both. A narrow card
+     stacks them: the tools under the scopes, the divider under the scopes only. The card's width alone decides */
+  .pl-panel { min-width: 0; container: pl-panel / inline-size; }
+  .pl-scopes-row { display: flex; align-items: center; gap: calc(4 * var(--sa-unit)); overflow: visible; }
+  /* No intrinsic width, so seven tabs never widen the card; fitScopeRow decides which fit */
+  .pl-scopes-row > .sa-tabs { flex: 1; min-width: 0; overflow: hidden; contain: inline-size; }
+  .pl-scopes-row[data-fitting] > .sa-tabs { visibility: hidden; }
+  .pl-scopes-row .sa-tabs-trigger { flex: none; }
+  .pl-scopes-row .sa-tabs-trigger[hidden], .pl-scopes-row [role="menuitem"][hidden] { display: none; }
+  .pl-scope-more svg { width: 1em; height: 1em; }
+  .pl-menu-count { margin-inline-start: auto; padding-inline-start: calc(4 * var(--sa-unit)); color: var(--sa-color-ink-muted); font-variant-numeric: tabular-nums; }
+  @container pl-panel (width < 44rem) {
+    .pl-scopes-row { flex-wrap: wrap; row-gap: 0; border-bottom: 0; }
+    .pl-scopes-row > .sa-tabs {
+      flex-basis: calc(100% + 2 * var(--_card-p));
+      margin-inline: calc(-1 * var(--_card-p));
+      padding-inline: var(--_card-p);
+      border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+    }
+    .pl-scopes-row > .pl-tools { padding-block: calc(3 * var(--sa-unit)); }
+    /* Stacked, the search fills its row */
+    .pl-tools { flex-basis: 100%; }
+    .pl-tools .pl-search { width: 100%; }
+    .pl-scopes-row + .pl-panel-toolbar { padding-top: 0; }
+    /* Sharing a row, the filter bar goes under the search */
+    .pl-panel-toolbar { flex-wrap: wrap; }
+    .pl-panel-toolbar > .sa-filter-bar { order: 1; flex-basis: 100%; }
+  }
+
+}
+
+/* ---------- Prototype chrome (not extracted) ---------- */
+.sa-configuration-problems { display: none; }
+.pl-proto-controls {
+  position: fixed; right: 12px; bottom: 12px; z-index: 50; width: 300px; max-height: calc(100vh - 24px); overflow: auto;
+  border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-surface-raised, var(--sa-color-surface));
+  box-shadow: var(--sa-shadow-overlay); color: var(--sa-color-ink); font: 12px/1.4 var(--sa-font-sans);
+}
+.pl-proto-controls > header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--sa-color-line); font-weight: 600; }
+.pl-proto-controls[data-collapsed] > :not(header) { display: none; }
+.pl-proto-controls[data-collapsed] > header { border-bottom: 0; }
+.pl-proto-controls h3 { margin: 0; padding: 10px 12px 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--sa-color-ink-muted); }
+.pl-proto-controls .rows { display: grid; grid-template-columns: 64px 1fr; gap: 6px 10px; align-items: center; padding: 4px 12px 8px; }
+.pl-proto-controls .rows > span { color: var(--sa-color-ink-muted); }
+.pl-proto-controls .group { display: flex; flex-wrap: wrap; gap: 2px; padding: 2px; border-radius: 6px; background: var(--sa-color-tint, var(--sa-color-hover)); width: fit-content; }
+.pl-proto-controls .group.stack { display: grid; width: auto; margin: 4px 12px; }
+.pl-proto-controls button { padding: 3px 8px; border: 0; border-radius: 4px; background: transparent; color: inherit; font: inherit; cursor: pointer; text-align: left; }
+.pl-proto-controls .group button[aria-pressed="true"] { background: var(--sa-color-surface); box-shadow: var(--sa-shadow-control); font-weight: 600; }
+.pl-proto-controls header button { border: 1px solid var(--sa-color-line); }
+.pl-proto-controls .note { margin: 0; padding: 4px 12px 12px; color: var(--sa-color-ink-muted); }
+.pl-proto-controls .note b { color: var(--sa-color-ink); }
+.pl-proto-controls .note ul { margin: 6px 0 0; padding-left: 16px; list-style: disc; }
+.pl-proto-controls .note li + li { margin-top: 3px; }

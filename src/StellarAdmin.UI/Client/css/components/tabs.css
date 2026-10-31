@@ -1,7 +1,8 @@
 /* Tabs: <sa-tab-list> (a tab list of links, default or line variant, horizontal or vertical), and
-   <sa-tabs> (sel-tabs), which adds panels the list's <sa-tab>s switch between.
+   <sa-tabs> (sel-tabs), which adds panels the list's <sa-tab>s switch between. A horizontal list
+   is a sel-tab-list, which moves the tabs that don't fit into its More menu (.sa-tabs-more).
    Replaces: .sa-tabs, .sa-tabs-list, .sa-tabs-list-variant-default, .sa-tabs-list-variant-line,
-   .sa-tabs-trigger, .sa-tabs-container, .sa-tab-panel */
+   .sa-tabs-trigger, .sa-tabs-more, .sa-tabs-container, .sa-tab-panel */
 
 @layer sa.tokens {
   .sa-tabs {
@@ -148,6 +149,17 @@
       box-shadow: var(--sa-focus-shadow);
     }
   }
+
+  /* A list with a More menu never grows past its container: the tabs keep their width, and until
+     sel-tab-list has fitted them, the ones that don't fit are clipped. */
+  sel-tab-list.sa-tabs {
+    min-width: 0;
+    & > .sa-tabs-list { max-width: 100%; }
+    & .sa-tabs-trigger { flex: none; }
+    & .sa-tabs-trigger[hidden], & [role="menuitem"][hidden] { display: none; }
+  }
+  sel-tab-list.sa-tabs:not(:defined) > .sa-tabs-list { overflow-x: clip; }
+  .sa-tabs-more svg:not([class*="size-"]) { width: 1em; height: 1em; }
 
   @media (prefers-reduced-motion: reduce) {
     .sa-tabs-trigger, .sa-tabs-trigger::after { transition-duration: 0s; }

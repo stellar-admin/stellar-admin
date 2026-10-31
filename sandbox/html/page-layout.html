@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Page layout prototype: the resource index page's layout. The sidebar, fields, forms and widgets are the real admin panel's markup, captured from the AdminPlayground products pages (2026-10-30); page-layout/layout.js composes them. -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page layout</title>
+    <meta name="description" content="Voyager Travel">
+    
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+        <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&amp;display=swap" />
+        <link rel="stylesheet" href="../AdminPlayground/wwwroot/css/playground.css" />
+    <link rel="stylesheet" id="theme-css" />
+    <link rel="stylesheet" href="page-layout/layout.css" />
+    <script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+</head>
+<body>
+
+<sel-sidebar id="--sa-sidebar-9c423f555123ee76caf7cba045dfcd36c348114c99e73c72a75aade5bb009d4522765" data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem; --sidebar-width-mobile: 18rem" class="sa-sidebar-wrapper">
+    
+<div data-slot="sidebar" data-variant="sidebar" data-side="left" data-state="expanded" data-mobile="closed" data-collapsible="" data-collapsible-config="offcanvas" class="sa-sidebar"><button aria-label="Close sidebar" class="sa-sidebar-backdrop" data-slot="sidebar-backdrop" type="button"></button><div class="sa-sidebar-gap" data-slot="sidebar-gap"></div><div class="sa-sidebar-container" data-slot="sidebar-container"><div class="sa-sidebar-inner" data-sidebar="sidebar" data-slot="sidebar-inner">
+    <div data-slot="sidebar-header" data-sidebar="header" class="sa-sidebar-header">
+        
+<ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+    <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+        <a href="/stellaradmin" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="lg" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-lg sa-sidebar-menu-button-variant-default">
+                    <span class="sa-sidebar-brand-mark" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path></svg>
+                    </span>
+                <span class="sa-sidebar-brand-text">
+                    <span class="sa-sidebar-brand-title">Voyager Travel</span>
+                        <span class="sa-sidebar-brand-subtitle">Admin Playground</span>
+                </span>
+        </a>
+    </li>
+</ul>
+
+
+        <button commandfor="--command-palette" command="show-modal" class="sa-button sa-button-variant-outline sa-button-size-default w-full justify-between text-muted-foreground" data-slot="button">
+            <span class="flex items-center gap-2">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                Search...
+            </span>
+            <kbd id="--command-palette-shortcut" aria-hidden="true" data-slot="kbd-group" class="sa-kbd-group">
+                <kbd data-slot="kbd" class="sa-kbd">Ctrl</kbd>
+                <kbd data-slot="kbd" class="sa-kbd">K</kbd>
+            </kbd>
+        </button>
+    </div>
+
+    <div data-slot="sidebar-content" data-sidebar="content" class="sa-sidebar-content">
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Identity</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/departments" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M12 6h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M16 6h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path><path d="M8 6h.01"></path><path d="M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path><rect height="20" rx="2" width="16" x="4" y="2"></rect></svg>
+                <span>Departments</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Commerce</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="page-layout.html" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" data-active="" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></svg>
+                <span>Products</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/categories" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.172 2a2 2 0 0 1 1.414.586l6.71 6.71a2.4 2.4 0 0 1 0 3.408l-4.592 4.592a2.4 2.4 0 0 1-3.408 0l-6.71-6.71A2 2 0 0 1 6 9.172V3a1 1 0 0 1 1-1z"></path><path d="M2 7v6.172a2 2 0 0 0 .586 1.414l6.71 6.71a2.4 2.4 0 0 0 3.191.193"></path><circle cx="10.5" cy="6.5" fill="currentColor" r=".5"></circle></svg>
+                <span>Categories</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/customers" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2v2"></path><path d="M7 21v-2a2 2 0 012-2h6a2 2 0 012 2v2"></path><path d="M8 2v2"></path><circle cx="12" cy="10" r="3"></circle><rect height="18" rx="2" width="18" x="3" y="3"></rect></svg>
+                <span>Customers</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/tags" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" fill="currentColor" r=".5"></circle></svg>
+                <span>Tags</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/destinations" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>Destinations</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/trips" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg>
+                <span>Trips</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/guides" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg>
+                <span>Guides</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/amenities" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                <span>Amenities</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/Reports" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                <span>Sales report</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Field editors</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/text-input" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Text input</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/select" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Select</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/lookup" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Lookup</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/airports" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Airports</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/multi-lookup" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Multi lookup</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/radio-group" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Radio group</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/checkbox-group" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Checkbox group</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/segmented-control" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Segmented control</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/toggle-group" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Toggle group</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/textarea" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Textarea</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/checkbox" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Checkbox</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/toggle" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Toggle</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/date-time" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Date and time</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/list-editor" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>List editor</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/dictionary-editor" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Dictionary editor</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/slider" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Slider</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/image" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Image</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/icon" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Icon</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/one-time-code" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>One-time code</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/field-states" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Read-only and disabled</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Form layouts</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-columns" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Columns</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-spans" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Spans</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-sections" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Sections and groups</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-section-layouts" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Section layouts</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-mixed-editors" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Mixed editors</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-display-fields" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Display fields</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-display-columns" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Display columns</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/form-destinations" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Destinations</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+        <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Trips</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/stellaradmin/excursions" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"></path><path d="M15 5.764v15"></path><path d="M9 3.236v15"></path></svg>
+                <span>Excursions</span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+            <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+                <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+                    <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="/Home/Privacy" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>Privacy policy</span>
+            </a>
+        </li>
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank" rel="noopener noreferrer" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">
+                <span>ASP.NET Core docs</span>
+            </a>
+        </li>
+                    </ul>
+                </div>
+            </div>
+    </div>
+
+</div></div></div>
+
+
+<sel-dialog><dialog id="--command-palette" aria-labelledby="--command-palette-title" aria-describedby="--command-palette-description" data-slot="dialog-content" class="sa-dialog-content sa-command-dialog"><div class="sa-dialog-header sr-only" data-slot="dialog-header"><h2 class="sa-dialog-title" data-slot="dialog-title" id="--command-palette-title">Search</h2><p class="sa-dialog-description" data-slot="dialog-description" id="--command-palette-description">Search for a page to open.</p></div>
+    <sel-command id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734" data-slot="command" data-filter="client" class="sa-command">
+        <div class="sa-command-input-wrapper" data-slot="command-input-wrapper"><div class="sa-input-group sa-command-input-group" data-slot="input-group" role="group"><input placeholder="Search..." type="text" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-input" aria-controls="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list" role="combobox" aria-autocomplete="list" aria-expanded="true" autocomplete="off" autocorrect="off" spellcheck="false" data-slot="command-input" class="sa-command-input"><div class="sa-input-group-addon sa-input-group-addon-align-start" data-align="start" data-slot="input-group-addon" role="group"><svg class="sa-command-input-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg></div></div></div>
+        <div id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list" role="listbox" aria-label="Suggestions" tabindex="-1" data-slot="command-list" class="sa-command-list">
+            <div role="presentation" hidden="" data-slot="command-empty" class="sa-command-empty">No results found.</div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div role="group">
+                <a href="/Home/Privacy" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" class="sa-command-item">
+                    Privacy policy
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank" rel="noopener noreferrer" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" class="sa-command-item">
+                    ASP.NET Core docs
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-1-heading">Identity</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-1-heading" role="group">
+                <a href="/stellaradmin/departments" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Identity" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M12 6h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M16 6h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path><path d="M8 6h.01"></path><path d="M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path><rect height="20" rx="2" width="16" x="4" y="2"></rect></svg>
+                    Departments
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-2-heading">Commerce</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-2-heading" role="group">
+                <a href="page-layout.html" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></svg>
+                    Products
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/categories" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.172 2a2 2 0 0 1 1.414.586l6.71 6.71a2.4 2.4 0 0 1 0 3.408l-4.592 4.592a2.4 2.4 0 0 1-3.408 0l-6.71-6.71A2 2 0 0 1 6 9.172V3a1 1 0 0 1 1-1z"></path><path d="M2 7v6.172a2 2 0 0 0 .586 1.414l6.71 6.71a2.4 2.4 0 0 0 3.191.193"></path><circle cx="10.5" cy="6.5" fill="currentColor" r=".5"></circle></svg>
+                    Categories
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/customers" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2v2"></path><path d="M7 21v-2a2 2 0 012-2h6a2 2 0 012 2v2"></path><path d="M8 2v2"></path><circle cx="12" cy="10" r="3"></circle><rect height="18" rx="2" width="18" x="3" y="3"></rect></svg>
+                    Customers
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/tags" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" fill="currentColor" r=".5"></circle></svg>
+                    Tags
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/destinations" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    Destinations
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/trips" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg>
+                    Trips
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/guides" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg>
+                    Guides
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/amenities" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                    Amenities
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/Reports" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Commerce" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                    Sales report
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-3-heading">Field editors</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-3-heading" role="group">
+                <a href="/stellaradmin/text-input" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Text input
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/select" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Select
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/lookup" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Lookup
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/airports" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Airports
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/multi-lookup" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Multi lookup
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/radio-group" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Radio group
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/checkbox-group" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Checkbox group
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/segmented-control" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Segmented control
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/toggle-group" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Toggle group
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/textarea" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Textarea
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/checkbox" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Checkbox
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/toggle" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Toggle
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/date-time" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Date and time
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/list-editor" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    List editor
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/dictionary-editor" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Dictionary editor
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/slider" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Slider
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/image" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Image
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/icon" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Icon
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/one-time-code" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    One-time code
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/field-states" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Field editors" class="sa-command-item">
+                    Read-only and disabled
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-4-heading">Form layouts</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-4-heading" role="group">
+                <a href="/stellaradmin/form-columns" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Columns
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-spans" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Spans
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-sections" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Sections and groups
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-section-layouts" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Section layouts
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-mixed-editors" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Mixed editors
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-display-fields" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Display fields
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-display-columns" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Display columns
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                <a href="/stellaradmin/form-destinations" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Form layouts" class="sa-command-item">
+                    Destinations
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+                <div role="presentation" data-slot="command-group" class="sa-command-group"><div aria-hidden="true" data-slot="command-group-heading" id="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-5-heading">Trips</div><div aria-labelledby="sa-command-0ae1ce11d0136595ad369733669a12c1d1ed7c5e9c7543696b566768348c4d647734-list-group-5-heading" role="group">
+                <a href="/stellaradmin/excursions" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-keywords="Trips" class="sa-command-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"></path><path d="M15 5.764v15"></path><path d="M9 3.236v15"></path></svg>
+                    Excursions
+                <svg class="sa-command-item-indicator" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></a>
+                </div></div>
+        </div>
+    </sel-command>
+</dialog></sel-dialog>
+
+<script>
+    (() => {
+        const dialog = document.getElementById("--command-palette");
+        const shortcut = document.getElementById("--command-palette-shortcut");
+        const platform = navigator.userAgentData?.platform ?? navigator.platform;
+        const mac = /mac|iphone|ipad/i.test(platform);
+        if (mac && shortcut) {
+            shortcut.querySelector("kbd").textContent = "⌘";
+        }
+
+        // ⌘K on macOS, Ctrl+K elsewhere, toggles the palette. Escape closes it natively.
+        document.addEventListener("keydown", event => {
+            if (event.defaultPrevented) {
+                return;
+            }
+
+            if (event.key.toLowerCase() === "k" && (mac ? event.metaKey : event.ctrlKey) && !event.altKey && !event.shiftKey) {
+                event.preventDefault();
+                dialog.open ? dialog.close() : dialog.showModal();
+            }
+        });
+        dialog.addEventListener("itemselect", () => dialog.close());
+    })();
+</script>
+
+
+
+
+
+    <main id="proto-main" data-slot="sidebar-inset" class="sa-sidebar-inset">
+    </main>
+</sel-sidebar>
+
+<template id="tpl-view-fields">
+<div data-slot="field-group" class="sa-field-group">
+    <div data-slot="grid" class="sa-grid"><div class="sa-grid-content" data-slot="grid-content" data-columns="single">
+        <div data-slot="grid-item" class="sa-grid-item">
+                
+
+<section data-slot="form-section" data-layout="split" aria-labelledby="sa-form-section-b8b18b9af6ae487b97045a295b659ebf" class="sa-form-section"><div class="sa-form-section-inner"><div class="sa-form-section-header" data-slot="form-section-header"><h2 class="sa-form-section-title" data-slot="form-section-title" id="sa-form-section-b8b18b9af6ae487b97045a295b659ebf">Product</h2></div><div class="sa-form-section-content" data-slot="form-section-content">
+    <div data-slot="grid" class="sa-grid"><div class="sa-grid-content" data-slot="grid-content" data-columns="multiple" style="--sa-cols-md:2;--sa-cols-lg:2">
+        <div data-slot="grid-item" class="sa-grid-item">
+                    <div data-slot="display-field" data-orientation="vertical" class="sa-field sa-display-field"><div class="sa-display-field-label" data-slot="display-field-label">Name</div><div class="sa-display-field-value" data-slot="display-field-value">
+
+    <span class="sa-text-display" data-multiline="false">A5 Ruled Notebook, 192 Pages</span>
+</div></div>
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+                    <div data-slot="display-field" data-orientation="vertical" class="sa-field sa-display-field"><div class="sa-display-field-label" data-slot="display-field-label">Category</div><div class="sa-display-field-value" data-slot="display-field-value">
+
+    <span class="sa-text-display" data-multiline="false">Stationery</span>
+</div></div>
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+                    <div data-slot="display-field" data-orientation="vertical" class="sa-field sa-display-field"><div class="sa-display-field-label" data-slot="display-field-label">Tags (2)</div><div class="sa-display-field-value" data-empty="true" data-slot="display-field-value">&#x2014;</div></div>
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+                    <div data-slot="display-field" data-orientation="vertical" class="sa-field sa-display-field"><div class="sa-display-field-label" data-slot="display-field-label">Tags</div><div class="sa-display-field-value" data-empty="true" data-slot="display-field-value">&#x2014;</div></div>
+        </div>
+</div></div>
+
+</div></div></section>
+
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+                
+
+<section data-slot="form-section" data-layout="split" aria-labelledby="sa-form-section-13ade331198847b284090e2f8c30ebb0" class="sa-form-section"><div class="sa-form-section-inner"><div class="sa-form-section-header" data-slot="form-section-header"><h2 class="sa-form-section-title" data-slot="form-section-title" id="sa-form-section-13ade331198847b284090e2f8c30ebb0">Pricing</h2></div><div class="sa-form-section-content" data-slot="form-section-content">
+    <div data-slot="grid" class="sa-grid"><div class="sa-grid-content" data-slot="grid-content" data-columns="multiple" style="--sa-cols-md:2;--sa-cols-lg:2">
+        <div data-slot="grid-item" class="sa-grid-item">
+                    <div data-slot="display-field" data-orientation="vertical" class="sa-field sa-display-field"><div class="sa-display-field-label" data-slot="display-field-label">Price</div><div class="sa-display-field-value" data-slot="display-field-value">
+<span class="sa-number-display">8.99</span>
+</div></div>
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+                    <div data-slot="display-field" data-orientation="vertical" class="sa-field sa-display-field"><div class="sa-display-field-label" data-slot="display-field-label">Sku</div><div class="sa-display-field-value" data-slot="display-field-value">
+
+    <span class="sa-text-display" data-multiline="false">STA-001</span>
+</div></div>
+        </div>
+</div></div>
+
+</div></div></section>
+
+        </div>
+</div></div>
+
+</div>
+</template>
+<template id="tpl-edit-fields">
+<form method="post" data-resource-form data-focus-first-field="false">
+                <div data-slot="field-group" class="sa-field-group">
+                    
+
+                    
+
+                    
+<div data-slot="field-group" class="sa-field-group">
+    <div data-slot="grid" class="sa-grid"><div class="sa-grid-content" data-slot="grid-content" data-columns="single">
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+
+    <div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="Entity_Name">Name</label><input type="text" data-val="true" data-val-length="The field Name must be a string with a maximum length of 100." data-val-length-max="100" data-val-required="The Name field is required." id="Entity_Name" maxlength="100" name="Entity.Name" value="A5 Ruled Notebook, 192 Pages" data-slot="input" class="sa-input" aria-describedby="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error"><div id="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.Name" data-valmsg-replace="true" role="alert" data-slot="field-error"></div></div>
+
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+
+    <div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="Entity_Price">Price</label><input type="number" step="any" data-val="true" data-val-number="The field Price must be a number." data-val-range="The field Price must be between 0.01 and 1000000." data-val-range-max="1000000" data-val-range-min="0.01" data-val-required="The Price field is required." id="Entity_Price" name="Entity.Price" value="8.99" data-slot="input" class="sa-input" aria-describedby="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error"><input name="__Invariant" type="hidden" value="Entity.Price" /><div id="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.Price" data-valmsg-replace="true" role="alert" data-slot="field-error"></div></div>
+
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+
+    <div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="Entity_Details_Sku">Sku</label><input type="text" data-val="true" data-val-length="The field Sku must be a string with a maximum length of 20." data-val-length-max="20" data-val-required="The Sku field is required." id="Entity_Details_Sku" maxlength="20" name="Entity.Details.Sku" value="STA-001" data-slot="input" class="sa-input" aria-describedby="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error"><div id="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.Details.Sku" data-valmsg-replace="true" role="alert" data-slot="field-error"></div></div>
+
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field">
+    <label id="Entity_CategoryId-label" data-slot="field-label" class="sa-label sa-field-label">Category</label>
+
+    <fieldset class="contents" role="none">
+        <admin-lookup-sheet-editor class="contents">
+                <input type="hidden" data-lookup="value" id="Entity_CategoryId" name="Entity.CategoryId" value="1" />
+
+                    <div id="Entity_CategoryId-selected" data-lookup="selected" class="sa-item sa-item-size-xs sa-item-variant-outline flex-nowrap  " role="group" aria-labelledby="Entity_CategoryId-label" aria-describedby="Entity_CategoryId-error" data-slot="item" data-variant="outline" data-size="xs">
+                        
+
+    <div data-lookup="media" data-slot="item-media" data-variant="default" class="sa-item-media sa-item-media-variant-default">
+            
+
+            <span class="sa-avatar sa-choice-media" data-media="avatar" data-placement="lookup-lg" data-slot="avatar" data-size="default"><span class="sa-avatar-fallback" data-slot="avatar-fallback">ST</span></span>
+
+    </div>
+    <div data-lookup="text" class="sa-item-content min-w-0 gap-0" data-slot="item-content">
+        <div class="sa-item-title w-full text-sm" data-slot="item-title"><span class="truncate" data-lookup="title">Stationery</span></div>
+            <p class="sa-item-description truncate text-xs" data-slot="item-description">Category #1</p>
+    </div>
+
+                        <div class="sa-item-actions gap-0.5" data-slot="item-actions">
+                            <button type="button" id="Entity_CategoryId-change" data-sheet-open="/stellaradmin/products/lookupsheet/1?form=edit&amp;field=CategoryId&amp;for=Entity_CategoryId" data-lookup="open" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-xs">
+                                Change<span class="sr-only"> Category</span>
+                            </button>
+                                <button type="button" data-lookup="clear" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                                    <span class="sr-only">Clear Category</span>
+                                </button>
+                        </div>
+                    </div>
+                <div id="Entity_CategoryId-empty" data-lookup="empty" class="flex gap-2" hidden="hidden">
+                    <div class="sa-input-group w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm h-12 text-muted-foreground flex-1 " role="group" data-slot="input-group">
+                        <button type="button" id="Entity_CategoryId-choose" class="hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors" data-slot="input-group-control"
+                                data-sheet-open="/stellaradmin/products/lookupsheet/1?form=edit&amp;field=CategoryId&amp;for=Entity_CategoryId" aria-describedby="Entity_CategoryId-error" data-lookup="open">
+                            <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                            <span class="truncate">Choose category</span>
+                        </button>
+                    </div>
+                </div>
+        </admin-lookup-sheet-editor>
+    </fieldset>
+
+    <div id="Entity_CategoryId-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.CategoryId" data-valmsg-replace="true" role="alert" data-slot="field-error"></div>
+    
+</div>
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+                    <div data-slot="display-field" data-orientation="vertical" class="sa-field sa-display-field"><div class="sa-display-field-label" data-slot="display-field-label">Tags (2)</div><div class="sa-display-field-value" data-empty="true" data-slot="display-field-value">&#x2014;</div></div>
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+
+<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label id="sa-choice-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-1-label" class="sa-label sa-field-label" data-slot="field-label">Tags</label><div id="sa-choice-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-1" data-slot="checkbox-group" role="group" class="sa-field-group" data-columns="multiple" style="--sa-cols-md:2;--sa-cols-lg:2" aria-describedby="sa-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-error" aria-labelledby="sa-choice-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-1-label">
+            <label class="sa-field-label" data-slot="field-label" for="sa-choice-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-1-1"><div class="sa-field sa-field-orientation-horizontal" data-orientation="horizontal" data-slot="field"><div class="sa-field-content" data-slot="field-content"><div class="sa-field-title" data-slot="field-label">
+                Clearance
+            </div></div><span class="sa-input-control-wrapper"><input type="checkbox" name="Entity.Tags" id="sa-choice-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-1-1" value="3" data-slot="input" class="sa-checkbox"><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span></span></div></label>
+            <label class="sa-field-label" data-slot="field-label" for="sa-choice-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-1-2"><div class="sa-field sa-field-orientation-horizontal" data-orientation="horizontal" data-slot="field"><div class="sa-field-content" data-slot="field-content"><div class="sa-field-title" data-slot="field-label">
+                Eco-friendly
+            </div></div><span class="sa-input-control-wrapper"><input type="checkbox" name="Entity.Tags" id="sa-choice-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-1-2" value="4" data-slot="input" class="sa-checkbox"><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span></span></div></label>
+            <label class="sa-field-label" data-slot="field-label" for="sa-choice-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-1-3"><div class="sa-field sa-field-orientation-horizontal" data-orientation="horizontal" data-slot="field"><div class="sa-field-content" data-slot="field-content"><div class="sa-field-title" data-slot="field-label">
+                New
+            </div></div><span class="sa-input-control-wrapper"><input type="checkbox" name="Entity.Tags" id="sa-choice-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-1-3" value="1" data-slot="input" class="sa-checkbox"><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span></span></div></label>
+<input name="__sa_checkbox_group.Entity.Tags" type="hidden" value="true" /></div><div id="sa-6c713ebf3589d4a2a174a7656793e68499df41078a44350ea92d1221d9ada45f8880-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.Tags" data-valmsg-replace="true" role="alert" data-slot="field-error"></div></div>
+        </div>
+</div></div>
+
+</div>
+</template>
+<template id="tpl-create-fields">
+<form method="post" data-resource-form data-focus-first-field="false">
+                <div data-slot="field-group" class="sa-field-group">
+                    
+
+                    
+
+                    
+<div data-slot="field-group" class="sa-field-group">
+    <div data-slot="grid" class="sa-grid"><div class="sa-grid-content" data-slot="grid-content" data-columns="single">
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+
+    <div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="Entity_Name">Name</label><input type="text" data-val="true" data-val-length="The field Name must be a string with a maximum length of 100." data-val-length-max="100" data-val-required="The Name field is required." id="Entity_Name" maxlength="100" name="Entity.Name" value="" data-slot="input" class="sa-input" aria-describedby="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error"><div id="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.Name" data-valmsg-replace="true" role="alert" data-slot="field-error"></div></div>
+
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+
+    <div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="Entity_Price">Price</label><input type="number" step="any" data-val="true" data-val-number="The field Price must be a number." data-val-range="The field Price must be between 0.01 and 1000000." data-val-range-max="1000000" data-val-range-min="0.01" data-val-required="The Price field is required." id="Entity_Price" name="Entity.Price" value="0" data-slot="input" class="sa-input" aria-describedby="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error"><input name="__Invariant" type="hidden" value="Entity.Price" /><div id="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.Price" data-valmsg-replace="true" role="alert" data-slot="field-error"></div></div>
+
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+
+    <div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label class="sa-label sa-field-label" data-slot="field-label" for="Entity_Details_Sku">Sku</label><input type="text" data-val="true" data-val-length="The field Sku must be a string with a maximum length of 20." data-val-length-max="20" data-val-required="The Sku field is required." id="Entity_Details_Sku" maxlength="20" name="Entity.Details.Sku" value="" data-slot="input" class="sa-input" aria-describedby="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error"><div id="sa-1b73280e78914fd5cf5d1815913c4bd1fc7512f612b114d040d853e09be171616185-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.Details.Sku" data-valmsg-replace="true" role="alert" data-slot="field-error"></div></div>
+
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field">
+    <label id="Entity_CategoryId-label" data-slot="field-label" class="sa-label sa-field-label">Category</label>
+
+    <fieldset class="contents" role="none">
+        <admin-lookup-sheet-editor class="contents" selection-url="/stellaradmin/products/lookupselection?form=create&amp;field=CategoryId">
+                <input type="hidden" data-lookup="value" id="Entity_CategoryId" name="Entity.CategoryId" value="" />
+
+                    <div id="Entity_CategoryId-selected" data-lookup="selected" hidden="hidden" class="sa-item sa-item-size-xs sa-item-variant-outline flex-nowrap  " role="group" aria-labelledby="Entity_CategoryId-label" aria-describedby="Entity_CategoryId-error" data-slot="item" data-variant="outline" data-size="xs">
+                        
+
+    <div data-lookup="media" hidden="hidden" data-slot="item-media" data-variant="default" class="sa-item-media sa-item-media-variant-default">
+    </div>
+    <div data-lookup="text" class="sa-item-content min-w-0 gap-0" data-slot="item-content">
+        <div class="sa-item-title w-full text-sm" data-slot="item-title"><span class="truncate" data-lookup="title"></span></div>
+    </div>
+
+                        <div class="sa-item-actions gap-0.5" data-slot="item-actions">
+                            <button type="button" id="Entity_CategoryId-change" data-sheet-open="/stellaradmin/products/lookupsheet?form=create&amp;field=CategoryId&amp;for=Entity_CategoryId" data-lookup="open" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-xs">
+                                Change<span class="sr-only"> Category</span>
+                            </button>
+                                <button type="button" data-lookup="clear" data-slot="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                                    <span class="sr-only">Clear Category</span>
+                                </button>
+                        </div>
+                    </div>
+                <div id="Entity_CategoryId-empty" data-lookup="empty" class="flex gap-2">
+                    <div class="sa-input-group w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm h-12 text-muted-foreground flex-1 " role="group" data-slot="input-group">
+                        <button type="button" id="Entity_CategoryId-choose" class="hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors" data-slot="input-group-control"
+                                data-sheet-open="/stellaradmin/products/lookupsheet?form=create&amp;field=CategoryId&amp;for=Entity_CategoryId" aria-describedby="Entity_CategoryId-error" data-lookup="open">
+                            <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                            <span class="truncate">Choose category</span>
+                        </button>
+                    </div>
+                        <div class="sa-input-group w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm h-12 text-muted-foreground shrink-0" role="group" data-slot="input-group">
+                            <button type="button" id="Entity_CategoryId-create" class="hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors" data-slot="input-group-control"
+                                    data-sheet-open="/stellaradmin/categories/createsheet?for=Entity_CategoryId&amp;level=1" data-lookup="create">
+                                <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                                <span class="truncate">New</span>
+                            </button>
+                        </div>
+                </div>
+        </admin-lookup-sheet-editor>
+    </fieldset>
+
+    <div id="Entity_CategoryId-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.CategoryId" data-valmsg-replace="true" role="alert" data-slot="field-error"></div>
+    
+</div>
+        </div>
+        <div data-slot="grid-item" class="sa-grid-item">
+
+
+<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field">
+    <label id="Entity_Tags-label" data-slot="field-label" class="sa-label sa-field-label">Tags</label>
+
+        <fieldset class="contents" role="none">
+            <admin-multi-lookup-sheet-editor id="Entity_Tags" class="contents" name="Entity.Tags" selection-url="/stellaradmin/products/multilookupselection?form=create&amp;field=Tags">
+                <input type="hidden" name="__sa_checkbox_group.Entity.Tags" value="true" />
+                <div data-lookup="values" hidden>
+                </div>
+
+                        <div id="Entity_Tags-selected" data-lookup="selected" hidden="hidden" aria-labelledby="Entity_Tags-label" aria-describedby="Entity_Tags-error" data-slot="chip-group" data-appearance="input" class="sa-chip-group">
+                            <span class="contents" data-lookup="items">
+                                
+
+
+                            </span>
+                            <button type="button" id="Entity_Tags-add" class="sa-button sa-button-variant-ghost sa-button-size-xs text-muted-foreground hover:text-foreground min-w-0" data-sheet-open="/stellaradmin/products/lookupsheet?form=create&amp;field=Tags&amp;for=Entity_Tags" data-lookup="open" data-slot="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                                <span class="truncate">Add tags</span>
+                            </button>
+                        </div>
+                        <div id="Entity_Tags-empty" data-lookup="empty" class="sa-input-group h-9 min-w-0 items-stretch p-0  " role="group" data-slot="input-group">
+                            <button type="button" id="Entity_Tags-choose" data-slot="input-group-control" aria-describedby="Entity_Tags-error" data-sheet-open="/stellaradmin/products/lookupsheet?form=create&amp;field=Tags&amp;for=Entity_Tags" data-lookup="open"
+                                    class="text-muted-foreground flex min-w-0 flex-1 items-center justify-between gap-2 px-3 text-sm outline-none">
+                                <span class="truncate">Choose tags</span>
+                                <svg class="size-4 shrink-0 opacity-60" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg>
+                            </button>
+                        </div>
+            </admin-multi-lookup-sheet-editor>
+        </fieldset>
+
+    <div id="Entity_Tags-error" class="sa-field-error field-validation-valid" data-valmsg-for="Entity.Tags" data-valmsg-replace="true" role="alert" data-slot="field-error"></div>
+    
+</div>
+        </div>
+</div></div>
+
+</div>
+</template>
+<template id="tpl-widget-price-summary">
+<div class="sa-widget" data-slot="widget" data-span="12" data-state="loaded"
+     data-widget="Price summary" hx-select="" hx-select-oob="" hx-push-url="false">
+            <div data-slot="card" data-size="default" class="sa-card">
+    <div data-slot="card-content" class="sa-card-content">
+        <dl class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Products listed</dt>
+                <dd class="text-2xl font-semibold tabular-nums">150</dd>
+            </div>
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Lowest price</dt>
+                <dd class="text-2xl font-semibold tabular-nums">4.29</dd>
+            </div>
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Average price</dt>
+                <dd class="text-2xl font-semibold tabular-nums">23.97</dd>
+            </div>
+            <div class="flex flex-col gap-1">
+                <dt class="text-sm text-muted-foreground">Highest price</dt>
+                <dd class="text-2xl font-semibold tabular-nums">89.99</dd>
+            </div>
+        </dl>
+    </div>
+</div>
+
+</div>
+</template>
+<template id="tpl-widget-top-categories">
+<div class="sa-widget" data-slot="widget" data-span="12" data-state="loaded"
+     data-widget="Top categories" hx-select="" hx-select-oob="" hx-push-url="false">
+            <div data-slot="card" data-size="default" class="sa-card">
+    <div data-slot="card-header" class="sa-card-header">
+        <div data-slot="card-title" class="sa-card-title">Top categories</div>
+        <div data-slot="card-description" class="sa-card-description">By number of products</div>
+        <div data-slot="card-action" class="sa-card-action">
+            <form data-slot="widget-form" hx-get="/stellaradmin/products/widget/Top%20categories?p=CfDJ8LJ5-GMKW_BBgm63EwyuTxuqx9yZwpTZh7mpBW3HjJzT5OfCWgDlFxPOiw5W5yF3tPjNxBP3drbHJWDMmLenggK3whR0TU6vTPKMQstO1pDWsNMnCbQC42bFwMG6gLNwdw" hx-trigger="change, submit" hx-target="closest [data-slot=&#x27;widget&#x27;]" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
+                <div data-slot="native-select-wrapper" data-size="sm" class="sa-native-select-wrapper"><select name="Count" aria-label="Categories to show" data-slot="native-select" data-size="sm" class="sa-native-select">
+                    <option value="3">Top 3</option>
+                    <option value="5" selected="selected">Top 5</option>
+                    <option value="10">Top 10</option>
+                </select><svg class="sa-native-select-icon" aria-hidden="true" data-slot="native-select-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></div>
+            </form>
+        </div>
+    </div>
+    <div data-slot="card-content" class="sa-card-content">
+            <ol class="flex flex-col gap-2 text-sm">
+                    <li class="flex items-center justify-between gap-4">
+                        <span>Bath &amp; Personal Care</span>
+                        <span data-slot="badge" class="sa-badge sa-badge-variant-secondary">15</span>
+                    </li>
+                    <li class="flex items-center justify-between gap-4">
+                        <span>Cleaning &amp; Laundry</span>
+                        <span data-slot="badge" class="sa-badge sa-badge-variant-secondary">15</span>
+                    </li>
+                    <li class="flex items-center justify-between gap-4">
+                        <span>Desk Accessories</span>
+                        <span data-slot="badge" class="sa-badge sa-badge-variant-secondary">15</span>
+                    </li>
+                    <li class="flex items-center justify-between gap-4">
+                        <span>Drinkware</span>
+                        <span data-slot="badge" class="sa-badge sa-badge-variant-secondary">15</span>
+                    </li>
+                    <li class="flex items-center justify-between gap-4">
+                        <span>Electronics Accessories</span>
+                        <span data-slot="badge" class="sa-badge sa-badge-variant-secondary">15</span>
+                    </li>
+            </ol>
+    </div>
+</div>
+
+</div>
+</template>
+<template id="tpl-widget-category-prices">
+<div class="sa-widget" data-slot="widget" data-span="12" data-state="loaded"
+     data-widget="Category prices" hx-select="" hx-select-oob="" hx-push-url="false">
+            <div data-slot="card" data-size="default" class="sa-card">
+    <div data-slot="card-header" class="sa-card-header">
+        <div data-slot="card-title" class="sa-card-title">Stationery prices</div>
+        <div data-slot="card-description" class="sa-card-description">15 products in the category</div>
+    </div>
+    <div data-slot="card-content" class="sa-card-content">
+        <dl class="flex flex-col gap-2 text-sm">
+            <div class="flex items-center justify-between gap-4">
+                <dt class="text-muted-foreground">This product</dt>
+                <dd class="font-medium tabular-nums">8.99</dd>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+                <dt class="text-muted-foreground">Lowest</dt>
+                <dd class="tabular-nums">4.29</dd>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+                <dt class="text-muted-foreground">Average</dt>
+                <dd class="tabular-nums">9.88</dd>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+                <dt class="text-muted-foreground">Highest</dt>
+                <dd class="tabular-nums">24.99</dd>
+            </div>
+        </dl>
+    </div>
+</div>
+
+</div>
+</template>
+<template id="tpl-alert-create-tip">
+<div data-slot="alert" role="alert" class="sa-alert sa-alert-variant-default">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+    <div data-slot="alert-title" class="sa-alert-title">Choose a category</div>
+    <div data-slot="alert-description" class="sa-alert-description">Products without a category don't appear in the store's category pages.</div>
+</div>
+</template>
+
+<script src="page-layout/layout.js"></script>
+</body>
+</html>

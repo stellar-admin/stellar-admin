@@ -185,7 +185,7 @@ Not done in phase 3: the website screenshots (`view-page-widgets` and `form-widg
 ## Open questions
 
 - Whether index widgets should load again after an inline save or a delete changes the records. They don't now.
-- Where top widgets sit on the index page, and whether they should follow the search and scope at all (Jerrie 2026-10-30: unsure about widgets between the search and scopes and the grid; kept as built until everything is in place). `IndexWidgetContext` stays `Search` and `Scope` until this is settled.
+- Where top widgets sit on the index page, and whether they should follow the search and scope at all (Jerrie 2026-10-30: unsure about widgets between the search and scopes and the grid; kept as built until everything is in place). Now part of [page-layout](page-layout.md). `IndexWidgetContext` stays `Search` and `Scope` until this is settled.
 
 ## Verification
 
