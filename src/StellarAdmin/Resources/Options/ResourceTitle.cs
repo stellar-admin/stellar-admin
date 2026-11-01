@@ -12,28 +12,18 @@ internal static class ResourceTitle
         string? keyPropertyName
     )
     {
-        var type = typeof(TResource);
-        var record = Expression.Parameter(type, "record");
-        var property =
-            FindStringProperty(
-                type,
-                type.GetCustomAttribute<DisplayColumnAttribute>()?.DisplayColumn
-            )
-            ?? FindStringProperty(type, "Name")
-            ?? FindStringProperty(type, "Title");
-        if (property is not null)
+        if (FindNamedProperty<TResource>() is { } named)
         {
-            return Expression.Lambda<Func<TResource, string?>>(
-                Expression.Property(record, property),
-                record
-            );
+            return named;
         }
 
+        var type = typeof(TResource);
         if (keyPropertyName is null || type.GetProperty(keyPropertyName) is not { } key)
         {
             return null;
         }
 
+        var record = Expression.Parameter(type, "record");
         Expression keyValue = Expression.Property(record, key);
 
         return Expression.Lambda<Func<TResource, string?>>(
@@ -43,6 +33,30 @@ internal static class ResourceTitle
                     keyValue,
                     key.PropertyType.GetMethod(nameof(ToString), Type.EmptyTypes)!
                 ),
+            record
+        );
+    }
+
+    // The string property [DisplayColumn] names, then a Name or Title property, leaving out the key
+    public static Expression<Func<TResource, string?>>? FindNamedProperty<TResource>()
+    {
+        var type = typeof(TResource);
+        var property =
+            FindStringProperty(
+                type,
+                type.GetCustomAttribute<DisplayColumnAttribute>()?.DisplayColumn
+            )
+            ?? FindStringProperty(type, "Name")
+            ?? FindStringProperty(type, "Title");
+        if (property is null)
+        {
+            return null;
+        }
+
+        var record = Expression.Parameter(type, "record");
+
+        return Expression.Lambda<Func<TResource, string?>>(
+            Expression.Property(record, property),
             record
         );
     }

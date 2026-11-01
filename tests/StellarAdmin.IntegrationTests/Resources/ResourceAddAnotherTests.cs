@@ -23,7 +23,7 @@ public class ResourceAddAnotherTests
         // Assert
         await Assert.That(document.QuerySelector("[data-form-add-another]")).IsNull();
         await Assert
-            .That(document.QuerySelectorAll("form button[type='submit']").Length)
+            .That(document.QuerySelectorAll("button[type='submit'][form='resource-form']").Length)
             .IsEqualTo(1);
     }
 
@@ -46,7 +46,7 @@ public class ResourceAddAnotherTests
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
-        var buttons = document.QuerySelectorAll("form button[type='submit']");
+        var buttons = document.QuerySelectorAll("button[type='submit'][form='resource-form']");
         await Assert.That(buttons.Length).IsEqualTo(2);
         await Assert.That(buttons[0].HasAttribute("data-form-add-another")).IsTrue();
         await Assert.That(buttons[0].TextContent.Trim()).IsEqualTo(expected);

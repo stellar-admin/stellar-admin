@@ -58,7 +58,7 @@ admin.AddEfCoreResource<Customer>(resource =>
 | Plural label | English plural of the singular label | `resource.PluralLabel = "Reservations";` |
 | Sidebar label | Plural label | `resource.SidebarItem(item => item.Label = "...")` |
 
-Slugs are lowercase letters and digits separated by single hyphens and must be unique. Setting only `SingularLabel` also changes the inferred plural; an explicit `PluralLabel` always wins. Page titles and button labels ("Create booking", "Edit booking") derive from the labels; change their patterns for every resource with `ConfigureResourceLabels` ([customization](customization.md#global-labels)).
+Slugs are lowercase letters and digits separated by single hyphens and must be unique. Setting only `SingularLabel` also changes the inferred plural; an explicit `PluralLabel` always wins. Page titles and button labels ("Create booking", "Save booking") derive from the labels, except that the view and edit pages are titled with the record's title unless it's only the key; change their patterns for every resource with `ConfigureResourceLabels` ([customization](customization.md#global-labels)).
 
 ## Record title and references
 

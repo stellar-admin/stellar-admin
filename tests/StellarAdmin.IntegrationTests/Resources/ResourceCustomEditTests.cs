@@ -239,9 +239,10 @@ public class ResourceCustomEditTests
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
         await Assert.That(state.Products.Single().Name).IsEqualTo("Updated");
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+        // A form model isn't the resource, so its page keeps the label; the product's own form shows its name
         await Assert
             .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
-            .IsEqualTo("Edit Product");
+            .IsEqualTo(customModel ? "Edit Product" : "Updated");
         await Assert.That(document.QuerySelectorAll("input[name^='Entity.']").Length).IsEqualTo(1);
         await Assert.That(document.QuerySelector($"input[name='Entity.{field}']")).IsNotNull();
         await Assert.That(document.QuerySelector("[data-slot='form-section-title']")).IsNull();

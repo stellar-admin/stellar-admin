@@ -133,7 +133,7 @@ A summary above the Bookings list:
 | Tag | Attributes | Slots |
 | --- | --- | --- |
 | `<sa-index-page>` | `model`, `view`, `class` | `pre-page-actions`, `post-page-actions` (beside the Create button) |
-| `<sa-form-page>` | `model`, `view`, `class` | `pre-form-fields`, `post-form-fields`, `form-leading-actions`, `pre-form-actions`, `post-form-actions` |
+| `<sa-form-page>` | `model`, `view`, `class` | `pre-form-fields`, `post-form-fields`, `form-leading-actions`, `pre-form-actions`, `post-form-actions` (in the page header, beside Cancel and the submit button, which belong to the form through its `form` attribute) |
 | `<sa-view-page>` | `model`, `view`, `class` | `pre-page-actions`, `post-page-actions`, `pre-view-fields`, `post-view-fields` |
 
 Fill a slot with `<sa-slot-content>` inside the tag:

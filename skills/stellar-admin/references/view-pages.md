@@ -41,7 +41,7 @@ resource.AllowView(view =>
 - References (`booking.Customer!.Email`) are loaded with the record for EF Core resources. A related record of a registered resource (`booking => booking.Customer`) shows its title, and a collection of them shows in badges with `UseDisplay<BadgeDisplay>()` ([relationships](relationships.md#showing-related-values)).
 - A custom display used here needs `DisplayTemplates/{TemplateName}.cshtml` (index cells use `GridDisplayTemplates/`).
 - The header shows Back, Delete (with `AllowDelete`) and Edit (with `AllowEdit`).
-- `view.Title` defaults to `View {singular label}`; the row action label is `index.ViewLabel`.
+- The page title is `view.Title` when set, else the record's title (`UseTitle` or the convention), else `View {singular label}` when the title would only be the key; the row action label is `index.ViewLabel`.
 - Custom data sources need `IResourceViewHandler<T>` (`FindAsync`); `IResourceEditHandler<T>` includes it.
 - `AllowView<TModel, THandler>(...)` shows a different model, loaded by `THandler : IResourceViewHandler<TModel>`.
 

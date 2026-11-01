@@ -97,23 +97,6 @@
         }
     }
 
-    :is(.sa-resource-form, .sa-resource-view):is([data-form-layout="split"], [data-form-layout="stacked"]) > :is(.sa-resource-form-header, .sa-resource-view-header) {
-        border-bottom: var(--sa-border-width) solid var(--sa-color-line);
-        padding-bottom: calc(5 * var(--sa-unit));
-    }
-
-    .sa-resource-form-footer {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: calc(4 * var(--sa-unit));
-    }
-
-    .sa-resource-form:is([data-form-layout="split"], [data-form-layout="stacked"]) .sa-resource-form-footer {
-        border-top: var(--sa-border-width) solid var(--sa-color-line);
-        padding-top: calc(5 * var(--sa-unit));
-    }
-
     /* The view page's display fields are details, not values beside inputs: muted labels, values at their own
        height, the weight details give them. */
     .sa-resource-view .sa-field.sa-display-field {
@@ -131,15 +114,6 @@
         & > .sa-display-field-value:not([data-empty], [data-kind="text"]) {
             font-weight: var(--sa-weight-control);
         }
-    }
-
-    .sa-resource-form-actions {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: flex-end;
-        gap: calc(2 * var(--sa-unit));
-        margin-inline-start: auto;
     }
 
     /* Toggle group editors wrap their separate toggles, and chips take the theme's chip radius, with a check that
@@ -1183,10 +1157,11 @@
             grid-template-columns: minmax(0, 1fr) 20rem;
         }
 
-        /* Beside a form, the column stays in view as the form scrolls */
+        /* Beside a form, the column stays in view as the form scrolls, under the page's sticky header, whose height
+           stellar-admin-panel.js measures */
         .sa-widgets-aside-grid > .sa-widgets-column[data-sticky] {
             position: sticky;
-            top: calc(4 * var(--sa-unit));
+            top: calc(var(--_page-header-height, 0px) + 4 * var(--sa-unit));
         }
     }
 }

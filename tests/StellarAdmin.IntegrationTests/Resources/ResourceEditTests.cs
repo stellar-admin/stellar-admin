@@ -71,8 +71,8 @@ public class ResourceEditTests
     }
 
     [Test]
-    [Arguments(0, "Edit Product", "Save Product", "Edit Product")]
-    [Arguments(1, "Change Stock item", "Save changes", "Change")]
+    [Arguments(0, "Notebook", "Save Product", "Edit Product")]
+    [Arguments(1, "Notebook", "Save changes", "Change")]
     [Arguments(2, "Update inventory", "Apply", "Update")]
     public async Task ConfiguredEdit_RendersExistingValuesLayoutAndLabels(
         int configuration,

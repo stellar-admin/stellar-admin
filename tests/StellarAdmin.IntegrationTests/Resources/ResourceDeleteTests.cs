@@ -42,8 +42,10 @@ public class ResourceDeleteTests
         var deleteForm = dialog.RequiredElement("form[action='/stellaradmin/products/delete/7']");
         await Assert.That(trigger.TextContent.Trim()).IsEqualTo("Remove product");
         await Assert.That(trigger.GetAttribute("type")).IsEqualTo("button");
-        await Assert.That(trigger.Closest(".sa-resource-form-footer")).IsNotNull();
-        await Assert.That(trigger.Closest(".sa-resource-form-actions")).IsNull();
+        await Assert.That(trigger.Closest("[data-slot='page-header-actions']")).IsNotNull();
+        await Assert
+            .That(trigger.ClassList.Contains("sa-button-variant-outline-destructive"))
+            .IsTrue();
         await Assert
             .That(dialog.RequiredElement("[data-slot='alert-dialog-title']").TextContent.Trim())
             .IsEqualTo("Remove product");

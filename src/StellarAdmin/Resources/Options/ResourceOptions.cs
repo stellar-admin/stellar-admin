@@ -133,6 +133,11 @@ public sealed class ResourceOptions<TResource>
 
     // How fields on other resources' forms refer to this resource, created once its options are built
     internal ResourceReference AsReference => field ??= ResourceReference.Create(this);
+
+    // A record's title as the title of its view and edit pages: what UseTitle selects, or the named property the
+    // convention finds, but never the key, which isn't a title
+    internal Func<TResource, string?>? PageTitle =>
+        field ??= (TitleExpression ?? ResourceTitle.FindNamedProperty<TResource>())?.Compile();
     internal Func<
         IServiceProvider,
         object,

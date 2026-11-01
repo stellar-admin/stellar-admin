@@ -200,14 +200,17 @@ showModKeys(document);
 
 // Create and edit pages: Ctrl+Enter or Cmd+Enter saves, and Ctrl+Shift+Enter or Cmd+Shift+Enter saves and adds
 // another. The add another button comes before the submit button, so a plain Enter in a field, which would press the
-// first, presses the submit button instead. After adding another, the form's first field has focus
+// first, presses the submit button instead. After adding another, the form's first field has focus. The buttons sit
+// in the page header, outside the form, and belong to it through their form attribute, so they're among its elements
+const formControl = (form, selector) => Array.from(form.elements).find((element) => element.matches(selector));
+
 document.addEventListener("keydown", (event) => {
   const form = event.target.closest?.("form[data-resource-form]");
   if (!form || event.key !== "Enter" || event.defaultPrevented || event.isComposing) {
     return;
   }
 
-  const another = form.querySelector("[data-form-add-another]");
+  const another = formControl(form, "[data-form-add-another]");
   const modified = event.ctrlKey || event.metaKey;
   const button =
     modified && event.shiftKey
@@ -219,13 +222,25 @@ document.addEventListener("keydown", (event) => {
             event.target.matches(
               "input:not([type='checkbox'], [type='radio'], [type='button'], [type='submit'], [type='reset'], [type='file'])",
             ))
-        ? form.querySelector("[data-form-submit]")
+        ? formControl(form, "[data-form-submit]")
         : null;
   if (button) {
     event.preventDefault();
     form.requestSubmit(button);
   }
 });
+
+// Pages with a sticky header: its page container holds the header's height, so a form's widget column sticks under
+// the header. A boosted navigation swaps in a new header, which is measured as it loads
+const stickyHeaders = new ResizeObserver((entries) => {
+  for (const { target } of entries) {
+    target.parentElement?.style.setProperty("--_page-header-height", `${target.offsetHeight}px`);
+  }
+});
+const measureStickyHeaders = (root) =>
+  root.querySelectorAll?.(".sa-page-header[data-sticky]").forEach((header) => stickyHeaders.observe(header));
+measureStickyHeaders(document);
+document.addEventListener("htmx:load", (event) => measureStickyHeaders(event.target));
 
 document
   .querySelector("form[data-focus-first-field='true']")

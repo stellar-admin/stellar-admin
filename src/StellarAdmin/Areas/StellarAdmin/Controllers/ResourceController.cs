@@ -441,7 +441,7 @@ internal sealed class ResourceController<TResource>(
 
         AddDeleteErrors();
 
-        return await EditView(resource, id, cancellationToken);
+        return await EditView(resource, id, FindRecordTitle(resource), cancellationToken);
     }
 
     [HttpPost]
@@ -467,6 +467,8 @@ internal sealed class ResourceController<TResource>(
             return NotFound();
         }
 
+        // The stored record's title, before binding changes the record to the values that weren't saved
+        var recordTitle = FindRecordTitle(resource);
         var fields = GetEditFieldNames(resource);
         var valid = await TryBindConfiguredFieldsAsync(
             resource,
@@ -477,7 +479,7 @@ internal sealed class ResourceController<TResource>(
         );
         if (!valid)
         {
-            return await EditView(resource, id, cancellationToken);
+            return await EditView(resource, id, recordTitle, cancellationToken);
         }
 
         var result = await UpdateAsync(id, resource, cancellationToken);
@@ -494,7 +496,7 @@ internal sealed class ResourceController<TResource>(
                 _resourceOptions.Edit.Fields,
                 ResourceFormPageViewModel.BindingPrefix
             );
-            return await EditView(resource, id, cancellationToken);
+            return await EditView(resource, id, recordTitle, cancellationToken);
         }
 
         return RedirectToAction(nameof(Index), new { id = (string?)null });
@@ -947,7 +949,7 @@ internal sealed class ResourceController<TResource>(
                 Items = view.Items.ToArray(),
                 Columns = view.Columns,
                 SectionLayout = view.SectionLayout,
-                Title = view.Title ?? _labelOptions.View.Title(labels),
+                Title = view.Title ?? FindRecordTitle(resource) ?? _labelOptions.View.Title(labels),
             }
         );
     }
@@ -1466,6 +1468,25 @@ internal sealed class ResourceController<TResource>(
         }
     }
 
+    // The record's title for its view or edit page, or null when the page shows another model, the resource has no
+    // title but its key, or the title is empty or reads a navigation property the record didn't load
+    private string? FindRecordTitle(object record)
+    {
+        if (record is not TResource resource || _resourceOptions.PageTitle is not { } title)
+        {
+            return null;
+        }
+
+        try
+        {
+            return title(resource) is { } text && !string.IsNullOrWhiteSpace(text) ? text : null;
+        }
+        catch (NullReferenceException)
+        {
+            return null;
+        }
+    }
+
     private ResourceLabelContext CreateLabelContext() =>
         new(_resourceOptions.SingularLabel, _resourceOptions.PluralLabel);
 
@@ -1672,6 +1693,7 @@ internal sealed class ResourceController<TResource>(
     private async Task<ViewResult> EditView(
         object resource,
         string id,
+        string? recordTitle,
         CancellationToken cancellationToken
     )
     {
@@ -1703,7 +1725,7 @@ internal sealed class ResourceController<TResource>(
                 EditorData = editors.Data,
                 EditorTemplates = editors.Templates,
                 SectionLayout = edit.SectionLayout,
-                Title = edit.Title ?? _labelOptions.Edit.Title(labels),
+                Title = edit.Title ?? recordTitle ?? _labelOptions.Edit.Title(labels),
                 SubmitLabel = edit.SubmitLabel ?? _labelOptions.Edit.SubmitLabel(labels),
             }
         );

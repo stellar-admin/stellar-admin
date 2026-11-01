@@ -51,7 +51,7 @@ public class ResourceViewPageTests
         // Assert
         await Assert
             .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
-            .IsEqualTo("View Product");
+            .IsEqualTo("Notebook");
         await Assert.That(document.QuerySelector(".sa-resource-view")).IsNotNull();
         var section = document.RequiredElement("[data-slot='form-section']");
         await Assert.That(section.TextContent).Contains("Pricing");
@@ -484,8 +484,9 @@ public class ResourceViewPageTests
                     .GetAttribute("aria-label")
             )
             .IsEqualTo("Open");
+        // The record's title wins over the configured label
         await Assert
             .That(page.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
-            .IsEqualTo("Product details");
+            .IsEqualTo("Notebook");
     }
 }

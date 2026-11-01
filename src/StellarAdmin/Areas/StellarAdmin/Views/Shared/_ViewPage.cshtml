@@ -7,14 +7,14 @@
 }
 
 <sa-page-container width="PageContainerWidth.Large" class="sa-resource-view" data-form-layout="@layout.GetDataAttributeText()">
-    <sa-page-header class="sa-resource-view-header">
+    <sa-page-header sticky="true">
         <sa-page-header-title>@Model.Title</sa-page-header-title>
         <sa-page-header-actions>
             <sa-slot-outlet name="pre-page-actions"/>
             <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="view-back">Back</sa-button-link>
             @if (Model.Delete is { } delete)
             {
-                <sa-button type="button" variant="ButtonVariant.Destructive"
+                <sa-button type="button" variant="ButtonVariant.OutlineDestructive"
                            command="show-modal" commandfor="delete-confirm-dialog">@delete.Title</sa-button>
             }
             @if (Model.EditLabel is { } editLabel)
