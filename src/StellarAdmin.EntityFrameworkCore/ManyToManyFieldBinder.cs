@@ -7,10 +7,11 @@ using StellarAdmin.Resources;
 
 namespace StellarAdmin.EntityFrameworkCore;
 
-// Binds a many-to-many navigation as the keys of its related entities. The related entities a form adds are
+// Binds a many-to-many navigation as the keys of its related entities, on the entity or a wrapping form model's entity. The related entities a form adds are
 // loaded through the request's context, so they're tracked when the data source saves the entity.
 internal sealed class ManyToManyFieldBinder<TRelated, TKey>(
     Type contextType,
+    PropertyInfo? owner,
     PropertyInfo navigation,
     PropertyInfo key
 ) : FieldBinder, IManyToManyFieldBinder
@@ -49,7 +50,7 @@ internal sealed class ManyToManyFieldBinder<TRelated, TKey>(
             }
         }
 
-        var collection = GetCollection(context.Model);
+        var collection = GetCollection(GetEntity(context.Model));
         var current = collection.Select(_key).ToHashSet();
         var added = keys.Distinct().Where(value => !current.Contains(value)).ToList();
         var loaded =
@@ -119,7 +120,12 @@ internal sealed class ManyToManyFieldBinder<TRelated, TKey>(
     }
 
     public override object GetValue(FieldBindingContext context) =>
-        (navigation.GetValue(context.Model) as IEnumerable<TRelated> ?? []).Select(_key).ToList();
+        (navigation.GetValue(GetEntity(context.Model)) as IEnumerable<TRelated> ?? [])
+            .Select(_key)
+            .ToList();
+
+    // The entity a wrapping form model holds in its owner property, or the model itself
+    private object GetEntity(object model) => owner is null ? model : owner.GetValue(model)!;
 
     private ICollection<TRelated> GetCollection(object model)
     {

@@ -47,6 +47,29 @@ internal sealed class EfCoreFormEntity
             ? field.PropertyPath.Skip(1).ToArray()
         : null;
 
+    // The entity's name for a field, such as Name for Product.Name, or null for a field of the wrapping model only
+    public string? FindEntityFieldName(FormFieldOptions field) =>
+        FindEntityPath(field) is { } path
+            ? string.Join('.', path.Select(property => property.Name))
+            : null;
+
+    // An expression on the model, such as m => m.Product.Category.Name, as one on the entity, or null when it reads the
+    // model other than through the entity
+    public LambdaExpression? FindEntityExpression(LambdaExpression expression)
+    {
+        if (Property is null)
+        {
+            return expression;
+        }
+
+        var model = expression.Parameters[0];
+        var entity = Expression.Parameter(Property.PropertyType, "entity");
+        var visitor = new EntityVisitor(model, Property, entity);
+        var body = visitor.Visit(expression.Body);
+
+        return visitor.ReadsModelOtherwise ? null : Expression.Lambda(body, entity);
+    }
+
     public object GetEntity(object model) =>
         Property is null
             ? model
@@ -56,4 +79,28 @@ internal sealed class EfCoreFormEntity
                 );
 
     public void SetEntity(object model, object entity) => Property?.SetValue(model, entity);
+
+    private sealed class EntityVisitor(
+        ParameterExpression model,
+        PropertyInfo property,
+        ParameterExpression entity
+    ) : ExpressionVisitor
+    {
+        public bool ReadsModelOtherwise { get; private set; }
+
+        protected override Expression VisitMember(MemberExpression node) =>
+            node.Expression == model && node.Member.Name == property.Name
+                ? entity
+                : base.VisitMember(node);
+
+        protected override Expression VisitParameter(ParameterExpression node)
+        {
+            if (node == model)
+            {
+                ReadsModelOtherwise = true;
+            }
+
+            return base.VisitParameter(node);
+        }
+    }
 }

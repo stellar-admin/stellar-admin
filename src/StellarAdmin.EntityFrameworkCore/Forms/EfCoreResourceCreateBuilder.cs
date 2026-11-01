@@ -29,6 +29,9 @@ public sealed class EfCoreResourceCreateBuilder<TEntity, TModel> : ResourceCreat
             options.EventsType = null;
             options.HasEvents = false;
         });
+        services.Configure<EfCoreResourceOptions<TEntity>>(options =>
+            options.CreateEntity = entity
+        );
 
         if (entity.Property is { } property)
         {

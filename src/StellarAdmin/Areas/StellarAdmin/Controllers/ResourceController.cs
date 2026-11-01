@@ -1491,7 +1491,10 @@ internal sealed class ResourceController<TResource>(
     // title but its key, or the title is empty or reads a navigation property the record didn't load
     private string? FindRecordTitle(object record)
     {
-        if (record is not TResource resource || _resourceOptions.PageTitle is not { } title)
+        if (
+            FindResource(record, _resourceOptions.Edit) is not { } resource
+            || _resourceOptions.PageTitle is not { } title
+        )
         {
             return null;
         }
@@ -1506,6 +1509,23 @@ internal sealed class ResourceController<TResource>(
         }
     }
 
+    // The resource a form's model is, or holds in the property of a model that wraps it
+    private static TResource? FindResource(object model, ResourceFormOptions? form) =>
+        model is TResource resource ? resource
+        : form is { ResourcePropertyName: { } name }
+        && FormModelType(form) == model.GetType()
+        && model.GetType().GetProperty(name)?.GetValue(model) is TResource wrapped
+            ? wrapped
+        : default;
+
+    private static Type? FormModelType(ResourceFormOptions form) =>
+        form switch
+        {
+            ResourceCreateOptions create => create.ModelType,
+            ResourceEditOptions edit => edit.ModelType,
+            _ => null,
+        };
+
     private ResourceLabelContext CreateLabelContext() =>
         new(_resourceOptions.SingularLabel, _resourceOptions.PluralLabel);
 
@@ -1519,21 +1539,37 @@ internal sealed class ResourceController<TResource>(
         }
 
         var modelType = _resourceOptions.Edit!.ModelType;
-        var model = modelType.GetConstructor(Type.EmptyTypes) is not null
-            ? Activator.CreateInstance(modelType)!
-            : RuntimeHelpers.GetUninitializedObject(modelType);
+        var model = CreateUnboundModel(modelType);
+
+        // A model that wraps the resource holds a resource with the key
+        var resource = model;
+        if (
+            _resourceOptions.Edit.ResourcePropertyName is { } resourceName
+            && modelType.GetProperty(resourceName) is { CanWrite: true } wrapped
+            && wrapped.PropertyType == typeof(TResource)
+        )
+        {
+            resource = wrapped.GetValue(model) ?? CreateUnboundModel(typeof(TResource));
+            wrapped.SetValue(model, resource);
+        }
+
         if (
             id is not null
-            && modelType == typeof(TResource)
+            && resource is TResource
             && _resourceOptions.KeyPropertyName is { } keyName
-            && modelType.GetProperty(keyName) is { CanWrite: true } key
+            && typeof(TResource).GetProperty(keyName) is { CanWrite: true } key
             && TryConvertKey(key.PropertyType, id, out var value)
         )
         {
-            key.SetValue(model, value);
+            key.SetValue(resource, value);
         }
 
         return model;
+
+        static object CreateUnboundModel(Type type) =>
+            type.GetConstructor(Type.EmptyTypes) is not null
+                ? Activator.CreateInstance(type)!
+                : RuntimeHelpers.GetUninitializedObject(type);
     }
 
     // A lookup's form model, with the values of the fields its items depend on, which the sheet's requests send

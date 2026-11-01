@@ -6,6 +6,7 @@ using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.UI;
+using StellarAdmin.UI.Toasts;
 using StellarAdmin.Widgets;
 
 namespace AdminPlayground.Resources.Products;
@@ -42,48 +43,64 @@ internal static class ProductResourceRegistration
                     // A tip above the form, which has no handler, so it renders with the page
                     .Widgets(widgets => widgets.Add("Category tip", "_ProductCreateTipWidget"))
             );
-            resource.AllowEdit(edit =>
-            {
-                // Compares the stored price with the new one, and rejects the save with an error on the field
-                edit.Events(events =>
-                    events.OnUpdating = (context, _) =>
+            // The form asks for a reason for the change, which the product doesn't store, and the events read it
+            resource.AllowEdit<EditProductModel>(
+                model => model.Product,
+                edit =>
+                {
+                    edit.Events(events =>
                     {
-                        var original = context
-                            .Entry.Property(product => product.Price)
-                            .OriginalValue;
-                        if (context.Entity.Price < original / 2)
+                        // Compares the stored price with the new one, and rejects the save with an error on the field
+                        events.OnUpdating = (context, _) =>
                         {
-                            context.Fail(
-                                product => product.Price,
-                                "The price can't drop by more than half in one change."
-                            );
-                        }
-
-                        return Task.CompletedTask;
-                    }
-                );
-                edit.Fields(fields =>
-                    {
-                        fields.Add(product => product.Name);
-                        fields.Add(product => product.Price);
-                        fields.Add(product => product.Details.Sku);
-                        // No editor: the foreign key gets a lookup sheet of the category resource
-                        fields.Add(product => product.CategoryId);
-                        fields.AddDisplayField(
-                            product => string.Join(", ", product.Tags.Select(t => t.Name)),
-                            field => field.Title = "Tags (2)"
-                        );
-                        fields
-                            .Add(product => product.Tags)
-                            .UseCheckboxGroupEditor(checkboxes =>
+                            var original = context
+                                .Entry.Property(product => product.Price)
+                                .OriginalValue;
+                            if (context.Entity.Price < original / 2)
                             {
-                                checkboxes.Appearance = CheckboxGroupAppearance.Cards;
-                                checkboxes.Columns(2);
-                            });
-                    })
-                    // The category's prices beside the form, which stay in view as the form scrolls
-                    .Widgets(widgets => AddCategoryPricesWidget(widgets));
-            });
+                                context.Fail(
+                                    model => model.Product.Price,
+                                    "The price can't drop by more than half in one change."
+                                );
+                            }
+
+                            return Task.CompletedTask;
+                        };
+                        events.OnUpdated = (context, _) =>
+                        {
+                            context
+                                .Services.GetRequiredService<IToastNotifier>()
+                                .Success($"{context.Entity.Name} changed: {context.Model.Reason}");
+
+                            return Task.CompletedTask;
+                        };
+                    });
+                    edit.Fields(fields =>
+                        {
+                            fields.Add(model => model.Product.Name);
+                            fields.Add(model => model.Product.Price);
+                            fields.Add(model => model.Product.Details.Sku);
+                            // No editor: the foreign key gets a lookup sheet of the category resource
+                            fields.Add(model => model.Product.CategoryId);
+                            fields.AddDisplayField(
+                                model => string.Join(", ", model.Product.Tags.Select(t => t.Name)),
+                                field => field.Title = "Tags (2)"
+                            );
+                            fields
+                                .Add(model => model.Product.Tags)
+                                .UseCheckboxGroupEditor(checkboxes =>
+                                {
+                                    checkboxes.Appearance = CheckboxGroupAppearance.Cards;
+                                    checkboxes.Columns(2);
+                                });
+                            fields.Add(model => model.Reason);
+                        })
+                        // The category's prices beside the form, which stay in view as the form scrolls
+                        .Widgets(widgets =>
+                            AddCategoryPricesWidget(widgets, model => model.Product.Id)
+                        );
+                }
+            );
             resource.AllowView(view =>
                 view.Fields(fields =>
                     {
@@ -113,7 +130,7 @@ internal static class ProductResourceRegistration
                             }
                         );
                     })
-                    .Widgets(widgets => AddCategoryPricesWidget(widgets))
+                    .Widgets(widgets => AddCategoryPricesWidget(widgets, product => product.Id))
             );
             resource.AllowDelete();
             resource.Index(index =>
@@ -217,8 +234,9 @@ internal static class ProductResourceRegistration
 
     // The view and edit pages compare the product's price with its category's, beside the fields. A product without
     // a category has nothing to compare, so the handler hides the widget.
-    private static void AddCategoryPricesWidget(
-        WidgetsBuilder<RecordWidgetContext<Product>> widgets
+    private static void AddCategoryPricesWidget<TRecord>(
+        WidgetsBuilder<RecordWidgetContext<TRecord>> widgets,
+        Func<TRecord, int> productId
     ) =>
         widgets.Add<ProductCategoryPricesHandler>(
             "Category prices",
@@ -227,7 +245,7 @@ internal static class ProductResourceRegistration
             {
                 widget.Placement = WidgetPlacement.Aside;
                 widget.Parameters(context => new ProductCategoryPricesParameters(
-                    context.Record.Id
+                    productId(context.Record)
                 ));
             }
         );

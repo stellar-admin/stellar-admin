@@ -242,17 +242,41 @@ public static class StellarAdminBuilderExtensions
                         property
                     );
 
-                    if (options.Create is { } create && create.ModelType == typeof(TEntity))
+                    if (
+                        EfCoreResourceOptions<TEntity>.Find(
+                            options.Create,
+                            efCore.Value.CreateEntity
+                        ) is
+                        { } createEntity
+                    )
                     {
-                        InferReferencedResources(entity, create);
-                        UseManyToManyBinders(options, entity, create, contextType);
-                        RemoveUnsupportedFormFields(options, entity, create);
+                        InferReferencedResources(entity, options.Create!, createEntity);
+                        UseManyToManyBinders(
+                            options,
+                            entity,
+                            options.Create!,
+                            createEntity,
+                            contextType
+                        );
+                        RemoveUnsupportedFormFields(options, entity, options.Create!, createEntity);
                     }
-                    if (options.Edit is { } edit && edit.ModelType == typeof(TEntity))
+                    if (
+                        EfCoreResourceOptions<TEntity>.Find(
+                            options.Edit,
+                            efCore.Value.EditEntity
+                        ) is
+                        { } editEntity
+                    )
                     {
-                        InferReferencedResources(entity, edit);
-                        UseManyToManyBinders(options, entity, edit, contextType);
-                        RemoveUnsupportedFormFields(options, entity, edit);
+                        InferReferencedResources(entity, options.Edit!, editEntity);
+                        UseManyToManyBinders(
+                            options,
+                            entity,
+                            options.Edit!,
+                            editEntity,
+                            contextType
+                        );
+                        RemoveUnsupportedFormFields(options, entity, options.Edit!, editEntity);
                     }
                 }
             );
@@ -267,14 +291,15 @@ public static class StellarAdminBuilderExtensions
         ResourceOptions<TEntity> options,
         IEntityType entity,
         ResourceFormOptions form,
+        EfCoreFormEntity formEntity,
         Type contextType
     )
     {
         foreach (var field in form.Fields)
         {
             if (
-                field.PropertyPath.Count != 1
-                || entity.FindSkipNavigation(field.FieldName) is not { } navigation
+                formEntity.FindEntityPath(field) is not [var segment]
+                || entity.FindSkipNavigation(segment.Name) is not { } navigation
             )
             {
                 continue;
@@ -289,8 +314,8 @@ public static class StellarAdminBuilderExtensions
                 form.RemoveField(field);
                 options.ReportProblem(
                     EfCoreConfigurationEvents.UnsupportedManyToManyField,
-                    $"The `{field.FieldName}` field isn't on the {FormName(options, form)} form because `{typeof(TEntity).Name}.{field.FieldName}` is a many-to-many field without a navigation property, or its related entities don't have one primary-key property.",
-                    $"Give `{typeof(TEntity).Name}` a navigation property for `{field.FieldName}`, and its related entities one primary-key property.",
+                    $"The `{field.FieldName}` field isn't on the {FormName(options, form)} form because `{typeof(TEntity).Name}.{segment.Name}` is a many-to-many field without a navigation property, or its related entities don't have one primary-key property.",
+                    $"Give `{typeof(TEntity).Name}` a navigation property for `{segment.Name}`, and its related entities one primary-key property.",
                     field
                 );
                 continue;
@@ -307,7 +332,7 @@ public static class StellarAdminBuilderExtensions
                 form.RemoveField(field);
                 options.ReportProblem(
                     EfCoreConfigurationEvents.SingleValueManyToManyEditor,
-                    $"The `{field.FieldName}` field isn't on the {FormName(options, form)} form because `{typeof(TEntity).Name}.{field.FieldName}` is a many-to-many field, and its editor selects one item.",
+                    $"The `{field.FieldName}` field isn't on the {FormName(options, form)} form because `{typeof(TEntity).Name}.{segment.Name}` is a many-to-many field, and its editor selects one item.",
                     "Call `UseCheckboxGroupEditor`, `UseToggleGroupEditor` or `UseMultiLookupSheetEditor` on the field.",
                     field
                 );
@@ -319,22 +344,38 @@ public static class StellarAdminBuilderExtensions
                 key.PropertyType
             );
             field.UseBinder(
-                (FieldBinder)Activator.CreateInstance(binderType, contextType, property, key)!
+                (FieldBinder)
+                    Activator.CreateInstance(
+                        binderType,
+                        contextType,
+                        formEntity.Property,
+                        property,
+                        key
+                    )!
             );
         }
     }
 
     // A choice or lookup editor without items on a foreign key or many-to-many field takes them from the related
     // entity's resource, and a field with no editor gets a lookup sheet for it
-    private static void InferReferencedResources(IEntityType entity, ResourceFormOptions form)
+    private static void InferReferencedResources(
+        IEntityType entity,
+        ResourceFormOptions form,
+        EfCoreFormEntity formEntity
+    )
     {
-        foreach (var field in form.Fields.Where(field => field.PropertyPath.Count == 1))
+        foreach (var field in form.Fields)
         {
+            if (formEntity.FindEntityPath(field) is not [var segment])
+            {
+                continue;
+            }
+
             var related =
-                entity.FindSkipNavigation(field.FieldName)?.TargetEntityType
+                entity.FindSkipNavigation(segment.Name)?.TargetEntityType
                 ?? (
                     entity
-                        .FindProperty(field.FieldName)
+                        .FindProperty(segment.Name)
                         ?.GetContainingForeignKeys()
                         .Where(foreignKey => foreignKey.Properties.Count == 1)
                         .Select(foreignKey => foreignKey.PrincipalEntityType)
@@ -396,15 +437,22 @@ public static class StellarAdminBuilderExtensions
     private static void RemoveUnsupportedFormFields<TEntity>(
         ResourceOptions<TEntity> options,
         IEntityType entity,
-        ResourceFormOptions form
+        ResourceFormOptions form,
+        EfCoreFormEntity formEntity
     )
     {
         foreach (
             var field in form.Fields.Where(field => field.Binder is not IManyToManyFieldBinder)
         )
         {
-            var property = EfCoreFormFieldMetadata.FindProperty(entity, field.FieldName);
-            var name = $"`{typeof(TEntity).Name}.{field.FieldName}`";
+            // A field of the wrapping model only isn't saved to the entity
+            if (formEntity.FindEntityFieldName(field) is not { } entityFieldName)
+            {
+                continue;
+            }
+
+            var property = EfCoreFormFieldMetadata.FindProperty(entity, entityFieldName);
+            var name = $"`{typeof(TEntity).Name}.{entityFieldName}`";
             var problem = property switch
             {
                 null => (

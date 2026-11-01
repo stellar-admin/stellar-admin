@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources.Builders;
@@ -45,6 +46,41 @@ public sealed class EfCoreResourceBuilder<TEntity>
     }
 
     /// <summary>
+    ///     Enables and configures the create page with a model that wraps the entity with fields
+    ///     of its own.
+    /// </summary>
+    /// <typeparam name="TModel">The type of the model the create form binds to.</typeparam>
+    /// <param name="entity">An expression that selects the model's property that holds the entity.</param>
+    /// <param name="configure">A delegate that configures the create page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="entity" /> or <paramref name="configure" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="entity" /> doesn't select a property of the model with a public getter
+    ///     and setter.
+    /// </exception>
+    /// <remarks>
+    ///     The new model's property must hold an entity, from its initializer or <c>UseFactory</c>.
+    ///     The entity's fields are saved as the resource; the model's other fields reach the
+    ///     events. Index columns match the entity's fields without the property's name.
+    /// </remarks>
+    public EfCoreResourceBuilder<TEntity> AllowCreate<TModel>(
+        Expression<Func<TModel, TEntity>> entity,
+        Action<EfCoreResourceCreateBuilder<TEntity, TModel>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(configure);
+        var form = EfCoreFormEntity.Wrapped(entity);
+
+        configure(new(Services, AllowCreate<TModel, EfCoreCreateHandler<TEntity, TModel>>(), form));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Enables the edit page.
     /// </summary>
     /// <returns>A builder that configures the edit page.</returns>
@@ -69,6 +105,42 @@ public sealed class EfCoreResourceBuilder<TEntity>
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(AllowEdit());
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Enables and configures the edit page with a model that wraps the entity with fields of
+    ///     its own.
+    /// </summary>
+    /// <typeparam name="TModel">The type of the model the edit form binds to.</typeparam>
+    /// <param name="entity">An expression that selects the model's property that holds the entity.</param>
+    /// <param name="configure">A delegate that configures the edit page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="entity" /> or <paramref name="configure" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="entity" /> doesn't select a property of the model with a public getter
+    ///     and setter.
+    /// </exception>
+    /// <remarks>
+    ///     The model is created with its parameterless constructor and holds the stored entity.
+    ///     The entity's fields are copied onto the stored entity when the form is saved; the
+    ///     model's other fields reach the events. Index columns match the entity's fields without
+    ///     the property's name.
+    /// </remarks>
+    public EfCoreResourceBuilder<TEntity> AllowEdit<TModel>(
+        Expression<Func<TModel, TEntity>> entity,
+        Action<EfCoreResourceEditBuilder<TEntity, TModel>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(configure);
+        var form = EfCoreFormEntity.Wrapped(entity);
+
+        configure(new(Services, AllowEdit<TModel, EfCoreEditHandler<TEntity, TModel>>(), form));
 
         return this;
     }

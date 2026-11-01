@@ -29,6 +29,7 @@ public sealed class EfCoreResourceEditBuilder<TEntity, TModel> : ResourceEditBui
             options.EventsType = null;
             options.HasEvents = false;
         });
+        services.Configure<EfCoreResourceOptions<TEntity>>(options => options.EditEntity = entity);
 
         if (entity.Property is { } property)
         {

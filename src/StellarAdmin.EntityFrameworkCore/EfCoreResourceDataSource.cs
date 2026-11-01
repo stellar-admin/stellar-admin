@@ -15,6 +15,7 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
     IOptions<ResourceOptions<TEntity>> options,
     ResourceReferences references,
     EfCoreResourceTitles titles,
+    IOptions<EfCoreResourceOptions<TEntity>> efCoreOptions,
     ILogger<EfCoreResourceDataSource<TEntity>> logger
 ) : IResourceCrudDataSource<TEntity>
     where TEntity : class
@@ -375,22 +376,34 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
         // navigations either page needs
         if (includeLookups)
         {
+            // A model that wraps the entity names its fields and reads its display fields through the entity's property
             var edit = _resourceOptions.Edit;
             var view = _resourceOptions.View;
-            var lookupIncludes = (edit?.Fields ?? []).SelectMany(field =>
+            var editEntity = EfCoreResourceOptions<TEntity>.Find(
+                edit,
+                efCoreOptions.Value.EditEntity
+            );
+            var editFields = editEntity is null ? [] : edit!.Fields;
+            var lookupIncludes = editFields.SelectMany(field =>
                 field.Editor is LookupSheetEditor lookup
                 && (
                     lookup.Items
                     ?? (lookup.Resource is { } resource ? references.GetItems(resource) : null)
                 )
                     is IEfCoreLookupReference reference
-                    ? reference.FindIncludePaths(entityType, field.FieldName)
+                && editEntity!.FindEntityFieldName(field) is { } fieldName
+                    ? reference.FindIncludePaths(entityType, fieldName)
                     : []
             );
-            var displayFields = (
-                edit?.ModelType == typeof(TEntity) ? edit.DisplayFields : []
-            ).Concat(view?.ModelType == typeof(TEntity) ? view.Fields : []);
-            var collections = (edit?.Fields ?? []).Select(field =>
+            var displayExpressions = (editEntity is null ? [] : edit!.DisplayFields)
+                .Select(field => editEntity!.FindEntityExpression(field.FieldExpression))
+                .Concat(
+                    (view?.ModelType == typeof(TEntity) ? view.Fields : []).Select(field =>
+                        field.FieldExpression
+                    )
+                )
+                .OfType<LambdaExpression>();
+            var collections = editFields.Select(field =>
                 (field.Binder as IManyToManyFieldBinder)?.NavigationName
             );
             query = Include(
@@ -398,8 +411,8 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
                 lookupIncludes
                     .Concat(collections)
                     .Concat(
-                        displayFields.SelectMany(field =>
-                            FindDisplayIncludePaths(entityType, field.FieldExpression)
+                        displayExpressions.SelectMany(expression =>
+                            FindDisplayIncludePaths(entityType, expression)
                         )
                     )
             );
