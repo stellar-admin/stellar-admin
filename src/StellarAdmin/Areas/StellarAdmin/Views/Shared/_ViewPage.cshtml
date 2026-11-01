@@ -16,10 +16,10 @@
                 <sa-button type="button" variant="ButtonVariant.OutlineDestructive"
                            command="show-modal" commandfor="delete-confirm-dialog">@delete.Title</sa-button>
             }
-            <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="view-back">Back</sa-button-link>
+            <sa-link-button asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="view-back">Back</sa-link-button>
             @if (Model.EditLabel is { } editLabel)
             {
-                <sa-button-link asp-action="Edit" asp-route-id="@Model.EntityId">@editLabel</sa-button-link>
+                <sa-link-button asp-action="Edit" asp-route-id="@Model.EntityId">@editLabel</sa-link-button>
             }
             <sa-slot-outlet name="post-page-actions"/>
         </sa-page-header-actions>

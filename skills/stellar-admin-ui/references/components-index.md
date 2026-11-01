@@ -11,7 +11,7 @@
 | [Badge](components/badge.md) | `<sa-badge>` | Renders a small label that highlights a status, count or category. |
 | [Breadcrumb](components/breadcrumb.md) | `<sa-breadcrumb>`, `<sa-breadcrumb-ellipsis>`, `<sa-breadcrumb-item>`, … | Renders a breadcrumb that shows the path to the current page. |
 | [Bubble](components/bubble.md) | `<sa-bubble>`, `<sa-bubble-button-content>`, `<sa-bubble-content>`, … | Renders a message in a conversation, with its content and any reactions. |
-| [Button](components/button.md) | `<sa-button>`, `<sa-button-link>` | Renders a button that triggers an action. |
+| [Button](components/button.md) | `<sa-button>`, `<sa-link-button>` | Renders a button that triggers an action. |
 | [ButtonGroup](components/button-group.md) | `<sa-button-group>`, `<sa-button-group-separator>`, `<sa-button-group-text>` | Renders related buttons as a single unit. |
 | [Card](components/card.md) | `<sa-card>`, `<sa-card-action>`, `<sa-card-content>`, … | Renders a container that groups related content. |
 | [Carousel](components/carousel.md) | `<sa-carousel>`, `<sa-carousel-content>`, `<sa-carousel-indicators>`, … | Renders a scrollable set of slides with optional navigation controls. |

@@ -22,7 +22,7 @@ Renders a thin line between sections of content.
 *From `Pages/Separator/_Intro.cshtml`*
 
 ```razor
-<sa-button-link variant="ButtonVariant.Outline" href="#">View bookings</sa-button-link>
+<sa-link-button variant="ButtonVariant.Outline" href="#">View bookings</sa-link-button>
 <sa-separator/>
-<sa-button-link variant="ButtonVariant.Outline" href="#">View past trips</sa-button-link>
+<sa-link-button variant="ButtonVariant.Outline" href="#">View past trips</sa-link-button>
 ```

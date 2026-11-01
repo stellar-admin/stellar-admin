@@ -38,9 +38,9 @@ Renders a small label that appears when the user hovers over or focuses another 
 <sa-button variant="ButtonVariant.Outline" interestfor="--tooltip-elements-button">
     Button
 </sa-button>
-<sa-button-link variant="ButtonVariant.Outline" interestfor="--tooltip-elements-linkbutton">
+<sa-link-button variant="ButtonVariant.Outline" interestfor="--tooltip-elements-linkbutton">
     Link Button
-</sa-button-link>
+</sa-link-button>
 <sa-input interestfor="--tooltip-elements-input"/>
 <sa-textarea interestfor="--tooltip-elements-textarea"></sa-textarea>
 <sa-select interestfor="--tooltip-elements-select">

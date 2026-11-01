@@ -9,13 +9,13 @@ namespace StellarAdmin.UI;
 /// <remarks>
 ///     Set <c>href</c> or the <c>asp-*</c> routing attributes.
 /// </remarks>
-[HtmlTargetElement("sa-button-link")]
-public sealed class ButtonLinkTagHelper : StellarAdminAnchorTagHelperBase
+[HtmlTargetElement("sa-link-button")]
+public sealed class LinkButtonTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="ButtonLinkTagHelper" /> class.
+    ///     Initializes a new instance of the <see cref="LinkButtonTagHelper" /> class.
     /// </summary>
     /// <param name="htmlGenerator">
     ///     The generator that builds the link's URL from the routing attributes.
@@ -23,7 +23,7 @@ public sealed class ButtonLinkTagHelper : StellarAdminAnchorTagHelperBase
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
     /// </exception>
-    public ButtonLinkTagHelper(IHtmlGenerator htmlGenerator)
+    public LinkButtonTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

@@ -270,10 +270,10 @@ Renders a table in a container that scrolls sideways when the table is too wide.
                     <sa-table-cell>@booking.Destination</sa-table-cell>
                     <sa-table-cell class="text-right">@booking.Amount.ToString("N2")</sa-table-cell>
                     <sa-table-cell class="w-px whitespace-nowrap">
-                        <sa-button-link href="#" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
+                        <sa-link-button href="#" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                        aria-label="Edit @booking.Id">
                             <sa-icon name="square-pen"/>
-                        </sa-button-link>
+                        </sa-link-button>
                         <sa-table-row-detail-toggle aria-label="Show itinerary for @booking.Id"/>
                     </sa-table-cell>
                 </sa-table-row>

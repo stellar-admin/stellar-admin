@@ -18,7 +18,7 @@
         <sa-page-header-actions>
             <sa-slot-outlet name="form-leading-actions"/>
             <sa-slot-outlet name="pre-form-actions"/>
-            <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="form-cancel">Cancel</sa-button-link>
+            <sa-link-button asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="form-cancel">Cancel</sa-link-button>
             @if (Model.AddAnotherLabel is { } addAnotherLabel)
             {
                 <sa-button type="submit" form="resource-form" name="after" value="add-another" variant="ButtonVariant.Outline"

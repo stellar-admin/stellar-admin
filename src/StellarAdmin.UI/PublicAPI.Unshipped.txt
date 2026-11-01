@@ -56,7 +56,7 @@ override StellarAdmin.UI.BubbleTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor
 override StellarAdmin.UI.ButtonGroupSeparatorTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.ButtonGroupTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.ButtonGroupTextTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
-override StellarAdmin.UI.ButtonLinkTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.LinkButtonTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.ButtonTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.CardActionTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.CardContentTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
@@ -526,12 +526,12 @@ StellarAdmin.UI.ButtonGroupTagHelper.Orientation.get -> StellarAdmin.UI.ButtonGr
 StellarAdmin.UI.ButtonGroupTagHelper.Orientation.set -> void
 StellarAdmin.UI.ButtonGroupTextTagHelper
 StellarAdmin.UI.ButtonGroupTextTagHelper.ButtonGroupTextTagHelper() -> void
-StellarAdmin.UI.ButtonLinkTagHelper
-StellarAdmin.UI.ButtonLinkTagHelper.ButtonLinkTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator) -> void
-StellarAdmin.UI.ButtonLinkTagHelper.Size.get -> StellarAdmin.UI.ButtonSize?
-StellarAdmin.UI.ButtonLinkTagHelper.Size.set -> void
-StellarAdmin.UI.ButtonLinkTagHelper.Variant.get -> StellarAdmin.UI.ButtonVariant?
-StellarAdmin.UI.ButtonLinkTagHelper.Variant.set -> void
+StellarAdmin.UI.LinkButtonTagHelper
+StellarAdmin.UI.LinkButtonTagHelper.LinkButtonTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator) -> void
+StellarAdmin.UI.LinkButtonTagHelper.Size.get -> StellarAdmin.UI.ButtonSize?
+StellarAdmin.UI.LinkButtonTagHelper.Size.set -> void
+StellarAdmin.UI.LinkButtonTagHelper.Variant.get -> StellarAdmin.UI.ButtonVariant?
+StellarAdmin.UI.LinkButtonTagHelper.Variant.set -> void
 StellarAdmin.UI.ButtonSize
 StellarAdmin.UI.ButtonSize.Default = 0 -> StellarAdmin.UI.ButtonSize
 StellarAdmin.UI.ButtonSize.ExtraSmall = 1 -> StellarAdmin.UI.ButtonSize

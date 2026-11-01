@@ -144,7 +144,7 @@ Fill a slot with `<sa-slot-content>` inside the tag:
 
 <sa-view-page model="Model">
     <sa-slot-content name="post-page-actions">
-        <sa-button-link href="@($"/invoices/{Model.EntityId}")" variant="ButtonVariant.Outline">Invoice</sa-button-link>
+        <sa-link-button href="@($"/invoices/{Model.EntityId}")" variant="ButtonVariant.Outline">Invoice</sa-link-button>
     </sa-slot-content>
     <sa-slot-content name="post-view-fields">
         <sa-card><sa-card-content>Payment history goes here.</sa-card-content></sa-card>

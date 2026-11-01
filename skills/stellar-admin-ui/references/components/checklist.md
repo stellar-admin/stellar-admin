@@ -132,7 +132,7 @@ Put `<sa-checklist-item>` or `<sa-checklist-item-link>` rows directly in `<sa-ch
                 <sa-icon name="circle-x" class="text-destructive"/>
             </sa-checklist-item-status>
             <sa-checklist-item-actions>
-                <sa-button-link variant="ButtonVariant.Outline" size="ButtonSize.Small" href="#">Edit description</sa-button-link>
+                <sa-link-button variant="ButtonVariant.Outline" size="ButtonSize.Small" href="#">Edit description</sa-link-button>
             </sa-checklist-item-actions>
         </sa-checklist-item>
         <sa-checklist-item title="Cancellation policy" description="Uses the default policy.">
@@ -140,7 +140,7 @@ Put `<sa-checklist-item>` or `<sa-checklist-item-link>` rows directly in `<sa-ch
                 <sa-icon name="triangle-alert" class="text-[var(--sa-color-warning)]"/>
             </sa-checklist-item-status>
             <sa-checklist-item-actions>
-                <sa-button-link variant="ButtonVariant.Ghost" size="ButtonSize.Small" href="#">Review</sa-button-link>
+                <sa-link-button variant="ButtonVariant.Ghost" size="ButtonSize.Small" href="#">Review</sa-link-button>
             </sa-checklist-item-actions>
         </sa-checklist-item>
     </sa-checklist>
