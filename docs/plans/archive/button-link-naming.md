@@ -1,6 +1,6 @@
 # Button link naming
 
-Status: implemented (2026-11-01).
+Status: completed (2026-11-01).
 
 Clean up the inconsistent naming of the Tag Helper that renders an anchor styled as a button (Jerrie, 2026-11-01). The code called it `<sa-button-link>` (`ButtonLinkTagHelper`), while most of the docs and samples called it a link button.
 
