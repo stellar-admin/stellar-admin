@@ -34,4 +34,9 @@ public enum ButtonVariant
     ///     A style that looks like a link.
     /// </summary>
     Link,
+
+    /// <summary>
+    ///     A border with a transparent background, in the colour of a destructive action.
+    /// </summary>
+    OutlineDestructive,
 }

@@ -10,8 +10,7 @@
     gap: calc(5 * var(--sa-unit));
     width: 100%;
     margin-inline: auto;
-    padding: calc(5 * var(--sa-unit));
-    @media (width >= 48rem) { padding: calc(8 * var(--sa-unit)); }
+    padding: var(--sa-space-page);
   }
   .sa-page-container-width-small { max-width: 42rem; }
   .sa-page-container-width-medium { max-width: 56rem; }

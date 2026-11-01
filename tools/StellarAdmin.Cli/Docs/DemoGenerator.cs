@@ -931,6 +931,7 @@ internal sealed partial class DemoGenerator
         new("PageHeader/_FullPage", "_CleanLayout"),
         new("PageHeader/_Intro", "_CleanLayout"),
         new("PageHeader/_Nav", "_CleanLayout"),
+        new("PageHeader/_Sticky", "_CleanLayout"),
         new("PageHeader/_TitleOnly", "_CleanLayout"),
         new("Pagination/_CustomContent"),
         new("Pagination/_Intro"),

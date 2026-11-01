@@ -36,7 +36,7 @@ Renders a scrolling frame for a conversation, with its transcript and scroll but
 |-----------|------|---------|--------|
 | `direction` | `MessageScrollerDirection` | `End` | `Start`, `End` |
 | `size` | `ButtonSize` | `IconSmall` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
-| `variant` | `ButtonVariant` | `Secondary` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `variant` | `ButtonVariant` | `Secondary` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link`, `OutlineDestructive` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

@@ -41,7 +41,7 @@ Renders a file with its media, details, upload state and actions.
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `size` | `ButtonSize` | `IconExtraSmall` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
-| `variant` | `ButtonVariant` | `Ghost` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `variant` | `ButtonVariant` | `Ghost` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link`, `OutlineDestructive` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-attachment-media>`

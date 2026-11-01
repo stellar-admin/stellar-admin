@@ -553,6 +553,7 @@ StellarAdmin.UI.ButtonVariant.Destructive = 1 -> StellarAdmin.UI.ButtonVariant
 StellarAdmin.UI.ButtonVariant.Ghost = 4 -> StellarAdmin.UI.ButtonVariant
 StellarAdmin.UI.ButtonVariant.Link = 5 -> StellarAdmin.UI.ButtonVariant
 StellarAdmin.UI.ButtonVariant.Outline = 2 -> StellarAdmin.UI.ButtonVariant
+StellarAdmin.UI.ButtonVariant.OutlineDestructive = 6 -> StellarAdmin.UI.ButtonVariant
 StellarAdmin.UI.ButtonVariant.Secondary = 3 -> StellarAdmin.UI.ButtonVariant
 StellarAdmin.UI.CardActionTagHelper
 StellarAdmin.UI.CardActionTagHelper.CardActionTagHelper() -> void
@@ -1875,6 +1876,8 @@ StellarAdmin.UI.PageHeaderNavTagHelper
 StellarAdmin.UI.PageHeaderNavTagHelper.PageHeaderNavTagHelper() -> void
 StellarAdmin.UI.PageHeaderTagHelper
 StellarAdmin.UI.PageHeaderTagHelper.PageHeaderTagHelper() -> void
+StellarAdmin.UI.PageHeaderTagHelper.Sticky.get -> bool
+StellarAdmin.UI.PageHeaderTagHelper.Sticky.set -> void
 StellarAdmin.UI.PageHeaderTitleTagHelper
 StellarAdmin.UI.PageHeaderTitleTagHelper.PageHeaderTitleTagHelper() -> void
 StellarAdmin.UI.PaginationContentTagHelper

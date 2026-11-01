@@ -1,6 +1,6 @@
 # Page layout
 
-Status: index page implemented and committed (2026-10-31). POC in `sandbox/html/page-layout.html`. The view, create and edit pages are a later pass.
+Status: index page implemented and committed (2026-10-31). POC in `sandbox/html/page-layout.html`. The page header pass (a sticky header on the index, view, create and edit pages) is ready for implementation (2026-11-01); POC in `sandbox/html/record-pages.html`.
 
 A top-to-bottom rethink of the resource pages' layout (index, view, create and edit), so that everything a page can hold fits together: the page title, subtitle and actions, and on the index page the scopes, search, filters, grid and widgets. Everything is open, including moving the title and actions into the app header. It settles where the index page's top widgets go and whether they follow the search, scope and filters, the open question in [widgets](widgets.md).
 
@@ -32,6 +32,53 @@ The panel toggles only what the page holds, never where things go: the scopes (n
 Two earlier rounds (three directions across all four pages, then ten index sketches) were replaced: they moved blocks around without designing them, and several turned widgets into plain numbers, which a widget can't be.
 
 Narrow screens (checked at 390px and 768px, 2026-10-31): the scopes keep the selected tab and More, the filter pills wrap, the table scrolls inside the card, and the page never scrolls sideways. Once the search is stacked it fills its row (Jerrie, 2026-10-31: "the best we'll get on a narrow screen").
+
+## Page header pass (index, view, create and edit)
+
+Designed with Jerrie on 2026-10-31 and 2026-11-01. POC: `sandbox/html/record-pages.html` (`record-pages/pages.js`, `pages.css`), Today and New for each page, built from markup captured from the AdminPlayground (the products index, view, create and edit pages, customers and form-mixed-editors). The product's Pricing and Inventory sections are prototype data that give the form some length.
+
+Scope (Jerrie, 2026-11-01): only the page title, the page's buttons and the header they sit in. Fields, sections, cards, controls and the layouts of the pages stay as they are. The breadcrumb in the app header moved to [app header breadcrumb](app-header-breadcrumb.md), the unsaved changes indicator to [unsaved changes](unsaved-changes.md), and the line under the title to [page subtitles](page-subtitles.md).
+
+How the design was chosen: a first round had three directions per page (A: section cards with a save bar stuck to the bottom of the window; B: a sticky header holding the actions, with section jump tabs; C: one card with the actions in its footer). Jerrie chose B for its consistency (the actions in the same place on every page, always visible), after comparing how other admin panels and content tools place Save: content tools keep it at the top, admin frameworks at the bottom of the form, Shopify in a bar that appears on changes. The section jump tabs, the label and value rows on the view page and the sections in one card were dropped as layout changes outside the scope.
+
+### Design
+
+- **A sticky page header on every resource page.** The page header sticks to the top of the window as the page scrolls, with a rule under it and a translucent canvas background, so the title and the page's actions stay in view. On a phone it keeps the title and the actions and hides the description.
+- **The title names the record** on the view and edit pages. The page's own `Title` setting wins, then the record's title (`UseTitle`, or the `[DisplayColumn]`, `Name` or `Title` property), then today's label pattern (`ConfigureResourceLabels`, View Product and Edit Product). A record whose title would only be its key gets the label pattern, since the developer needs to give the resource a proper title. The browser tab's title follows the page title.
+- **Index page:** the title and Create, as today, in the sticky header.
+- **View page:** Back, Delete and Edit in the header. Delete is an outline destructive button (outline, not ghost and not today's solid destructive). Edit stays the primary button. Back stays until the [app header breadcrumb](app-header-breadcrumb.md) lands.
+- **Edit and create pages:** Delete (edit only), Cancel and Save (Add on create, and Save and add another when enabled) move from the bottom of the form to the header, in the same place as Edit and Create. Delete is the same outline destructive button as on the view page, not in a menu. The form loses its bottom row of buttons.
+- **The order of the header's actions:** on the form page, the `form-leading-actions` slot (where the edit page puts Delete), `pre-form-actions`, Cancel, Save and add another, Save, `post-form-actions`; on the view page, `pre-page-actions`, Back, Delete, Edit, `post-page-actions`; on the index page, as today.
+- **Widgets:** the edit and create pages' aside widget column already sticks; it now sticks under the header instead of sliding beneath it.
+
+### Phase 1: StellarAdmin.UI
+
+- `ButtonVariant.OutlineDestructive`, appended at the end of the enum: an outline button with the danger text colour and a soft danger fill on hover, in `button.css`, reading the existing danger tokens.
+- `Sticky` (`sticky`) on `<sa-page-header>`, off by default so other pages don't change: the header sticks to the top with a rule under it and a translucent canvas background, and on a phone hides its breadcrumb and description. It reaches the page's edges with negative margins of the page container's padding, so it does so only as a direct child of `<sa-page-container>`.
+- The page container's padding becomes a foundation token (for example `--sa-space-page`, 5 units and 8 from the md breakpoint), read by `page-container.css` and `page-header.css` and listed in `docs/design/tokens.md`.
+- Tag helper tests, DocsSamples demos (the variant, a sticky header over a long page), the website's Button and Page header pages, the generated skills reference and the public API files.
+
+Checkpoint with Jerrie before phase 2.
+
+Phase 1 implemented (2026-11-01), not committed. `ButtonVariant.OutlineDestructive` renders `sa-button-variant-outline-destructive`, which shares the outline variant's rules and sets the danger text colour, the soft danger fill on hover and active, and the danger focus ring. `sticky` renders `data-sticky`; the header sits at z-index 15, above the content's raised parts (10) and under the sidebar's backdrop (20), with 5 units above the title (3 on a phone) and 4 below. `--sa-space-page` is in `tokens.css` and `page-container.css` reads it. DocsSamples: an outline destructive button beside each destructive one in every Button and LinkButton demo that shows the variants (Sizes and Variants, Icon Left, Icon Right, Icon Only, Spinner, Invalid States), and a new PageHeader Sticky demo (registered in `DemoGenerator`). Website: a sentence on the variant on the Button and Link Button pages, and a Sticky header section and the `sticky` attribute on the Page header page. Verified: `StellarAdmin.UI.Tests` (810, with new `ButtonTagHelperTests` and `PageHeaderTagHelperTests`) and `StellarAdmin.UI.IntegrationTests` (19) pass; CDP screenshots of the Sticky demo scrolled at 1280 and 390px, and of the button variants in light and dark mode; `docs generate demos` (the website diff is the two pages, the new demo and the usual stylesheet hash change) and `skills generate`/`skills check` (the button variant lists and the page header's new attribute table). Not checked: the website pages in its dev server, and the theme fixtures.
+
+### Phase 2: StellarAdmin (admin panel)
+
+- `_IndexPage.cshtml`, `_ViewPage.cshtml` and `_FormPage.cshtml`: `sticky` on the page header and the actions in the order above. On the form page, the buttons sit in the header, outside the form, and name it with their `form` attribute.
+- `ResourceEdit.cshtml`: Delete as `ButtonVariant.OutlineDestructive`, still through `form-leading-actions`, which now renders in the header. The customization reference and the docs describe the slots' new place.
+- `ResourceController`: the view and edit page titles as above, with the record's title read from the loaded record.
+- `client.css`: the widget column's offset under the header.
+- `stellar-admin-panel.js`: measure the header's height for the widget column's offset; the Ctrl/Cmd+Enter and Ctrl/Cmd+Shift+Enter shortcuts find the submit buttons through the form's elements (`form.elements`) instead of inside the form.
+- Tests: the page rendering tests for the moved buttons and slots and the titles (page setting, record title, key-only fallback); the shortcuts with the buttons outside the form. CDP checks at 1440, 768 and 390px, with and without widgets, in the theme fixtures and dark mode, and the inset sidebar variant, where the main area is a rounded card and the sticky header hasn't been checked yet. The docs screenshots of these pages are regenerated through write-docs-screenshot-specs.
+
+### Decisions (Jerrie, 2026-11-01)
+
+- The sticky header is an option of `<sa-page-header>` in StellarAdmin.UI, with the page container's padding as a foundation token.
+- The edit page's Delete is the same outline destructive button as the view page's, in the header, not in a menu.
+- The view page keeps its Back button until the app header breadcrumb lands.
+- The new member is `ButtonVariant.OutlineDestructive`.
+- The title order: the page's `Title` setting, the record's title, the label pattern; a key-only title falls back to the label pattern.
+- Two phases, UI then admin panel, with a checkpoint between them.
 
 ## Implementation (index page)
 
@@ -69,4 +116,6 @@ Phase 2 implemented (2026-10-31). The card and its controls are in the new `_Ind
 
 - Scope counts: the POC shows them, but they're not included (Jerrie, 2026-10-31); a scope has no count today and each one would cost a count query per page load.
 - Hiding the Filter button's F hint on touch screens and Clear's line of its own with seven filters belong to the filters work.
-- The view, create and edit pages.
+- The breadcrumb in the app header, moved to [app header breadcrumb](app-header-breadcrumb.md) (Jerrie, 2026-11-01).
+- An unsaved changes indicator on the create and edit pages, moved to [unsaved changes](unsaved-changes.md) (Jerrie, 2026-11-01).
+- A subtitle under the page title, moved to [page subtitles](page-subtitles.md) (Jerrie, 2026-11-01).

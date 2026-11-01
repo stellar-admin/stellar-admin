@@ -124,7 +124,7 @@ Renders a dropdown menu, which pairs a trigger with its content.
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `size` | `ButtonSize` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
-| `variant` | `ButtonVariant` | `Outline` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `variant` | `ButtonVariant` | `Outline` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link`, `OutlineDestructive` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

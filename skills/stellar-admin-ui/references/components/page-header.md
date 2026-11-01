@@ -18,6 +18,15 @@ Renders a header at the top of a page's content.
 | `<sa-page-header-nav>` | Renders a full-width navigation area at the bottom of a page header. |
 | `<sa-page-header-title>` | Renders the title of a page header as the page's `<h1>` heading. |
 
+## Attributes
+
+### `<sa-page-header>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `sticky` | `bool` | `false` | `true`, `false` |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
 ## Examples
 
 *From `Pages/PageHeader/_Intro.cshtml`*

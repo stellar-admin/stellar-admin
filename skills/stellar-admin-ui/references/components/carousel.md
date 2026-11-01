@@ -45,7 +45,7 @@ The light-DOM web component uses native scrolling and Invoker Commands. Without 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `size` | `ButtonSize` | `IconSmall` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
-| `variant` | `ButtonVariant` | `Outline` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `variant` | `ButtonVariant` | `Outline` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link`, `OutlineDestructive` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-carousel-previous>`
@@ -53,7 +53,7 @@ The light-DOM web component uses native scrolling and Invoker Commands. Without 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `size` | `ButtonSize` | `IconSmall` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
-| `variant` | `ButtonVariant` | `Outline` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `variant` | `ButtonVariant` | `Outline` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link`, `OutlineDestructive` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

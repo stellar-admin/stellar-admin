@@ -148,9 +148,17 @@
     --sa-space-item-x: calc(1.5 * var(--sa-unit));
     --sa-space-item-y: calc(1 * var(--sa-unit));
     --sa-space-item-gap: calc(1.5 * var(--sa-unit));
+    --sa-space-page: calc(5 * var(--sa-unit));                                             /* the page container's padding */
 
     --sa-border-width: var(--sa-stroke);
     --sa-focus-ring-width: var(--sa-focus-width);
+  }
+  @media (width >= 48rem) {
+    :root,
+    [data-sa-density],
+    [data-sa-scope] {
+      --sa-space-page: calc(8 * var(--sa-unit));
+    }
   }
 
   /* --- Colour ramps: the only mode-specific part ---------------------------------------------- */

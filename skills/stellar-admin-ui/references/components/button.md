@@ -22,7 +22,7 @@ Renders a button that triggers an action.
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `size` | `ButtonSize` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
-| `variant` | `ButtonVariant` | `Default` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `variant` | `ButtonVariant` | `Default` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link`, `OutlineDestructive` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
@@ -32,7 +32,7 @@ Renders a button that triggers an action.
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `size` | `ButtonSize` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
-| `variant` | `ButtonVariant` | `Default` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `variant` | `ButtonVariant` | `Default` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link`, `OutlineDestructive` |
 | `asp-action` | `string` | — | — |
 | `asp-area` | `string` | — | — |
 | `asp-controller` | `string` | — | — |

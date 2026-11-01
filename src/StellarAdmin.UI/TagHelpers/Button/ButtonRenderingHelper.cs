@@ -15,6 +15,7 @@ internal static class ButtonRenderingHelper
         [ButtonVariant.Secondary] = "sa-button-variant-secondary",
         [ButtonVariant.Ghost] = "sa-button-variant-ghost",
         [ButtonVariant.Link] = "sa-button-variant-link",
+        [ButtonVariant.OutlineDestructive] = "sa-button-variant-outline-destructive",
     };
 
     private static readonly Dictionary<ButtonSize, string> ButtonSizeClasses = new Dictionary<

@@ -1,0 +1,54 @@
+/* Record pages prototype: candidate styles (sandbox only).
+   The rules under @layer components are written as the admin panel's client.css would write them, reading only theme
+   variables and tokens. The rp-proto-* rules at the bottom are prototype chrome and are not extracted. */
+
+@layer components {
+  .rp-sticky-header > .sa-page-header-description { display: flex; align-items: center; gap: calc(1.5 * var(--sa-unit)); }
+  /* An outline button in the danger colour; the button has no such variant, so this sets its private colours */
+  .rp-outline-danger { --_fg: var(--sa-color-danger-text); --_bg-hover: var(--sa-color-danger-soft); --_bg-active: var(--sa-color-danger-soft-hover); }
+
+  /* The header sticks as the page scrolls, so the page's actions stay in view */
+  .rp-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    margin: calc(-8 * var(--sa-unit)) calc(-8 * var(--sa-unit)) 0;
+    padding: calc(5 * var(--sa-unit)) calc(8 * var(--sa-unit)) calc(4 * var(--sa-unit));
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+    background: color-mix(in oklab, var(--sa-color-canvas) 90%, transparent);
+    backdrop-filter: blur(8px);
+    /* A phone keeps the title and the actions in view, not the breadcrumb and the description */
+    @media (width < 48rem) {
+      margin: calc(-5 * var(--sa-unit)) calc(-5 * var(--sa-unit)) 0;
+      padding: calc(3 * var(--sa-unit)) calc(5 * var(--sa-unit)) calc(3 * var(--sa-unit));
+      & > [data-slot="breadcrumb"], & > .sa-page-header-description { display: none; }
+    }
+  }
+  /* Beside a sticky header, the widget column sticks under it */
+  .sa-page-container:has(> .rp-sticky-header) .sa-widgets-column[data-sticky] { top: calc(var(--rp-header-h, 0px) + 4 * var(--sa-unit)); }
+
+  /* In the top bar, a long breadcrumb clips instead of widening the page */
+  .sa-app-header > [data-slot="breadcrumb"] { min-width: 0; overflow: hidden; }
+  .sa-app-header > [data-slot="breadcrumb"] .sa-breadcrumb-list { flex-wrap: nowrap; white-space: nowrap; }
+}
+
+/* ---------- Prototype chrome (not extracted) ---------- */
+.sa-configuration-problems { display: none; }
+.rp-proto-controls {
+  position: fixed; left: 12px; bottom: 12px; z-index: 50; width: 300px; max-height: calc(100vh - 24px); overflow: auto;
+  border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-surface-raised, var(--sa-color-surface));
+  box-shadow: var(--sa-shadow-overlay); color: var(--sa-color-ink); font: 12px/1.4 var(--sa-font-sans);
+}
+.rp-proto-controls > header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--sa-color-line); font-weight: 600; }
+.rp-proto-controls[data-collapsed] > :not(header) { display: none !important; }
+.rp-proto-controls[data-collapsed] > header { border-bottom: 0; }
+.rp-proto-controls h3 { margin: 0; padding: 10px 12px 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--sa-color-ink-muted); }
+.rp-proto-controls .rows { display: grid; grid-template-columns: 76px 1fr; gap: 6px 10px; align-items: center; padding: 8px 12px; }
+.rp-proto-controls .rows > span { color: var(--sa-color-ink-muted); }
+.rp-proto-controls .group { display: flex; flex-wrap: wrap; gap: 2px; padding: 2px; border-radius: 6px; background: var(--sa-color-tint, var(--sa-color-hover)); width: fit-content; }
+.rp-proto-controls button { padding: 3px 8px; border: 0; border-radius: 4px; background: transparent; color: inherit; font: inherit; cursor: pointer; text-align: left; }
+.rp-proto-controls .group button[aria-pressed="true"] { background: var(--sa-color-surface); box-shadow: var(--sa-shadow-control); font-weight: 600; }
+.rp-proto-controls header button { border: 1px solid var(--sa-color-line); }
+.rp-proto-controls .note { margin: 0; padding: 6px 12px 10px; color: var(--sa-color-ink-muted); }
+.rp-proto-controls .note b { color: var(--sa-color-ink); }
+.rp-proto-controls .note.keys { padding-top: 0; }

@@ -1,5 +1,6 @@
 /* Page header: a title with an optional breadcrumb above, description below, actions beside (below on
-   narrow screens) and a nav row (usually line tabs) underneath.
+   narrow screens) and a nav row (usually line tabs) underneath. A sticky header stays at the top as the
+   page scrolls.
    Replaces: .sa-page-header, .sa-page-header-title, .sa-page-header-description,
    .sa-page-header-actions, .sa-page-header-nav */
 
@@ -14,6 +15,29 @@
       grid-column: 1 / -1;
       padding-bottom: var(--sa-unit);
     }
+  }
+  /* Sticky: stays at the top of the scrolling page, ruled off from the content passing under its
+     translucent canvas. Above the content's raised parts (10), under the sidebar's backdrop (20). As a
+     page container's child it reaches the container's edges and keeps the page's side padding. A narrow
+     screen keeps the title, the actions and the nav in view, not the breadcrumb and the description. */
+  .sa-page-header[data-sticky] {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    padding-bottom: calc(4 * var(--sa-unit));
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+    background: color-mix(in oklab, var(--sa-color-canvas) 90%, transparent);
+    backdrop-filter: blur(8px);
+    @media (width < 48rem) {
+      padding-bottom: calc(3 * var(--sa-unit));
+      & > :is([data-slot="breadcrumb"], .sa-page-header-description) { display: none; }
+    }
+  }
+  .sa-page-container > .sa-page-header[data-sticky] {
+    margin: calc(-1 * var(--sa-space-page)) calc(-1 * var(--sa-space-page)) 0;
+    padding-top: calc(5 * var(--sa-unit));
+    padding-inline: var(--sa-space-page);
+    @media (width < 48rem) { padding-top: calc(3 * var(--sa-unit)); }
   }
   .sa-page-header-title {
     color: var(--sa-color-ink);

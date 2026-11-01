@@ -1,0 +1,58 @@
+@{
+    var departures = new[]
+    {
+        ("Lisbon", "Portugal", "2 Apr 2027", 18), ("Kyoto", "Japan", "6 Apr 2027", 12),
+        ("Reykjavík", "Iceland", "9 Apr 2027", 16), ("Marrakesh", "Morocco", "14 Apr 2027", 20),
+        ("Cape Town", "South Africa", "18 Apr 2027", 14), ("Hanoi", "Vietnam", "23 Apr 2027", 10),
+        ("Cusco", "Peru", "27 Apr 2027", 12), ("Dubrovnik", "Croatia", "2 May 2027", 22),
+        ("Queenstown", "New Zealand", "7 May 2027", 8), ("Istanbul", "Turkey", "11 May 2027", 24),
+        ("Banff", "Canada", "16 May 2027", 14), ("Santorini", "Greece", "21 May 2027", 18),
+        ("Edinburgh", "Scotland", "26 May 2027", 20), ("Zanzibar", "Tanzania", "31 May 2027", 12),
+        ("Petra", "Jordan", "4 Jun 2027", 16), ("Bergen", "Norway", "8 Jun 2027", 18),
+        ("Oaxaca", "Mexico", "12 Jun 2027", 14), ("Siem Reap", "Cambodia", "15 Jun 2027", 10),
+        ("Seville", "Spain", "19 Jun 2027", 22), ("Tbilisi", "Georgia", "23 Jun 2027", 12),
+        ("Hobart", "Australia", "27 Jun 2027", 8), ("Ljubljana", "Slovenia", "30 Jun 2027", 16),
+    };
+}
+<sa-page-container width="PageContainerWidth.Medium">
+    <!-- code begin -->
+    <sa-page-header sticky="true">
+        <sa-page-header-title>Departures</sa-page-header-title>
+        <sa-page-header-description>Group trips leaving in the next three months.</sa-page-header-description>
+        <sa-page-header-actions>
+            <sa-button variant="ButtonVariant.Outline">
+                <sa-icon name="download"/>
+                Export
+            </sa-button>
+            <sa-button>
+                <sa-icon name="plus"/>
+                Add departure
+            </sa-button>
+        </sa-page-header-actions>
+    </sa-page-header>
+    <!-- code end -->
+
+    <div class="w-full overflow-x-auto rounded-lg border">
+        <sa-table>
+            <sa-table-header>
+                <sa-table-row>
+                    <sa-table-head>Destination</sa-table-head>
+                    <sa-table-head>Country</sa-table-head>
+                    <sa-table-head>Departs</sa-table-head>
+                    <sa-table-head class="text-right">Seats</sa-table-head>
+                </sa-table-row>
+            </sa-table-header>
+            <sa-table-body>
+                @foreach (var (destination, country, departs, seats) in departures)
+                {
+                    <sa-table-row>
+                        <sa-table-cell class="font-medium">@destination</sa-table-cell>
+                        <sa-table-cell>@country</sa-table-cell>
+                        <sa-table-cell>@departs</sa-table-cell>
+                        <sa-table-cell class="text-right tabular-nums">@seats</sa-table-cell>
+                    </sa-table-row>
+                }
+            </sa-table-body>
+        </sa-table>
+    </div>
+</sa-page-container>

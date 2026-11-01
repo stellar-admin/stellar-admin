@@ -35,7 +35,7 @@ Renders a group that combines an input with add-ons, buttons or text into one fi
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `size` | `InputGroupButtonSize` | `ExtraSmall` | `ExtraSmall`, `Small`, `IconExtraSmall`, `IconSmall` |
-| `variant` | `ButtonVariant` | `Ghost` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `variant` | `ButtonVariant` | `Ghost` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link`, `OutlineDestructive` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-input-group-input>`
