@@ -1,8 +1,8 @@
 # Custom create and edit models on EF Core resources
 
-Status: implemented on the `efcore-form-models` branch of the product and website repositories, in review (2026-11-02).
+Status: completed (2026-11-02); merged into `master` in the product and website repositories.
 
-Let an EF Core resource use a form model with extra fields, and run code when it saves, without giving up the EF data source. Today one extra field (a reason for the change, a password confirmation) means `AllowEdit<TModel, THandler>`, and the handler then loads, maps and saves by hand, losing what `EfCoreResourceDataSource` does: copying only the configured fields onto the tracked entity, many-to-many fields, the includes for lookups and display fields, and the concurrency and refused-delete messages. Covers create and edit saves from the "Save hooks" row of the [admin panel backlog](admin-panel-backlog.md); delete and list events are out of scope.
+Let an EF Core resource use a form model with extra fields, and run code when it saves, without giving up the EF data source. Today one extra field (a reason for the change, a password confirmation) means `AllowEdit<TModel, THandler>`, and the handler then loads, maps and saves by hand, losing what `EfCoreResourceDataSource` does: copying only the configured fields onto the tracked entity, many-to-many fields, the includes for lookups and display fields, and the concurrency and refused-delete messages. Covers create and edit saves from the "Save hooks" row of the [admin panel backlog](../admin-panel-backlog.md); delete and list events are out of scope.
 
 Motivating cases: an internal app that asks for a reason on every change and writes it to a separate audit table, and the playground's users, which save through `UserManager`.
 
@@ -13,7 +13,7 @@ Motivating cases: an internal app that asks for a reason on every change and wri
 3. A wrapped form model names its entity property with an explicit argument (`model => model.Product`), not by convention (2026-11-01).
 4. Events sit only on the create and edit builders, typed to the form's model. There are no resource-level events (query, delete, or saves from any form) (2026-11-01).
 5. The core create and edit builders are unsealed with a protected constructor, so the EF builders derive from them and add `Events` and `UseEvents` (2026-11-01).
-6. Fields under a wrapped model's entity are validated by attributes, as today: on the entity, or through `IValidatableObject` on the form model for properties that can't be annotated (2026-11-01). Reading rules from the EF model is out of scope: [Validation from the EF model](efcore-model-validation.md).
+6. Fields under a wrapped model's entity are validated by attributes, as today: on the entity, or through `IValidatableObject` on the form model for properties that can't be annotated (2026-11-01). Reading rules from the EF model is out of scope: [Validation from the EF model](../efcore-model-validation.md).
 7. The data source runs the `-ing` events and the save in one transaction, so an event that saves more than once (such as `UserManager`) doesn't open its own (2026-11-01).
 8. The after-save events (`Created`, `Updated`) have no `Fail` or `Handled`: the record is already saved (2026-11-01).
 9. `IResourceCreateHandler` and `IResourceEditHandler` stay; they remain useful for custom data sources. Retire them later only if they turn out not to be needed (2026-11-01).
@@ -410,7 +410,7 @@ Verification (2026-11-01 and 2026-11-02):
 - The playground users were smoke-tested against a copy of `app.db` on port 5207: index and search, labels, password mismatch and length, duplicate and invalid email, create with roles, edit with roles, an unknown role, and delete.
 - `skills check` and the skill validator pass; the website builds.
 
-The [admin panel backlog](admin-panel-backlog.md)'s "Save hooks" row is updated. The consumer skill's resources and relationships references and the website's many-to-many page now say that a many-to-many navigation through a join entity type with only its two foreign keys, such as Identity's `IdentityUserRole<string>`, can be edited; a join entity with columns of its own still needs a form model and handler.
+The [admin panel backlog](../admin-panel-backlog.md)'s "Save hooks" row is updated. The consumer skill's resources and relationships references and the website's many-to-many page now say that a many-to-many navigation through a join entity type with only its two foreign keys, such as Identity's `IdentityUserRole<string>`, can be edited; a join entity with columns of its own still needs a form model and handler.
 
 ## Implementation notes
 
