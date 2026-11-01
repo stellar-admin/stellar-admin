@@ -2,7 +2,7 @@
 
 Status: proposed (2026-11-01).
 
-A line under the title of the view, create and edit pages, such as a product's sku and category under its name. Split out of [page layout](page-layout.md)'s page header pass (Jerrie, 2026-11-01). The POC `sandbox/html/record-pages.html` shows it as `BAG-011 · Bags` under `Waxed Canvas Daypack`.
+A line under the title of the view, create and edit pages, such as a product's sku and category under its name. Split out of [page layout](archive/page-layout.md)'s page header pass (Jerrie, 2026-11-01). The POC `sandbox/html/record-pages.html` shows it as `BAG-011 · Bags` under `Waxed Canvas Daypack`.
 
 - `<sa-page-header-description>` already shows a line under the title. What's missing is configuration that produces it.
 - `_FormPage.cshtml` renders `ResourceFormPageViewModel.Subtitle` in the description, but nothing sets the property, so it's always empty. `_ViewPage.cshtml` renders no description.

@@ -2,7 +2,7 @@
 
 Status: proposed (2026-11-01).
 
-Show that a create or edit form has changes that aren't saved yet, beside its Save button. Split out of [page layout](page-layout.md)'s view, create and edit pass (Jerrie, 2026-11-01), which moves the form's actions into the page header but leaves the indicator out. An earlier version of the POC `sandbox/html/record-pages.html` showed it as an amber dot and "Unsaved changes" before the header's actions, the dot alone on a phone.
+Show that a create or edit form has changes that aren't saved yet, beside its Save button. Split out of [page layout](archive/page-layout.md)'s view, create and edit pass (Jerrie, 2026-11-01), which moves the form's actions into the page header but leaves the indicator out. An earlier version of the POC `sandbox/html/record-pages.html` showed it as an amber dot and "Unsaved changes" before the header's actions, the dot alone on a phone.
 
 Proposed detection, from the review on 2026-11-01:
 
