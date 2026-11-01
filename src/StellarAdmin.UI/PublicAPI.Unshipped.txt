@@ -27,7 +27,7 @@ override StellarAdmin.UI.AppHeaderSeparatorTagHelper.ProcessAsync(Microsoft.AspN
 override StellarAdmin.UI.AppHeaderTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.AttachmentActionsTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.AttachmentActionTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
-override StellarAdmin.UI.AttachmentButtonTriggerTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.AttachmentTriggerButtonTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.AttachmentContentTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.AttachmentDescriptionTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.AttachmentGroupTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
@@ -47,7 +47,7 @@ override StellarAdmin.UI.BreadcrumbListTagHelper.ProcessAsync(Microsoft.AspNetCo
 override StellarAdmin.UI.BreadcrumbPageTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.BreadcrumbSeparatorTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.BreadcrumbTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
-override StellarAdmin.UI.BubbleButtonContentTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+override StellarAdmin.UI.BubbleContentButtonTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.BubbleContentLinkTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.BubbleContentTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.BubbleGroupTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
@@ -388,8 +388,8 @@ StellarAdmin.UI.AttachmentActionTagHelper.Size.get -> StellarAdmin.UI.ButtonSize
 StellarAdmin.UI.AttachmentActionTagHelper.Size.set -> void
 StellarAdmin.UI.AttachmentActionTagHelper.Variant.get -> StellarAdmin.UI.ButtonVariant?
 StellarAdmin.UI.AttachmentActionTagHelper.Variant.set -> void
-StellarAdmin.UI.AttachmentButtonTriggerTagHelper
-StellarAdmin.UI.AttachmentButtonTriggerTagHelper.AttachmentButtonTriggerTagHelper() -> void
+StellarAdmin.UI.AttachmentTriggerButtonTagHelper
+StellarAdmin.UI.AttachmentTriggerButtonTagHelper.AttachmentTriggerButtonTagHelper() -> void
 StellarAdmin.UI.AttachmentContentTagHelper
 StellarAdmin.UI.AttachmentContentTagHelper.AttachmentContentTagHelper() -> void
 StellarAdmin.UI.AttachmentDescriptionTagHelper
@@ -476,8 +476,8 @@ StellarAdmin.UI.BreadcrumbTagHelper.BreadcrumbTagHelper() -> void
 StellarAdmin.UI.BubbleAlign
 StellarAdmin.UI.BubbleAlign.End = 1 -> StellarAdmin.UI.BubbleAlign
 StellarAdmin.UI.BubbleAlign.Start = 0 -> StellarAdmin.UI.BubbleAlign
-StellarAdmin.UI.BubbleButtonContentTagHelper
-StellarAdmin.UI.BubbleButtonContentTagHelper.BubbleButtonContentTagHelper() -> void
+StellarAdmin.UI.BubbleContentButtonTagHelper
+StellarAdmin.UI.BubbleContentButtonTagHelper.BubbleContentButtonTagHelper() -> void
 StellarAdmin.UI.BubbleContentLinkTagHelper
 StellarAdmin.UI.BubbleContentLinkTagHelper.BubbleContentLinkTagHelper(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator! htmlGenerator) -> void
 StellarAdmin.UI.BubbleContentTagHelper

@@ -1,6 +1,6 @@
 ---
 component: Attachment
-tags: [sa-attachment, sa-attachment-action, sa-attachment-actions, sa-attachment-button-trigger, sa-attachment-content, sa-attachment-description, sa-attachment-group, sa-attachment-media, sa-attachment-title, sa-attachment-trigger-link]
+tags: [sa-attachment, sa-attachment-action, sa-attachment-actions, sa-attachment-content, sa-attachment-description, sa-attachment-group, sa-attachment-media, sa-attachment-title, sa-attachment-trigger-button, sa-attachment-trigger-link]
 generated: true
 ---
 
@@ -15,12 +15,12 @@ Renders a file with its media, details, upload state and actions.
 | `<sa-attachment>` | Renders a file with its media, details, upload state and actions. |
 | `<sa-attachment-action>` | Renders a button that acts on an attachment, such as removing or retrying it. |
 | `<sa-attachment-actions>` | Renders the area of an attachment that holds its action buttons. |
-| `<sa-attachment-button-trigger>` | Renders a button that makes the whole attachment clickable. |
 | `<sa-attachment-content>` | Renders the area of an attachment that holds its title and description. |
 | `<sa-attachment-description>` | Renders the description of an attachment, such as its file type, size or upload status. |
 | `<sa-attachment-group>` | Renders a row of attachments that scrolls horizontally and snaps each one into view. |
 | `<sa-attachment-media>` | Renders the media of an attachment, such as a file type icon or a thumbnail. |
 | `<sa-attachment-title>` | Renders the name of an attachment, shortened to fit. |
+| `<sa-attachment-trigger-button>` | Renders a button that makes the whole attachment clickable. |
 | `<sa-attachment-trigger-link>` | Renders a link that makes the whole attachment clickable. |
 
 ## Attributes
@@ -319,7 +319,7 @@ Renders a file with its media, details, upload state and actions.
                 <sa-icon name="x"/>
             </sa-attachment-action>
         </sa-attachment-actions>
-        <sa-attachment-button-trigger commandfor="--attachment-preview" command="show-modal"
+        <sa-attachment-trigger-button commandfor="--attachment-preview" command="show-modal"
                                       aria-label="Preview kyoto-itinerary.pdf"/>
     </sa-attachment>
     <sa-attachment>

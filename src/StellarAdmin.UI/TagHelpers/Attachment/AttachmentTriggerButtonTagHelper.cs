@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Renders the content of a bubble as a button, so the whole bubble can be clicked.
+///     Renders a button that makes the whole attachment clickable.
 /// </summary>
-[HtmlTargetElement("sa-bubble-button-content")]
-public sealed class BubbleButtonContentTagHelper : StellarAdminTagHelperBase
+/// <remarks>
+///     The attachment's action buttons stay clickable.
+/// </remarks>
+[HtmlTargetElement("sa-attachment-trigger-button")]
+public sealed class AttachmentTriggerButtonTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -19,7 +22,7 @@ public sealed class BubbleButtonContentTagHelper : StellarAdminTagHelperBase
             output.Attributes.SetAttribute("type", "button");
         }
 
-        BubbleContentRenderingHelper.Render(output);
+        AttachmentTriggerRenderingHelper.Render(output);
 
         return Task.CompletedTask;
     }

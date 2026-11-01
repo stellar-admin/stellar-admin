@@ -26,3 +26,9 @@ Where it was already called a link button (found 2026-11-01) and so needed no ch
 - `stellar skills generate` matched the renamed references; `skills check` passes.
 - `docs generate demos` regenerated the website includes. The run also rewrote 32 `public/demo/ui` files with new antiforgery tokens and carousel IDs only; those were restored.
 - Website `pnpm types:check` passes. Not rendered in a browser.
+
+## Button versions named role last
+
+Two tags with button and link versions put "button" in the middle, against the role-last rule their link versions follow (Jerrie, 2026-11-01). Renamed: `sa-attachment-button-trigger` to `sa-attachment-trigger-button` (`AttachmentTriggerButtonTagHelper`) and `sa-bubble-button-content` to `sa-bubble-content-button` (`BubbleContentButtonTagHelper`). The marker and sidebar menu button and link tags already follow the rule and were left alone.
+
+Verified 2026-11-01: build 0 errors; `dotnet test StellarAdmin.slnx -c Release` 2092 of 2092 passed; `skills generate` and `skills check` pass; `docs generate demos` regenerated the attachment and bubble includes (token-only `public/demo/ui` churn restored); website `pnpm types:check` passes. Not rendered in a browser.

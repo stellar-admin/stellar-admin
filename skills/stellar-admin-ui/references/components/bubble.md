@@ -1,6 +1,6 @@
 ---
 component: Bubble
-tags: [sa-bubble, sa-bubble-button-content, sa-bubble-content, sa-bubble-content-link, sa-bubble-group, sa-bubble-reactions]
+tags: [sa-bubble, sa-bubble-content, sa-bubble-content-button, sa-bubble-content-link, sa-bubble-group, sa-bubble-reactions]
 generated: true
 ---
 
@@ -13,8 +13,8 @@ Renders a message in a conversation, with its content and any reactions.
 | Tag | Description |
 |-----|-------------|
 | `<sa-bubble>` | Renders a message in a conversation, with its content and any reactions. |
-| `<sa-bubble-button-content>` | Renders the content of a bubble as a button, so the whole bubble can be clicked. |
 | `<sa-bubble-content>` | Renders the framed content of a bubble, which holds the message text. |
+| `<sa-bubble-content-button>` | Renders the content of a bubble as a button, so the whole bubble can be clicked. |
 | `<sa-bubble-content-link>` | Renders the content of a bubble as a link, so the whole bubble can be clicked. |
 | `<sa-bubble-group>` | Renders a stack of consecutive bubbles from the same sender. |
 | `<sa-bubble-reactions>` | Renders a row of emoji reactions or small actions on an edge of a bubble. |
