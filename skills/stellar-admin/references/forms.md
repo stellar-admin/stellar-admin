@@ -11,6 +11,7 @@
 - [Sharing fields between create and edit](#sharing-fields-between-create-and-edit)
 - [Layout: columns, sections and groups](#layout-columns-sections-and-groups)
 - [Validation](#validation)
+- [EF Core form events](#ef-core-form-events)
 - [Custom create and edit models](#custom-create-and-edit-models)
 - [Fields bound by code](#fields-bound-by-code)
 
@@ -169,9 +170,88 @@ Model validation runs on every post, including data annotations (`[Required]`, `
 
 Inputs post as `Entity.{Property}` (with a `Sheet` prefix in a create sheet opened from a lookup); this matters only for tests that post forms directly. Every post needs the antiforgery token the page renders.
 
+## EF Core form events
+
+On an EF Core resource, `AllowCreate` and `AllowEdit` return builders with `Events(...)` and `UseEvents<TEvents>()`. Use them for audit rows, values the form doesn't show, defaults that need services, rules that compare old and new values, saving through a service such as `UserManager`, and side effects after the save. The EF data source still copies the configured fields, binds many-to-many fields and reports concurrency conflicts.
+
+```csharp
+resource.AllowEdit(edit =>
+{
+    edit.Fields(fields =>
+    {
+        fields.Add(tour => tour.Name);
+        fields.Add(tour => tour.Price);
+    });
+    edit.Events(events =>
+        events.OnUpdating = (context, _) =>
+        {
+            var original = context.Entry.Property(tour => tour.Price).OriginalValue;
+            if (context.Entity.Price < original / 2)
+            {
+                context.Fail(tour => tour.Price, "The price can't drop by more than half in one change.");
+            }
+
+            return Task.CompletedTask;
+        });
+});
+```
+
+| Event | Runs | Use for |
+| --- | --- | --- |
+| `OnInitialized` (create) | After the factory, wherever a create form is shown: the create page, a new inline row, a lookup's create sheet, the next form after save and add another (before the kept values). Not for a submitted form. | Defaults the user sees and can change, from services or the database. |
+| `OnCreating`, `OnUpdating` | After the form's values are on the entity the context tracks, before `SaveChanges`, in one transaction with the save. | Audit rows (`context.Db.Add(...)`), values the form doesn't show (`CreatedBy`), rules, saving through a service. |
+| `OnCreated`, `OnUpdated` | After the save is committed. | Emails and other side effects. An exception is logged and the form continues as saved. |
+| `OnLoaded` (edit) | Each time the edit form loads the record, including before a submitted form is bound. | Filling form-only fields of a wrapped model. |
+
+- Every context has `Db`, `Entity`, `Model` and `Services`. With a plain form, `Model` and `Entity` are the same object.
+- The saving context adds `Entry` (original and current values), `Fail(message)` for a form error, `Fail(model => model.Property, message)` for a field error, and `Handled()` when the event saved the record itself. `Fail` rolls back everything, including what the event saved.
+- The after-save events have no `Fail` or `Handled`; the record is already saved.
+- `UseEvents<TEvents>()` takes a class derived from `EfCoreCreateEvents<TEntity, TModel>` or `EfCoreEditEvents<TEntity, TModel>` that overrides `CreatingAsync`, `UpdatingAsync` and the others. It's registered as a scoped service, so its constructor takes services. It replaces delegates set with `Events`.
+- `Fields(...)` returns the core builder, so call `Events` as its own statement rather than chained after `Fields`.
+- Events exist only on EF Core resources' create and edit forms. There are no delete or list events.
+
+### Wrapped form models
+
+A form that needs fields the entity doesn't have (a reason for the change, a password) wraps the entity in a model of its own, and names the property that holds it:
+
+```csharp
+public sealed class EditTourModel
+{
+    public Tour Tour { get; set; } = null!;
+
+    [Required, StringLength(500)]
+    public string Reason { get; set; } = "";
+}
+
+resource.AllowEdit<EditTourModel>(model => model.Tour, edit =>
+{
+    edit.Fields(fields =>
+    {
+        fields.Add(model => model.Tour.Name);
+        fields.Add(model => model.Tour.DestinationId);
+        fields.Add(model => model.Tour.Tags).UseCheckboxGroupEditor(_ => { });
+        fields.Add(model => model.Reason);
+    });
+    edit.Events(events =>
+        events.OnUpdating = (context, _) =>
+        {
+            context.Db.Add(new TourAudit { TourId = context.Entity.Id, Reason = context.Model.Reason });
+
+            return Task.CompletedTask;
+        });
+});
+```
+
+- Fields under the entity's property save, look up, infer their resource and bind many-to-many as they do on the entity's own form. The other fields reach the events only.
+- The create model's property must hold a new entity (`public Tour Tour { get; set; } = new();`, or `UseFactory`). The edit model is created with its parameterless constructor and holds the stored entity, which isn't tracked in `OnLoaded`.
+- In `OnUpdating`, `context.Model.Tour` is the tracked entity, the same object as `context.Entity`.
+- Labels of entity fields come from the entity's properties, not the form model's `[Display]`; set `field.Title` where needed. Validate entity fields with attributes on the entity, or with `IValidatableObject` on the form model, naming the field's path (`new ValidationResult(message, ["Tour.Name"])`).
+- Index columns match wrapped fields without the property's name, so `model.Tour.Name` is edited inline by the `Name` column. A `[Required]` form-only property needs a field and column for an inline create row.
+- Inputs post as `Entity.Tour.Name`.
+
 ## Custom create and edit models
 
-When the form doesn't map one-to-one onto the entity (a password and confirmation, a many-to-many relationship through a join entity of your own, extra side effects), pair a form model with a handler:
+When the form doesn't map one-to-one onto the entity and an EF Core resource's [form events](#ef-core-form-events) don't fit, or the resource has a custom data source, pair a form model with a handler:
 
 ```csharp
 resource.AllowCreate<NewCustomerForm, NewCustomerHandler>(create => create.Fields(fields =>
@@ -211,7 +291,7 @@ public sealed class NewCustomerHandler(VoyagerDbContext db) : IResourceCreateHan
 - Handlers are registered as scoped services automatically and take services through their constructors. They replace the resource's own create or edit, and work with EF Core resources too.
 - Return `Success(key)` from create so a lookup's "New" sheet can select the created record.
 - Mark passwords `[DataType(DataType.Password)]`; they are left empty when the form redisplays.
-- This is also the place for save-time side effects; there are no before/after save hooks.
+- With a custom data source, the handler is also the place for save-time side effects.
 - Labels and titles still come from the resource.
 
 ## Fields bound by code

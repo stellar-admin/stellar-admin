@@ -1,6 +1,6 @@
 # Custom create and edit models on EF Core resources
 
-Status: proposed, being refined (2026-11-01).
+Status: implemented on the `efcore-form-models` branch of the product and website repositories, in review (2026-11-02).
 
 Let an EF Core resource use a form model with extra fields, and run code when it saves, without giving up the EF data source. Today one extra field (a reason for the change, a password confirmation) means `AllowEdit<TModel, THandler>`, and the handler then loads, maps and saves by hand, losing what `EfCoreResourceDataSource` does: copying only the configured fields onto the tracked entity, many-to-many fields, the includes for lookups and display fields, and the concurrency and refused-delete messages. Covers create and edit saves from the "Save hooks" row of the [admin panel backlog](admin-panel-backlog.md); delete and list events are out of scope.
 
@@ -383,14 +383,34 @@ None at the moment.
 
 ## Left to the implementation
 
-The implementing agent decides these, then records each choice in this plan:
+Decided during implementation (2026-11-01):
 
-- The steps and their order, the tests, and how much of the playground (such as the users), docs, consumer skills reference and `PublicAPI.Unshipped.txt` to update.
-- The members of the contexts for `OnInitialized`, `OnLoaded` and the after-save events.
-- On edit, whether `context.Model`'s entity property and `context.Entity` are the same object in `OnUpdating` (the submitted form binds a fresh, untracked entity whose fields are copied onto the tracked one). Users of the API see this choice.
-- Whether `OnLoaded` runs again when a save fails validation and the form is shown again.
-- The order of `OnInitialized` and the values `KeepForNext` carries over after Save and add another.
-- What happens when an event calls `Handled()` and the save throws a concurrency or database error.
+- **Steps:** four checkpoints, each stopped for Jerrie to test: events on plain forms; wrapped models; the playground's users; API review, consumer skill, website docs and this record.
+- **Contexts:** every event context derives from `EfCoreFormContext<TEntity, TModel>` with `Db`, `Entity`, `Model` and `Services`. `EfCoreInitializedContext`, `EfCoreLoadedContext` and `EfCoreSavedContext` add nothing; `EfCoreSaveContext` adds `Entry`, `Fail(message)`, `Fail(field, message)` and `Handled()`.
+- **The model's entity in `OnUpdating`:** the same object as `context.Entity`, the tracked entity. A failed save gives the model back the submitted entity, which the form displays again.
+- **`OnLoaded` on a failed save:** it runs each time the edit form loads the record, including before a submitted form is bound, so it runs again when the form is displayed again.
+- **`OnInitialized` and save and add another:** `OnInitialized` runs first, then the kept fields' values are applied, so the kept values win. It doesn't run for a submitted form or for the model that loads a field's items.
+- **`Handled()` and a failing save:** an exception from the event's own save is treated as one from the data source's save: a concurrency conflict on edit displays the concurrency message, and anything else rolls back and becomes the general save error.
+- **Transactions:** opened only when events are configured, not on the in-memory provider, and not when the context already has a transaction. A failed or throwing save clears the change tracker.
+- **A bad entity selector** (not a direct property with a public getter and setter) throws `ArgumentException` from `AllowCreate`/`AllowEdit`.
+
+## Implementation record
+
+Core (`StellarAdmin`): `ResourceCreateBuilder` and `ResourceEditBuilder` are unsealed, with a protected copy constructor, and protected `UseInitializer` (create) and `UseResourceProperty`. The controller runs the initializer wherever a create form is displayed, inline rows and `InlineRowCheck` match columns and required properties through the wrapped resource property, and the edit page title and a field's item model read the wrapped resource.
+
+EF Core: `AllowCreate()`/`AllowEdit()` hide the base methods and return `EfCoreResourceCreateBuilder<TEntity, TEntity>`/`EfCoreResourceEditBuilder<TEntity, TEntity>`; `AllowCreate<TModel>(entity, configure)`/`AllowEdit<TModel>(entity, configure)` add wrapped models. `edit => ...` is not ambiguous with the base overload, so `ResourceBuilderBase` wasn't restructured. Both forms save through internal `IResourceCreateHandler`/`IResourceEditHandler` classes that call the data source with the form's events. Field copying, include paths, inferred resources, many-to-many binders and the unsupported-field checks strip the entity's prefix. `Fields(...)` still returns the core builder, so `Events` can't be chained after it.
+
+Playground: the product edit form wraps `Product` with a required reason, rejects a price drop of more than half, and toasts the reason after saving (no audit table, which would need a migration). Users are an EF Core resource whose forms save through `UserManager` in events classes; `ApplicationUser.Roles` maps Identity's `AspNetUserRoles` as a many-to-many navigation, so roles are an ordinary field. A migration generated for that mapping was empty and the snapshot unchanged; it was removed.
+
+Docs: the `stellar-admin` consumer skill's forms reference, `SKILL.md` and inline editing reference; the website's new Form events page, and the custom models, default values and forms pages.
+
+Verification (2026-11-01 and 2026-11-02):
+
+- Unit 340, integration 749 and EF Core integration 170 tests pass, with `ResourceFormEventsTests` (10) and `ResourceWrappedModelTests` (9) added.
+- The playground users were smoke-tested against a copy of `app.db` on port 5207: index and search, labels, password mismatch and length, duplicate and invalid email, create with roles, edit with roles, an unknown role, and delete.
+- `skills check` and the skill validator pass; the website builds.
+
+The [admin panel backlog](admin-panel-backlog.md)'s "Save hooks" row is updated. The consumer skill's resources and relationships references and the website's many-to-many page now say that a many-to-many navigation through a join entity type with only its two foreign keys, such as Identity's `IdentityUserRole<string>`, can be edited; a join entity with columns of its own still needs a form model and handler.
 
 ## Implementation notes
 

@@ -23,6 +23,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Search, scope tabs, default sort, paging, expandable rows | `Index(index => ...)`, `EnableSearch`, `EnableScopes`, `DefaultSortBy`, `EnablePaging`, `EnableRowDetails` | [index-pages](references/index-pages.md) |
 | Grid columns: titles, sorting, currency, badges, values through references | `Columns(columns => columns.Add(...))`, `Sortable`, `UseDisplay` | [columns](references/columns.md) |
 | Create and edit pages: layout, sections, validation, defaults, save and add another, custom models | `AllowCreate`, `AllowEdit`, `Fields`, `AddSection`, `Columns`, `UseFactory`, `EnableAddAnother` | [forms](references/forms.md) |
+| Run code when an EF Core form loads or saves: audit rows, defaults from services, rules, `UserManager`, extra form fields | `Events`, `UseEvents`, `OnCreating`, `OnUpdating`, `Fail`, `AllowEdit<TModel>(model => model.Entity, ...)` | [forms](references/forms.md#ef-core-form-events) |
 | Edit and add small resources in the index grid's rows | `UseInlineRow`, `EditsField`, `InlineCreatePosition`, `InlineAddButton` | [inline-editing](references/inline-editing.md) |
 | Read-only values in forms, displays, display templates | `AddDisplayField`, `AddDetails`, `UseDisplay<TDisplay>` | [fields](references/fields.md) |
 | Read-only or disabled editable fields | `ReadOnly()`, `ReadOnly(predicate)`, `Disabled()` | [fields](references/fields.md#read-only-and-disabled-editable-fields) |
@@ -216,7 +217,7 @@ Say so rather than inventing an API:
 - Form tabs and wizards.
 - File upload editors other than images (`ImageEditor`, and images in `RichTextEditor`), and deleting replaced or removed images: StellarAdmin never deletes them, so the app cleans up files no record references.
 - Making a field read-only or disabled as other fields change in the browser (a `ReadOnly` condition is decided as the form renders, and `Disabled()` takes no condition).
-- Before/after save hooks (use a custom create or edit handler).
+- Save hooks on custom data sources (use a custom create or edit handler), and delete or list hooks. EF Core resources have create and edit [form events](references/forms.md#ef-core-form-events).
 - Search and scope predicates for non-EF data sources (the data source reads `ResourceListRequest.Search` and `Scope`).
 - Displays with handlers in index columns (the column keeps its default display).
 - Localization through `IStringLocalizer` (labels come from `ConfigureResourceLabels` delegates).

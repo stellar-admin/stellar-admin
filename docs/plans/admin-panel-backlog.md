@@ -13,7 +13,7 @@ Admin panel features that comparable frameworks (Filament, Nova, Avo, ActiveAdmi
 | Dashboard and widgets | The home page shows a setup checklist in Development and links to the resources elsewhere; there is no widget or stat API. |
 | File uploads | No general file upload editor. Images have `ImageEditor` and `ImageDisplay` ([image-field](archive/image-field.md)). |
 | Live read-only and disabled fields | `ReadOnly(predicate)` and `Disabled()` are decided as the form renders; a field can't become read-only or disabled as other fields change in the browser ([read-only-fields](archive/read-only-fields.md)). |
-| Save hooks | No before/after create, update or delete callbacks. EF data source errors propagate. |
+| Save hooks | EF Core resources have create and edit form events ([efcore-form-models](efcore-form-models.md)). Custom data sources have no callbacks beyond their handlers, and there are no delete or list events. |
 | Search and scope predicates for custom data sources | Only EF Core builders accept predicates; other data sources interpret `ResourceListRequest.Search` and `Scope` themselves. |
 | Delete handler registration | No `AllowDelete<THandler>` to match `AllowCreate<TModel, THandler>` and `AllowEdit<TModel, THandler>`; delete needs the data source. |
 | Display handlers in index columns | Throws; see [display-defaults](display-defaults.md). |

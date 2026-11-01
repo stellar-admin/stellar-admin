@@ -45,7 +45,7 @@ admin.AddEfCoreResource<Customer>(resource =>
 - Queries honour global query filters, count before paging and add primary-key ordering so pages are stable.
 - References on a column's or display field's path (`booking => booking.Customer!.Name`, or `booking => booking.Customer` for the customer's title) are loaded in the same query; no `Include` is needed.
 - Create builds the entity with its parameterless constructor or `create.UseFactory(...)`, binds the configured fields and saves. Edit loads the entity, copies only the configured editable fields onto the tracked entity and saves.
-- Form fields must be mapped scalar properties that are not keys, generated values or concurrency tokens, or many-to-many navigations whose join table has no entity type ([relationships](relationships.md#many-to-many-with-multilookupsheeteditor)). Other collections and navigations need a custom model and handler ([forms](forms.md#custom-create-and-edit-models)).
+- Form fields must be mapped scalar properties that are not keys, generated values or concurrency tokens, or many-to-many navigations whose join has no columns of its own ([relationships](relationships.md#many-to-many-with-multilookupsheeteditor)). Other collections and navigations need a custom model and handler ([forms](forms.md#custom-create-and-edit-models)).
 - A concurrency conflict on save shows a general error (or not found if the record was deleted). A delete the database refuses, such as one that other records still refer to, shows a general error and logs the exception as a warning; the record stays. Other database errors on save, such as a unique index violation, show a general error (see [delete](#delete)).
 - Search and scope predicates and sort selectors must translate through the provider.
 

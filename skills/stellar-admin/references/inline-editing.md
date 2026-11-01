@@ -66,7 +66,7 @@ admin.AddEfCoreResource<Destination>(resource =>
 
 ## Fields and columns
 
-The operation's fields define what the row edits, and every field must match a column. A field matches the column with the same property path. A column showing a different path than the field it edits names the field with `EditsField`, as the Country column above shows `Country.Name` and edits `CountryId`. `EditsField("CountryId")` takes the name instead, for a field of a separate edit or create model (`AllowEdit<TModel, THandler>`).
+The operation's fields define what the row edits, and every field must match a column. A field matches the column with the same property path. A column showing a different path than the field it edits names the field with `EditsField`, as the Country column above shows `Country.Name` and edits `CountryId`. `EditsField("CountryId")` takes the name instead, for a field of a separate edit or create model (`AllowEdit<TModel, THandler>`). A field of an EF Core form model that wraps the entity matches without the property's name: `model.Tour.Name` matches the `Name` column ([forms](forms.md#wrapped-form-models)).
 
 The resource loses that create or edit, inline row included, and a configuration problem is logged ([configuration problems](configuration-problems.md)) when:
 
