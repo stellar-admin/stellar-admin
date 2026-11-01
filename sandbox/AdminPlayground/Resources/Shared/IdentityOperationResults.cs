@@ -1,5 +1,4 @@
 using AdminPlayground.Resources.Roles;
-using AdminPlayground.Resources.Users;
 using Microsoft.AspNetCore.Identity;
 using StellarAdmin.Resources;
 
@@ -16,25 +15,6 @@ internal static class IdentityOperationResults
                         or nameof(IdentityErrorDescriber.InvalidRoleName)
                     ? nameof(RoleFormModel.Name)
                     : null
-        );
-
-    public static ResourceOperationResult ForUser(IdentityResult result, bool creating) =>
-        FromIdentity(
-            result,
-            error =>
-                error.Code switch
-                {
-                    nameof(IdentityErrorDescriber.DuplicateUserName)
-                    or nameof(IdentityErrorDescriber.InvalidUserName) => nameof(
-                        EditUserModel.Email
-                    ),
-                    nameof(IdentityErrorDescriber.DuplicateEmail)
-                    or nameof(IdentityErrorDescriber.InvalidEmail) => nameof(EditUserModel.Email),
-                    _ when creating
-                            && error.Code.StartsWith("Password", StringComparison.Ordinal) =>
-                        nameof(CreateUserModel.Password),
-                    _ => null,
-                }
         );
 
     private static ResourceOperationResult FromIdentity(

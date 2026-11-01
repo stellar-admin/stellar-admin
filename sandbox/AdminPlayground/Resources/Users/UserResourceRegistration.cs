@@ -9,7 +9,9 @@ internal static class UserResourceRegistration
 {
     internal static void AddUserResource(this StellarAdminBuilder admin)
     {
-        admin.AddResource<ApplicationUser>(
+        // Users are an EF Core resource of ApplicationDbContext. Their forms wrap the user with the password and roles
+        // that UserManager saves, through events
+        admin.AddEfCoreResource<ApplicationUser>(
             "users",
             resource =>
             {
@@ -25,8 +27,6 @@ internal static class UserResourceRegistration
                     item.Icon = "users";
                     item.Group = "Identity";
                 });
-                resource.UseDataSource<UserDataSource>();
-                resource.UseKey(user => user.Id);
                 resource.Index(index =>
                 {
                     index.Columns(columns =>
@@ -41,162 +41,219 @@ internal static class UserResourceRegistration
                         columns.Add(user => user.EmailConfirmed, column => column.Sortable());
                     });
                     index.DefaultSortBy(user => user.Email);
-                    index.EnableSearch(search => search.Placeholder = "Search users...");
+                    index.EnableSearch(
+                        term =>
+                            user =>
+                                (user.Email != null && user.Email.Contains(term))
+                                || user.FirstName.Contains(term)
+                                || user.LastName.Contains(term),
+                        search => search.Placeholder = "Search users..."
+                    );
                     index.EnablePaging();
                 });
-                resource.AllowCreate<CreateUserModel, CreateUserHandler>(create =>
-                    create.Fields(fields =>
+                resource.AllowCreate<CreateUserModel>(
+                    model => model.User,
+                    create =>
                     {
-                        fields.AddSection(
-                            "Account",
-                            section =>
-                            {
-                                section.Add(model => model.Email);
-                                section.Add(model => model.EmailConfirmed);
-                            }
-                        );
-                        fields.AddSection(
-                            "Profile",
-                            section =>
-                            {
-                                section.AddGroup(group =>
+                        create.UseEvents<CreateUserEvents>();
+                        create.Fields(fields =>
+                        {
+                            fields.AddSection(
+                                "Account",
+                                section =>
                                 {
-                                    group.Columns(2);
-                                    group.Add(model => model.FirstName);
-                                    group.Add(model => model.LastName);
-                                });
-                                section.Add(
-                                    model => model.DepartmentId,
-                                    field =>
+                                    section.Add(model => model.User.Email);
+                                    section.Add(
+                                        model => model.User.EmailConfirmed,
+                                        field => field.Title = "Email confirmed"
+                                    );
+                                }
+                            );
+                            fields.AddSection(
+                                "Profile",
+                                section =>
+                                {
+                                    section.AddGroup(group =>
                                     {
-                                        field.UseSelectEditor(options =>
+                                        group.Columns(2);
+                                        group.Add(
+                                            model => model.User.FirstName,
+                                            field => field.Title = "First name"
+                                        );
+                                        group.Add(
+                                            model => model.User.LastName,
+                                            field => field.Title = "Last name"
+                                        );
+                                    });
+                                    section.Add(
+                                        model => model.User.DepartmentId,
+                                        field =>
                                         {
-                                            options.UseResource<Department>();
-                                            options.EmptyChoiceText = "Not specified";
-                                        });
-                                    }
-                                );
-                                section.AddGroup(group =>
-                                {
-                                    group.Columns(2);
-                                    group
-                                        .Add(model => model.PreferredLanguage)
-                                        .UseSelectEditor(options =>
-                                        {
-                                            options.UseItems(UserLookups.Languages());
-                                            options.EmptyChoiceText = "Not specified";
-                                        });
-                                    group
-                                        .Add(model => model.TimeZoneId)
-                                        .UseSelectEditor(options =>
-                                        {
-                                            options.UseItems(UserLookups.TimeZones());
-                                            options.EmptyChoiceText = "Not specified";
-                                        });
-                                });
-                            }
-                        );
-                        fields.AddSection(
-                            "Roles",
-                            section =>
-                            {
-                                section.Description = "Select the roles the user belong to";
-                                section.Add(
-                                    model => model.RoleIds,
-                                    field =>
+                                            field.Title = "Department";
+                                            field.UseSelectEditor(options =>
+                                            {
+                                                options.UseResource<Department>();
+                                                options.EmptyChoiceText = "Not specified";
+                                            });
+                                        }
+                                    );
+                                    section.AddGroup(group =>
                                     {
-                                        field.UseCheckboxGroupEditor(options =>
-                                        {
-                                            options.UseResource<ApplicationRole>();
-                                            options.Columns(2);
-                                        });
-                                    }
-                                );
-                            }
-                        );
-                        fields.AddSection(
-                            "Password",
-                            section =>
-                                section.AddGroup(group =>
+                                        group.Columns(2);
+                                        group.Add(
+                                            model => model.User.PreferredLanguage,
+                                            field =>
+                                            {
+                                                field.Title = "Preferred language";
+                                                field.UseSelectEditor(options =>
+                                                {
+                                                    options.UseItems(UserLookups.Languages());
+                                                    options.EmptyChoiceText = "Not specified";
+                                                });
+                                            }
+                                        );
+                                        group.Add(
+                                            model => model.User.TimeZoneId,
+                                            field =>
+                                            {
+                                                field.Title = "Time zone";
+                                                field.UseSelectEditor(options =>
+                                                {
+                                                    options.UseItems(UserLookups.TimeZones());
+                                                    options.EmptyChoiceText = "Not specified";
+                                                });
+                                            }
+                                        );
+                                    });
+                                }
+                            );
+                            fields.AddSection(
+                                "Roles",
+                                section =>
                                 {
-                                    group.Columns(2);
-                                    group.Add(model => model.Password);
-                                    group.Add(model => model.PasswordConfirmation);
-                                })
-                        );
-                    })
+                                    section.Description = "Select the roles the user belong to";
+                                    section.Add(
+                                        model => model.RoleIds,
+                                        field =>
+                                        {
+                                            field.UseCheckboxGroupEditor(options =>
+                                            {
+                                                options.UseResource<ApplicationRole>();
+                                                options.Columns(2);
+                                            });
+                                        }
+                                    );
+                                }
+                            );
+                            fields.AddSection(
+                                "Password",
+                                section =>
+                                    section.AddGroup(group =>
+                                    {
+                                        group.Columns(2);
+                                        group.Add(model => model.Password);
+                                        group.Add(model => model.PasswordConfirmation);
+                                    })
+                            );
+                        });
+                    }
                 );
-                resource.AllowEdit<EditUserModel, EditUserHandler>(edit =>
-                    edit.Fields(fields =>
+                resource.AllowEdit<EditUserModel>(
+                    model => model.User,
+                    edit =>
                     {
-                        fields.AddSection(
-                            "Account",
-                            section =>
-                            {
-                                section.Add(model => model.Email);
-                                section.Add(model => model.EmailConfirmed);
-                            }
-                        );
-                        fields.AddSection(
-                            "Profile",
-                            section =>
-                            {
-                                section.AddGroup(group =>
+                        edit.UseEvents<EditUserEvents>();
+                        edit.Fields(fields =>
+                        {
+                            fields.AddSection(
+                                "Account",
+                                section =>
                                 {
-                                    group.Columns(2);
-                                    group.Add(model => model.FirstName);
-                                    group.Add(model => model.LastName);
-                                });
-                                section.Add(
-                                    model => model.DepartmentId,
-                                    field =>
-                                    {
-                                        field.UseSelectEditor(options =>
-                                        {
-                                            options.UseResource<Department>();
-                                            options.EmptyChoiceText = "Not specified";
-                                        });
-                                    }
-                                );
-                                section.AddGroup(group =>
+                                    section.Add(model => model.User.Email);
+                                    section.Add(
+                                        model => model.User.EmailConfirmed,
+                                        field => field.Title = "Email confirmed"
+                                    );
+                                }
+                            );
+                            fields.AddSection(
+                                "Profile",
+                                section =>
                                 {
-                                    group.Columns(2);
-                                    group
-                                        .Add(model => model.PreferredLanguage)
-                                        .UseSelectEditor(options =>
-                                        {
-                                            options.UseItems(UserLookups.Languages());
-                                            options.EmptyChoiceText = "Not specified";
-                                        });
-                                    group
-                                        .Add(model => model.TimeZoneId)
-                                        .UseSelectEditor(options =>
-                                        {
-                                            options.UseItems(UserLookups.TimeZones());
-                                            options.EmptyChoiceText = "Not specified";
-                                        });
-                                });
-                            }
-                        );
-                        fields.AddSection(
-                            "Roles",
-                            section =>
-                            {
-                                section.Description = "Select the roles the user belong to";
-                                section.Add(
-                                    model => model.RoleIds,
-                                    field =>
+                                    section.AddGroup(group =>
                                     {
-                                        field.UseCheckboxGroupEditor(options =>
+                                        group.Columns(2);
+                                        group.Add(
+                                            model => model.User.FirstName,
+                                            field => field.Title = "First name"
+                                        );
+                                        group.Add(
+                                            model => model.User.LastName,
+                                            field => field.Title = "Last name"
+                                        );
+                                    });
+                                    section.Add(
+                                        model => model.User.DepartmentId,
+                                        field =>
                                         {
-                                            options.UseResource<ApplicationRole>();
-                                            options.Columns(2);
-                                        });
-                                    }
-                                );
-                            }
-                        );
-                    })
+                                            field.Title = "Department";
+                                            field.UseSelectEditor(options =>
+                                            {
+                                                options.UseResource<Department>();
+                                                options.EmptyChoiceText = "Not specified";
+                                            });
+                                        }
+                                    );
+                                    section.AddGroup(group =>
+                                    {
+                                        group.Columns(2);
+                                        group.Add(
+                                            model => model.User.PreferredLanguage,
+                                            field =>
+                                            {
+                                                field.Title = "Preferred language";
+                                                field.UseSelectEditor(options =>
+                                                {
+                                                    options.UseItems(UserLookups.Languages());
+                                                    options.EmptyChoiceText = "Not specified";
+                                                });
+                                            }
+                                        );
+                                        group.Add(
+                                            model => model.User.TimeZoneId,
+                                            field =>
+                                            {
+                                                field.Title = "Time zone";
+                                                field.UseSelectEditor(options =>
+                                                {
+                                                    options.UseItems(UserLookups.TimeZones());
+                                                    options.EmptyChoiceText = "Not specified";
+                                                });
+                                            }
+                                        );
+                                    });
+                                }
+                            );
+                            fields.AddSection(
+                                "Roles",
+                                section =>
+                                {
+                                    section.Description = "Select the roles the user belong to";
+                                    section.Add(
+                                        model => model.RoleIds,
+                                        field =>
+                                        {
+                                            field.UseCheckboxGroupEditor(options =>
+                                            {
+                                                options.UseResource<ApplicationRole>();
+                                                options.Columns(2);
+                                            });
+                                        }
+                                    );
+                                }
+                            );
+                        });
+                    }
                 );
                 resource.AllowDelete(delete =>
                     delete.Message = "Delete this user account? This cannot be undone."
