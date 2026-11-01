@@ -11,12 +11,12 @@
         <sa-page-header-title>@Model.Title</sa-page-header-title>
         <sa-page-header-actions>
             <sa-slot-outlet name="pre-page-actions"/>
-            <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="view-back">Back</sa-button-link>
             @if (Model.Delete is { } delete)
             {
                 <sa-button type="button" variant="ButtonVariant.OutlineDestructive"
                            command="show-modal" commandfor="delete-confirm-dialog">@delete.Title</sa-button>
             }
+            <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="view-back">Back</sa-button-link>
             @if (Model.EditLabel is { } editLabel)
             {
                 <sa-button-link asp-action="Edit" asp-route-id="@Model.EntityId">@editLabel</sa-button-link>

@@ -152,7 +152,7 @@ Fill a slot with `<sa-slot-content>` inside the tag:
 </sa-view-page>
 ```
 
-The standard edit view fills `form-leading-actions` with the Delete button; an Edit override that fills that slot replaces it. `view="_MyIndexPage"` renders the tag through your own partial instead of the built-in one.
+The edit page has no Delete button; to add one, override Edit and put a `ButtonVariant.OutlineDestructive` button with `command="show-modal" commandfor="delete-confirm-dialog"` in `form-leading-actions`, then render `<partial name="_FormDeleteDialog" model="Model.Delete" />` after `<sa-form-page>` (both only when `Model.Delete` isn't null). `view="_MyIndexPage"` renders the tag through your own partial instead of the built-in one.
 
 ## Global labels
 

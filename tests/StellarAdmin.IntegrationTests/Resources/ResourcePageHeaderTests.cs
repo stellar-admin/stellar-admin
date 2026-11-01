@@ -32,7 +32,7 @@ public class ResourcePageHeaderTests
     }
 
     [Test]
-    public async Task ViewPage_RendersRecordTitleAndOutlineDestructiveDelete()
+    public async Task ViewPage_RendersRecordTitleAndOutlineDestructiveDeleteBeforeBack()
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
@@ -50,18 +50,17 @@ public class ResourcePageHeaderTests
             .IsEqualTo("Notebook");
         await Assert.That(document.Title).StartsWith("Notebook");
         var actions = document.RequiredElement("[data-slot='page-header-actions']");
-        await Assert.That(actions.QuerySelector("[data-slot='view-back']")).IsNotNull();
+        var delete = actions.RequiredElement("button[commandfor='delete-confirm-dialog']");
         await Assert
-            .That(
-                actions
-                    .RequiredElement("button[commandfor='delete-confirm-dialog']")
-                    .ClassList.Contains("sa-button-variant-outline-destructive")
-            )
+            .That(delete.ClassList.Contains("sa-button-variant-outline-destructive"))
             .IsTrue();
+        await Assert
+            .That(delete.NextElementSibling?.GetAttribute("data-slot"))
+            .IsEqualTo("view-back");
     }
 
     [Test]
-    public async Task EditPage_RendersActionsInHeaderForTheForm()
+    public async Task EditPage_RendersActionsInHeaderForTheFormWithoutDelete()
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
@@ -83,12 +82,8 @@ public class ResourcePageHeaderTests
             .IsEqualTo("resource-form");
         await Assert.That(actions.QuerySelector("[data-slot='form-cancel']")).IsNotNull();
         await Assert
-            .That(
-                actions
-                    .RequiredElement("button[commandfor='delete-confirm-dialog']")
-                    .ClassList.Contains("sa-button-variant-outline-destructive")
-            )
-            .IsTrue();
+            .That(actions.QuerySelector("button[commandfor='delete-confirm-dialog']"))
+            .IsNull();
     }
 
     [Test]

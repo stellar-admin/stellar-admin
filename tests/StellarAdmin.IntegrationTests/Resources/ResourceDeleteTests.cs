@@ -10,7 +10,7 @@ namespace StellarAdmin.IntegrationTests.Resources;
 public class ResourceDeleteTests
 {
     [Test]
-    public async Task EditPageDeletion_RendersSeparateConfirmationForm()
+    public async Task EditPageWithDeletion_HasNoDeleteControl()
     {
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
@@ -22,13 +22,7 @@ public class ResourceDeleteTests
                 resource.AllowEdit(edit =>
                     edit.Fields(fields => fields.Add(product => product.Name))
                 );
-                resource.AllowDelete(delete =>
-                {
-                    delete.Title = "Remove product";
-                    delete.Message = "Remove this product permanently?";
-                    delete.ConfirmLabel = "Remove";
-                    delete.CancelLabel = "Keep";
-                });
+                resource.AllowDelete();
             }
         );
         using var client = sut.GetTestClient();
@@ -37,36 +31,10 @@ public class ResourceDeleteTests
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
 
         // Assert
-        var trigger = document.RequiredElement("button[commandfor='delete-confirm-dialog']");
-        var dialog = document.RequiredElement("dialog[id='delete-confirm-dialog']");
-        var deleteForm = dialog.RequiredElement("form[action='/stellaradmin/products/delete/7']");
-        await Assert.That(trigger.TextContent.Trim()).IsEqualTo("Remove product");
-        await Assert.That(trigger.GetAttribute("type")).IsEqualTo("button");
-        await Assert.That(trigger.Closest("[data-slot='page-header-actions']")).IsNotNull();
         await Assert
-            .That(trigger.ClassList.Contains("sa-button-variant-outline-destructive"))
-            .IsTrue();
-        await Assert
-            .That(dialog.RequiredElement("[data-slot='alert-dialog-title']").TextContent.Trim())
-            .IsEqualTo("Remove product");
-        await Assert
-            .That(
-                dialog.RequiredElement("[data-slot='alert-dialog-description']").TextContent.Trim()
-            )
-            .IsEqualTo("Remove this product permanently?");
-        await Assert
-            .That(dialog.RequiredElement("[data-slot='alert-dialog-action']").TextContent.Trim())
-            .IsEqualTo("Remove");
-        await Assert
-            .That(dialog.RequiredElement("[data-slot='alert-dialog-cancel']").TextContent.Trim())
-            .IsEqualTo("Keep");
-        await Assert
-            .That(deleteForm.QuerySelector("input[name='__RequestVerificationToken']"))
-            .IsNotNull();
-        await Assert
-            .That(deleteForm.RequiredElement("input[name='origin']").GetAttribute("value"))
-            .IsEqualTo("edit");
-        await Assert.That(deleteForm.Closest(".sa-resource-form")).IsNull();
+            .That(document.QuerySelector("button[commandfor='delete-confirm-dialog']"))
+            .IsNull();
+        await Assert.That(document.QuerySelector("dialog[id='delete-confirm-dialog']")).IsNull();
     }
 
     [Test]
@@ -81,33 +49,6 @@ public class ResourceDeleteTests
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
-
-        // Assert
-        await Assert
-            .That(document.QuerySelector("button[commandfor='delete-confirm-dialog']"))
-            .IsNull();
-        await Assert.That(document.QuerySelector("dialog[id='delete-confirm-dialog']")).IsNull();
-    }
-
-    [Test]
-    public async Task EditPageWithoutDeletion_HidesConfirmation()
-    {
-        // Arrange
-        var state = new ProductState([new(7, "Notebook", 8.50m)]);
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            state,
-            resource =>
-            {
-                resource.UseKey(product => product.Id);
-                resource.AllowEdit(edit =>
-                    edit.Fields(fields => fields.Add(product => product.Name))
-                );
-            }
-        );
-        using var client = sut.GetTestClient();
-
-        // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
 
         // Assert
         await Assert
@@ -198,7 +139,6 @@ public class ResourceDeleteTests
         await Assert.That(summary.TextContent).Contains("This product is still in use.");
         await Assert.That(summary.TextContent).Contains("<script>unsafe</script>");
         await Assert.That(summary.QuerySelector("script")).IsNull();
-        await Assert.That(document.QuerySelector("dialog[id='delete-confirm-dialog']")).IsNotNull();
         await Assert.That(state.Products.Count).IsEqualTo(1);
         await Assert.That(state.DeleteCalls).IsEqualTo(1);
     }

@@ -40,7 +40,7 @@ resource.AllowView(view =>
 - Layout uses the same `Columns`, `AddSection`, `AddGroup`, spans and starts as forms ([forms](forms.md#layout-columns-sections-and-groups)). Sections take `Description`, `Layout`, `Orientation`, `Columns`, `ColumnSpan` and `ColumnStart`; a section's `Orientation` applies to the fields inside it. View pages have no `AddDetails`; use sections.
 - References (`booking.Customer!.Email`) are loaded with the record for EF Core resources. A related record of a registered resource (`booking => booking.Customer`) shows its title, and a collection of them shows in badges with `UseDisplay<BadgeDisplay>()` ([relationships](relationships.md#showing-related-values)).
 - A custom display used here needs `DisplayTemplates/{TemplateName}.cshtml` (index cells use `GridDisplayTemplates/`).
-- The header shows Back, Delete (with `AllowDelete`) and Edit (with `AllowEdit`).
+- The header shows Delete (with `AllowDelete`), Back and Edit (with `AllowEdit`).
 - The page title is `view.Title` when set, else the record's title (`UseTitle` or the convention), else `View {singular label}` when the title would only be the key; the row action label is `index.ViewLabel`.
 - Custom data sources need `IResourceViewHandler<T>` (`FindAsync`); `IResourceEditHandler<T>` includes it.
 - `AllowView<TModel, THandler>(...)` shows a different model, loaded by `THandler : IResourceViewHandler<TModel>`.

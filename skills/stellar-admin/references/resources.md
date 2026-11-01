@@ -83,7 +83,7 @@ Every page except the index is off until enabled. Each call takes its own callba
 | `resource.AllowCreate(create => ...)` | `/{slug}/create` and a Create button | Fields ([forms](forms.md)) |
 | `resource.AllowEdit(edit => ...)` | `/{slug}/edit/{id}` and an Edit row action | Fields and a key |
 | `resource.AllowView(view => ...)` | `/{slug}/view/{id}` and a View row action | At least one field and a key ([view-pages](view-pages.md)) |
-| `resource.AllowDelete()` | Delete on index rows, the edit page and the view page, with confirmation | A key |
+| `resource.AllowDelete()` | Delete on index rows and the view page, with confirmation | A key |
 
 The overloads without a callback (`AllowCreate()`, `AllowEdit()`) return the page builder instead, for configuration spread over several statements:
 
