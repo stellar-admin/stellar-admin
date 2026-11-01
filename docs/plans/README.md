@@ -23,6 +23,8 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [app-header-breadcrumb](app-header-breadcrumb.md) | proposed | A breadcrumb in the app header in place of the brand title, split out of page layout because every page has to hand its trail to the outer layout. Basics only. |
 | [unsaved-changes](unsaved-changes.md) | proposed | An unsaved changes indicator beside a form's Save button, detected by comparing the form's values with a snapshot taken on load. Split out of page layout. Basics only. |
 | [page-subtitles](page-subtitles.md) | proposed | A line under the title of the view, create and edit pages, a fixed text or a per-record subtitle set like `UseTitle`. Split out of page layout. Basics only. |
+| [efcore-form-models](efcore-form-models.md) | proposed | Create and edit forms on EF Core resources that wrap the entity with form-only fields, with typed events on those forms (loaded, creating/updating and after) as delegates or an events class, so extra fields and audit rows don't need a handler. Being refined. |
+| [efcore-model-validation](efcore-model-validation.md) | proposed | Form validation from the EF model's rules (`HasMaxLength`, `IsRequired()`), which only attributes cover today. Basics only. |
 | [index-page-refreshing](index-page-refreshing.md) | open | Make the index page's htmx refreshes selective: today a scope click swaps the whole body and a search refreshes every widget, so the page flashes. Basics only. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
