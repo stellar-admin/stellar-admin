@@ -9,8 +9,8 @@ internal static class UserResourceRegistration
 {
     internal static void AddUserResource(this StellarAdminBuilder admin)
     {
-        // Users are an EF Core resource of ApplicationDbContext. Their forms wrap the user with the password and roles
-        // that UserManager saves, through events
+        // Users are an EF Core resource of ApplicationDbContext. Their roles are a many-to-many field, and their forms
+        // save through UserManager, in events
         admin.AddEfCoreResource<ApplicationUser>(
             "users",
             resource =>
@@ -133,7 +133,7 @@ internal static class UserResourceRegistration
                                 {
                                     section.Description = "Select the roles the user belong to";
                                     section.Add(
-                                        model => model.RoleIds,
+                                        model => model.User.Roles,
                                         field =>
                                         {
                                             field.UseCheckboxGroupEditor(options =>
@@ -240,7 +240,7 @@ internal static class UserResourceRegistration
                                 {
                                     section.Description = "Select the roles the user belong to";
                                     section.Add(
-                                        model => model.RoleIds,
+                                        model => model.User.Roles,
                                         field =>
                                         {
                                             field.UseCheckboxGroupEditor(options =>

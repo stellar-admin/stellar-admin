@@ -3,13 +3,10 @@ using AdminPlayground.Data;
 
 namespace AdminPlayground.Resources.Users;
 
-// The user, and the roles that UserManager saves for it
+// The user, with the validation of its fields
 public sealed class EditUserModel : IValidatableObject
 {
     public ApplicationUser User { get; set; } = null!;
-
-    [Display(Name = "Roles")]
-    public string[] RoleIds { get; set; } = [];
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) =>
         UserFormValidation.Validate(User);

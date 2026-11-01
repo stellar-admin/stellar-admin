@@ -4,9 +4,8 @@ using StellarAdmin.EntityFrameworkCore;
 
 namespace AdminPlayground.Resources.Users;
 
-// Creates the user with its password and roles through UserManager, inside the form's transaction, so a role that
-// can't be added also removes the user
-public sealed class CreateUserEvents(ApplicationDbContext db, UserManager<ApplicationUser> users)
+// Creates the user with its password through UserManager, which saves the selected roles with it
+public sealed class CreateUserEvents(UserManager<ApplicationUser> users)
     : EfCoreCreateEvents<ApplicationUser, CreateUserModel>
 {
     public override async Task CreatingAsync(
@@ -14,26 +13,9 @@ public sealed class CreateUserEvents(ApplicationDbContext db, UserManager<Applic
         CancellationToken cancellationToken
     )
     {
-        var roleNames = await UserRoleAssignments.ResolveNamesAsync(
-            db,
-            context.Model.RoleIds,
-            cancellationToken
-        );
-        if (roleNames is null)
-        {
-            context.Fail(model => model.RoleIds, "Select valid roles.");
-
-            return;
-        }
-
         var user = context.Entity;
         user.UserName = user.Email;
         var result = await users.CreateAsync(user, context.Model.Password);
-        if (result.Succeeded && roleNames.Count > 0)
-        {
-            result = await users.AddToRolesAsync(user, roleNames.Values);
-        }
-
         if (!result.Succeeded)
         {
             foreach (var error in result.Errors)

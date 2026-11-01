@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdminPlayground.Data;
@@ -33,6 +34,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             user.HasOne(value => value.Department)
                 .WithMany(department => department.Users)
                 .HasForeignKey(value => value.DepartmentId);
+
+            // The same join table and foreign keys Identity maps, so the database doesn't change
+            user.HasMany(value => value.Roles)
+                .WithMany()
+                .UsingEntity<IdentityUserRole<string>>(
+                    userRole =>
+                        userRole
+                            .HasOne<ApplicationRole>()
+                            .WithMany()
+                            .HasForeignKey(value => value.RoleId),
+                    userRole =>
+                        userRole
+                            .HasOne<ApplicationUser>()
+                            .WithMany()
+                            .HasForeignKey(value => value.UserId)
+                );
         });
 
         builder.Entity<ApplicationRole>(role =>

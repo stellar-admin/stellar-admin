@@ -3,7 +3,7 @@ using AdminPlayground.Data;
 
 namespace AdminPlayground.Resources.Users;
 
-// The user, and the password and roles that UserManager saves with it
+// The user, and the password that UserManager saves with it
 public sealed class CreateUserModel : IValidatableObject
 {
     public ApplicationUser User { get; set; } = new() { FirstName = "", LastName = "" };
@@ -14,9 +14,6 @@ public sealed class CreateUserModel : IValidatableObject
     [Required, Compare(nameof(Password)), DataType(DataType.Password)]
     [Display(Name = "Confirm password")]
     public string PasswordConfirmation { get; set; } = "";
-
-    [Display(Name = "Roles")]
-    public string[] RoleIds { get; set; } = [];
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) =>
         UserFormValidation.Validate(User);

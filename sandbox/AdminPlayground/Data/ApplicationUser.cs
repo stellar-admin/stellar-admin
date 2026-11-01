@@ -14,5 +14,8 @@ public class ApplicationUser : IdentityUser
 
     public string? PreferredLanguage { get; set; }
 
+    // Identity's user roles, as a many-to-many navigation through its AspNetUserRoles join table
+    public ICollection<ApplicationRole> Roles { get; } = new List<ApplicationRole>();
+
     public string? TimeZoneId { get; set; }
 }
