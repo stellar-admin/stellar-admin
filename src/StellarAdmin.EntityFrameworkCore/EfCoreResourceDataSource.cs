@@ -19,22 +19,18 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
 ) : IResourceCrudDataSource<TEntity>
     where TEntity : class
 {
+    private const string InMemoryProviderName = "Microsoft.EntityFrameworkCore.InMemory";
+
     private readonly ResourceOptions<TEntity> _resourceOptions = options.Value;
     private DbContext? _db;
 
     // Found on first use, since an unavailable resource's data source is still created and may have no context
     private DbContext Db => _db ??= contexts.Get<TEntity>(services);
 
-    public async Task<ResourceOperationResult> CreateAsync(
+    public Task<ResourceOperationResult> CreateAsync(
         TEntity model,
         CancellationToken cancellationToken
-    )
-    {
-        Db.Set<TEntity>().Add(model);
-        await Db.SaveChangesAsync(cancellationToken);
-
-        return ResourceOperationResult.Success();
-    }
+    ) => CreateAsync(model, EfCoreFormEntity.Self(typeof(TEntity)), null, cancellationToken);
 
     public async Task<ResourceOperationResult> DeleteAsync(
         string id,
@@ -151,9 +147,94 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
         return new(await query.ToListAsync(cancellationToken), totalCount);
     }
 
-    public async Task<ResourceOperationResult> UpdateAsync(
+    public Task<ResourceOperationResult> UpdateAsync(
         string id,
         TEntity model,
+        CancellationToken cancellationToken
+    ) => UpdateAsync(id, model, EfCoreFormEntity.Self(typeof(TEntity)), null, cancellationToken);
+
+    // Adds the entity the form's model holds, runs the create events around saving it, and returns its key
+    internal async Task<ResourceOperationResult> CreateAsync<TModel>(
+        TModel model,
+        EfCoreFormEntity form,
+        EfCoreCreateEvents<TEntity, TModel>? events,
+        CancellationToken cancellationToken
+    )
+    {
+        var entity = (TEntity)form.GetEntity(model!);
+        Db.Set<TEntity>().Add(entity);
+
+        var context = new EfCoreSaveContext<TEntity, TModel>(Db, entity, model, services);
+        if (
+            await SaveAsync(
+                context,
+                events is null ? null : events.CreatingAsync,
+                cancellationToken
+            ) is
+            { } failed
+        )
+        {
+            return failed;
+        }
+
+        if (events is not null)
+        {
+            await RunSavedEventAsync(
+                () => events.CreatedAsync(new(Db, entity, model, services), cancellationToken),
+                "created",
+                cancellationToken
+            );
+        }
+
+        return _resourceOptions.KeySelector is { } key
+            ? ResourceOperationResult.Success(key(entity))
+            : ResourceOperationResult.Success();
+    }
+
+    // The edit form's model for a stored entity, which isn't tracked, after the loaded event
+    internal async Task<TModel?> FindAsync<TModel>(
+        string id,
+        EfCoreFormEntity form,
+        EfCoreEditEvents<TEntity, TModel>? events,
+        CancellationToken cancellationToken
+    )
+    {
+        var entity = await FindAsync(id, cancellationToken);
+        if (entity is null)
+        {
+            return default;
+        }
+
+        var model = form.Property is null ? (TModel)(object)entity : CreateModel<TModel>();
+        form.SetEntity(model!, entity);
+        if (events is not null)
+        {
+            await events.LoadedAsync(new(Db, entity, model, services), cancellationToken);
+        }
+
+        return model;
+    }
+
+    // Runs the created event's delegate for a new form's model
+    internal Task InitializeAsync<TModel>(
+        TModel model,
+        EfCoreFormEntity form,
+        EfCoreCreateEvents<TEntity, TModel> events,
+        CancellationToken cancellationToken
+    ) =>
+        events.InitializedAsync(
+            new(Db, (TEntity)form.GetEntity(model!), model, services),
+            cancellationToken
+        );
+
+    // Copies the form's fields of the entity onto the stored one, and runs the update events around saving it. While
+    // the events run, the model holds the stored entity; a failed save gives it back the submitted one, which the form
+    // shows again
+    internal async Task<ResourceOperationResult> UpdateAsync<TModel>(
+        string id,
+        TModel model,
+        EfCoreFormEntity form,
+        EfCoreEditEvents<TEntity, TModel>? events,
         CancellationToken cancellationToken
     )
     {
@@ -168,49 +249,93 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
             return ResourceOperationResult.NotFound();
         }
 
+        var submitted = (TEntity)form.GetEntity(model!);
+        await CopyFieldsAsync(edit, form, entity, submitted, cancellationToken);
+
+        form.SetEntity(model!, entity);
+        var context = new EfCoreSaveContext<TEntity, TModel>(Db, entity, model, services);
+        ResourceOperationResult? failed;
+        try
+        {
+            failed = await SaveAsync(
+                context,
+                events is null ? null : events.UpdatingAsync,
+                cancellationToken
+            );
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            failed = await GetConcurrencyFailureResultAsync(id, cancellationToken);
+        }
+
+        if (failed is not null)
+        {
+            form.SetEntity(model!, submitted);
+
+            return failed;
+        }
+
+        if (events is not null)
+        {
+            await RunSavedEventAsync(
+                () => events.UpdatedAsync(new(Db, entity, model, services), cancellationToken),
+                "updated",
+                cancellationToken
+            );
+        }
+
+        return ResourceOperationResult.Success();
+    }
+
+    private static TModel CreateModel<TModel>() => Activator.CreateInstance<TModel>();
+
+    private async Task CopyFieldsAsync(
+        ResourceEditOptions edit,
+        EfCoreFormEntity form,
+        TEntity target,
+        TEntity source,
+        CancellationToken cancellationToken
+    )
+    {
         var entityType = Db.Model.FindEntityType(typeof(TEntity))!;
         foreach (var field in edit.Fields)
         {
-            if (field.Binder is IManyToManyFieldBinder binder)
+            if (form.FindEntityPath(field) is not { } properties)
             {
-                await binder.CopyAsync(Db, entity, model, cancellationToken);
                 continue;
             }
 
-            var properties = field.PropertyPath;
-            object target = entity;
-            object source = model;
+            if (field.Binder is IManyToManyFieldBinder binder)
+            {
+                await binder.CopyAsync(Db, target, source, cancellationToken);
+                continue;
+            }
+
+            object targetValue = target;
+            object sourceValue = source;
             for (var i = 0; i < properties.Count - 1; i++)
             {
                 var segment = properties[i];
-                target =
-                    segment.GetValue(target)
+                targetValue =
+                    segment.GetValue(targetValue)
                     ?? throw new InvalidOperationException(
                         $"{field.FieldName} has a null parent value on the stored entity."
                     );
-                source =
-                    segment.GetValue(source)
+                sourceValue =
+                    segment.GetValue(sourceValue)
                     ?? throw new InvalidOperationException(
                         $"{field.FieldName} has a null parent value on the submitted model."
                     );
             }
 
             var property = EfCoreFormFieldMetadata
-                .FindProperty(entityType, field.FieldName)!
+                .FindProperty(
+                    entityType,
+                    string.Join('.', properties.Select(segment => segment.Name))
+                )!
                 .PropertyInfo!;
-            property.SetValue(target, property.GetValue(source));
+            property.SetValue(targetValue, property.GetValue(sourceValue));
         }
-
-        try
-        {
-            await Db.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            return await GetConcurrencyFailureResultAsync(id, cancellationToken);
-        }
-
-        return ResourceOperationResult.Success();
     }
 
     private async Task<ResourceOperationResult> GetConcurrencyFailureResultAsync(
@@ -281,6 +406,91 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
         }
 
         return query.SingleOrDefaultAsync(predicate, cancellationToken);
+    }
+
+    // An after-save event can't undo the save, so its exception is logged, and the form continues as saved
+    private async Task RunSavedEventAsync(
+        Func<Task> saved,
+        string operation,
+        CancellationToken cancellationToken
+    )
+    {
+        try
+        {
+            await saved();
+        }
+        catch (Exception exception)
+            when (exception is not OperationCanceledException
+                || !cancellationToken.IsCancellationRequested
+            )
+        {
+            logger.LogError(
+                exception,
+                "The {Operation} event of {Entity} failed after the record was saved.",
+                operation,
+                typeof(TEntity).Name
+            );
+        }
+    }
+
+    // Runs the saving event, then saves unless the event saved the record itself. With an event, both run in one
+    // transaction, through the context's execution strategy, so a failed event rolls back what it saved. A failed save
+    // forgets the tracked changes, so nothing in them is saved later in the request
+    private async Task<ResourceOperationResult?> SaveAsync<TModel>(
+        EfCoreSaveContext<TEntity, TModel> context,
+        Func<EfCoreSaveContext<TEntity, TModel>, CancellationToken, Task>? saving,
+        CancellationToken cancellationToken
+    )
+    {
+        if (saving is null)
+        {
+            await Db.SaveChangesAsync(cancellationToken);
+
+            return null;
+        }
+
+        try
+        {
+            return await Db
+                .Database.CreateExecutionStrategy()
+                .ExecuteAsync(
+                    async cancellationToken =>
+                    {
+                        // The in-memory provider has no transactions, and a transaction the app started includes the save
+                        await using var transaction =
+                            Db.Database.CurrentTransaction is null
+                            && Db.Database.ProviderName != InMemoryProviderName
+                                ? await Db.Database.BeginTransactionAsync(cancellationToken)
+                                : null;
+
+                        await saving(context, cancellationToken);
+                        if (context.Errors.Count > 0)
+                        {
+                            Db.ChangeTracker.Clear();
+
+                            return ResourceOperationResult.ValidationFailed(context.Errors);
+                        }
+
+                        if (!context.IsHandled)
+                        {
+                            await Db.SaveChangesAsync(cancellationToken);
+                        }
+
+                        if (transaction is not null)
+                        {
+                            await transaction.CommitAsync(cancellationToken);
+                        }
+
+                        return null;
+                    },
+                    cancellationToken
+                );
+        }
+        catch
+        {
+            Db.ChangeTracker.Clear();
+            throw;
+        }
     }
 
     private IEnumerable<string> FindDisplayIncludePaths(

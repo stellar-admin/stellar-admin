@@ -10,7 +10,7 @@ namespace StellarAdmin.Resources.Builders;
 ///     Configures a resource's edit page.
 /// </summary>
 /// <typeparam name="TModel">The type of the model the edit form binds to.</typeparam>
-public sealed class ResourceEditBuilder<TModel>
+public class ResourceEditBuilder<TModel>
 {
     private readonly Action<Action<ResourceEditOptions<TModel>>> _configure;
     private readonly IServiceCollection _services;
@@ -55,6 +55,22 @@ public sealed class ResourceEditBuilder<TModel>
     {
         _services = services;
         _configure = configure;
+    }
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ResourceEditBuilder{TModel}" /> class that
+    ///     configures the same edit page as another builder.
+    /// </summary>
+    /// <param name="builder">The builder whose edit page to configure.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="builder" /> is <see langword="null" />.
+    /// </exception>
+    protected ResourceEditBuilder(ResourceEditBuilder<TModel> builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        _services = builder._services;
+        _configure = builder._configure;
     }
 
     /// <summary>
@@ -140,5 +156,27 @@ public sealed class ResourceEditBuilder<TModel>
         _configure(options => options.Widgets.AddRange(widgets));
 
         return this;
+    }
+
+    /// <summary>
+    ///     Sets the property of the model that holds the resource, when the model wraps the
+    ///     resource with fields of its own.
+    /// </summary>
+    /// <param name="propertyName">The name of the property that holds the resource.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="propertyName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="propertyName" /> is empty.
+    /// </exception>
+    /// <remarks>
+    ///     Index columns match the resource's fields without the property's name, so the
+    ///     <c>Product.Name</c> field is edited inline by the <c>Name</c> column.
+    /// </remarks>
+    protected void UseResourceProperty(string propertyName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(propertyName);
+
+        _configure(options => options.ResourcePropertyName = propertyName);
     }
 }

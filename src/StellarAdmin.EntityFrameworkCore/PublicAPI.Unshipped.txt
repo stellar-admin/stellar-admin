@@ -74,3 +74,48 @@ static StellarAdmin.EntityFrameworkCore.LookupSheetEditorExtensions.UseItems<TEn
 static StellarAdmin.EntityFrameworkCore.MultiLookupSheetEditorExtensions.UseItems<TEntity>(this StellarAdmin.Resources.Editors.MultiLookupSheetEditor! editor, System.Linq.Expressions.Expression<System.Func<TEntity!, object?>!>! value, System.Linq.Expressions.Expression<System.Func<TEntity!, string!>!>! title) -> void
 static StellarAdmin.EntityFrameworkCore.MultiLookupSheetEditorExtensions.UseItems<TEntity>(this StellarAdmin.Resources.Editors.MultiLookupSheetEditor! editor, System.Linq.Expressions.Expression<System.Func<TEntity!, object?>!>! value, System.Linq.Expressions.Expression<System.Func<TEntity!, string!>!>! title, System.Action<StellarAdmin.EntityFrameworkCore.EfCoreLookupItemsBuilder<TEntity!>!>! configure) -> void
 StellarAdmin.EntityFrameworkCore.EfCoreRowDetailPanelsBuilder<TEntity>.Add<TModel>(string! title, string! partialName, System.Linq.Expressions.Expression<System.Func<TEntity!, TModel>!>! select, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!>! configure) -> StellarAdmin.EntityFrameworkCore.EfCoreRowDetailPanelsBuilder<TEntity!>!
+StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>
+StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.EfCoreCreateEvents() -> void
+StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.OnCreated.get -> System.Func<StellarAdmin.EntityFrameworkCore.EfCoreSavedContext<TEntity!, TModel>!, System.Threading.CancellationToken, System.Threading.Tasks.Task!>!
+StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.OnCreated.set -> void
+StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.OnCreating.get -> System.Func<StellarAdmin.EntityFrameworkCore.EfCoreSaveContext<TEntity!, TModel>!, System.Threading.CancellationToken, System.Threading.Tasks.Task!>!
+StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.OnCreating.set -> void
+StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.OnInitialized.get -> System.Func<StellarAdmin.EntityFrameworkCore.EfCoreInitializedContext<TEntity!, TModel>!, System.Threading.CancellationToken, System.Threading.Tasks.Task!>!
+StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.OnInitialized.set -> void
+StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>
+StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.EfCoreEditEvents() -> void
+StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.OnLoaded.get -> System.Func<StellarAdmin.EntityFrameworkCore.EfCoreLoadedContext<TEntity!, TModel>!, System.Threading.CancellationToken, System.Threading.Tasks.Task!>!
+StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.OnLoaded.set -> void
+StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.OnUpdated.get -> System.Func<StellarAdmin.EntityFrameworkCore.EfCoreSavedContext<TEntity!, TModel>!, System.Threading.CancellationToken, System.Threading.Tasks.Task!>!
+StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.OnUpdated.set -> void
+StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.OnUpdating.get -> System.Func<StellarAdmin.EntityFrameworkCore.EfCoreSaveContext<TEntity!, TModel>!, System.Threading.CancellationToken, System.Threading.Tasks.Task!>!
+StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.OnUpdating.set -> void
+StellarAdmin.EntityFrameworkCore.EfCoreFormContext<TEntity, TModel>
+StellarAdmin.EntityFrameworkCore.EfCoreFormContext<TEntity, TModel>.Db.get -> Microsoft.EntityFrameworkCore.DbContext!
+StellarAdmin.EntityFrameworkCore.EfCoreFormContext<TEntity, TModel>.Entity.get -> TEntity!
+StellarAdmin.EntityFrameworkCore.EfCoreFormContext<TEntity, TModel>.Model.get -> TModel
+StellarAdmin.EntityFrameworkCore.EfCoreFormContext<TEntity, TModel>.Services.get -> System.IServiceProvider!
+StellarAdmin.EntityFrameworkCore.EfCoreInitializedContext<TEntity, TModel>
+StellarAdmin.EntityFrameworkCore.EfCoreLoadedContext<TEntity, TModel>
+StellarAdmin.EntityFrameworkCore.EfCoreResourceBuilder<TEntity>.AllowCreate() -> StellarAdmin.EntityFrameworkCore.EfCoreResourceCreateBuilder<TEntity!, TEntity!>!
+StellarAdmin.EntityFrameworkCore.EfCoreResourceBuilder<TEntity>.AllowCreate(System.Action<StellarAdmin.EntityFrameworkCore.EfCoreResourceCreateBuilder<TEntity!, TEntity!>!>! configure) -> StellarAdmin.EntityFrameworkCore.EfCoreResourceBuilder<TEntity!>!
+StellarAdmin.EntityFrameworkCore.EfCoreResourceBuilder<TEntity>.AllowEdit() -> StellarAdmin.EntityFrameworkCore.EfCoreResourceEditBuilder<TEntity!, TEntity!>!
+StellarAdmin.EntityFrameworkCore.EfCoreResourceBuilder<TEntity>.AllowEdit(System.Action<StellarAdmin.EntityFrameworkCore.EfCoreResourceEditBuilder<TEntity!, TEntity!>!>! configure) -> StellarAdmin.EntityFrameworkCore.EfCoreResourceBuilder<TEntity!>!
+StellarAdmin.EntityFrameworkCore.EfCoreResourceCreateBuilder<TEntity, TModel>
+StellarAdmin.EntityFrameworkCore.EfCoreResourceCreateBuilder<TEntity, TModel>.Events(System.Action<StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity!, TModel>!>! configure) -> StellarAdmin.EntityFrameworkCore.EfCoreResourceCreateBuilder<TEntity!, TModel>!
+StellarAdmin.EntityFrameworkCore.EfCoreResourceCreateBuilder<TEntity, TModel>.UseEvents<TEvents>() -> StellarAdmin.EntityFrameworkCore.EfCoreResourceCreateBuilder<TEntity!, TModel>!
+StellarAdmin.EntityFrameworkCore.EfCoreResourceEditBuilder<TEntity, TModel>
+StellarAdmin.EntityFrameworkCore.EfCoreResourceEditBuilder<TEntity, TModel>.Events(System.Action<StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity!, TModel>!>! configure) -> StellarAdmin.EntityFrameworkCore.EfCoreResourceEditBuilder<TEntity!, TModel>!
+StellarAdmin.EntityFrameworkCore.EfCoreResourceEditBuilder<TEntity, TModel>.UseEvents<TEvents>() -> StellarAdmin.EntityFrameworkCore.EfCoreResourceEditBuilder<TEntity!, TModel>!
+StellarAdmin.EntityFrameworkCore.EfCoreSaveContext<TEntity, TModel>
+StellarAdmin.EntityFrameworkCore.EfCoreSaveContext<TEntity, TModel>.Entry.get -> Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<TEntity!>!
+StellarAdmin.EntityFrameworkCore.EfCoreSaveContext<TEntity, TModel>.Fail(string! message) -> void
+StellarAdmin.EntityFrameworkCore.EfCoreSaveContext<TEntity, TModel>.Fail<TValue>(System.Linq.Expressions.Expression<System.Func<TModel, TValue>!>! field, string! message) -> void
+StellarAdmin.EntityFrameworkCore.EfCoreSaveContext<TEntity, TModel>.Handled() -> void
+StellarAdmin.EntityFrameworkCore.EfCoreSavedContext<TEntity, TModel>
+virtual StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.CreatedAsync(StellarAdmin.EntityFrameworkCore.EfCoreSavedContext<TEntity!, TModel>! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+virtual StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.CreatingAsync(StellarAdmin.EntityFrameworkCore.EfCoreSaveContext<TEntity!, TModel>! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+virtual StellarAdmin.EntityFrameworkCore.EfCoreCreateEvents<TEntity, TModel>.InitializedAsync(StellarAdmin.EntityFrameworkCore.EfCoreInitializedContext<TEntity!, TModel>! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+virtual StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.LoadedAsync(StellarAdmin.EntityFrameworkCore.EfCoreLoadedContext<TEntity!, TModel>! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+virtual StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.UpdatedAsync(StellarAdmin.EntityFrameworkCore.EfCoreSavedContext<TEntity!, TModel>! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+virtual StellarAdmin.EntityFrameworkCore.EfCoreEditEvents<TEntity, TModel>.UpdatingAsync(StellarAdmin.EntityFrameworkCore.EfCoreSaveContext<TEntity!, TModel>! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

@@ -63,6 +63,9 @@ public abstract class ResourceFormOptions : IFormScope
 
     internal List<FormItemOptions> MutableItems { get; } = [];
 
+    // The property of the form's model that holds the resource, when the model wraps it with fields of its own
+    internal string? ResourcePropertyName { get; set; }
+
     internal ConfigurationSource? Source { get; set; }
 
     // The widgets as configured, then, once checked, those that can be shown
@@ -99,6 +102,14 @@ public abstract class ResourceFormOptions : IFormScope
 
         return FormItems.Remove(this, field);
     }
+
+    // A field's name as the resource's index columns name it: a field of a wrapped resource without the prefix of the
+    // property that holds it
+    internal string GetResourceFieldName(FormFieldOptions field) =>
+        ResourcePropertyName is { } property
+        && field.FieldName.StartsWith(property + ".", StringComparison.Ordinal)
+            ? field.FieldName[(property.Length + 1)..]
+            : field.FieldName;
 
     internal static IEnumerable<FormDisplayFieldOptions> EnumerateDisplayFields(
         IEnumerable<FormItemOptions> items

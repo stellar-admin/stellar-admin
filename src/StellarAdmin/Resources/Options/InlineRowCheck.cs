@@ -26,12 +26,7 @@ internal static class InlineRowCheck
 
         if (options.Create is { InlineRow: not null } create)
         {
-            if (
-                (
-                    FindProblem(options, create) ?? FindMissingRequired(create)
-                ) is
-                { } problem
-            )
+            if ((FindProblem(options, create) ?? FindMissingRequired(create)) is { } problem)
             {
                 options.Create = null;
                 options.Report(
@@ -44,10 +39,11 @@ internal static class InlineRowCheck
         }
     }
 
-    private static (ConfigurationProblemKind Kind, string Reason, string Fix)? FindProblem<TResource>(
-        ResourceOptions<TResource> options,
-        ResourceFormOptions form
-    )
+    private static (
+        ConfigurationProblemKind Kind,
+        string Reason,
+        string Fix
+    )? FindProblem<TResource>(ResourceOptions<TResource> options, ResourceFormOptions form)
     {
         if (options.KeyPropertyName is null)
         {
@@ -63,7 +59,9 @@ internal static class InlineRowCheck
             .OfType<string>()
             .ToHashSet(StringComparer.Ordinal);
         var unmatched = form
-            .Fields.Where(field => !field.IsNeverEditable && !editedFields.Contains(field.FieldName))
+            .Fields.Where(field =>
+                !field.IsNeverEditable && !editedFields.Contains(form.GetResourceFieldName(field))
+            )
             .Select(field => field.FieldName)
             .ToArray();
 
@@ -84,13 +82,13 @@ internal static class InlineRowCheck
             .Fields.Where(field => !field.IsNeverEditable)
             .Select(field => field.FieldName)
             .ToHashSet(StringComparer.Ordinal);
-        var missing = create
-            .ModelType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(property =>
-                property.IsDefined(typeof(RequiredAttribute), inherit: true)
-                && !fields.Contains(property.Name)
-            )
-            .Select(property => property.Name)
+        // A model that wraps the resource also needs fields for the resource's required properties
+        var wrapped = create.ResourcePropertyName is { } name
+            ? create.ModelType.GetProperty(name, BindingFlags.Public | BindingFlags.Instance)
+            : null;
+        var missing = FindRequired(create.ModelType, "")
+            .Concat(wrapped is null ? [] : FindRequired(wrapped.PropertyType, wrapped.Name + "."))
+            .Where(path => !fields.Contains(path))
             .ToArray();
 
         return missing.Length == 0
@@ -100,5 +98,10 @@ internal static class InlineRowCheck
                 $"has no field for the required properties {string.Join(", ", missing.Select(name => $"`{name}`"))} of `{create.ModelType.Name}`",
                 "Add fields and columns for the required properties."
             );
+
+        static IEnumerable<string> FindRequired(Type type, string prefix) =>
+            type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(property => property.IsDefined(typeof(RequiredAttribute), inherit: true))
+                .Select(property => prefix + property.Name);
     }
 }

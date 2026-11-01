@@ -16,6 +16,64 @@ public sealed class EfCoreResourceBuilder<TEntity>
         : base(services) { }
 
     /// <summary>
+    ///     Enables the create page.
+    /// </summary>
+    /// <returns>A builder that configures the create page.</returns>
+    public new EfCoreResourceCreateBuilder<TEntity, TEntity> AllowCreate() =>
+        new(
+            Services,
+            AllowCreate<TEntity, EfCoreCreateHandler<TEntity, TEntity>>(),
+            EfCoreFormEntity.Self(typeof(TEntity))
+        );
+
+    /// <summary>
+    ///     Enables and configures the create page.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the create page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public EfCoreResourceBuilder<TEntity> AllowCreate(
+        Action<EfCoreResourceCreateBuilder<TEntity, TEntity>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AllowCreate());
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Enables the edit page.
+    /// </summary>
+    /// <returns>A builder that configures the edit page.</returns>
+    public new EfCoreResourceEditBuilder<TEntity, TEntity> AllowEdit() =>
+        new(
+            Services,
+            AllowEdit<TEntity, EfCoreEditHandler<TEntity, TEntity>>(),
+            EfCoreFormEntity.Self(typeof(TEntity))
+        );
+
+    /// <summary>
+    ///     Enables and configures the edit page.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the edit page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public EfCoreResourceBuilder<TEntity> AllowEdit(
+        Action<EfCoreResourceEditBuilder<TEntity, TEntity>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AllowEdit());
+
+        return this;
+    }
+
+    /// <summary>
     ///     Configures the index page.
     /// </summary>
     /// <param name="configure">A delegate that configures the index page.</param>

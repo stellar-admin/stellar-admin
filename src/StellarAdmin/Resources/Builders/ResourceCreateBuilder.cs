@@ -10,7 +10,7 @@ namespace StellarAdmin.Resources.Builders;
 ///     Configures a resource's create page.
 /// </summary>
 /// <typeparam name="TModel">The type of the model the create form binds to.</typeparam>
-public sealed class ResourceCreateBuilder<TModel>
+public class ResourceCreateBuilder<TModel>
 {
     private readonly Action<Action<ResourceCreateOptions<TModel>>> _configure;
     private readonly IServiceCollection _services;
@@ -56,6 +56,22 @@ public sealed class ResourceCreateBuilder<TModel>
     {
         _services = services;
         _configure = configure;
+    }
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ResourceCreateBuilder{TModel}" /> class
+    ///     that configures the same create page as another builder.
+    /// </summary>
+    /// <param name="builder">The builder whose create page to configure.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="builder" /> is <see langword="null" />.
+    /// </exception>
+    protected ResourceCreateBuilder(ResourceCreateBuilder<TModel> builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        _services = builder._services;
+        _configure = builder._configure;
     }
 
     /// <summary>
@@ -201,5 +217,54 @@ public sealed class ResourceCreateBuilder<TModel>
         _configure(options => options.Widgets.AddRange(widgets));
 
         return this;
+    }
+
+    /// <summary>
+    ///     Sets the function that fills a new model before the create form shows it.
+    /// </summary>
+    /// <param name="initializer">
+    ///     A function that receives the request's services and the new model.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="initializer" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The function runs after the factory, wherever a create form is shown: on the create
+    ///     page, in a new inline row, in the create sheet of a lookup, and in the next form after
+    ///     saving and adding another, before the kept fields' values. It doesn't run for a
+    ///     submitted form.
+    /// </remarks>
+    protected void UseInitializer(
+        Func<IServiceProvider, TModel, CancellationToken, Task> initializer
+    )
+    {
+        ArgumentNullException.ThrowIfNull(initializer);
+
+        _configure(options =>
+            options.Initializer = (services, model, cancellationToken) =>
+                initializer(services, (TModel)model, cancellationToken)
+        );
+    }
+
+    /// <summary>
+    ///     Sets the property of the model that holds the resource, when the model wraps the
+    ///     resource with fields of its own.
+    /// </summary>
+    /// <param name="propertyName">The name of the property that holds the resource.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="propertyName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="propertyName" /> is empty.
+    /// </exception>
+    /// <remarks>
+    ///     Index columns match the resource's fields without the property's name, so the
+    ///     <c>Product.Name</c> field is edited inline by the <c>Name</c> column.
+    /// </remarks>
+    protected void UseResourceProperty(string propertyName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(propertyName);
+
+        _configure(options => options.ResourcePropertyName = propertyName);
     }
 }

@@ -43,6 +43,25 @@ internal static class ProductResourceRegistration
                     .Widgets(widgets => widgets.Add("Category tip", "_ProductCreateTipWidget"))
             );
             resource.AllowEdit(edit =>
+            {
+                // Compares the stored price with the new one, and rejects the save with an error on the field
+                edit.Events(events =>
+                    events.OnUpdating = (context, _) =>
+                    {
+                        var original = context
+                            .Entry.Property(product => product.Price)
+                            .OriginalValue;
+                        if (context.Entity.Price < original / 2)
+                        {
+                            context.Fail(
+                                product => product.Price,
+                                "The price can't drop by more than half in one change."
+                            );
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                );
                 edit.Fields(fields =>
                     {
                         fields.Add(product => product.Name);
@@ -63,8 +82,8 @@ internal static class ProductResourceRegistration
                             });
                     })
                     // The category's prices beside the form, which stay in view as the form scrolls
-                    .Widgets(widgets => AddCategoryPricesWidget(widgets))
-            );
+                    .Widgets(widgets => AddCategoryPricesWidget(widgets));
+            });
             resource.AllowView(view =>
                 view.Fields(fields =>
                     {

@@ -95,7 +95,10 @@ internal sealed class ResourceController<TResource>(
         }
 
         // After save and add another, the new model starts with the kept fields' values and the form with focus
-        var resource = create.CreateModel();
+        var resource = await create.CreateModelAsync(
+            HttpContext.RequestServices,
+            cancellationToken
+        );
         var addingAnother = false;
         if (create.AddAnother is not null && TempData[AddAnotherTempDataKey] is string kept)
         {
@@ -184,12 +187,18 @@ internal sealed class ResourceController<TResource>(
     }
 
     [HttpGet]
-    public IActionResult CreateRow([FromQuery] ResourceIndexQuery query)
+    public async Task<IActionResult> CreateRow(
+        [FromQuery] ResourceIndexQuery query,
+        CancellationToken cancellationToken
+    )
     {
         return
             _resourceOptions.Create is { InlineRow: not null } create
             && _resourceOptions.KeySelector is not null
-            ? NewRowView(create.CreateModel(), query)
+            ? NewRowView(
+                await create.CreateModelAsync(HttpContext.RequestServices, cancellationToken),
+                query
+            )
             : NotFound();
     }
 
@@ -257,7 +266,12 @@ internal sealed class ResourceController<TResource>(
     )
     {
         return _resourceOptions.Create is { } create && !string.IsNullOrEmpty(lookup) && level >= 1
-            ? await CreateSheetView(create.CreateModel(), lookup, level, cancellationToken)
+            ? await CreateSheetView(
+                await create.CreateModelAsync(HttpContext.RequestServices, cancellationToken),
+                lookup,
+                level,
+                cancellationToken
+            )
             : NotFound();
     }
 
@@ -1184,7 +1198,10 @@ internal sealed class ResourceController<TResource>(
         CancellationToken cancellationToken
     )
     {
-        var next = _resourceOptions.Create!.CreateModel();
+        var next = await _resourceOptions.Create!.CreateModelAsync(
+            HttpContext.RequestServices,
+            cancellationToken
+        );
         await BindKeptFieldsAsync(
             next,
             await CompositeValueProvider.CreateAsync(ControllerContext),
@@ -1438,9 +1455,9 @@ internal sealed class ResourceController<TResource>(
             CancelLabel =
                 _resourceOptions.Index.CancelLabel ?? _labelOptions.Index.CancelLabel(labels),
             Create = create,
-            CreateFields = create is null ? null : GetColumnFields(_resourceOptions.Create!.Fields),
+            CreateFields = create is null ? null : GetColumnFields(_resourceOptions.Create!),
             Edit = edit,
-            EditFields = edit is null ? null : GetColumnFields(_resourceOptions.Edit!.Fields),
+            EditFields = edit is null ? null : GetColumnFields(_resourceOptions.Edit!),
             EditingKey = editingKey,
             EditModel = editModel,
             KeyField = keyField,
@@ -1448,15 +1465,17 @@ internal sealed class ResourceController<TResource>(
             SaveLabel = _resourceOptions.Index.SaveLabel ?? _labelOptions.Index.SaveLabel(labels),
         };
 
-        FormFieldOptions?[] GetColumnFields(IEnumerable<FormFieldOptions> fields)
+        FormFieldOptions?[] GetColumnFields(ResourceFormOptions form)
         {
-            var remaining = fields.ToList();
+            var remaining = form.Fields.ToList();
 
             return _resourceOptions
                 .Index.Columns.Select(column =>
                 {
                     var name = column.EditsFieldName ?? column.FieldName;
-                    var field = remaining.FirstOrDefault(field => field.FieldName == name);
+                    var field = remaining.FirstOrDefault(field =>
+                        form.GetResourceFieldName(field) == name
+                    );
                     if (field is not null)
                     {
                         remaining.Remove(field);

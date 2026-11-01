@@ -27,5 +27,24 @@ public abstract class ResourceCreateOptions : ResourceFormOptions
     /// </summary>
     public abstract Type ModelType { get; }
 
+    // Fills a new model the form shows, after it's created, such as with defaults that need services
+    internal Func<IServiceProvider, object, CancellationToken, Task>? Initializer { get; set; }
+
     internal abstract object CreateModel();
+
+    // A new model for a form the user fills in. A model that's only bound, to load a field's items or from a submitted
+    // form, comes from CreateModel
+    internal async Task<object> CreateModelAsync(
+        IServiceProvider services,
+        CancellationToken cancellationToken
+    )
+    {
+        var model = CreateModel();
+        if (Initializer is { } initializer)
+        {
+            await initializer(services, model, cancellationToken);
+        }
+
+        return model;
+    }
 }

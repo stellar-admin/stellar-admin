@@ -2186,3 +2186,8 @@ StellarAdmin.Resources.TabsResourceRowDetailPanelLayout
 StellarAdmin.Resources.TabsResourceRowDetailPanelLayout.Style.get -> StellarAdmin.Resources.ResourceRowDetailTabStyle
 StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Add(string! title, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>.Add<THandler>(string! title, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceRowDetailPanelBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceRowDetailPanelsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.ResourceCreateBuilder(StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>! builder) -> void
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseInitializer(System.Func<System.IServiceProvider!, TModel, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! initializer) -> void
+StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseResourceProperty(string! propertyName) -> void
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.ResourceEditBuilder(StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>! builder) -> void
+StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.UseResourceProperty(string! propertyName) -> void
