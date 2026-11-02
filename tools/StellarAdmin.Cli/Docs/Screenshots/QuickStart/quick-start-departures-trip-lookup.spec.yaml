@@ -1,0 +1,28 @@
+# Looking up a trip on the departure create form: the lookup sheet searches trips and the chosen trip fills the field, in light and dark
+scenario: quick-start-departures-trip-lookup
+steps:
+  - goto: /stellaradmin/departures/create
+  - record: { name: quick-start-departures-trip-lookup, gif: true }
+  - pause: 600
+  - click: { role: button, name: Choose trip }
+  - expectVisible: { selector: "[role='option']:has-text('Amalfi Coast')", timeout: 3000 }
+  - pause: 500
+  - type: { locator: { role: combobox }, text: Kyoto }
+  - expectVisible: { selector: "[role='option']:has-text('Tokyo to Kyoto by Bullet Train')", timeout: 3000 }
+  - pause: 800
+  - click: "[role='option']:has-text('Tokyo to Kyoto by Bullet Train')"
+  - pause: 1500
+  - recordEnd: true
+  - goto: /stellaradmin/departures/create
+  - colorScheme: dark
+  - record: { name: quick-start-departures-trip-lookup-dark, gif: true }
+  - pause: 600
+  - click: { role: button, name: Choose trip }
+  - expectVisible: { selector: "[role='option']:has-text('Amalfi Coast')", timeout: 3000 }
+  - pause: 500
+  - type: { locator: { role: combobox }, text: Kyoto }
+  - expectVisible: { selector: "[role='option']:has-text('Tokyo to Kyoto by Bullet Train')", timeout: 3000 }
+  - pause: 800
+  - click: "[role='option']:has-text('Tokyo to Kyoto by Bullet Train')"
+  - pause: 1500
+  - recordEnd: true

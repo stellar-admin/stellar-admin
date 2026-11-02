@@ -5,10 +5,10 @@ using VoyagerTravel.Models;
 
 namespace StellarAdmin.Cli.Docs.Screenshots.QuickStart;
 
-public sealed class QuickStartDeparturesCreateScenario : Scenario
+public sealed class QuickStartDeparturesTripLookupScenario : Scenario
 {
     public override string Description =>
-        "The departure create form with the trip lookup, from the quick start.";
+        "Looking up a trip on the departure create form, from the quick start.";
 
     public override string StartPath => "/stellaradmin/departures/create";
 
