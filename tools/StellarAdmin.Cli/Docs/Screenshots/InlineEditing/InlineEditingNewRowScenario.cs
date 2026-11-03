@@ -9,7 +9,7 @@ namespace StellarAdmin.Cli.Docs.Screenshots.InlineEditing;
 public sealed class InlineEditingNewRowScenario : Scenario
 {
     public override string Description =>
-        "The destinations grid adding a destination in a new row at the bottom, with the Create button in the grid.";
+        "The destinations grid adding a destination in a new row, with the Create button in the grid.";
 
     public override string StartPath => "/stellaradmin/destinations";
 
@@ -58,11 +58,7 @@ public sealed class InlineEditingNewRowScenario : Scenario
                     fields.Add(destination => destination.IsFeatured);
                 });
                 create.UseFactory(() => new Destination { Name = "", IsFeatured = true });
-                create.UseInlineRow(inline =>
-                {
-                    inline.Position = InlineCreatePosition.Bottom;
-                    inline.AddButton = InlineAddButton.Grid;
-                });
+                create.UseInlineRow(inline => inline.AddButton = InlineAddButton.Grid);
             });
         });
     }

@@ -1,0 +1,8 @@
+# The bookings grid's header and first five rows, with the total rendered as a currency, in light and dark
+scenario: columns-currency-display-type
+steps:
+  - goto: /stellaradmin/bookings
+  - expectCount: { selector: "tbody tr", count: 5 }
+  - screenshot: { name: columns-currency-display-type, locator: table, margin: { top: 16, right: 16, bottom: 1, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: columns-currency-display-type-dark, locator: table, margin: { top: 16, right: 16, bottom: 1, left: 16 } }
