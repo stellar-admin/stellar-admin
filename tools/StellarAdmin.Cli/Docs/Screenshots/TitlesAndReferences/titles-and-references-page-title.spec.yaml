@@ -1,0 +1,10 @@
+# A guide's edit page, titled with the guide's first and last name, the title boxed, in light and dark
+scenario: titles-and-references-page-title
+steps:
+  - viewport: { width: 1280, height: 420 }
+  - goto: /stellaradmin/guides/edit/15
+  - expectVisible: { role: heading, name: Francine Morin }
+  - annotate: { locator: { role: heading, name: Francine Morin } }
+  - screenshot: titles-and-references-page-title
+  - colorScheme: dark
+  - screenshot: titles-and-references-page-title-dark

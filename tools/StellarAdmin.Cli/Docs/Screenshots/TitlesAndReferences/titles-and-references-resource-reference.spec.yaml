@@ -1,0 +1,10 @@
+# The trips index with each trip's lead guide shown by its title, one guide boxed, in light and dark
+scenario: titles-and-references-resource-reference
+steps:
+  - viewport: { width: 1280, height: 560 }
+  - goto: /stellaradmin/trips
+  - expectVisible: { role: cell, name: Tokyo to Kyoto by Bullet Train }
+  - annotate: { locator: "tr:has-text('Tokyo to Kyoto by Bullet Train') td:nth-child(3) .sa-text-display" }
+  - screenshot: titles-and-references-resource-reference
+  - colorScheme: dark
+  - screenshot: titles-and-references-resource-reference-dark

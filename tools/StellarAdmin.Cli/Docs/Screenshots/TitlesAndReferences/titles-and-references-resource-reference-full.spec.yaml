@@ -1,0 +1,10 @@
+# A trip's edit page with the lead guide's title, email and photo in a card, the field boxed, in light and dark
+scenario: titles-and-references-resource-reference-full
+steps:
+  - viewport: { width: 1280, height: 420 }
+  - goto: /stellaradmin/trips/edit/1
+  - expectVisible: { selector: "img[src='/images/avatars/guides/guide-15.webp']" }
+  - annotate: { locator: ":has(> [data-lookup='media'])" }
+  - screenshot: titles-and-references-resource-reference-full
+  - colorScheme: dark
+  - screenshot: titles-and-references-resource-reference-full-dark

@@ -1,0 +1,26 @@
+# A trip's lead guide lookup opened and searched for Huerta, recorded as a GIF in light and dark
+scenario: titles-and-references-resource-reference-search
+steps:
+  - goto: /stellaradmin/trips/edit/1
+  - expectVisible: { selector: "img[src='/images/avatars/guides/guide-15.webp']" }
+  - record: { name: titles-and-references-resource-reference-search, gif: true }
+  - pause: 500
+  - click: { role: button, name: Change Lead guide }
+  - expectVisible: { role: combobox, timeout: 3000 }
+  - pause: 800
+  - type: { locator: { role: combobox }, text: Huerta }
+  - expectVisible: { selector: "[role='option']:has-text('Barbara Huerta')", timeout: 3000 }
+  - pause: 1200
+  - recordEnd: true
+  - press: Escape
+  - colorScheme: dark
+  - record: { name: titles-and-references-resource-reference-search-dark, gif: true }
+  - pause: 500
+  - click: { role: button, name: Change Lead guide }
+  - expectVisible: { role: combobox, timeout: 3000 }
+  - pause: 800
+  - fill: { locator: { role: combobox }, text: "" }
+  - type: { locator: { role: combobox }, text: Huerta }
+  - expectVisible: { selector: "[role='option']:has-text('Barbara Huerta')", timeout: 3000 }
+  - pause: 1200
+  - recordEnd: true
