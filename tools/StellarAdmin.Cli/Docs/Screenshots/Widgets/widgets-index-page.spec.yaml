@@ -1,10 +1,10 @@
 # The bookings index page with totals above the grid and upcoming departures beside it, in light and dark
-scenario: index-page-widgets-bookings
+scenario: widgets-index-page
 steps:
   - viewport: { width: 1440, height: 760 }
   - goto: /stellaradmin/bookings?scope=pending
   - expectVisible: { selector: "text=Bookings listed", timeout: 5000 }
   - expectVisible: { selector: ".sa-card-title:has-text('Upcoming departures')", timeout: 5000 }
-  - screenshot: index-page-widgets-bookings
+  - screenshot: widgets-index-page
   - colorScheme: dark
-  - screenshot: index-page-widgets-bookings-dark
+  - screenshot: widgets-index-page-dark

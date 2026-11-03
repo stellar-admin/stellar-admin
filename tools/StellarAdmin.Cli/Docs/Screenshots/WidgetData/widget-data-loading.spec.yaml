@@ -1,0 +1,10 @@
+# The Revenue widget's placeholder beside the loaded Bookings widget, in light and dark
+scenario: widget-data-loading
+steps:
+  - viewport: { width: 1200, height: 330 }
+  - goto: /stellaradmin
+  - expectVisible: { selector: ".sa-card-title:has-text('Bookings')", timeout: 5000 }
+  - expectVisible: { selector: ".sa-widget-placeholder", timeout: 5000 }
+  - screenshot: widget-data-loading
+  - colorScheme: dark
+  - screenshot: widget-data-loading-dark

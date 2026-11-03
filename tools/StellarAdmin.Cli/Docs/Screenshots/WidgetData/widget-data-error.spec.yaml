@@ -1,0 +1,10 @@
+# The Revenue widget's error with its Try again button beside the loaded Bookings widget, in light and dark
+scenario: widget-data-error
+steps:
+  - viewport: { width: 1200, height: 350 }
+  - goto: /stellaradmin
+  - expectVisible: { selector: ".sa-card-title:has-text('Bookings')", timeout: 5000 }
+  - expectVisible: { role: button, name: Try again, timeout: 5000 }
+  - screenshot: widget-data-error
+  - colorScheme: dark
+  - screenshot: widget-data-error-dark

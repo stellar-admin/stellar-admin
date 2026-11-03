@@ -6,9 +6,9 @@ using StellarAdmin.Widgets;
 using VoyagerTravel.Data;
 using VoyagerTravel.Models;
 
-namespace StellarAdmin.Cli.Docs.Screenshots.FormWidgets;
+namespace StellarAdmin.Cli.Docs.Screenshots.Widgets;
 
-public sealed class FormWidgetsTripScenario : Scenario
+public sealed class WidgetsEditPageScenario : Scenario
 {
     public override string Description =>
         "A trip's edit page with the trip's upcoming departures in a column beside the form.";

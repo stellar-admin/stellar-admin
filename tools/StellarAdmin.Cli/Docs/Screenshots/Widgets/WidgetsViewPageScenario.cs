@@ -8,9 +8,9 @@ using StellarAdmin.Widgets;
 using VoyagerTravel.Data;
 using VoyagerTravel.Models;
 
-namespace StellarAdmin.Cli.Docs.Screenshots.ViewPageWidgets;
+namespace StellarAdmin.Cli.Docs.Screenshots.Widgets;
 
-public sealed class ViewPageWidgetsBookingScenario : Scenario
+public sealed class WidgetsViewPageScenario : Scenario
 {
     public override string Description =>
         "A booking's view page with the traveller's other bookings beside its fields, and its notes below them.";

@@ -7,9 +7,9 @@ using StellarAdmin.Widgets;
 using VoyagerTravel.Data;
 using VoyagerTravel.Models;
 
-namespace StellarAdmin.Cli.Docs.Screenshots.IndexPageWidgets;
+namespace StellarAdmin.Cli.Docs.Screenshots.Widgets;
 
-public sealed class IndexPageWidgetsBookingsScenario : Scenario
+public sealed class WidgetsIndexPageScenario : Scenario
 {
     public override string Description =>
         "The bookings grid with All and Pending scopes and a search, the totals of the bookings it lists above it, and Upcoming departures beside it.";
