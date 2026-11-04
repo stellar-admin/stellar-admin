@@ -1,0 +1,8 @@
+# The trip create page with a Save and add another trip button, in light and dark
+scenario: forms-add-another
+steps:
+  - viewport: { width: 1280, height: 420 }
+  - goto: /stellaradmin/trips/create
+  - screenshot: forms-add-another
+  - colorScheme: dark
+  - screenshot: forms-add-another-dark

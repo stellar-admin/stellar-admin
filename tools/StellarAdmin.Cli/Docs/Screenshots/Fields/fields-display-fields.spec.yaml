@@ -1,0 +1,8 @@
+# A booking's edit page with four display fields and an editable status, in light and dark
+scenario: fields-display-fields
+steps:
+  - viewport: { width: 1280, height: 552 }
+  - goto: /stellaradmin/bookings/edit/1
+  - screenshot: fields-display-fields
+  - colorScheme: dark
+  - screenshot: fields-display-fields-dark

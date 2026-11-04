@@ -1,0 +1,9 @@
+# A departure's Start date field with its label and help text, in light and dark
+scenario: fields-label-help-text
+steps:
+  # Narrow, so the field isn't too wide
+  - viewport: { width: 480, height: 480 }
+  - goto: /stellaradmin/departures/edit/1
+  - screenshot: { name: fields-label-help-text, locator: "[data-slot='field']:has(label:text-is('Start date'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: fields-label-help-text-dark, locator: "[data-slot='field']:has(label:text-is('Start date'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }

@@ -9,9 +9,9 @@ namespace StellarAdmin.Cli.Docs.Screenshots.Fields;
 public sealed class FieldsDetailsScenario : Scenario
 {
     public override string Description =>
-        "A booking's edit page with its status, and a History section with when it was booked and its reference.";
+        "A booking's edit page with its status, total and special requests, and a narrow History card with when it was booked and its reference.";
 
-    public override string StartPath => "/stellaradmin/bookings/edit/1";
+    public override string StartPath => "/stellaradmin/bookings/edit/7";
 
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
@@ -22,12 +22,19 @@ public sealed class FieldsDetailsScenario : Scenario
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {
-                    fields.Add(booking => booking.Status);
+                    fields.Columns(3);
+                    fields.AddGroup(group =>
+                    {
+                        group.ColumnSpan(2);
+                        group.Add(booking => booking.Status);
+                        group.Add(booking => booking.TotalAmount);
+                        group.Add(booking => booking.SpecialRequests);
+                    });
                     fields.AddDetails(
                         "History",
                         details =>
                         {
-                            details.Columns(2);
+                            details.Layout = FormSectionLayout.Card;
                             details.Variant = DetailsVariant.Divided;
                             details.Add(booking => booking.BookedAt);
                             details.Add(booking => booking.Reference);

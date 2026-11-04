@@ -1,8 +1,8 @@
-# A booking's edit page with the History details section, in light and dark
+# A booking's edit page with its fields on the left and a narrow History card on the right, in light and dark
 scenario: fields-details
 steps:
-  - viewport: { width: 1280, height: 480 }
-  - goto: /stellaradmin/bookings/edit/1
+  - viewport: { width: 1280, height: 420 }
+  - goto: /stellaradmin/bookings/edit/7
   - screenshot: fields-details
   - colorScheme: dark
   - screenshot: fields-details-dark
