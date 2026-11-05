@@ -24,6 +24,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [unsaved-changes](unsaved-changes.md) | proposed | An unsaved changes indicator beside a form's Save button, detected by comparing the form's values with a snapshot taken on load. Split out of page layout. Basics only. |
 | [page-subtitles](page-subtitles.md) | proposed | A line under the title of the view, create and edit pages, a fixed text or a per-record subtitle set like `UseTitle`. Split out of page layout. Basics only. |
 | [efcore-model-validation](efcore-model-validation.md) | proposed | Form validation from the EF model's rules (`HasMaxLength`, `IsRequired()`), which only attributes cover today. Basics only. |
+| [public-field-binders](public-field-binders.md) | open | Whether `FieldBinder` and `UseBinder()` need to stay public; today an app can only attach one through `PostConfigure`. Website docs section removed (2026-11-05). Basics only. |
 | [index-page-refreshing](index-page-refreshing.md) | open | Make the index page's htmx refreshes selective: today a scope click swaps the whole body and a search refreshes every widget, so the page flashes. Basics only. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
