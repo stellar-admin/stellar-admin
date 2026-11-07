@@ -12,6 +12,6 @@ steps:
   - fill: { locator: "input[aria-label='Item 3']", text: Benagil sea caves }
   - click: { role: button, name: Create Trip }
   - expectVisible: { selector: "text=A highlight can't be the trip's name.", timeout: 5000 }
-  - screenshot: { name: list-and-dictionary-editors-row-error, locator: "[data-slot='field']:has(label:text-is('Highlights'))", margin: 24 }
+  - screenshot: { name: list-and-dictionary-editors-row-error, locator: "[data-slot='field']:has(label:text-is('Highlights'))", margin: { top: 19, right: 24, bottom: 24, left: 24 } }
   - colorScheme: dark
-  - screenshot: { name: list-and-dictionary-editors-row-error-dark, locator: "[data-slot='field']:has(label:text-is('Highlights'))", margin: 24 }
+  - screenshot: { name: list-and-dictionary-editors-row-error-dark, locator: "[data-slot='field']:has(label:text-is('Highlights'))", margin: { top: 19, right: 24, bottom: 24, left: 24 } }

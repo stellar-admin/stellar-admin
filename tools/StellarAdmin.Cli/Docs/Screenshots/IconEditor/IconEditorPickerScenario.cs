@@ -25,7 +25,8 @@ public sealed class IconEditorPickerScenario : Scenario
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {
-                    fields.Add(trip => trip.Title);
+                    fields.Columns(3);
+                    fields.Add(trip => trip.Title).ColumnSpanFull();
                     fields.Add(trip => trip.Icon).UseIconEditor();
                 })
             );

@@ -1,0 +1,8 @@
+# The trip's Icon field offering five icons inline, in light and dark
+scenario: icon-editor-icons
+steps:
+  - viewport: { width: 1280, height: 720 }
+  - goto: /stellaradmin/trips/edit/3
+  - screenshot: { name: icon-editor-icons, locator: "[data-slot='field']:has(label:text-is('Icon'))", margin: { top: 16, right: 24, bottom: 16, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: icon-editor-icons-dark, locator: "[data-slot='field']:has(label:text-is('Icon'))", margin: { top: 16, right: 24, bottom: 16, left: 24 } }
