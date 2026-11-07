@@ -1,8 +1,21 @@
-# A trip's edit page with the group size slider, in light and dark
+# A trip's group size slider in one column of a two-column form, set to 10 people, in light and dark
 scenario: inputs-slider
 steps:
+  # Wide, so the form has two columns
   - viewport: { width: 1280, height: 400 }
   - goto: /stellaradmin/trips/edit/1
-  - screenshot: inputs-slider
+  # From the minimum of 2 to 10 people
+  - click: "[role='slider']"
+  - press: Home
+  - press: ArrowRight
+  - press: ArrowRight
+  - press: ArrowRight
+  - press: ArrowRight
+  - press: ArrowRight
+  - press: ArrowRight
+  - press: ArrowRight
+  - press: ArrowRight
+  - click: "h1"
+  - screenshot: { name: inputs-slider, locator: "[data-slot='field']:has(:text-is('Max group size'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }
   - colorScheme: dark
-  - screenshot: inputs-slider-dark
+  - screenshot: { name: inputs-slider-dark, locator: "[data-slot='field']:has(:text-is('Max group size'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }

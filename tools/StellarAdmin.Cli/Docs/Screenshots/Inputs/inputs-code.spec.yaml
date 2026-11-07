@@ -1,8 +1,9 @@
-# A guide's edit page with the badge code input, in light and dark
+# A guide's badge code input, in light and dark
 scenario: inputs-code
 steps:
-  - viewport: { width: 1280, height: 470 }
+  # Narrow, so the field isn't too wide
+  - viewport: { width: 480, height: 480 }
   - goto: /stellaradmin/guides/edit/1
-  - screenshot: inputs-code
+  - screenshot: { name: inputs-code, locator: "[data-slot='field']:has(label:text-is('Badge code'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }
   - colorScheme: dark
-  - screenshot: inputs-code-dark
+  - screenshot: { name: inputs-code-dark, locator: "[data-slot='field']:has(label:text-is('Badge code'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }

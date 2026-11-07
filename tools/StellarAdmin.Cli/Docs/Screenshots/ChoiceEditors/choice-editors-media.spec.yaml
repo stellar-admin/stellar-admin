@@ -1,11 +1,11 @@
-# The transport toggle group with an icon beside each option, Train selected, in light and dark
+# The transport toggle group with an icon beside each option, Train selected, cropped to the field, in light and dark
 scenario: choice-editors-media
 steps:
-  # A short window, so the page crop ends below the form
-  - viewport: { width: 1280, height: 320 }
+  # Narrow, so the field isn't too wide
+  - viewport: { width: 480, height: 480 }
   - goto: /stellaradmin/trips/create
   # The radio input is visually hidden, so click its label
   - click: "label:has(input[value='Train'])"
-  - screenshot: { name: choice-editors-media, locator: main }
+  - screenshot: { name: choice-editors-media, locator: "[data-slot='field']:has(label:text-is('Transport'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
   - colorScheme: dark
-  - screenshot: { name: choice-editors-media-dark, locator: main }
+  - screenshot: { name: choice-editors-media-dark, locator: "[data-slot='field']:has(label:text-is('Transport'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }

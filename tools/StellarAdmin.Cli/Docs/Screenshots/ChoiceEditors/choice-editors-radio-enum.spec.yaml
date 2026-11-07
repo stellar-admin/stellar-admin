@@ -1,10 +1,10 @@
-# The difficulty radio group of an enum with descriptions, Moderate selected, in light and dark
+# The difficulty radio group of an enum with descriptions, Moderate selected, cropped to the field, in light and dark
 scenario: choice-editors-radio-enum
 steps:
-  # A short window, so the page crop ends below the form
-  - viewport: { width: 1280, height: 480 }
+  # Narrow, so the field isn't too wide
+  - viewport: { width: 480, height: 480 }
   - goto: /stellaradmin/trips/create
   - click: { role: radio, name: Moderate }
-  - screenshot: { name: choice-editors-radio-enum, locator: main }
+  - screenshot: { name: choice-editors-radio-enum, locator: "[data-slot='field-set']:has(legend:text-is('Difficulty'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
   - colorScheme: dark
-  - screenshot: { name: choice-editors-radio-enum-dark, locator: main }
+  - screenshot: { name: choice-editors-radio-enum-dark, locator: "[data-slot='field-set']:has(legend:text-is('Difficulty'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }

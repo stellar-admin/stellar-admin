@@ -1,0 +1,9 @@
+# The trip's tags as a checkbox group in three columns, cropped to the field, in light and dark
+scenario: choice-editors-columns
+steps:
+  # Wide enough for the field to reach 40rem and display three columns
+  - viewport: { width: 1280, height: 800 }
+  - goto: /stellaradmin/trips/edit/1
+  - screenshot: { name: choice-editors-columns, locator: "[data-slot='field']:has(label:text-is('Tags'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: choice-editors-columns-dark, locator: "[data-slot='field']:has(label:text-is('Tags'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }

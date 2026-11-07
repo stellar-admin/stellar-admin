@@ -1,0 +1,12 @@
+# A trip's empty summary in a four-row textarea with its placeholder, in light and dark
+scenario: inputs-textarea
+steps:
+  # Narrow, so the field isn't too wide
+  - viewport: { width: 480, height: 480 }
+  - goto: /stellaradmin/trips/edit/1
+  # Empty, so the placeholder shows, and unfocused, so the textarea has no focus ring
+  - fill: { locator: "textarea", text: "" }
+  - click: "h1"
+  - screenshot: { name: inputs-textarea, locator: "[data-slot='field']:has(label:text-is('Summary'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: inputs-textarea-dark, locator: "[data-slot='field']:has(label:text-is('Summary'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }

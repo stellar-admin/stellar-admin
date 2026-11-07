@@ -1,0 +1,9 @@
+# A nullable Published field as its default select, in light and dark
+scenario: inputs-nullable-boolean-select
+steps:
+  # Narrow, so the field isn't too wide
+  - viewport: { width: 480, height: 480 }
+  - goto: /stellaradmin/trips/create
+  - screenshot: { name: inputs-nullable-boolean-select, locator: "[data-slot='field']:has(:text-is('Published'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: inputs-nullable-boolean-select-dark, locator: "[data-slot='field']:has(:text-is('Published'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }

@@ -1,0 +1,9 @@
+# A nullable Published field as a radio group, in light and dark
+scenario: inputs-nullable-boolean-radio-group
+steps:
+  # Narrow, so the field isn't too wide
+  - viewport: { width: 480, height: 480 }
+  - goto: /stellaradmin/trips/create
+  - screenshot: { name: inputs-nullable-boolean-radio-group, locator: "[data-slot='field-set']:has(legend:text-is('Published'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: inputs-nullable-boolean-radio-group-dark, locator: "[data-slot='field-set']:has(legend:text-is('Published'))", margin: { top: 16, right: 24, bottom: 24, left: 24 } }

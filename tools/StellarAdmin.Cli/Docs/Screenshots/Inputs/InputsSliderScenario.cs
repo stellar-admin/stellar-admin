@@ -22,7 +22,8 @@ public sealed class InputsSliderScenario : Scenario
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {
-                    fields.Add(trip => trip.Title);
+                    fields.Columns(2);
+                    fields.Add(trip => trip.Title).ColumnSpanFull();
                     fields
                         .Add(trip => trip.MaxGroupSize)
                         .UseSliderEditor(slider =>

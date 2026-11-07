@@ -1,0 +1,13 @@
+# The difficulty as a toggle group in each appearance, Moderate selected, cropped to each field, in light and dark
+scenario: choice-editors-toggle-appearance
+steps:
+  # Narrow, so the fields aren't too wide for a row of three crops
+  - viewport: { width: 360, height: 800 }
+  - goto: /stellaradmin/trips/create
+  - screenshot: { name: choice-editors-toggle-appearance-chips, locator: "[data-slot='field']:has(label:text-is('Difficulty')) >> nth=0", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - screenshot: { name: choice-editors-toggle-appearance-joined, locator: "[data-slot='field']:has(label:text-is('Difficulty')) >> nth=1", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - screenshot: { name: choice-editors-toggle-appearance-buttons, locator: "[data-slot='field']:has(label:text-is('Difficulty')) >> nth=2", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: choice-editors-toggle-appearance-chips-dark, locator: "[data-slot='field']:has(label:text-is('Difficulty')) >> nth=0", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - screenshot: { name: choice-editors-toggle-appearance-joined-dark, locator: "[data-slot='field']:has(label:text-is('Difficulty')) >> nth=1", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - screenshot: { name: choice-editors-toggle-appearance-buttons-dark, locator: "[data-slot='field']:has(label:text-is('Difficulty')) >> nth=2", margin: { top: 16, right: 24, bottom: 12, left: 24 } }

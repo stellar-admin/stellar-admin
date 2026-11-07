@@ -1,0 +1,17 @@
+# Each kind of choice editor with a value chosen, cropped to its field, in light and dark
+scenario: choice-editors-kinds
+steps:
+  # Narrow, so the fields aren't too wide for a grid of crops
+  - viewport: { width: 480, height: 1200 }
+  - goto: /stellaradmin/trips/create
+  - screenshot: { name: choice-editors-kinds-select, locator: "[data-slot='field']:has(label:text-is('Trip type'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - screenshot: { name: choice-editors-kinds-radio-group, locator: "[data-slot='field-set']:has(legend:text-is('Difficulty'))", margin: { top: 16, right: 24, bottom: 8, left: 24 } }
+  - screenshot: { name: choice-editors-kinds-segmented-control, locator: "[data-slot='field']:has(label:text-is('Room type'))", margin: { top: 16, right: 24, bottom: 8, left: 24 } }
+  - screenshot: { name: choice-editors-kinds-checkbox-group, locator: "[data-slot='field']:has(label:text-is('Payment methods'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - screenshot: { name: choice-editors-kinds-toggle-group, locator: "[data-slot='field']:has(label:text-is('Climates'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: choice-editors-kinds-select-dark, locator: "[data-slot='field']:has(label:text-is('Trip type'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - screenshot: { name: choice-editors-kinds-radio-group-dark, locator: "[data-slot='field-set']:has(legend:text-is('Difficulty'))", margin: { top: 16, right: 24, bottom: 8, left: 24 } }
+  - screenshot: { name: choice-editors-kinds-segmented-control-dark, locator: "[data-slot='field']:has(label:text-is('Room type'))", margin: { top: 16, right: 24, bottom: 8, left: 24 } }
+  - screenshot: { name: choice-editors-kinds-checkbox-group-dark, locator: "[data-slot='field']:has(label:text-is('Payment methods'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
+  - screenshot: { name: choice-editors-kinds-toggle-group-dark, locator: "[data-slot='field']:has(label:text-is('Climates'))", margin: { top: 16, right: 24, bottom: 12, left: 24 } }
