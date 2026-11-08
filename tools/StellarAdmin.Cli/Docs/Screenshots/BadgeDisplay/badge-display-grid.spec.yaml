@@ -1,0 +1,7 @@
+# The trips grid with a list and a dictionary displayed as badges by default, in light and dark
+scenario: badge-display-grid
+steps:
+  - goto: /stellaradmin/trips
+  - screenshot: { name: badge-display-grid, locator: "#index-page-grid", margin: 16 }
+  - colorScheme: dark
+  - screenshot: { name: badge-display-grid-dark, locator: "#index-page-grid", margin: 16 }

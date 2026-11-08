@@ -1,0 +1,8 @@
+# The trips grid with a check mark or cross in the Published column, in light and dark
+scenario: boolean-and-enum-displays-icon-grid
+steps:
+  # Page 9 has two drafts among the published trips
+  - goto: /stellaradmin/trips?page=9
+  - screenshot: { name: boolean-and-enum-displays-icon-grid, locator: "#index-page-grid", margin: 16 }
+  - colorScheme: dark
+  - screenshot: { name: boolean-and-enum-displays-icon-grid-dark, locator: "#index-page-grid", margin: 16 }

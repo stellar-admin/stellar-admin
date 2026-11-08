@@ -1,0 +1,7 @@
+# The trips grid with each trip's tags as badges, in light and dark
+scenario: badge-display-related-grid
+steps:
+  - goto: /stellaradmin/trips
+  - screenshot: { name: badge-display-related-grid, locator: "#index-page-grid", margin: 16 }
+  - colorScheme: dark
+  - screenshot: { name: badge-display-related-grid-dark, locator: "#index-page-grid", margin: 16 }

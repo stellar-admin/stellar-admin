@@ -9,7 +9,7 @@ namespace StellarAdmin.Cli.Docs.Screenshots.BadgeDisplay;
 public sealed class BadgeDisplayLimitScenario : Scenario
 {
     public override string Description =>
-        "The trips grid with at most 3 of each trip's highlights as outline badges.";
+        "The trips grid with at most 2 of each trip's departure airports as outline badges.";
 
     public override string StartPath => "/stellaradmin/trips";
 
@@ -23,17 +23,17 @@ public sealed class BadgeDisplayLimitScenario : Scenario
                 {
                     columns.Add(trip => trip.Title);
                     columns.Add(
-                        trip => trip.Highlights,
+                        trip => trip.DepartureAirports,
                         column =>
                             column.UseDisplay<Resources.Displays.BadgeDisplay>(badge =>
                             {
                                 badge.Variant = BadgeVariant.Outline;
-                                badge.Limit = 3;
+                                badge.Limit = 2;
                             })
                     );
                 });
-                // Six rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 6);
+                // Five rows, so the grid crop stays short
+                index.EnablePaging(paging => paging.PageSize = 5);
             })
         );
     }

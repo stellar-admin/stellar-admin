@@ -9,9 +9,9 @@ namespace StellarAdmin.Cli.Docs.Screenshots.BooleanAndEnumDisplays;
 public sealed class BooleanAndEnumDisplaysGridScenario : Scenario
 {
     public override string Description =>
-        "The trips grid with whether each trip is published as Live or Draft, and its difficulty.";
+        "The trips grid with whether each trip is published as Live or Draft.";
 
-    public override string StartPath => "/stellaradmin/trips?page=8";
+    public override string StartPath => "/stellaradmin/trips?page=9";
 
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
@@ -32,10 +32,9 @@ public sealed class BooleanAndEnumDisplaysGridScenario : Scenario
                                 flag.FalseText = "Draft";
                             })
                     );
-                    columns.Add(trip => trip.Difficulty);
                 });
-                // Six rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 6);
+                // Five rows, so the grid crop stays short
+                index.EnablePaging(paging => paging.PageSize = 5);
             })
         );
     }

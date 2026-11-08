@@ -25,8 +25,8 @@ public sealed class LinkDisplaysGridScenario : Scenario
                     columns.Add(supplier => supplier.Phone);
                     columns.Add(supplier => supplier.Website);
                 });
-                // Six rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 6);
+                // Five rows, so the grid crop stays short
+                index.EnablePaging(paging => paging.PageSize = 5);
             })
         );
     }
