@@ -1,0 +1,8 @@
+# A guide's view page with the home airport's name from the AirportDisplay handler, in light and dark
+scenario: custom-displays-airport
+steps:
+  - goto: /stellaradmin/guides/view/1
+  - expectVisible: "text=London Heathrow (LHR)"
+  - screenshot: { name: custom-displays-airport, locator: "[data-slot='field-group'] >> nth=0", margin: { top: 16, right: 16, bottom: 16, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: custom-displays-airport-dark, locator: "[data-slot='field-group'] >> nth=0", margin: { top: 16, right: 16, bottom: 16, left: 16 } }

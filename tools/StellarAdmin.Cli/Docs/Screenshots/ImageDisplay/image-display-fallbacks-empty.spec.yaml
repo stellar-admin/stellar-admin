@@ -1,0 +1,8 @@
+# The empty hero image display field on Tokyo's edit page, with its label, in light and dark
+scenario: image-display-fallbacks-empty
+steps:
+  - goto: /stellaradmin/destinations/edit/2
+  - expectVisible: "[data-slot='image']"
+  - screenshot: { name: image-display-fallbacks-empty, locator: "[data-slot='image']", margin: { top: 44, right: 24, bottom: 24, left: 24 } }
+  - colorScheme: dark
+  - screenshot: { name: image-display-fallbacks-empty-dark, locator: "[data-slot='image']", margin: { top: 44, right: 24, bottom: 24, left: 24 } }

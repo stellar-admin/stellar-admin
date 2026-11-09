@@ -1,0 +1,9 @@
+@* Only the display-templates-boolean scenario looks in this folder, so other scenarios keep the built-in template *@
+@using StellarAdmin.Areas.StellarAdmin
+@using StellarAdmin.Resources.Displays
+@using StellarAdmin.UI
+@inherits FieldDisplayView<BooleanDisplay>
+
+<sa-badge variant="@(Model is true ? BadgeVariant.Default : BadgeVariant.Outline)">
+    @(Model is true ? Display.TrueText : Display.FalseText)
+</sa-badge>

@@ -1,0 +1,8 @@
+# An icon display field whose value isn't a registered icon, with its label, in light and dark
+scenario: icon-display-unregistered
+steps:
+  - goto: /stellaradmin/trips/create
+  - expectVisible: ".sa-icon-missing"
+  - screenshot: { name: icon-display-unregistered, locator: ".sa-icon-display", margin: { top: 48, right: 200, bottom: 32, left: 32 } }
+  - colorScheme: dark
+  - screenshot: { name: icon-display-unregistered-dark, locator: ".sa-icon-display", margin: { top: 48, right: 200, bottom: 32, left: 32 } }

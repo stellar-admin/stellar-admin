@@ -1,0 +1,14 @@
+# The bookings grid and the latest cancelled booking's view page with the BookingStatus display templates, in light and dark
+scenario: display-templates-booking-status
+steps:
+  - goto: /stellaradmin/bookings
+  - expectVisible: "#index-page-grid tr:has-text('Cancelled')"
+  - screenshot: { name: display-templates-booking-status-grid, locator: "#index-page-grid", margin: { top: 16, right: 16, bottom: 16, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: display-templates-booking-status-grid-dark, locator: "#index-page-grid", margin: { top: 16, right: 16, bottom: 16, left: 16 } }
+  - colorScheme: light
+  - click: "#index-page-grid tr:has-text('Cancelled') a[href*='/view/']"
+  - expectVisible: "#resource-form, [data-slot='field-group']"
+  - screenshot: { name: display-templates-booking-status-view-page, locator: "[data-slot='field-group'] >> nth=0", margin: { top: 16, right: 16, bottom: 16, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: display-templates-booking-status-view-page-dark, locator: "[data-slot='field-group'] >> nth=0", margin: { top: 16, right: 16, bottom: 16, left: 16 } }

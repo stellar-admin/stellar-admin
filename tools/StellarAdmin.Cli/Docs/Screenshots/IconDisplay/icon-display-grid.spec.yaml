@@ -1,0 +1,8 @@
+# The trips grid with each trip's icon, in light and dark
+scenario: icon-display-grid
+steps:
+  - goto: /stellaradmin/trips
+  - expectVisible: "#index-page-grid"
+  - screenshot: { name: icon-display-grid, locator: "#index-page-grid", margin: { top: 16, right: 16, bottom: 16, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: icon-display-grid-dark, locator: "#index-page-grid", margin: { top: 16, right: 16, bottom: 16, left: 16 } }

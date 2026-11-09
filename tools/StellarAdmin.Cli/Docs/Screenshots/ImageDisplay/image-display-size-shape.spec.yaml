@@ -1,0 +1,22 @@
+# Hovering over Tokyo's extra-small, landscape hero image on its view page shows the larger preview, recorded as a GIF in light and dark
+scenario: image-display-size-shape
+steps:
+  - goto: /stellaradmin/destinations/view/2
+  - expectVisible: "img[src$='tokyo.webp']"
+  - record: { name: image-display-size-shape, gif: true }
+  - pause: 600
+  - hover: "main .sa-image"
+  - expectVisible: ".sa-image-preview"
+  - pause: 1500
+  - hover: "main h1"
+  - pause: 800
+  - recordEnd: true
+  - colorScheme: dark
+  - record: { name: image-display-size-shape-dark, gif: true }
+  - pause: 600
+  - hover: "main .sa-image"
+  - expectVisible: ".sa-image-preview"
+  - pause: 1500
+  - hover: "main h1"
+  - pause: 800
+  - recordEnd: true

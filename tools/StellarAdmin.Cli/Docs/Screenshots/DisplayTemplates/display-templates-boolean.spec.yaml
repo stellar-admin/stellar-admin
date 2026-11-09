@@ -1,0 +1,8 @@
+# The trips grid with the published flag as a badge from the overridden Boolean grid template, in light and dark
+scenario: display-templates-boolean
+steps:
+  - goto: /stellaradmin/trips
+  - expectVisible: "#index-page-grid"
+  - screenshot: { name: display-templates-boolean, locator: "#index-page-grid", margin: { top: 16, right: 16, bottom: 16, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: display-templates-boolean-dark, locator: "#index-page-grid", margin: { top: 16, right: 16, bottom: 16, left: 16 } }

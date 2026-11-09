@@ -1,0 +1,6 @@
+@using StellarAdmin.UI
+@model BookingStatus
+
+<sa-badge variant="@(Model == BookingStatus.Cancelled ? BadgeVariant.Destructive : BadgeVariant.Secondary)">
+    @Model
+</sa-badge>
