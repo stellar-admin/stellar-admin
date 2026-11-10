@@ -1,8 +1,10 @@
-# The trip edit page with the trip's tags as chips in the multi-lookup, in light and dark
+# The trip edit page with the trip's tags as chips in the multi-lookup, and its sheet open, in light and dark
 scenario: many-to-many-multi-lookup
 steps:
-  - viewport: { width: 1280, height: 480 }
+  - viewport: { width: 1280, height: 640 }
   - goto: /stellaradmin/trips/edit/1
+  - click: "[data-lookup='open']:visible >> nth=0"
+  - expectVisible: { selector: "dialog[open] [data-lookup='results'] [data-lookup='item'] >> nth=0", timeout: 5000 }
   - screenshot: many-to-many-multi-lookup
   - colorScheme: dark
   - screenshot: many-to-many-multi-lookup-dark

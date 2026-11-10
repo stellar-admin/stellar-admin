@@ -1,0 +1,11 @@
+# A booking's traveller lookup with the traveller in a single row, and its sheet open with its own title and search
+# hint, in light and dark
+scenario: foreign-keys-configure
+steps:
+  - viewport: { width: 1280, height: 640 }
+  - goto: /stellaradmin/bookings/edit/1
+  - click: "[data-lookup='title']"
+  - expectVisible: { selector: "dialog[open] [data-lookup='results'] [data-lookup='item'] >> nth=0", timeout: 5000 }
+  - screenshot: foreign-keys-configure
+  - colorScheme: dark
+  - screenshot: foreign-keys-configure-dark

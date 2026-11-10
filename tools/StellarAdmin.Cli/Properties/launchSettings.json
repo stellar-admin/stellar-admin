@@ -22,7 +22,7 @@
     },
     "scenarios start default": {
       "commandName": "Project",
-      "commandLineArgs": "scenarios start default",
+      "commandLineArgs": "scenarios start foreign-keys-configure",
       "launchBrowser": true,
       "launchUrl": "stellaradmin",
       "applicationUrl": "http://localhost:5210"

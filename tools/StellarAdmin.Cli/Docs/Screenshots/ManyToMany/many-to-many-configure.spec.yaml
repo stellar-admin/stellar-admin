@@ -1,0 +1,10 @@
+# The trip's tags in a multi-lookup with a row for each tag, and its sheet open with its own title, in light and dark
+scenario: many-to-many-configure
+steps:
+  - viewport: { width: 1280, height: 640 }
+  - goto: /stellaradmin/trips/edit/1
+  - click: "[data-lookup='open']:visible >> nth=0"
+  - expectVisible: { selector: "dialog[open] [data-lookup='results'] [data-lookup='item'] >> nth=0", timeout: 5000 }
+  - screenshot: many-to-many-configure
+  - colorScheme: dark
+  - screenshot: many-to-many-configure-dark

@@ -29,7 +29,12 @@ public sealed class ForeignKeysLookupScenario : Scenario
                 index.Columns(columns => columns.Add(booking => booking.Reference));
             });
             resource.AllowCreate(create =>
-                create.Fields(fields => fields.Add(booking => booking.TravellerId))
+                create.Fields(fields =>
+                {
+                    // Two columns, so the lookup takes only half the form's width
+                    fields.Columns(2);
+                    fields.Add(booking => booking.TravellerId);
+                })
             );
         });
     }

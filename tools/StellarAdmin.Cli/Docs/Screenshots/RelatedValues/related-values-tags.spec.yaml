@@ -1,0 +1,8 @@
+# The trips grid with each trip's tags as badges, cropped to the grid, in light and dark
+scenario: related-values-tags
+steps:
+  - goto: /stellaradmin/trips
+  - expectCount: { selector: "tbody tr", count: 5 }
+  - screenshot: { name: related-values-tags, locator: "#index-page-grid", margin: 16 }
+  - colorScheme: dark
+  - screenshot: { name: related-values-tags-dark, locator: "#index-page-grid", margin: 16 }
