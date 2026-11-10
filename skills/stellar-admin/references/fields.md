@@ -88,7 +88,7 @@ resource.AllowEdit(edit => edit.Fields(fields =>
 }));
 ```
 
-- **Read-only** means the value matters but can't be changed here. The editor looks normal, takes focus and posts its value. A property marked `[ReadOnly(true)]` or `[Editable(false)]`, or with no public setter, is also read-only, unless the field has a binder.
+- **Read-only** means the value matters but can't be changed here. The editor looks normal, takes focus and posts its value. A property marked `[ReadOnly(true)]` or `[Editable(false)]`, or with no public setter, is also read-only, except a many-to-many navigation on an EF Core resource.
 - **Disabled** means the field doesn't apply. The editor is faded, takes no focus and doesn't post. A field that is both is disabled.
 - **The server ignores a posted value for either**, whatever the editor posts, including list, dictionary and lookup fields. Their validation errors are dropped too, since the user can't fix them.
 - **A `ReadOnly` condition is checked against the record as it loads**, or the new model on a create form, before the posted values are bound, so a posted value never decides it. A form shown again with errors checks it against the model it shows.

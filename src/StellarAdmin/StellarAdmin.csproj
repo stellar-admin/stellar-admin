@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="StellarAdmin.EntityFrameworkCore" />
     <InternalsVisibleTo Include="StellarAdmin.Tests" />
   </ItemGroup>
 

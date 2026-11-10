@@ -25,7 +25,7 @@ internal static class FieldBinderCheck
                 options.Report(
                     ConfigurationProblemKind.FieldWithoutSetter,
                     $"The `{field.FieldName}` field isn't on the {form} form because `{Property(field)}` has no public setter.",
-                    $"Add a public setter to `{Property(field)}`, or bind the field with a `FieldBinder`.",
+                    $"Add a public setter to `{Property(field)}`, or edit the field through a form model with a property that has one.",
                     field.Source
                 );
             }

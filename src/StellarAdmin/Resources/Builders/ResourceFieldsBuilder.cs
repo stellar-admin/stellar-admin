@@ -24,10 +24,9 @@ public abstract class ResourceFieldsBuilder<TResource>
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
     /// <remarks>
-    ///     The last property needs a public setter unless a <see cref="FieldBinder" /> binds the
-    ///     field, such as the one EF resources use for many-to-many navigations. A field without
-    ///     either, or an expression that doesn't select a property path with public getters, is a
-    ///     configuration problem, and the field is left out.
+    ///     The last property needs a public setter, except for the many-to-many navigations of EF
+    ///     resources. A field without one, or an expression that doesn't select a property path with
+    ///     public getters, is a configuration problem, and the field is left out.
     /// </remarks>
     public ResourceFieldBuilder<TResource> Add<TProperty>(
         Expression<Func<TResource, TProperty>> field

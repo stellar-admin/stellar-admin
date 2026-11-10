@@ -369,7 +369,7 @@ public class ResourceFieldsBuilderTests
         public string ReadOnly => Name;
     }
 
-    public sealed class ReadOnlyBinder : FieldBinder
+    internal sealed class ReadOnlyBinder : FieldBinder
     {
         public override Task BindAsync(
             FieldBindingContext context,

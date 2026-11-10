@@ -10,16 +10,8 @@ namespace StellarAdmin.Resources.Options;
 /// </summary>
 public sealed class FormFieldOptions : FormItemOptions
 {
-    /// <summary>
-    ///     Gets the binder that reads and binds the field.
-    /// </summary>
-    /// <value>
-    ///     The binder, or <see langword="null" /> to bind the field's property.
-    /// </value>
-    /// <remarks>
-    ///     <see cref="UseBinder" /> sets the binder.
-    /// </remarks>
-    public FieldBinder? Binder { get; private set; }
+    // The binder that reads and binds the field, or null to bind its property
+    internal FieldBinder? Binder { get; private set; }
 
     /// <summary>
     ///     Gets the help text shown with the field.
@@ -157,14 +149,7 @@ public sealed class FormFieldOptions : FormItemOptions
         return IsAlwaysReadOnly || ReadOnlyWhen?.Invoke(model) == true;
     }
 
-    /// <summary>
-    ///     Sets the binder that reads and binds the field in place of its property.
-    /// </summary>
-    /// <param name="binder">The binder.</param>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="binder" /> is <see langword="null" />.
-    /// </exception>
-    public void UseBinder(FieldBinder binder)
+    internal void UseBinder(FieldBinder binder)
     {
         ArgumentNullException.ThrowIfNull(binder);
 

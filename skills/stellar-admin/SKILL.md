@@ -172,7 +172,7 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 | `StellarAdmin.Resources.Editors` | StellarAdmin | Editors, `ChoiceItem`, `ItemMedia`, `LookupSource` |
 | `StellarAdmin.Resources.Displays` | StellarAdmin | Displays such as `NumberDisplay`, `BadgeDisplay`, `FieldDisplay` |
 | `StellarAdmin.Resources.Builders` | StellarAdmin | Builder types, for helper methods such as `void BookingFields(ResourceFieldsBuilder<Booking> fields)` |
-| `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `InlineCreatePosition`, `InlineAddButton`, `FieldBinder` |
+| `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `InlineCreatePosition`, `InlineAddButton` |
 | `StellarAdmin.Resources.Options` | StellarAdmin | Resolved options such as `ResourceOptions<T>` and `FormFieldOptions`, for post-configuration |
 | `StellarAdmin.Sidebar` | StellarAdmin | `SidebarLinkTarget`, `BrandingLogo`, `UserMenuItem` |
 | `StellarAdmin.Areas.StellarAdmin.ViewModels` | StellarAdmin | Page view models for overrides (`ResourceIndexPageViewModel<T>`) |
