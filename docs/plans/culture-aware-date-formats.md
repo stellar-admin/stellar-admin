@@ -1,18 +1,40 @@
 # Culture-aware date formats
 
-Status: proposed (2026-11-08).
+Status: in progress (2026-11-10).
 
 ## Problem
 
 The default date display formats are fixed custom strings in `Displays/Date.cshtml` (both the display and grid display templates): `d MMM yyyy`, `HH:mm` and `d MMM yyyy, HH:mm`. Only the month name follows the current culture; the day-month-year order and the 24-hour clock do not, so en-US shows `14 Oct 2026, 09:30` and cultures such as ja-JP, hu-HU and de-DE get the wrong order or punctuation.
 
-## Proposal
+## Approach
 
-- Date: a medium date derived from the current culture's `LongDatePattern`, with the weekday (`dddd`) and its adjacent punctuation removed and `MMMM` replaced by `MMM`.
-- Time: the standard short time (`t`).
-- Date and time: the derived date and the short time.
-- Check the derivation across all cultures in a scratch script before adopting it, and note ICU versus NLS differences.
+.NET exposes no CLDR medium date and no CLDR date–time join, and no NuGet package fills the gap (NodaTime formats through the BCL's `DateTimeFormatInfo`; ICU4N has not ported date formatting; net-cldr formats only numbers). The formats are derived from the culture's own patterns instead:
 
-## Follow-up
+- Date: the first of the culture's long date patterns (`GetAllDateTimePatterns('D')`) without a weekday, with `MMMM` shortened to `MMM`. On ICU the list holds CLDR's full date and then its long date, which has no weekday, so no weekday is cut out of a pattern. en-US `MMM d, yyyy`, de-DE `d. MMM yyyy`, hu-HU `yyyy. MMM d.`, ja-JP `yyyy年M月d日`.
+- Time: the culture's short time pattern (`t`).
+- Date and time: the date and the time joined by a space, as .NET's own `g`, `G` and `F` formats do. CLDR's join varies (`, ` in English and most European languages, a space in Hungarian, Japanese, Chinese and Korean, ` klo ` in Finnish); a space reads correctly in all of them.
+- The invariant culture, and any culture without a long date free of a weekday, keep today's formats.
+- `[DisplayFormat]` and `DateDisplay.Format` still override the defaults.
 
-- Update the website docs to match, including the default formats in `content/docs/admin/number-and-date-displays.mdx`, and the `DateDisplay.Format` XML documentation.
+## Steps
+
+- [x] Check the derivation across all cultures and in invariant mode in a scratch script, not committed.
+- [x] One internal helper, `DateDisplayFormats` in `src/StellarAdmin/Resources/Displays/`, used by both `Date.cshtml` templates. Not cached: the derivation reads a short pattern list and is cheap next to rendering.
+- [x] Unit tests for the helper (`tests/StellarAdmin.Tests/Resources/Displays/DateDisplayFormatsTests.cs`); `ResourceDisplayFieldTests` pins en-GB for the default displays and checks de-DE dates through request localization.
+- [x] Update the `DateDisplay.Format` XML documentation, the `DateDisplay` rows of the stellar-admin skill's `columns.md` and `fields.md`, and the default formats in the website's `content/docs/admin/number-and-date-displays.mdx`.
+- [ ] Afterwards: regenerate the docs screenshots that show dates (they render in the machine's culture, en-US on Jerrie's machine).
+
+## Notes
+
+- Hand-written partials with explicit formats keep their formats, such as `_BookingSummary.cshtml` in the scenario host (`{0:d MMM yyyy, HH:mm}`), which the row details specs assert. In en-US screenshots its row details show `3 May 2025, 21:33` beside index cells showing `May 3, 2025 9:33 PM`.
+- The scenario host sets no culture, so specs and screenshots render in the machine's culture: the derived formats on an en-US machine, the fixed fallback in CI (`LANG=C.UTF-8`, the invariant culture).
+- en-US and about 160 other cultures put a narrow no-break space (U+202F) before AM/PM in their short time.
+
+## Verification (2026-11-10)
+
+- Scratch script over all 907 ICU cultures (ICU on Linux): only the invariant culture falls back; quoted literals (`'de'`, `'г'.`) survive; 21 picked patterns have numeric months (ja, zh). In invariant globalization mode only the invariant culture exists and it falls back.
+- `DateDisplayFormatsTests`: 14 passed; `ResourceDisplayFieldTests`: 22 passed, both also with `LANG=C.UTF-8`.
+- Full suites on this machine (en-US): StellarAdmin.Tests 354, StellarAdmin.IntegrationTests 750, StellarAdmin.EntityFrameworkCore.IntegrationTests 170, all passed.
+- Row details specs `row-details-inline`, `row-details-single-panel` and `row-details-panels-accordion` passed through `stellar scenarios run`; the full spec suite was not run.
+- `build/skill-validation` check passed.
+- Not checked: Windows with NLS, macOS, the admin panel in a browser.

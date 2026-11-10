@@ -14,7 +14,7 @@
     },
     "docs generate screenshots": {
       "commandName": "Project",
-      "commandLineArgs": "docs generate screenshots -h"
+      "commandLineArgs": "docs generate screenshots"
     },
     "scenarios list": {
       "commandName": "Project",

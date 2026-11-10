@@ -5,18 +5,19 @@
 
 @{
     var metadata = ViewData.ModelMetadata;
+    var formats = DateDisplayFormats.For(CultureInfo.CurrentCulture.DateTimeFormat);
     var dateFormat = metadata.DataTypeName switch
     {
-        nameof(DataType.Date) => "d MMM yyyy",
-        nameof(DataType.Time) => "HH:mm",
-        _ => "d MMM yyyy, HH:mm",
+        nameof(DataType.Date) => formats.Date,
+        nameof(DataType.Time) => formats.Time,
+        _ => formats.DateAndTime,
     };
 
     // The datetime attribute carries the value in ISO 8601 for machines, whatever the format shown
     var (machineValue, defaultFormat) = Model switch
     {
-        DateOnly date => (date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), "d MMM yyyy"),
-        TimeOnly time => (time.ToString("HH:mm:ss", CultureInfo.InvariantCulture), "HH:mm"),
+        DateOnly date => (date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), formats.Date),
+        TimeOnly time => (time.ToString("HH:mm:ss", CultureInfo.InvariantCulture), formats.Time),
         DateTimeOffset dateTime => (dateTime.ToString("yyyy-MM-dd'T'HH:mm:sszzz", CultureInfo.InvariantCulture), dateFormat),
         DateTime { Kind: DateTimeKind.Utc } dateTime => (dateTime.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture), dateFormat),
         DateTime dateTime => (dateTime.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture), dateFormat),

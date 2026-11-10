@@ -220,22 +220,25 @@ public class ResourceDisplayFieldTests
     public async Task Edit_WithoutDisplay_RendersDefaultDisplayForType()
     {
         // Arrange
-        await using var sut = await CreateFactsHostAsync(details =>
-        {
-            details.Add(model => model.ProductName);
-            details.Add(model => model.Notes);
-            details.Add(model => model.Email);
-            details.Add(model => model.Website);
-            details.Add(model => model.Phone);
-            details.Add(model => model.Released);
-            details.Add(model => model.Updated);
-            details.Add(model => model.Opens);
-            details.Add(model => model.Active);
-            details.Add(model => model.Discontinued);
-            details.Add(model => model.Status);
-            details.Add(model => model.Price);
-            details.Add(model => model.Weight);
-        });
+        await using var sut = await CreateFactsHostAsync(
+            details =>
+            {
+                details.Add(model => model.ProductName);
+                details.Add(model => model.Notes);
+                details.Add(model => model.Email);
+                details.Add(model => model.Website);
+                details.Add(model => model.Phone);
+                details.Add(model => model.Released);
+                details.Add(model => model.Updated);
+                details.Add(model => model.Opens);
+                details.Add(model => model.Active);
+                details.Add(model => model.Discontinued);
+                details.Add(model => model.Status);
+                details.Add(model => model.Price);
+                details.Add(model => model.Weight);
+            },
+            culture: "en-GB"
+        );
         using var client = sut.GetTestClient();
 
         // Act
@@ -262,7 +265,7 @@ public class ResourceDisplayFieldTests
         await Assert.That(phone.GetAttribute("href")).IsEqualTo("tel:+27215550100");
         await Assert.That(phone.TextContent).IsEqualTo("+27 21 555 0100");
         await AssertTime(values["Released"], "2026-03-14", "14 Mar 2026");
-        await AssertTime(values["Updated"], "2026-10-12T14:05:00", "12 Oct 2026, 14:05");
+        await AssertTime(values["Updated"], "2026-10-12T14:05:00", "12 Oct 2026 14:05");
         await AssertTime(values["Opens"], "09:30:00", "09:30");
         var active = values["Active"].RequiredElement(".sa-boolean-display");
         await Assert.That(active.GetAttribute("data-value")).IsEqualTo("true");
@@ -278,6 +281,31 @@ public class ResourceDisplayFieldTests
         await Assert
             .That(values["Weight"].RequiredElement(".sa-number-display").TextContent)
             .IsEqualTo("1.500");
+    }
+
+    [Test]
+    public async Task Edit_WithoutDisplay_FormatsDatesInRequestCulture()
+    {
+        // Arrange
+        await using var sut = await CreateFactsHostAsync(
+            details =>
+            {
+                details.Add(model => model.Released);
+                details.Add(model => model.Updated);
+                details.Add(model => model.Opens);
+            },
+            culture: "de-DE"
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var values = GetValues(document);
+        await AssertTime(values["Released"], "2026-03-14", "14. März 2026");
+        await AssertTime(values["Updated"], "2026-10-12T14:05:00", "12. Okt. 2026 14:05");
+        await AssertTime(values["Opens"], "09:30:00", "09:30");
     }
 
     [Test]
@@ -736,7 +764,8 @@ public class ResourceDisplayFieldTests
 
     private static Task<WebApplication> CreateFactsHostAsync(
         Action<ResourceDetailsBuilder<ProductFactsModel>> configure,
-        Action<ProductFactsModel>? change = null
+        Action<ProductFactsModel>? change = null,
+        string? culture = null
     ) =>
         StellarAdminTestHost.CreateAsync(
             new([new(7, "Notebook", 8.50m)]),
@@ -752,7 +781,8 @@ public class ResourceDisplayFieldTests
                 );
             },
             configureServices: services =>
-                services.AddSingleton(new ProductFactsChange(change ?? (_ => { })))
+                services.AddSingleton(new ProductFactsChange(change ?? (_ => { }))),
+            configureApp: culture is null ? null : app => app.UseRequestLocalization(culture)
         );
 
     // The value of each display field, by its label

@@ -17,9 +17,10 @@ public sealed class DateDisplay : FieldDisplay
     /// </summary>
     /// <value>
     ///     The format string, or <see langword="null" /> to use the property's
-    ///     <c>[DisplayFormat]</c>. Without one, dates use <c>d MMM yyyy</c>, times use
-    ///     <c>HH:mm</c> and values with both use <c>d MMM yyyy, HH:mm</c>. The default is
-    ///     <see langword="null" />.
+    ///     <c>[DisplayFormat]</c>. Without one, the format follows the current culture: dates use
+    ///     its long date without the weekday and with abbreviated month names, such as
+    ///     <c>MMM d, yyyy</c> in en-US, times use its short time, and values with both use the two
+    ///     joined by a space. The default is <see langword="null" />.
     /// </value>
     public string? Format { get; set; }
 }
