@@ -1,0 +1,10 @@
+# The home page linking to five resources in the sidebar's order, in light and dark
+scenario: home-page-resource-links
+steps:
+  # A short window, so the shot ends a little below the sidebar's last item
+  - viewport: { width: 1280, height: 480 }
+  - goto: /stellaradmin
+  - expectVisible: ".sa-item:has-text('Reviews')"
+  - screenshot: home-page-resource-links
+  - colorScheme: dark
+  - screenshot: home-page-resource-links-dark
