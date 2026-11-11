@@ -55,7 +55,7 @@ Any step whose value is a mapping can add `timeout` in milliseconds (default 100
 
 | Step | Value |
 | --- | --- |
-| `goto` | A path, relative to the scenario's base URL. Fails unless the response is OK. |
+| `goto` | A path, relative to the scenario's base URL. Fails unless the response is OK; then waits for the page's first frames, so the next step's timeout is not spent on them. |
 | `expectUrl` | The end of the URL, e.g. `/stellaradmin/trips`, or `{ url, timeout }`. |
 | `expectVisible` | A locator. |
 | `signIn` | A seeded user's email; signs in (or switches user) without a password. The next page loads signed in. |

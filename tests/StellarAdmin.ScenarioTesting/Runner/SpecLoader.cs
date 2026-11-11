@@ -21,6 +21,9 @@ public static class SpecLoader
         ? 1000
         : 5000;
 
+    // How long goto waits for a loaded page's first frames; the same as Playwright's navigation timeout
+    private static readonly TimeSpan FirstFramesTimeout = TimeSpan.FromSeconds(30);
+
     // Looks the scenario up in catalog. Errors name the file by displayPath, e.g. Specs/sign-in.spec.yaml; defaults to the file
     public static Spec Load(ScenarioCatalog catalog, string file, string? displayPath = null)
     {
@@ -538,6 +541,9 @@ public static class SpecLoader
         float timeout
     ) => run => Assertions.Expect(locate(run)).ToBeVisibleAsync(new() { Timeout = timeout });
 
+    // Also waits for the page's first two frames, which can lag its load event by seconds on a busy machine;
+    // the next step's click would otherwise spend its timeout on them, as it waits for frames to see the
+    // element is stable
     private static Func<SpecRun, Task> Goto(string path, int line, string url) =>
         async run =>
         {
@@ -545,6 +551,24 @@ public static class SpecLoader
             if (response is not { Ok: true })
             {
                 throw new SpecException(path, line, $"{url} returned {response?.Status}.");
+            }
+
+            try
+            {
+                await run
+                    .Page.EvaluateAsync(
+                        "() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))"
+                    )
+                    .WaitAsync(FirstFramesTimeout);
+            }
+            catch (TimeoutException exception)
+            {
+                throw new SpecException(
+                    path,
+                    line,
+                    $"{url} loaded but rendered no frame within {FirstFramesTimeout.TotalSeconds} seconds.",
+                    exception
+                );
             }
         };
 

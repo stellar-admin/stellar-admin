@@ -31,6 +31,7 @@ public class SpecTests
 
     [Test]
     [MethodDataSource(nameof(Specs))]
+    [ParallelLimiter<SpecParallelLimit>]
     public async Task Spec_StepsPass(string file)
     {
         // Arrange
