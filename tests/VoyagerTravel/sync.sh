@@ -9,7 +9,8 @@ set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 generator="$(realpath "${1:-$here/../../../voyager-travel-generator}")"
-source="$generator/overlay/src/VoyagerTravel"
+dataset="$generator/datasets/voyager-travel"
+source="$dataset/overlay/src/VoyagerTravel"
 
 if [[ ! -d "$source" ]]; then
   echo "No Voyager Travel app at $source." >&2
@@ -21,7 +22,7 @@ mkdir -p "$here/Data"
 cp -R "$source/Models" "$here/Models"
 cp "$source/Data/ApplicationDbContext.cs" "$source/Data/ApplicationUser.cs" "$here/Data/"
 mkdir -p "$here/Data/Seeding"
-cp "$generator/seeder/Catalog.cs" "$generator/seeder/Descriptions.cs" "$generator/seeder/DatabaseSeeder.cs" "$here/Data/Seeding/"
+cp "$dataset/seeder/Catalog.cs" "$dataset/seeder/Descriptions.cs" "$dataset/seeder/DatabaseSeeder.cs" "$here/Data/Seeding/"
 
 seeder="$here/Data/Seeding/DatabaseSeeder.cs"
 anchor='new SeedData(DateOnly.FromDateTime(DateTime.UtcNow))'
