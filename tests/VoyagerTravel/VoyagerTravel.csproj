@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- The Voyager Travel model and seeder, copied from voyager-travel-generator by sync.sh -->
+  <!-- The Voyager Travel model and seeder, copied from sample-app-generator by sync.sh -->
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
