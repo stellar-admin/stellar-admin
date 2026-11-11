@@ -20,7 +20,8 @@ rm -rf "$here/Models" "$here/Data"
 mkdir -p "$here/Data"
 cp -R "$source/Models" "$here/Models"
 cp "$source/Data/ApplicationDbContext.cs" "$source/Data/ApplicationUser.cs" "$here/Data/"
-cp -R "$source/Data/Seeding" "$here/Data/Seeding"
+mkdir -p "$here/Data/Seeding"
+cp "$generator/seeder/Catalog.cs" "$generator/seeder/Descriptions.cs" "$generator/seeder/DatabaseSeeder.cs" "$here/Data/Seeding/"
 
 seeder="$here/Data/Seeding/DatabaseSeeder.cs"
 anchor='new SeedData(DateOnly.FromDateTime(DateTime.UtcNow))'
