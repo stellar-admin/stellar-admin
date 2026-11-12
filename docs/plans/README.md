@@ -25,6 +25,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [page-subtitles](page-subtitles.md) | proposed | A line under the title of the view, create and edit pages, a fixed text or a per-record subtitle set like `UseTitle`. Split out of page layout. Basics only. |
 | [efcore-model-validation](efcore-model-validation.md) | proposed | Form validation from the EF model's rules (`HasMaxLength`, `IsRequired()`), which only attributes cover today. Basics only. |
 | [index-page-refreshing](index-page-refreshing.md) | open | Make the index page's htmx refreshes selective: today a scope click swaps the whole body and a search refreshes every widget, so the page flashes. Basics only. |
+| [agent-evals](agent-evals.md) | proposed | Measure what StellarAdmin saves a coding agent building an admin panel: the same task without StellarAdmin, with it, and with it plus the skills, repeated and compared on checks passed, tokens and time. The existing skill evaluations move into the same structure later. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
 ## Retired implementation and research records

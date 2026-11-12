@@ -1,0 +1,31 @@
+# Agent evaluations
+
+Measures what StellarAdmin saves a coding agent building an admin panel, from the [agent evaluations plan](../../docs/plans/agent-evals.md). The same Claude Code agent gets the same task, [build-admin](build-admin/prompt.md), in three variants of the Voyager app:
+
+- **`razor`:** Razor Pages, no StellarAdmin ([voyager/base](voyager/base)).
+- **`sa-docs`:** StellarAdmin wired in at `/admin` with no resources, and its docs named in `CLAUDE.md` (base plus [voyager/package](voyager/package)).
+- **`sa-skills`:** `sa-docs` plus the `stellar-admin` and `stellar-admin-setup` skills in the project's `.claude/skills/`.
+
+The skill evaluation tasks from the admin panel skills work are in [admin-panel](admin-panel/README.md) and still run by hand.
+
+## Run
+
+Linux only: the agent and the grader run in a [bubblewrap](https://github.com/containers/bubblewrap) sandbox that hides the home directory (this repository, other checkouts, and Claude's user configuration, memory and skills) apart from the run's own workspace. It needs `bwrap`, `chromium`, `node`, `dotnet` and `claude`, and credentials for `claude -p`: run `claude setup-token` and save the token to `~/.config/stellaradmin-agent-evals/claude-token`, or set `CLAUDE_CODE_OAUTH_TOKEN` or `ANTHROPIC_API_KEY`.
+
+```bash
+build/agent-evals/setup.sh ~/agent-eval-runs/one      # packs StellarAdmin into a feed, installs the grader's browser tool
+build/agent-evals/run-all.sh ~/agent-eval-runs/one 3   # 3 runs of each variant, each graded, then the summary
+```
+
+The run root must be outside this repository. `run.sh <root> <variant>` and `grade.sh <root> <run-id>` do one run or one grading; `node summarize.mjs <root>` prints the tables again. Runs have opaque ids; `runs.tsv` maps them to variants. Each run directory keeps the agent's transcript (`agent.jsonl`), the lines it changed (`numstat.txt`), its workspace and `grade/`. The agent is Sonnet (`AGENT_MODEL`), with a 90 minute limit (`AGENT_TIMEOUT`); the grader is Opus (`GRADER_MODEL`).
+
+## Grading
+
+`grade.sh` builds the app and runs it on port 5310 in the sandbox, with a freshly seeded database, then:
+
+1. [checks.mjs](voyager/checks/checks.mjs) checks access and data over HTTP: Staff can open `/admin`; anonymous users and users without Staff are refused there and on every admin page linked from it; the seeded bookings appear.
+2. An Opus grader works through the [checklist](build-admin/checklist.md) in a headless Chromium, through [chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp), and scores the [rubric](build-admin/rubric.md) from its screenshots. It sees only the running app, not the source or the variant.
+
+The summary counts a pass as 1 and a partial as 0.5, and leaves vendored `wwwroot/lib/` files out of the lines written. Check the grading by hand against the app before trusting a new checklist or rubric.
+
+`voyager/base`, `voyager/package` and `voyager/configured` hold only the files that differ from `dotnet new webapp`; the scripts lay them over a fresh template. Don't build them in place: the repository's `Directory.Build.props` and central package management would apply.

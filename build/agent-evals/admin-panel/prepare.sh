@@ -5,8 +5,8 @@ set -euo pipefail
 
 here="$(cd "$(dirname "$0")" && pwd)"
 repo="$(cd "$here/../../.." && pwd)"
+voyager="$here/../voyager"
 run="${1:?usage: prepare.sh <run-dir>}"
-version="0.0.1-eval"
 
 mkdir -p "$run"
 run="$(cd "$run" && pwd)"
@@ -14,9 +14,7 @@ case "$run/" in "$repo/"*) echo "run dir must be outside the repository" >&2; ex
 
 export DOTNET_SYSTEM_NET_DISABLEIPV6=1
 
-for project in StellarAdmin.UI StellarAdmin StellarAdmin.EntityFrameworkCore; do
-  dotnet pack "$repo/src/$project" -c Release -o "$run/feed" -p:Version=$version -p:AllowMissingPrunePackageData=true -v quiet
-done
+"$here/../pack-feed.sh" "$run/feed"
 
 cp "$repo/global.json" "$run/"
 # A run-local package folder: the global cache would keep serving an earlier run's 0.0.1-eval packages
@@ -38,9 +36,9 @@ for task in 1 2 3 4 5 6; do
   app="$run/task-$task"
   rm -rf "$app"
   dotnet new webapp -n Voyager -o "$app" --no-https > /dev/null
-  cp -r "$here/fixtures/fresh/." "$app/"
+  cp -r "$voyager/base/." "$app/"
   if [ "$task" != 1 ]; then
-    cp -r "$here/fixtures/installed/." "$app/"
+    cp -r "$voyager/configured/." "$app/"
   fi
   dotnet build "$app" -v quiet > /dev/null
 done
