@@ -54,7 +54,7 @@ fields.Add(form => form.CustomerId).UseSelectEditor(select => select.UseResource
 ```
 
 - `UseResource<T>()` is on every choice editor, `LookupSheetEditor` and `MultiLookupSheetEditor`. Explicit `UseItems` or `UseResource` always wins over the inferred resource.
-- A field without a `Title` or `[Display(Name)]` is labelled with the related resource's singular label ("Customer", not "CustomerId"). Collections keep their property's name.
+- A field without a `Title` or `[Display(Name)]` is labelled with the related resource's singular label ("Customer", not "Customer Id"). Collections are labelled by their property's name.
 - A field that refers to a type with no registered resource, or to an unavailable one, has no items, and a configuration problem is logged when the form renders. Register the resource, or give the editor `UseItems` ([below](#related-types-that-arent-resources)). A foreign key with no editor and no related resource keeps its number input instead, and an info problem is logged.
 - A field that needs a different look from the resource's uses `UseItems`, or `UseSource` on a lookup ([below](#lookups-without-ef-core)).
 
@@ -258,7 +258,7 @@ view.Fields(fields =>
 ```
 
 - Sort a navigation column by one of the record's properties: `column.Sortable(booking => booking.Customer!.Name)`. On an EF Core resource, `Sortable()` without one is turned off, and a configuration problem is logged.
-- A related entity whose type isn't a registered resource is left out, with a configuration problem logged, since it would show its type name. Show one of its properties instead (`booking => booking.Agent!.Name`), and set `Title`, because the default label is the last property's name.
+- A related entity whose type isn't a registered resource is left out, with a configuration problem logged, since it would show its type name. Show one of its properties instead (`booking => booking.Agent!.Name`), and set `Title`, because the default label comes from the last property's name ("Name").
 - A title that reads through another navigation isn't loaded for a column or display field; keep it to the record's own properties.
 
 A collection or many-to-many navigation shows as one badge per related record, named by its title:

@@ -294,6 +294,7 @@ override StellarAdmin.UI.ToasterTagHelper.ProcessAsync(Microsoft.AspNetCore.Razo
 override StellarAdmin.UI.ToggleGroupItemTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 override StellarAdmin.UI.TooltipTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
 static StellarAdmin.UI.DataGridHtmlHelperExtensions.GridItem<T>(this Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper! htmlHelper) -> T!
+static StellarAdmin.UI.DisplayNames.FromPropertyName(string! name) -> string!
 static StellarAdmin.UI.FieldLayout.ControlFirst.get -> StellarAdmin.UI.FieldLayout!
 static StellarAdmin.UI.FieldLayout.Stacked.get -> StellarAdmin.UI.FieldLayout!
 static StellarAdmin.UI.FieldLayout.StackedDescriptionFirst.get -> StellarAdmin.UI.FieldLayout!
@@ -886,6 +887,7 @@ StellarAdmin.UI.DataGridTagHelper.RowsOnly.get -> bool?
 StellarAdmin.UI.DataGridTagHelper.RowsOnly.set -> void
 StellarAdmin.UI.DataGridTagHelper.ViewContext.get -> Microsoft.AspNetCore.Mvc.Rendering.ViewContext!
 StellarAdmin.UI.DataGridTagHelper.ViewContext.set -> void
+StellarAdmin.UI.DisplayNames
 StellarAdmin.UI.DetailsOrientation
 StellarAdmin.UI.DetailsOrientation.Horizontal = 1 -> StellarAdmin.UI.DetailsOrientation
 StellarAdmin.UI.DetailsOrientation.Vertical = 0 -> StellarAdmin.UI.DetailsOrientation

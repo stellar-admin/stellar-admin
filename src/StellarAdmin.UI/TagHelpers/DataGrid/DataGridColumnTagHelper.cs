@@ -2,7 +2,6 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -288,7 +287,7 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
                         ?? fieldMetadata?.DisplayName
                         ?? (
                             fieldName is { } name
-                                ? SplitPascalCase(name[(name.LastIndexOf('.') + 1)..])
+                                ? DisplayNames.FromPropertyName(name[(name.LastIndexOf('.') + 1)..])
                                 : null
                         ),
                     HeaderHtml = columnContext.HeaderContent,
@@ -420,26 +419,6 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
             IEnumerable items => !items.Cast<object?>().Any(),
             _ => false,
         };
-    }
-
-    private static string SplitPascalCase(string name)
-    {
-        var builder = new StringBuilder(name.Length + 4);
-        for (var i = 0; i < name.Length; i++)
-        {
-            if (
-                i > 0
-                && char.IsUpper(name[i])
-                && (char.IsLower(name[i - 1]) || (i + 1 < name.Length && char.IsLower(name[i + 1])))
-            )
-            {
-                builder.Append(' ');
-            }
-
-            builder.Append(name[i]);
-        }
-
-        return builder.ToString();
     }
 
     /// <summary>

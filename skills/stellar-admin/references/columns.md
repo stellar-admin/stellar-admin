@@ -30,7 +30,7 @@ index.Columns(columns =>
 
 | Column builder member | Effect |
 | --- | --- |
-| `Title` | Header text. Defaults to `[Display(Name)]`, else the humanized property name. |
+| `Title` | Header text. Defaults to `[Display(Name)]`, else the property name split into words, as form labels show it. |
 | `EmptyText` | Text for null or empty values. |
 | `Sortable()` / `Sortable(selector)` | Opts into sorting by the column's value, or by another expression ([index-pages](index-pages.md#sorting)). |
 | `UseDisplay<TDisplay>()` / `UseDisplay<TDisplay>(display => ...)` | Renders cells with a display and its settings. |

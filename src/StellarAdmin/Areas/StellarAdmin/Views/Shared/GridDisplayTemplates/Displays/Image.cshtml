@@ -5,6 +5,6 @@
     var source = await Display.ResolveUrlAsync(Model, Context.RequestServices, Context.RequestAborted);
 }
 
-<sa-image variant="ImageVariant.Thumbnail" src="@source" alt="@ViewData.ModelMetadata.GetDisplayName()"
+<sa-image variant="ImageVariant.Thumbnail" src="@source" alt="@(ViewData[ViewDataKeys.FieldLabel] as string ?? FieldLabels.Default(ViewData.ModelMetadata))"
           size="Display.Size?.ToImageSize()" aspect-ratio="Display.AspectRatio" fit="Display.Fit"
           interaction="Display.Interaction.ToImageInteraction()" />

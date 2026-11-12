@@ -82,7 +82,7 @@ public class MultiLookupSheetEditorTests
             .IsEqualTo("Remove Notebooks");
         await Assert
             .That(selected.RequiredElement("#Entity_CategoryIds-add").TextContent.Trim())
-            .IsEqualTo("Add categoryIds");
+            .IsEqualTo("Add category Ids");
         await Assert
             .That(document.RequiredElement("#Entity_CategoryIds-empty").HasAttribute("hidden"))
             .IsTrue();
@@ -648,8 +648,8 @@ public class MultiLookupSheetEditorTests
     }
 
     [Test]
-    [Arguments("selected=1&term=lens", "No selected categoryIds match “lens”")]
-    [Arguments("", "No categoryIds selected")]
+    [Arguments("selected=1&term=lens", "No selected category Ids match “lens”")]
+    [Arguments("", "No category Ids selected")]
     public async Task Lookup_SelectedOnlyWithoutMatches_ShowsNoSelectedTitle(
         string query,
         string title

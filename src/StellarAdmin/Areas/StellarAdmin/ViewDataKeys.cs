@@ -27,6 +27,9 @@ public static class ViewDataKeys
 
     internal const string EditorTemplates = "StellarAdminEditorTemplates";
 
+    // The label of the field whose display template renders, or null when the template's metadata names it
+    internal const string FieldLabel = "StellarAdminFieldLabel";
+
     // The column definitions of the form scope whose items are rendered
     internal const string FormColumns = "StellarAdminFormColumns";
 

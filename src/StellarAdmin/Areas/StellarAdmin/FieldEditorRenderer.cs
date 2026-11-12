@@ -66,7 +66,7 @@ internal static class FieldEditorRenderer
                 IsBound = field.Binder is not null,
                 IsDisabled = field.IsDisabled,
                 IsReadOnly = field.IsReadOnly(model),
-                Title = FieldLabels.Find(
+                Title = FieldLabels.Get(
                     field,
                     html.ViewContext.HttpContext.RequestServices,
                     html.MetadataProvider

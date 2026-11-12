@@ -105,7 +105,7 @@ public class GridEditorTests
             .IsEqualTo("datetime-local");
         var segmented = Cell(document, "OptionalInsured")
             .RequiredElement("[data-slot='segmented-control']");
-        await Assert.That(segmented.GetAttribute("aria-label")).IsEqualTo("OptionalInsured");
+        await Assert.That(segmented.GetAttribute("aria-label")).IsEqualTo("Optional Insured");
         await Assert
             .That(segmented.QuerySelectorAll("input[type='radio']").Length)
             .IsGreaterThan(1);

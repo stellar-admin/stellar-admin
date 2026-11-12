@@ -50,6 +50,7 @@
         // The display template reads its display from the view context's data, which the column renders it with.
         // Numbers line up on the right, header and cells alike
         ViewContext.ViewData[ViewDataKeys.FieldDisplay] = display;
+        ViewContext.ViewData[ViewDataKeys.FieldLabel] = column.Title;
         <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
                              template="@display?.TemplateName" template-renders-empty="@(display?.RendersEmptyValue == true)"
                              empty-text="@column.EmptyText"
@@ -65,6 +66,7 @@
     }
     @{
         ViewContext.ViewData.Remove(ViewDataKeys.FieldDisplay);
+        ViewContext.ViewData.Remove(ViewDataKeys.FieldLabel);
     }
     @if (Model.CanView || Model.CanEdit || Model.Delete is not null || inline is not null)
     {

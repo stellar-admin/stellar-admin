@@ -67,16 +67,20 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
                     ? null
                     : FieldDisplayDefaults.Resolve(metadata)
             );
+        var label = FieldLabels.Get(field, metadata);
         var contextData = ViewContext.ViewData;
         var originalDisplay = contextData[ViewDataKeys.FieldDisplay];
         var originalDisplayData = contextData[ViewDataKeys.FieldDisplayData];
+        var originalLabel = contextData[ViewDataKeys.FieldLabel];
         contextData[ViewDataKeys.FieldDisplay] = display;
+        contextData[ViewDataKeys.FieldLabel] = label;
         contextData[ViewDataKeys.FieldDisplayData] = (
             original[ViewDataKeys.DisplayData]
             as IReadOnlyDictionary<FormDisplayFieldOptions, object?>
         )?.GetValueOrDefault(field);
 
         return new FieldScope(
+            label,
             display?.TemplateName,
             display?.RendersEmptyValue == true,
             () =>
@@ -84,16 +88,20 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
                 ViewData = original;
                 contextData[ViewDataKeys.FieldDisplay] = originalDisplay;
                 contextData[ViewDataKeys.FieldDisplayData] = originalDisplayData;
+                contextData[ViewDataKeys.FieldLabel] = originalLabel;
             }
         );
     }
 
     internal sealed class FieldScope(
+        string label,
         string? templateName,
         bool templateRendersEmpty,
         Action restore
     ) : IDisposable
     {
+        public string Label { get; } = label;
+
         // The display template the field renders, or null to let the tag helper choose
         public string? TemplateName { get; } = templateName;
 

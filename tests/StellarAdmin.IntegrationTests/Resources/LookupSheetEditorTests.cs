@@ -48,7 +48,7 @@ public class LookupSheetEditorTests
             .IsEqualTo("Entity_CategoryId-error");
         await Assert
             .That(document.RequiredElement("#Entity_CategoryId-label").TextContent)
-            .IsEqualTo("CategoryId");
+            .IsEqualTo("Category Id");
         await Assert
             .That(document.RequiredElement("#Entity_CategoryId-empty").HasAttribute("hidden"))
             .IsTrue();
@@ -79,7 +79,7 @@ public class LookupSheetEditorTests
             .That(document.RequiredElement("#Entity_CategoryId-empty").HasAttribute("hidden"))
             .IsFalse();
         var choose = document.RequiredElement("#Entity_CategoryId-choose");
-        await Assert.That(choose.TextContent.Trim()).IsEqualTo("Choose categoryId");
+        await Assert.That(choose.TextContent.Trim()).IsEqualTo("Choose category Id");
         await Assert.That(choose.GetAttribute("data-lookup")).IsEqualTo("open");
         await Assert.That(choose.ParentElement!.ClassList.Contains("flex-1")).IsTrue();
         await Assert.That(document.QuerySelector("[data-lookup='create']")).IsNull();
@@ -144,10 +144,10 @@ public class LookupSheetEditorTests
         // Assert
         await Assert
             .That(document.RequiredElement("#Entity_CategoryId-choose").TextContent.Trim())
-            .IsEqualTo("Find a CategoryId");
+            .IsEqualTo("Find a Category Id");
         await Assert
             .That(document.RequiredElement("[data-lookup='create']").TextContent.Trim())
-            .IsEqualTo("Add CategoryId");
+            .IsEqualTo("Add Category Id");
     }
 
     [Test]
@@ -934,7 +934,7 @@ public class LookupSheetEditorTests
         // Assert
         await Assert
             .That(document.RequiredElement("[data-slot='empty-description']").TextContent)
-            .IsEqualTo("No CategoryId matches tents");
+            .IsEqualTo("No Category Id matches tents");
     }
 
     [Test]

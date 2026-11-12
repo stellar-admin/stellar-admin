@@ -47,8 +47,11 @@ public sealed record FormFieldProperties
     public bool IsReadOnly { get; init; }
 
     /// <summary>
-    ///     Gets the field's label, or <see langword="null" /> to use the property's display name.
+    ///     Gets the field's label.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the property's display name.
+    /// </value>
     public string? Title { get; init; }
 
     // A field with a binder edits without its property's setter

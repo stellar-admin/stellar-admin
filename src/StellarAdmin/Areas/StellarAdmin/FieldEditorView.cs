@@ -79,8 +79,11 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
         );
 
     /// <summary>
-    ///     Gets the field's label, or <see langword="null" /> to use the property's display name.
+    ///     Gets the field's label.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> when the template renders outside a form field.
+    /// </value>
     public string? Title => Field?.Title;
 
     // The text the field shows, disabled, while a field its items depend on has no value

@@ -246,7 +246,7 @@ public class ResourceDisplayFieldTests
 
         // Assert
         var values = GetValues(document);
-        var name = values["ProductName"].RequiredElement(".sa-text-display");
+        var name = values["Product Name"].RequiredElement(".sa-text-display");
         await Assert.That(name.TextContent).IsEqualTo("Notebook");
         await Assert.That(name.GetAttribute("data-multiline")).IsEqualTo("false");
         await Assert.That(name.HasAttribute("data-line-clamp")).IsFalse();

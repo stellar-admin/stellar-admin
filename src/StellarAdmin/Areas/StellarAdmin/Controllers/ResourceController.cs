@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -2453,9 +2454,10 @@ internal sealed class ResourceController<TResource>(
 
         var source = await CompositeValueProvider.CreateAsync(ControllerContext);
         if (
-            !await TryUpdateModelAsync(
+            !await TryUpdateFormModelAsync(
                 model,
                 modelType,
+                formFields,
                 prefix,
                 new ConfiguredFieldValueProvider(source, fields, prefix),
                 metadata => propertyNames.Contains(metadata.PropertyName ?? "")
@@ -2484,6 +2486,47 @@ internal sealed class ResourceController<TResource>(
         await BindWithBindersAsync(model, boundFields, source, prefix);
 
         return ModelState.IsValid;
+    }
+
+    // Binds and validates the form's model with metadata that names each property as the form labels it, so binding
+    // and validation messages name a field by its label
+    private async Task<bool> TryUpdateFormModelAsync(
+        object model,
+        Type modelType,
+        IReadOnlyList<FormFieldOptions> formFields,
+        string prefix,
+        IValueProvider valueProvider,
+        Func<ModelMetadata, bool> propertyFilter
+    )
+    {
+        var (metadataProvider, objectValidator) = (MetadataProvider, ObjectValidator);
+        var root = FormMetadata.ForForm(
+            formFields,
+            modelType,
+            metadataProvider,
+            HttpContext.RequestServices
+        );
+        MetadataProvider = new FormMetadata.Provider(metadataProvider, root);
+        if (objectValidator is ObjectModelValidator validator)
+        {
+            ObjectValidator = new FormMetadata.Validator(validator, root);
+        }
+
+        try
+        {
+            return await TryUpdateModelAsync(
+                model,
+                modelType,
+                prefix,
+                valueProvider,
+                propertyFilter
+            );
+        }
+        finally
+        {
+            MetadataProvider = metadataProvider;
+            ObjectValidator = objectValidator;
+        }
     }
 
     // Model validation runs before the binders, so the attributes of a bound field's property, such as [MinLength],

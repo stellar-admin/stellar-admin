@@ -76,7 +76,7 @@ internal static class GridEditorRenderer
             IsBound = field.Binder is not null,
             IsDisabled = field.IsDisabled,
             IsReadOnly = field.IsReadOnly(model),
-            Title = FieldLabels.Find(field, services, html.MetadataProvider),
+            Title = FieldLabels.Get(field, services, html.MetadataProvider),
             WaitingText = waitingText,
         };
 
