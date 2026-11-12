@@ -25,6 +25,16 @@ build/agent-evals/run-all.sh ~/agent-eval-runs/one 3 "razor sa-docs sa-skills" t
 
 The run root must be outside this repository. `run.sh <root> <variant> [task]` and `grade.sh <root> <run-id>` do one run or one grading (`PREPARE_ONLY=1 run.sh ...` stops before the agent, to check a starting app); `node summarize.mjs <root>` prints the tables again. Runs have opaque ids; `runs.tsv` maps them to variants and tasks. Each run directory keeps the agent's transcript (`agent.jsonl`), the lines it changed (`numstat.txt`), its workspace and `grade/`. The agent is Sonnet (`AGENT_MODEL`), with a 90 minute limit (`AGENT_TIMEOUT`); the grader is Opus (`GRADER_MODEL`).
 
+## Before rerunning
+
+The results so far, with their dates and the model versions they ran on, are in the [archived plan](../../docs/plans/archive/agent-evals.md). Check these before comparing a rerun with them:
+
+- **The models move.** `AGENT_MODEL` and `GRADER_MODEL` default to the `sonnet` and `opus` aliases, so a later rerun uses newer models. To compare StellarAdmin versions rather than models, set both to the model ids of the earlier runs (`claude-sonnet-5-5` and `claude-opus-5-5`). The run also packs StellarAdmin from the current source.
+- **The travel checklists depend on the seed data.** They name exact counts, records and search terms (7,162 bookings, `VB-100531`, `Treutel`), read from the database `tests/VoyagerTravel` seeds. That model is synced from the sample app generator, so after a sync, seed a database with `PREPARE_ONLY=1 run.sh` and check the facts before running. A stale fact fails its item in every variant.
+- **Deleting a traveller fails in the Voyager Travel app.** `ApplicationDbContext` sets the owned `Address`'s ownership key to `Restrict` with every other required key, so EF refuses the delete and F5 is partial in every variant. Fix the model first, or expect it.
+- **Time and cost.** A travel run takes 8 to 12.5 minutes with grading, and 27 runs take about 4 to 5 hours. The agent costs $0.45 to $1.06 per run and grading $1.85 to $2.75, at API prices. On a subscription these count against its usage limits instead.
+- **Credentials.** Create a new token with `claude setup-token` for each batch, and revoke it and delete the file afterwards.
+
 ## Grading
 
 `grade.sh` builds the app and runs it on port 5310 in the sandbox, with a freshly seeded database, then:
