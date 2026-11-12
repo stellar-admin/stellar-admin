@@ -1,6 +1,8 @@
 // Deterministic checks of /admin: access for anonymous, non-Staff and Staff users, and the seeded bookings.
-// Usage: node checks.mjs <base-url>    Prints JSON.
+// Usage: node checks.mjs <base-url> [seed-pattern]    Prints JSON. The pattern is a regular expression that some
+// seeded record shows in the admin, VT-10dd (the Voyager app's booking references) by default.
 const base = process.argv[2];
+const seedPattern = new RegExp(process.argv[3] ?? "VT-10\\d\\d");
 const origin = new URL(base).origin;
 
 async function signIn(roles) {
@@ -34,7 +36,7 @@ async function crawl(cookie) {
   for (let depth = 0; depth < 3 && frontier.length; depth++) {
     const next = [];
     for (const path of frontier) {
-      if (seen.has(path) || seen.size >= 60) continue;
+      if (seen.has(path) || seen.size >= 100) continue;
       const result = await get(path, cookie);
       seen.set(path, result);
       if (!isAdmin(result)) continue;
@@ -62,7 +64,7 @@ const other = await get("/admin", sales);
 check("D3", "Signed-in users without Staff are refused at /admin", refused(other), `${other.status} at ${other.path}`);
 
 const pages = isAdmin(home) ? await crawl(staff) : [];
-const seeded = pages.find((page) => /VT-10\d\d/.test(page.body));
+const seeded = pages.find((page) => seedPattern.test(page.body));
 check("D4", "The seeded bookings appear in the admin area", Boolean(seeded), seeded ? `on ${seeded.path}` : `not on any of ${pages.length} pages`);
 const open = [];
 for (const page of pages) {

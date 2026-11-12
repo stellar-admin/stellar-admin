@@ -1,6 +1,12 @@
 # Agent evaluations: StellarAdmin vs no StellarAdmin
 
-Status: in progress (2026-11-12): phases 1 and 2 done (phase 2 rerun with the locale fix); phases 3 and 4 proposed, waiting for their open questions; phase 5 later.
+Status: completed (2026-11-12): phases 1 and 2 done; phase 3 stopped after its one-run check, because more runs wouldn't change the conclusion; phases 4 and 5 not started, kept as ideas.
+
+## Conclusion
+
+StellarAdmin makes an agent's build faster and somewhat cheaper, with far less code and a more finished UI, but the build costs little either way. In phase 3 (one run per variant at 4, 10 and 21 entities), the StellarAdmin variants took 2.4 to 4.3 minutes against `razor`'s 4.7 to 7.1, and cost $0.45 to $0.92 against $0.76 to $1.06. The gap narrowed at 21 entities. They didn't use fewer input tokens: `razor` used the fewest at 10 and 21 entities, and `sa-docs`' docs reading used the most. `razor` wrote 1,200 to 1,700 lines against 280 to 1,100, and its 21-entity app had a paging bug. Rubric scores were 3.2 to 3.6 for `razor` against 3.6 to 4.2. The skills over the docs made a smaller difference than StellarAdmin itself: `sa-skills` was cheaper than `sa-docs` at 4 and 10 entities and level at 21. Phases 1 and 2 (2 entities) showed the same pattern at a few cents and about a minute.
+
+Building the panel isn't where the case for StellarAdmin lies, since Sonnet builds a working 21-entity admin from scratch for about a dollar. It lies in the code that's left to own and change afterwards, which phase 4 would measure. The runner in `build/agent-evals` is kept for that or for later reruns.
 
 ## Summary
 
@@ -8,7 +14,7 @@ Measure what StellarAdmin saves a coding agent that builds an admin panel: give 
 
 The question it answers: when an agent can write an admin site from scratch, why use StellarAdmin? The aim is to show, fairly, whether it's cheaper and faster (decision 8). Phases 1 and 2 measured a small app built once; phases 3 and 4 measure a realistic size and changes after the build, where the difference is expected to be larger.
 
-The first focus is StellarAdmin vs no StellarAdmin. The existing skill evaluations in `build/agent-evals/admin-panel` (six tasks, run by hand for the [admin panel skills](archive/admin-panel-skills.md)) move into the same structure later; they measure what the skills add, a separate and smaller question.
+The first focus is StellarAdmin vs no StellarAdmin. The existing skill evaluations in `build/agent-evals/admin-panel` (six tasks, run by hand for the [admin panel skills](admin-panel-skills.md)) move into the same structure later; they measure what the skills add, a separate and smaller question.
 
 ## Decisions
 
@@ -44,17 +50,17 @@ One prompt asking for an admin panel for Voyager, written without StellarAdmin v
 - The booking form chooses the customer from a searchable list; required fields and ranges are validated.
 - Only signed-in users with the Staff role can use it.
 
-The prompt is in [build-admin/prompt.md](../../build/agent-evals/build-admin/prompt.md). The checks test behaviour only, never API names, so they apply to all three variants:
+The prompt is in [build-admin/prompt.md](../../../build/agent-evals/build-admin/prompt.md). The checks test behaviour only, never API names, so they apply to all three variants:
 
 - Deterministic, in `voyager/checks/checks.mjs` (D1 to D5): Staff can open `/admin`; anonymous users and users without Staff are refused there and on every admin page linked from it; the seeded bookings appear. A refusal is anything other than a 200 under `/admin`, so an app with its own sign-in page under `/admin` would wrongly fail; check by hand.
-- Interactive (search, filters, sorting, paging, creating and editing): the URLs and markup differ per implementation, so a grader agent works through a written [checklist](../../build/agent-evals/build-admin/checklist.md) (L1 to L8, F1 to F5) in a browser against the running app and reports pass, partial or fail per item.
-- Judged: screenshots of the list and form scored 1 to 5 against a [rubric](../../build/agent-evals/build-admin/rubric.md) (R1 to R5: visual quality, list and form usability, narrow screens, navigation), blind to the variant.
+- Interactive (search, filters, sorting, paging, creating and editing): the URLs and markup differ per implementation, so a grader agent works through a written [checklist](../../../build/agent-evals/build-admin/checklist.md) (L1 to L8, F1 to F5) in a browser against the running app and reports pass, partial or fail per item.
+- Judged: screenshots of the list and form scored 1 to 5 against a [rubric](../../../build/agent-evals/build-admin/rubric.md) (R1 to R5: visual quality, list and form usability, narrow screens, navigation), blind to the variant.
 
 Measured per run: checks passed, tokens, cost, time and turns (from the result event of `claude -p --output-format stream-json`), tool calls (from the transcript), lines of code written (leaving out `wwwroot/lib/`).
 
 ## Runner
 
-See the [README](../../build/agent-evals/README.md). `setup.sh <root>` packs StellarAdmin into a feed and installs chrome-devtools-mcp for the grader. `run.sh <root> <variant>` lays the variant over a fresh `dotnet new webapp` with its own `nuget.config` (no local feed for `razor`), builds it, commits it to a new Git repository and runs `claude -p` with Sonnet in it, keeping the transcript. `grade.sh <root> <id>` builds and starts the app with a fresh database, runs the deterministic checks and an Opus grader with a headless Chromium. `run-all.sh` interleaves the variants and grades each run; `summarize.mjs` tabulates the runs and the means per variant. Runs have opaque ids, so neither agent nor grader sees the variant in a path.
+See the [README](../../../build/agent-evals/README.md). `setup.sh <root>` packs StellarAdmin into a feed and installs chrome-devtools-mcp for the grader. `run.sh <root> <variant>` lays the variant over a fresh `dotnet new webapp` with its own `nuget.config` (no local feed for `razor`), builds it, commits it to a new Git repository and runs `claude -p` with Sonnet in it, keeping the transcript. `grade.sh <root> <id>` builds and starts the app with a fresh database, runs the deterministic checks and an Opus grader with a headless Chromium. `run-all.sh` interleaves the variants and grades each run; `summarize.mjs` tabulates the runs and the means per variant. Runs have opaque ids, so neither agent nor grader sees the variant in a path.
 
 Isolation: both agents run in a bubblewrap sandbox with an empty home directory and a cleared environment, with the tools (mise) read-only and only their own workspace writable. They can't see this repository, other checkouts, other runs or `~/.claude`, `~/.agents`; the network is shared. Credentials come from `claude setup-token` (`~/.config/stellaradmin-agent-evals/claude-token`, `CLAUDE_CODE_OAUTH_TOKEN` or `ANTHROPIC_API_KEY`), since the interactive login's credentials file can't be shared with the sandbox safely.
 
@@ -80,6 +86,10 @@ build/agent-evals/                  # was build/skill-evals/
     prompt.md                       # given to the agent verbatim
     checklist.md                    # the grader agent's interactive checks
     rubric.md                       # the screenshot rubric
+    task.env                        # the starting app, database, rubric and seeded pattern
+  voyager-travel/                   # phase 3: base/ and package/, overlays on dotnet new webapp
+  travel-4/, travel-10/, travel-21/ # phase 3 tasks: prompt.md, checklist.md, task.env
+  travel-rubric.md
 ```
 
 ## Phases
@@ -108,16 +118,23 @@ Phases 1 and 2 used 2 entities, where every variant finishes in about two minute
 - Checks: the deterministic access checks across every admin page, and a grader checklist for a sample of entities chosen before the runs.
 - Measures: minutes, cost and input tokens (decision 8), plus output tokens, since output is priced about five times input and `razor` wrote 3 to 4 times `sa-skills`' output in phase 2.
 
-Open questions:
+Settled 2026-11-12: only the entities staff manage are in scope; a series of sizes, to show how cost grows with size; 3 runs per variant and size, with the 90 minute agent timeout.
 
-1. Which entities are in scope: all 21, or the ones staff would manage (leaving out join tables such as `BookingAddOn` and `TripTag`)?
-2. One size, or a series (for example 2, about 8 and all) to show how cost grows with size?
-3. Runs per variant (3 as before?) and the agent timeout (90 minutes now).
+None of the 21 entities is a pure join table: `BookingAddOn` is a line item with a quantity and price, `TripTag` is a named tag, and the many-to-many links (trip tags, guide languages, accommodation amenities) have no entities of their own. Five are children of another record: `BookingPassenger`, `BookingAddOn` and `Payment` of a booking, `ItineraryDay` of a trip and `RoomAllocation` of a departure.
 
-- [ ] Settle the open questions.
-- [ ] Add the Voyager Travel starting point for each variant, the prompt, the checklist sample and the rubric.
-- [ ] One run per variant and check the grading by hand. Checkpoint.
-- [ ] The agreed runs per variant; record the results here. Checkpoint.
+Also settled 2026-11-12:
+
+- Scope: all 21 entities, each with its own list and forms. Child records aren't required to be edited inside their parent: that would be a design choice that could favour one approach.
+- The series, all on the Voyager Travel data, fixed before any run:
+  - 4 entities: Trips, Departures, Travellers, Bookings.
+  - 10 entities: those 4 plus Countries, Cities, Destinations, Guides, Payments and BookingPassengers.
+  - 21 entities: all.
+- The phase 2 app isn't the smallest size: it's a different, simpler app, so its numbers wouldn't line up with these. 3 sizes × 3 variants × 3 runs is 27 runs, plus grading; the one-run-per-variant check measures the time per run first.
+
+- [x] Settle the open questions.
+- [x] Add the Voyager Travel starting point for each variant, the prompt, the checklist sample and the rubric. `voyager-travel/base` and `package` are the starting apps (`VoyagerTravel`, the same `/dev-login`; the StellarAdmin variants wired in at `/admin` with no resources). `run.sh` copies the model and seeder from `tests/VoyagerTravel` and adds a convention storing decimals as double, as the Voyager app does for its totals, since SQLite can't order by decimal. One prompt per size (`travel-4`, `travel-10`, `travel-21`), the same requirements for every kind of record: 25 per page, related records and amounts readable, search, a status filter where there's a status, sorting, create, edit and delete with validation, related records chosen from searchable lists, Staff only. The checklists sample trips, bookings and travellers at every size, guides, cities and payments from 10, and suppliers, trip tags and supplier invoices at 21 (12, 16 and 20 items), with facts read from the seeded database (7,162 bookings, 3,000 travellers, 70 trips, unique search terms). The scripts take a task: `task.env` names the starting app, the database, the rubric and the seeded pattern for the HTTP checks (`VB-10dddd`), and `runs.tsv` and the summary carry the task.
+- [x] One run per variant and check the grading by hand. Checkpoint. Results under Verification. Every app failed F5 (deleting a traveller) because of the starting app, not the agents: see there. Not fixed in the evals, since no more runs followed; the lasting fix is a proposed task for the sample app generator.
+- [ ] ~~The agreed runs per variant; record the results here. Checkpoint.~~ Not run (2026-11-12): the check already showed the pattern, and 27 more runs would only narrow small differences in minutes and cents.
 
 ### Phase 4: changes after the build
 
@@ -128,7 +145,7 @@ An admin panel is built once and changed often, so the cost of a change matters 
 - Measures: minutes, cost and input tokens per change (decision 8).
 - `run.sh` needs a mode that starts from an existing run's workspace instead of a fresh app.
 
-Open questions:
+Not started (2026-11-12). Open questions:
 
 4. Which changes?
 5. Starting from which apps: the phase 2 rerun apps (ready now), phase 3's, or both?
@@ -140,6 +157,8 @@ Open questions:
 - [ ] The agreed runs; record the results here. Checkpoint.
 
 ### Phase 5: the skill tasks (later)
+
+Not started (2026-11-12).
 
 - [ ] Convert the six tasks in `tasks.md` to the same runner on `voyager/configured`, compared `sa-docs` vs `sa-skills`.
 
@@ -169,6 +188,28 @@ Open questions:
 - Grading costs about $1.60 per run, against $0.18 to $0.26 for the agent.
 - The task doesn't separate the variants on checks: Sonnet passes everything in every variant. The differences are in lines written (5×), rubric (3.0 against 4.0 and 4.2) and, less clearly, time and tool calls. `sa-docs`' docs reading doubled its input tokens.
 - Product finding: StellarAdmin's form labels use the raw property name ("DepartureDate") while the index header reads "Departure Date"; both StellarAdmin runs lost rubric points for it. Proposed as a follow-up task.
+
+### Phase 3 check
+
+2026-11-12, one run per variant and size (`~/agent-eval-runs/phase3-check`, Sonnet 5.5 agents, Opus grader). All 9 agents ended normally (exit 0) and every app built. The batch took 1 hour 22 minutes, 8 to 12.5 minutes per run including grading.
+
+| Run | Task | Variant | Checks | Rubric | Minutes | Cost | Input | Output | Tool calls | Lines | Not passed |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| run-5dfb14 | travel-4 | `razor` | 16.5/17 | 3.2 | 4.7 | $0.76 | 979k | 41k | 17 | 1705 | F5 |
+| run-92a3b0 | travel-4 | `sa-docs` | 16.5/17 | 4.0 | 2.8 | $0.46 | 1033k | 14k | 32 | 280 | F5 |
+| run-66247f | travel-4 | `sa-skills` | 16/17 | 3.6 | 3.5 | $0.45 | 965k | 14k | 18 | 369 | F1 F5 |
+| run-3caf1c | travel-10 | `razor` | 20.5/21 | 3.2 | 4.9 | $0.79 | 1084k | 43k | 18 | 1236 | F5 |
+| run-6a7f3d | travel-10 | `sa-docs` | 20.5/21 | 3.8 | 3.4 | $0.69 | 1863k | 21k | 43 | 478 | F5 |
+| run-b566ec | travel-10 | `sa-skills` | 20.5/21 | 3.8 | 2.4 | $0.53 | 1162k | 17k | 20 | 551 | F5 |
+| run-cf946d | travel-21 | `razor` | 24/25 | 3.6 | 7.1 | $1.06 | 1174k | 61k | 15 | 1527 | L1 F5 |
+| run-d21daf | travel-21 | `sa-docs` | 24.5/25 | 4.2 | 4.3 | $0.89 | 2338k | 30k | 43 | 785 | F5 |
+| run-436e62 | travel-21 | `sa-skills` | 24.5/25 | 4.2 | 4.2 | $0.92 | 2005k | 34k | 26 | 1124 | F5 |
+
+- F5 (create, edit and delete a traveller) was partial in all 9 runs for the same reason, and it is a fault of the starting app. `ApplicationDbContext` sets every required foreign key in the model's namespace to `Restrict`, and that includes the ownership key of the owned `Traveller.Address`. EF then refuses to delete any traveller ("The association between entity types 'Traveller' and 'Traveller.Address#Address' has been severed…"), and every app's `app.log` shows that exception. `razor` showed the exception page; StellarAdmin showed "This record couldn't be deleted. Try again." Excluding ownership keys from that loop (`!foreignKey.IsOwnership`) would fix it. The model is synced from the sample app generator, so the lasting fix belongs there.
+- L1 for `razor` at 21 is a real fault: the list handler takes `int page`, which Razor Pages binds to its reserved `page` route value, so every pager link shows page 1.
+- F1 for `sa-skills` at 4 is a fair partial: the departure picker shows only trip titles, so departures of the same trip can't be told apart. The other StellarAdmin runs show the dates.
+- The grader's notes match its screenshots. Grading cost $1.84 to $2.76 per run (133 to 183 turns, 3 to 5 minutes).
+- At every size, the StellarAdmin variants took less time than `razor` (2.4 to 4.3 minutes against 4.7 to 7.1) and cost less at 4 and 10 entities ($0.45 to $0.69 against $0.76 to $0.79). At 21 entities the costs were close ($0.89 and $0.92 against $1.06). Input tokens were not lower: `razor` used the fewest at 10 and 21 entities, and `sa-docs` the most (1.9M and 2.3M, with 43 tool calls against `razor`'s 15 to 18). `razor` wrote 2 to 6 times the lines. These are single runs, so they're only an indication.
 
 ### Phase 2 rerun
 

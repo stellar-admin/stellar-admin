@@ -15,10 +15,11 @@ out="$dir/grade"
 url="http://127.0.0.1:$port"
 sandbox_credentials="$(credentials)"
 grader_model="${GRADER_MODEL:-opus}"
+load_task "$(node -p "require('$dir/meta.json').task ?? 'build-admin'")"
 
 rm -rf "$out"
 mkdir -p "$out"
-rm -f "$app"/voyager.db*
+rm -f "$app/$database"*
 
 if ! sandbox "$ws" "$app" dotnet build -v quiet > "$out/build.log" 2>&1; then
   echo '{ "build": false, "checks": [] }' > "$out/checks.json"
@@ -31,10 +32,10 @@ app_pid=$!
 trap 'kill $app_pid 2>/dev/null || true' EXIT
 for _ in $(seq 1 120); do curl -s -o /dev/null "$url/" && break; sleep 0.5; done
 
-node "$evals/voyager/checks/checks.mjs" "$url" > "$out/checks.json"
+node "$evals/voyager/checks/checks.mjs" "$url" "$seed_marker" > "$out/checks.json"
 
-sed "s|{{BASE_URL}}|$url|g" "$evals/build-admin/checklist.md" > "$out/checklist.md"
-cp "$evals/build-admin/rubric.md" "$out/rubric.md"
+sed "s|{{BASE_URL}}|$url|g" "$task_dir/checklist.md" > "$out/checklist.md"
+cp "$task_dir/$rubric" "$out/rubric.md"
 cat > "$out/mcp.json" <<JSON
 { "mcpServers": { "browser": {
   "command": "$(tool_dir node)/node",

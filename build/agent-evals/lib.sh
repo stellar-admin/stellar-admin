@@ -8,6 +8,22 @@ tool_dir() { dirname "$(readlink -f "$(mise which "$1" 2>/dev/null || command -v
 dotnet_root="$(tool_dir dotnet)"
 sandbox_path="$(tool_dir claude):$(tool_dir node):$dotnet_root:/usr/local/bin:/usr/bin:/bin"
 
+# A task is a directory here with the prompt, the checklist, the rubric and a task.env naming its starting app
+# (fixture, app_name), its database file, a pattern the seeded data shows in the admin, and the rubric file.
+load_task() {
+  task_dir="$evals/$1"
+  [ -f "$task_dir/task.env" ] || { echo "no task $1 (no $task_dir/task.env)" >&2; exit 1; }
+  source "$task_dir/task.env"
+}
+
+# The Voyager Travel model and seeder come from tests/VoyagerTravel, their one source in this repository. SQLite
+# can't order by decimal, so the copy stores decimals as double, as the Voyager app does.
+copy_voyager_travel_model() {
+  cp -r "$repo/tests/VoyagerTravel/Models" "$repo/tests/VoyagerTravel/Data" "$1/"
+  perl -0 -i -pe 's/(\n    protected override void OnModelCreating)/\n    \/\/ SQLite cannot order by decimal, so store decimals as double\n    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)\n    {\n        configurationBuilder.Properties<decimal>().HaveConversion<double>();\n    }\n$1/' "$1/Data/ApplicationDbContext.cs"
+  grep -q ConfigureConventions "$1/Data/ApplicationDbContext.cs" || { echo "couldn't add the decimal convention to ApplicationDbContext.cs" >&2; exit 1; }
+}
+
 # The run root must be outside the repository, so agents can't find StellarAdmin's source through it.
 check_root() {
   case "$1/" in "$repo/"*) echo "the run root must be outside the repository" >&2; exit 1 ;; esac

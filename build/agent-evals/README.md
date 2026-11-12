@@ -1,10 +1,15 @@
 # Agent evaluations
 
-Measures what StellarAdmin saves a coding agent building an admin panel, from the [agent evaluations plan](../../docs/plans/agent-evals.md). The same Claude Code agent gets the same task, [build-admin](build-admin/prompt.md), in three variants of the Voyager app:
+Measures what StellarAdmin saves a coding agent building an admin panel, from the [agent evaluations plan](../../docs/plans/archive/agent-evals.md). The same Claude Code agent gets the same task, [build-admin](build-admin/prompt.md), in three variants of the Voyager app:
 
 - **`razor`:** Razor Pages, no StellarAdmin ([voyager/base](voyager/base)).
 - **`sa-docs`:** StellarAdmin wired in at `/admin` with no resources, and its docs named in `CLAUDE.md` (base plus [voyager/package](voyager/package)).
 - **`sa-skills`:** `sa-docs` plus the `stellar-admin` and `stellar-admin-setup` skills in the project's `.claude/skills/`.
+
+A task is a directory with `prompt.md`, `checklist.md` and a `task.env` naming its starting app, database, rubric and a pattern the seeded data shows in the admin:
+
+- [build-admin](build-admin/prompt.md): the Voyager app (`voyager/`), customers and bookings.
+- [travel-4](travel-4/prompt.md), [travel-10](travel-10/prompt.md) and [travel-21](travel-21/prompt.md): the Voyager Travel app (`voyager-travel/`), with 4, 10 or all 21 kinds of record in scope. Its model and seeder are copied from `tests/VoyagerTravel` at run time, with one convention added (decimals stored as double, since SQLite can't order by decimal). They share [travel-rubric.md](travel-rubric.md).
 
 The skill evaluation tasks from the admin panel skills work are in [admin-panel](admin-panel/README.md) and still run by hand.
 
@@ -14,10 +19,11 @@ Linux only: the agent and the grader run in a [bubblewrap](https://github.com/co
 
 ```bash
 build/agent-evals/setup.sh ~/agent-eval-runs/one      # packs StellarAdmin into a feed, installs the grader's browser tool
-build/agent-evals/run-all.sh ~/agent-eval-runs/one 3   # 3 runs of each variant, each graded, then the summary
+build/agent-evals/run-all.sh ~/agent-eval-runs/one 3   # 3 runs of each variant of build-admin, each graded, then the summary
+build/agent-evals/run-all.sh ~/agent-eval-runs/one 3 "razor sa-docs sa-skills" travel-10   # another task
 ```
 
-The run root must be outside this repository. `run.sh <root> <variant>` and `grade.sh <root> <run-id>` do one run or one grading; `node summarize.mjs <root>` prints the tables again. Runs have opaque ids; `runs.tsv` maps them to variants. Each run directory keeps the agent's transcript (`agent.jsonl`), the lines it changed (`numstat.txt`), its workspace and `grade/`. The agent is Sonnet (`AGENT_MODEL`), with a 90 minute limit (`AGENT_TIMEOUT`); the grader is Opus (`GRADER_MODEL`).
+The run root must be outside this repository. `run.sh <root> <variant> [task]` and `grade.sh <root> <run-id>` do one run or one grading (`PREPARE_ONLY=1 run.sh ...` stops before the agent, to check a starting app); `node summarize.mjs <root>` prints the tables again. Runs have opaque ids; `runs.tsv` maps them to variants and tasks. Each run directory keeps the agent's transcript (`agent.jsonl`), the lines it changed (`numstat.txt`), its workspace and `grade/`. The agent is Sonnet (`AGENT_MODEL`), with a 90 minute limit (`AGENT_TIMEOUT`); the grader is Opus (`GRADER_MODEL`).
 
 ## Grading
 

@@ -1,4 +1,4 @@
-// Tabulates the graded runs of a run root: per run, then the mean per variant.
+// Tabulates the graded runs of a run root: per run, then the mean per task and variant.
 // Usage: node summarize.mjs <run-root>    Prints Markdown.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -15,7 +15,11 @@ const json = (path) => {
 };
 const points = { pass: 1, partial: 0.5, fail: 0 };
 
-function summarize(id, variant) {
+// A build that fails scores 0 of the 5 HTTP checks and every item of the task's checklist
+const checklistItems = (task) =>
+  (read(join(import.meta.dirname, task, "checklist.md")) ?? "").split("\n").filter((line) => /^- [A-Z]\d+:/.test(line)).length;
+
+function summarize(id, variant, task) {
   const dir = join(root, id);
   const meta = json(join(dir, "meta.json"));
   if (!meta) return null;
@@ -45,9 +49,10 @@ function summarize(id, variant) {
   return {
     id,
     variant,
+    task,
     built: checks ? checks.build : null,
     score: all.reduce((sum, check) => sum + (points[check.result] ?? 0), 0),
-    of: checks?.build === false ? 5 + 13 : all.length,
+    of: checks?.build === false ? 5 + checklistItems(task) : all.length,
     rubric: rubric.length ? rubric.reduce((sum, item) => sum + item.score, 0) / rubric.length : null,
     minutes: meta.seconds / 60,
     cost: result.total_cost_usd ?? null,
@@ -65,28 +70,29 @@ const runs = (read(join(root, "runs.tsv")) ?? "")
   .split("\n")
   .filter(Boolean)
   .map((line) => line.split("\t"))
-  .map(([id, variant]) => summarize(id, variant))
+  .map(([id, variant, , task]) => summarize(id, variant, task || "build-admin"))
   .filter(Boolean);
 
 const number = (value, digits = 0) => (value === null || Number.isNaN(value) ? "–" : value.toFixed(digits));
 const thousands = (value) => `${Math.round(value / 1000)}k`;
 
-console.log("| Run | Variant | Checks | Rubric | Minutes | Cost | Input | Output | Turns | Tool calls | Lines | Not passed |");
-console.log("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+console.log("| Run | Task | Variant | Checks | Rubric | Minutes | Cost | Input | Output | Turns | Tool calls | Lines | Not passed |");
+console.log("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
 for (const run of runs) {
   console.log(
-    `| ${run.id} | ${run.variant} | ${run.score}/${run.of} | ${number(run.rubric, 1)} | ${number(run.minutes, 1)} | ${run.cost === null ? "–" : "$" + run.cost.toFixed(2)} | ${thousands(run.input)} | ${thousands(run.output)} | ${run.turns ?? "–"} | ${run.toolCalls} | ${run.lines} | ${run.failed}${run.skills ? " (skills: " + run.skills + ")" : ""} |`,
+    `| ${run.id} | ${run.task} | ${run.variant} | ${run.score}/${run.of} | ${number(run.rubric, 1)} | ${number(run.minutes, 1)} | ${run.cost === null ? "–" : "$" + run.cost.toFixed(2)} | ${thousands(run.input)} | ${thousands(run.output)} | ${run.turns ?? "–"} | ${run.toolCalls} | ${run.lines} | ${run.failed}${run.skills ? " (skills: " + run.skills + ")" : ""} |`,
   );
 }
 
-console.log("\n| Variant | Runs | Checks | Rubric | Minutes | Cost | Input | Output | Tool calls | Lines |");
-console.log("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+console.log("\n| Task | Variant | Runs | Checks | Rubric | Minutes | Cost | Input | Output | Tool calls | Lines |");
+console.log("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
 const mean = (values) => (values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null);
+for (const task of [...new Set(runs.map((run) => run.task))])
 for (const variant of ["razor", "sa-docs", "sa-skills"]) {
-  const group = runs.filter((run) => run.variant === variant);
+  const group = runs.filter((run) => run.task === task && run.variant === variant);
   if (!group.length) continue;
   const pick = (key) => group.map((run) => run[key]).filter((value) => value !== null);
   console.log(
-    `| ${variant} | ${group.length} | ${number(mean(group.map((run) => run.score / run.of)) * 100)}% | ${number(mean(pick("rubric")), 1)} | ${number(mean(pick("minutes")), 1)} | $${number(mean(pick("cost")), 2)} | ${thousands(mean(pick("input")))} | ${thousands(mean(pick("output")))} | ${number(mean(pick("toolCalls")))} | ${number(mean(pick("lines")))} |`,
+    `| ${task} | ${variant} | ${group.length} | ${number(mean(group.map((run) => run.score / run.of)) * 100)}% | ${number(mean(pick("rubric")), 1)} | ${number(mean(pick("minutes")), 1)} | $${number(mean(pick("cost")), 2)} | ${thousands(mean(pick("input")))} | ${thousands(mean(pick("output")))} | ${number(mean(pick("toolCalls")))} | ${number(mean(pick("lines")))} |`,
   );
 }
