@@ -49,10 +49,7 @@ public sealed record FormFieldProperties
     /// <summary>
     ///     Gets the field's label.
     /// </summary>
-    /// <value>
-    ///     The label, or <see langword="null" /> to use the property's display name.
-    /// </value>
-    public string? Title { get; init; }
+    public required string Title { get; init; }
 
     // A field with a binder edits without its property's setter
     internal bool IsBound { get; init; }

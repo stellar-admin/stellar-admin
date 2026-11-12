@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources.Options;
-using StellarAdmin.UI;
 
 namespace StellarAdmin.Areas.StellarAdmin;
 
@@ -33,7 +32,6 @@ internal sealed class FormMetadata : DefaultModelMetadata
     private readonly DefaultModelMetadata _inner;
     private readonly IReadOnlyDictionary<string, string> _labels;
     private readonly string _path;
-    private readonly IReadOnlySet<string> _paths;
     private readonly IModelMetadataProvider _provider;
     private ModelPropertyCollection? _properties;
 
@@ -42,8 +40,7 @@ internal sealed class FormMetadata : DefaultModelMetadata
         ICompositeMetadataDetailsProvider detailsProvider,
         DefaultModelMetadata inner,
         string path,
-        IReadOnlyDictionary<string, string> labels,
-        IReadOnlySet<string> paths
+        IReadOnlyDictionary<string, string> labels
     )
         : base(
             provider,
@@ -57,13 +54,12 @@ internal sealed class FormMetadata : DefaultModelMetadata
         _inner = inner;
         _path = path;
         _labels = labels;
-        _paths = paths;
     }
 
     public override string? DisplayName =>
         _path.Length == 0 ? base.DisplayName
         : _labels.TryGetValue(_path, out var label) ? label
-        : base.DisplayName ?? DisplayNames.FromPropertyName(PropertyName!);
+        : FieldLabels.Default(_inner);
 
     public override ModelPropertyCollection Properties =>
         _properties ??= new(
@@ -71,8 +67,8 @@ internal sealed class FormMetadata : DefaultModelMetadata
                 property is DefaultModelMetadata metadata
                 && (_path.Length == 0 ? metadata.PropertyName! : $"{_path}.{metadata.PropertyName}")
                     is var path
-                && _paths.Contains(path)
-                    ? new FormMetadata(_provider, _detailsProvider, metadata, path, _labels, _paths)
+                && IsOnFieldPath(path)
+                    ? new FormMetadata(_provider, _detailsProvider, metadata, path, _labels)
                     : property
             )
         );
@@ -87,31 +83,10 @@ internal sealed class FormMetadata : DefaultModelMetadata
     )
     {
         var metadata = provider.GetMetadataForType(modelType);
-        if (metadata is not DefaultModelMetadata defaultMetadata)
-        {
-            return metadata;
-        }
 
-        // Each field's path and the paths that lead to it, such as Billing for Billing.Street
-        var paths = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var path in labels.Keys)
-        {
-            for (var end = path.IndexOf('.'); end > 0; end = path.IndexOf('.', end + 1))
-            {
-                paths.Add(path[..end]);
-            }
-
-            paths.Add(path);
-        }
-
-        return new FormMetadata(
-            provider,
-            detailsProvider,
-            defaultMetadata,
-            string.Empty,
-            labels,
-            paths
-        );
+        return metadata is DefaultModelMetadata defaultMetadata
+            ? new FormMetadata(provider, detailsProvider, defaultMetadata, string.Empty, labels)
+            : metadata;
     }
 
     public static ModelMetadata ForForm(
@@ -149,6 +124,13 @@ internal sealed class FormMetadata : DefaultModelMetadata
             PropertySetter = metadata.PropertySetter,
             ValidationMetadata = metadata.ValidationMetadata,
         };
+
+    // Whether the path is a field's or leads to one, such as Billing for Billing.Street
+    private bool IsOnFieldPath(string path) =>
+        _labels.Keys.Any(field =>
+            field.StartsWith(path, StringComparison.Ordinal)
+            && (field.Length == path.Length || field[path.Length] == '.')
+        );
 
     // Gives the form model's metadata in place of its type's, for binding the form
     public sealed class Provider(IModelMetadataProvider inner, ModelMetadata root)

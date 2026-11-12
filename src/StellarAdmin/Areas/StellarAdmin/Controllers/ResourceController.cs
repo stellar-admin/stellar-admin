@@ -2499,7 +2499,8 @@ internal sealed class ResourceController<TResource>(
         Func<ModelMetadata, bool> propertyFilter
     )
     {
-        var (metadataProvider, objectValidator) = (MetadataProvider, ObjectValidator);
+        var metadataProvider = MetadataProvider;
+        var objectValidator = ObjectValidator;
         var root = FormMetadata.ForForm(
             formFields,
             modelType,

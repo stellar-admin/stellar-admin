@@ -222,7 +222,7 @@ StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsDisabled.get -> bool
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsDisabled.init -> void
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsReadOnly.get -> bool
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.IsReadOnly.init -> void
-StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Title.get -> string?
+StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Title.get -> string!
 StellarAdmin.Areas.StellarAdmin.FormFieldProperties.Title.init -> void
 StellarAdmin.Areas.StellarAdmin.FormFieldsBaseView<TModel>
 StellarAdmin.Areas.StellarAdmin.FormFieldsBaseView<TModel>.Fields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormFieldOptions!>!
