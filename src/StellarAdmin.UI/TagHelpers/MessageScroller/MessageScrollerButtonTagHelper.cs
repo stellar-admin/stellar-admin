@@ -111,7 +111,7 @@ public sealed class MessageScrollerButtonTagHelper : StellarAdminTagHelperBase
         var childContent = await output.GetChildContentAsync();
         if (childContent.IsEmptyOrWhiteSpace)
         {
-            await RenderDefaultContentAsync(output, context, effectiveDirection);
+            RenderDefaultContent(output, effectiveDirection);
         }
         else
         {
@@ -119,23 +119,10 @@ public sealed class MessageScrollerButtonTagHelper : StellarAdminTagHelperBase
         }
     }
 
-    private async Task RenderDefaultContentAsync(
-        TagHelperOutput output,
-        TagHelperContext context,
-        MessageScrollerDirection direction
-    )
+    private void RenderDefaultContent(TagHelperOutput output, MessageScrollerDirection direction)
     {
         // One arrow for both directions; the stylesheet rotates it for data-direction="start".
-        var iconOutput = new TagHelperOutput(
-            "svg",
-            [],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
-        var iconTagHelper = new IconTagHelper(_iconOptions)
-        {
-            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.ScrollToEnd),
-        };
-        await iconTagHelper.ProcessAsync(context, iconOutput);
+        var iconOutput = _iconOptions.RenderIcon(SemanticIconRole.ScrollToEnd);
         output.Content.AppendHtml(iconOutput);
 
         var label = direction == MessageScrollerDirection.End ? "Scroll to end" : "Scroll to start";

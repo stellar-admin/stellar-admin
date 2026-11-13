@@ -2,7 +2,7 @@
 
 internal static partial class LucideIcons
 {
-    private static readonly Dictionary<string, string> SvgAttributes = new Dictionary<
+    internal static readonly Dictionary<string, string> SvgAttributes = new Dictionary<
         string,
         string
     >

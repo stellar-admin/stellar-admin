@@ -80,16 +80,7 @@ public sealed class TableRowDetailToggleTagHelper : StellarAdminTagHelperBase
         var content = await output.GetChildContentAsync();
         if (content.IsEmptyOrWhiteSpace)
         {
-            var icon = new TagHelperOutput(
-                "svg",
-                [],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-            );
-
-            new IconTagHelper(_iconOptions)
-            {
-                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.RowDetailIndicator),
-            }.Process(context, icon);
+            var icon = _iconOptions.RenderIcon(SemanticIconRole.RowDetailIndicator);
 
             output.Content.SetHtmlContent(icon);
         }

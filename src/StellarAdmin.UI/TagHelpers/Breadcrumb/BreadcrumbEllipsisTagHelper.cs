@@ -23,7 +23,7 @@ public sealed class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
     }
 
     /// <inheritdoc />
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -37,16 +37,10 @@ public sealed class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
         );
 
         /* Render the ellipsis icon */
-        var iconOutput = new TagHelperOutput(
-            "svg",
-            [new TagHelperAttribute("class", "size-4")],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        var iconOutput = _iconOptions.RenderIcon(
+            SemanticIconRole.BreadcrumbEllipsis,
+            ("class", "size-4")
         );
-        var iconTagHelper = new IconTagHelper(_iconOptions)
-        {
-            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.BreadcrumbEllipsis),
-        };
-        await iconTagHelper.ProcessAsync(context, iconOutput);
         output.Content.AppendHtml(iconOutput);
 
         /* Render the screen reader text */
@@ -54,5 +48,7 @@ public sealed class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
         srTagBuilder.Attributes.Add("class", "sr-only");
         srTagBuilder.InnerHtml.AppendHtml("More");
         output.Content.AppendHtml(srTagBuilder);
+
+        return Task.CompletedTask;
     }
 }

@@ -593,11 +593,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         var hover = new TagBuilder("span");
         hover.Attributes.Add("class", "sa-image-upload-trigger-icon");
         hover.InnerHtml.AppendHtml(
-            await ImageRendering.RenderIconAsync(
-                parts.Context,
-                parts.IconOptions,
-                SemanticIconRole.Upload
-            )
+            parts.IconOptions.RenderIcon(SemanticIconRole.Upload, ("aria-hidden", "true"))
         );
         trigger.InnerHtml.AppendHtml(hover);
         trigger.InnerHtml.AppendHtml(await parts.ProgressAsync(bar: false));
@@ -735,8 +731,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
 
             if (icon is { } role)
             {
-                var iconOutput = (TagHelperOutput)
-                    await ImageRendering.RenderIconAsync(Context, IconOptions, role);
+                var iconOutput = IconOptions.RenderIcon(role, ("aria-hidden", "true"));
                 if (text != null)
                 {
                     iconOutput.Attributes.SetAttribute("data-icon", "inline-start");
@@ -776,7 +771,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             var icon = new TagBuilder("span");
             icon.Attributes.Add("class", "sa-image-upload-drop-icon");
             icon.InnerHtml.AppendHtml(
-                await ImageRendering.RenderIconAsync(Context, IconOptions, SemanticIconRole.Upload)
+                IconOptions.RenderIcon(SemanticIconRole.Upload, ("aria-hidden", "true"))
             );
             drop.InnerHtml.AppendHtml(icon);
 
@@ -827,12 +822,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             progress.Attributes.Add("class", "sa-image-upload-progress");
             ShowWhen(progress, "uploading");
 
-            var spinner = (TagHelperOutput)
-                await ImageRendering.RenderIconAsync(
-                    Context,
-                    IconOptions,
-                    SemanticIconRole.Loading
-                );
+            var spinner = IconOptions.RenderIcon(SemanticIconRole.Loading, ("aria-hidden", "true"));
             spinner.Attributes.SetAttribute("class", "sa-spinner");
             spinner.Attributes.SetAttribute("role", "status");
             spinner.Attributes.SetAttribute("aria-label", "Uploading");

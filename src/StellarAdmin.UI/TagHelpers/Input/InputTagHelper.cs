@@ -74,7 +74,7 @@ public sealed class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
     public string? Value { get; set; }
 
     /// <inheritdoc />
-    protected override async Task<FieldLayout> RenderInput(
+    protected override Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -208,16 +208,10 @@ public sealed class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                 checkboxSpan.Attributes.Add("class", "sa-checkbox-indicator");
 
                 // Add the icon
-                var checkboxIconOutput = new TagHelperOutput(
-                    "svg",
-                    [new TagHelperAttribute("class", "sa-checkbox-indicator-icon")],
-                    (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+                var checkboxIconOutput = _iconOptions.RenderIcon(
+                    SemanticIconRole.CheckboxSelected,
+                    ("class", "sa-checkbox-indicator-icon")
                 );
-                var checkboxIconTagHelper = new IconTagHelper(_iconOptions)
-                {
-                    Name = _iconOptions.GetSemanticIconName(SemanticIconRole.CheckboxSelected),
-                };
-                await checkboxIconTagHelper.ProcessAsync(context, checkboxIconOutput);
                 checkboxSpan.InnerHtml.AppendHtml(checkboxIconOutput);
 
                 output.Content.AppendHtml(checkboxSpan);
@@ -237,16 +231,10 @@ public sealed class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                 spanTagBuilder.Attributes.Add("class", "sa-radiobutton-indicator");
 
                 // Add the icon
-                var iconOutput = new TagHelperOutput(
-                    "svg",
-                    [new TagHelperAttribute("class", "sa-radiobutton-indicator-icon")],
-                    (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+                var iconOutput = _iconOptions.RenderIcon(
+                    SemanticIconRole.RadioSelected,
+                    ("class", "sa-radiobutton-indicator-icon")
                 );
-                var iconTagHelper = new IconTagHelper(_iconOptions)
-                {
-                    Name = _iconOptions.GetSemanticIconName(SemanticIconRole.RadioSelected),
-                };
-                await iconTagHelper.ProcessAsync(context, iconOutput);
                 spanTagBuilder.InnerHtml.AppendHtml(iconOutput);
 
                 output.Content.AppendHtml(spanTagBuilder);
@@ -256,6 +244,6 @@ public sealed class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                 break;
         }
 
-        return layout;
+        return Task.FromResult(layout);
     }
 }

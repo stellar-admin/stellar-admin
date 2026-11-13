@@ -91,16 +91,10 @@ public sealed class CarouselPreviousTagHelper : StellarAdminTagHelperBase
         var content = await output.GetChildContentAsync();
         if (content.IsEmptyOrWhiteSpace)
         {
-            var icon = new TagHelperOutput(
-                "svg",
-                [new TagHelperAttribute("class", "size-4")],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+            var icon = _iconOptions.RenderIcon(
+                SemanticIconRole.CarouselPrevious,
+                ("class", "size-4")
             );
-
-            new IconTagHelper(_iconOptions)
-            {
-                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.CarouselPrevious),
-            }.Process(context, icon);
 
             output.Content.SetHtmlContent(icon);
         }

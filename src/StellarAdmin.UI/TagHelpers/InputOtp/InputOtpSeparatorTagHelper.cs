@@ -50,11 +50,7 @@ public sealed class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
         }
         else
         {
-            await InputOtpRenderer.RenderDefaultSeparatorContentAsync(
-                output.Content,
-                context,
-                _iconOptions
-            );
+            InputOtpRenderer.RenderDefaultSeparatorContent(output.Content, _iconOptions);
         }
     }
 }

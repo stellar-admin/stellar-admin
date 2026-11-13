@@ -123,7 +123,7 @@ public sealed class TabListTagHelper : StellarAdminTagHelperBase
         }
 
         var menuId = $"--sa-tab-list-{GetUniqueId(context)}-more";
-        tabListTagBuilder.InnerHtml.AppendHtml(RenderMoreTrigger(context, menuId));
+        tabListTagBuilder.InnerHtml.AppendHtml(RenderMoreTrigger(menuId));
         output.Content.AppendHtml(tabListTagBuilder);
 
         // sel-tab-list fills the menu with the tabs it hides
@@ -146,7 +146,7 @@ public sealed class TabListTagHelper : StellarAdminTagHelperBase
     }
 
     // Hidden until sel-tab-list hides a tab
-    private IHtmlContent RenderMoreTrigger(TagHelperContext context, string menuId)
+    private IHtmlContent RenderMoreTrigger(string menuId)
     {
         var triggerTagBuilder = new TagBuilder("button");
         triggerTagBuilder.Attributes.Add("type", "button");
@@ -157,15 +157,10 @@ public sealed class TabListTagHelper : StellarAdminTagHelperBase
         triggerTagBuilder.Attributes.Add("hidden", "");
         triggerTagBuilder.InnerHtml.Append(MoreLabel ?? "More");
 
-        var iconOutput = new TagHelperOutput(
-            string.Empty,
-            [new TagHelperAttribute("data-icon", "inline-end")],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        var iconOutput = _iconOptions.RenderIcon(
+            SemanticIconRole.DropdownIndicator,
+            ("data-icon", "inline-end")
         );
-        new IconTagHelper(_iconOptions)
-        {
-            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.DropdownIndicator),
-        }.Process(context, iconOutput);
         triggerTagBuilder.InnerHtml.AppendHtml(iconOutput);
 
         return triggerTagBuilder;

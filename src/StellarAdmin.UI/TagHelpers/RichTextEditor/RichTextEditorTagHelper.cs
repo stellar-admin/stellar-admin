@@ -262,7 +262,7 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             textarea.MergeAttribute("readonly", "readonly");
         }
 
-        var parts = new Parts(context, _iconOptions, id);
+        var parts = new Parts(_iconOptions, id);
         if (!readOnly)
         {
             output.Content.AppendHtml(parts.Toolbar(ClassNames?.Toolbar, uploads));
@@ -340,7 +340,7 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
     // Builds the editor's parts: the toolbar, link popover, slash menu, table handles and selection
     // bubble, drawn with the library's buttons, toggles, menus and tooltips. Each control names its
     // action in data-action, which the script runs and keeps checked or disabled.
-    private sealed class Parts(TagHelperContext context, IconOptions iconOptions, string id)
+    private sealed class Parts(IconOptions iconOptions, string id)
     {
         public IHtmlContent Toolbar(string? toolbarClass, bool uploads)
         {
@@ -710,23 +710,9 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
 
         private IHtmlContent Icon(SemanticIconRole role, string? cssClass = null)
         {
-            var output = new TagHelperOutput(
-                "svg",
-                cssClass == null
-                    ? [new TagHelperAttribute("aria-hidden", "true")]
-                    :
-                    [
-                        new TagHelperAttribute("class", cssClass),
-                        new TagHelperAttribute("aria-hidden", "true"),
-                    ],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-            );
-            new IconTagHelper(iconOptions) { Name = iconOptions.GetSemanticIconName(role) }.Process(
-                context,
-                output
-            );
-
-            return output;
+            return cssClass == null
+                ? iconOptions.RenderIcon(role, ("aria-hidden", "true"))
+                : iconOptions.RenderIcon(role, ("class", cssClass), ("aria-hidden", "true"));
         }
 
         private TagBuilder MenuItem(

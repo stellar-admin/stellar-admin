@@ -67,12 +67,7 @@ public sealed class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
         var childContent = await output.GetChildContentAsync();
         output.Content.SetHtmlContent(childContent);
         output.Content.AppendHtml(
-            DropdownMenuInternals.RenderIcon(
-                context,
-                _iconOptions,
-                SemanticIconRole.SubmenuIndicator,
-                "size-4"
-            )
+            _iconOptions.RenderIcon(SemanticIconRole.SubmenuIndicator, ("class", "size-4"))
         );
     }
 }

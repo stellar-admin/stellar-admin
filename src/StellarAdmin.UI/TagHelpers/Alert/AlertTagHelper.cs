@@ -123,13 +123,7 @@ public sealed class AlertTagHelper : StellarAdminTagHelperBase
     {
         if (!string.IsNullOrEmpty(Icon))
         {
-            var iconTagHelperOutput = new TagHelperOutput(
-                string.Empty,
-                [],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-            );
-            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = Icon };
-            await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
+            var iconTagHelperOutput = _iconOptions.RenderIcon(Icon);
 
             output.Content.AppendHtml(iconTagHelperOutput);
         }

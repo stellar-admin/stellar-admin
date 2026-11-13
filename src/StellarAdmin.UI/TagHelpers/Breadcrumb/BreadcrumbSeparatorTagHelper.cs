@@ -47,16 +47,10 @@ public sealed class BreadcrumbSeparatorTagHelper : StellarAdminTagHelperBase
         else
         {
             /* Render the chevron-right icon */
-            var iconOutput = new TagHelperOutput(
-                "svg",
-                [new TagHelperAttribute("class", "size-4")],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+            var iconOutput = _iconOptions.RenderIcon(
+                SemanticIconRole.BreadcrumbSeparator,
+                ("class", "size-4")
             );
-            var iconTagHelper = new IconTagHelper(_iconOptions)
-            {
-                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.BreadcrumbSeparator),
-            };
-            await iconTagHelper.ProcessAsync(context, iconOutput);
             output.Content.AppendHtml(iconOutput);
         }
     }

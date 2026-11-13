@@ -188,8 +188,7 @@ public sealed class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
         );
         linkOutput.Content.AppendHtml(headerContent);
         linkOutput.Content.AppendHtml(
-            await RenderIcon(
-                context,
+            _iconOptions.RenderIcon(
                 activeDirection switch
                 {
                     DataGridSortDirection.Ascending => SemanticIconRole.SortAscending,
@@ -244,21 +243,5 @@ public sealed class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
                     .Replace(SortDirectionPlaceholder, direction.GetQueryValueText()),
             StringComparer.OrdinalIgnoreCase
         );
-    }
-
-    private async Task<IHtmlContent> RenderIcon(TagHelperContext context, SemanticIconRole role)
-    {
-        var iconOutput = new TagHelperOutput(
-            "svg",
-            [],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
-        var iconTagHelper = new IconTagHelper(_iconOptions)
-        {
-            Name = _iconOptions.GetSemanticIconName(role),
-        };
-        await iconTagHelper.ProcessAsync(context, iconOutput);
-
-        return iconOutput;
     }
 }

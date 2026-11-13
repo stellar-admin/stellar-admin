@@ -86,12 +86,7 @@ public sealed class CommandInputTagHelper : StellarAdminTagHelperBase
             "sa-input-group-addon-align-start"
         );
         addon.InnerHtml.AppendHtml(
-            CommandRenderingHelper.RenderIcon(
-                context,
-                _iconOptions,
-                SemanticIconRole.Search,
-                "sa-command-input-icon"
-            )
+            _iconOptions.RenderIcon(SemanticIconRole.Search, ("class", "sa-command-input-icon"))
         );
 
         output.PreElement.AppendHtml(wrapper.RenderStartTag());

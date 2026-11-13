@@ -69,15 +69,7 @@ public sealed class CommandItemTagHelper : StellarAdminTagHelperBase
     {
         output.TagName = "div";
 
-        CommandRenderingHelper.RenderItem(
-            context,
-            output,
-            _iconOptions,
-            Value,
-            Keywords,
-            Disabled,
-            Checked
-        );
+        CommandRenderingHelper.RenderItem(output, _iconOptions, Value, Keywords, Disabled, Checked);
 
         return Task.CompletedTask;
     }

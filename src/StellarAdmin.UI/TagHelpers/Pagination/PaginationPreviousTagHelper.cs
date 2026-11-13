@@ -79,16 +79,7 @@ public sealed class PaginationPreviousTagHelper : StellarAdminAnchorTagHelperBas
         else
         {
             // Render the icon
-            var iconOutput = new TagHelperOutput(
-                "svg",
-                [],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-            );
-            var iconTagHelper = new IconTagHelper(_iconOptions)
-            {
-                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.PaginationPrevious),
-            };
-            await iconTagHelper.ProcessAsync(context, iconOutput);
+            var iconOutput = _iconOptions.RenderIcon(SemanticIconRole.PaginationPrevious);
             output.Content.AppendHtml(iconOutput);
 
             // Render the text

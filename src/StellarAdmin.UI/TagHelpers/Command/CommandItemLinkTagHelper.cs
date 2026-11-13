@@ -77,14 +77,6 @@ public sealed class CommandItemLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         await ApplyRouteAttributesAsync(_htmlGenerator, context, output);
 
-        CommandRenderingHelper.RenderItem(
-            context,
-            output,
-            _iconOptions,
-            Value,
-            Keywords,
-            Disabled,
-            Checked
-        );
+        CommandRenderingHelper.RenderItem(output, _iconOptions, Value, Keywords, Disabled, Checked);
     }
 }

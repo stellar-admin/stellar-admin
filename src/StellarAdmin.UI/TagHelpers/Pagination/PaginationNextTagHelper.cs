@@ -79,16 +79,7 @@ public sealed class PaginationNextTagHelper : StellarAdminAnchorTagHelperBase
             output.Content.AppendHtml(textBlockTagBuilder);
 
             // Render the icon
-            var iconOutput = new TagHelperOutput(
-                "svg",
-                [],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-            );
-            var iconTagHelper = new IconTagHelper(_iconOptions)
-            {
-                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.PaginationNext),
-            };
-            await iconTagHelper.ProcessAsync(context, iconOutput);
+            var iconOutput = _iconOptions.RenderIcon(SemanticIconRole.PaginationNext);
             output.Content.AppendHtml(iconOutput);
         }
     }

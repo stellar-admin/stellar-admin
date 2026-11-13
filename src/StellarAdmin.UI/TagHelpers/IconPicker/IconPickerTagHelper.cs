@@ -274,23 +274,6 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         return formatted.Count > 0 ? string.Join(',', formatted) : null;
     }
 
-    private TagHelperOutput RenderIcon(TagHelperContext context, string? name, string? className)
-    {
-        var icon = new TagHelperOutput(
-            "svg",
-            [new TagHelperAttribute("aria-hidden", "true")],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
-        if (className != null)
-        {
-            icon.Attributes.SetAttribute("class", className);
-        }
-
-        new IconTagHelper(_iconOptions) { Name = name }.Process(context, icon);
-
-        return icon;
-    }
-
     private void RenderInline(TagHelperContext context, TagHelperOutput output, Picker picker)
     {
         var spacing = ToggleGroupSpacing.Default.GetSpacingUnits();
@@ -508,7 +491,7 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         }
         else
         {
-            trigger.Content.AppendHtml(RenderValueIcon(context, picker.Value));
+            trigger.Content.AppendHtml(RenderValueIcon(picker.Value));
             text.InnerHtml.Append(picker.Value);
         }
 
@@ -522,15 +505,15 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         }
 
         trigger.Content.AppendHtml(
-            RenderIcon(
-                context,
-                _iconOptions.GetSemanticIconName(SemanticIconRole.DropdownIndicator),
-                "sa-icon-picker-chevron"
+            _iconOptions.RenderIcon(
+                SemanticIconRole.DropdownIndicator,
+                ("aria-hidden", "true"),
+                ("class", "sa-icon-picker-chevron")
             )
         );
         output.Content.AppendHtml(trigger);
 
-        output.Content.AppendHtml(RenderPopover(context, picker, popoverId, gridId));
+        output.Content.AppendHtml(RenderPopover(picker, popoverId, gridId));
 
         if (picker.Icons.Count > 0)
         {
@@ -545,12 +528,7 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         }
     }
 
-    private TagBuilder RenderPopover(
-        TagHelperContext context,
-        Picker picker,
-        string popoverId,
-        string gridId
-    )
+    private TagBuilder RenderPopover(Picker picker, string popoverId, string gridId)
     {
         var input = new TagBuilder("input") { TagRenderMode = TagRenderMode.SelfClosing };
         input.Attributes.Add("type", "search");
@@ -568,7 +546,7 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         addon.Attributes.Add("data-align", "start");
         addon.Attributes.Add("class", "sa-input-group-addon sa-input-group-addon-align-start");
         addon.InnerHtml.AppendHtml(
-            RenderIcon(context, _iconOptions.GetSemanticIconName(SemanticIconRole.Search), null)
+            _iconOptions.RenderIcon(SemanticIconRole.Search, ("aria-hidden", "true"))
         );
 
         var inputGroup = new TagBuilder("div");
@@ -647,11 +625,11 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
     }
 
     // A child icon's output can only be written once, so the trigger renders its own copy
-    private IHtmlContent RenderValueIcon(TagHelperContext context, string value)
+    private IHtmlContent RenderValueIcon(string value)
     {
         if (_iconOptions.TryGetIcon(value, out _))
         {
-            return RenderIcon(context, value, null);
+            return _iconOptions.RenderIcon(value, ("aria-hidden", "true"));
         }
 
         var missing = new TagBuilder("span");

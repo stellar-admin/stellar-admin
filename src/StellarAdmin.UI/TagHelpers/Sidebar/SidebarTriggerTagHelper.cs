@@ -53,16 +53,10 @@ public sealed class SidebarTriggerTagHelper : StellarAdminTagHelperBase
         }
         else
         {
-            var iconOutput = new TagHelperOutput(
-                "svg",
-                [new TagHelperAttribute("class", "size-4")],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+            var iconOutput = _iconOptions.RenderIcon(
+                SemanticIconRole.ToggleSidebar,
+                ("class", "size-4")
             );
-            var iconTagHelper = new IconTagHelper(_iconOptions)
-            {
-                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.ToggleSidebar),
-            };
-            iconTagHelper.Process(context, iconOutput);
             iconContent = new DefaultTagHelperContent().AppendHtml(iconOutput);
         }
 

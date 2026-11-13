@@ -51,16 +51,10 @@ public sealed class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
         else
         {
             // Render the icon
-            var iconOutput = new TagHelperOutput(
-                "svg",
-                [new TagHelperAttribute("class", "size-4")],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+            var iconOutput = _iconOptions.RenderIcon(
+                SemanticIconRole.PaginationEllipsis,
+                ("class", "size-4")
             );
-            var iconTagHelper = new IconTagHelper(_iconOptions)
-            {
-                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.PaginationEllipsis),
-            };
-            await iconTagHelper.ProcessAsync(context, iconOutput);
             output.Content.AppendHtml(iconOutput);
 
             // Render the text

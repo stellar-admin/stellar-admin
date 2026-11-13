@@ -92,7 +92,7 @@ internal sealed class CollectionEditorRenderer(
         content.AppendHtml(emptyMessage);
         if (!model.ReadOnly)
         {
-            content.AppendHtml(await AddAsync());
+            content.AppendHtml(Add());
 
             var template = new TagBuilder("template");
             template.InnerHtml.AppendHtml(
@@ -140,7 +140,7 @@ internal sealed class CollectionEditorRenderer(
         }
     }
 
-    private async Task<IHtmlContent> AddAsync()
+    private IHtmlContent Add()
     {
         var full = model.MaxItems is { } max && model.Rows.Count >= max;
         var add = new TagHelperOutput(
@@ -166,7 +166,9 @@ internal sealed class CollectionEditorRenderer(
 
         var text = new TagBuilder("span");
         text.InnerHtml.Append(model.AddText);
-        add.Content.AppendHtml(await IconAsync(SemanticIconRole.CollectionEditorAdd, null));
+        add.Content.AppendHtml(
+            icons.Value.RenderIcon(SemanticIconRole.CollectionEditorAdd, ("aria-hidden", "true"))
+        );
         add.Content.AppendHtml(text);
 
         // The count shows only when there is a maximum
@@ -435,26 +437,6 @@ internal sealed class CollectionEditorRenderer(
         return head;
     }
 
-    private async Task<IHtmlContent> IconAsync(SemanticIconRole role, string? css)
-    {
-        var icon = new TagHelperOutput(
-            string.Empty,
-            css == null
-                ? [new TagHelperAttribute("aria-hidden", "true")]
-                :
-                [
-                    new TagHelperAttribute("class", css),
-                    new TagHelperAttribute("aria-hidden", "true"),
-                ],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
-        await new IconTagHelper(icons.Value)
-        {
-            Name = icons.Value.GetSemanticIconName(role),
-        }.ProcessAsync(context, icon);
-        return icon;
-    }
-
     // A row, or the template row when the index is null
     private async Task<IHtmlContent> RowAsync(CollectionEditorRow row, int? index)
     {
@@ -481,7 +463,12 @@ internal sealed class CollectionEditorRenderer(
                     content.AppendHtml(numberText);
                 }
 
-                content.AppendHtml(await IconAsync(SemanticIconRole.CollectionEditorHandle, null));
+                content.AppendHtml(
+                    icons.Value.RenderIcon(
+                        SemanticIconRole.CollectionEditorHandle,
+                        ("aria-hidden", "true")
+                    )
+                );
                 gutter.InnerHtml.AppendHtml(
                     Button(
                         "sa-collection-editor-handle",
@@ -521,7 +508,10 @@ internal sealed class CollectionEditorRenderer(
                 Button(
                     "sa-collection-editor-remove",
                     Format(model.Texts["remove"], number),
-                    await IconAsync(SemanticIconRole.CollectionEditorRemove, null),
+                    icons.Value.RenderIcon(
+                        SemanticIconRole.CollectionEditorRemove,
+                        ("aria-hidden", "true")
+                    ),
                     ButtonSize.IconSmall,
                     "--remove",
                     model.Disabled && index != null

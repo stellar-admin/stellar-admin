@@ -10,7 +10,6 @@ namespace StellarAdmin.UI;
 internal static class ChecklistItemRenderingHelper
 {
     public static IHtmlContent RenderContent(
-        TagHelperContext context,
         TagHelperOutput output,
         ChecklistItemContext item,
         TagHelperContent childContent,
@@ -37,7 +36,7 @@ internal static class ChecklistItemRenderingHelper
             var effectiveStatus = status ?? ChecklistStatus.Todo;
 
             output.Attributes.SetAttribute("data-status", effectiveStatus.GetDataAttributeText());
-            content.AppendHtml(RenderStatus(context, iconOptions, effectiveStatus));
+            content.AppendHtml(RenderStatus(iconOptions, effectiveStatus));
         }
 
         if (!string.IsNullOrEmpty(title))
@@ -65,22 +64,9 @@ internal static class ChecklistItemRenderingHelper
         return text;
     }
 
-    private static TagBuilder RenderStatus(
-        TagHelperContext context,
-        IconOptions iconOptions,
-        ChecklistStatus status
-    )
+    private static TagBuilder RenderStatus(IconOptions iconOptions, ChecklistStatus status)
     {
-        var iconOutput = new TagHelperOutput(
-            "svg",
-            [new TagHelperAttribute("aria-hidden", "true")],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
-        var iconTagHelper = new IconTagHelper(iconOptions)
-        {
-            Name = iconOptions.GetSemanticIconName(status.GetIconRole()),
-        };
-        iconTagHelper.Process(context, iconOutput);
+        var iconOutput = iconOptions.RenderIcon(status.GetIconRole(), ("aria-hidden", "true"));
 
         var statusElement = new TagBuilder("span");
         statusElement.AddCssClass("sa-checklist-item-status");

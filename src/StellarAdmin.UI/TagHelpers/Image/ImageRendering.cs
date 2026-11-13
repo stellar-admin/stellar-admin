@@ -98,26 +98,6 @@ internal static class ImageRendering
         return image;
     }
 
-    public static async Task<IHtmlContent> RenderIconAsync(
-        TagHelperContext context,
-        IconOptions iconOptions,
-        SemanticIconRole role
-    )
-    {
-        var iconOutput = new TagHelperOutput(
-            "svg",
-            [new TagHelperAttribute("aria-hidden", "true")],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
-        var iconTagHelper = new IconTagHelper(iconOptions)
-        {
-            Name = iconOptions.GetSemanticIconName(role),
-        };
-        await iconTagHelper.ProcessAsync(context, iconOutput);
-
-        return iconOutput;
-    }
-
     // The lightbox dialog the script opens, as a template it clones once. It is written with the
     // first image of a response that can open it, so pages and partial responses both carry it.
     public static async Task<IHtmlContent?> RenderLightboxTemplateOnceAsync(
@@ -153,7 +133,7 @@ internal static class ImageRendering
             ButtonSize.IconSmall
         );
         close.Content.AppendHtml(
-            await RenderIconAsync(context, iconOptions, SemanticIconRole.Close)
+            iconOptions.RenderIcon(SemanticIconRole.Close, ("aria-hidden", "true"))
         );
 
         var img = new TagBuilder("img") { TagRenderMode = TagRenderMode.SelfClosing };
@@ -190,7 +170,7 @@ internal static class ImageRendering
         var fallback = new TagBuilder("span");
         fallback.Attributes.Add("data-slot", slot);
         fallback.Attributes.Add("class", "sa-image-fallback");
-        fallback.InnerHtml.AppendHtml(await RenderIconAsync(context, iconOptions, role));
+        fallback.InnerHtml.AppendHtml(iconOptions.RenderIcon(role, ("aria-hidden", "true")));
         if (text is not null)
         {
             var label = new TagBuilder("span");

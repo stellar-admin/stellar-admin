@@ -129,7 +129,7 @@ public sealed class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
         );
 
         output.Content.SetHtmlContent(input);
-        output.Content.AppendHtml(await BuildIndicatorAsync(context, type));
+        output.Content.AppendHtml(BuildIndicator(type));
         output.Content.AppendHtml(BuildLabel(inputId, childContent));
 
         if (!string.IsNullOrEmpty(shortcut))
@@ -232,7 +232,7 @@ public sealed class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
         return input;
     }
 
-    private async Task<TagBuilder> BuildIndicatorAsync(TagHelperContext context, string type)
+    private TagBuilder BuildIndicator(string type)
     {
         var indicator = new TagBuilder("span");
         indicator.Attributes["aria-hidden"] = "true";
@@ -252,20 +252,11 @@ public sealed class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
             return indicator;
         }
 
-        var iconOutput = new TagHelperOutput(
-            "svg",
-            [
-                new TagHelperAttribute("class", "sa-questionnaire-choice-indicator-check"),
-                new TagHelperAttribute("data-slot", "questionnaire-choice-indicator-check"),
-            ],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        var iconOutput = _iconOptions.RenderIcon(
+            SemanticIconRole.ChoiceSelected,
+            ("class", "sa-questionnaire-choice-indicator-check"),
+            ("data-slot", "questionnaire-choice-indicator-check")
         );
-
-        var iconTagHelper = new IconTagHelper(_iconOptions)
-        {
-            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.ChoiceSelected),
-        };
-        await iconTagHelper.ProcessAsync(context, iconOutput);
         indicator.InnerHtml.AppendHtml(iconOutput);
 
         return indicator;

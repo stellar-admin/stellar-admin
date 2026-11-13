@@ -25,13 +25,9 @@ public sealed class SpinnerTagHelper : StellarAdminTagHelperBase
     }
 
     /// <inheritdoc />
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var iconTagHelper = new IconTagHelper(_iconOptions)
-        {
-            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.Loading),
-        };
-        await iconTagHelper.ProcessAsync(context, output);
+        _iconOptions.RenderIcon(output, _iconOptions.GetSemanticIconName(SemanticIconRole.Loading));
 
         output.Attributes.SetAttribute("role", "status");
         output.Attributes.SetAttribute("aria-label", "Loading");
@@ -39,5 +35,7 @@ public sealed class SpinnerTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses("sa-spinner", output.GetUserSuppliedClass())
         );
+
+        return Task.CompletedTask;
     }
 }

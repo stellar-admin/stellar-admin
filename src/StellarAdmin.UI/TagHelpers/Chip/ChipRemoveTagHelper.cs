@@ -67,16 +67,7 @@ public sealed class ChipRemoveTagHelper : StellarAdminTagHelperBase
         var content = await output.GetChildContentAsync();
         if (content.IsEmptyOrWhiteSpace)
         {
-            var icon = new TagHelperOutput(
-                "svg",
-                [new TagHelperAttribute("class", "size-4")],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-            );
-
-            new IconTagHelper(_iconOptions)
-            {
-                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.Close),
-            }.Process(context, icon);
+            var icon = _iconOptions.RenderIcon(SemanticIconRole.Close, ("class", "size-4"));
 
             output.Content.SetHtmlContent(icon);
         }

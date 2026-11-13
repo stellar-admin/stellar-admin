@@ -79,7 +79,6 @@ public sealed class ChecklistItemTagHelper : StellarAdminTagHelperBase
 
         output.Content.SetHtmlContent(
             ChecklistItemRenderingHelper.RenderContent(
-                context,
                 output,
                 item,
                 childContent,

@@ -99,12 +99,7 @@ public sealed class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
         indicator.Attributes["data-slot"] = "dropdown-menu-radio-item-indicator";
         indicator.Attributes["class"] = JoinCssClasses("sa-dropdown-menu-item-indicator");
         indicator.InnerHtml.AppendHtml(
-            DropdownMenuInternals.RenderIcon(
-                context,
-                _iconOptions,
-                SemanticIconRole.MenuItemSelected,
-                "size-4"
-            )
+            _iconOptions.RenderIcon(SemanticIconRole.MenuItemSelected, ("class", "size-4"))
         );
 
         var childContent = await output.GetChildContentAsync();

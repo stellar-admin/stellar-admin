@@ -111,20 +111,12 @@ public sealed class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
         /*
          * Render the icon
          */
-        var iconTagHelperOutput = new TagHelperOutput(
-            string.Empty,
-            [
-                new TagHelperAttribute("class", "sa-native-select-icon"),
-                new TagHelperAttribute("aria-hidden", "true"),
-                new TagHelperAttribute("data-slot", "native-select-icon"),
-            ],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        var iconTagHelperOutput = _iconOptions.RenderIcon(
+            SemanticIconRole.DropdownIndicator,
+            ("class", "sa-native-select-icon"),
+            ("aria-hidden", "true"),
+            ("data-slot", "native-select-icon")
         );
-        var iconTagHelper = new IconTagHelper(_iconOptions)
-        {
-            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.DropdownIndicator),
-        };
-        await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
 
         output.Content.AppendHtml(iconTagHelperOutput);
 

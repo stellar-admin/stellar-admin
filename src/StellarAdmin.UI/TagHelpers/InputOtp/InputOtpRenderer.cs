@@ -52,22 +52,12 @@ internal static class InputOtpRenderer
     /// <summary>
     ///     Renders the default separator glyph (a Lucide <c>minus</c> icon) into the given content.
     /// </summary>
-    internal static async Task RenderDefaultSeparatorContentAsync(
+    internal static void RenderDefaultSeparatorContent(
         TagHelperContent target,
-        TagHelperContext context,
         IconOptions iconOptions
     )
     {
-        var iconOutput = new TagHelperOutput(
-            "svg",
-            [new TagHelperAttribute("class", "size-4")],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
-        var iconTagHelper = new IconTagHelper(iconOptions)
-        {
-            Name = iconOptions.GetSemanticIconName(SemanticIconRole.OtpSeparator),
-        };
-        await iconTagHelper.ProcessAsync(context, iconOutput);
+        var iconOutput = iconOptions.RenderIcon(SemanticIconRole.OtpSeparator, ("class", "size-4"));
         target.AppendHtml(iconOutput);
     }
 }

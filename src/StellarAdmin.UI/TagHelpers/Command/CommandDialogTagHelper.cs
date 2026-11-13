@@ -122,12 +122,7 @@ public sealed class CommandDialogTagHelper : StellarAdminTagHelperBase
                 ButtonSize.IconSmall
             );
             closeButtonOutput.Content.AppendHtml(
-                CommandRenderingHelper.RenderIcon(
-                    context,
-                    _iconOptions,
-                    SemanticIconRole.Close,
-                    "size-4"
-                )
+                _iconOptions.RenderIcon(SemanticIconRole.Close, ("class", "size-4"))
             );
             closeButtonOutput.Content.AppendHtml("<span class=\"sr-only\">Close</span>");
 

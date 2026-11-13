@@ -86,7 +86,7 @@ public sealed class ToasterTagHelper : StellarAdminTagHelperBase
     /// <exception cref="InvalidOperationException">
     ///     <see cref="Duration" /> is negative, or <see cref="Limit" /> is less than 1.
     /// </exception>
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveDuration = Duration ?? TimeSpan.FromSeconds(5);
         var effectiveLimit = Limit ?? 3;
@@ -115,7 +115,7 @@ public sealed class ToasterTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute("limit", effectiveLimit.ToString());
 
-        output.Content.AppendHtml(await RenderToastTemplateAsync(context));
+        output.Content.AppendHtml(RenderToastTemplate());
         output.Content.AppendHtml(RenderViewport(effectivePosition, userClass));
 
         // Toasts queued for this page, from this request or carried over a redirect. AJAX
@@ -128,6 +128,8 @@ public sealed class ToasterTagHelper : StellarAdminTagHelperBase
             script.InnerHtml.AppendHtml(queued);
             output.Content.AppendHtml(script);
         }
+
+        return Task.CompletedTask;
     }
 
     private static TagBuilder RenderViewport(ToasterPosition position, string? userClass)
@@ -157,7 +159,7 @@ public sealed class ToasterTagHelper : StellarAdminTagHelperBase
         return viewport;
     }
 
-    private async Task<IHtmlContent> RenderToastTemplateAsync(TagHelperContext context)
+    private IHtmlContent RenderToastTemplate()
     {
         var icon = new TagBuilder("span");
         icon.Attributes.Add("data-slot", "toast-icon");
@@ -165,11 +167,7 @@ public sealed class ToasterTagHelper : StellarAdminTagHelperBase
         foreach (var (type, role) in TypeIcons)
         {
             icon.InnerHtml.AppendHtml(
-                await RenderIconAsync(
-                    context,
-                    role,
-                    new TagHelperAttribute("data-toast-icon", type)
-                )
+                _iconOptions.RenderIcon(role, ("data-toast-icon", type), ("aria-hidden", "true"))
             );
         }
 
@@ -208,7 +206,9 @@ public sealed class ToasterTagHelper : StellarAdminTagHelperBase
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
         ButtonRenderingHelper.RenderAttributes(close, ButtonVariant.Ghost, ButtonSize.IconSmall);
-        close.Content.AppendHtml(await RenderIconAsync(context, SemanticIconRole.Close));
+        close.Content.AppendHtml(
+            _iconOptions.RenderIcon(SemanticIconRole.Close, ("aria-hidden", "true"))
+        );
 
         var content = new TagBuilder("div");
         content.Attributes.Add("data-slot", "toast-content");
@@ -232,25 +232,5 @@ public sealed class ToasterTagHelper : StellarAdminTagHelperBase
         template.InnerHtml.AppendHtml(toast);
 
         return template;
-    }
-
-    private async Task<TagHelperOutput> RenderIconAsync(
-        TagHelperContext context,
-        SemanticIconRole role,
-        params TagHelperAttribute[] attributes
-    )
-    {
-        var iconOutput = new TagHelperOutput(
-            "svg",
-            [.. attributes, new TagHelperAttribute("aria-hidden", "true")],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
-        var iconTagHelper = new IconTagHelper(_iconOptions)
-        {
-            Name = _iconOptions.GetSemanticIconName(role),
-        };
-        await iconTagHelper.ProcessAsync(context, iconOutput);
-
-        return iconOutput;
     }
 }

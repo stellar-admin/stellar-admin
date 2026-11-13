@@ -95,7 +95,6 @@ public sealed class ChecklistItemLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Content.SetHtmlContent(
             ChecklistItemRenderingHelper.RenderContent(
-                context,
                 output,
                 item,
                 childContent,

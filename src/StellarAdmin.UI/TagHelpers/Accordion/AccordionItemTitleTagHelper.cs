@@ -56,7 +56,7 @@ public sealed class AccordionItemTitleTagHelper : StellarAdminTagHelperBase
         {
             var mediaTagBuilder = new TagBuilder("span");
             mediaTagBuilder.AddCssClass("sa-accordion-trigger-media");
-            mediaTagBuilder.InnerHtml.AppendHtml(await RenderIconAsync(context, Icon));
+            mediaTagBuilder.InnerHtml.AppendHtml(_iconOptions.RenderIcon(Icon));
 
             var labelTagBuilder = new TagBuilder("span");
             labelTagBuilder.AddCssClass("sa-accordion-trigger-label");
@@ -69,24 +69,8 @@ public sealed class AccordionItemTitleTagHelper : StellarAdminTagHelperBase
         var iconTagBuilder = new TagBuilder("div");
         iconTagBuilder.AddCssClass("sa-accordion-trigger-icon");
         iconTagBuilder.InnerHtml.AppendHtml(
-            await RenderIconAsync(
-                context,
-                _iconOptions.GetSemanticIconName(SemanticIconRole.AccordionIndicator)
-            )
+            _iconOptions.RenderIcon(SemanticIconRole.AccordionIndicator)
         );
         output.Content.AppendHtml(iconTagBuilder);
-    }
-
-    private async Task<TagHelperOutput> RenderIconAsync(TagHelperContext context, string? name)
-    {
-        var iconOutput = new TagHelperOutput(
-            "svg",
-            [],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
-        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = name };
-        await iconTagHelper.ProcessAsync(context, iconOutput);
-
-        return iconOutput;
     }
 }

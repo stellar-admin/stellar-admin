@@ -298,7 +298,7 @@ public sealed class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlac
         var valueElement = new TagBuilder(details is null ? "div" : "dd");
         valueElement.Attributes["data-slot"] = "display-field-value";
         valueElement.AddCssClass("sa-display-field-value");
-        await RenderValueAsync(context, valueElement, await output.GetChildContentAsync());
+        await RenderValueAsync(valueElement, await output.GetChildContentAsync());
 
         output.Content.SetHtmlContent(labelElement);
         output.Content.AppendHtml(valueElement);
@@ -385,22 +385,13 @@ public sealed class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlac
             : FormatItem(value, metadata);
     }
 
-    private IHtmlContent RenderBoolean(TagHelperContext context, bool value)
+    private IHtmlContent RenderBoolean(bool value)
     {
-        var icon = new TagHelperOutput(
-            "svg",
-            [
-                new TagHelperAttribute("class", "size-4"),
-                new TagHelperAttribute("aria-hidden", "true"),
-            ],
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        var icon = _iconOptions.Value.RenderIcon(
+            value ? SemanticIconRole.BooleanTrue : SemanticIconRole.BooleanFalse,
+            ("class", "size-4"),
+            ("aria-hidden", "true")
         );
-        new IconTagHelper(_iconOptions)
-        {
-            Name = _iconOptions.Value.GetSemanticIconName(
-                value ? SemanticIconRole.BooleanTrue : SemanticIconRole.BooleanFalse
-            ),
-        }.Process(context, icon);
 
         var text = new TagBuilder("span");
         text.AddCssClass("sr-only");
@@ -448,11 +439,7 @@ public sealed class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlac
         return new HtmlString(writer.ToString());
     }
 
-    private async Task RenderValueAsync(
-        TagHelperContext context,
-        TagBuilder valueElement,
-        TagHelperContent childContent
-    )
+    private async Task RenderValueAsync(TagBuilder valueElement, TagHelperContent childContent)
     {
         var metadata = For?.Metadata;
         var value = For?.Model;
@@ -482,7 +469,7 @@ public sealed class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlac
         {
             valueElement.Attributes["data-kind"] = "boolean";
             valueElement.Attributes["data-boolean"] = booleanValue ? "true" : "false";
-            valueElement.InnerHtml.AppendHtml(RenderBoolean(context, booleanValue));
+            valueElement.InnerHtml.AppendHtml(RenderBoolean(booleanValue));
         }
         else
         {
