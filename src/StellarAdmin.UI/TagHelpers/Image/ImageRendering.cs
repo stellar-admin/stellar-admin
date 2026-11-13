@@ -29,8 +29,7 @@ internal static class ImageRendering
 
     // The image box: an <img> when there is a source, and the placeholder and error fallbacks,
     // which the stylesheet shows for the empty and error states. A lightbox image is a button.
-    public static async Task<TagBuilder> RenderImageAsync(
-        TagHelperContext context,
+    public static TagBuilder RenderImage(
         IconOptions iconOptions,
         string? source,
         string? alt,
@@ -77,8 +76,7 @@ internal static class ImageRendering
 
         var isFigure = appearance.Variant == ImageVariant.Figure;
         image.InnerHtml.AppendHtml(
-            await RenderFallbackAsync(
-                context,
+            RenderFallback(
                 iconOptions,
                 "image-placeholder",
                 SemanticIconRole.Image,
@@ -86,8 +84,7 @@ internal static class ImageRendering
             )
         );
         image.InnerHtml.AppendHtml(
-            await RenderFallbackAsync(
-                context,
+            RenderFallback(
                 iconOptions,
                 "image-error",
                 SemanticIconRole.ImageError,
@@ -100,8 +97,7 @@ internal static class ImageRendering
 
     // The lightbox dialog the script opens, as a template it clones once. It is written with the
     // first image of a response that can open it, so pages and partial responses both carry it.
-    public static async Task<IHtmlContent?> RenderLightboxTemplateOnceAsync(
-        TagHelperContext context,
+    public static IHtmlContent? RenderLightboxTemplateOnce(
         IconOptions iconOptions,
         HttpContext? httpContext
     )
@@ -159,8 +155,7 @@ internal static class ImageRendering
         return template;
     }
 
-    private static async Task<TagBuilder> RenderFallbackAsync(
-        TagHelperContext context,
+    private static TagBuilder RenderFallback(
         IconOptions iconOptions,
         string slot,
         SemanticIconRole role,

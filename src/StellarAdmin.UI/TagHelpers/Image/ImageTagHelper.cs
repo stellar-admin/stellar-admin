@@ -107,7 +107,7 @@ public sealed class ImageTagHelper : StellarAdminTagHelperBase
     public ViewContext? ViewContext { get; set; }
 
     /// <inheritdoc />
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? ImageVariant.Thumbnail;
         var isFigure = effectiveVariant == ImageVariant.Figure;
@@ -119,13 +119,7 @@ public sealed class ImageTagHelper : StellarAdminTagHelperBase
             Interaction ?? ImageInteraction.Lightbox
         );
 
-        var image = await ImageRendering.RenderImageAsync(
-            context,
-            _iconOptions,
-            Source,
-            Alt,
-            appearance
-        );
+        var image = ImageRendering.RenderImage(_iconOptions, Source, Alt, appearance);
 
         output.TagName = image.TagName;
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -141,11 +135,7 @@ public sealed class ImageTagHelper : StellarAdminTagHelperBase
         if (image.TagName == "button")
         {
             output.PostElement.AppendHtml(
-                await ImageRendering.RenderLightboxTemplateOnceAsync(
-                    context,
-                    _iconOptions,
-                    ViewContext?.HttpContext
-                )
+                ImageRendering.RenderLightboxTemplateOnce(_iconOptions, ViewContext?.HttpContext)
             );
         }
     }

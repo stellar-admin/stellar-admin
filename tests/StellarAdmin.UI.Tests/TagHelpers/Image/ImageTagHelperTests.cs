@@ -5,7 +5,7 @@ namespace StellarAdmin.UI.Tests.TagHelpers.Image;
 public class ImageTagHelperTests
 {
     [Test]
-    public async Task ProcessAsync_WithSource_RendersLightboxButtonAndTemplate()
+    public async Task Process_WithSource_RendersLightboxButtonAndTemplate()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -33,7 +33,7 @@ public class ImageTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_WithoutSource_RendersPlaceholder()
+    public async Task Process_WithoutSource_RendersPlaceholder()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -53,7 +53,7 @@ public class ImageTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_Figure_DefaultsToMediumAndOriginalWithFallbackText()
+    public async Task Process_Figure_DefaultsToMediumAndOriginalWithFallbackText()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -74,7 +74,7 @@ public class ImageTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_WithoutInteraction_RendersImageWithAlt()
+    public async Task Process_WithoutInteraction_RendersImageWithAlt()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -94,7 +94,7 @@ public class ImageTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_SecondLightboxImageInRequest_DoesNotRepeatTemplate()
+    public async Task Process_SecondLightboxImageInRequest_DoesNotRepeatTemplate()
     {
         // Arrange
         using var context = new RenderingContext();

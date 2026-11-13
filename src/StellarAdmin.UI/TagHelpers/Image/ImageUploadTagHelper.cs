@@ -143,7 +143,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
     /// <exception cref="InvalidOperationException">
     ///     <see cref="UploadUrl" /> is empty and the control isn't disabled.
     /// </exception>
-    protected override async Task<FieldLayout> RenderInput(
+    protected override Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -247,7 +247,6 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         output.Content.AppendHtml(hidden);
 
         var parts = new Parts(
-            context,
             _iconOptions,
             state,
             effectiveDisabled,
@@ -257,16 +256,16 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         switch (effectiveLayout)
         {
             case ImageUploadLayout.Compact:
-                await RenderCompactAsync(parts, output.Content, source);
+                RenderCompact(parts, output.Content, source);
                 break;
             case ImageUploadLayout.Attachment:
-                await RenderAttachmentAsync(parts, output.Content, source, value);
+                RenderAttachment(parts, output.Content, source, value);
                 break;
             case ImageUploadLayout.Cell:
-                await RenderCellAsync(parts, output.Content, source);
+                RenderCell(parts, output.Content, source);
                 break;
             default:
-                await RenderDropzoneAsync(parts, output.Content, source);
+                RenderDropzone(parts, output.Content, source);
                 break;
         }
 
@@ -302,29 +301,21 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         if (!effectiveDisabled && effectiveLayout != ImageUploadLayout.Cell)
         {
             output.PostElement.AppendHtml(
-                await ImageRendering.RenderLightboxTemplateOnceAsync(
-                    context,
-                    _iconOptions,
-                    ViewContext.HttpContext
-                )
+                ImageRendering.RenderLightboxTemplateOnce(_iconOptions, ViewContext.HttpContext)
             );
         }
 
-        return FieldLayout.Stacked;
+        return Task.FromResult(FieldLayout.Stacked);
     }
 
-    private static async Task RenderDropzoneAsync(
-        Parts parts,
-        TagHelperContent content,
-        string? source
-    )
+    private static void RenderDropzone(Parts parts, TagHelperContent content, string? source)
     {
         // Read-only shows the image, or the empty image, alone
         if (parts.ReadOnly)
         {
             var image = parts.Media(null);
             image.InnerHtml.AppendHtml(
-                await parts.ImageAsync(
+                parts.Image(
                     source,
                     new ImageAppearance(
                         ImageVariant.Figure,
@@ -339,11 +330,11 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             return;
         }
 
-        content.AppendHtml(await parts.DropAsync(row: false));
+        content.AppendHtml(parts.Drop(row: false));
 
         var media = parts.Media("filled uploading removed");
         media.InnerHtml.AppendHtml(
-            await parts.ImageAsync(
+            parts.Image(
                 source,
                 new ImageAppearance(
                     ImageVariant.Figure,
@@ -354,12 +345,12 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
                 )
             )
         );
-        media.InnerHtml.AppendHtml(await parts.ProgressAsync(bar: true));
+        media.InnerHtml.AppendHtml(parts.Progress(bar: true));
 
         var overlay = new TagBuilder("div");
         overlay.Attributes.Add("class", "sa-image-upload-overlay");
         overlay.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "pick",
                 "filled",
                 ButtonVariant.Secondary,
@@ -369,7 +360,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             )
         );
         overlay.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "remove",
                 "filled",
                 ButtonVariant.Secondary,
@@ -380,7 +371,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             )
         );
         overlay.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "cancel",
                 "uploading",
                 ButtonVariant.Secondary,
@@ -393,17 +384,11 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         content.AppendHtml(media);
     }
 
-    private static async Task RenderCompactAsync(
-        Parts parts,
-        TagHelperContent content,
-        string? source
-    )
+    private static void RenderCompact(Parts parts, TagHelperContent content, string? source)
     {
         var media = parts.Media(null);
-        media.InnerHtml.AppendHtml(
-            await parts.ImageAsync(source, ImageRendering.Thumbnail(ImageSize.Large))
-        );
-        media.InnerHtml.AppendHtml(await parts.ProgressAsync(bar: false));
+        media.InnerHtml.AppendHtml(parts.Image(source, ImageRendering.Thumbnail(ImageSize.Large)));
+        media.InnerHtml.AppendHtml(parts.Progress(bar: false));
         content.AppendHtml(media);
         if (parts.ReadOnly)
         {
@@ -413,7 +398,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         var actions = new TagBuilder("div");
         actions.Attributes.Add("class", "sa-image-upload-actions");
         actions.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "pick",
                 "empty removed",
                 ButtonVariant.Outline,
@@ -423,7 +408,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             )
         );
         actions.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "pick",
                 "filled",
                 ButtonVariant.Outline,
@@ -433,17 +418,10 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             )
         );
         actions.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
-                "remove",
-                "filled",
-                ButtonVariant.Ghost,
-                ButtonSize.Small,
-                "Remove",
-                null
-            )
+            parts.Button("remove", "filled", ButtonVariant.Ghost, ButtonSize.Small, "Remove", null)
         );
         actions.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "cancel",
                 "uploading",
                 ButtonVariant.Outline,
@@ -455,7 +433,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         content.AppendHtml(actions);
     }
 
-    private static async Task RenderAttachmentAsync(
+    private static void RenderAttachment(
         Parts parts,
         TagHelperContent content,
         string? source,
@@ -464,7 +442,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
     {
         if (!parts.ReadOnly)
         {
-            content.AppendHtml(await parts.DropAsync(row: true));
+            content.AppendHtml(parts.Drop(row: true));
         }
 
         var attachment = new TagBuilder("div");
@@ -485,10 +463,8 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         media.Attributes.Add("data-slot", "attachment-media");
         media.Attributes.Add("data-variant", "image");
         media.Attributes.Add("class", "sa-attachment-media sa-attachment-media-variant-image");
-        media.InnerHtml.AppendHtml(
-            await parts.ImageAsync(source, ImageRendering.Thumbnail(ImageSize.Medium))
-        );
-        media.InnerHtml.AppendHtml(await parts.ProgressAsync(bar: false));
+        media.InnerHtml.AppendHtml(parts.Image(source, ImageRendering.Thumbnail(ImageSize.Medium)));
+        media.InnerHtml.AppendHtml(parts.Progress(bar: false));
         attachment.InnerHtml.AppendHtml(media);
 
         var title = new TagBuilder("span");
@@ -517,7 +493,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         actions.Attributes.Add("data-slot", "attachment-actions");
         actions.Attributes.Add("class", "sa-attachment-actions");
         actions.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "pick",
                 "filled",
                 ButtonVariant.Ghost,
@@ -528,7 +504,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             )
         );
         actions.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "remove",
                 "filled",
                 ButtonVariant.Ghost,
@@ -539,7 +515,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             )
         );
         actions.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "cancel",
                 "uploading",
                 ButtonVariant.Ghost,
@@ -550,7 +526,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             )
         );
         actions.InnerHtml.AppendHtml(
-            await parts.ButtonAsync(
+            parts.Button(
                 "undo",
                 "removed",
                 ButtonVariant.Ghost,
@@ -563,13 +539,11 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         content.AppendHtml(attachment);
     }
 
-    private static async Task RenderCellAsync(Parts parts, TagHelperContent content, string? source)
+    private static void RenderCell(Parts parts, TagHelperContent content, string? source)
     {
         if (parts.ReadOnly)
         {
-            content.AppendHtml(
-                await parts.ImageAsync(source, ImageRendering.Thumbnail(ImageSize.Small))
-            );
+            content.AppendHtml(parts.Image(source, ImageRendering.Thumbnail(ImageSize.Small)));
             return;
         }
 
@@ -588,7 +562,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         }
 
         trigger.InnerHtml.AppendHtml(
-            await parts.ImageAsync(source, ImageRendering.Thumbnail(ImageSize.Small))
+            parts.Image(source, ImageRendering.Thumbnail(ImageSize.Small))
         );
         var hover = new TagBuilder("span");
         hover.Attributes.Add("class", "sa-image-upload-trigger-icon");
@@ -596,10 +570,10 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             parts.IconOptions.RenderIcon(SemanticIconRole.Upload, ("aria-hidden", "true"))
         );
         trigger.InnerHtml.AppendHtml(hover);
-        trigger.InnerHtml.AppendHtml(await parts.ProgressAsync(bar: false));
+        trigger.InnerHtml.AppendHtml(parts.Progress(bar: false));
         content.AppendHtml(trigger);
 
-        var clear = await parts.ButtonAsync(
+        var clear = parts.Button(
             "remove",
             "filled",
             ButtonVariant.Secondary,
@@ -678,7 +652,6 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
     // Builds the layouts' parts. Each part that only belongs to some states names them in
     // data-when; the script shows and hides the parts as the state changes.
     private sealed class Parts(
-        TagHelperContext context,
         IconOptions iconOptions,
         string state,
         bool disabled,
@@ -686,15 +659,13 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         string? imageClass
     )
     {
-        public TagHelperContext Context { get; } = context;
-
         public bool Disabled { get; } = disabled;
 
         public IconOptions IconOptions { get; } = iconOptions;
 
         public bool ReadOnly { get; } = readOnly;
 
-        public async Task<TagHelperOutput> ButtonAsync(
+        public TagHelperOutput Button(
             string action,
             string when,
             ButtonVariant variant,
@@ -748,7 +719,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             return button;
         }
 
-        public async Task<TagBuilder> DropAsync(bool row)
+        public TagBuilder Drop(bool row)
         {
             var drop = new TagBuilder("div");
             drop.Attributes.Add("data-slot", "image-upload-drop");
@@ -785,15 +756,9 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             return drop;
         }
 
-        public async Task<TagBuilder> ImageAsync(string? source, ImageAppearance appearance)
+        public TagBuilder Image(string? source, ImageAppearance appearance)
         {
-            var image = await ImageRendering.RenderImageAsync(
-                Context,
-                IconOptions,
-                source,
-                null,
-                appearance
-            );
+            var image = ImageRendering.RenderImage(IconOptions, source, null, appearance);
             if (imageClass is not null)
             {
                 image.Attributes["class"] = JoinCssClasses(image.Attributes["class"], imageClass);
@@ -815,7 +780,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
             return media;
         }
 
-        public async Task<IHtmlContent> ProgressAsync(bool bar)
+        public IHtmlContent Progress(bool bar)
         {
             var progress = new TagBuilder("span");
             progress.Attributes.Add("data-slot", "image-upload-progress");
