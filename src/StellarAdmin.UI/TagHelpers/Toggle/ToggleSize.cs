@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the size of a toggle.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ToggleSize
 {
     /// <summary>
@@ -13,25 +14,12 @@ public enum ToggleSize
     /// <summary>
     ///     A small toggle.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
 
     /// <summary>
     ///     A large toggle.
     /// </summary>
+    [DataAttributeText("lg")]
     Large,
-}
-
-internal static class ToggleSizeExtensions
-{
-    extension(ToggleSize size)
-    {
-        public string GetDataAttributeText() =>
-            size switch
-            {
-                ToggleSize.Default => "default",
-                ToggleSize.Small => "sm",
-                ToggleSize.Large => "lg",
-                _ => string.Empty,
-            };
-    }
 }

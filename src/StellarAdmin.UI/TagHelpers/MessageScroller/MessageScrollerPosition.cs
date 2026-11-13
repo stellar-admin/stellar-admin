@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies where a message scroller is scrolled to when it first appears.
 /// </summary>
+[GenerateDataAttributeText]
 public enum MessageScrollerPosition
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum MessageScrollerPosition
     ///     The newest content, at the bottom of the transcript.
     /// </summary>
     End,
-}
-
-internal static class MessageScrollerPositionExtensions
-{
-    extension(MessageScrollerPosition position)
-    {
-        public string GetDataAttributeText() =>
-            position switch
-            {
-                MessageScrollerPosition.Start => "start",
-                MessageScrollerPosition.End => "end",
-                _ => string.Empty,
-            };
-    }
 }

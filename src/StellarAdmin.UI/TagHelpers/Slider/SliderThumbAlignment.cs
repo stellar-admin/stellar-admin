@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies how a slider thumb is positioned relative to its value.
 /// </summary>
+[GenerateDataAttributeText]
 public enum SliderThumbAlignment
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum SliderThumbAlignment
     ///     The thumb stays within the track at the minimum and maximum.
     /// </summary>
     Edge,
-}
-
-internal static class SliderThumbAlignmentExtensions
-{
-    extension(SliderThumbAlignment alignment)
-    {
-        public string GetDataAttributeText() =>
-            alignment switch
-            {
-                SliderThumbAlignment.Center => "center",
-                SliderThumbAlignment.Edge => "edge",
-                _ => string.Empty,
-            };
-    }
 }

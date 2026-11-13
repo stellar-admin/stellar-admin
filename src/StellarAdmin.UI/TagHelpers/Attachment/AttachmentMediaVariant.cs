@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the kind of media an attachment shows.
 /// </summary>
+[GenerateDataAttributeText]
 public enum AttachmentMediaVariant
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum AttachmentMediaVariant
     ///     A thumbnail of the file.
     /// </summary>
     Image,
-}
-
-internal static class AttachmentMediaVariantExtensions
-{
-    extension(AttachmentMediaVariant variant)
-    {
-        public string GetDataAttributeText() =>
-            variant switch
-            {
-                AttachmentMediaVariant.Icon => "icon",
-                AttachmentMediaVariant.Image => "image",
-                _ => string.Empty,
-            };
-    }
 }

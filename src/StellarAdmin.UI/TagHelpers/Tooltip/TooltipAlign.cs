@@ -7,6 +7,7 @@ namespace StellarAdmin.UI;
 ///     Above or below the trigger, the start is the trigger's left edge. To its left or right,
 ///     the start is the trigger's top edge.
 /// </remarks>
+[GenerateDataAttributeText]
 public enum TooltipAlign
 {
     /// <summary>
@@ -29,20 +30,4 @@ public enum TooltipAlign
     ///     trigger's width.
     /// </summary>
     CenterWithin,
-}
-
-internal static class TooltipAlignExtensions
-{
-    extension(TooltipAlign align)
-    {
-        public string GetDataAttributeText() =>
-            align switch
-            {
-                TooltipAlign.Start => "start",
-                TooltipAlign.Center => "center",
-                TooltipAlign.End => "end",
-                TooltipAlign.CenterWithin => "center-within",
-                _ => string.Empty,
-            };
-    }
 }

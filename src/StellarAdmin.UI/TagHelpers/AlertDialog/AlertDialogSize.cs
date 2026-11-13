@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the size of an alert dialog.
 /// </summary>
+[GenerateDataAttributeText]
 public enum AlertDialogSize
 {
     /// <summary>
@@ -13,19 +14,6 @@ public enum AlertDialogSize
     /// <summary>
     ///     A compact size.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
-}
-
-internal static class AlertDialogSizeExtensions
-{
-    extension(AlertDialogSize size)
-    {
-        public string GetDataAttributeText() =>
-            size switch
-            {
-                AlertDialogSize.Default => "default",
-                AlertDialogSize.Small => "sm",
-                _ => string.Empty,
-            };
-    }
 }

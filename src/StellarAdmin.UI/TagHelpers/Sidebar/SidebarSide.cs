@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the edge of the screen that a sidebar sits on.
 /// </summary>
+[GenerateDataAttributeText]
 public enum SidebarSide
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum SidebarSide
     ///     The sidebar sits on the right edge.
     /// </summary>
     Right,
-}
-
-internal static class SidebarSideExtensions
-{
-    extension(SidebarSide side)
-    {
-        public string GetDataAttributeText() =>
-            side switch
-            {
-                SidebarSide.Left => "left",
-                SidebarSide.Right => "right",
-                _ => string.Empty,
-            };
-    }
 }

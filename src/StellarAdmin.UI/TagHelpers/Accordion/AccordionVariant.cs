@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the visual style of an accordion.
 /// </summary>
+[GenerateDataAttributeText]
 public enum AccordionVariant
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum AccordionVariant
     ///     Items in a bordered box, each title on a muted band.
     /// </summary>
     Contained,
-}
-
-internal static class AccordionVariantExtensions
-{
-    extension(AccordionVariant variant)
-    {
-        public string GetDataAttributeText() =>
-            variant switch
-            {
-                AccordionVariant.Default => "default",
-                AccordionVariant.Contained => "contained",
-                _ => "",
-            };
-    }
 }

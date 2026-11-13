@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the side of its trigger that a popover appears on.
 /// </summary>
+[GenerateDataAttributeText]
 public enum PopoverSide
 {
     /// <summary>
@@ -24,20 +25,4 @@ public enum PopoverSide
     ///     To the left of the trigger.
     /// </summary>
     Left,
-}
-
-internal static class PopoverSideExtensions
-{
-    extension(PopoverSide side)
-    {
-        public string GetDataAttributeText() =>
-            side switch
-            {
-                PopoverSide.Top => "top",
-                PopoverSide.Bottom => "bottom",
-                PopoverSide.Left => "left",
-                PopoverSide.Right => "right",
-                _ => string.Empty,
-            };
-    }
 }

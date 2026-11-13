@@ -4,6 +4,7 @@ namespace StellarAdmin.UI;
 ///     Specifies the size of a checklist, which sets the size of its status icons and the spacing
 ///     between its rows.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ChecklistSize
 {
     /// <summary>
@@ -14,21 +15,6 @@ public enum ChecklistSize
     /// <summary>
     ///     A compact size, for a checklist in a card or nested in another checklist.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
-}
-
-internal static class ChecklistSizeExtensions
-{
-    extension(ChecklistSize size)
-    {
-        public string GetDataAttributeText()
-        {
-            return size switch
-            {
-                ChecklistSize.Default => "default",
-                ChecklistSize.Small => "sm",
-                _ => string.Empty,
-            };
-        }
-    }
 }

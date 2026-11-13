@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the layout of a marker.
 /// </summary>
+[GenerateDataAttributeText]
 public enum MarkerVariant
 {
     /// <summary>
@@ -19,19 +20,4 @@ public enum MarkerVariant
     ///     A centered label with a line on each side.
     /// </summary>
     Separator,
-}
-
-internal static class MarkerVariantExtensions
-{
-    extension(MarkerVariant variant)
-    {
-        public string GetDataAttributeText() =>
-            variant switch
-            {
-                MarkerVariant.Default => "default",
-                MarkerVariant.Border => "border",
-                MarkerVariant.Separator => "separator",
-                _ => string.Empty,
-            };
-    }
 }

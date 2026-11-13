@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the size of an avatar.
 /// </summary>
+[GenerateDataAttributeText]
 public enum AvatarSize
 {
     /// <summary>
@@ -13,27 +14,12 @@ public enum AvatarSize
     /// <summary>
     ///     A small size.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
 
     /// <summary>
     ///     A large size.
     /// </summary>
+    [DataAttributeText("lg")]
     Large,
-}
-
-internal static class GetAvatarSizeAttributeText
-{
-    extension(AvatarSize size)
-    {
-        public string GetDataAttributeText()
-        {
-            return size switch
-            {
-                AvatarSize.Default => "default",
-                AvatarSize.Small => "sm",
-                AvatarSize.Large => "lg",
-                _ => string.Empty,
-            };
-        }
-    }
 }

@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies how far an attachment has progressed through its upload.
 /// </summary>
+[GenerateDataAttributeText]
 public enum AttachmentState
 {
     /// <summary>
@@ -29,21 +30,4 @@ public enum AttachmentState
     ///     The file is available.
     /// </summary>
     Done,
-}
-
-internal static class AttachmentStateExtensions
-{
-    extension(AttachmentState state)
-    {
-        public string GetDataAttributeText() =>
-            state switch
-            {
-                AttachmentState.Idle => "idle",
-                AttachmentState.Uploading => "uploading",
-                AttachmentState.Processing => "processing",
-                AttachmentState.Error => "error",
-                AttachmentState.Done => "done",
-                _ => string.Empty,
-            };
-    }
 }

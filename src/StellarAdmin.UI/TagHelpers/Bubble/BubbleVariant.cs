@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the visual style of a bubble.
 /// </summary>
+[GenerateDataAttributeText]
 public enum BubbleVariant
 {
     /// <summary>
@@ -39,23 +40,4 @@ public enum BubbleVariant
     ///     A style that signals an error or a failed action.
     /// </summary>
     Destructive,
-}
-
-internal static class BubbleVariantExtensions
-{
-    extension(BubbleVariant variant)
-    {
-        public string GetDataAttributeText() =>
-            variant switch
-            {
-                BubbleVariant.Default => "default",
-                BubbleVariant.Secondary => "secondary",
-                BubbleVariant.Muted => "muted",
-                BubbleVariant.Tinted => "tinted",
-                BubbleVariant.Outline => "outline",
-                BubbleVariant.Ghost => "ghost",
-                BubbleVariant.Destructive => "destructive",
-                _ => string.Empty,
-            };
-    }
 }

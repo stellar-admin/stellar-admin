@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the direction in which a button group arranges its items.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ButtonGroupOrientation
 {
     /// <summary>
@@ -14,20 +15,4 @@ public enum ButtonGroupOrientation
     ///     Items are stacked in a column.
     /// </summary>
     Vertical,
-}
-
-internal static class ButtonGroupOrientationExtensions
-{
-    extension(ButtonGroupOrientation orientation)
-    {
-        public string GetDataAttributeText()
-        {
-            return orientation switch
-            {
-                ButtonGroupOrientation.Horizontal => "horizontal",
-                ButtonGroupOrientation.Vertical => "vertical",
-                _ => string.Empty,
-            };
-        }
-    }
 }

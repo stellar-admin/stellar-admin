@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the line drawn between the rows of a checklist.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ChecklistDivider
 {
     /// <summary>
@@ -19,21 +20,4 @@ public enum ChecklistDivider
     ///     No line.
     /// </summary>
     None,
-}
-
-internal static class ChecklistDividerExtensions
-{
-    extension(ChecklistDivider divider)
-    {
-        public string GetDataAttributeText()
-        {
-            return divider switch
-            {
-                ChecklistDivider.Inset => "inset",
-                ChecklistDivider.FullWidth => "full-width",
-                ChecklistDivider.None => "none",
-                _ => string.Empty,
-            };
-        }
-    }
 }

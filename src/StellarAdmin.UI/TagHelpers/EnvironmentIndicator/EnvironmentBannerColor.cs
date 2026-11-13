@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the colour of a <c>&lt;sa-environment-banner&gt;</c>.
 /// </summary>
+[GenerateDataAttributeText]
 public enum EnvironmentBannerColor
 {
     /// <summary>
@@ -29,21 +30,4 @@ public enum EnvironmentBannerColor
     ///     The theme's danger colour, for an environment where changes matter most, such as production.
     /// </summary>
     Danger,
-}
-
-internal static class EnvironmentBannerColorExtensions
-{
-    extension(EnvironmentBannerColor color)
-    {
-        public string GetDataAttributeText() =>
-            color switch
-            {
-                EnvironmentBannerColor.Neutral => "neutral",
-                EnvironmentBannerColor.Info => "info",
-                EnvironmentBannerColor.Success => "success",
-                EnvironmentBannerColor.Warning => "warning",
-                EnvironmentBannerColor.Danger => "danger",
-                _ => string.Empty,
-            };
-    }
 }

@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies where an input group add-on is placed relative to the input.
 /// </summary>
+[GenerateDataAttributeText]
 public enum InputGroupAddonAlign
 {
     /// <summary>
@@ -24,22 +25,4 @@ public enum InputGroupAddonAlign
     ///     On its own row below the input.
     /// </summary>
     Bottom,
-}
-
-internal static class InputGroupAddonAlignExtensions
-{
-    extension(InputGroupAddonAlign align)
-    {
-        public string GetDataAttributeText()
-        {
-            return align switch
-            {
-                InputGroupAddonAlign.Start => "start",
-                InputGroupAddonAlign.End => "end",
-                InputGroupAddonAlign.Top => "top",
-                InputGroupAddonAlign.Bottom => "bottom",
-                _ => string.Empty,
-            };
-        }
-    }
 }

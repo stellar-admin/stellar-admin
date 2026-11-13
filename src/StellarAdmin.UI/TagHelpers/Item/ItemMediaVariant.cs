@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the kind of media in an item.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ItemMediaVariant
 {
     /// <summary>
@@ -19,19 +20,4 @@ public enum ItemMediaVariant
     ///     An image or avatar that fills the media area.
     /// </summary>
     Image,
-}
-
-internal static class ItemMediaVariantExtensions
-{
-    extension(ItemMediaVariant variant)
-    {
-        public string GetDataAttributeText() =>
-            variant switch
-            {
-                ItemMediaVariant.Default => "default",
-                ItemMediaVariant.Icon => "icon",
-                ItemMediaVariant.Image => "image",
-                _ => "",
-            };
-    }
 }

@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies where the content of a data grid row's details starts.
 /// </summary>
+[GenerateDataAttributeText]
 public enum DataGridRowDetailInset
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum DataGridRowDetailInset
     ///     The content starts at the column after the toggle's column.
     /// </summary>
     Aligned,
-}
-
-internal static class DataGridRowDetailInsetExtensions
-{
-    extension(DataGridRowDetailInset inset)
-    {
-        public string GetDataAttributeText() =>
-            inset switch
-            {
-                DataGridRowDetailInset.Bleed => "bleed",
-                DataGridRowDetailInset.Aligned => "aligned",
-                _ => string.Empty,
-            };
-    }
 }

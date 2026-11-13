@@ -44,6 +44,7 @@ Commands below run from the product repository root unless a working directory i
 | Admin panel unit tests | `dotnet run --project tests/StellarAdmin.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | UI HTTP integration tests | `dotnet run --project tests/StellarAdmin.UI.IntegrationTests --configuration Release`; uses an in-process TestServer with MVC controllers and a Razor Page, and carries the TempData cookie between requests. No database. |
 | UI unit tests (including icons) | `dotnet run --project tests/StellarAdmin.UI.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
+| Source generator tests | `dotnet run --project tests/StellarAdmin.Generators.Tests --configuration Release`; runs the generators on sample source and checks what they add. |
 | OSS C# | `dotnet build src/StellarAdmin.UI/StellarAdmin.UI.csproj`; exercise the affected DocsSamples page. |
 | OSS CSS/JS | `npm run build` and `npm run check` in `src/StellarAdmin.UI/Client/`; exercise changed states in the browser. Run `build:css` directly for CSS changes because MSBuild has historically hidden client failures. |
 | Admin panel | Build `src/StellarAdmin/StellarAdmin.csproj`. EF Core is included with resource listing and CRUD. AdminPlayground demonstrates Identity users and roles through ordinary resources. |

@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies where an image is shown, which sets its sizes and its empty and error states.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ImageVariant
 {
     /// <summary>
@@ -17,18 +18,4 @@ public enum ImageVariant
     ///     The image is never wider than its container.
     /// </remarks>
     Figure,
-}
-
-internal static class ImageVariantExtensions
-{
-    extension(ImageVariant imageVariant)
-    {
-        public string GetDataAttributeText() =>
-            imageVariant switch
-            {
-                ImageVariant.Thumbnail => "thumbnail",
-                ImageVariant.Figure => "figure",
-                _ => string.Empty,
-            };
-    }
 }

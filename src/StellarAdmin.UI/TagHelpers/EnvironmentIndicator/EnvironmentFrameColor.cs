@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the colour of a <c>&lt;sa-environment-frame&gt;</c>.
 /// </summary>
+[GenerateDataAttributeText]
 public enum EnvironmentFrameColor
 {
     /// <summary>
@@ -29,21 +30,4 @@ public enum EnvironmentFrameColor
     ///     The theme's danger colour, for an environment where changes matter most, such as production.
     /// </summary>
     Danger,
-}
-
-internal static class EnvironmentFrameColorExtensions
-{
-    extension(EnvironmentFrameColor color)
-    {
-        public string GetDataAttributeText() =>
-            color switch
-            {
-                EnvironmentFrameColor.Neutral => "neutral",
-                EnvironmentFrameColor.Info => "info",
-                EnvironmentFrameColor.Success => "success",
-                EnvironmentFrameColor.Warning => "warning",
-                EnvironmentFrameColor.Danger => "danger",
-                _ => string.Empty,
-            };
-    }
 }

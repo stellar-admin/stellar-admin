@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the size of a sidebar menu link.
 /// </summary>
+[GenerateDataAttributeText]
 public enum SidebarMenuLinkSize
 {
     /// <summary>
@@ -13,27 +14,12 @@ public enum SidebarMenuLinkSize
     /// <summary>
     ///     A shorter, more compact link.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
 
     /// <summary>
     ///     A taller link for prominent entries.
     /// </summary>
+    [DataAttributeText("lg")]
     Large,
-}
-
-internal static class SidebarMenuLinkSizeExtensions
-{
-    extension(SidebarMenuLinkSize size)
-    {
-        public string GetDataAttributeText()
-        {
-            return size switch
-            {
-                SidebarMenuLinkSize.Default => "default",
-                SidebarMenuLinkSize.Small => "sm",
-                SidebarMenuLinkSize.Large => "lg",
-                _ => String.Empty,
-            };
-        }
-    }
 }

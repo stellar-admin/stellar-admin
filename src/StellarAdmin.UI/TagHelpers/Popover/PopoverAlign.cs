@@ -7,6 +7,7 @@ namespace StellarAdmin.UI;
 ///     Above or below the trigger, the start is the trigger's left edge. To its left or right,
 ///     the start is the trigger's top edge.
 /// </remarks>
+[GenerateDataAttributeText]
 public enum PopoverAlign
 {
     /// <summary>
@@ -29,20 +30,4 @@ public enum PopoverAlign
     ///     trigger's width.
     /// </summary>
     CenterWithin,
-}
-
-internal static class PopoverAlignExtensions
-{
-    extension(PopoverAlign align)
-    {
-        public string GetDataAttributeText() =>
-            align switch
-            {
-                PopoverAlign.Start => "start",
-                PopoverAlign.Center => "center",
-                PopoverAlign.End => "end",
-                PopoverAlign.CenterWithin => "center-within",
-                _ => string.Empty,
-            };
-    }
 }

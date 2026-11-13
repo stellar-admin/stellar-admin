@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the visual style of a tab list.
 /// </summary>
+[GenerateDataAttributeText]
 public enum TabListVariant
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum TabListVariant
     ///     Tabs with an underline below the selected tab.
     /// </summary>
     Line,
-}
-
-internal static class TabListVariantExtensions
-{
-    extension(TabListVariant variant)
-    {
-        public string GetDataAttributeText() =>
-            variant switch
-            {
-                TabListVariant.Default => "default",
-                TabListVariant.Line => "line",
-                _ => "",
-            };
-    }
 }

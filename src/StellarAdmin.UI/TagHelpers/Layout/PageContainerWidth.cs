@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the maximum content width of a <c>&lt;sa-page-container&gt;</c>.
 /// </summary>
+[GenerateDataAttributeText]
 public enum PageContainerWidth
 {
     /// <summary>
@@ -33,16 +34,6 @@ internal static class PageContainerWidthExtensions
 {
     extension(PageContainerWidth width)
     {
-        public string GetDataAttributeText() =>
-            width switch
-            {
-                PageContainerWidth.Full => "full",
-                PageContainerWidth.Large => "large",
-                PageContainerWidth.Medium => "medium",
-                PageContainerWidth.Small => "small",
-                _ => "",
-            };
-
         public string GetWidthCssClass() =>
             width switch
             {

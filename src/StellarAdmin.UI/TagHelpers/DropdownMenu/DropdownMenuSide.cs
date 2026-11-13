@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the side of its trigger that a dropdown menu panel appears on.
 /// </summary>
+[GenerateDataAttributeText]
 public enum DropdownMenuSide
 {
     /// <summary>
@@ -24,20 +25,4 @@ public enum DropdownMenuSide
     ///     To the left of the trigger.
     /// </summary>
     Left,
-}
-
-internal static class DropdownMenuSideExtensions
-{
-    extension(DropdownMenuSide side)
-    {
-        public string GetDataAttributeText() =>
-            side switch
-            {
-                DropdownMenuSide.Top => "top",
-                DropdownMenuSide.Bottom => "bottom",
-                DropdownMenuSide.Left => "left",
-                DropdownMenuSide.Right => "right",
-                _ => string.Empty,
-            };
-    }
 }

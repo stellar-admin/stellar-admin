@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies how the icon in a timeline item's media is drawn.
 /// </summary>
+[GenerateDataAttributeText]
 public enum TimelineMediaStyle
 {
     /// <summary>
@@ -19,21 +20,4 @@ public enum TimelineMediaStyle
     ///     The icon in a ring.
     /// </summary>
     Ring,
-}
-
-internal static class TimelineMediaStyleExtensions
-{
-    extension(TimelineMediaStyle mediaStyle)
-    {
-        public string GetDataAttributeText()
-        {
-            return mediaStyle switch
-            {
-                TimelineMediaStyle.Disc => "disc",
-                TimelineMediaStyle.Plain => "plain",
-                TimelineMediaStyle.Ring => "ring",
-                _ => string.Empty,
-            };
-        }
-    }
 }

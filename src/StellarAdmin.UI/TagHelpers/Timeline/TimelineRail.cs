@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the line drawn from a timeline item to the next one.
 /// </summary>
+[GenerateDataAttributeText]
 public enum TimelineRail
 {
     /// <summary>
@@ -19,21 +20,4 @@ public enum TimelineRail
     ///     No line, such as for a gap the timeline doesn't cover.
     /// </summary>
     None,
-}
-
-internal static class TimelineRailExtensions
-{
-    extension(TimelineRail rail)
-    {
-        public string GetDataAttributeText()
-        {
-            return rail switch
-            {
-                TimelineRail.Solid => "solid",
-                TimelineRail.Dashed => "dashed",
-                TimelineRail.None => "none",
-                _ => string.Empty,
-            };
-        }
-    }
 }

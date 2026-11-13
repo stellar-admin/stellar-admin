@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the side of its trigger that a tooltip appears on.
 /// </summary>
+[GenerateDataAttributeText]
 public enum TooltipSide
 {
     /// <summary>
@@ -24,20 +25,4 @@ public enum TooltipSide
     ///     To the left of the trigger.
     /// </summary>
     Left,
-}
-
-internal static class TooltipSideExtensions
-{
-    extension(TooltipSide side)
-    {
-        public string GetDataAttributeText() =>
-            side switch
-            {
-                TooltipSide.Top => "top",
-                TooltipSide.Bottom => "bottom",
-                TooltipSide.Left => "left",
-                TooltipSide.Right => "right",
-                _ => string.Empty,
-            };
-    }
 }

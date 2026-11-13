@@ -3,43 +3,30 @@
 /// <summary>
 ///     Specifies the size of a button in an input group.
 /// </summary>
+[GenerateDataAttributeText]
 public enum InputGroupButtonSize
 {
     /// <summary>
     ///     An extra-small button.
     /// </summary>
+    [DataAttributeText("xs")]
     ExtraSmall,
 
     /// <summary>
     ///     A small button.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
 
     /// <summary>
     ///     An extra-small square button for a single icon.
     /// </summary>
+    [DataAttributeText("icon-xs")]
     IconExtraSmall,
 
     /// <summary>
     ///     A small square button for a single icon.
     /// </summary>
+    [DataAttributeText("icon-sm")]
     IconSmall,
-}
-
-internal static class InputGroupButtonSizeExtensions
-{
-    extension(InputGroupButtonSize size)
-    {
-        public string GetDataAttributeText()
-        {
-            return size switch
-            {
-                InputGroupButtonSize.ExtraSmall => "xs",
-                InputGroupButtonSize.Small => "sm",
-                InputGroupButtonSize.IconExtraSmall => "icon-xs",
-                InputGroupButtonSize.IconSmall => "icon-sm",
-                _ => string.Empty,
-            };
-        }
-    }
 }

@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the end of the transcript that a message scroller button scrolls to.
 /// </summary>
+[GenerateDataAttributeText]
 public enum MessageScrollerDirection
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum MessageScrollerDirection
     ///     The newest content, at the bottom of the transcript.
     /// </summary>
     End,
-}
-
-internal static class MessageScrollerDirectionExtensions
-{
-    extension(MessageScrollerDirection direction)
-    {
-        public string GetDataAttributeText() =>
-            direction switch
-            {
-                MessageScrollerDirection.Start => "start",
-                MessageScrollerDirection.End => "end",
-                _ => string.Empty,
-            };
-    }
 }

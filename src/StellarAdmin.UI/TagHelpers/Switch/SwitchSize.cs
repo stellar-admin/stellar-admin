@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the size of a switch.
 /// </summary>
+[GenerateDataAttributeText]
 public enum SwitchSize
 {
     /// <summary>
@@ -13,19 +14,6 @@ public enum SwitchSize
     /// <summary>
     ///     A smaller, more compact switch.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
-}
-
-internal static class SwitchSizeExtensions
-{
-    extension(SwitchSize size)
-    {
-        public string GetDataAttributeText() =>
-            size switch
-            {
-                SwitchSize.Default => "default",
-                SwitchSize.Small => "sm",
-                _ => string.Empty,
-            };
-    }
 }

@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the orientation of a <c>&lt;sa-separator&gt;</c>.
 /// </summary>
+[GenerateDataAttributeText]
 public enum SeparatorOrientation
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum SeparatorOrientation
     ///     A vertical line that divides side-by-side content.
     /// </summary>
     Vertical,
-}
-
-internal static class SeparatorOrientationExtensions
-{
-    extension(SeparatorOrientation orientation)
-    {
-        public string GetDataAttributeText() =>
-            orientation switch
-            {
-                SeparatorOrientation.Horizontal => "horizontal",
-                SeparatorOrientation.Vertical => "vertical",
-                _ => string.Empty,
-            };
-    }
 }

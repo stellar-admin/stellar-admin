@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the kind of shortcut key that each choice in a questionnaire gets.
 /// </summary>
+[GenerateDataAttributeText]
 public enum QuestionnaireShortcuts
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum QuestionnaireShortcuts
     ///     The numbers 1 to 9.
     /// </summary>
     Numbers,
-}
-
-internal static class QuestionnaireShortcutsExtensions
-{
-    extension(QuestionnaireShortcuts shortcuts)
-    {
-        public string GetDataAttributeText() =>
-            shortcuts switch
-            {
-                QuestionnaireShortcuts.Letters => "letters",
-                QuestionnaireShortcuts.Numbers => "numbers",
-                _ => throw new ArgumentOutOfRangeException(nameof(shortcuts), shortcuts, null),
-            };
-    }
 }

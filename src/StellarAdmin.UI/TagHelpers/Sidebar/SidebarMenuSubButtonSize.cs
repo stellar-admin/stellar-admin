@@ -3,31 +3,18 @@
 /// <summary>
 ///     Specifies the size of a sidebar submenu button.
 /// </summary>
+[GenerateDataAttributeText]
 public enum SidebarMenuSubButtonSize
 {
     /// <summary>
     ///     The standard text size.
     /// </summary>
+    [DataAttributeText("md")]
     Default,
 
     /// <summary>
     ///     A smaller text size.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
-}
-
-internal static class SidebarMenuSubButtonSizeExtensions
-{
-    extension(SidebarMenuSubButtonSize size)
-    {
-        public string GetDataAttributeText()
-        {
-            return size switch
-            {
-                SidebarMenuSubButtonSize.Default => "md",
-                SidebarMenuSubButtonSize.Small => "sm",
-                _ => string.Empty,
-            };
-        }
-    }
 }

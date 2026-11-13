@@ -3,6 +3,7 @@
 /// <summary>
 ///     The visual style of a <c>&lt;sa-empty-media&gt;</c> region.
 /// </summary>
+[GenerateDataAttributeText]
 public enum EmptyMediaVariant
 {
     /// <summary>
@@ -14,20 +15,4 @@ public enum EmptyMediaVariant
     ///     Shows a single icon in a muted container.
     /// </summary>
     Icon,
-}
-
-internal static class EmptyMediaVariantExtensions
-{
-    extension(EmptyMediaVariant variant)
-    {
-        public string GetDataAttributeText()
-        {
-            return variant switch
-            {
-                EmptyMediaVariant.Default => "default",
-                EmptyMediaVariant.Icon => "icon",
-                _ => string.Empty,
-            };
-        }
-    }
 }

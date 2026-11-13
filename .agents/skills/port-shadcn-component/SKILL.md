@@ -98,7 +98,7 @@ Then check the component in DocsSamples (Phase 4) in the default theme against u
 **Naming: component prefix first, element role last** — `sa-bubble-content-link`, `sa-sidebar-menu-button`, `sa-item-link`, with class names to match. The link version of a part appends `-link` to the part's tag, as in `sa-command-item-link`. The exception is `sa-link-button`, an `<a>` styled as a button, which keeps the common component name.
 
 - Nullable enum properties resolved at the top of `ProcessAsync`: `var effectiveVariant = Variant ?? BubbleVariant.Default;`
-- `GetDataAttributeText()` on each enum in a C# 14 `extension(...)` block; the extension class is `internal` and gets no XML docs.
+- `[GenerateDataAttributeText]` on each enum, which generates its `GetDataAttributeText()`: the member name in kebab-case, or the text of the member's `[DataAttributeText("sm")]`.
 - `data-slot` on the primary element, plus `data-*` for every piece of state the CSS keys off.
 - `JoinCssClasses(..., output.GetUserSuppliedClass())` — user classes last so they win.
 - **Synchronous** `ProcessAsync` returning `Task.CompletedTask` unless you relocate child content. Never call `GetChildContentAsync` in a decorate-only helper — content renders automatically, and fetching without writing it back drops it.

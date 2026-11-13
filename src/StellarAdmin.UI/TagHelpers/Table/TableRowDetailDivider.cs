@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the line between an expanded table row and its details.
 /// </summary>
+[GenerateDataAttributeText]
 public enum TableRowDetailDivider
 {
     /// <summary>
@@ -19,19 +20,4 @@ public enum TableRowDetailDivider
     ///     A line across the table, like the lines between rows.
     /// </summary>
     FullWidth,
-}
-
-internal static class TableRowDetailDividerExtensions
-{
-    extension(TableRowDetailDivider divider)
-    {
-        public string GetDataAttributeText() =>
-            divider switch
-            {
-                TableRowDetailDivider.None => "none",
-                TableRowDetailDivider.Inset => "inset",
-                TableRowDetailDivider.FullWidth => "full-width",
-                _ => string.Empty,
-            };
-    }
 }

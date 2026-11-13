@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies what pointing at or clicking an image does.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ImageInteraction
 {
     /// <summary>
@@ -19,19 +20,4 @@ public enum ImageInteraction
     ///     Nothing happens.
     /// </summary>
     None,
-}
-
-internal static class ImageInteractionExtensions
-{
-    extension(ImageInteraction imageInteraction)
-    {
-        public string GetDataAttributeText() =>
-            imageInteraction switch
-            {
-                ImageInteraction.Lightbox => "lightbox",
-                ImageInteraction.Preview => "preview",
-                ImageInteraction.None => "none",
-                _ => string.Empty,
-            };
-    }
 }

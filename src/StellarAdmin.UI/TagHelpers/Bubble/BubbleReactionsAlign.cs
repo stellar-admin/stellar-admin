@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the horizontal edge of a bubble that its reactions sit at.
 /// </summary>
+[GenerateDataAttributeText]
 public enum BubbleReactionsAlign
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum BubbleReactionsAlign
     ///     Near the end edge of the bubble.
     /// </summary>
     End,
-}
-
-internal static class BubbleReactionsAlignExtensions
-{
-    extension(BubbleReactionsAlign align)
-    {
-        public string GetDataAttributeText() =>
-            align switch
-            {
-                BubbleReactionsAlign.Start => "start",
-                BubbleReactionsAlign.End => "end",
-                _ => string.Empty,
-            };
-    }
 }

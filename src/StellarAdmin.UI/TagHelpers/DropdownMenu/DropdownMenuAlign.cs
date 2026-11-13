@@ -7,6 +7,7 @@ namespace StellarAdmin.UI;
 ///     Above or below the trigger, the start is the trigger's left edge. To its left or right,
 ///     the start is the trigger's top edge.
 /// </remarks>
+[GenerateDataAttributeText]
 public enum DropdownMenuAlign
 {
     /// <summary>
@@ -29,20 +30,4 @@ public enum DropdownMenuAlign
     ///     trigger's width.
     /// </summary>
     CenterWithin,
-}
-
-internal static class DropdownMenuAlignExtensions
-{
-    extension(DropdownMenuAlign align)
-    {
-        public string GetDataAttributeText() =>
-            align switch
-            {
-                DropdownMenuAlign.Start => "start",
-                DropdownMenuAlign.Center => "center",
-                DropdownMenuAlign.End => "end",
-                DropdownMenuAlign.CenterWithin => "center-within",
-                _ => string.Empty,
-            };
-    }
 }

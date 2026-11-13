@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies how an icon picker shows its icons.
 /// </summary>
+[GenerateDataAttributeText]
 public enum IconPickerLayout
 {
     /// <summary>
@@ -18,18 +19,4 @@ public enum IconPickerLayout
     ///     Use it for a short list of icons.
     /// </remarks>
     Inline,
-}
-
-internal static class IconPickerLayoutExtensions
-{
-    extension(IconPickerLayout iconPickerLayout)
-    {
-        public string GetDataAttributeText() =>
-            iconPickerLayout switch
-            {
-                IconPickerLayout.Picker => "picker",
-                IconPickerLayout.Inline => "inline",
-                _ => string.Empty,
-            };
-    }
 }

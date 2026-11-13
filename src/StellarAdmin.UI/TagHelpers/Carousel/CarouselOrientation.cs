@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the direction in which the slides of a carousel scroll.
 /// </summary>
+[GenerateDataAttributeText]
 public enum CarouselOrientation
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum CarouselOrientation
     ///     The slides scroll vertically.
     /// </summary>
     Vertical,
-}
-
-internal static class CarouselOrientationExtensions
-{
-    extension(CarouselOrientation orientation)
-    {
-        public string GetDataAttributeText() =>
-            orientation switch
-            {
-                CarouselOrientation.Horizontal => "horizontal",
-                CarouselOrientation.Vertical => "vertical",
-                _ => string.Empty,
-            };
-    }
 }

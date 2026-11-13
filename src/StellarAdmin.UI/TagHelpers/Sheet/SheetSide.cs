@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the edge of the screen that a sheet slides in from.
 /// </summary>
+[GenerateDataAttributeText]
 public enum SheetSide
 {
     /// <summary>
@@ -24,20 +25,4 @@ public enum SheetSide
     ///     The sheet slides in from the left edge.
     /// </summary>
     Left,
-}
-
-internal static class SheetSideExtensions
-{
-    extension(SheetSide side)
-    {
-        public string GetDataAttributeText() =>
-            side switch
-            {
-                SheetSide.Top => "top",
-                SheetSide.Right => "right",
-                SheetSide.Bottom => "bottom",
-                SheetSide.Left => "left",
-                _ => string.Empty,
-            };
-    }
 }

@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies how an image upload arranges the image and its actions.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ImageUploadLayout
 {
     /// <summary>
@@ -28,20 +29,4 @@ public enum ImageUploadLayout
     ///     Use it in a table row that is being edited.
     /// </remarks>
     Cell,
-}
-
-internal static class ImageUploadLayoutExtensions
-{
-    extension(ImageUploadLayout imageUploadLayout)
-    {
-        public string GetDataAttributeText() =>
-            imageUploadLayout switch
-            {
-                ImageUploadLayout.Dropzone => "dropzone",
-                ImageUploadLayout.Compact => "compact",
-                ImageUploadLayout.Attachment => "attachment",
-                ImageUploadLayout.Cell => "cell",
-                _ => string.Empty,
-            };
-    }
 }

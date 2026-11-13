@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies where on the screen toasts appear.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ToasterPosition
 {
     /// <summary>
@@ -34,22 +35,4 @@ public enum ToasterPosition
     ///     Toasts appear in the bottom-right corner.
     /// </summary>
     BottomRight,
-}
-
-internal static class ToasterPositionExtensions
-{
-    extension(ToasterPosition position)
-    {
-        public string GetDataAttributeText() =>
-            position switch
-            {
-                ToasterPosition.TopLeft => "top-left",
-                ToasterPosition.TopCenter => "top-center",
-                ToasterPosition.TopRight => "top-right",
-                ToasterPosition.BottomLeft => "bottom-left",
-                ToasterPosition.BottomCenter => "bottom-center",
-                ToasterPosition.BottomRight => "bottom-right",
-                _ => string.Empty,
-            };
-    }
 }

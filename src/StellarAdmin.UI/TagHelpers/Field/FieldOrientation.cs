@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies how a field arranges its label, control and supporting text.
 /// </summary>
+[GenerateDataAttributeText]
 public enum FieldOrientation
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum FieldOrientation
     ///     Places the label, control and supporting text side by side.
     /// </summary>
     Horizontal,
-}
-
-internal static class FieldOrientationExtensions
-{
-    extension(FieldOrientation orientation)
-    {
-        public string GetDataAttributeText() =>
-            orientation switch
-            {
-                FieldOrientation.Vertical => "vertical",
-                FieldOrientation.Horizontal => "horizontal",
-                _ => string.Empty,
-            };
-    }
 }

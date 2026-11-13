@@ -3,11 +3,13 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies how a sidebar collapses.
 /// </summary>
+[GenerateDataAttributeText]
 public enum SidebarCollapsible
 {
     /// <summary>
     ///     The sidebar slides off the screen when collapsed.
     /// </summary>
+    [DataAttributeText("offcanvas")]
     OffCanvas,
 
     /// <summary>
@@ -19,19 +21,4 @@ public enum SidebarCollapsible
     ///     The sidebar can't be collapsed.
     /// </summary>
     None,
-}
-
-internal static class SidebarCollapsibleExtensions
-{
-    extension(SidebarCollapsible collapsible)
-    {
-        public string GetDataAttributeText() =>
-            collapsible switch
-            {
-                SidebarCollapsible.OffCanvas => "offcanvas",
-                SidebarCollapsible.Icon => "icon",
-                SidebarCollapsible.None => "none",
-                _ => string.Empty,
-            };
-    }
 }

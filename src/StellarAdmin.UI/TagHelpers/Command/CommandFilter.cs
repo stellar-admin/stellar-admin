@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies how a command menu filters its items as the user types.
 /// </summary>
+[GenerateDataAttributeText]
 public enum CommandFilter
 {
     /// <summary>
@@ -15,18 +16,4 @@ public enum CommandFilter
     ///     for example with results from the server.
     /// </summary>
     None,
-}
-
-internal static class CommandFilterExtensions
-{
-    extension(CommandFilter filter)
-    {
-        public string GetDataAttributeText() =>
-            filter switch
-            {
-                CommandFilter.Client => "client",
-                CommandFilter.None => "none",
-                _ => string.Empty,
-            };
-    }
 }

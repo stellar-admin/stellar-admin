@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies how a form section places its heading and fields.
 /// </summary>
+[GenerateDataAttributeText]
 public enum FormSectionLayout
 {
     /// <summary>
@@ -19,19 +20,4 @@ public enum FormSectionLayout
     ///     Displays the heading and fields inside a bordered card.
     /// </summary>
     Card,
-}
-
-internal static class FormSectionLayoutExtensions
-{
-    extension(FormSectionLayout layout)
-    {
-        public string GetDataAttributeText() =>
-            layout switch
-            {
-                FormSectionLayout.Stacked => "stacked",
-                FormSectionLayout.Split => "split",
-                FormSectionLayout.Card => "card",
-                _ => throw new ArgumentOutOfRangeException(nameof(layout), layout, null),
-            };
-    }
 }

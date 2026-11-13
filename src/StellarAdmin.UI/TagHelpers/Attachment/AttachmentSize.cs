@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the size of an attachment.
 /// </summary>
+[GenerateDataAttributeText]
 public enum AttachmentSize
 {
     /// <summary>
@@ -13,25 +14,12 @@ public enum AttachmentSize
     /// <summary>
     ///     An extra-small size.
     /// </summary>
+    [DataAttributeText("xs")]
     ExtraSmall,
 
     /// <summary>
     ///     A small size.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
-}
-
-internal static class AttachmentSizeExtensions
-{
-    extension(AttachmentSize size)
-    {
-        public string GetDataAttributeText() =>
-            size switch
-            {
-                AttachmentSize.Default => "default",
-                AttachmentSize.ExtraSmall => "xs",
-                AttachmentSize.Small => "sm",
-                _ => string.Empty,
-            };
-    }
 }

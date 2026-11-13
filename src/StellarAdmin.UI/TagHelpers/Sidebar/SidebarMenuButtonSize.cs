@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the size of a sidebar menu button.
 /// </summary>
+[GenerateDataAttributeText]
 public enum SidebarMenuButtonSize
 {
     /// <summary>
@@ -13,27 +14,12 @@ public enum SidebarMenuButtonSize
     /// <summary>
     ///     A shorter, more compact button.
     /// </summary>
+    [DataAttributeText("sm")]
     Small,
 
     /// <summary>
     ///     A taller button for prominent entries.
     /// </summary>
+    [DataAttributeText("lg")]
     Large,
-}
-
-internal static class SidebarMenuButtonSizeExtensions
-{
-    extension(SidebarMenuButtonSize size)
-    {
-        public string GetDataAttributeText()
-        {
-            return size switch
-            {
-                SidebarMenuButtonSize.Default => "default",
-                SidebarMenuButtonSize.Small => "sm",
-                SidebarMenuButtonSize.Large => "lg",
-                _ => String.Empty,
-            };
-        }
-    }
 }

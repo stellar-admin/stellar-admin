@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the shape of the box an image is shown in.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ImageAspectRatio
 {
     /// <summary>
@@ -32,21 +33,4 @@ public enum ImageAspectRatio
     ///     A thumbnail's width stays between half and three times its height.
     /// </remarks>
     Original,
-}
-
-internal static class ImageAspectRatioExtensions
-{
-    extension(ImageAspectRatio imageAspectRatio)
-    {
-        public string GetDataAttributeText() =>
-            imageAspectRatio switch
-            {
-                ImageAspectRatio.Square => "square",
-                ImageAspectRatio.Landscape => "landscape",
-                ImageAspectRatio.Widescreen => "widescreen",
-                ImageAspectRatio.Portrait => "portrait",
-                ImageAspectRatio.Original => "original",
-                _ => string.Empty,
-            };
-    }
 }

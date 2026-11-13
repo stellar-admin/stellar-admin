@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies the visual style of an item.
 /// </summary>
+[GenerateDataAttributeText]
 public enum ItemVariant
 {
     /// <summary>
@@ -19,21 +20,4 @@ public enum ItemVariant
     ///     An item with a muted background.
     /// </summary>
     Muted,
-}
-
-internal static class ItemVariantExtensions
-{
-    extension(ItemVariant variant)
-    {
-        public string GetDataAttributeText()
-        {
-            return variant switch
-            {
-                ItemVariant.Default => "default",
-                ItemVariant.Outline => "outline",
-                ItemVariant.Muted => "muted",
-                _ => string.Empty,
-            };
-        }
-    }
 }

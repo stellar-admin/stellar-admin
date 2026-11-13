@@ -4,6 +4,7 @@ namespace StellarAdmin.UI;
 ///     Specifies how an expanded table row and its details are set apart from the rows around
 ///     them.
 /// </summary>
+[GenerateDataAttributeText]
 public enum TableRowDetailEmphasis
 {
     /// <summary>
@@ -20,19 +21,4 @@ public enum TableRowDetailEmphasis
     ///     An accent bar along the left edge of the row and its details.
     /// </summary>
     Rail,
-}
-
-internal static class TableRowDetailEmphasisExtensions
-{
-    extension(TableRowDetailEmphasis emphasis)
-    {
-        public string GetDataAttributeText() =>
-            emphasis switch
-            {
-                TableRowDetailEmphasis.None => "none",
-                TableRowDetailEmphasis.Band => "band",
-                TableRowDetailEmphasis.Rail => "rail",
-                _ => string.Empty,
-            };
-    }
 }

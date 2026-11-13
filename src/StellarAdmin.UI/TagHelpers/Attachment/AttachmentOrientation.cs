@@ -3,6 +3,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Specifies how an attachment arranges its media and content.
 /// </summary>
+[GenerateDataAttributeText]
 public enum AttachmentOrientation
 {
     /// <summary>
@@ -14,18 +15,4 @@ public enum AttachmentOrientation
     ///     The media sits above the content, as a card.
     /// </summary>
     Vertical,
-}
-
-internal static class AttachmentOrientationExtensions
-{
-    extension(AttachmentOrientation orientation)
-    {
-        public string GetDataAttributeText() =>
-            orientation switch
-            {
-                AttachmentOrientation.Horizontal => "horizontal",
-                AttachmentOrientation.Vertical => "vertical",
-                _ => string.Empty,
-            };
-    }
 }
