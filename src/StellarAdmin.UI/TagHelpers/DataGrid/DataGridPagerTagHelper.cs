@@ -223,7 +223,13 @@ public sealed class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
 
             contentBuilder.InnerHtml.AppendHtml(
                 WrapInItem(
-                    await RenderNavigationLink(context, pageNo - 1, pageNo > 1, "previous", compact)
+                    await RenderNavigationLink(
+                        context,
+                        pageNo - 1,
+                        pageNo > 1,
+                        PaginationNavDirection.Previous,
+                        compact
+                    )
                 )
             );
 
@@ -247,7 +253,7 @@ public sealed class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
                         context,
                         pageNo + 1,
                         pageNo < totalPages,
-                        "next",
+                        PaginationNavDirection.Next,
                         compact
                     )
                 )
@@ -515,22 +521,15 @@ public sealed class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
         bool compact
     )
     {
-        return new PaginationLinkTagHelper(_htmlGenerator)
-        {
-            ViewContext = ViewContext,
-            Action = Action,
-            Area = Area,
-            Controller = Controller,
-            Fragment = Fragment,
-            Host = Host,
-            Page = Page,
-            PageHandler = PageHandler,
-            Protocol = Protocol,
-            Route = Route,
-            RouteValues = SubstitutePlaceholders(targetPage, SelectedPageSize),
-            Active = isActive,
-            Size = compact ? ButtonSize.IconSmall : null,
-        };
+        var link = PaginationNavRenderingHelper.CreateLink(
+            _htmlGenerator,
+            this,
+            compact ? ButtonSize.IconSmall : null
+        );
+        link.RouteValues = SubstitutePlaceholders(targetPage, SelectedPageSize);
+        link.Active = isActive;
+
+        return link;
     }
 
     private async Task<IHtmlContent> RenderPageLink(
@@ -556,76 +555,41 @@ public sealed class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
         TagHelperContext context,
         long targetPage,
         bool isEnabled,
-        string direction,
+        PaginationNavDirection direction,
         bool compact
     )
     {
-        // Compact (in-grid) links are icon-only, so they carry an aria-label instead of
-        // the visible label span.
-        var content = new DefaultTagHelperContent();
-        if (direction == "previous")
+        var linkOutput = new TagHelperOutput(
+            "a",
+            [],
+            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        );
+
+        // A disabled link has no href; the button styles grey out an aria-disabled link and
+        // block its clicks.
+        PaginationLinkTagHelper link;
+        if (isEnabled)
         {
-            content.AppendHtml(_iconOptions.RenderIcon(SemanticIconRole.PaginationPrevious));
-            if (!compact)
-            {
-                content.AppendHtml("<span class=\"sa-pagination-link-label\">Previous</span>");
-            }
+            link = CreatePageLinkTagHelper(targetPage, isActive: false, compact);
         }
         else
         {
-            if (!compact)
+            link = new PaginationLinkTagHelper(_htmlGenerator)
             {
-                content.AppendHtml("<span class=\"sa-pagination-link-label\">Next</span>");
-            }
-            content.AppendHtml(_iconOptions.RenderIcon(SemanticIconRole.PaginationNext));
+                ViewContext = ViewContext,
+                Size = compact ? ButtonSize.IconSmall : null,
+            };
+            linkOutput.Attributes.SetAttribute("aria-disabled", "true");
         }
 
-        var ariaLabel = direction == "previous" ? "Go to previous page" : "Go to next page";
-
-        if (!isEnabled)
-        {
-            var disabledBuilder = new TagBuilder("a");
-            disabledBuilder.Attributes.Add("aria-disabled", "true");
-            disabledBuilder.Attributes.Add("data-slot", "pagination-link");
-            disabledBuilder.Attributes.Add("data-active", "false");
-            if (compact)
-            {
-                disabledBuilder.Attributes.Add("aria-label", ariaLabel);
-            }
-            disabledBuilder.Attributes.Add(
-                "class",
-                JoinCssClasses(
-                    "sa-button",
-                    "sa-button-variant-ghost",
-                    compact ? "sa-button-size-icon-sm" : "sa-button-size-default",
-                    "sa-pagination-link",
-                    $"sa-pagination-{direction}"
-                )
-            );
-            disabledBuilder.Attributes.Add("style", "pointer-events: none; opacity: 0.5");
-            disabledBuilder.InnerHtml.AppendHtml(content);
-
-            return disabledBuilder;
-        }
-
-        var linkAttributes = new List<TagHelperAttribute>
-        {
-            new TagHelperAttribute("class", $"sa-pagination-{direction}"),
-        };
-        if (compact)
-        {
-            linkAttributes.Add(new TagHelperAttribute("aria-label", ariaLabel));
-        }
-
-        var linkOutput = new TagHelperOutput(
-            "a",
-            new TagHelperAttributeList(linkAttributes),
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        await PaginationNavRenderingHelper.RenderAsync(
+            context,
+            linkOutput,
+            link,
+            direction,
+            _iconOptions,
+            compact
         );
-        linkOutput.Content.AppendHtml(content);
-
-        await CreatePageLinkTagHelper(targetPage, isActive: false, compact)
-            .ProcessAsync(context, linkOutput);
 
         return linkOutput;
     }

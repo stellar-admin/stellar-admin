@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
@@ -33,54 +32,24 @@ public sealed class PaginationNextTagHelper : StellarAdminAnchorTagHelperBase
     /// </summary>
     /// <param name="htmlGenerator">The generator that builds the link URL from the routing attributes.</param>
     /// <param name="iconOptions">The icon options that supply the default arrow icon.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public PaginationNextTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
-        _htmlGenerator = htmlGenerator;
+        _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconOptions = iconOptions.Value;
     }
 
     /// <inheritdoc />
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("sa-pagination-next", output.GetUserSuppliedClass())
+        return PaginationNavRenderingHelper.RenderAsync(
+            context,
+            output,
+            PaginationNavRenderingHelper.CreateLink(_htmlGenerator, this, Size),
+            PaginationNavDirection.Next,
+            _iconOptions
         );
-        var linkTagHelper = new PaginationLinkTagHelper(_htmlGenerator)
-        {
-            ViewContext = ViewContext,
-            Action = Action,
-            Area = Area,
-            Controller = Controller,
-            Fragment = Fragment,
-            Host = Host,
-            Page = Page,
-            PageHandler = PageHandler,
-            Protocol = Protocol,
-            Route = Route,
-            RouteValues = RouteValues,
-            Active = false,
-            Size = Size,
-        };
-        await linkTagHelper.ProcessAsync(context, output);
-
-        var content = await output.GetChildContentAsync();
-
-        if (!content.IsEmptyOrWhiteSpace)
-        {
-            output.Content.AppendHtml(content);
-        }
-        else
-        {
-            // Render the text
-            var textBlockTagBuilder = new TagBuilder("span");
-            textBlockTagBuilder.AddCssClass("sa-pagination-link-label");
-            textBlockTagBuilder.InnerHtml.AppendHtml("Next");
-            output.Content.AppendHtml(textBlockTagBuilder);
-
-            // Render the icon
-            var iconOutput = _iconOptions.RenderIcon(SemanticIconRole.PaginationNext);
-            output.Content.AppendHtml(iconOutput);
-        }
     }
 }

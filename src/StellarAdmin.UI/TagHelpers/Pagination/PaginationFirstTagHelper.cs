@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
@@ -43,47 +42,14 @@ public sealed class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
     }
 
     /// <inheritdoc />
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("sa-pagination-previous", output.GetUserSuppliedClass())
+        return PaginationNavRenderingHelper.RenderAsync(
+            context,
+            output,
+            PaginationNavRenderingHelper.CreateLink(_htmlGenerator, this, Size),
+            PaginationNavDirection.First,
+            _iconOptions
         );
-        var linkTagHelper = new PaginationLinkTagHelper(_htmlGenerator)
-        {
-            ViewContext = ViewContext,
-            Action = Action,
-            Area = Area,
-            Controller = Controller,
-            Fragment = Fragment,
-            Host = Host,
-            Page = Page,
-            PageHandler = PageHandler,
-            Protocol = Protocol,
-            Route = Route,
-            RouteValues = RouteValues,
-            Active = false,
-            Size = Size,
-        };
-        await linkTagHelper.ProcessAsync(context, output);
-
-        var content = await output.GetChildContentAsync();
-
-        if (!content.IsEmptyOrWhiteSpace)
-        {
-            output.Content.AppendHtml(content);
-        }
-        else
-        {
-            // Render the icon
-            var iconOutput = _iconOptions.RenderIcon(SemanticIconRole.PaginationFirst);
-            output.Content.AppendHtml(iconOutput);
-
-            // Render the text
-            var textBlockTagBuilder = new TagBuilder("span");
-            textBlockTagBuilder.AddCssClass("sa-pagination-link-label");
-            textBlockTagBuilder.InnerHtml.AppendHtml("First");
-            output.Content.AppendHtml(textBlockTagBuilder);
-        }
     }
 }
