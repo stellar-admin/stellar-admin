@@ -107,7 +107,7 @@ public class ResourceDisplayFieldTests
             "[data-slot='display-field-value'] [data-slot='badge']"
         );
         await Assert.That(badge.TextContent.Trim()).IsEqualTo("Notebook");
-        await Assert.That(badge.ClassList.Contains("sa-badge-variant-outline")).IsTrue();
+        await Assert.That(badge.GetAttribute("data-variant")).IsEqualTo("outline");
     }
 
     [Test]

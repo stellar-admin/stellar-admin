@@ -361,12 +361,7 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
             item.Attributes.Add("title", name);
             item.Attributes.Add(
                 "class",
-                ToggleRenderingHelper.BuildClass(
-                    ToggleVariant.Outline,
-                    ToggleSize.Default,
-                    includeGroupItemToken: true,
-                    ClassNames?.Item
-                )
+                ToggleRenderingHelper.BuildClass(includeGroupItemToken: true, ClassNames?.Item)
             );
             item.InnerHtml.AppendHtml(input);
             item.InnerHtml.AppendHtml(svg);
@@ -544,7 +539,7 @@ public sealed class IconPickerTagHelper : FieldInputBaseTagHelper<IconPickerClas
         addon.Attributes.Add("role", "group");
         addon.Attributes.Add("data-slot", "input-group-addon");
         addon.Attributes.Add("data-align", "start");
-        addon.Attributes.Add("class", "sa-input-group-addon sa-input-group-addon-align-start");
+        addon.Attributes.Add("class", "sa-input-group-addon");
         addon.InnerHtml.AppendHtml(
             _iconOptions.RenderIcon(SemanticIconRole.Search, ("aria-hidden", "true"))
         );

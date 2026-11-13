@@ -8,14 +8,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-item-media")]
 public sealed class ItemMediaTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<ItemMediaVariant, string> ItemVariantClasses =
-        new Dictionary<ItemMediaVariant, string>
-        {
-            [ItemMediaVariant.Default] = "sa-item-media-variant-default",
-            [ItemMediaVariant.Icon] = "sa-item-media-variant-icon",
-            [ItemMediaVariant.Image] = "sa-item-media-variant-image",
-        };
-
     /// <summary>
     ///     Gets or sets the kind of media, which sets its size and style.
     /// </summary>
@@ -38,11 +30,7 @@ public sealed class ItemMediaTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-item-media",
-                ItemVariantClasses[effectiveVariant],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-item-media", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -450,10 +450,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         attachment.Attributes.Add("data-state", "done");
         attachment.Attributes.Add("data-size", "default");
         attachment.Attributes.Add("data-orientation", "horizontal");
-        attachment.Attributes.Add(
-            "class",
-            "sa-attachment sa-attachment-size-default sa-attachment-orientation-horizontal"
-        );
+        attachment.Attributes.Add("class", "sa-attachment");
         if (!parts.ReadOnly)
         {
             parts.ShowWhen(attachment, "filled uploading removed");
@@ -462,7 +459,7 @@ public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadCl
         var media = new TagBuilder("div");
         media.Attributes.Add("data-slot", "attachment-media");
         media.Attributes.Add("data-variant", "image");
-        media.Attributes.Add("class", "sa-attachment-media sa-attachment-media-variant-image");
+        media.Attributes.Add("class", "sa-attachment-media");
         media.InnerHtml.AppendHtml(parts.Image(source, ImageRendering.Thumbnail(ImageSize.Medium)));
         media.InnerHtml.AppendHtml(parts.Progress(bar: false));
         attachment.InnerHtml.AppendHtml(media);

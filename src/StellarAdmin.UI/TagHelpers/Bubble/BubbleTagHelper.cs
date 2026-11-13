@@ -8,17 +8,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-bubble")]
 public sealed class BubbleTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<BubbleVariant, string> BubbleVariantClasses = new()
-    {
-        [BubbleVariant.Default] = "sa-bubble-variant-default",
-        [BubbleVariant.Secondary] = "sa-bubble-variant-secondary",
-        [BubbleVariant.Muted] = "sa-bubble-variant-muted",
-        [BubbleVariant.Tinted] = "sa-bubble-variant-tinted",
-        [BubbleVariant.Outline] = "sa-bubble-variant-outline",
-        [BubbleVariant.Ghost] = "sa-bubble-variant-ghost",
-        [BubbleVariant.Destructive] = "sa-bubble-variant-destructive",
-    };
-
     /// <summary>
     ///     Gets or sets the side of the conversation that the bubble sits on.
     /// </summary>
@@ -53,11 +42,7 @@ public sealed class BubbleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-align", effectiveAlign.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-bubble",
-                BubbleVariantClasses[effectiveVariant],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-bubble", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

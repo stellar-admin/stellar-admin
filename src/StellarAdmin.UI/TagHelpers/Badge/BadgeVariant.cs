@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the visual style of a badge.
 /// </summary>
+[GenerateDataAttributeText]
 public enum BadgeVariant
 {
     /// <summary>

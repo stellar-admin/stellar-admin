@@ -48,15 +48,12 @@ public sealed class StackTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
+        output.Attributes.SetAttribute("data-align", effectiveAlign.GetDataAttributeText());
+        output.Attributes.SetAttribute("data-gap", effectiveGap.GetDataAttributeText());
+        output.Attributes.SetAttribute("data-justify", effectiveJustify.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-stack",
-                effectiveAlign.GetClass(),
-                effectiveGap.GetClassName(),
-                effectiveJustify.GetClass(),
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-stack", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies how a <c>&lt;sa-stack&gt;</c> aligns its children horizontally.
 /// </summary>
+[GenerateDataAttributeText]
 public enum StackAlign
 {
     /// <summary>
@@ -24,20 +25,4 @@ public enum StackAlign
     ///     The children align to the end of the cross axis.
     /// </summary>
     End,
-}
-
-internal static class StackAlignExtensions
-{
-    extension(StackAlign align)
-    {
-        public string GetClass() =>
-            align switch
-            {
-                StackAlign.Stretch => "sa-stack-align-stretch",
-                StackAlign.Center => "sa-stack-align-center",
-                StackAlign.Start => "sa-stack-align-start",
-                StackAlign.End => "sa-stack-align-end",
-                _ => "sa-stack-align-stretch",
-            };
-    }
 }

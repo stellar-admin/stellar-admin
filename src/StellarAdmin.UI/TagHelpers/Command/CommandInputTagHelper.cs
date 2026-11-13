@@ -81,10 +81,7 @@ public sealed class CommandInputTagHelper : StellarAdminTagHelperBase
         addon.Attributes["role"] = "group";
         addon.Attributes["data-slot"] = "input-group-addon";
         addon.Attributes["data-align"] = "start";
-        addon.Attributes["class"] = JoinCssClasses(
-            "sa-input-group-addon",
-            "sa-input-group-addon-align-start"
-        );
+        addon.Attributes["class"] = "sa-input-group-addon";
         addon.InnerHtml.AppendHtml(
             _iconOptions.RenderIcon(SemanticIconRole.Search, ("class", "sa-command-input-icon"))
         );

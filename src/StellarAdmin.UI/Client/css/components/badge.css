@@ -1,7 +1,5 @@
 /* Badge: a short label on a tag-shaped fill (<sa-badge>, also as a link).
-   Replaces: .sa-badge, .sa-badge-variant-default, .sa-badge-variant-secondary,
-   .sa-badge-variant-outline, .sa-badge-variant-destructive, .sa-badge-variant-ghost,
-   .sa-badge-variant-link */
+   Replaces: .sa-badge */
 
 @layer sa.tokens {
   .sa-badge {
@@ -63,24 +61,24 @@
       &:focus-visible { box-shadow: var(--sa-invalid-focus-shadow); }
     }
   }
-  .sa-badge-variant-default {
+  .sa-badge[data-variant="default"] {
     --_bg: var(--sa-color-accent-fill);
     --_bg-hover: var(--sa-color-accent-hover);
     --_fg: var(--sa-color-on-accent);
     --_border: oklch(0.2 0 0 / calc(var(--sa-outlines) * 0.2));
   }
-  .sa-badge-variant-secondary {
+  .sa-badge[data-variant="secondary"] {
     --_bg: var(--sa-color-surface-sunken);
     --_bg-hover: color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%);
     --_fg: var(--sa-color-ink);
     --_border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);
   }
-  .sa-badge-variant-outline {
+  .sa-badge[data-variant="outline"] {
     --_bg-hover: var(--sa-color-hover);
     --_fg: var(--sa-color-ink);
     --_border: var(--sa-color-line);
   }
-  .sa-badge-variant-destructive {
+  .sa-badge[data-variant="destructive"] {
     --_bg: var(--sa-color-danger-soft);
     --_bg-hover: var(--sa-color-danger-soft-hover);
     --_fg: var(--_badge-danger-fg);
@@ -88,11 +86,11 @@
     --sa-focus-border: var(--sa-color-danger);
     --sa-focus-shadow: var(--sa-invalid-focus-shadow);
   }
-  .sa-badge-variant-ghost {
+  .sa-badge[data-variant="ghost"] {
     --_fg: var(--sa-color-ink);
     &:hover { background-color: var(--sa-color-hover); }
   }
-  .sa-badge-variant-link {
+  .sa-badge[data-variant="link"] {
     --_fg: var(--sa-color-accent-text);
     text-underline-offset: 4px;
     &:hover { text-decoration: underline; }

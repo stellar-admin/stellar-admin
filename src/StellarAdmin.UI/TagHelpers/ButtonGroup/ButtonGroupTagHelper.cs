@@ -8,13 +8,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-button-group")]
 public sealed class ButtonGroupTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<ButtonGroupOrientation, string?[]> OrientationClasses =
-        new Dictionary<ButtonGroupOrientation, string?[]>
-        {
-            [ButtonGroupOrientation.Horizontal] = ["sa-button-group-orientation-horizontal"],
-            [ButtonGroupOrientation.Vertical] = ["sa-button-group-orientation-vertical"],
-        };
-
     /// <summary>
     ///     Gets or sets the direction in which the group arranges its items.
     /// </summary>
@@ -41,12 +34,7 @@ public sealed class ButtonGroupTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                new string?[] { "sa-button-group" }
-                    .Union(OrientationClasses[effectiveOrientation])
-                    .Union([output.GetUserSuppliedClass()])
-                    .ToArray()
-            )
+            JoinCssClasses("sa-button-group", output.GetUserSuppliedClass())
         );
         return base.ProcessAsync(context, output);
     }

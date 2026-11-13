@@ -8,15 +8,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-attachment-media")]
 public sealed class AttachmentMediaTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<
-        AttachmentMediaVariant,
-        string
-    > AttachmentMediaVariantClasses = new()
-    {
-        [AttachmentMediaVariant.Icon] = "sa-attachment-media-variant-icon",
-        [AttachmentMediaVariant.Image] = "sa-attachment-media-variant-image",
-    };
-
     /// <summary>
     ///     Gets or sets the kind of media shown.
     /// </summary>
@@ -39,11 +30,7 @@ public sealed class AttachmentMediaTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-attachment-media",
-                AttachmentMediaVariantClasses[effectiveVariant],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-attachment-media", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

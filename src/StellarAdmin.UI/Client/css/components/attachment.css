@@ -1,10 +1,9 @@
 /* Attachment: a file card (media, title, description, actions, an optional whole-card trigger) in
    three sizes, horizontal or vertical, with idle, uploading, processing, done and error states; and the
    attachment group, a horizontally scrolling, snapping row with faded edges.
-   Replaces: .sa-attachment, .sa-attachment-actions, .sa-attachment-content, .sa-attachment-description,
-   .sa-attachment-group, .sa-attachment-media, .sa-attachment-media-variant-image,
-   .sa-attachment-orientation-horizontal, .sa-attachment-orientation-vertical, .sa-attachment-size-default,
-   .sa-attachment-size-sm, .sa-attachment-size-xs, .sa-attachment-title, .sa-attachment-trigger */
+   Replaces: .sa-attachment, .sa-attachment-actions, .sa-attachment-content,
+   .sa-attachment-description, .sa-attachment-group, .sa-attachment-media, .sa-attachment-title,
+   .sa-attachment-trigger */
 
 @layer sa.components {
   .sa-attachment {
@@ -51,10 +50,10 @@
     }
   }
 
-  .sa-attachment-orientation-horizontal {
+  .sa-attachment[data-orientation="horizontal"] {
     align-items: center;
   }
-  .sa-attachment-orientation-vertical {
+  .sa-attachment[data-orientation="vertical"] {
     --_media-w: 100%;
     --_media-icon: 1.5rem;
     flex-direction: column;
@@ -64,7 +63,7 @@
     }
   }
 
-  .sa-attachment-size-sm {
+  .sa-attachment[data-size="sm"] {
     --_p: calc(1.5 * var(--sa-unit));
     --_px: calc(2 * var(--sa-unit));
     --_py: calc(1.5 * var(--sa-unit));
@@ -72,7 +71,7 @@
     gap: calc(2.5 * var(--sa-unit));
     font-size: var(--sa-text-xs);
   }
-  .sa-attachment-size-xs {
+  .sa-attachment[data-size="xs"] {
     --_p: var(--sa-unit);
     --_px: calc(1.5 * var(--sa-unit));
     --_py: var(--sa-unit);
@@ -83,7 +82,7 @@
     border-radius: var(--sa-radius-box);
     font-size: var(--sa-text-xs);
   }
-  .sa-attachment-orientation-vertical:is(.sa-attachment-size-sm, .sa-attachment-size-xs) {
+  .sa-attachment[data-orientation="vertical"]:is([data-size="sm"], [data-size="xs"]) {
     --_media-w: 100%;
     --_media-icon: 1.5rem;
   }
@@ -114,7 +113,7 @@
       color: var(--sa-color-danger-text);
     }
   }
-  .sa-attachment-media-variant-image {
+  .sa-attachment-media[data-variant="image"] {
     opacity: 0.6;
     & > img {
       width: 100%;
@@ -131,7 +130,7 @@
     min-width: 0;
     max-width: 100%;
     line-height: 1.25;
-    .sa-attachment-orientation-vertical > & {
+    .sa-attachment[data-orientation="vertical"] > & {
       padding-inline: var(--sa-unit);
     }
   }
@@ -188,7 +187,7 @@
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    .sa-attachment-orientation-vertical > & {
+    .sa-attachment[data-orientation="vertical"] > & {
       position: absolute;
       top: calc(3 * var(--sa-unit));
       right: calc(3 * var(--sa-unit));

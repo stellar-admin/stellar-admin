@@ -29,19 +29,3 @@ public enum PageContainerWidth
     /// </summary>
     Small,
 }
-
-internal static class PageContainerWidthExtensions
-{
-    extension(PageContainerWidth width)
-    {
-        public string GetWidthCssClass() =>
-            width switch
-            {
-                PageContainerWidth.Full => "sa-page-container-width-full",
-                PageContainerWidth.Large => "sa-page-container-width-large",
-                PageContainerWidth.Medium => "sa-page-container-width-medium",
-                PageContainerWidth.Small => "sa-page-container-width-small",
-                _ => "",
-            };
-    }
-}

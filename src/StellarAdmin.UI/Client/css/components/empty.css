@@ -1,7 +1,7 @@
 /* Empty: an empty state, centred: media (an icon on a tile), title, description and actions. Draws
    no edge itself; an author's border utility gets a dashed line.
-   Replaces: .sa-empty, .sa-empty-header, .sa-empty-media, .sa-empty-media-default,
-   .sa-empty-media-icon, .sa-empty-title, .sa-empty-description, .sa-empty-content */
+   Replaces: .sa-empty, .sa-empty-header, .sa-empty-media, .sa-empty-title, .sa-empty-description,
+   .sa-empty-content */
 
 @layer sa.components {
   .sa-empty {
@@ -35,8 +35,8 @@
     margin-bottom: calc(2 * var(--sa-unit));
     & svg { flex-shrink: 0; pointer-events: none; }
   }
-  .sa-empty-media-default { background: transparent; }
-  .sa-empty-media-icon {
+  .sa-empty-media[data-variant="default"] { background: transparent; }
+  .sa-empty-media[data-variant="icon"] {
     width: calc(8 * var(--sa-unit));
     height: calc(8 * var(--sa-unit));
     border-radius: var(--sa-radius-control);

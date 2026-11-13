@@ -53,7 +53,7 @@
     font-size: var(--sa-text-xs);
     font-weight: var(--sa-weight-control);
     line-height: calc(var(--sa-text-xs) * 1.3333);
-    .sa-message:has([data-variant="ghost"]) & {
+    .sa-message:has(.sa-bubble[data-variant="ghost"]) & {
       padding-inline: 0;
     }
   }

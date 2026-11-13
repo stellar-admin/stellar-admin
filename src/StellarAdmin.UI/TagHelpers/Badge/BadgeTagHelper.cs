@@ -8,16 +8,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-badge")]
 public sealed class BadgeTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<BadgeVariant, string> BadgeVariantClasses = new()
-    {
-        [BadgeVariant.Default] = "sa-badge-variant-default",
-        [BadgeVariant.Secondary] = "sa-badge-variant-secondary",
-        [BadgeVariant.Destructive] = "sa-badge-variant-destructive",
-        [BadgeVariant.Outline] = "sa-badge-variant-outline",
-        [BadgeVariant.Ghost] = "sa-badge-variant-ghost",
-        [BadgeVariant.Link] = "sa-badge-variant-link",
-    };
-
     /// <summary>
     ///     Gets or sets the visual style of the badge.
     /// </summary>
@@ -37,13 +27,10 @@ public sealed class BadgeTagHelper : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.Attributes.SetAttribute("data-slot", "badge");
+        output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-badge",
-                BadgeVariantClasses[effectiveVariant],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-badge", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

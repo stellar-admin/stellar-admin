@@ -1,27 +1,24 @@
 /* Group: <sa-group>, a row of items with a gap from a five-step scale, alignment and justification.
-   Replaces: .sa-group, .sa-group-align-baseline, .sa-group-align-center, .sa-group-align-end,
-   .sa-group-align-start, .sa-group-align-stretch, .sa-group-gap-xs, .sa-group-gap-sm, .sa-group-gap-md,
-   .sa-group-gap-lg, .sa-group-gap-xl, .sa-group-justify-around, .sa-group-justify-between,
-   .sa-group-justify-center, .sa-group-justify-end, .sa-group-justify-start */
+   Replaces: .sa-group */
 
 @layer sa.components {
   .sa-group {
     display: flex;
     flex-direction: row;
   }
-  .sa-group-gap-xs { column-gap: calc(1 * var(--sa-unit)); }
-  .sa-group-gap-sm { column-gap: calc(2 * var(--sa-unit)); }
-  .sa-group-gap-md { column-gap: calc(4 * var(--sa-unit)); }
-  .sa-group-gap-lg { column-gap: calc(5 * var(--sa-unit)); }
-  .sa-group-gap-xl { column-gap: calc(8 * var(--sa-unit)); }
-  .sa-group-align-start { align-items: flex-start; }
-  .sa-group-align-center { align-items: center; }
-  .sa-group-align-end { align-items: flex-end; }
-  .sa-group-align-baseline { align-items: baseline; }
-  .sa-group-align-stretch { align-items: stretch; }
-  .sa-group-justify-start { justify-content: flex-start; }
-  .sa-group-justify-center { justify-content: center; }
-  .sa-group-justify-end { justify-content: flex-end; }
-  .sa-group-justify-between { justify-content: space-between; }
-  .sa-group-justify-around { justify-content: space-around; }
+  .sa-group[data-gap="xs"] { column-gap: calc(1 * var(--sa-unit)); }
+  .sa-group[data-gap="sm"] { column-gap: calc(2 * var(--sa-unit)); }
+  .sa-group[data-gap="default"] { column-gap: calc(4 * var(--sa-unit)); }
+  .sa-group[data-gap="lg"] { column-gap: calc(5 * var(--sa-unit)); }
+  .sa-group[data-gap="xl"] { column-gap: calc(8 * var(--sa-unit)); }
+  .sa-group[data-align="start"] { align-items: flex-start; }
+  .sa-group[data-align="center"] { align-items: center; }
+  .sa-group[data-align="end"] { align-items: flex-end; }
+  .sa-group[data-align="baseline"] { align-items: baseline; }
+  .sa-group[data-align="stretch"] { align-items: stretch; }
+  .sa-group[data-justify="start"] { justify-content: flex-start; }
+  .sa-group[data-justify="center"] { justify-content: center; }
+  .sa-group[data-justify="end"] { justify-content: flex-end; }
+  .sa-group[data-justify="space-between"] { justify-content: space-between; }
+  .sa-group[data-justify="space-around"] { justify-content: space-around; }
 }

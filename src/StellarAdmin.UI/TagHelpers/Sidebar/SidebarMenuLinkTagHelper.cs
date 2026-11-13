@@ -13,19 +13,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-sidebar-menu-link")]
 public sealed class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
-    private static readonly Dictionary<SidebarMenuLinkSize, string> SizeClasses = new()
-    {
-        [SidebarMenuLinkSize.Default] = "sa-sidebar-menu-button-size-default",
-        [SidebarMenuLinkSize.Small] = "sa-sidebar-menu-button-size-sm",
-        [SidebarMenuLinkSize.Large] = "sa-sidebar-menu-button-size-lg",
-    };
-
-    private static readonly Dictionary<SidebarMenuLinkVariant, string> VariantClasses = new()
-    {
-        [SidebarMenuLinkVariant.Default] = "sa-sidebar-menu-button-variant-default",
-        [SidebarMenuLinkVariant.Outline] = "sa-sidebar-menu-button-variant-outline",
-    };
-
     private readonly IHtmlGenerator _htmlGenerator;
 
     /// <summary>
@@ -76,6 +63,7 @@ public sealed class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
         output.Attributes.SetAttribute("data-slot", "sidebar-menu-button");
         output.Attributes.SetAttribute("data-sidebar", "menu-button");
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
+        output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         if (IsActiveRoute())
         {
             output.Attributes.SetAttribute("data-active", null);
@@ -83,12 +71,7 @@ public sealed class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-sidebar-menu-button",
-                SizeClasses[effectiveSize],
-                VariantClasses[effectiveVariant],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-sidebar-menu-button", output.GetUserSuppliedClass())
         );
     }
 }

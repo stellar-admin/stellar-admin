@@ -8,20 +8,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-attachment")]
 public sealed class AttachmentTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<AttachmentOrientation, string> AttachmentOrientationClasses =
-        new()
-        {
-            [AttachmentOrientation.Horizontal] = "sa-attachment-orientation-horizontal",
-            [AttachmentOrientation.Vertical] = "sa-attachment-orientation-vertical",
-        };
-
-    private static readonly Dictionary<AttachmentSize, string> AttachmentSizeClasses = new()
-    {
-        [AttachmentSize.Default] = "sa-attachment-size-default",
-        [AttachmentSize.Small] = "sa-attachment-size-sm",
-        [AttachmentSize.ExtraSmall] = "sa-attachment-size-xs",
-    };
-
     /// <summary>
     ///     Gets or sets how the attachment arranges its media and content.
     /// </summary>
@@ -71,12 +57,7 @@ public sealed class AttachmentTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-attachment",
-                AttachmentSizeClasses[effectiveSize],
-                AttachmentOrientationClasses[effectiveOrientation],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-attachment", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

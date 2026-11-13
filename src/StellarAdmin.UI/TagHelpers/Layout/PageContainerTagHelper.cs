@@ -35,11 +35,7 @@ public sealed class PageContainerTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-page-container",
-                effectiveWidth.GetWidthCssClass(),
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-page-container", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

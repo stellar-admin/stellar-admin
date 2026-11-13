@@ -1,11 +1,8 @@
 /* Item: a row of media, content (title and description) and actions, with optional header and
    footer rows; plain, outlined or on a muted fill, in three sizes. An item link (<a>) highlights on
    hover. Items stack in an item group, optionally with separators.
-   Replaces: .sa-item, .sa-item-variant-default, .sa-item-variant-outline, .sa-item-variant-muted,
-   .sa-item-size-default, .sa-item-size-sm, .sa-item-size-xs, .sa-item-media,
-   .sa-item-media-variant-default, .sa-item-media-variant-icon, .sa-item-media-variant-image,
-   .sa-item-content, .sa-item-title, .sa-item-description, .sa-item-actions, .sa-item-header,
-   .sa-item-footer, .sa-item-group, .sa-item-separator */
+   Replaces: .sa-item, .sa-item-media, .sa-item-content, .sa-item-title, .sa-item-description,
+   .sa-item-actions, .sa-item-header, .sa-item-footer, .sa-item-group, .sa-item-separator */
 
 @layer sa.components {
   .sa-item {
@@ -38,15 +35,15 @@
       box-shadow: var(--sa-focus-shadow);
     }
   }
-  .sa-item-variant-outline { border-color: var(--sa-color-line); }
-  .sa-item-variant-muted { background-color: var(--sa-color-surface-sunken); }
-  .sa-item-size-sm {
+  .sa-item[data-variant="outline"] { border-color: var(--sa-color-line); }
+  .sa-item[data-variant="muted"] { background-color: var(--sa-color-surface-sunken); }
+  .sa-item[data-size="sm"] {
     --_item-gap: calc(2.5 * var(--sa-unit));
     --_item-px: calc(3 * var(--sa-unit));
     --_item-py: calc(2.5 * var(--sa-unit));
     --_item-media-size: calc(8 * var(--sa-unit));
   }
-  .sa-item-size-xs {
+  .sa-item[data-size="xs"] {
     --_item-gap: calc(2 * var(--sa-unit));
     --_item-px: calc(2.5 * var(--sa-unit));
     --_item-py: calc(2 * var(--sa-unit));
@@ -69,12 +66,12 @@
       translate: 0 calc(0.5 * var(--sa-unit));
     }
   }
-  .sa-item-media-variant-default { background: transparent; }
-  .sa-item-media-variant-icon svg:not([class*="size-"]) {
+  .sa-item-media[data-variant="default"] { background: transparent; }
+  .sa-item-media[data-variant="icon"] svg:not([class*="size-"]) {
     width: var(--sa-control-icon);
     height: var(--sa-control-icon);
   }
-  .sa-item-media-variant-image {
+  .sa-item-media[data-variant="image"] {
     width: var(--_item-media-size);
     height: var(--_item-media-size);
     overflow: hidden;

@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies the visual style of an alert.
 /// </summary>
+[GenerateDataAttributeText]
 public enum AlertVariant
 {
     /// <summary>

@@ -152,8 +152,6 @@ public sealed class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ToggleRenderingHelper.BuildClass(
-                effectiveVariant,
-                effectiveSize,
                 includeGroupItemToken: true,
                 JoinCssClasses(toggleGroupContext?.ClassNames?.Item, userClass)
             )

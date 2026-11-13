@@ -148,8 +148,6 @@ public sealed class ToggleTagHelper : FieldInputBaseTagHelper<ToggleClassNames>
         output.Attributes.SetAttribute(
             "class",
             ToggleRenderingHelper.BuildClass(
-                effectiveVariant,
-                effectiveSize,
                 includeGroupItemToken: false,
                 JoinCssClasses(ClassNames?.Control, userClass)
             )

@@ -1,7 +1,6 @@
 /* Toggle: a two-state button, a label around a visually hidden checkbox (or radio, in a toggle group),
    so its states come from the input (:checked, :focus-visible, :disabled, aria-invalid).
-   Replaces: .sa-toggle, .sa-toggle-variant-default, .sa-toggle-variant-outline,
-   .sa-toggle-size-default, .sa-toggle-size-sm, .sa-toggle-size-lg */
+   Replaces: .sa-toggle */
 
 @layer sa.tokens {
   .sa-toggle {
@@ -104,17 +103,17 @@
   }
 
   /* The plain toggle draws no edge, so it is as wide as its content (Nova's sizes). */
-  .sa-toggle-variant-default {
+  .sa-toggle[data-variant="default"] {
     border-width: 0;
   }
-  .sa-toggle-variant-outline {
+  .sa-toggle[data-variant="outline"] {
     --_bg: var(--_toggle-outline-bg);
     --_border: var(--_toggle-outline-border);
     --_shadow: var(--sa-shadow-control);
     --_on-border: var(--_toggle-outline-on-border);
   }
 
-  .sa-toggle-size-sm {
+  .sa-toggle[data-size="sm"] {
     --_h: var(--sa-control-h-sm);
     --_px: var(--sa-control-px);
     --_radius: var(--sa-radius-control-sm);
@@ -127,7 +126,7 @@
       padding-inline-end: calc(var(--_px) - var(--sa-unit));
     }
   }
-  .sa-toggle-size-lg {
+  .sa-toggle[data-size="lg"] {
     --_h: var(--sa-control-h-lg);
     --_px: var(--sa-control-px);
   }

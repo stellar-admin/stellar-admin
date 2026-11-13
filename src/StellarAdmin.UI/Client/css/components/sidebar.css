@@ -4,10 +4,8 @@
    Replaces: .sa-sidebar, .sa-sidebar-backdrop, .sa-sidebar-container, .sa-sidebar-content,
    .sa-sidebar-footer, .sa-sidebar-gap, .sa-sidebar-group, .sa-sidebar-group-content,
    .sa-sidebar-group-label, .sa-sidebar-header, .sa-sidebar-inner, .sa-sidebar-inset, .sa-sidebar-menu,
-   .sa-sidebar-menu-badge, .sa-sidebar-menu-button, .sa-sidebar-menu-button-variant-default,
-   .sa-sidebar-menu-button-variant-outline, .sa-sidebar-menu-button-size-default,
-   .sa-sidebar-menu-button-size-sm, .sa-sidebar-menu-button-size-lg, .sa-sidebar-menu-item,
-   .sa-sidebar-menu-sub, .sa-sidebar-menu-sub-button, .sa-sidebar-menu-sub-item, .sa-sidebar-separator,
+   .sa-sidebar-menu-badge, .sa-sidebar-menu-button, .sa-sidebar-menu-item, .sa-sidebar-menu-sub,
+   .sa-sidebar-menu-sub-button, .sa-sidebar-menu-sub-item, .sa-sidebar-separator,
    .sa-sidebar-wrapper */
 
 @layer sa.components {
@@ -230,7 +228,7 @@
       &[data-size="lg"] { padding: 0; }
     }
   }
-  .sa-sidebar-menu-button-variant-outline {
+  .sa-sidebar-menu-button[data-variant="outline"] {
     background: var(--sa-color-surface);
     box-shadow: 0 0 0 var(--sa-border-width) var(--sa-color-nav-line);
     &:hover { box-shadow: 0 0 0 var(--sa-border-width) var(--sa-color-line-control-hover); }

@@ -27,12 +27,6 @@ public sealed class AlertTagHelper : StellarAdminTagHelperBase
     private const string IconAttributeName = "icon";
     private const string TitleAttributeName = "title";
 
-    private static readonly Dictionary<AlertVariant, string> AlertVariantClasses = new()
-    {
-        [AlertVariant.Default] = "sa-alert-variant-default",
-        [AlertVariant.Destructive] = "sa-alert-variant-destructive",
-    };
-
     /// <summary>
     ///     Gets or sets the description of the alert.
     /// </summary>
@@ -87,13 +81,10 @@ public sealed class AlertTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute("data-slot", "alert");
         output.Attributes.SetAttribute("role", "alert");
+        output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-alert",
-                AlertVariantClasses[effectiveVariant],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-alert", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

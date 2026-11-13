@@ -11,17 +11,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-input-group-button")]
 public sealed class InputGroupButtonTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<InputGroupButtonSize, string> SizeClasses = new Dictionary<
-        InputGroupButtonSize,
-        string
-    >
-    {
-        [InputGroupButtonSize.ExtraSmall] = "sa-input-group-button-size-xs",
-        [InputGroupButtonSize.Small] = "sa-input-group-button-size-sm",
-        [InputGroupButtonSize.IconExtraSmall] = "sa-input-group-button-size-icon-xs",
-        [InputGroupButtonSize.IconSmall] = "sa-input-group-button-size-icon-sm",
-    };
-
     /// <summary>
     ///     Gets or sets the size of the button.
     /// </summary>
@@ -60,11 +49,7 @@ public sealed class InputGroupButtonTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-input-group-button",
-                SizeClasses[effectiveSize],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-input-group-button", output.GetUserSuppliedClass())
         );
 
         ButtonRenderingHelper.RenderAttributes(

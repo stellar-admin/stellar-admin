@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies how a <c>&lt;sa-stack&gt;</c> spreads its children vertically.
 /// </summary>
+[GenerateDataAttributeText]
 public enum StackJustify
 {
     /// <summary>
@@ -29,21 +30,4 @@ public enum StackJustify
     ///     The children have equal space around each of them.
     /// </summary>
     SpaceAround,
-}
-
-internal static class StackJustifyExtensions
-{
-    extension(StackJustify justify)
-    {
-        public string GetClass() =>
-            justify switch
-            {
-                StackJustify.Center => "sa-stack-justify-center",
-                StackJustify.Start => "sa-stack-justify-start",
-                StackJustify.End => "sa-stack-justify-end",
-                StackJustify.SpaceBetween => "sa-stack-justify-between",
-                StackJustify.SpaceAround => "sa-stack-justify-around",
-                _ => "sa-stack-justify-start",
-            };
-    }
 }

@@ -11,15 +11,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-input-group-addon")]
 public sealed class InputGroupAddonTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<InputGroupAddonAlign, string?[]> AlignClasses =
-        new Dictionary<InputGroupAddonAlign, string?[]>
-        {
-            [InputGroupAddonAlign.Start] = ["sa-input-group-addon-align-start"],
-            [InputGroupAddonAlign.End] = ["sa-input-group-addon-align-end"],
-            [InputGroupAddonAlign.Top] = ["sa-input-group-addon-align-top"],
-            [InputGroupAddonAlign.Bottom] = ["sa-input-group-addon-align-bottom"],
-        };
-
     /// <summary>
     ///     Gets or sets where the add-on is placed relative to the input.
     /// </summary>
@@ -56,12 +47,7 @@ public sealed class InputGroupAddonTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                new string?[] { "sa-input-group-addon" }
-                    .Union(AlignClasses[effectiveAlign])
-                    .Append(output.GetUserSuppliedClass())
-                    .ToArray()
-            )
+            JoinCssClasses("sa-input-group-addon", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

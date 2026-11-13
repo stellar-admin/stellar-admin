@@ -780,7 +780,7 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             separator.Attributes.Add("aria-orientation", "vertical");
             separator.Attributes.Add("data-slot", "separator");
             separator.Attributes.Add("data-orientation", "vertical");
-            separator.Attributes.Add("class", "sa-separator sa-separator-vertical");
+            separator.Attributes.Add("class", "sa-separator");
 
             return separator;
         }
@@ -967,12 +967,7 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             toggle.Attributes.SetAttribute("data-size", "sm");
             toggle.Attributes.SetAttribute(
                 "class",
-                ToggleRenderingHelper.BuildClass(
-                    ToggleVariant.Default,
-                    ToggleSize.Small,
-                    false,
-                    null
-                )
+                ToggleRenderingHelper.BuildClass(includeGroupItemToken: false, null)
             );
 
             var input = new TagBuilder("input") { TagRenderMode = TagRenderMode.SelfClosing };

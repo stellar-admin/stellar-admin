@@ -1,10 +1,6 @@
 /* Bubble: a chat bubble (its content a div, link or button), with optional reactions pinned to its
    edge, alone or in a group.
-   Replaces: .sa-bubble, .sa-bubble-content, .sa-bubble-group, .sa-bubble-reactions,
-   .sa-bubble-reactions-side-top, .sa-bubble-reactions-side-bottom, .sa-bubble-reactions-align-start,
-   .sa-bubble-reactions-align-end, .sa-bubble-variant-default, .sa-bubble-variant-secondary,
-   .sa-bubble-variant-muted, .sa-bubble-variant-tinted, .sa-bubble-variant-outline,
-   .sa-bubble-variant-ghost, .sa-bubble-variant-destructive */
+   Replaces: .sa-bubble, .sa-bubble-content, .sa-bubble-group, .sa-bubble-reactions */
 
 @layer sa.tokens {
   .sa-bubble,
@@ -76,33 +72,33 @@
     }
   }
 
-  .sa-bubble-variant-default {
+  .sa-bubble[data-variant="default"] {
     --_bg: var(--sa-color-accent-fill);
     --_bg-hover: var(--sa-color-accent-hover);
     --_fg: var(--sa-color-on-accent);
   }
-  .sa-bubble-variant-secondary {
+  .sa-bubble[data-variant="secondary"] {
     --_bg: var(--sa-color-surface-sunken);
     --_bg-hover: color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%);
     --_fg: var(--sa-color-ink);
   }
-  .sa-bubble-variant-muted {
+  .sa-bubble[data-variant="muted"] {
     --_bg: var(--sa-color-surface-sunken);
     --_bg-hover: color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%);
     --_fg: var(--sa-color-ink-muted);
   }
-  .sa-bubble-variant-tinted {
+  .sa-bubble[data-variant="tinted"] {
     --_bg: var(--_bubble-tinted-bg);
     --_bg-hover: var(--_bubble-tinted-bg-hover);
     --_fg: var(--sa-color-ink);
   }
-  .sa-bubble-variant-outline {
+  .sa-bubble[data-variant="outline"] {
     --_bg: var(--sa-color-surface);
     --_bg-hover: var(--sa-color-hover);
     --_fg: var(--sa-color-ink);
     --_border: var(--sa-color-line);
   }
-  .sa-bubble-variant-ghost {
+  .sa-bubble[data-variant="ghost"] {
     --_bg-hover: var(--sa-color-hover);
     --_fg: initial;   /* no colour of its own: the text inherits */
     max-width: 100%;
@@ -111,7 +107,7 @@
       border-radius: 0;
     }
   }
-  .sa-bubble-variant-destructive {
+  .sa-bubble[data-variant="destructive"] {
     --_bg: var(--sa-color-danger-soft);
     --_bg-hover: var(--sa-color-danger-soft-hover);
     --_fg: var(--sa-color-danger-text);

@@ -8,15 +8,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-empty-media")]
 public sealed class EmptyMediaTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<EmptyMediaVariant, string> VariantClasses = new Dictionary<
-        EmptyMediaVariant,
-        string
-    >
-    {
-        [EmptyMediaVariant.Default] = "sa-empty-media-default",
-        [EmptyMediaVariant.Icon] = "sa-empty-media-icon",
-    };
-
     /// <summary>
     ///     Gets or sets the visual style of the media.
     /// </summary>
@@ -39,11 +30,7 @@ public sealed class EmptyMediaTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-empty-media",
-                VariantClasses[effectiveVariant],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-empty-media", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

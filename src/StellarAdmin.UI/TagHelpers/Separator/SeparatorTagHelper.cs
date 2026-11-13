@@ -8,12 +8,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-separator")]
 public sealed class SeparatorTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<SeparatorOrientation, string> OrientationClasses = new()
-    {
-        [SeparatorOrientation.Horizontal] = "sa-separator-horizontal",
-        [SeparatorOrientation.Vertical] = "sa-separator-vertical",
-    };
-
     /// <summary>
     ///     Gets or sets the orientation of the separator.
     /// </summary>
@@ -45,11 +39,7 @@ public sealed class SeparatorTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-separator",
-                OrientationClasses[effectiveOrientation],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-separator", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

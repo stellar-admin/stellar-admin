@@ -1,7 +1,6 @@
 /* Marker: a muted inline note in a transcript or list (a status line, a date separator), as a div,
    a link or a button.
-   Replaces: .sa-marker, .sa-marker-variant-separator, .sa-marker-variant-border, .sa-marker-icon,
-   .sa-marker-content */
+   Replaces: .sa-marker, .sa-marker-icon, .sa-marker-content */
 
 @layer sa.components {
   .sa-marker {
@@ -33,7 +32,7 @@
       box-shadow: var(--sa-focus-shadow);
     }
   }
-  .sa-marker-variant-separator {
+  .sa-marker[data-variant="separator"] {
     &::before,
     &::after {
       content: "";
@@ -45,7 +44,7 @@
     &::before { margin-inline-end: var(--sa-unit); }
     &::after { margin-inline-start: var(--sa-unit); }
   }
-  .sa-marker-variant-border {
+  .sa-marker[data-variant="border"] {
     padding-bottom: calc(2 * var(--sa-unit));
     border-bottom: var(--sa-border-width) solid var(--sa-color-line);
   }
@@ -63,7 +62,7 @@
       text-underline-offset: 3px;
       &:hover { color: var(--sa-color-ink); }
     }
-    .sa-marker-variant-separator > & {
+    .sa-marker[data-variant="separator"] > & {
       flex: none;
       text-align: center;
     }

@@ -1,6 +1,5 @@
 /* Alert: a bordered message box with an optional leading icon, title, description and action.
-   Replaces: .sa-alert, .sa-alert-variant-default, .sa-alert-variant-destructive, .sa-alert-title,
-   .sa-alert-description, .sa-alert-action */
+   Replaces: .sa-alert, .sa-alert-title, .sa-alert-description, .sa-alert-action */
 
 @layer sa.tokens {
   .sa-alert {
@@ -53,7 +52,7 @@
       }
     }
   }
-  .sa-alert-variant-destructive {
+  .sa-alert[data-variant="destructive"] {
     --_bg: var(--_alert-danger-bg);
     --_fg: var(--sa-color-danger-text);
     --_border: var(--_alert-danger-border);
@@ -83,7 +82,7 @@
       color: var(--sa-color-ink);
     }
   }
-  .sa-alert-variant-destructive :is(.sa-alert-title, .sa-alert-description) a:hover {
+  .sa-alert[data-variant="destructive"] :is(.sa-alert-title, .sa-alert-description) a:hover {
     color: inherit;
   }
   .sa-alert-action {

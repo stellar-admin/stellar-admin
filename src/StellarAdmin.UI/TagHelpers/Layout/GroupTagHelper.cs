@@ -48,15 +48,12 @@ public sealed class GroupTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
+        output.Attributes.SetAttribute("data-align", effectiveAlign.GetDataAttributeText());
+        output.Attributes.SetAttribute("data-gap", effectiveGap.GetDataAttributeText());
+        output.Attributes.SetAttribute("data-justify", effectiveJustify.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-group",
-                effectiveAlign.GetClass(),
-                effectiveGap.GetClassName(),
-                effectiveJustify.GetClass(),
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-group", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

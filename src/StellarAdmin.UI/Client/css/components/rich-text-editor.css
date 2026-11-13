@@ -69,7 +69,7 @@
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
 
-    & > .sa-separator-vertical {
+    & > .sa-separator[data-orientation="vertical"] {
       align-self: stretch;
       height: auto;
       margin: var(--sa-unit) calc(0.5 * var(--sa-unit));
@@ -409,7 +409,7 @@
     &:not([data-state="open"]) {
       display: none;
     }
-    & > .sa-separator-vertical {
+    & > .sa-separator[data-orientation="vertical"] {
       align-self: stretch;
       height: auto;
       margin: var(--sa-unit) calc(0.5 * var(--sa-unit));

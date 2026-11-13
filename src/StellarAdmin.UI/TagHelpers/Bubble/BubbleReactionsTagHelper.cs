@@ -8,18 +8,6 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-bubble-reactions")]
 public sealed class BubbleReactionsTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<BubbleReactionsAlign, string> AlignClasses = new()
-    {
-        [BubbleReactionsAlign.Start] = "sa-bubble-reactions-align-start",
-        [BubbleReactionsAlign.End] = "sa-bubble-reactions-align-end",
-    };
-
-    private static readonly Dictionary<BubbleReactionsSide, string> SideClasses = new()
-    {
-        [BubbleReactionsSide.Top] = "sa-bubble-reactions-side-top",
-        [BubbleReactionsSide.Bottom] = "sa-bubble-reactions-side-bottom",
-    };
-
     /// <summary>
     ///     Gets or sets the horizontal edge of the bubble that the reactions sit at.
     /// </summary>
@@ -54,12 +42,7 @@ public sealed class BubbleReactionsTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-side", effectiveSide.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-bubble-reactions",
-                SideClasses[effectiveSide],
-                AlignClasses[effectiveAlign],
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-bubble-reactions", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

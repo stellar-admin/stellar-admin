@@ -3,6 +3,7 @@
 /// <summary>
 ///     Specifies how a <c>&lt;sa-group&gt;</c> spreads its children horizontally.
 /// </summary>
+[GenerateDataAttributeText]
 public enum GroupJustify
 {
     /// <summary>
@@ -29,21 +30,4 @@ public enum GroupJustify
     ///     The children have equal space around each of them.
     /// </summary>
     SpaceAround,
-}
-
-internal static class GroupJustifyExtensions
-{
-    extension(GroupJustify justify)
-    {
-        public string GetClass() =>
-            justify switch
-            {
-                GroupJustify.Center => "sa-group-justify-center",
-                GroupJustify.Start => "sa-group-justify-start",
-                GroupJustify.End => "sa-group-justify-end",
-                GroupJustify.SpaceBetween => "sa-group-justify-between",
-                GroupJustify.SpaceAround => "sa-group-justify-around",
-                _ => "sa-group-justify-start",
-            };
-    }
 }
