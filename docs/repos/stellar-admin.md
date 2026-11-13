@@ -147,7 +147,7 @@ The samples and the theme checks read the folder on their next start or run; the
 node util/visual-regression/vrt.mjs capture --url http://localhost:5205 --out util/visual-regression/snapshots/<name>   # DocsSamples must be running
 node util/visual-regression/vrt.mjs compare util/visual-regression/snapshots/<base> util/visual-regression/snapshots/<head>   # report.md, summary.json + diff images
 ```
-PRs run this automatically (`.github/workflows/vrt.yml`): an ephemeral base-vs-head comparison on one runner, reported as an advisory sticky PR comment (`vrt-comment.yml`) with the screenshot pairs in the run artifact — contributors never regenerate baselines. `selftest.mjs` proves the pipeline fires on known historical regressions (standing rule: any visual bug that reaches human eyes without the tool firing becomes a permanent self-test case) and asserts a clean re-capture produces zero diffs.
+PRs run this automatically (`.github/workflows/vrt.yml`): an ephemeral base-vs-head comparison on one runner, reported as an advisory sticky PR comment (`vrt-comment.yml`) with the screenshot pairs in the run artifact — contributors never regenerate baselines.
 
 ## Resources, Identity, and Entity Framework Core
 

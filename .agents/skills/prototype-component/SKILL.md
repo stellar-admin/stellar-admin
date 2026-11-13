@@ -14,7 +14,7 @@ metadata:
 
 Design the visuals in a throwaway sandbox page first; extract library code only after Jerrie approves what he sees. Do not start with tag helpers or library CSS: a rebuild and a DocsSamples restart per change is slow to iterate, a static page is cheap.
 
-Reference example: `sandbox/html/secondary-depth.html`, a prototype written against `stellar-admin.css`: plain CSS reading the tokens, labeled options side by side, light and dark, a theme picker. Older prototypes (`app-header.html`, `sidebar.html`) predate the token stylesheet; their theme switchers name bundles that no longer exist.
+Reference example: `sandbox/html/secondary-depth.html`, a prototype written against `stellar-admin.css`: plain CSS reading the tokens, labeled options side by side, light and dark, a theme picker.
 
 ## Process contract
 

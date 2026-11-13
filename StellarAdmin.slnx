@@ -8,7 +8,6 @@
   <Folder Name="/sandbox/">
     <Project Path="sandbox/ComponentPlayground/ComponentPlayground.csproj" />
     <Project Path="sandbox/AdminPlayground/AdminPlayground.csproj" />
-    <Project Path="sandbox/DataGridSpike/DataGridSpike.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/StellarAdmin.EntityFrameworkCore/StellarAdmin.EntityFrameworkCore.csproj" />

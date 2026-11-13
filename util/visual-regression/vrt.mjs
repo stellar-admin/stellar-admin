@@ -22,7 +22,7 @@
 // Determinism controls, applied identically to every run: animations/transitions/caret are
 // disabled; external image hosts (unsplash, dicebear) are blocked; fonts are awaited; fixed
 // browser flags and viewport metrics. Same-environment captures are byte-identical in
-// practice (selftest.mjs asserts this), so pixels flagged as anti-aliasing are still real
+// practice, so pixels flagged as anti-aliasing are still real
 // changes — they are reported in a separate "AA-only" count (hairline changes) rather than
 // counted into the headline changed-pixel number.
 //
