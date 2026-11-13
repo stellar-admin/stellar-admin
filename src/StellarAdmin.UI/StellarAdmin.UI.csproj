@@ -81,7 +81,7 @@
     Name="Client"
     DependsOnTargets="ClientItems"
     BeforeTargets="ResolveProjectStaticWebAssets"
-    Inputs="@(Compile);@(ClientInput)"
+    Inputs="@(ClientInput)"
     Outputs="@(ClientOutput)"
   >
     <Exec

@@ -12,7 +12,7 @@
 //
 //   node ./scripts/build-css.mjs
 
-import { readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const css = resolve(import.meta.dirname, "../css");
@@ -40,9 +40,6 @@ const header =
   "@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;\n";
 const sources = ["reset.css", "tokens.css", "structure.css", ...cssFiles("components").map((file) => `components/${file}`)];
 write("stellar-admin.css", header + sources.map((path) => `\n/* ${path} */\n${read(path).trim()}\n`).join(""));
-
-// The presets were shipped from wwwroot/presets until the theme builder replaced them.
-rmSync(resolve(wwwroot, "presets"), { recursive: true, force: true });
 
 write("stellar-admin.tailwind.css", read("tailwind-adapter.css"));
 
