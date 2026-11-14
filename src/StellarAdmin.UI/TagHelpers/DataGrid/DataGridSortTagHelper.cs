@@ -219,10 +219,7 @@ public sealed class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
             "data-active",
             activeDirection is null ? "false" : "true"
         );
-        linkOutput.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("sa-button", "sa-button-variant-ghost", "sa-button-size-sm")
-        );
+        ButtonRenderingHelper.RenderAttributes(linkOutput, ButtonVariant.Ghost, ButtonSize.Small);
         // Align the button label with the unsorted columns' header text (sa-table-head pads
         // px-2, the small button px-2.5).
         linkOutput.Attributes.SetAttribute("style", "margin-left: -0.625rem");

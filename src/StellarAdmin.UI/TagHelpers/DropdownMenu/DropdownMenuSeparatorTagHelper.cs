@@ -11,16 +11,7 @@ public sealed class DropdownMenuSeparatorTagHelper : StellarAdminTagHelperBase
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.TagName = "div";
-        output.TagMode = TagMode.StartTagAndEndTag;
-
-        output.Attributes.SetAttribute("role", "separator");
-        output.Attributes.SetAttribute("aria-orientation", "horizontal");
-        output.Attributes.SetAttribute("data-slot", "dropdown-menu-separator");
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("sa-dropdown-menu-separator", output.GetUserSuppliedClass())
-        );
+        DropdownMenuInternals.RenderSeparator(output);
 
         return Task.CompletedTask;
     }

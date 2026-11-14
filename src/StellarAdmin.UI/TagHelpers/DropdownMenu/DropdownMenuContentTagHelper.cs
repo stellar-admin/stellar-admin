@@ -37,12 +37,6 @@ public sealed class DropdownMenuContentTagHelper : StellarAdminTagHelperBase
     /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var side = (Side ?? DropdownMenuSide.Bottom).GetDataAttributeText();
-        var align = (Align ?? DropdownMenuAlign.Start).GetDataAttributeText();
-
-        output.TagName = "sel-dropdown-menu";
-        output.TagMode = TagMode.StartTagAndEndTag;
-
         var menuId = GetContext<DropdownMenuContext>(context)?.MenuId;
         if (menuId != null)
         {
@@ -62,23 +56,10 @@ public sealed class DropdownMenuContentTagHelper : StellarAdminTagHelperBase
             output.Attributes.SetAttribute("id", menuId);
         }
 
-        if (!output.Attributes.ContainsName("popover"))
-        {
-            output.Attributes.SetAttribute("popover", "");
-        }
-
-        output.Attributes.SetAttribute("role", "menu");
-        output.Attributes.SetAttribute("data-slot", "dropdown-menu-content");
-        output.Attributes.SetAttribute("data-anchor-side", side);
-        output.Attributes.SetAttribute("data-side", side);
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses(
-                "sa-dropdown-menu-content",
-                "sa-dropdown-menu-content-logical",
-                AnchorPlacement.GetClassName(side, align),
-                output.GetUserSuppliedClass()
-            )
+        DropdownMenuInternals.RenderContent(
+            output,
+            Side ?? DropdownMenuSide.Bottom,
+            Align ?? DropdownMenuAlign.Start
         );
 
         return Task.CompletedTask;

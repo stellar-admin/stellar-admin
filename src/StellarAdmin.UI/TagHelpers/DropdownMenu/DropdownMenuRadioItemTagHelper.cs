@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 using StellarAdmin.UI.Icons;
@@ -57,53 +56,19 @@ public sealed class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
         var group = GetContext<DropdownMenuRadioGroupContext>(context);
         var isChecked = group?.IsSelected(Value) == true;
 
-        output.TagName = "div";
-        output.TagMode = TagMode.StartTagAndEndTag;
-
-        output.Attributes.SetAttribute("role", "menuitemradio");
-        output.Attributes.SetAttribute("tabindex", "-1");
-        output.Attributes.SetAttribute("aria-checked", isChecked ? "true" : "false");
-        output.Attributes.SetAttribute("data-slot", "dropdown-menu-radio-item");
-        output.Attributes.SetAttribute("data-state", isChecked ? "checked" : "unchecked");
-        if (Value != null)
-        {
-            output.Attributes.SetAttribute("data-value", Value);
-        }
-
-        if (group != null)
-        {
-            output.Attributes.SetAttribute("data-radio-group", group.GroupName);
-        }
-
-        // Only emit when the author overrides the default (radio items stay open on click).
-        if (CloseOnClick.HasValue)
-        {
-            output.Attributes.SetAttribute(
-                "data-close-on-click",
-                CloseOnClick.Value ? "true" : "false"
-            );
-        }
-
-        if (Disabled == true)
-        {
-            output.Attributes.SetAttribute("data-disabled", "");
-            output.Attributes.SetAttribute("aria-disabled", "true");
-        }
-
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("sa-dropdown-menu-radio-item", output.GetUserSuppliedClass())
-        );
-
-        var indicator = new TagBuilder("span");
-        indicator.Attributes["data-slot"] = "dropdown-menu-radio-item-indicator";
-        indicator.Attributes["class"] = JoinCssClasses("sa-dropdown-menu-item-indicator");
-        indicator.InnerHtml.AppendHtml(
-            _iconOptions.RenderIcon(SemanticIconRole.MenuItemSelected, ("class", "size-4"))
+        DropdownMenuInternals.RenderRadioItem(
+            output,
+            Value,
+            group?.GroupName,
+            isChecked,
+            CloseOnClick,
+            Disabled
         );
 
         var childContent = await output.GetChildContentAsync();
-        output.Content.SetHtmlContent(indicator);
+        output.Content.SetHtmlContent(
+            DropdownMenuInternals.ItemIndicator(_iconOptions, "dropdown-menu-radio-item-indicator")
+        );
         output.Content.AppendHtml(childContent);
     }
 }

@@ -11,14 +11,7 @@ public sealed class DropdownMenuShortcutTagHelper : StellarAdminTagHelperBase
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.TagName = "span";
-        output.TagMode = TagMode.StartTagAndEndTag;
-
-        output.Attributes.SetAttribute("data-slot", "dropdown-menu-shortcut");
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("sa-dropdown-menu-shortcut", output.GetUserSuppliedClass())
-        );
+        DropdownMenuInternals.RenderShortcut(output);
 
         return Task.CompletedTask;
     }

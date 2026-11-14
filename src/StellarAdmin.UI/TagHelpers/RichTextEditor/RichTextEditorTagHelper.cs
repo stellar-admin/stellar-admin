@@ -409,25 +409,21 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
 
         public IHtmlContent LinkPopover()
         {
-            var popover = new TagBuilder("div");
-            popover.Attributes.Add("id", $"{id}-link");
-            popover.Attributes.Add("popover", string.Empty);
-            popover.Attributes.Add("data-slot", "rich-text-editor-link");
-            popover.Attributes.Add("data-anchor-side", "bottom");
-            popover.Attributes.Add(
-                "class",
-                $"sa-popover-content {AnchorPlacement.GetClassName("bottom", "start")}"
-            );
+            var popover = Element();
+            popover.Attributes.SetAttribute("id", $"{id}-link");
+            PopoverRenderingHelper.Render(popover, PopoverSide.Bottom, PopoverAlign.Start);
+            // The editor's script finds the popover by its slot
+            popover.Attributes.SetAttribute("data-slot", "rich-text-editor-link");
 
             var form = new TagBuilder("div");
             form.Attributes.Add("class", "sa-rich-text-editor-link-form");
 
-            var input = new TagBuilder("input") { TagRenderMode = TagRenderMode.SelfClosing };
-            input.Attributes.Add("type", "url");
-            input.Attributes.Add("aria-label", "Link address");
-            input.Attributes.Add("placeholder", "https://");
-            input.Attributes.Add("data-slot", "input");
-            input.Attributes.Add("class", "sa-input");
+            var input = Element("input");
+            input.TagMode = TagMode.StartTagOnly;
+            input.Attributes.SetAttribute("type", "url");
+            input.Attributes.SetAttribute("aria-label", "Link address");
+            input.Attributes.SetAttribute("placeholder", "https://");
+            InputRenderingHelper.RenderAttributes(input, "url");
             form.InnerHtml.AppendHtml(input);
 
             var apply = ButtonElement(ButtonVariant.Default, ButtonSize.Default);
@@ -441,7 +437,7 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             remove.Content.AppendHtml(Icon(SemanticIconRole.RichTextUnlink));
             form.InnerHtml.AppendHtml(remove);
 
-            popover.InnerHtml.AppendHtml(form);
+            popover.Content.AppendHtml(form);
 
             return popover;
         }
@@ -630,22 +626,17 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             group.InnerHtml.AppendHtml(BlockItem(groupId, "h2", "Heading 2", "Mod Alt 2"));
             group.InnerHtml.AppendHtml(BlockItem(groupId, "h3", "Heading 3", "Mod Alt 3"));
 
-            var menu = new TagBuilder("sel-dropdown-menu");
-            menu.Attributes.Add("id", menuId);
-            menu.Attributes.Add("popover", string.Empty);
-            menu.Attributes.Add("role", "menu");
-            menu.Attributes.Add("data-slot", "dropdown-menu-content");
-            menu.Attributes.Add("data-anchor-side", "bottom");
-            menu.Attributes.Add("data-side", "bottom");
-            menu.Attributes.Add(
-                "class",
-                "sa-dropdown-menu-content sa-dropdown-menu-content-logical "
-                    + AnchorPlacement.GetClassName("bottom", "start")
+            var menu = Element();
+            menu.Attributes.SetAttribute("id", menuId);
+            DropdownMenuInternals.RenderContent(
+                menu,
+                DropdownMenuSide.Bottom,
+                DropdownMenuAlign.Start
             );
             var menuGroup = new TagBuilder("div");
             menuGroup.Attributes.Add("data-slot", "rich-text-editor-block-menu");
             menuGroup.InnerHtml.AppendHtml(group);
-            menu.InnerHtml.AppendHtml(menuGroup);
+            menu.Content.AppendHtml(menuGroup);
 
             var content = new HtmlContentBuilder();
             content.AppendHtml(trigger);
@@ -656,25 +647,24 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
 
         private IHtmlContent BlockItem(string groupId, string value, string text, string shortcut)
         {
-            var item = new TagBuilder("div");
-            item.Attributes.Add("role", "menuitemradio");
-            item.Attributes.Add("tabindex", "-1");
-            item.Attributes.Add("aria-checked", "false");
-            item.Attributes.Add("data-slot", "dropdown-menu-radio-item");
-            item.Attributes.Add("data-state", "unchecked");
-            item.Attributes.Add("data-value", value);
-            item.Attributes.Add("data-label", text);
-            item.Attributes.Add("data-radio-group", groupId);
-            item.Attributes.Add("data-close-on-click", "true");
-            item.Attributes.Add("class", "sa-dropdown-menu-radio-item");
-
-            var indicator = new TagBuilder("span");
-            indicator.Attributes.Add("class", "sa-dropdown-menu-item-indicator");
-            indicator.Attributes.Add("data-slot", "dropdown-menu-radio-item-indicator");
-            indicator.InnerHtml.AppendHtml(Icon(SemanticIconRole.MenuItemSelected, "size-4"));
-            item.InnerHtml.AppendHtml(indicator);
-            item.InnerHtml.Append(text);
-            item.InnerHtml.AppendHtml(Shortcut(shortcut));
+            var item = Element();
+            DropdownMenuInternals.RenderRadioItem(
+                item,
+                value,
+                groupId,
+                isChecked: false,
+                closeOnClick: true,
+                disabled: null
+            );
+            item.Attributes.SetAttribute("data-label", text);
+            item.Content.AppendHtml(
+                DropdownMenuInternals.ItemIndicator(
+                    iconOptions,
+                    "dropdown-menu-radio-item-indicator"
+                )
+            );
+            item.Content.Append(text);
+            item.Content.AppendHtml(Shortcut(shortcut));
 
             return item;
         }
@@ -696,16 +686,23 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             return button;
         }
 
-        private TagHelperOutput ButtonElement(ButtonVariant variant, ButtonSize size)
+        private static TagHelperOutput ButtonElement(ButtonVariant variant, ButtonSize size)
         {
-            var button = new TagHelperOutput(
-                "button",
-                [new TagHelperAttribute("type", "button")],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-            );
+            var button = Element("button");
+            button.Attributes.SetAttribute("type", "button");
             ButtonRenderingHelper.RenderAttributes(button, variant, size);
 
             return button;
+        }
+
+        // An empty element for a library component's rendering helper to draw
+        private static TagHelperOutput Element(string tagName = "div")
+        {
+            return new TagHelperOutput(
+                tagName,
+                [],
+                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+            );
         }
 
         private IHtmlContent Icon(SemanticIconRole role, string? cssClass = null)
@@ -752,13 +749,10 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             return item;
         }
 
-        private static TagBuilder MenuSeparator()
+        private static TagHelperOutput MenuSeparator()
         {
-            var separator = new TagBuilder("div");
-            separator.Attributes.Add("role", "separator");
-            separator.Attributes.Add("aria-orientation", "horizontal");
-            separator.Attributes.Add("data-slot", "dropdown-menu-separator");
-            separator.Attributes.Add("class", "sa-dropdown-menu-separator");
+            var separator = Element();
+            DropdownMenuInternals.RenderSeparator(separator);
 
             return separator;
         }
@@ -773,40 +767,39 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             return positioner;
         }
 
-        private static TagBuilder Separator()
+        private static TagHelperOutput Separator()
         {
-            var separator = new TagBuilder("div");
-            separator.Attributes.Add("role", "separator");
-            separator.Attributes.Add("aria-orientation", "vertical");
-            separator.Attributes.Add("data-slot", "separator");
-            separator.Attributes.Add("data-orientation", "vertical");
-            separator.Attributes.Add("class", "sa-separator");
+            var separator = Element();
+            SeparatorRenderingHelper.Render(separator, SeparatorOrientation.Vertical);
 
             return separator;
         }
 
-        // A key combination as keyboard keys. Mod is Ctrl here; the script shows Command on Apple
-        // platforms.
-        private static TagBuilder Shortcut(string shortcut, string slot = "dropdown-menu-shortcut")
+        // A key combination as keyboard keys, in a menu item's shortcut or a tooltip's key group.
+        // Mod is Ctrl here; the script shows Command on Apple platforms.
+        private static TagHelperOutput Shortcut(string shortcut, bool keyGroup = false)
         {
-            var group = new TagBuilder(slot == "kbd-group" ? "kbd" : "span");
-            group.Attributes.Add("data-slot", slot);
-            group.Attributes.Add(
-                "class",
-                slot == "kbd-group" ? "sa-kbd-group" : "sa-dropdown-menu-shortcut"
-            );
+            var group = Element();
+            if (keyGroup)
+            {
+                KbdRenderingHelper.RenderGroup(group);
+            }
+            else
+            {
+                DropdownMenuInternals.RenderShortcut(group);
+            }
+
             foreach (var key in shortcut.Split(' '))
             {
-                var kbd = new TagBuilder("kbd");
-                kbd.Attributes.Add("data-slot", "kbd");
-                kbd.Attributes.Add("class", "sa-kbd");
+                var kbd = Element();
+                KbdRenderingHelper.RenderKey(kbd);
                 if (key == "Mod")
                 {
-                    kbd.Attributes.Add("data-key", "mod");
+                    kbd.Attributes.SetAttribute("data-key", "mod");
                 }
 
-                kbd.InnerHtml.Append(key == "Mod" ? "Ctrl" : key);
-                group.InnerHtml.AppendHtml(kbd);
+                kbd.Content.Append(key == "Mod" ? "Ctrl" : key);
+                group.Content.AppendHtml(kbd);
             }
 
             return group;
@@ -829,10 +822,9 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             item.InnerHtml.Append(text);
             if (markdown != null)
             {
-                var shortcut = new TagBuilder("span");
-                shortcut.Attributes.Add("data-slot", "dropdown-menu-shortcut");
-                shortcut.Attributes.Add("class", "sa-dropdown-menu-shortcut");
-                shortcut.InnerHtml.Append(markdown);
+                var shortcut = Element();
+                DropdownMenuInternals.RenderShortcut(shortcut);
+                shortcut.Content.Append(markdown);
                 item.InnerHtml.AppendHtml(shortcut);
             }
 
@@ -951,11 +943,7 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             bool tooltip = true
         )
         {
-            var toggle = new TagHelperOutput(
-                "label",
-                [],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-            );
+            var toggle = Element("label");
             toggle.Attributes.SetAttribute("data-action", action);
             if (tooltip)
             {
@@ -985,22 +973,16 @@ public sealed class RichTextEditorTagHelper : FieldInputBaseTagHelper<RichTextEd
             return toggle;
         }
 
-        private TagBuilder Tooltip(string action, string label, string? shortcut)
+        private TagHelperOutput Tooltip(string action, string label, string? shortcut)
         {
-            var tooltip = new TagBuilder("div");
-            tooltip.Attributes.Add("id", TooltipId(action));
-            tooltip.Attributes.Add("popover", "hint");
-            tooltip.Attributes.Add("data-slot", "tooltip-content");
-            tooltip.Attributes.Add("data-anchor-side", "bottom");
-            tooltip.Attributes.Add(
-                "class",
-                $"sa-tooltip-content {AnchorPlacement.GetClassName("bottom", "center")}"
-            );
-            tooltip.InnerHtml.Append(label);
+            var tooltip = Element();
+            tooltip.Attributes.SetAttribute("id", TooltipId(action));
+            TooltipRenderingHelper.Render(tooltip, TooltipSide.Bottom, TooltipAlign.Center);
+            tooltip.Content.Append(label);
             if (shortcut != null)
             {
-                tooltip.InnerHtml.Append(" ");
-                tooltip.InnerHtml.AppendHtml(Shortcut(shortcut, "kbd-group"));
+                tooltip.Content.Append(" ");
+                tooltip.Content.AppendHtml(Shortcut(shortcut, keyGroup: true));
             }
 
             return tooltip;

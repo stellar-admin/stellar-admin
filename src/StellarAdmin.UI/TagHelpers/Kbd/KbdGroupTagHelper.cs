@@ -11,14 +11,7 @@ public sealed class KbdGroupTagHelper : StellarAdminTagHelperBase
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.TagName = "kbd";
-        output.TagMode = TagMode.StartTagAndEndTag;
-
-        output.Attributes.SetAttribute("data-slot", "kbd-group");
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("sa-kbd-group", output.GetUserSuppliedClass())
-        );
+        KbdRenderingHelper.RenderGroup(output);
 
         return Task.CompletedTask;
     }

@@ -21,26 +21,7 @@ public sealed class SeparatorTagHelper : StellarAdminTagHelperBase
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveOrientation = Orientation ?? SeparatorOrientation.Horizontal;
-
-        output.TagName = "div";
-        output.TagMode = TagMode.StartTagAndEndTag;
-
-        output.Attributes.SetAttribute("role", "separator");
-        output.Attributes.SetAttribute(
-            "aria-orientation",
-            effectiveOrientation.GetDataAttributeText()
-        );
-        output.Attributes.SetAttribute("data-slot", "separator");
-        output.Attributes.SetAttribute(
-            "data-orientation",
-            effectiveOrientation.GetDataAttributeText()
-        );
-
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("sa-separator", output.GetUserSuppliedClass())
-        );
+        SeparatorRenderingHelper.Render(output, Orientation ?? SeparatorOrientation.Horizontal);
 
         return Task.CompletedTask;
     }

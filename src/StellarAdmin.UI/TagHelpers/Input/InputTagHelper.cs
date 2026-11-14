@@ -142,29 +142,11 @@ public sealed class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
             LabelForId = perValueId;
         }
 
-        string?[] classNames = type switch
-        {
-            "checkbox" => ["sa-checkbox"],
-            "radio" => ["sa-radiobutton"],
-            _ => ["sa-input"],
-        };
-
-        if (!inputOutput.Attributes.ContainsName("data-slot"))
-        {
-            inputOutput.Attributes.SetAttribute("data-slot", "input");
-        }
-
-        inputOutput.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses(
-                classNames
-                    .Union([
-                        inputOutput.GetUserSuppliedClass(),
-                        output.GetUserSuppliedClass(),
-                        type is "checkbox" or "radio" ? null : ClassNames?.Control,
-                    ])
-                    .ToArray()
-            )
+        InputRenderingHelper.RenderAttributes(
+            inputOutput,
+            type,
+            output.GetUserSuppliedClass(),
+            type is "checkbox" or "radio" ? null : ClassNames?.Control
         );
 
         var layout = type switch

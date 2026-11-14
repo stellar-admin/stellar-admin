@@ -35,26 +35,10 @@ public sealed class PopoverTagHelper : StellarAdminTagHelperBase
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.TagName = "div";
-        output.TagMode = TagMode.StartTagAndEndTag;
-
-        var side = (Side ?? PopoverSide.Bottom).GetDataAttributeText();
-        var align = (Align ?? PopoverAlign.Center).GetDataAttributeText();
-
-        if (!output.Attributes.ContainsName("popover"))
-        {
-            output.Attributes.SetAttribute("popover", "");
-        }
-
-        output.Attributes.SetAttribute("data-slot", "popover-content");
-        output.Attributes.SetAttribute("data-anchor-side", side);
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses(
-                "sa-popover-content",
-                AnchorPlacement.GetClassName(side, align),
-                output.GetUserSuppliedClass()
-            )
+        PopoverRenderingHelper.Render(
+            output,
+            Side ?? PopoverSide.Bottom,
+            Align ?? PopoverAlign.Center
         );
 
         return Task.CompletedTask;

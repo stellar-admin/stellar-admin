@@ -48,26 +48,10 @@ public sealed class TooltipTagHelper : StellarAdminTagHelperBase
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.TagName = "div";
-        output.TagMode = TagMode.StartTagAndEndTag;
-
-        var side = (Side ?? TooltipSide.Top).GetDataAttributeText();
-        var align = (Align ?? TooltipAlign.Center).GetDataAttributeText();
-
-        if (!output.Attributes.ContainsName("popover"))
-        {
-            output.Attributes.SetAttribute("popover", "hint");
-        }
-
-        output.Attributes.SetAttribute("data-slot", "tooltip-content");
-        output.Attributes.SetAttribute("data-anchor-side", side);
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses(
-                "sa-tooltip-content",
-                AnchorPlacement.GetClassName(side, align),
-                output.GetUserSuppliedClass()
-            )
+        TooltipRenderingHelper.Render(
+            output,
+            Side ?? TooltipSide.Top,
+            Align ?? TooltipAlign.Center
         );
 
         return Task.CompletedTask;

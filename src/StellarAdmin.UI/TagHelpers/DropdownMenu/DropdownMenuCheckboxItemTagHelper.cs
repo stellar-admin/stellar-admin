@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 using StellarAdmin.UI.Icons;
@@ -100,15 +99,13 @@ public sealed class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBas
             JoinCssClasses("sa-dropdown-menu-checkbox-item", output.GetUserSuppliedClass())
         );
 
-        var indicator = new TagBuilder("span");
-        indicator.Attributes["data-slot"] = "dropdown-menu-checkbox-item-indicator";
-        indicator.Attributes["class"] = JoinCssClasses("sa-dropdown-menu-item-indicator");
-        indicator.InnerHtml.AppendHtml(
-            _iconOptions.RenderIcon(SemanticIconRole.MenuItemSelected, ("class", "size-4"))
-        );
-
         var childContent = await output.GetChildContentAsync();
-        output.Content.SetHtmlContent(indicator);
+        output.Content.SetHtmlContent(
+            DropdownMenuInternals.ItemIndicator(
+                _iconOptions,
+                "dropdown-menu-checkbox-item-indicator"
+            )
+        );
         output.Content.AppendHtml(childContent);
     }
 }
