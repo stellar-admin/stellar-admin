@@ -20,7 +20,7 @@ public sealed class MultiLookupSheetEditorHandler(
     )
     {
         // A resource that can't be referred to has been reported, and leaves the lookup without items
-        if (((ILookupSheetEditor)Editor).ResolveItems(services) is not { } items)
+        if (Editor.ResolveItems(services) is not { } items)
         {
             return new MultiLookupSheetEditorData([], false);
         }

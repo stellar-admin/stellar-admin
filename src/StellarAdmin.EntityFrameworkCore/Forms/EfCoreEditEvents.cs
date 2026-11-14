@@ -20,10 +20,11 @@ public class EfCoreEditEvents<TEntity, TModel>
     /// </value>
     /// <remarks>
     ///     The delegate runs each time the record is loaded: before the form is shown, and before
-    ///     a submitted form's values are bound to it.
+    ///     a submitted form's values are bound to it. The entity isn't tracked by the context's
+    ///     <see cref="EfCoreFormContext{TEntity, TModel}.Db" />.
     /// </remarks>
     public Func<
-        EfCoreLoadedContext<TEntity, TModel>,
+        EfCoreFormContext<TEntity, TModel>,
         CancellationToken,
         Task
     > OnLoaded { get; set; } = (_, _) => Task.CompletedTask;
@@ -39,7 +40,7 @@ public class EfCoreEditEvents<TEntity, TModel>
     ///     saved.
     /// </remarks>
     public Func<
-        EfCoreSavedContext<TEntity, TModel>,
+        EfCoreFormContext<TEntity, TModel>,
         CancellationToken,
         Task
     > OnUpdated { get; set; } = (_, _) => Task.CompletedTask;
@@ -69,7 +70,7 @@ public class EfCoreEditEvents<TEntity, TModel>
     /// <param name="cancellationToken">A token that cancels the operation.</param>
     /// <returns>A task that completes when the event has run.</returns>
     public virtual Task LoadedAsync(
-        EfCoreLoadedContext<TEntity, TModel> context,
+        EfCoreFormContext<TEntity, TModel> context,
         CancellationToken cancellationToken
     ) => OnLoaded(context, cancellationToken);
 
@@ -80,7 +81,7 @@ public class EfCoreEditEvents<TEntity, TModel>
     /// <param name="cancellationToken">A token that cancels the operation.</param>
     /// <returns>A task that completes when the event has run.</returns>
     public virtual Task UpdatedAsync(
-        EfCoreSavedContext<TEntity, TModel> context,
+        EfCoreFormContext<TEntity, TModel> context,
         CancellationToken cancellationToken
     ) => OnUpdated(context, cancellationToken);
 

@@ -6,34 +6,11 @@ using StellarAdmin.Diagnostics;
 
 namespace StellarAdmin.Resources.Editors;
 
-// What each item of a lookup source shows, shared by the source classes with and without an argument
-internal interface ILookupSourceItem<in TItem, out TValue>
-{
-    string? GetAvatar(TItem item);
-
-    string? GetCode(TItem item);
-
-    string? GetDescription(TItem item);
-
-    string? GetIcon(TItem item);
-
-    string? GetImage(TItem item);
-
-    string GetTitle(TItem item);
-
-    TValue GetValue(TItem item);
-}
-
 // Turns a source's items into choices
 internal static class LookupSourceItems
 {
     public static async Task<IReadOnlyList<ChoiceItem>> FindAsync<TItem, TValue>(
-        ILookupSourceItem<TItem, TValue> source,
-        Func<
-            IReadOnlyCollection<TValue>,
-            CancellationToken,
-            Task<IReadOnlyCollection<TItem>>
-        > find,
+        LookupSourceBase<TItem, TValue> source,
         FieldEditorContext context,
         CancellationToken cancellationToken
     )
@@ -44,7 +21,7 @@ internal static class LookupSourceItems
             return [];
         }
 
-        var items = await find(values, cancellationToken);
+        var items = await source.FindAsync(values, cancellationToken);
         var mediaType = LookupSourceShape.For(source.GetType()).MediaType;
 
         // A value the source no longer has is still displayed, so the selection stays visible. A value type's default,
@@ -56,18 +33,18 @@ internal static class LookupSourceItems
                 )
                     is { } item
                     ? CreateChoice(source, item, mediaType)
-                    : IsUnset(current) ? null
-                    : new ChoiceItem(
-                        FormatValue(current),
-                        Convert.ToString(current, CultureInfo.InvariantCulture) ?? ""
-                    )
+                : IsUnset(current) ? null
+                : new ChoiceItem(
+                    FormatValue(current),
+                    Convert.ToString(current, CultureInfo.InvariantCulture) ?? ""
+                )
             )
             .OfType<ChoiceItem>()
             .ToArray();
     }
 
     public static LookupResults ToResults<TItem, TValue>(
-        ILookupSourceItem<TItem, TValue> source,
+        LookupSourceBase<TItem, TValue> source,
         LookupPage<TItem> page
     )
     {
@@ -80,7 +57,7 @@ internal static class LookupSourceItems
     }
 
     private static ChoiceItem CreateChoice<TItem, TValue>(
-        ILookupSourceItem<TItem, TValue> source,
+        LookupSourceBase<TItem, TValue> source,
         TItem item,
         Type? mediaType
     ) =>
@@ -91,7 +68,7 @@ internal static class LookupSourceItems
         };
 
     private static ItemMedia? CreateMedia<TItem, TValue>(
-        ILookupSourceItem<TItem, TValue> source,
+        LookupSourceBase<TItem, TValue> source,
         TItem item,
         Type? mediaType
     )
@@ -111,8 +88,7 @@ internal static class LookupSourceItems
             return source.GetIcon(item) is { Length: > 0 } name ? new ItemMedia.Icon(name) : null;
         }
 
-        return mediaType == typeof(ItemMedia.Image)
-            && source.GetImage(item) is { Length: > 0 } url
+        return mediaType == typeof(ItemMedia.Image) && source.GetImage(item) is { Length: > 0 } url
             ? new ItemMedia.Image(url)
             : null;
     }
@@ -155,26 +131,27 @@ internal sealed record LookupSourceShape(
 
     private static readonly (string Method, Type Media)[] Media =
     [
-        (nameof(LookupSource<,>.GetAvatar), typeof(ItemMedia.Avatar)),
-        (nameof(LookupSource<,>.GetCode), typeof(ItemMedia.Code)),
-        (nameof(LookupSource<,>.GetIcon), typeof(ItemMedia.Icon)),
-        (nameof(LookupSource<,>.GetImage), typeof(ItemMedia.Image)),
+        (nameof(LookupSourceBase<,>.GetAvatar), typeof(ItemMedia.Avatar)),
+        (nameof(LookupSourceBase<,>.GetCode), typeof(ItemMedia.Code)),
+        (nameof(LookupSourceBase<,>.GetIcon), typeof(ItemMedia.Icon)),
+        (nameof(LookupSourceBase<,>.GetImage), typeof(ItemMedia.Image)),
     ];
 
     public static LookupSourceShape For(Type sourceType) => Shapes.GetOrAdd(sourceType, Read);
 
     private static LookupSourceShape Read(Type sourceType)
     {
+        // The base declares the item and value types and the members a source overrides; a source with an argument
+        // derives from it through LookupSource<TItem, TValue, TArgument>
+        Type? argumentType = null;
         var baseType = sourceType;
-        while (
-            baseType is not null
-            && !(
-                baseType.IsGenericType
-                && baseType.GetGenericTypeDefinition() is var definition
-                && (definition == typeof(LookupSource<,>) || definition == typeof(LookupSource<,,>))
-            )
-        )
+        while (baseType is not null && !IsConstructedFrom(baseType, typeof(LookupSourceBase<,>)))
         {
+            if (IsConstructedFrom(baseType, typeof(LookupSource<,,>)))
+            {
+                argumentType = baseType.GetGenericArguments()[2];
+            }
+
             baseType = baseType.BaseType;
         }
 
@@ -193,14 +170,18 @@ internal sealed record LookupSourceShape(
         return new LookupSourceShape(
             itemType,
             arguments[1],
-            arguments.Length == 3 ? arguments[2] : null,
-            Overrides(nameof(LookupSource<,>.GetDescription)),
+            argumentType,
+            Overrides(nameof(LookupSourceBase<,>.GetDescription)),
             media.Select(media => media.Method).ToArray(),
             media.FirstOrDefault().Media
         );
 
-        bool Overrides(string name) => sourceType.GetMethod(name, [itemType])?.DeclaringType != baseType;
+        bool Overrides(string name) =>
+            sourceType.GetMethod(name, [itemType])?.DeclaringType != baseType;
     }
+
+    private static bool IsConstructedFrom(Type type, Type definition) =>
+        type.IsGenericType && type.GetGenericTypeDefinition() == definition;
 }
 
 // Items from a lookup source, resolved for each request

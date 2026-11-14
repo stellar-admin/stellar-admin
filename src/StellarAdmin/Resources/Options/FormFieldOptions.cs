@@ -115,10 +115,7 @@ public sealed class FormFieldOptions : FormItemOptions
             case ChoiceEditor { ItemsLoader: null } choice:
                 choice.UseResource(resource);
                 break;
-            case LookupSheetEditor { Items: null, Resource: null } lookup:
-                lookup.UseResource(resource);
-                break;
-            case MultiLookupSheetEditor { Items: null, Resource: null } lookup:
+            case LookupSheetEditorBase { Items: null, Resource: null } lookup:
                 lookup.UseResource(resource);
                 break;
             case null:

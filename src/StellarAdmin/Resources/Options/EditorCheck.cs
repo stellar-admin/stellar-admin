@@ -87,12 +87,12 @@ internal static class EditorCheck
                     $"`{editor}` has no items, and only takes them from a non-flags enum or Boolean property",
                     "Pass the editor's items to `UseItems`."
                 );
-            case ILookupSheetEditor { Items: null, Resource: null }:
+            case LookupSheetEditorBase { Items: null, Resource: null }:
                 return (
                     $"`{editor}` has no items",
                     "Pass the editor's items to `UseItems` or `UseSource`, or take them from a resource with `UseResource`."
                 );
-            case ILookupSheetEditor { Items: SourceLookupItems items }
+            case LookupSheetEditorBase { Items: SourceLookupItems items }
                 when FindSourceProblem(items) is { } problem:
                 return problem;
             default:
@@ -179,7 +179,7 @@ internal static class EditorCheck
         var valueType = field.Editor switch
         {
             ChoiceEditor choice => choice.ItemsValueType,
-            ILookupSheetEditor lookup => lookup.Items?.ValueType,
+            LookupSheetEditorBase lookup => lookup.Items?.ValueType,
             _ => null,
         };
         if (valueType is null || field.Binder is not null)

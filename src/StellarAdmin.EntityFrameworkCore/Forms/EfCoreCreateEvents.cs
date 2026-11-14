@@ -23,7 +23,7 @@ public class EfCoreCreateEvents<TEntity, TModel>
     ///     saved.
     /// </remarks>
     public Func<
-        EfCoreSavedContext<TEntity, TModel>,
+        EfCoreFormContext<TEntity, TModel>,
         CancellationToken,
         Task
     > OnCreated { get; set; } = (_, _) => Task.CompletedTask;
@@ -60,7 +60,7 @@ public class EfCoreCreateEvents<TEntity, TModel>
     ///     <see cref="OnCreating" />.
     /// </remarks>
     public Func<
-        EfCoreInitializedContext<TEntity, TModel>,
+        EfCoreFormContext<TEntity, TModel>,
         CancellationToken,
         Task
     > OnInitialized { get; set; } = (_, _) => Task.CompletedTask;
@@ -72,7 +72,7 @@ public class EfCoreCreateEvents<TEntity, TModel>
     /// <param name="cancellationToken">A token that cancels the operation.</param>
     /// <returns>A task that completes when the event has run.</returns>
     public virtual Task CreatedAsync(
-        EfCoreSavedContext<TEntity, TModel> context,
+        EfCoreFormContext<TEntity, TModel> context,
         CancellationToken cancellationToken
     ) => OnCreated(context, cancellationToken);
 
@@ -94,7 +94,7 @@ public class EfCoreCreateEvents<TEntity, TModel>
     /// <param name="cancellationToken">A token that cancels the operation.</param>
     /// <returns>A task that completes when the event has run.</returns>
     public virtual Task InitializedAsync(
-        EfCoreInitializedContext<TEntity, TModel> context,
+        EfCoreFormContext<TEntity, TModel> context,
         CancellationToken cancellationToken
     ) => OnInitialized(context, cancellationToken);
 }

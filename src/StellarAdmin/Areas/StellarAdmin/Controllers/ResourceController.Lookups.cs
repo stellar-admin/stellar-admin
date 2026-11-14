@@ -308,13 +308,13 @@ internal sealed partial class ResourceController<TResource>
     }
 
     // The lookup field and its items; a field whose resource can't be referred to has none, and was reported
-    private (FormFieldOptions, ILookupSheetEditor, LookupItems)? FindLookupField(
+    private (FormFieldOptions, LookupSheetEditorBase, LookupItems)? FindLookupField(
         ResourceLookupQuery query
     )
     {
         return
             FindForm(query.Form)?.Fields.FirstOrDefault(options => options.FieldName == query.Field)
-                is { IsNeverEditable: false, Editor: ILookupSheetEditor editor } options
+                is { IsNeverEditable: false, Editor: LookupSheetEditorBase editor } options
             && editor.ResolveItems(HttpContext.RequestServices) is { } items
             ? (options, editor, items)
             : null;
@@ -326,7 +326,7 @@ internal sealed partial class ResourceController<TResource>
     // A multi-select lookup's create form opens one level above the form that contains the field
     private async Task<string?> GetLookupCreateUrlAsync(
         FormFieldOptions options,
-        ILookupSheetEditor editor,
+        LookupSheetEditorBase editor,
         LookupItems items,
         ResourceLookupQuery query
     )
@@ -378,7 +378,7 @@ internal sealed partial class ResourceController<TResource>
     private async Task<IActionResult> SelectedLookupResults(
         ResourceLookupQuery query,
         FormFieldOptions options,
-        ILookupSheetEditor editor,
+        LookupSheetEditorBase editor,
         LookupItems items,
         string? term,
         LookupLabelContext labels,

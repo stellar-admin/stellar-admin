@@ -5,11 +5,12 @@ using StellarAdmin.Resources.Editors;
 namespace StellarAdmin.EntityFrameworkCore;
 
 /// <summary>
-///     Provides extension methods that load the items of lookup editors with EF Core.
+///     Provides extension methods that load the items of single- and multi-select lookup editors
+///     with EF Core.
 /// </summary>
 public static class LookupSheetEditorExtensions
 {
-    extension(LookupSheetEditor editor)
+    extension(LookupSheetEditorBase editor)
     {
         /// <summary>
         ///     Looks up the items in an entity set.

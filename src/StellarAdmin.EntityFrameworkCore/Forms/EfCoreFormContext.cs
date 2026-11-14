@@ -7,7 +7,7 @@ namespace StellarAdmin.EntityFrameworkCore;
 /// </summary>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
 /// <typeparam name="TModel">The type of the model the form binds to.</typeparam>
-public abstract class EfCoreFormContext<TEntity, TModel>
+public class EfCoreFormContext<TEntity, TModel>
     where TEntity : class
 {
     /// <summary>
@@ -34,7 +34,7 @@ public abstract class EfCoreFormContext<TEntity, TModel>
     /// </summary>
     public IServiceProvider Services { get; }
 
-    private protected EfCoreFormContext(
+    internal EfCoreFormContext(
         DbContext db,
         TEntity entity,
         TModel model,

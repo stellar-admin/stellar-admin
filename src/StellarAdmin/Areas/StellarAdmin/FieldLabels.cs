@@ -37,7 +37,7 @@ internal static class FieldLabels
         var resource = field.Editor switch
         {
             ChoiceEditor choice => choice.Resource,
-            ILookupSheetEditor lookup => lookup.Resource,
+            LookupSheetEditorBase lookup => lookup.Resource,
             _ => null,
         };
         var propertyType = field.PropertyPath[^1].PropertyType;
