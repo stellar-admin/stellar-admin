@@ -41,7 +41,10 @@ public sealed class RowDetailsScenario(string layout) : Scenario
                                 booking.Departure.Trip.BasePrice
                             )
                         );
-                        panels.Add<BookingHistoryHandler>("History", "_BookingHistory");
+                        panels.Add<BookingHistory, BookingHistoryHandler>(
+                            "History",
+                            "_BookingHistory"
+                        );
                     },
                     details =>
                         details.PanelLayout =

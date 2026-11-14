@@ -163,7 +163,7 @@ internal static class ProductResourceRegistration
                         panel => panel.Icon = "tag"
                     );
                     panels.Add("Overview", "_ProductOverview", panel => panel.Icon = "package");
-                    panels.Add<RelatedProductsHandler>(
+                    panels.Add<RelatedProducts, RelatedProductsHandler>(
                         "Related",
                         "_RelatedProducts",
                         panel => panel.Icon = "link"

@@ -11,7 +11,7 @@ namespace StellarAdmin.ScenarioTesting.Scenarios.RowDetails;
 public sealed class RowDetailsProblemsScenario : Scenario
 {
     public override string Description =>
-        "Row detail configuration problems: a panel handler for two models and an undefined tab style on bookings, a handler that isn't one on trips, and a handler on partners, which have no key.";
+        "Row detail configuration problems: an undefined tab style on bookings, and a handler on partners, which have no key.";
 
     public override string StartPath => "/stellaradmin/bookings";
 
@@ -29,7 +29,6 @@ public sealed class RowDetailsProblemsScenario : Scenario
                     {
                         panels.Add("Summary", "_BookingSummary");
                         panels.Add("Pricing", "_BookingPricing", RowDetailsBookings.Pricing);
-                        panels.Add<BookingHistoryAndPricingHandler>("History", "_BookingHistory");
                     },
                     details =>
                         details.PanelLayout = ResourceRowDetailPanelLayout.Tabs(
@@ -39,39 +38,15 @@ public sealed class RowDetailsProblemsScenario : Scenario
                 index.EnablePaging(paging => paging.PageSize = 10);
             })
         );
-        admin.AddEfCoreResource<Trip>(resource =>
-            resource.Index(index =>
-            {
-                index.Columns(columns => columns.Add(trip => trip.Title));
-                index.EnableRowDetails<BookingHistoryService>("_BookingHistory");
-                index.EnablePaging(paging => paging.PageSize = 10);
-            })
-        );
         admin.AddResource<Partner>(resource =>
         {
             resource.UseDataSource<PartnerDataSource>();
             resource.Index(index =>
             {
                 index.Columns(columns => columns.Add(partner => partner.Name));
-                index.EnableRowDetails<BookingHistoryHandler>("_BookingHistory");
+                index.EnableRowDetails<BookingHistory, BookingHistoryHandler>("_BookingHistory");
             });
         });
-    }
-
-    // Loads two models, so the panel's partial view model isn't known
-    public sealed class BookingHistoryAndPricingHandler
-        : IResourceRowDetailHandler<BookingHistory>,
-            IResourceRowDetailHandler<BookingPricing>
-    {
-        Task<BookingHistory?> IResourceRowDetailHandler<BookingHistory>.FindAsync(
-            string id,
-            CancellationToken cancellationToken
-        ) => Task.FromResult<BookingHistory?>(null);
-
-        Task<BookingPricing?> IResourceRowDetailHandler<BookingPricing>.FindAsync(
-            string id,
-            CancellationToken cancellationToken
-        ) => Task.FromResult<BookingPricing?>(null);
     }
 
     // A travel partner from outside the database, with no key

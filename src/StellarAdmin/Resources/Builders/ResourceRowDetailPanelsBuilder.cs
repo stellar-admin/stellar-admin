@@ -80,18 +80,14 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <summary>
     ///     Adds a panel that shows a partial view with a model that a handler loads.
     /// </summary>
-    /// <typeparam name="THandler">
-    ///     The type of the handler that loads the model, which implements
-    ///     <see cref="IResourceRowDetailHandler{TModel}" /> for the partial view's model.
-    /// </typeparam>
+    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
     /// <param name="title">The title of the panel's tab.</param>
     /// <param name="partialName">The partial view to render.</param>
     /// <returns>A builder that configures the panel.</returns>
     /// <remarks>
-    ///     The handler loads the model when the panel is first shown. The handler is registered as
-    ///     a scoped service if it isn't registered already. A handler that doesn't implement
-    ///     <see cref="IResourceRowDetailHandler{TModel}" /> for exactly one model is a
-    ///     configuration problem, and the panel is left out.
+    ///     The handler loads the model when the panel is first shown. Registers
+    ///     <typeparamref name="THandler" /> as a scoped service if it isn't registered already.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is <see langword="null" />.
@@ -99,27 +95,23 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <exception cref="ArgumentException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailPanelBuilder Add<THandler>(string title, string partialName)
-        where THandler : class =>
-        AddPanel(title, partialName, HandlerRowDetailLoader.Create(typeof(THandler), Services));
+    public ResourceRowDetailPanelBuilder Add<TModel, THandler>(string title, string partialName)
+        where THandler : class, IResourceRowDetailHandler<TModel> =>
+        AddPanel(title, partialName, HandlerRowDetailLoader.Create<TModel, THandler>(Services));
 
     /// <summary>
     ///     Adds a panel that shows a partial view with a model that a handler loads, and
     ///     configures the panel.
     /// </summary>
-    /// <typeparam name="THandler">
-    ///     The type of the handler that loads the model, which implements
-    ///     <see cref="IResourceRowDetailHandler{TModel}" /> for the partial view's model.
-    /// </typeparam>
+    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
     /// <param name="title">The title of the panel.</param>
     /// <param name="partialName">The partial view to render.</param>
     /// <param name="configure">A delegate that configures the panel.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     The handler loads the model when the panel is first shown. The handler is registered as
-    ///     a scoped service if it isn't registered already. A handler that doesn't implement
-    ///     <see cref="IResourceRowDetailHandler{TModel}" /> for exactly one model is a
-    ///     configuration problem, and the panel is left out.
+    ///     The handler loads the model when the panel is first shown. Registers
+    ///     <typeparamref name="THandler" /> as a scoped service if it isn't registered already.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="title" />, <paramref name="partialName" /> or
@@ -128,15 +120,15 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <exception cref="ArgumentException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailPanelsBuilder<TResource> Add<THandler>(
+    public ResourceRowDetailPanelsBuilder<TResource> Add<TModel, THandler>(
         string title,
         string partialName,
         Action<ResourceRowDetailPanelBuilder> configure
     )
-        where THandler : class
+        where THandler : class, IResourceRowDetailHandler<TModel>
     {
         ArgumentNullException.ThrowIfNull(configure);
-        configure(Add<THandler>(title, partialName));
+        configure(Add<TModel, THandler>(title, partialName));
 
         return this;
     }
@@ -166,8 +158,9 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <param name="title">The title of the panel's tab.</param>
     /// <param name="partialName">The partial view to render.</param>
     /// <param name="loader">
-    ///     The object that loads the partial's model from the row's key when the panel is first
-    ///     shown, or <see langword="null" /> to use the row itself as the model.
+    ///     A delegate that loads the partial's model from the request's services and the row's key
+    ///     when the panel is first shown, and returns <see langword="null" /> when the row no
+    ///     longer exists; or <see langword="null" /> to use the row itself as the model.
     /// </param>
     /// <returns>A builder that configures the panel.</returns>
     /// <exception cref="ArgumentNullException">
@@ -180,7 +173,7 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     protected ResourceRowDetailPanelBuilder AddPanel(
         string title,
         string partialName,
-        ResourceRowDetailLoader? loader
+        Func<IServiceProvider, string, CancellationToken, Task<object?>>? loader
     )
     {
         ArgumentNullException.ThrowIfNull(title);

@@ -46,7 +46,7 @@ public sealed class EfCoreRowDetailPanelsBuilder<TEntity> : ResourceRowDetailPan
     {
         ArgumentNullException.ThrowIfNull(select);
 
-        return AddPanel(title, partialName, new EfCoreRowDetailLoader<TEntity, TModel>(select));
+        return AddPanel(title, partialName, EfCoreRowDetailLoader.Create(select));
     }
 
     /// <summary>

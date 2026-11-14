@@ -122,20 +122,20 @@ index.EnableRowDetails("_BookingSummary");
 index.EnableRowDetails("_BookingPricing", booking => new BookingPricing(booking.Total, booking.Travellers));
 
 // A model loaded on expand by a handler implementing IResourceRowDetailHandler<BookingNotes>
-index.EnableRowDetails<BookingNotesHandler>("_BookingNotes");
+index.EnableRowDetails<BookingNotes, BookingNotesHandler>("_BookingNotes");
 
 // Two or more panels display in an accordion, all closed when the row expands
 index.EnableRowDetails(panels =>
 {
     panels.Add("Summary", "_BookingSummary").Icon = "receipt";
-    panels.Add<BookingNotesHandler>("Notes", "_BookingNotes");
+    panels.Add<BookingNotes, BookingNotesHandler>("Notes", "_BookingNotes");
 });
 ```
 
 - Panels that load on demand load when first opened (or, as tabs, when their tab is first selected). `Icon` shows before the panel's title.
 - `details.PanelLayout` (namespace `StellarAdmin.Resources`) changes the layout: `ResourceRowDetailPanelLayout.Accordion()` (the default, any number open), `Accordion(ResourceRowDetailAccordionExpandMode.Single)` (one open at a time), `Tabs()` (muted background) or `Tabs(ResourceRowDetailTabStyle.Line)` (underline).
 
-- A handler's partial takes the model its `IResourceRowDetailHandler<TModel>` names. Give each model its own handler: one that implements the interface for no model, or for two, is a configuration problem, and its panel is left out.
+- The first type argument is the partial's model, and the handler must implement `IResourceRowDetailHandler<TModel>` for it; the compiler checks this.
 - Put the partials in `Areas/StellarAdmin/Views/{slug}/` or `Areas/StellarAdmin/Views/Shared/`, with an area `_ViewImports.cshtml` ([customization](customization.md#view-imports)).
 - The callback overloads configure presentation: `details => { details.Emphasis = DataGridRowDetailEmphasis.Rail; details.ExpandMode = DataGridRowDetailExpandMode.Single; details.RowClick = true; }`. Other settings: `Animate`, `Divider` (`DataGridRowDetailDivider`), `Inset`, `Toggle`, `PanelLayout`. The `DataGridRowDetail*` enums are in `StellarAdmin.UI`.
 - Row details are for per-row information. Content for the whole page, such as a summary above the grid, belongs in a [widget](widgets.md#index-pages).

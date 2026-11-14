@@ -66,7 +66,7 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
     {
         ArgumentNullException.ThrowIfNull(select);
 
-        return RegisterRowDetails(partialName, new EfCoreRowDetailLoader<TEntity, TModel>(select));
+        return RegisterRowDetails(partialName, EfCoreRowDetailLoader.Create(select));
     }
 
     /// <summary>

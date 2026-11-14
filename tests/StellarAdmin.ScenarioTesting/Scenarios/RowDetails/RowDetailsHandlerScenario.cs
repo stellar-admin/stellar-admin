@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore;
+using StellarAdmin.ScenarioTesting.Host.Models;
 using StellarAdmin.ScenarioTesting.Hosting;
 using VoyagerTravel.Models;
 
@@ -21,7 +22,7 @@ public sealed class RowDetailsHandlerScenario : Scenario
             resource.Index(index =>
             {
                 index.Columns(RowDetailsBookings.AddColumns);
-                index.EnableRowDetails<BookingHistoryHandler>("_BookingHistory");
+                index.EnableRowDetails<BookingHistory, BookingHistoryHandler>("_BookingHistory");
                 index.EnablePaging(paging => paging.PageSize = 10);
             })
         );

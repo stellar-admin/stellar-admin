@@ -47,7 +47,7 @@ public class ResourceRowDetailPanelsBuilderTests
         var sut = new DefaultRowDetailPanelsBuilder<Product>(services);
 
         // Act
-        sut.Add<ProductNotesHandler>("Notes", "_ProductNotes");
+        sut.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
 
         // Assert
         await Assert.That(sut.Panels.Single().LoadsOnDemand).IsTrue();
@@ -79,7 +79,7 @@ public class ResourceRowDetailPanelsBuilderTests
         var sut = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
 
         // Act
-        var result = sut.Add<ProductNotesHandler>(
+        var result = sut.Add<ProductNotes, ProductNotesHandler>(
             "Notes",
             "_ProductNotes",
             panel => panel.Name = "notes-panel"

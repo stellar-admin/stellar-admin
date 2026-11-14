@@ -50,13 +50,13 @@ public sealed class ResourceRowDetailPanelOptions
     /// </value>
     public string? Title { get; }
 
-    internal ResourceRowDetailLoader? Loader { get; }
+    internal Func<IServiceProvider, string, CancellationToken, Task<object?>>? Loader { get; }
 
     internal ConfigurationSource? Source { get; set; }
 
     internal ResourceRowDetailPanelOptions(
         string partialName,
-        ResourceRowDetailLoader? loader,
+        Func<IServiceProvider, string, CancellationToken, Task<object?>>? loader,
         string? title = null
     )
     {

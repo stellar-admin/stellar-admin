@@ -66,7 +66,7 @@ internal sealed partial class ResourceController<TResource>
             return NotFound();
         }
 
-        var model = await loader.LoadAsync(HttpContext.RequestServices, id, cancellationToken);
+        var model = await loader(HttpContext.RequestServices, id, cancellationToken);
         if (model is null)
         {
             // htmx swaps error responses, so the row shows that its details are gone

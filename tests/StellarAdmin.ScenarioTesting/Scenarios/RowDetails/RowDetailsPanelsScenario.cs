@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore;
 using StellarAdmin.Resources;
+using StellarAdmin.ScenarioTesting.Host.Models;
 using StellarAdmin.ScenarioTesting.Hosting;
 using VoyagerTravel.Models;
 
@@ -31,7 +32,10 @@ public sealed class RowDetailsPanelsScenario(string layout) : Scenario
                 index.EnableRowDetails(
                     panels =>
                     {
-                        panels.Add<BookingHistoryHandler>("History", "_BookingHistory");
+                        panels.Add<BookingHistory, BookingHistoryHandler>(
+                            "History",
+                            "_BookingHistory"
+                        );
                         panels.Add("Summary", "_BookingSummary");
                         panels.Add(
                             "Pricing",

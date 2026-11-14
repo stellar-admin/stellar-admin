@@ -64,7 +64,7 @@ public class ResourceRowDetailsTests
         resource.Index(index =>
             index.EnableRowDetails(panels =>
             {
-                panels.Add<ProductNotesHandler>("Notes", "_ProductNotes");
+                panels.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
                 panels.Add("Summary", "_ProductSummary");
             })
         );
