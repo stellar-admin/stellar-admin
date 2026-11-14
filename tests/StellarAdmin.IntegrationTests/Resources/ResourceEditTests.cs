@@ -83,7 +83,7 @@ public class ResourceEditTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 12.50m)]),
+            new ProductState([new(7, "Notebook", 12.50m)]),
             resource =>
             {
                 var edit = ConfigureEdit(resource);

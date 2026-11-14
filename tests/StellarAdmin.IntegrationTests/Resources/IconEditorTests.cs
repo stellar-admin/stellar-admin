@@ -109,7 +109,7 @@ public class IconEditorTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "coffee", 8.50m)]),
+            new ProductState([new(7, "coffee", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -296,7 +296,7 @@ public class IconEditorTests
         AmenityIcons? icons = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([new(7, "Breakfast", 8.50m)]),
+            new ProductState([new(7, "Breakfast", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

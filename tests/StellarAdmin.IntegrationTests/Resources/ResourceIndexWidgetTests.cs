@@ -64,7 +64,7 @@ public class ResourceIndexWidgetTests
     public async Task NoWidgets_LeavesOutTheirRegions()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -210,7 +210,6 @@ public class ResourceIndexWidgetTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
                 resource.Index(index =>
                     index.Widgets(widgets =>
@@ -296,7 +295,6 @@ public class ResourceIndexWidgetTests
         Action<ResourceIndexBuilder<Product>>? configureIndex = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
                 resource.Index(index =>
                 {

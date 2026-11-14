@@ -504,7 +504,6 @@ public class HomePageWidgetTests
         Action<IServiceCollection>? configureServices = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin => admin.ConfigureHomePage(home => home.Widgets(configure)),
             configureServices: configureServices,
             environmentName: environmentName

@@ -19,7 +19,7 @@ public class ConfigurationProblemsTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(1, "Notebook", 12.50m)]),
+            new ProductState([new(1, "Notebook", 12.50m)]),
             configureAdmin: admin =>
             {
                 admin.AddResource<CustomProduct>(
@@ -60,7 +60,6 @@ public class ConfigurationProblemsTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
             {
                 admin.AddResource<CustomProduct>(
@@ -90,17 +89,15 @@ public class ConfigurationProblemsTests
     {
         // Arrange
         var line = 0;
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate(create =>
-                    create.Fields(fields =>
-                    {
-                        line = CurrentLine() + 1;
-                        fields.Add(product => product.Name).UseEditor<MismatchedEditor>();
-                        fields.Add(product => product.Price);
-                    })
-                )
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate(create =>
+                create.Fields(fields =>
+                {
+                    line = CurrentLine() + 1;
+                    fields.Add(product => product.Name).UseEditor<MismatchedEditor>();
+                    fields.Add(product => product.Price);
+                })
+            )
         );
         using var client = sut.GetTestClient();
 
@@ -135,14 +132,12 @@ public class ConfigurationProblemsTests
         // Arrange
 
         // Act
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin.ConfigureUI(ui =>
-                    ui.Services.Configure<IconOptions>(icons =>
-                        icons.MapSemanticIcon(SemanticIconRole.Close, "missing")
-                    )
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin.ConfigureUI(ui =>
+                ui.Services.Configure<IconOptions>(icons =>
+                    icons.MapSemanticIcon(SemanticIconRole.Close, "missing")
                 )
+            )
         );
 
         // Assert
@@ -164,7 +159,7 @@ public class ConfigurationProblemsTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(1, "Notebook", 12.50m)]),
+            new ProductState([new(1, "Notebook", 12.50m)]),
             resource => resource.Index(index => index.DefaultSortBy(product => product.Name)),
             admin =>
                 admin.ConfigureDiagnostics(diagnostics =>
@@ -193,7 +188,7 @@ public class ConfigurationProblemsTests
         var sortLine = 0;
         var stylesheetLine = 0;
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(1, "Notebook", 12.50m)]),
+            new ProductState([new(1, "Notebook", 12.50m)]),
             resource =>
             {
                 sortLine = CurrentLine() + 1;
@@ -226,12 +221,10 @@ public class ConfigurationProblemsTests
             .IsEquivalentTo([Path.GetFileName(CurrentFile())]);
         await Assert
             .That(document.TextContents(".sa-configuration-problems-number[data-level]"))
-            .IsEquivalentTo(
-                [
-                    stylesheetLine.ToString(CultureInfo.InvariantCulture),
-                    sortLine.ToString(CultureInfo.InvariantCulture),
-                ]
-            );
+            .IsEquivalentTo([
+                stylesheetLine.ToString(CultureInfo.InvariantCulture),
+                sortLine.ToString(CultureInfo.InvariantCulture),
+            ]);
         await Assert.That(document.QuerySelectorAll(".sa-configuration-problem")).HasCount(2);
         await Assert
             .That(document.TextContents(".sa-configuration-problem-fix"))
@@ -242,14 +235,12 @@ public class ConfigurationProblemsTests
     public async Task Indicator_ListsProblemsWithoutALineUnderTheirResource()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin.ConfigureUI(ui =>
-                    ui.Services.Configure<IconOptions>(icons =>
-                        icons.MapSemanticIcon(SemanticIconRole.Close, "missing")
-                    )
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin.ConfigureUI(ui =>
+                ui.Services.Configure<IconOptions>(icons =>
+                    icons.MapSemanticIcon(SemanticIconRole.Close, "missing")
                 )
+            )
         );
         using var client = sut.GetTestClient();
 
@@ -269,7 +260,7 @@ public class ConfigurationProblemsTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(1, "Notebook", 12.50m)]),
+            new ProductState([new(1, "Notebook", 12.50m)]),
             resource =>
                 resource.Index(index =>
                     index.EnablePaging(paging =>
@@ -287,7 +278,11 @@ public class ConfigurationProblemsTests
         // Assert
         var trigger = document.RequiredElement(".sa-configuration-problems-trigger");
         await Assert
-            .That(trigger.RequiredElement(".sa-configuration-problems-count").GetAttribute("data-level"))
+            .That(
+                trigger
+                    .RequiredElement(".sa-configuration-problems-count")
+                    .GetAttribute("data-level")
+            )
             .IsEqualTo("info");
         await Assert.That(trigger.TextContent).Contains("Configuration info");
         await Assert
@@ -299,7 +294,7 @@ public class ConfigurationProblemsTests
     public async Task ValidConfiguration_RendersNoIndicator()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -314,7 +309,7 @@ public class ConfigurationProblemsTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(1, "Notebook", 12.50m)]),
+            new ProductState([new(1, "Notebook", 12.50m)]),
             resource => resource.Index(index => index.DefaultSortBy(product => product.Name))
         );
         using var client = sut.GetTestClient();
@@ -340,16 +335,14 @@ public class ConfigurationProblemsTests
         // Arrange
 
         // Act
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.Index(index =>
-                    index.EnablePaging(paging =>
-                    {
-                        paging.PageSize = 15;
-                        paging.PageSizes = [10, 25];
-                    })
-                )
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.Index(index =>
+                index.EnablePaging(paging =>
+                {
+                    paging.PageSize = 15;
+                    paging.PageSizes = [10, 25];
+                })
+            )
         );
 
         // Assert
@@ -369,14 +362,11 @@ public class ConfigurationProblemsTests
         var line = 0;
 
         // Act
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-            {
-                line = CurrentLine() + 1;
-                resource.Index(index => index.DefaultSortByDescending(product => product.Price));
-            }
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+        {
+            line = CurrentLine() + 1;
+            resource.Index(index => index.DefaultSortByDescending(product => product.Price));
+        });
 
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
@@ -392,16 +382,14 @@ public class ConfigurationProblemsTests
         var line = 0;
 
         // Act
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        line = CurrentLine() + 1;
-                        columns.Add(product => product.Price * 2);
-                    })
-                )
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.Index(index =>
+                index.Columns(columns =>
+                {
+                    line = CurrentLine() + 1;
+                    columns.Add(product => product.Price * 2);
+                })
+            )
         );
 
         // Assert
@@ -417,9 +405,8 @@ public class ConfigurationProblemsTests
         // Arrange
 
         // Act
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource => resource.SingularLabel = " "
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.SingularLabel = " "
         );
 
         // Assert
@@ -436,21 +423,18 @@ public class ConfigurationProblemsTests
         var line = 0;
 
         // Act
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.AddResource<CustomProduct>(
+                "catalog",
+                resource => resource.UseDataSource<CustomProductDataSource>()
+            );
+            admin.Services.Configure<ResourceOptions<CustomProduct>>(_ =>
             {
-                admin.AddResource<CustomProduct>(
-                    "catalog",
-                    resource => resource.UseDataSource<CustomProductDataSource>()
-                );
-                admin.Services.Configure<ResourceOptions<CustomProduct>>(_ =>
-                {
-                    line = CurrentLine() + 1;
-                    throw new InvalidOperationException("Broken catalog");
-                });
-            }
-        );
+                line = CurrentLine() + 1;
+                throw new InvalidOperationException("Broken catalog");
+            });
+        });
 
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
@@ -466,7 +450,6 @@ public class ConfigurationProblemsTests
         static async Task Create()
         {
             await using var app = await StellarAdminTestHost.CreateAsync(
-                new([]),
                 resource => resource.Index(index => index.DefaultSortBy(product => product.Name)),
                 admin =>
                 {
@@ -493,7 +476,7 @@ public class ConfigurationProblemsTests
         // Arrange
 
         // Act
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
 
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();

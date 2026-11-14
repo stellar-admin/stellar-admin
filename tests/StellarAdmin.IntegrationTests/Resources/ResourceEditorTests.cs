@@ -178,7 +178,6 @@ public class ResourceEditorTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
                 resource.AllowCreate(create =>
                     create.Fields(fields =>
@@ -213,19 +212,17 @@ public class ResourceEditorTests
     {
         // Arrange
         var choices = new List<SelectListItem> { new("Notebook", "notebook") };
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate(create =>
-                    create.Fields(fields =>
-                    {
-                        fields.Clear();
-                        fields
-                            .Add(product => product.Name)
-                            .UseSelectEditor(options => options.UseItems(choices));
-                        fields.Add(product => product.Price);
-                    })
-                )
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate(create =>
+                create.Fields(fields =>
+                {
+                    fields.Clear();
+                    fields
+                        .Add(product => product.Name)
+                        .UseSelectEditor(options => options.UseItems(choices));
+                    fields.Add(product => product.Price);
+                })
+            )
         );
         using var client = sut.GetTestClient();
         var firstDocument = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -255,7 +252,7 @@ public class ResourceEditorTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m), new(9, "Retired lamp", 24m)]),
+            new ProductState([new(7, "Notebook", 8.50m), new(9, "Retired lamp", 24m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -295,20 +292,18 @@ public class ResourceEditorTests
     public async Task CustomEditor_RendersApplicationTemplateWithTypedSettings()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
-                {
-                    create.UseFactory(() => new(10m));
-                    create.Fields(fields =>
-                        fields
-                            .Add(model => model.ProductName)
-                            .UseEditor<ProductNameEditor>(options =>
-                                options.Placeholder = "Product name"
-                            )
-                    );
-                })
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
+            {
+                create.UseFactory(() => new(10m));
+                create.Fields(fields =>
+                    fields
+                        .Add(model => model.ProductName)
+                        .UseEditor<ProductNameEditor>(options =>
+                            options.Placeholder = "Product name"
+                        )
+                );
+            })
         );
         using var client = sut.GetTestClient();
 
@@ -328,18 +323,16 @@ public class ResourceEditorTests
     public async Task CustomEditor_WithoutHandler_RendersTemplateWithoutEditorData()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
-                {
-                    create.UseFactory(() => new(10m));
-                    create.Fields(fields =>
-                        fields
-                            .Add(model => model.ProductName)
-                            .UseEditor<ProductCodeEditor>(options => options.Prefix = "VT-")
-                    );
-                })
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
+            {
+                create.UseFactory(() => new(10m));
+                create.Fields(fields =>
+                    fields
+                        .Add(model => model.ProductName)
+                        .UseEditor<ProductCodeEditor>(options => options.Prefix = "VT-")
+                );
+            })
         );
         using var client = sut.GetTestClient();
 
@@ -357,18 +350,16 @@ public class ResourceEditorTests
     public async Task CustomEditor_CreatePage_ReceivesFactoryValue()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate(create =>
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate(create =>
+            {
+                create.UseFactory(() => new() { Name = "Draft" });
+                create.Fields(fields =>
                 {
-                    create.UseFactory(() => new() { Name = "Draft" });
-                    create.Fields(fields =>
-                    {
-                        fields.Clear();
-                        fields.Add(product => product.Name).UseEditor<ProductNameEditor>();
-                    });
-                })
+                    fields.Clear();
+                    fields.Add(product => product.Name).UseEditor<ProductNameEditor>();
+                });
+            })
         );
         using var client = sut.GetTestClient();
 
@@ -433,7 +424,7 @@ public class ResourceEditorTests
 
     private static Task<Microsoft.AspNetCore.Builder.WebApplication> CreateProductNameEditHost() =>
         StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -452,7 +443,7 @@ public class ResourceEditorTests
         Action<EditorClassNames>? classNames = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

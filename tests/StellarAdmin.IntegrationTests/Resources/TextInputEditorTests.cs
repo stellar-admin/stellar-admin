@@ -57,7 +57,7 @@ public class TextInputEditorTests
     public async Task DataTypeTemplate_PreservesFieldMetadata()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -79,7 +79,7 @@ public class TextInputEditorTests
     public async Task DataTypeTemplate_InvalidSubmission_ShowsFieldErrors()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "";
@@ -161,18 +161,16 @@ public class TextInputEditorTests
     public async Task UseEditor_PasswordProperty_InfersPasswordType()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
+            {
+                create.UseFactory(() => new(10m));
+                create.Fields(fields =>
                 {
-                    create.UseFactory(() => new(10m));
-                    create.Fields(fields =>
-                    {
-                        fields.Add(model => model.ProductName).UseTextInputEditor();
-                        fields.Add(model => model.Password).UseTextInputEditor();
-                    });
-                })
+                    fields.Add(model => model.ProductName).UseTextInputEditor();
+                    fields.Add(model => model.Password).UseTextInputEditor();
+                });
+            })
         );
         using var client = sut.GetTestClient();
 
@@ -269,18 +267,16 @@ public class TextInputEditorTests
     public async Task UseEditor_PrefixWithInvalidSubmission_MarksInputInvalid()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate(create =>
-                    create.Fields(fields =>
-                    {
-                        fields.Add(product => product.Name);
-                        fields
-                            .Add(product => product.Price)
-                            .UseTextInputEditor(input => input.Prefix = "$");
-                    })
-                )
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate(create =>
+                create.Fields(fields =>
+                {
+                    fields.Add(product => product.Name);
+                    fields
+                        .Add(product => product.Price)
+                        .UseTextInputEditor(input => input.Prefix = "$");
+                })
+            )
         );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
@@ -304,13 +300,11 @@ public class TextInputEditorTests
     private static Task<WebApplication> CreateTextInputFieldsHost(
         Action<ResourceFieldsBuilder<TextInputFieldsModel>> configureFields
     ) =>
-        StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate<TextInputFieldsModel, TextInputFieldsHandler>(create =>
-                {
-                    create.UseFactory(() => new());
-                    create.Fields(configureFields);
-                })
+        StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate<TextInputFieldsModel, TextInputFieldsHandler>(create =>
+            {
+                create.UseFactory(() => new());
+                create.Fields(configureFields);
+            })
         );
 }

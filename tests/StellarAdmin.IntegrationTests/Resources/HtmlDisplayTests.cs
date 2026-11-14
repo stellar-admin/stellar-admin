@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.TestHost;
+using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Displays;
 
@@ -14,7 +15,7 @@ public class HtmlDisplayTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, Html, 8.50m)]),
+            new ProductState([new(7, Html, 8.50m)]),
             resource =>
                 resource.Index(index =>
                     index.Columns(columns =>
@@ -41,7 +42,7 @@ public class HtmlDisplayTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, Html, 8.50m)]),
+            new ProductState([new(7, Html, 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

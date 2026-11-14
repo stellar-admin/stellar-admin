@@ -107,7 +107,6 @@ public class FieldLabelTests
         Action<ResourceFieldsBuilder<FieldLabelsModel>>? configureFields = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
                 resource.AllowCreate<FieldLabelsModel, FieldLabelsHandler>(create =>
                     create.Fields(

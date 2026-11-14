@@ -21,9 +21,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [2, 1] }
         );
         using var client = sut.GetTestClient();
@@ -58,9 +56,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [2, 1] }
         );
         using var client = sut.GetTestClient();
@@ -340,9 +336,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [1, 99] }
         );
         using var client = sut.GetTestClient();
@@ -394,9 +388,7 @@ public class MultiLookupSheetEditorTests
         var state = new MultiLookupFieldsState { Model = new() { CategoryIds = [1] } };
         await using var sut = await CreateStateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             state
         );
         using var client = sut.GetTestClient();
@@ -426,9 +418,7 @@ public class MultiLookupSheetEditorTests
         var state = new MultiLookupFieldsState { Model = new() { CategoryIds = [1, 2] } };
         await using var sut = await CreateStateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             state
         );
         using var client = sut.GetTestClient();
@@ -502,9 +492,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [1] }
         );
         using var client = sut.GetTestClient();
@@ -537,9 +525,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -574,9 +560,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -629,9 +613,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -658,9 +640,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -687,9 +667,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -750,9 +728,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -772,9 +748,7 @@ public class MultiLookupSheetEditorTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -820,7 +794,7 @@ public class MultiLookupSheetEditorTests
         configureCategories?.Invoke(categories.Categories);
 
         return StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

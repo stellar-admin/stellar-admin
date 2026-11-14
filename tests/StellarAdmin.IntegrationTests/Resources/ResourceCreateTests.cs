@@ -77,14 +77,11 @@ public class ResourceCreateTests
     public async Task ClearedLayout_RendersNoFieldsOrContainers()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-            {
-                var create = ConfigureLayout(resource);
-                create.Fields(fields => fields.Clear());
-            }
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+        {
+            var create = ConfigureLayout(resource);
+            create.Fields(fields => fields.Clear());
+        });
         using var client = sut.GetTestClient();
 
         // Act
@@ -106,26 +103,23 @@ public class ResourceCreateTests
     )
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+        {
+            if (customize)
             {
-                if (customize)
+                resource.AllowCreate(create =>
                 {
-                    resource.AllowCreate(create =>
+                    create.Title = "Add inventory";
+                    create.SubmitLabel = "Save product";
+                    create.Fields(fields =>
                     {
-                        create.Title = "Add inventory";
-                        create.SubmitLabel = "Save product";
-                        create.Fields(fields =>
-                        {
-                            fields.Clear();
-                            fields.Add(product => product.Name).Title = "Name of product";
-                            fields.Add(product => product.Price);
-                        });
+                        fields.Clear();
+                        fields.Add(product => product.Name).Title = "Name of product";
+                        fields.Add(product => product.Price);
                     });
-                }
+                });
             }
-        );
+        });
         using var client = sut.GetTestClient();
 
         // Act
@@ -293,24 +287,22 @@ public class ResourceCreateTests
     public async Task GridLayout_WritesResolvedColumnsSpansAndStarts()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource
-                    .AllowCreate()
-                    .Fields(fields =>
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource
+                .AllowCreate()
+                .Fields(fields =>
+                {
+                    fields.Clear();
+                    fields.Columns(columns => columns.Small(2).Large(3));
+                    fields.Add(product => product.Name).ColumnSpanFull();
+                    fields.Add(product => product.Price).ColumnSpan(2);
+                    fields.AddGroup(group =>
                     {
-                        fields.Clear();
-                        fields.Columns(columns => columns.Small(2).Large(3));
-                        fields.Add(product => product.Name).ColumnSpanFull();
-                        fields.Add(product => product.Price).ColumnSpan(2);
-                        fields.AddGroup(group =>
-                        {
-                            group.ColumnSpan(span => span.Medium(2));
-                            group.ColumnStart(2);
-                            group.Add(product => product.Id);
-                        });
-                    })
+                        group.ColumnSpan(span => span.Medium(2));
+                        group.ColumnStart(2);
+                        group.Add(product => product.Id);
+                    });
+                })
         );
         using var client = sut.GetTestClient();
 
@@ -354,7 +346,6 @@ public class ResourceCreateTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
                 resource
                     .AllowCreate()
@@ -428,7 +419,6 @@ public class ResourceCreateTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
             {
                 var create = ConfigureLayout(resource);
@@ -545,26 +535,23 @@ public class ResourceCreateTests
         List<InventoryItem> items,
         List<InventoryItem> created
     ) =>
-        StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
+        StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.Services.AddSingleton(items);
+            admin.AddResource<InventoryItem>(resource =>
             {
-                admin.Services.AddSingleton(items);
-                admin.AddResource<InventoryItem>(resource =>
+                resource.UseDataSource<InventoryItemDataSource>();
+                resource.AllowCreate(create =>
                 {
-                    resource.UseDataSource<InventoryItemDataSource>();
-                    resource.AllowCreate(create =>
+                    create.UseFactory(() =>
                     {
-                        create.UseFactory(() =>
-                        {
-                            var item = new InventoryItem("SKU-123");
-                            created.Add(item);
+                        var item = new InventoryItem("SKU-123");
+                        created.Add(item);
 
-                            return item;
-                        });
-                        create.Fields(fields => fields.Add(item => item.Name));
+                        return item;
                     });
+                    create.Fields(fields => fields.Add(item => item.Name));
                 });
-            }
-        );
+            });
+        });
 }

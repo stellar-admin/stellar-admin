@@ -230,9 +230,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabins)
-                .UseCheckboxGroupEditor(editor =>
-                    editor.Appearance = CheckboxGroupAppearance.Cards
-                )
+                .UseCheckboxGroupEditor(editor => editor.Appearance = CheckboxGroupAppearance.Cards)
         );
         using var client = sut.GetTestClient();
 
@@ -251,9 +249,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields
-                .Add(model => model.Cabins)
-                .UseCheckboxGroupEditor(editor => editor.Columns(2))
+            fields.Add(model => model.Cabins).UseCheckboxGroupEditor(editor => editor.Columns(2))
         );
         using var client = sut.GetTestClient();
 
@@ -318,9 +314,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields
-                .Add(model => model.Cabin)
-                .UseRadioGroupEditor(editor => editor.Columns(2))
+            fields.Add(model => model.Cabin).UseRadioGroupEditor(editor => editor.Columns(2))
         );
         using var client = sut.GetTestClient();
 
@@ -457,9 +451,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Cabin)
-                .UseToggleGroupEditor(editor =>
-                    editor.Appearance = ToggleGroupAppearance.Joined
-                )
+                .UseToggleGroupEditor(editor => editor.Appearance = ToggleGroupAppearance.Joined)
         );
         using var client = sut.GetTestClient();
 
@@ -485,9 +477,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields
                 .Add(model => model.Insured)
-                .UseToggleGroupEditor(editor =>
-                    editor.Appearance = ToggleGroupAppearance.Buttons
-                )
+                .UseToggleGroupEditor(editor => editor.Appearance = ToggleGroupAppearance.Buttons)
         );
         using var client = sut.GetTestClient();
 
@@ -634,9 +624,7 @@ public class ChoiceEditorTests
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
-            fields
-                .Add(model => model.Seat)
-                .UseSelectEditor(select => select.UseItems(SeatChoices))
+            fields.Add(model => model.Seat).UseSelectEditor(select => select.UseItems(SeatChoices))
         );
         using var client = sut.GetTestClient();
 
@@ -659,9 +647,7 @@ public class ChoiceEditorTests
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
         {
-            fields
-                .Add(model => model.Seat)
-                .UseSelectEditor(select => select.UseItems(SeatChoices));
+            fields.Add(model => model.Seat).UseSelectEditor(select => select.UseItems(SeatChoices));
             fields.Add(model => model.RequiredCabin);
         });
         using var client = sut.GetTestClient();
@@ -1096,15 +1082,13 @@ public class ChoiceEditorTests
     private static Task<WebApplication> CreateChoiceFieldsHost(
         Action<ResourceFieldsBuilder<ChoiceFieldsModel>> configureFields
     ) =>
-        StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate<ChoiceFieldsModel, ChoiceFieldsHandler>(create =>
-                {
-                    create.UseFactory(() =>
-                        new() { Cabin = Cabin.Business, Cabins = [Cabin.Economy, Cabin.Business] }
-                    );
-                    create.Fields(configureFields);
-                })
+        StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate<ChoiceFieldsModel, ChoiceFieldsHandler>(create =>
+            {
+                create.UseFactory(() =>
+                    new() { Cabin = Cabin.Business, Cabins = [Cabin.Economy, Cabin.Business] }
+                );
+                create.Fields(configureFields);
+            })
         );
 }

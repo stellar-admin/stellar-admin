@@ -14,7 +14,7 @@ public class ResourceAddAnotherTests
     public async Task CreatePage_WithoutAddAnother_RendersOnlySubmitButton()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -36,9 +36,8 @@ public class ResourceAddAnotherTests
     )
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource => ConfigureAddAnother(resource, another => another.Label = label)
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            ConfigureAddAnother(resource, another => another.Label = label)
         );
         using var client = sut.GetTestClient();
 
@@ -169,9 +168,8 @@ public class ResourceAddAnotherTests
     public async Task CreateRow_WithAddAnother_RendersAddAnotherButton()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource => ConfigureInlineAddAnother(resource)
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            ConfigureInlineAddAnother(resource)
         );
         using var client = sut.GetTestClient();
 
@@ -191,22 +189,19 @@ public class ResourceAddAnotherTests
     public async Task IndexPage_WithoutAddAnother_LeavesAddAnotherMarkerEmpty()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+        {
+            resource.UseKey(product => product.Id);
+            resource.AllowCreate(create =>
             {
-                resource.UseKey(product => product.Id);
-                resource.AllowCreate(create =>
+                create.Fields(fields =>
                 {
-                    create.Fields(fields =>
-                    {
-                        fields.Add(product => product.Name);
-                        fields.Add(product => product.Price);
-                    });
-                    create.UseInlineRow();
+                    fields.Add(product => product.Name);
+                    fields.Add(product => product.Price);
                 });
-            }
-        );
+                create.UseInlineRow();
+            });
+        });
         using var client = sut.GetTestClient();
 
         // Act
@@ -222,13 +217,11 @@ public class ResourceAddAnotherTests
     public async Task IndexPage_WithInlineAddAnother_NamesWhatEndsTheRun()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                ConfigureInlineAddAnother(
-                    resource,
-                    inline => inline.AfterSave = InlineRowAfterSave.KeepInPlace
-                )
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            ConfigureInlineAddAnother(
+                resource,
+                inline => inline.AfterSave = InlineRowAfterSave.KeepInPlace
+            )
         );
         using var client = sut.GetTestClient();
 
@@ -333,9 +326,8 @@ public class ResourceAddAnotherTests
     public async Task CreateSheet_WithAddAnother_RendersNoAddAnotherButton()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource => ConfigureAddAnother(resource)
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            ConfigureAddAnother(resource)
         );
         using var client = sut.GetTestClient();
 

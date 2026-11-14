@@ -17,7 +17,7 @@ public class ResourcePageHeaderTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigurePages
         );
         using var client = sut.GetTestClient();
@@ -36,7 +36,7 @@ public class ResourcePageHeaderTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigurePages
         );
         using var client = sut.GetTestClient();
@@ -64,7 +64,7 @@ public class ResourcePageHeaderTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigurePages
         );
         using var client = sut.GetTestClient();
@@ -91,7 +91,7 @@ public class ResourcePageHeaderTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigurePages
         );
         using var client = sut.GetTestClient();
@@ -115,7 +115,7 @@ public class ResourcePageHeaderTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -150,27 +150,22 @@ public class ResourcePageHeaderTests
     public async Task ViewPage_WhenTitleIsOnlyTheKey_RendersLabel()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.AddResource<CustomProduct>(resource =>
             {
-                admin.AddResource<CustomProduct>(resource =>
-                {
-                    resource.SingularLabel = "Custom item";
-                    resource.PluralLabel = "Custom inventory";
-                    resource.UseDataSource<CustomProductDataSource>();
-                    resource.UseKey(product => product.Code);
-                    resource.AllowView(view =>
-                        view.Fields(fields => fields.Add(product => product.Code))
-                    );
-                });
-                admin.ConfigureResourceLabels(labels =>
-                    labels.View(view =>
-                        view.Title = resource => $"{resource.SingularLabel} details"
-                    )
+                resource.SingularLabel = "Custom item";
+                resource.PluralLabel = "Custom inventory";
+                resource.UseDataSource<CustomProductDataSource>();
+                resource.UseKey(product => product.Code);
+                resource.AllowView(view =>
+                    view.Fields(fields => fields.Add(product => product.Code))
                 );
-            }
-        );
+            });
+            admin.ConfigureResourceLabels(labels =>
+                labels.View(view => view.Title = resource => $"{resource.SingularLabel} details")
+            );
+        });
         using var client = sut.GetTestClient();
 
         // Act

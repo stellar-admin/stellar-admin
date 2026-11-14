@@ -13,7 +13,6 @@ public class ResourceSidebarTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource => resource.SidebarItem(item => item.Order = 10),
             admin =>
             {
@@ -63,7 +62,6 @@ public class ResourceSidebarTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource => resource.SidebarItem(item => item.Icon = "package"),
             admin =>
                 admin.AddResource<CustomProduct>(

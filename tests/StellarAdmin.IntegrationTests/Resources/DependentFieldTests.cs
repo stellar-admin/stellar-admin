@@ -252,10 +252,7 @@ public class DependentFieldTests
             .Add(trip => trip.CityId)
             .DependsOn(trip => trip.CountryId)
             .UseSelectEditor(select =>
-                select.UseItems(
-                    (trip, _, _) =>
-                        Task.FromResult(Cities(trip.CountryId!.Value))
-                )
+                select.UseItems((trip, _, _) => Task.FromResult(Cities(trip.CountryId!.Value)))
             );
         fields
             .Add(trip => trip.PlaceId)
@@ -285,7 +282,7 @@ public class DependentFieldTests
         Action<ResourceFieldsBuilder<TripFieldsModel>>? configureFields = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

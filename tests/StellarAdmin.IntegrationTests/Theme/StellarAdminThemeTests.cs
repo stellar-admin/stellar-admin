@@ -9,7 +9,7 @@ public class StellarAdminThemeTests
     public async Task DefaultConfiguration_RendersTheStylesheetWithoutWebFonts()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -32,15 +32,12 @@ public class StellarAdminThemeTests
         // Arrange
         const string Fonts =
             "https://fonts.googleapis.com/css2?family=Lexend:wght@300..700&display=swap";
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-            {
-                admin.AddStylesheet(Fonts);
-                admin.AddStylesheet("~/css/theme.css");
-                admin.AddStylesheet("~/css/overrides.css");
-            }
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.AddStylesheet(Fonts);
+            admin.AddStylesheet("~/css/theme.css");
+            admin.AddStylesheet("~/css/overrides.css");
+        });
         using var client = sut.GetTestClient();
 
         // Act

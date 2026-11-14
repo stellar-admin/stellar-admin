@@ -68,7 +68,7 @@ public class IconDisplayTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "wifi", 8.50m)]),
+            new ProductState([new(7, "wifi", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -103,7 +103,7 @@ public class IconDisplayTests
 
     private static Task<WebApplication> CreateGridAsync(bool? showName) =>
         StellarAdminTestHost.CreateAsync(
-            new([new(7, "wifi", 8.50m), new(8, "spa-flower", 9.50m)]),
+            new ProductState([new(7, "wifi", 8.50m), new(8, "spa-flower", 9.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

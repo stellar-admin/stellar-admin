@@ -20,17 +20,15 @@ public class SidebarLinkTests
     public async Task CustomProviderGroup_MergesIntoGroupWithSameLabel()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureServices: services =>
-                services.AddSingleton<ISidebarItemsProvider>(
-                    new FixedSidebarItemsProvider(
-                        new SidebarGroupItem(
-                            "Resources",
-                            [new SidebarLinkItem("Help", "/help") { Order = -1 }]
-                        )
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureServices: services =>
+            services.AddSingleton<ISidebarItemsProvider>(
+                new FixedSidebarItemsProvider(
+                    new SidebarGroupItem(
+                        "Resources",
+                        [new SidebarLinkItem("Help", "/help") { Order = -1 }]
                     )
                 )
+            )
         );
         using var client = sut.GetTestClient();
 
@@ -50,27 +48,24 @@ public class SidebarLinkTests
     public async Task Groups_AppearWhereTheirLabelFirstAppears()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-            {
-                admin.AddSidebarLink(
-                    "Revenue",
-                    SidebarLinkTarget.Url("/revenue"),
-                    link => link.Group = "Analytics"
-                );
-                admin.AddSidebarLink(
-                    "Reports",
-                    SidebarLinkTarget.Url("/reports"),
-                    link => link.Group = "Resources"
-                );
-                admin.AddSidebarLink(
-                    "Traffic",
-                    SidebarLinkTarget.Url("/traffic"),
-                    link => link.Group = "Analytics"
-                );
-            }
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.AddSidebarLink(
+                "Revenue",
+                SidebarLinkTarget.Url("/revenue"),
+                link => link.Group = "Analytics"
+            );
+            admin.AddSidebarLink(
+                "Reports",
+                SidebarLinkTarget.Url("/reports"),
+                link => link.Group = "Resources"
+            );
+            admin.AddSidebarLink(
+                "Traffic",
+                SidebarLinkTarget.Url("/traffic"),
+                link => link.Group = "Analytics"
+            );
+        });
         using var client = sut.GetTestClient();
 
         // Act
@@ -92,30 +87,27 @@ public class SidebarLinkTests
     public async Task LinksWithOrder_ComeBeforeResourcesWithout()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-            {
-                admin.AddSidebarLink(
-                    "Status",
-                    SidebarLinkTarget.Url("https://status.example.com"),
-                    link =>
-                    {
-                        link.Group = "Resources";
-                        link.Order = 5;
-                    }
-                );
-                admin.AddSidebarLink(
-                    "Reports",
-                    SidebarLinkTarget.Url("/reports"),
-                    link =>
-                    {
-                        link.Group = "Resources";
-                        link.Order = -1;
-                    }
-                );
-            }
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.AddSidebarLink(
+                "Status",
+                SidebarLinkTarget.Url("https://status.example.com"),
+                link =>
+                {
+                    link.Group = "Resources";
+                    link.Order = 5;
+                }
+            );
+            admin.AddSidebarLink(
+                "Reports",
+                SidebarLinkTarget.Url("/reports"),
+                link =>
+                {
+                    link.Group = "Resources";
+                    link.Order = -1;
+                }
+            );
+        });
         using var client = sut.GetTestClient();
 
         // Act
@@ -143,18 +135,15 @@ public class SidebarLinkTests
     public async Task Icon_RendersBeforeLabelInSidebarAndCommandPalette()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-            {
-                admin.AddSidebarLink(
-                    "Reports",
-                    SidebarLinkTarget.Url("/reports"),
-                    link => link.Icon = "chart-line"
-                );
-                admin.AddSidebarLink("Status", SidebarLinkTarget.Url("https://status.example.com"));
-            }
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.AddSidebarLink(
+                "Reports",
+                SidebarLinkTarget.Url("/reports"),
+                link => link.Icon = "chart-line"
+            );
+            admin.AddSidebarLink("Status", SidebarLinkTarget.Url("https://status.example.com"));
+        });
         using var client = sut.GetTestClient();
 
         // Act
@@ -194,7 +183,6 @@ public class SidebarLinkTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
             {
                 admin.AddSidebarLink("Missing report", SidebarLinkTarget.Page("/Missing"));
@@ -230,18 +218,15 @@ public class SidebarLinkTests
     public async Task OpenInNewTab_RendersTargetAndRel()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-            {
-                admin.AddSidebarLink(
-                    "Status",
-                    SidebarLinkTarget.Url("https://status.example.com"),
-                    link => link.OpenInNewTab = true
-                );
-                admin.AddSidebarLink("Reports", SidebarLinkTarget.Url("/reports"));
-            }
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.AddSidebarLink(
+                "Status",
+                SidebarLinkTarget.Url("https://status.example.com"),
+                link => link.OpenInNewTab = true
+            );
+            admin.AddSidebarLink("Reports", SidebarLinkTarget.Url("/reports"));
+        });
         using var client = sut.GetTestClient();
 
         // Act
@@ -273,7 +258,6 @@ public class SidebarLinkTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.AddSidebarLink(
                     "Invoices",
@@ -303,7 +287,6 @@ public class SidebarLinkTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
             {
                 admin.AddSidebarLink("Reports", SidebarLinkTarget.Page("/Reports"));
@@ -340,10 +323,8 @@ public class SidebarLinkTests
     public async Task UngroupedLinks_RenderInSidebarMenuWithoutHeading()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin.AddSidebarLink("Reports", SidebarLinkTarget.Url("/reports"))
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin.AddSidebarLink("Reports", SidebarLinkTarget.Url("/reports"))
         );
         using var client = sut.GetTestClient();
 
@@ -366,22 +347,19 @@ public class SidebarLinkTests
     public async Task UngroupedLinks_SortByOrderInCommandPalette()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-            {
-                admin.AddSidebarLink(
-                    "Reports",
-                    SidebarLinkTarget.Url("/reports"),
-                    link => link.Order = 10
-                );
-                admin.AddSidebarLink(
-                    "Overview",
-                    SidebarLinkTarget.Url("/overview"),
-                    link => link.Order = 5
-                );
-            }
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.AddSidebarLink(
+                "Reports",
+                SidebarLinkTarget.Url("/reports"),
+                link => link.Order = 10
+            );
+            admin.AddSidebarLink(
+                "Overview",
+                SidebarLinkTarget.Url("/overview"),
+                link => link.Order = 5
+            );
+        });
         using var client = sut.GetTestClient();
 
         // Act

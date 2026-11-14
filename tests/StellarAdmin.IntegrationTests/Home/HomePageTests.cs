@@ -12,7 +12,7 @@ public class HomePageTests
     public async Task Development_ShowsSetupChecklist()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -44,7 +44,7 @@ public class HomePageTests
     public async Task Development_OpensFirstStepStillToDo()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -63,10 +63,7 @@ public class HomePageTests
     public async Task Production_LinksToResources()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            environmentName: "Production"
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(environmentName: "Production");
         using var client = sut.GetTestClient();
 
         // Act
@@ -88,7 +85,6 @@ public class HomePageTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
             {
                 admin.AddResource<CustomProduct>(
@@ -126,7 +122,6 @@ public class HomePageTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configure: resource => resource.SidebarItem(item => item.Visible = false),
             environmentName: "Production"
         );
@@ -145,10 +140,8 @@ public class HomePageTests
     public async Task ChecklistTurnedOff_LinksToResourcesInDevelopment()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin.ConfigureHomePage(home => home.ShowSetupChecklist = false)
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin.ConfigureHomePage(home => home.ShowSetupChecklist = false)
         );
         using var client = sut.GetTestClient();
 
@@ -165,7 +158,6 @@ public class HomePageTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin => admin.RequireAuthorization(),
             configureServices: TestAuthenticationHandler.Register
         );
@@ -186,7 +178,6 @@ public class HomePageTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureServices: TestAuthenticationHandler.Register,
             configureRoute: route => route.RequireAuthorization()
         );
@@ -207,7 +198,6 @@ public class HomePageTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureServices: TestAuthenticationHandler.Register
         );
         using var client = sut.GetTestClient();

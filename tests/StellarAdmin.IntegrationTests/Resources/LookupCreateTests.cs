@@ -104,8 +104,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(
-            fields =>
-                fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
+            fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             addCategoryResource: false
         );
         using var client = sut.GetTestClient();
@@ -130,8 +129,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(
-            fields =>
-                fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
+            fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             admin =>
                 admin.AddResource<Category>(resource =>
                     resource.UseDataSource<CategoryDataSource>()
@@ -164,8 +162,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(
-            fields =>
-                fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
+            fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             configureCategories: resource =>
                 resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             configureServices: TestAuthenticationHandler.Register
@@ -579,7 +576,6 @@ public class LookupCreateTests
         bool addCategoryResource = true
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
                 resource.AllowCreate<LookupFieldsModel, LookupFieldsHandler>(create =>
                     create.Fields(configureFields)

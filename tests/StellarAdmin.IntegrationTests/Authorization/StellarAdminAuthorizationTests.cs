@@ -18,7 +18,6 @@ public class StellarAdminAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin => admin.RequireAuthorization(),
             configureServices: TestAuthenticationHandler.Register
         );
@@ -36,7 +35,6 @@ public class StellarAdminAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin => admin.RequireAuthorization(),
             configureServices: TestAuthenticationHandler.Register
         );
@@ -55,7 +53,6 @@ public class StellarAdminAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin => admin.RequireAuthorization(),
             configureServices: TestAuthenticationHandler.Register
         );
@@ -81,7 +78,6 @@ public class StellarAdminAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin => admin.RequireAuthorization("AdminOnly"),
             configureServices: services =>
             {
@@ -111,7 +107,6 @@ public class StellarAdminAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.RequireAuthorization(policy => policy.RequireRole("Admin")),
             configureServices: TestAuthenticationHandler.Register
@@ -136,7 +131,6 @@ public class StellarAdminAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" }),
             configureServices: TestAuthenticationHandler.Register
@@ -156,7 +150,6 @@ public class StellarAdminAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureServices: TestAuthenticationHandler.Register,
             configureRoute: route => route.RequireAuthorization()
         );

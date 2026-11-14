@@ -14,7 +14,7 @@ public class ResourceCustomCreateTests
     public async Task CustomModel_RendersTypedLayoutFactoryValuesAndResourceLabels()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]), Configure);
+        await using var sut = await StellarAdminTestHost.CreateAsync(Configure);
         using var client = sut.GetTestClient();
 
         // Act
@@ -201,33 +201,28 @@ public class ResourceCustomCreateTests
     public async Task RepeatedCreate_UsesOnlyLatestRegistration(bool customModel)
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+        {
+            resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
+            {
+                create.Title = "Discarded title";
+                create.SubmitLabel = "Discarded submit";
+                create.UseFactory(() => throw new InvalidOperationException("Discarded factory"));
+                create.Fields(fields => fields.Add(model => model.Password));
+            });
+            if (customModel)
             {
                 resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
                 {
-                    create.Title = "Discarded title";
-                    create.SubmitLabel = "Discarded submit";
-                    create.UseFactory(() =>
-                        throw new InvalidOperationException("Discarded factory")
-                    );
-                    create.Fields(fields => fields.Add(model => model.Password));
+                    create.UseFactory(() => new(25m));
+                    create.Fields(fields => fields.Add(model => model.ProductName));
                 });
-                if (customModel)
-                {
-                    resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
-                    {
-                        create.UseFactory(() => new(25m));
-                        create.Fields(fields => fields.Add(model => model.ProductName));
-                    });
-                }
-                else
-                {
-                    resource.AllowCreate().Fields(fields => fields.Add(product => product.Name));
-                }
             }
-        );
+            else
+            {
+                resource.AllowCreate().Fields(fields => fields.Add(product => product.Name));
+            }
+        });
         using var client = sut.GetTestClient();
 
         // Act

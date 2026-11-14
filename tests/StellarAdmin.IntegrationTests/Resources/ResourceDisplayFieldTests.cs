@@ -18,19 +18,17 @@ public class ResourceDisplayFieldTests
     public async Task Create_WithDisplayField_ShowsEmptyText()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate(create =>
-                    create.Fields(fields =>
-                    {
-                        fields.Add(product => product.Price);
-                        fields.AddDisplayField(
-                            product => product.Name,
-                            field => field.EmptyText = "Not named yet"
-                        );
-                    })
-                )
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate(create =>
+                create.Fields(fields =>
+                {
+                    fields.Add(product => product.Price);
+                    fields.AddDisplayField(
+                        product => product.Name,
+                        field => field.EmptyText = "Not named yet"
+                    );
+                })
+            )
         );
         using var client = sut.GetTestClient();
 
@@ -53,7 +51,7 @@ public class ResourceDisplayFieldTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -84,7 +82,7 @@ public class ResourceDisplayFieldTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -115,7 +113,7 @@ public class ResourceDisplayFieldTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -149,7 +147,7 @@ public class ResourceDisplayFieldTests
 
         // Act
         await using var app = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -185,7 +183,7 @@ public class ResourceDisplayFieldTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(id, "Notebook", 8.50m)]),
+            new ProductState([new(id, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -551,7 +549,7 @@ public class ResourceDisplayFieldTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -620,7 +618,7 @@ public class ResourceDisplayFieldTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -665,7 +663,7 @@ public class ResourceDisplayFieldTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -715,7 +713,7 @@ public class ResourceDisplayFieldTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureEdit
         );
         using var client = sut.GetTestClient();
@@ -768,7 +766,7 @@ public class ResourceDisplayFieldTests
         string? culture = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

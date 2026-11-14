@@ -20,7 +20,6 @@ public class ResourceAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource => resource.RequireAuthorization(),
             admin =>
                 admin.AddResource<CustomProduct>(resource =>
@@ -47,7 +46,6 @@ public class ResourceAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource => resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             admin => admin.RequireAuthorization(policy => policy.RequireRole("Staff")),
             TestAuthenticationHandler.Register
@@ -67,7 +65,6 @@ public class ResourceAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource => resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             admin => admin.RequireAuthorization(policy => policy.RequireRole("Staff")),
             TestAuthenticationHandler.Register
@@ -92,7 +89,6 @@ public class ResourceAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
             {
                 resource.RequireAuthorization("CatalogPolicy");
@@ -131,7 +127,6 @@ public class ResourceAuthorizationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource => resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             admin =>
                 admin.AddResource<CustomProduct>(resource =>

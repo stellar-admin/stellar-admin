@@ -402,7 +402,6 @@ public class ResourceReferenceTests
         Action<IServiceCollection>? configureServices = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
                 resource.AllowCreate<ReferenceFieldsModel, ReferenceFieldsHandler>(create =>
                 {

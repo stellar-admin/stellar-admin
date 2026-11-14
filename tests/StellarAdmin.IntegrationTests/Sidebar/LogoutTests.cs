@@ -15,10 +15,8 @@ public class LogoutTests
     {
         // Arrange
         var log = new SignOutLog();
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureServices: services =>
-                AddSchemes(services, log, defaultScheme: "Local", signInScheme: "External")
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureServices: services =>
+            AddSchemes(services, log, defaultScheme: "Local", signInScheme: "External")
         );
         using var client = CreateClient(sut);
         var form = await FormTestHelpers.PrepareForm(client, "/stellaradmin");
@@ -41,7 +39,6 @@ public class LogoutTests
         // Arrange
         var log = new SignOutLog();
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu =>
                     menu.Logout(logout =>
@@ -78,7 +75,6 @@ public class LogoutTests
         // Arrange
         var log = new SignOutLog();
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu =>
                     menu.Logout(logout =>
@@ -112,10 +108,8 @@ public class LogoutTests
     {
         // Arrange
         var log = new SignOutLog();
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureServices: services =>
-                AddSchemes(services, log, defaultScheme: "Local", signInScheme: "Local")
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureServices: services =>
+            AddSchemes(services, log, defaultScheme: "Local", signInScheme: "Local")
         );
         using var client = CreateClient(sut);
 

@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
+using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 
 namespace StellarAdmin.IntegrationTests.Resources;
@@ -10,7 +11,7 @@ public class ResourceIndexTests
     public async Task EmptyDataSource_RendersEmptyStateAndColumnHeaders()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -30,7 +31,7 @@ public class ResourceIndexTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(1, "<script>alert('test')</script>", 12.5m)])
+            new ProductState([new(1, "<script>alert('test')</script>", 12.5m)])
         );
         using var client = sut.GetTestClient();
 
@@ -67,7 +68,7 @@ public class ResourceIndexTests
     public async Task UnregisteredResource_ReturnsNotFound()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act

@@ -16,7 +16,7 @@ public class ResourceCustomEditTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             Configure
         );
         using var client = sut.GetTestClient();

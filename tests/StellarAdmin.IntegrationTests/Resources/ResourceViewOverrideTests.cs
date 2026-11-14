@@ -16,18 +16,16 @@ public class ResourceViewOverrideTests
     )
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin.AddResource<CustomProduct>(resource =>
-                {
-                    resource.SingularLabel = "Custom item";
-                    resource.PluralLabel = "Custom inventory";
-                    resource.UseDataSource<CustomProductDataSource>();
-                    resource.UseKey(product => product.Code);
-                    resource.AllowCreate();
-                    resource.AllowEdit();
-                })
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin.AddResource<CustomProduct>(resource =>
+            {
+                resource.SingularLabel = "Custom item";
+                resource.PluralLabel = "Custom inventory";
+                resource.UseDataSource<CustomProductDataSource>();
+                resource.UseKey(product => product.Code);
+                resource.AllowCreate();
+                resource.AllowEdit();
+            })
         );
         using var client = sut.GetTestClient();
 

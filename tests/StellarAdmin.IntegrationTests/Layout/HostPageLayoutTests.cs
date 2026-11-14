@@ -12,7 +12,6 @@ public class HostPageLayoutTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.AddSidebarLink("Sales report", SidebarLinkTarget.Page("/SalesReport")),
             configureApp: app => app.MapRazorPages()
@@ -23,7 +22,9 @@ public class HostPageLayoutTests
         var document = await client.GetDocumentAsync("/SalesReport");
 
         // Assert
-        await Assert.That(document.Title).IsEqualTo("Sales report - Stellar Admin Integration Tests");
+        await Assert
+            .That(document.Title)
+            .IsEqualTo("Sales report - Stellar Admin Integration Tests");
         await Assert.That(document.QuerySelector("#sales-report")).IsNotNull();
         await Assert.That(document.QuerySelector("#--command-palette")).IsNotNull();
         await Assert.That(document.QuerySelector("template#admin-sheet-template")).IsNotNull();

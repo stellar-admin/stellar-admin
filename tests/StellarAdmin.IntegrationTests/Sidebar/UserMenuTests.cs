@@ -18,7 +18,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureServices: TestAuthenticationHandler.Register
         );
         using var client = sut.GetTestClient();
@@ -35,7 +34,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureServices: TestAuthenticationHandler.Register
         );
         using var client = sut.GetTestClient();
@@ -83,7 +81,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu =>
                 {
@@ -123,7 +120,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu => menu.DescriptionClaimType = ClaimTypes.Role),
             configureServices: TestAuthenticationHandler.Register
@@ -145,7 +141,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureServices: TestAuthenticationHandler.Register
         );
         using var client = sut.GetTestClient();
@@ -169,7 +164,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu =>
                     menu.Add(UserMenuItem.Url("Help", "~/help", item => item.Icon = "life-buoy"))
@@ -199,7 +193,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu =>
                     menu.Add(UserMenuItem.Action("Profile", "Index", "Home", "StellarAdmin"))
@@ -244,7 +237,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu =>
                     menu.Add(UserMenuItem.Page("Account", "/Account/Manage/Index", "Identity"))
@@ -273,7 +265,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu =>
                     menu.Add(UserMenuItem.Url("Help", "~/help")).Clear()
@@ -297,7 +288,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu => menu.Logout(logout => logout.Show = false)),
             configureServices: TestAuthenticationHandler.Register
@@ -318,7 +308,6 @@ public class UserMenuTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 admin.ConfigureUserMenu(menu => menu.Logout(logout => logout.Icon = null)),
             configureServices: TestAuthenticationHandler.Register

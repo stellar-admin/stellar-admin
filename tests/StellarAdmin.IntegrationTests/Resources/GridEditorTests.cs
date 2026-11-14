@@ -171,7 +171,6 @@ public class GridEditorTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 AddGridCells(
                     admin,
@@ -244,7 +243,6 @@ public class GridEditorTests
         string environment = "Development"
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([]),
             configureAdmin: admin =>
                 AddGridCells(
                     admin,

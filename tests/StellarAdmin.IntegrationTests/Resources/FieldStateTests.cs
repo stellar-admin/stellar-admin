@@ -328,7 +328,6 @@ public class FieldStateTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
                 resource.AllowCreate<LookupFieldsModel, LookupFieldsHandler>(create =>
                 {
@@ -370,7 +369,7 @@ public class FieldStateTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", (decimal)price)]),
+            new ProductState([new(7, "Notebook", (decimal)price)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -404,7 +403,7 @@ public class FieldStateTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -463,23 +462,19 @@ public class FieldStateTests
     private static Task<WebApplication> CreateChoiceFieldsHost(
         Action<ResourceFieldsBuilder<ChoiceFieldsModel>> configureFields
     ) =>
-        StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate<ChoiceFieldsModel, ChoiceFieldsHandler>(create =>
-                    create.Fields(configureFields)
-                )
+        StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate<ChoiceFieldsModel, ChoiceFieldsHandler>(create =>
+                create.Fields(configureFields)
+            )
         );
 
     private static Task<WebApplication> CreateInputFieldsHost(
         Action<ResourceFieldsBuilder<InputFieldsModel>> configureFields
     ) =>
-        StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate<InputFieldsModel, InputFieldsHandler>(create =>
-                    create.Fields(configureFields)
-                )
+        StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate<InputFieldsModel, InputFieldsHandler>(create =>
+                create.Fields(configureFields)
+            )
         );
 
     private static Task<WebApplication> CreateProductsHost(
@@ -499,23 +494,20 @@ public class FieldStateTests
         TourStore store,
         Action<ResourceFieldsBuilder<Tour>> configureFields
     ) =>
-        StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-            {
-                admin.Services.AddSingleton(store);
-                admin.AddResource<Tour>(
-                    "tours",
-                    resource =>
-                    {
-                        resource.UseDataSource<TourDataSource>();
-                        resource.UseKey(tour => tour.Id);
-                        resource.Index(index =>
-                            index.Columns(columns => columns.Add(tour => tour.Name))
-                        );
-                        resource.AllowEdit(builder => builder.Fields(configureFields));
-                    }
-                );
-            }
-        );
+        StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.Services.AddSingleton(store);
+            admin.AddResource<Tour>(
+                "tours",
+                resource =>
+                {
+                    resource.UseDataSource<TourDataSource>();
+                    resource.UseKey(tour => tour.Id);
+                    resource.Index(index =>
+                        index.Columns(columns => columns.Add(tour => tour.Name))
+                    );
+                    resource.AllowEdit(builder => builder.Fields(configureFields));
+                }
+            );
+        });
 }

@@ -41,9 +41,8 @@ public class ResourceDeleteTests
     public async Task CreatePageWithDeletion_HasNoDeleteControl()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new ProductState([]),
-            resource => resource.UseKey(product => product.Id).AllowDelete()
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+            resource.UseKey(product => product.Id).AllowDelete()
         );
         using var client = sut.GetTestClient();
 

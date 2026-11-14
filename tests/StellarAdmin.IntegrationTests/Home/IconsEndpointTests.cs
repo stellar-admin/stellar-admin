@@ -19,7 +19,7 @@ public class IconsEndpointTests
     public async Task Icons_ReturnsEveryRegisteredIconWithItsMarkup()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
         var registered = sut.Services.GetRequiredService<IOptions<IconOptions>>().Value;
 
@@ -46,7 +46,7 @@ public class IconsEndpointTests
     public async Task Icons_AcceptingCompression_ReturnsCompressedPayload(string encoding)
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
         var plain = await client.GetByteArrayAsync(IconsUrl);
         using var request = new HttpRequestMessage(HttpMethod.Get, IconsUrl);
@@ -67,7 +67,7 @@ public class IconsEndpointTests
     public async Task Icons_WithCurrentVersion_IsCachedForGood()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
         var version = (await client.GetAsync(IconsUrl)).Headers.ETag!.Tag.Trim('"');
 
@@ -88,7 +88,7 @@ public class IconsEndpointTests
     public async Task Icons_WithoutCurrentVersion_IsRevalidated(string query)
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -103,7 +103,7 @@ public class IconsEndpointTests
     public async Task Icons_WithMatchingETag_ReturnsNotModified()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
         var etag = (await client.GetAsync(IconsUrl)).Headers.ETag!;
         using var request = new HttpRequestMessage(HttpMethod.Get, IconsUrl);
@@ -120,30 +120,28 @@ public class IconsEndpointTests
     public async Task Icons_AddedInCode_AreIncludedWithNamespace()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureServices: services =>
-                services.Configure<IconOptions>(options =>
-                {
-                    options.ClearIcons();
-                    options.AddIcon(
-                        "voyager-compass",
-                        new IconDefinition(
-                            new Dictionary<string, string> { ["viewBox"] = "0 0 24 24" },
-                            [
-                                new SvgShape(
-                                    "circle",
-                                    new Dictionary<string, string>
-                                    {
-                                        ["cx"] = "12",
-                                        ["cy"] = "12",
-                                        ["r"] = "10",
-                                    }
-                                ),
-                            ]
-                        )
-                    );
-                })
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureServices: services =>
+            services.Configure<IconOptions>(options =>
+            {
+                options.ClearIcons();
+                options.AddIcon(
+                    "voyager-compass",
+                    new IconDefinition(
+                        new Dictionary<string, string> { ["viewBox"] = "0 0 24 24" },
+                        [
+                            new SvgShape(
+                                "circle",
+                                new Dictionary<string, string>
+                                {
+                                    ["cx"] = "12",
+                                    ["cy"] = "12",
+                                    ["r"] = "10",
+                                }
+                            ),
+                        ]
+                    )
+                );
+            })
         );
         using var client = sut.GetTestClient();
 

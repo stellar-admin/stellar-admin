@@ -281,13 +281,11 @@ public class SliderEditorTests
     private static Task<WebApplication> CreateSliderFieldsHost(
         Action<ResourceFieldsBuilder<InputFieldsModel>> configureFields
     ) =>
-        StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate<InputFieldsModel, InputFieldsHandler>(create =>
-                {
-                    create.UseFactory(() => new() { Passengers = 2 });
-                    create.Fields(configureFields);
-                })
+        StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate<InputFieldsModel, InputFieldsHandler>(create =>
+            {
+                create.UseFactory(() => new() { Passengers = 2 });
+                create.Fields(configureFields);
+            })
         );
 }

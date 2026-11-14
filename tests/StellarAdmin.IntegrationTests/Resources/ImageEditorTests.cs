@@ -315,7 +315,7 @@ public class ImageEditorTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "notebook.jpg", 8.50m)]),
+            new ProductState([new(7, "notebook.jpg", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -419,7 +419,7 @@ public class ImageEditorTests
         Action<IServiceCollection>? configureServices = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

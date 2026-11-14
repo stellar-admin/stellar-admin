@@ -138,9 +138,7 @@ public class MultiLookupCreateTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             addCategoryResource: false
         );
         using var client = sut.GetTestClient();
@@ -172,9 +170,7 @@ public class MultiLookupCreateTests
         // Arrange
         await using var sut = await CreateHost(
             fields =>
-                fields
-                    .Add(model => model.CategoryIds)
-                    .UseMultiLookupSheetEditor(UseCategories),
+                fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             resource => resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             configureServices: TestAuthenticationHandler.Register
         );
@@ -197,7 +193,7 @@ public class MultiLookupCreateTests
         bool addCategoryResource = true
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

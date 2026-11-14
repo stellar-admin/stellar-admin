@@ -12,7 +12,7 @@ public class EnvironmentIndicatorTests
     public async Task NotEnabled_ShowsNoIndicator()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -26,19 +26,17 @@ public class EnvironmentIndicatorTests
     public async Task Stripe_ShowsLabelColorAndTabSize()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin.EnableEnvironmentIndicator(
-                    EnvironmentIndicator.Stripe(
-                        "Testing",
-                        stripe =>
-                        {
-                            stripe.Color = EnvironmentColor.Warning;
-                            stripe.TabSize = EnvironmentIndicatorTabSize.Large;
-                        }
-                    )
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin.EnableEnvironmentIndicator(
+                EnvironmentIndicator.Stripe(
+                    "Testing",
+                    stripe =>
+                    {
+                        stripe.Color = EnvironmentColor.Warning;
+                        stripe.TabSize = EnvironmentIndicatorTabSize.Large;
+                    }
                 )
+            )
         );
         using var client = sut.GetTestClient();
 
@@ -57,10 +55,8 @@ public class EnvironmentIndicatorTests
     public async Task Frame_ShowsNeutralFrameWithMediumTabByDefault()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin.EnableEnvironmentIndicator(EnvironmentIndicator.Frame("Local"))
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin.EnableEnvironmentIndicator(EnvironmentIndicator.Frame("Local"))
         );
         using var client = sut.GetTestClient();
 
@@ -79,19 +75,17 @@ public class EnvironmentIndicatorTests
     public async Task BannerWithCustomColor_ShowsDescriptionAndCustomColors()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin.EnableEnvironmentIndicator(
-                    EnvironmentIndicator.Banner(
-                        "Live",
-                        banner =>
-                        {
-                            banner.Color = EnvironmentColor.Custom("#b91c1c", "#f87171");
-                            banner.Description = "Changes affect live customers";
-                        }
-                    )
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin.EnableEnvironmentIndicator(
+                EnvironmentIndicator.Banner(
+                    "Live",
+                    banner =>
+                    {
+                        banner.Color = EnvironmentColor.Custom("#b91c1c", "#f87171");
+                        banner.Description = "Changes affect live customers";
+                    }
                 )
+            )
         );
         using var client = sut.GetTestClient();
 
@@ -115,12 +109,10 @@ public class EnvironmentIndicatorTests
     public async Task EnabledTwice_ShowsLastIndicator()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin
-                    .EnableEnvironmentIndicator(EnvironmentIndicator.Stripe("Testing"))
-                    .EnableEnvironmentIndicator(EnvironmentIndicator.Banner("Live"))
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin
+                .EnableEnvironmentIndicator(EnvironmentIndicator.Stripe("Testing"))
+                .EnableEnvironmentIndicator(EnvironmentIndicator.Banner("Live"))
         );
         using var client = sut.GetTestClient();
 

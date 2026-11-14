@@ -15,7 +15,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
         using var client = sut.GetTestClient();
@@ -35,7 +35,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
         using var client = sut.GetTestClient();
@@ -55,7 +55,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
         using var client = sut.GetTestClient();
@@ -78,7 +78,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
         using var client = sut.GetTestClient();
@@ -229,7 +229,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
         using var client = sut.GetTestClient();
@@ -253,7 +253,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);
@@ -276,7 +276,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
         using var client = sut.GetTestClient();
@@ -374,7 +374,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
         using var client = sut.GetTestClient();
@@ -407,7 +407,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
                 ConfigureInlineRows(
                     resource,
@@ -437,7 +437,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
                 ConfigureInlineRows(
                     resource,
@@ -475,7 +475,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
                 ConfigureInlineRows(
                     resource,
@@ -506,7 +506,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 ConfigureInlineRows(resource);
@@ -553,7 +553,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureSearchableInlineRows
         );
         using var client = sut.GetTestClient();
@@ -585,7 +585,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureSearchableInlineRows
         );
         using var client = sut.GetTestClient();
@@ -720,7 +720,7 @@ public class ResourceInlineRowTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 ConfigureSearchableInlineRows(resource);

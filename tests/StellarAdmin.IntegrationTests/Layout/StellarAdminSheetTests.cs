@@ -10,17 +10,15 @@ public class StellarAdminSheetTests
     public async Task ConfiguredLabels_ReplaceErrorText()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-                admin.ConfigureResourceLabels(labels =>
-                    labels.Sheet(sheet =>
-                    {
-                        sheet.ErrorTitle = "Could not open";
-                        sheet.ErrorDescription = "Please try once more.";
-                        sheet.RetryLabel = "Reload";
-                    })
-                )
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            admin.ConfigureResourceLabels(labels =>
+                labels.Sheet(sheet =>
+                {
+                    sheet.ErrorTitle = "Could not open";
+                    sheet.ErrorDescription = "Please try once more.";
+                    sheet.RetryLabel = "Reload";
+                })
+            )
         );
         using var client = sut.GetTestClient();
 
@@ -49,7 +47,7 @@ public class StellarAdminSheetTests
     public async Task Layout_RendersSheetLevelTemplate()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act

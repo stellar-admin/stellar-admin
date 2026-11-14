@@ -277,7 +277,7 @@ public class RichTextEditorTests
         Action<IServiceCollection>? configureServices = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([new(7, "Notebook", 8.50m)]),
+            new ProductState([new(7, "Notebook", 8.50m)]),
             resource =>
             {
                 resource.UseKey(product => product.Id);

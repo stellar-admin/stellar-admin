@@ -16,9 +16,8 @@ public class ResourceCapabilitiesTests
     public async Task UnregisteredActions_AreHidden(bool fullCrud)
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin => Configure(admin, fullCrud)
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            Configure(admin, fullCrud)
         );
         using var client = sut.GetTestClient();
 
@@ -46,9 +45,8 @@ public class ResourceCapabilitiesTests
     )
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin => Configure(admin, fullCrud)
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+            Configure(admin, fullCrud)
         );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client);

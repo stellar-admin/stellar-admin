@@ -31,7 +31,7 @@ public class ResourceConfigurationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([new(1, "Notebook", 12.50m)]),
+            new ProductState([new(1, "Notebook", 12.50m)]),
             resource =>
                 resource.Index(index =>
                     index.Columns(columns =>
@@ -64,7 +64,6 @@ public class ResourceConfigurationTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
             resource =>
             {
                 resource.SingularLabel = "Inventory item";
@@ -125,7 +124,7 @@ public class ResourceConfigurationTests
     public async Task PascalCaseRequest_ResolvesAction()
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(new([]));
+        await using var sut = await StellarAdminTestHost.CreateAsync();
         using var client = sut.GetTestClient();
 
         // Act
@@ -144,14 +143,11 @@ public class ResourceConfigurationTests
     )
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-            {
-                resource.PluralLabel = "Inventory";
-                resource.Index(index => index.Title = title);
-            }
-        );
+        await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
+        {
+            resource.PluralLabel = "Inventory";
+            resource.Index(index => index.Title = title);
+        });
         using var client = sut.GetTestClient();
 
         // Act
@@ -169,22 +165,19 @@ public class ResourceConfigurationTests
     public async Task RepeatedRegistration_RendersComposedLabels(string? plural, string expected)
     {
         // Arrange
-        await using var sut = await StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
+        await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.AddResource<Product>(resource =>
             {
-                admin.AddResource<Product>(resource =>
+                resource.SingularLabel = "Item";
+                if (plural is not null)
                 {
-                    resource.SingularLabel = "Item";
-                    if (plural is not null)
-                    {
-                        resource.PluralLabel = plural;
-                    }
-                });
-                admin.AddResource<Product>().SingularLabel = "Person";
-                admin.AddResource<Product>();
-            }
-        );
+                    resource.PluralLabel = plural;
+                }
+            });
+            admin.AddResource<Product>().SingularLabel = "Person";
+            admin.AddResource<Product>();
+        });
         using var client = sut.GetTestClient();
 
         // Act

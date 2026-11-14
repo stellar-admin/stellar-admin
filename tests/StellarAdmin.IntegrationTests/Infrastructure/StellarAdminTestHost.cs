@@ -11,6 +11,25 @@ namespace StellarAdmin.IntegrationTests.Infrastructure;
 
 internal static class StellarAdminTestHost
 {
+    // For tests that never read or seed the Product resource's data
+    public static Task<WebApplication> CreateAsync(
+        Action<ResourceBuilder<Product>>? configure = null,
+        Action<StellarAdminBuilder>? configureAdmin = null,
+        Action<IServiceCollection>? configureServices = null,
+        Action<ControllerActionEndpointConventionBuilder>? configureRoute = null,
+        Action<WebApplication>? configureApp = null,
+        string environmentName = "Development"
+    ) =>
+        CreateAsync(
+            new ProductState([]),
+            configure,
+            configureAdmin,
+            configureServices,
+            configureRoute,
+            configureApp,
+            environmentName
+        );
+
     public static async Task<WebApplication> CreateAsync(
         ProductState state,
         Action<ResourceBuilder<Product>>? configure = null,

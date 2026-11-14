@@ -616,43 +616,40 @@ public class CollectionEditorTests
         Action<ResourceViewBuilder<Tour>>? view = null,
         Action<ResourceColumnsBuilder<Tour>>? configureIndex = null
     ) =>
-        StellarAdminTestHost.CreateAsync(
-            new([]),
-            configureAdmin: admin =>
-            {
-                admin.Services.AddSingleton(store);
-                admin.AddResource<Tour>(
-                    "tours",
-                    resource =>
+        StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
+        {
+            admin.Services.AddSingleton(store);
+            admin.AddResource<Tour>(
+                "tours",
+                resource =>
+                {
+                    resource.UseDataSource<TourDataSource>();
+                    resource.UseKey(tour => tour.Id);
+                    resource.Index(index =>
+                        index.Columns(columns =>
+                        {
+                            columns.Add(tour => tour.Name);
+                            configureIndex?.Invoke(columns);
+                        })
+                    );
+                    if (create is not null)
                     {
-                        resource.UseDataSource<TourDataSource>();
-                        resource.UseKey(tour => tour.Id);
-                        resource.Index(index =>
-                            index.Columns(columns =>
-                            {
-                                columns.Add(tour => tour.Name);
-                                configureIndex?.Invoke(columns);
-                            })
-                        );
-                        if (create is not null)
-                        {
-                            resource.AllowCreate(create);
-                        }
-
-                        if (edit is not null)
-                        {
-                            resource.AllowEdit(edit);
-                        }
-
-                        if (view is not null)
-                        {
-                            resource.AllowView(view);
-                        }
+                        resource.AllowCreate(create);
                     }
-                );
-                configureAdmin?.Invoke(admin);
-            }
-        );
+
+                    if (edit is not null)
+                    {
+                        resource.AllowEdit(edit);
+                    }
+
+                    if (view is not null)
+                    {
+                        resource.AllowView(view);
+                    }
+                }
+            );
+            configureAdmin?.Invoke(admin);
+        });
 
     private static IElement Editor(IParentNode document, string name) =>
         document.RequiredElement($"sel-collection-editor[data-name='{name}']");

@@ -433,7 +433,6 @@ public class ResourceColumnDisplayTests
         change?.Invoke(facts);
 
         return StellarAdminTestHost.CreateAsync(
-            new([]),
             configureServices: services =>
             {
                 configureServices?.Invoke(services);

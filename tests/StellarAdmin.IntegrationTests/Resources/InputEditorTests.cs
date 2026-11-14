@@ -266,9 +266,7 @@ public class InputEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
         {
             fields.Add(model => model.BookingCode).UseOneTimeCodeEditor();
-            fields
-                .Add(model => model.PromoCode)
-                .UseOneTimeCodeEditor(code => code.Length = 8);
+            fields.Add(model => model.PromoCode).UseOneTimeCodeEditor(code => code.Length = 8);
         });
         using var client = sut.GetTestClient();
 
@@ -343,34 +341,24 @@ public class InputEditorTests
     private static Task<WebApplication> CreateInputFieldsHost(
         Action<ResourceFieldsBuilder<InputFieldsModel>> configureFields
     ) =>
-        StellarAdminTestHost.CreateAsync(
-            new([]),
-            resource =>
-                resource.AllowCreate<InputFieldsModel, InputFieldsHandler>(create =>
-                {
-                    create.UseFactory(() =>
-                        new()
-                        {
-                            BookingCode = "1234",
-                            Booked = new DateTimeOffset(
-                                2026,
-                                10,
-                                1,
-                                9,
-                                30,
-                                0,
-                                TimeSpan.FromHours(2)
-                            ),
-                            Boarding = new DateTime(2026, 10, 1, 9, 30, 0),
-                            Departure = new DateOnly(2026, 10, 1),
-                            DepartureDate = new DateTime(2026, 10, 1),
-                            Gate = new TimeOnly(9, 30),
-                            Insured = true,
-                            Notes = "Window seat",
-                            Passengers = 2,
-                        }
-                    );
-                    create.Fields(configureFields);
-                })
+        StellarAdminTestHost.CreateAsync(resource =>
+            resource.AllowCreate<InputFieldsModel, InputFieldsHandler>(create =>
+            {
+                create.UseFactory(() =>
+                    new()
+                    {
+                        BookingCode = "1234",
+                        Booked = new DateTimeOffset(2026, 10, 1, 9, 30, 0, TimeSpan.FromHours(2)),
+                        Boarding = new DateTime(2026, 10, 1, 9, 30, 0),
+                        Departure = new DateOnly(2026, 10, 1),
+                        DepartureDate = new DateTime(2026, 10, 1),
+                        Gate = new TimeOnly(9, 30),
+                        Insured = true,
+                        Notes = "Window seat",
+                        Passengers = 2,
+                    }
+                );
+                create.Fields(configureFields);
+            })
         );
 }

@@ -99,7 +99,6 @@ public class HtmxAuthorizationTests
         Action<WebApplication>? configureApp = null
     ) =>
         StellarAdminTestHost.CreateAsync(
-            new([]),
             resource => resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             configureServices: services =>
             {
