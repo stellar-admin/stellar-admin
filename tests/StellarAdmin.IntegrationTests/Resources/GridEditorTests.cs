@@ -112,6 +112,28 @@ public class GridEditorTests
     }
 
     [Test]
+    public async Task FieldWithoutEditor_UIHintWithApplicationTemplate_RendersApplicationTemplate()
+    {
+        // Arrange
+        await using var sut = await CreateInputFieldsHost(fields =>
+            fields.Add(model => model.Seat)
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/grid-cells/create");
+
+        // Assert
+        await Assert
+            .That(
+                Cell(document, "Seat")
+                    .RequiredElement("input[name='Entity.Seat']")
+                    .GetAttribute("data-application-template")
+            )
+            .IsEqualTo("seat-map-cell");
+    }
+
+    [Test]
     [Arguments("Development")]
     [Arguments("Production")]
     public async Task EditorWithoutGridTemplate_ShowsErrorOnlyInDevelopment(string environment)

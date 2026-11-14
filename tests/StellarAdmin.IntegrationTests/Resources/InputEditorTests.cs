@@ -181,6 +181,28 @@ public class InputEditorTests
     }
 
     [Test]
+    public async Task DataTypeTemplate_UIHintWithApplicationTemplate_RendersApplicationTemplate()
+    {
+        // Arrange
+        await using var sut = await CreateInputFieldsHost(fields =>
+            fields.Add(model => model.Seat)
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .RequiredElement("input[name='Entity.Seat']")
+                    .GetAttribute("data-application-template")
+            )
+            .IsEqualTo("seat-map");
+    }
+
+    [Test]
     public async Task DataTypeTemplate_MultilineText_RendersTextarea()
     {
         // Arrange

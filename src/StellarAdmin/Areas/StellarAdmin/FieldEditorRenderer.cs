@@ -87,7 +87,21 @@ internal static class FieldEditorRenderer
             field,
             () =>
                 editorData is ConfigurationException exception ? throw exception
-                : field.Binder is null ? html.Editor(field.FieldName, templateName, fieldViewData)
+                : field.Binder is null
+                    ? html.Editor(
+                        field.FieldName,
+                        templateName
+                            ?? FindDefaultTemplate(
+                                html,
+                                CreateExplorer(
+                                    html.MetadataProvider,
+                                    field,
+                                    model,
+                                    html.ViewContext.HttpContext.RequestServices
+                                ).Metadata
+                            ),
+                        fieldViewData
+                    )
                 : RenderFormEditor(html, field, model, templateName, fieldViewData)
         );
 
@@ -118,7 +132,11 @@ internal static class FieldEditorRenderer
             new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer)
         );
 
-        return helper.Editor(string.Empty, templateName, additionalViewData);
+        return helper.Editor(
+            string.Empty,
+            templateName ?? FindDefaultTemplate(html, viewData.ModelExplorer.Metadata),
+            additionalViewData
+        );
     }
 
     // Renders a field, leaving it out when its configuration only fails as it renders, and reporting why
@@ -157,6 +175,12 @@ internal static class FieldEditorRenderer
             return HtmlString.Empty;
         }
     }
+
+    // The template of a field without an editor, or null to leave a complex type to MVC
+    private static string? FindDefaultTemplate(IHtmlHelper html, ModelMetadata metadata) =>
+        EditorTemplateFinder
+            .FindDefault(html.ViewContext, EditorTemplateFinder.FormFolder, metadata)
+            ?.Name;
 
     private static void Report(
         IHtmlHelper html,

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,13 +10,11 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Areas.StellarAdmin;
 
 // Renders a field's editor in a grid cell. The editor's template name resolves in GridEditorTemplates/, as a form
-// resolves it in EditorTemplates/: the handler's template for a field with an editor, or else the names MVC derives
-// from the property's [UIHint], [DataType] and type. A field without a grid template renders an error naming the
-// template in development, and nothing in production.
+// resolves it in EditorTemplates/: the handler's template for a field with an editor, or else the default for its
+// property. A field without a grid template renders an error naming the template in development, and nothing in
+// production.
 internal static class GridEditorRenderer
 {
-    private const string Folder = "GridEditorTemplates";
-
     public static async Task<IHtmlContent> RenderAsync(
         IHtmlHelper html,
         FormFieldOptions field,
@@ -52,14 +49,18 @@ internal static class GridEditorRenderer
             );
         }
 
-        var templateNames = field.Editor is { } editor
-            ? [editor.TemplateName]
-            : GetTemplateNames(explorer.Metadata).ToArray();
-
-        var view = FindView(services, viewContext, templateNames);
+        var view = field.Editor is { } editor
+            ? EditorTemplateFinder.FindView(
+                viewContext,
+                EditorTemplateFinder.GridFolder,
+                editor.TemplateName
+            )
+            : EditorTemplateFinder
+                .FindDefault(viewContext, EditorTemplateFinder.GridFolder, explorer.Metadata)
+                ?.View;
         if (view is null)
         {
-            return MissingTemplate(services, field, templateNames);
+            return MissingTemplate(services, field, explorer.Metadata);
         }
 
         var viewData = new ViewDataDictionary(html.ViewData) { ModelExplorer = explorer };
@@ -130,67 +131,10 @@ internal static class GridEditorRenderer
         content.AppendHtml(span);
     }
 
-    private static IView? FindView(
-        IServiceProvider services,
-        ViewContext viewContext,
-        IEnumerable<string> templateNames
-    )
-    {
-        var viewEngine = services.GetRequiredService<ICompositeViewEngine>();
-        foreach (var templateName in templateNames)
-        {
-            var viewName = $"{Folder}/{templateName}";
-            var result = viewEngine.GetView(viewContext.ExecutingFilePath, viewName, false);
-            if (!result.Success)
-            {
-                result = viewEngine.FindView(viewContext, viewName, false);
-            }
-
-            if (result.Success)
-            {
-                return result.View;
-            }
-        }
-
-        return null;
-    }
-
-    // The names MVC tries for an editor template without a template name, most specific first
-    private static IEnumerable<string> GetTemplateNames(ModelMetadata metadata)
-    {
-        if (!string.IsNullOrEmpty(metadata.TemplateHint))
-        {
-            yield return metadata.TemplateHint;
-        }
-
-        if (!string.IsNullOrEmpty(metadata.DataTypeName))
-        {
-            yield return metadata.DataTypeName;
-        }
-
-        var type = metadata.UnderlyingOrModelType;
-        yield return type.Name;
-        if (type == typeof(string) || metadata.IsComplexType)
-        {
-            yield break;
-        }
-
-        if (type.IsEnum)
-        {
-            yield return "Enum";
-        }
-        else if (type == typeof(DateTimeOffset))
-        {
-            yield return "DateTime";
-        }
-
-        yield return "String";
-    }
-
     private static IHtmlContent MissingTemplate(
         IServiceProvider services,
         FormFieldOptions field,
-        IReadOnlyList<string> templateNames
+        ModelMetadata metadata
     )
     {
         if (!services.GetRequiredService<IHostEnvironment>().IsDevelopment())
@@ -198,7 +142,13 @@ internal static class GridEditorRenderer
             return HtmlString.Empty;
         }
 
-        var names = string.Join(", ", templateNames.Select(name => $"{Folder}/{name}"));
+        IEnumerable<string> templateNames = field.Editor is { } editor
+            ? [editor.TemplateName]
+            : EditorTemplateFinder.GetTemplateNames(metadata);
+        var names = string.Join(
+            ", ",
+            templateNames.Select(name => $"{EditorTemplateFinder.GridFolder}/{name}")
+        );
         var span = new TagBuilder("span");
         span.AddCssClass("sa-cell-error");
         span.Attributes["data-slot"] = "cell-editor-missing";

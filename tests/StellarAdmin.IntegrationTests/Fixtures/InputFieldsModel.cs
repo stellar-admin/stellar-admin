@@ -30,6 +30,9 @@ public sealed class InputFieldsModel
     public int Passengers { get; set; }
 
     public string? PromoCode { get; set; }
+
+    [UIHint("SeatMap")]
+    public string? Seat { get; set; }
 }
 
 public sealed class InputFieldsHandler : IResourceCreateHandler<InputFieldsModel>
