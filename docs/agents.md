@@ -2,7 +2,7 @@
 
 ## Repository entry points
 
-Start product sessions in this repository. `AGENTS.md` is the maintained entry point. Claude Code 2.1.277 or later reads it directly when no `CLAUDE.md` exists. This support is not yet available on Bedrock, Vertex, or Foundry, as noted in the [2.1.277 release notes](https://code.claude.com/docs/en/changelog#2-1-277). Website-only sessions start in the separate website repository, which has its own entry point. No workspace checkout is required for either repository's ordinary development.
+Start product sessions in this repository. `AGENTS.md` is the maintained entry point; Claude Code reads it directly when no `CLAUDE.md` exists. Website-only sessions start in the separate website repository, which has its own entry point. No workspace checkout is required for either repository's ordinary development.
 
 Product conventions live in [conventions](conventions/), detailed guidance in [repo guides](repos/), and handoffs in [plans](plans/README.md). Follow the current task; historical plans and old repository paths describe prior work, not instructions to resume it.
 

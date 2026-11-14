@@ -38,10 +38,7 @@ Solution file: `StellarAdmin.slnx`. SDK pinned in `global.json` (`.NET 10`). Pac
 
 ## Build & dev commands
 
-### .NET
-```bash
-dotnet build src/StellarAdmin.UI/StellarAdmin.UI.csproj
-```
+The build, test and validation commands for each kind of change are in [commands and validation](../development.md#commands-and-validation).
 
 ### Client assets (run from `src/StellarAdmin.UI/Client/`)
 ```bash
@@ -62,7 +59,7 @@ The library ships no presets: themes come from the [theme builder](https://www.s
 Theme web fonts are optional: each font stack prefers its family and falls back to native fonts, and the library never downloads fonts (a builder theme file may `@import` its Google Fonts). DocsSamples and website exports share the sample `wwwroot/js/theme-fonts.js` loader, which requests only the selected theme's family with `display=swap`.
 
 ### Formatting
-- **C#:** CSharpier (local dotnet tool, `.config/dotnet-tools.json`). Restore tools with `dotnet tool restore`, then run `dotnet csharpier format <touched-path>` from this repo (or rely on format-on-save). Match the existing formatting in edits.
+- **C#:** CSharpier (local dotnet tool, `.config/dotnet-tools.json`); see [commands and validation](../development.md#commands-and-validation), or rely on format-on-save. Match the existing formatting in edits.
 - **TS/JS:** `oxfmt` via `npm run fmt`.
 
 ## Architecture & conventions
@@ -112,7 +109,7 @@ Optional webfonts are linked from the app layout, **not** `@import`ed in CSS. A 
 - State is exposed to CSS by reflecting it onto `data-*` attributes that the component rules select on.
 
 ## Verifying changes
-Follow the [unit testing conventions](../conventions/unit-testing.md) for new and migrated .NET tests: mirror the owning SUT's project and folders, use TUnit, and write explicit arrange–act–assert sections. `StellarAdmin.UI.Tests` uses TUnit for component rendering, icon configuration and UI registration tests. Admin panel builder tests live in `StellarAdmin.Tests`; admin panel rendering/binding and EF resource behavior live in their respective `.IntegrationTests` projects. Both CI and release discover all five TUnit test projects in `StellarAdmin.slnx` automatically through `dotnet test`; adding a test project to the solution needs no workflow entry. There are no legacy test runners. Also verify component work by running the DocsSamples site (`docs/DocsSamples`) and exercising the relevant `Pages/<Component>/` sample in the browser (desktop + mobile widths where applicable).
+Follow the [unit testing conventions](../conventions/unit-testing.md) for new and migrated .NET tests: mirror the owning SUT's project and folders, use TUnit, and write explicit arrange–act–assert sections. `StellarAdmin.UI.Tests` uses TUnit for component rendering, icon configuration and UI registration tests. Admin panel builder tests live in `StellarAdmin.Tests`; admin panel rendering/binding and EF resource behavior live in their respective `.IntegrationTests` projects. Both CI and release discover the TUnit test projects in `StellarAdmin.slnx` automatically through `dotnet test`; adding a test project to the solution needs no workflow entry. Also verify component work by running the DocsSamples site (`docs/DocsSamples`) and exercising the relevant `Pages/<Component>/` sample in the browser (desktop + mobile widths where applicable).
 
 DocsSamples and ComponentPlayground link `stellar-admin.css` and have a theme picker (`?theme=ledger|ops|soft&mode=light|dark`) over the theme fixtures (see below). ComponentPlayground additionally runs the `@tailwindcss/forms` plugin in its own build. Both import the Tailwind adapter into their own Tailwind builds, keeping that consumer path exercised. `util/theme-check/` checks text contrast and takes screenshots across the theme fixtures and seeded random themes (see its README).
 
@@ -151,11 +148,6 @@ PRs run this automatically (`.github/workflows/vrt.yml`): an ephemeral base-vs-h
 
 ## Resources, Identity, and Entity Framework Core
 
-The admin shell and resource layer live in `src/StellarAdmin/`, with the EF Core integration in `src/StellarAdmin.EntityFrameworkCore/`. Register the application with `AddStellarAdmin(admin => ...)`; its assets use `_content/StellarAdmin/` (`stellar-admin-panel.css` and `stellar-admin-panel.js`). The admin panel links `stellar-admin.css` and then each stylesheet registered with `admin.AddStylesheet(...)`, in registration order; a theme variable stylesheet (`~/css/theme.css`) and a web font link are both added that way. The admin panel's own Tailwind build (`src/StellarAdmin/Client/css/client.css`) imports the adapter, so its utilities follow the tokens. `sandbox/AdminPlayground/` demonstrates host-owned Identity user and role resources. `admin.RequireAuthorization(...)` and `resource.RequireAuthorization(...)` mirror the framework's endpoint overloads. `MapStellarAdmin` applies them as endpoint metadata, returns the route's convention builder, and the resource sidebar provider hides links the current user cannot open. Resource routes use lowercase kebab-case plural slugs by default, overridable through `AddResource<TResource>(slug)`, and the admin panel route lowercases generated controller and action segments without affecting host routes; see `docs/development.md`. The playground requires a signed-in user and restricts users and roles to administrators. The former dedicated Identity package designs in `docs/design/identity-configuration.md` and `docs/design/identity-user-forms.md` are retained as superseded history.
+The admin shell and resource layer live in `src/StellarAdmin/`, with the EF Core integration in `src/StellarAdmin.EntityFrameworkCore/`. Register the application with `AddStellarAdmin(admin => ...)`; its assets use `_content/StellarAdmin/` (`stellar-admin-panel.css` and `stellar-admin-panel.js`). The admin panel links `stellar-admin.css` and then each stylesheet registered with `admin.AddStylesheet(...)`, in registration order; a theme variable stylesheet (`~/css/theme.css`) and a web font link are both added that way. The admin panel's own Tailwind build (`src/StellarAdmin/Client/css/client.css`) imports the adapter, so its utilities follow the tokens. `sandbox/AdminPlayground/` demonstrates host-owned Identity user and role resources. `admin.RequireAuthorization(...)` and `resource.RequireAuthorization(...)` mirror the framework's endpoint overloads. `MapStellarAdmin` applies them as endpoint metadata, returns the route's convention builder, and the resource sidebar provider hides links the current user cannot open. Resource routes use lowercase kebab-case plural slugs by default, overridable through `AddResource<TResource>(slug)`. The slug is the MVC controller name, so application view overrides live in `Areas/StellarAdmin/Views/{slug}/`. The admin panel route lowercases generated controller and action segments without affecting host routes, while action and view names keep their PascalCase. The admin panel layout and the views it renders (the sidebar view component view, `_CommandPalette`, `_RemoteSheet` and `_SheetLoading`) reference each other by full path, so host pages can use the layout through `StellarAdminLayouts.Default`; keep new layout partials on full paths. The playground requires a signed-in user and restricts users and roles to administrators. The former dedicated Identity package designs in `docs/design/identity-configuration.md` and `docs/design/identity-user-forms.md` are retained as superseded history.
 
-`docs/DocsSamples/` includes DataGrid. `tools/StellarAdmin.Cli/` (`docs generate all`) exports website demos and admin docs screenshots. Admin panel HTTP integration tests use an in-process host and private in-memory source. EF Core HTTP integration tests use an in-process host with private in-memory SQLite databases; neither suite needs AdminPlayground or its database. See [development and verification](../development.md).
-
-```bash
-dotnet build StellarAdmin.slnx
-dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
-```
+`docs/DocsSamples/` includes DataGrid. `tools/StellarAdmin.Cli/` (`docs generate all`) exports website demos and admin docs screenshots. Neither the admin panel nor the EF Core HTTP integration tests need AdminPlayground or its database; see [commands and validation](../development.md#commands-and-validation).

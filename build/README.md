@@ -6,7 +6,7 @@ Every run builds and validates StellarAdmin.UI, StellarAdmin, and StellarAdmin.E
 
 ## Test discovery
 
-Both [Build and Test](../.github/workflows/ci.yml) and [Release](../.github/workflows/release.yml) use `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after building. `global.json` selects Microsoft.Testing.Platform; new TUnit projects added to the solution participate automatically. No individual test-project list or legacy runner step remains. The active suites cover StellarAdmin.UI, the admin panel configuration and HTTP scenarios, and EF Core SQLite HTTP scenarios. AdminPlayground demonstrates host-owned Identity resources; the former dedicated Identity package and its playground have been removed. See the [resource redesign baseline](../docs/development.md#resource-redesign-baseline).
+Both [Build and Test](../.github/workflows/ci.yml) and [Release](../.github/workflows/release.yml) use `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after building. `global.json` selects Microsoft.Testing.Platform; new TUnit projects added to the solution participate automatically. The active suites cover StellarAdmin.UI, the admin panel configuration and HTTP scenarios, and EF Core SQLite HTTP scenarios. See [commands and validation](../docs/development.md#commands-and-validation) for each test project.
 
 ## Publishing
 
