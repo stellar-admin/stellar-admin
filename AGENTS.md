@@ -50,8 +50,8 @@ Canonical development skills live in `.agents/skills/`; `.claude/skills/` contai
 
 See [agent setup](docs/agents.md) for discovery and handoffs. Theme variables and tokens are specified in [docs/design/tokens.md](docs/design/tokens.md).
 
-## Separate website and release transition
+## Separate website and releases
 
 Website-only work starts in the website repository and follows its own `AGENTS.md`. For component documentation/export tasks, read [website integration](docs/repos/website.md). A sibling `../website` checkout is a convenience; `STELLARADMIN_WEBSITE_DIR` selects another destination. Product-only work needs neither checkout.
 
-Release verification now runs here through the [manual release workflow](.github/workflows/release.yml), with individual GitHub Actions steps. Opt-in publishing covers StellarAdmin.UI, StellarAdmin and StellarAdmin.EntityFrameworkCore and requires the configured `nuget-org` environment and publishing gate. Consumer skill source lives in `skills/`; Claude plugin packaging has been removed. See the [consumer skill consolidation plan](docs/plans/archive/consumer-skill-consolidation.md) for distribution work and the [workspace consolidation plan](docs/plans/archive/workspace-retirement.md) for historical context.
+Release verification runs here through the [manual release workflow](.github/workflows/release.yml), which builds and tests through the shared `.github/actions/verify` action that CI also uses. Opt-in publishing covers StellarAdmin.UI, StellarAdmin and StellarAdmin.EntityFrameworkCore and requires the configured `nuget-org` environment and publishing gate. Consumer skill source lives in `skills/`; Claude plugin packaging has been removed. See the [consumer skill consolidation plan](docs/plans/archive/consumer-skill-consolidation.md) for distribution work and the [workspace consolidation plan](docs/plans/archive/workspace-retirement.md) for historical context.
