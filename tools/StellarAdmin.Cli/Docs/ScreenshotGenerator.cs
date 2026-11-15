@@ -12,7 +12,7 @@ internal static class ScreenshotGenerator
 {
     // The scenarios and specs the screenshots are captured from, read from source
     private static readonly string SourceFolder = Path.Combine(
-        DocsPaths.RepoRoot,
+        RepoPaths.Root,
         "tools",
         "StellarAdmin.Cli",
         "Docs",
@@ -98,7 +98,7 @@ internal static class ScreenshotGenerator
     // docs page is an error.
     private static Task Check(StepRunner.Step step)
     {
-        var check = ScreenshotCheck.Run(DocsContentFolder, SourceFolder, DocsPaths.RepoRoot);
+        var check = ScreenshotCheck.Run(DocsContentFolder, SourceFolder, RepoPaths.Root);
         foreach (var (placeholder, missing) in check.Open)
         {
             step.Warn(
@@ -124,7 +124,7 @@ internal static class ScreenshotGenerator
         var misnamed = ScreenshotNames.Check(
             DocsContentFolder,
             SourceFolder,
-            DocsPaths.RepoRoot,
+            RepoPaths.Root,
             docsScenarios
         );
         foreach (var problem in misnamed)
@@ -159,7 +159,7 @@ internal static class ScreenshotGenerator
             var name = SpecFiles.Name(file);
             step.Detail = name;
             await SpecRunner.RunAsync(
-                SpecLoader.Load(catalog, file, Path.GetRelativePath(DocsPaths.RepoRoot, file)),
+                SpecLoader.Load(catalog, file, Path.GetRelativePath(RepoPaths.Root, file)),
                 browser,
                 OutputFolder,
                 logging =>

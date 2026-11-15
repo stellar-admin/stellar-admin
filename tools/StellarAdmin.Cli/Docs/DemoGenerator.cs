@@ -16,9 +16,7 @@ internal sealed partial class DemoGenerator
 {
     // The theme fixtures (util/theme-check/presets) the samples serve from /presets/, exported for the
     // theme builder's presets. "default" is the token stylesheet alone, with no preset.
-    private static readonly IReadOnlyList<ThemeFixture> Themes = ThemeFixtures.Load(
-        DocsPaths.RepoRoot
-    );
+    private static readonly IReadOnlyList<ThemeFixture> Themes = ThemeFixtures.Load(RepoPaths.Root);
 
     private static readonly string[] PresetNames =
     [
@@ -99,13 +97,13 @@ internal sealed partial class DemoGenerator
 
     /// <summary>Content root of the DocsSamples web project, used to host it in-memory.</summary>
     public static readonly string DocsSamplesContentRoot = Path.Combine(
-        DocsPaths.RepoRoot,
+        RepoPaths.Root,
         "docs",
         "DocsSamples"
     );
 
     private static readonly string PageSourceCodeFolder = Path.Combine(
-        DocsPaths.RepoRoot,
+        RepoPaths.Root,
         "docs",
         "DocsSamples",
         "Pages"

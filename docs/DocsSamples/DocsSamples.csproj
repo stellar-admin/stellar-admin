@@ -16,15 +16,23 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin.UI\StellarAdmin.UI.csproj" />
   </ItemGroup>
-  <Target Name="Tailwind" BeforeTargets="Build">
-    <Exec
-      WorkingDirectory="Client"
-      Command="npm install"
-      Condition=" !Exists('Client/node_modules') "
-    />
-    <Exec
-      Command="npx @tailwindcss/cli -i ./css/site.css -o ../wwwroot/css/site.css"
-      WorkingDirectory="Client"
-    />
+
+  <!-- Client -->
+  <Import Project="../../build/Client.targets" />
+
+  <ItemGroup>
+    <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="../../src/StellarAdmin.UI/Client/css/tailwind-adapter.css" />
+    <ClientInput Include="Client/package.json" />
+  </ItemGroup>
+
+  <!-- Declared at execution time, as in StellarAdmin: .cshtml files in a second item type break
+       Rider's Razor analysis. Tailwind scans the Pages and TagHelpers folders. -->
+  <Target Name="ClientItems">
+    <ItemGroup>
+      <ClientInput Include="Pages/**/*.cshtml;Pages/**/*.cs;TagHelpers/**/*.cs" />
+
+      <ClientOutput Include="wwwroot/css/site.css" />
+    </ItemGroup>
   </Target>
 </Project>

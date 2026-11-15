@@ -19,15 +19,21 @@
     /presets/), and this Tailwind build covers only the app's own markup, importing the StellarAdmin
     Tailwind adapter so token-named utilities (bg-primary, …) resolve to the tokens.
   -->
-  <Target Name="Tailwind" BeforeTargets="Build">
-    <Exec
-      WorkingDirectory="Client"
-      Command="npm install"
-      Condition=" !Exists('Client/node_modules') "
-    />
-    <Exec
-      Command="npx @tailwindcss/cli -i ./css/site.css -o ../wwwroot/css/site.css"
-      WorkingDirectory="Client"
-    />
+  <Import Project="../../build/Client.targets" />
+
+  <ItemGroup>
+    <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="../../src/StellarAdmin.UI/Client/css/tailwind-adapter.css" />
+    <ClientInput Include="Client/package.json" />
+  </ItemGroup>
+
+  <!-- Declared at execution time, as in StellarAdmin: .cshtml files in a second item type break
+       Rider's Razor analysis. Tailwind scans the Pages folder. -->
+  <Target Name="ClientItems">
+    <ItemGroup>
+      <ClientInput Include="Pages/**/*.cshtml;Pages/**/*.cs" />
+
+      <ClientOutput Include="wwwroot/css/site.css" />
+    </ItemGroup>
   </Target>
 </Project>

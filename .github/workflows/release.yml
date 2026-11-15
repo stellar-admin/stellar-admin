@@ -1,7 +1,7 @@
 name: Release
 run-name: Release ${{ inputs.version }}${{ inputs.publish && ' (publish)' || ' (dry run)' }}
 
-# Build and verify StellarAdmin.UI, StellarAdmin, and EF Core. Publishing all three is opt-in.
+# Build and verify StellarAdmin.UI, StellarAdmin, and EF Core through the verify action. Publishing all three is opt-in.
 on:
   workflow_dispatch:
     inputs:
@@ -65,37 +65,13 @@ jobs:
             printf 'Version: %s\n\nCommit: %s\n' "$VERSION" "$sha"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Build and test
+        uses: ./.github/actions/verify
         with:
-          node-version: 20.x
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          global-json-file: global.json
+          build-properties: -p:Version=${{ inputs.version }} -p:ContinuousIntegrationBuild=true
 
       - name: Restore .NET tools
         run: dotnet tool restore
-
-      - name: Install client dependencies
-        shell: bash
-        run: |
-          for client in \
-            src/StellarAdmin.UI/Client \
-            src/StellarAdmin/Client \
-            docs/DocsSamples/Client \
-            sandbox/ComponentPlayground/Client
-          do
-            npm ci --prefix "$client"
-          done
-
-      - name: Build product solution
-        run: >
-          dotnet build StellarAdmin.slnx --configuration Release -m:1
-          -p:Version="$VERSION"
-          -p:ContinuousIntegrationBuild=true
-          -p:AllowMissingPrunePackageData=true
 
       - name: Pack packages
         shell: bash
@@ -106,7 +82,6 @@ jobs:
               -p:Version="$VERSION" \
               -p:PackageVersion="$VERSION" \
               -p:ContinuousIntegrationBuild=true \
-              -p:AllowMissingPrunePackageData=true \
               -p:IncludeSymbols=true \
               -p:SymbolPackageFormat=snupkg
           done
@@ -117,15 +92,6 @@ jobs:
           for package in StellarAdmin.UI StellarAdmin StellarAdmin.EntityFrameworkCore; do
             dotnet meziantou.validate-nuget-package "$ARTIFACTS_DIR/$package.$VERSION.nupkg"
           done
-
-      - name: Run all .NET tests
-        env:
-          # The scenario tests drive the runner's preinstalled Chrome
-          STELLARADMIN_CHROMIUM: /usr/bin/google-chrome
-        run: dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
-
-      - name: Check consumer reference drift
-        run: dotnet run --project tools/StellarAdmin.Cli --no-build --no-launch-profile --configuration Release -- skills check
 
       - name: Smoke-test packages as a consumer
         run: build/smoke-test.sh "$VERSION" "$ARTIFACTS_DIR"

@@ -1,0 +1,66 @@
+name: Verify
+description: Build and test the solution, check the consumer skills and reference drift, and type-check the UI scripts.
+
+# Shared by ci.yml and release.yml. A composite action rather than a reusable workflow, so release
+# packs the build this verified in the same job.
+
+inputs:
+  build-properties:
+    description: "Extra MSBuild properties for the solution build, such as -p:Version=1.2.3"
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        global-json-file: global.json
+
+    - name: Install client dependencies
+      shell: bash
+      run: |
+        for client in \
+          src/StellarAdmin.UI/Client \
+          src/StellarAdmin/Client \
+          docs/DocsSamples/Client \
+          sandbox/ComponentPlayground/Client \
+          sandbox/AdminPlayground/Client
+        do
+          npm ci --prefix "$client" --no-audit --no-fund
+        done
+
+    - name: Validate consumer skills
+      shell: bash
+      run: |
+        npm ci --prefix build/skill-validation --ignore-scripts --no-audit --no-fund
+        npm test --prefix build/skill-validation
+        npm run check --prefix build/skill-validation
+
+    - name: Type-check the UI scripts
+      shell: bash
+      run: npm run check --prefix src/StellarAdmin.UI/Client
+
+    - name: Build solution
+      shell: bash
+      env:
+        BUILD_PROPERTIES: ${{ inputs.build-properties }}
+      # Unquoted on purpose: each property is its own argument.
+      run: dotnet build StellarAdmin.slnx --configuration Release $BUILD_PROPERTIES
+
+    - name: Run all .NET tests
+      shell: bash
+      env:
+        # The scenario tests drive the runner's preinstalled Chrome
+        STELLARADMIN_CHROMIUM: /usr/bin/google-chrome
+      run: dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
+
+    - name: Check consumer reference drift
+      shell: bash
+      run: dotnet run --project tools/StellarAdmin.Cli --no-build --no-launch-profile --configuration Release -- skills check

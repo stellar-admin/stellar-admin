@@ -4,10 +4,8 @@ namespace StellarAdmin.Cli.Skills;
 // examples in skills.examples.json, keeping each reference's hand-written structure region
 internal static class SkillsGenerator
 {
-    private static readonly string RepoRoot = GetRepoRoot();
-
     private static readonly string ManifestFile = Path.Combine(
-        RepoRoot,
+        RepoPaths.Root,
         "tools",
         "StellarAdmin.Cli",
         "Skills",
@@ -15,7 +13,7 @@ internal static class SkillsGenerator
     );
 
     private static readonly string PagesFolder = Path.Combine(
-        RepoRoot,
+        RepoPaths.Root,
         "docs",
         "DocsSamples",
         "Pages"
@@ -55,7 +53,7 @@ internal static class SkillsGenerator
     private static References Render()
     {
         var tagHelpersFolders = Products
-            .Select(product => Path.Combine(RepoRoot, "src", product.Package, "TagHelpers"))
+            .Select(product => Path.Combine(RepoPaths.Root, "src", product.Package, "TagHelpers"))
             .ToArray();
         var examples = Snippets.LoadManifest(ManifestFile);
         var enums = tagHelpersFolders
@@ -67,10 +65,10 @@ internal static class SkillsGenerator
         var files = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var (package, skill, title) in Products)
         {
-            var referencesFolder = Path.Combine(RepoRoot, "skills", skill, "references");
+            var referencesFolder = Path.Combine(RepoPaths.Root, "skills", skill, "references");
             var productComponents = Extractor
                 .ExtractComponents(
-                    Path.Combine(RepoRoot, "src", package, "TagHelpers"),
+                    Path.Combine(RepoPaths.Root, "src", package, "TagHelpers"),
                     enums,
                     folder => Snippets.ForComponent(PagesFolder, folder, examples),
                     tagHelpersFolders
@@ -130,7 +128,7 @@ internal static class SkillsGenerator
                     StringComparison.Ordinal
                 )
             )
-            .Select(file => Path.GetRelativePath(RepoRoot, file.Key))
+            .Select(file => Path.GetRelativePath(RepoPaths.Root, file.Key))
             .Order(StringComparer.Ordinal)
             .ToList();
 
@@ -143,23 +141,6 @@ internal static class SkillsGenerator
             );
 
         step.Log($"{references.Files.Count} references are up to date");
-    }
-
-    // Walks up from the build output, since CI's deterministic builds can rewrite compile-time source paths
-    // to /_/, which rules out [CallerFilePath]
-    private static string GetRepoRoot()
-    {
-        for (
-            var directory = new DirectoryInfo(AppContext.BaseDirectory);
-            directory is not null;
-            directory = directory.Parent
-        )
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "StellarAdmin.slnx")))
-                return directory.FullName;
-        }
-
-        throw new DirectoryNotFoundException("Run the CLI from a product checkout's build output.");
     }
 
     private sealed record References(

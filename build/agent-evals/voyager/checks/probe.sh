@@ -6,7 +6,7 @@ app="$1"; port="$2"; roles="$3"; shift 3
 out="$(dirname "$app")/probe-out/$(basename "$app")"
 mkdir -p "$out"; rm -f "$out"/*
 export DOTNET_SYSTEM_NET_DISABLEIPV6=1
-( cd "$app" && rm -f voyager.db* && dotnet build -v quiet -p:AllowMissingPrunePackageData=true > "$out/build.log" 2>&1 ) || { echo "BUILD FAILED"; tail -20 "$out/build.log"; exit 1; }
+( cd "$app" && rm -f voyager.db* && dotnet build -v quiet > "$out/build.log" 2>&1 ) || { echo "BUILD FAILED"; tail -20 "$out/build.log"; exit 1; }
 ( cd "$app" && exec dotnet run --no-build --urls "http://127.0.0.1:$port" > "$out/run.log" 2>&1 ) &
 pid=$!
 for i in $(seq 1 60); do curl -s -o /dev/null "http://127.0.0.1:$port/" && break; sleep 0.5; done
