@@ -15,6 +15,7 @@
     <Project Path="src/StellarAdmin/StellarAdmin.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/StellarAdmin.Cli.Tests/StellarAdmin.Cli.Tests.csproj" />
     <Project Path="tests/StellarAdmin.EntityFrameworkCore.IntegrationTests/StellarAdmin.EntityFrameworkCore.IntegrationTests.csproj" />
     <Project Path="tests/StellarAdmin.Generators.Tests/StellarAdmin.Generators.Tests.csproj" />
     <Project Path="tests/StellarAdmin.IntegrationTests/StellarAdmin.IntegrationTests.csproj" />

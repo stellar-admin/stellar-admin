@@ -137,7 +137,7 @@ Check desktop and mobile widths, light and dark (`?mode=dark`), in the default t
 
 ## Phase 5 — website docs
 
-Register each partial in `tools/StellarAdmin.Cli/Docs/DemoGenerator.cs` as a `new("<Component>/_<Name>")` entry in `DemoPartials`, alphabetically, then run it:
+The generator exports every partial in a folder of `docs/DocsSamples/Pages`. A demo that needs a layout other than `_DemoLayout` or another output name goes in `DemoExceptions` in `tools/StellarAdmin.Cli/Docs/DemoGenerator.cs`, and a partial that other partials include goes in its `NotDemos`. `tests/StellarAdmin.Cli.Tests` fails on an exported partial no page shows, and on a demo whose layout differs from its page's `asp-route-layout` link. Run the generator:
 
 ```bash
 dotnet run --project tools/StellarAdmin.Cli -- docs generate demos
