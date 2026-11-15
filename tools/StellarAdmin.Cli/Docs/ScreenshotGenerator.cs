@@ -1,6 +1,6 @@
 using System.Buffers.Binary;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
+using StellarAdmin.Cli.Scenarios;
 using StellarAdmin.ScenarioTesting.Runner;
 using StellarAdmin.ScenarioTesting.Scenarios;
 
@@ -53,8 +53,9 @@ internal static class ScreenshotGenerator
 
     // Captures every spec's screenshots, or only the named specs', rewrites the manifest and checks what
     // is still open. A run of every spec deletes the existing screenshots first, unless keepOutput, so
-    // renamed or removed ones don't leave files behind; a run of named specs keeps the others. Returns
-    // whether every step succeeded.
+    // renamed or removed ones don't leave files behind; a run of named specs keeps the others. A failed spec
+    // doesn't stop the others, and the manifest still lists the screenshots that were captured, so only the
+    // failed specs' screenshots are missing from the docs. Returns whether every step succeeded.
     public static async Task<bool> GenerateAsync(
         bool keepOutput,
         IReadOnlyCollection<string> specNames
@@ -74,8 +75,8 @@ internal static class ScreenshotGenerator
         }
 
         return await runner
-            .Add("Capture screenshots", step => RunSpecsAsync(FindSpecs(specNames), step))
-            .Add(
+            .Add("Capture screenshots", step => CaptureAsync(FindSpecs(specNames), step))
+            .AddAlways(
                 "Write screenshot manifest",
                 () =>
                 {
@@ -83,7 +84,7 @@ internal static class ScreenshotGenerator
                     return Task.CompletedTask;
                 }
             )
-            .Add("Check screenshots", Check)
+            .AddAlways("Check screenshots", Check)
             .RunAsync();
     }
 
@@ -145,37 +146,20 @@ internal static class ScreenshotGenerator
                 .Where(spec => names.Count == 0 || names.Contains(SpecFiles.Name(spec))),
         ];
 
-    // Runs each spec against its scenario and saves its screenshots. Each host's log messages are shown as
-    // the step's warnings, since a host writing to the console would garble the step's line.
-    private static async Task RunSpecsAsync(IReadOnlyList<string> specs, StepRunner.Step step)
+    // Runs each spec against its scenario and saves its screenshots
+    private static async Task CaptureAsync(IReadOnlyList<string> specs, StepRunner.Step step)
     {
-        var catalog = new ScenarioCatalog(typeof(ScreenshotGenerator).Assembly);
-        var log = new CollectingLoggerProvider();
+        await ScenarioRunner.RunSpecsAsync(
+            new ScenarioCatalog(typeof(ScreenshotGenerator).Assembly),
+            specs,
+            OutputFolder,
+            step
+        );
 
-        step.SetTotal(specs.Count);
-        await using var browser = await SpecBrowser.LaunchAsync();
-        foreach (var file in specs)
-        {
-            var name = SpecFiles.Name(file);
-            step.Detail = name;
-            await SpecRunner.RunAsync(
-                SpecLoader.Load(catalog, file, Path.GetRelativePath(RepoPaths.Root, file)),
-                browser,
-                OutputFolder,
-                logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddProvider(log);
-                }
-            );
+        // The docs show a recording's GIF, not its MP4. The folder is missing when no spec saved anything.
+        if (!Directory.Exists(OutputFolder))
+            return;
 
-            foreach (var (level, message) in log.Drain())
-                step.Warn($"{level} {name}: {message}");
-
-            step.Increment();
-        }
-
-        // The docs show a recording's GIF, not its MP4
         foreach (var clip in Directory.EnumerateFiles(OutputFolder, "*.mp4"))
             File.Delete(clip);
     }

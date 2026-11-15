@@ -55,16 +55,16 @@ internal static class ScenarioRunner
         var output = outputFolder is null ? null : Path.GetFullPath(outputFolder);
 
         return new StepRunner()
-            .Add("Run specs", step => RunSpecsAsync(specs, output, step))
+            .Add("Run specs", step => RunSpecsAsync(Catalog, specs, output, step))
             .RunAsync();
     }
 
-    private static string Source(Scenario scenario) =>
-        scenario.GetType().Assembly == typeof(Scenario).Assembly ? "tests" : "docs";
-
-    // Each host's log messages are shown as the step's warnings, since a host writing to the console would
-    // garble the step's line
-    private static async Task RunSpecsAsync(
+    // Runs each spec file against its scenario in catalog, saving its screenshots and clips to output when
+    // it's given. Every spec runs even when one fails, and each failure fails the step. Each host's log
+    // messages are shown as the step's warnings, since a host writing to the console would garble the
+    // step's line.
+    public static async Task RunSpecsAsync(
+        ScenarioCatalog catalog,
         IReadOnlyList<string> specs,
         string? output,
         StepRunner.Step step
@@ -83,7 +83,7 @@ internal static class ScenarioRunner
             {
                 var completed = await SpecRunner.RunAsync(
                     SpecLoader.Load(
-                        Catalog,
+                        catalog,
                         file,
                         Path.GetRelativePath(Environment.CurrentDirectory, file)
                     ),
@@ -113,6 +113,9 @@ internal static class ScenarioRunner
         else
             step.Error($"{failed} of {specs.Count} specs failed");
     }
+
+    private static string Source(Scenario scenario) =>
+        scenario.GetType().Assembly == typeof(Scenario).Assembly ? "tests" : "docs";
 
     private static void Report(CollectingLoggerProvider log, string name, StepRunner.Step step)
     {

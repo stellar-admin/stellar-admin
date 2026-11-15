@@ -4,20 +4,31 @@ namespace StellarAdmin.Cli;
 
 // Runs steps in order as a checklist: one line per step with a spinner, then ✓ or ✗, and a grey detail,
 // plus a bar and percentage once the step sets a total. Each step has its own live line, so its messages
-// and any error print under it before the next step starts. A failed step stops the run.
+// and any error print under it before the next step starts. A failed step stops the run, except for the
+// steps added with AddAlways.
 internal sealed class StepRunner
 {
     private const int BarWidth = 40;
 
     private static readonly Spinner Spinner = Spinner.Known.Dots;
 
-    private readonly List<(string Title, Func<Step, Task> Run)> steps = [];
+    private readonly List<(string Title, Func<Step, Task> Run, bool Always)> steps = [];
 
     public StepRunner Add(string title, Func<Task> run) => Add(title, _ => run());
 
     public StepRunner Add(string title, Func<Step, Task> run)
     {
-        steps.Add((title, run));
+        steps.Add((title, run, false));
+        return this;
+    }
+
+    // A step that runs even after an earlier step failed, such as one that records what the steps before it
+    // produced; the run still fails
+    public StepRunner AddAlways(string title, Func<Task> run) => AddAlways(title, _ => run());
+
+    public StepRunner AddAlways(string title, Func<Step, Task> run)
+    {
+        steps.Add((title, run, true));
         return this;
     }
 
@@ -26,13 +37,14 @@ internal sealed class StepRunner
     {
         // Padding every title to the longest keeps the bars aligned across the steps' lines
         var width = steps.Max(step => step.Title.Length);
-        foreach (var (title, run) in steps)
+        var succeeded = true;
+        foreach (var (title, run, always) in steps)
         {
-            if (!await RunStepAsync(title.PadRight(width), run))
-                return false;
+            if ((succeeded || always) && !await RunStepAsync(title.PadRight(width), run))
+                succeeded = false;
         }
 
-        return true;
+        return succeeded;
     }
 
     // A Live line this redraws for the spinner. Spectre's Progress pads each display with a blank line
