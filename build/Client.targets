@@ -1,0 +1,36 @@
+<Project>
+  <!--
+    Builds the importing project's Client folder with `npm run build` when a ClientInput item is newer than
+    a ClientOutput item. The project lists ClientInput items and declares its ClientOutput items in a target
+    named ClientItems. ClientOutput is declared at execution time rather than in a top-level ItemGroup:
+    Rider silently strips an evaluation-time item whose file is deleted in the IDE, and MSBuild skips a
+    target with inputs but no outputs, so the client build would silently stop running.
+  -->
+  <ItemGroup>
+    <Content Update="Client/**/*.*" Pack="false" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+  <Target
+    Name="Client"
+    DependsOnTargets="ClientItems"
+    BeforeTargets="ResolveProjectStaticWebAssets"
+    Inputs="@(ClientInput)"
+    Outputs="@(ClientOutput)"
+  >
+    <Exec
+      Command="npm install"
+      WorkingDirectory="$(MSBuildProjectDirectory)/Client"
+      Condition=" !Exists('$(MSBuildProjectDirectory)/Client/node_modules') "
+    />
+    <Exec Command="npm run build" WorkingDirectory="$(MSBuildProjectDirectory)/Client" />
+
+    <!-- The CSS builds and rolldown skip the write when output is unchanged, leaving it older than the
+         inputs — without this the target never goes up-to-date and re-runs on every build. -->
+    <Touch Files="@(ClientOutput)" />
+
+    <!-- Re-glob what we just generated; the evaluation-time Content glob predates it. -->
+    <ItemGroup>
+      <Content Include="wwwroot/**/*" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
+</Project>

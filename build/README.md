@@ -1,12 +1,12 @@
 # Release workflow
 
-Run the **Release** workflow in GitHub Actions, select the product branch or tag, and enter a package version using SemVer without a leading `v` or build metadata. Leave **publish** unchecked for a dry run. Release orchestration lives directly in [the workflow](../.github/workflows/release.yml), with individual Actions steps.
+Run the **Release** workflow in GitHub Actions, select the product branch or tag, and enter a package version using SemVer without a leading `v` or build metadata. Leave **publish** unchecked for a dry run. Release orchestration lives in [the workflow](../.github/workflows/release.yml); its build job runs the [verify action](../.github/actions/verify/action.yml), which Build and Test also runs, then packs that build.
 
 Every run builds and validates StellarAdmin.UI, StellarAdmin, and StellarAdmin.EntityFrameworkCore, discovers and runs all solution TUnit unit and integration test projects, runs consumer reference checks, tests a temporary consumer app, and uploads all six package/symbol files. Source Link validation remains enabled. `build/smoke-test.sh` contains the consumer test.
 
 ## Test discovery
 
-Both [Build and Test](../.github/workflows/ci.yml) and [Release](../.github/workflows/release.yml) use `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after building. `global.json` selects Microsoft.Testing.Platform; new TUnit projects added to the solution participate automatically. The active suites cover StellarAdmin.UI, the admin panel configuration and HTTP scenarios, and EF Core SQLite HTTP scenarios. See [commands and validation](../docs/development.md#commands-and-validation) for each test project.
+Both [Build and Test](../.github/workflows/ci.yml) and [Release](../.github/workflows/release.yml) run the [verify action](../.github/actions/verify/action.yml), which uses `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after building. `global.json` selects Microsoft.Testing.Platform; new TUnit projects added to the solution participate automatically. The active suites cover StellarAdmin.UI, the admin panel configuration and HTTP scenarios, and EF Core SQLite HTTP scenarios. See [commands and validation](../docs/development.md#commands-and-validation) for each test project.
 
 ## Publishing
 

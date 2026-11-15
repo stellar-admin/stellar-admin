@@ -12,5 +12,5 @@ export DOTNET_SYSTEM_NET_DISABLEIPV6=1
 
 mkdir -p "$feed"
 for project in StellarAdmin.UI StellarAdmin StellarAdmin.EntityFrameworkCore; do
-  dotnet pack "$repo/src/$project" -c Release -o "$feed" -p:Version=$version -p:AllowMissingPrunePackageData=true -v quiet
+  dotnet pack "$repo/src/$project" -c Release -o "$feed" -p:Version=$version -v quiet
 done

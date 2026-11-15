@@ -19,7 +19,7 @@ For TUnit, follow the [official console-project setup](https://tunit.dev/docs/ge
 The three packaged projects use PublicApiAnalyzers. Each lists its public API in `PublicAPI.Shipped.txt` (what a released package contains) and `PublicAPI.Unshipped.txt` (changes since then). Adding, removing or changing a public member fails the build with RS0016 or RS0017 until the list is updated. Update it from the repository root, with the project whose API changed:
 
 ```bash
-AllowMissingPrunePackageData=true dotnet format analyzers src/StellarAdmin/StellarAdmin.csproj --diagnostics RS0016 --severity error
+dotnet format analyzers src/StellarAdmin/StellarAdmin.csproj --diagnostics RS0016 --severity error
 ```
 
 The command adds entries for new and changed members (RS0016). It doesn't remove entries for deleted members, so delete those lines from `PublicAPI.Unshipped.txt` by hand; the RS0017 errors name them.
@@ -76,7 +76,6 @@ Export samples with `dotnet run --project tools/StellarAdmin.Cli -- docs generat
 These came from earlier sessions on Jerrie's machine; they are not universal build requirements. Recheck the environment before using them:
 
 - If .NET downloads hang because of the local IPv6 route, prefix the command with `DOTNET_SYSTEM_NET_DISABLEIPV6=1`.
-- If a build reports NETSDK1226 about missing prune package data, retry with `-p:AllowMissingPrunePackageData=true` and report the workaround.
 - Earlier workspace sessions could accidentally bypass the product SDK pin. Run commands from the product root so `global.json` selects the intended SDK; do not change the pin to accommodate a machine.
 - If the formatter tool shim fails despite restoring tools, inspect the installed tool and SDK. A cached `~/.nuget/packages/.../CSharpier.dll` path is machine/version-specific and should not be the shared default.
 

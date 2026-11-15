@@ -1,6 +1,6 @@
 name: Build and Test
 
-# Build and test the active solution, including EF Core integration tests.
+# Build and test the active solution, including EF Core integration tests, through the verify action.
 # Release verification uses release.yml; opt-in publishing is owned by that workflow.
 
 on:
@@ -23,38 +23,5 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-
-    - name: Validate consumer skills
-      run: |
-        npm ci --prefix build/skill-validation --ignore-scripts --no-audit --no-fund
-        npm test --prefix build/skill-validation
-        npm run check --prefix build/skill-validation
-
-    - name: Type-check the UI scripts
-      run: |
-        npm ci --prefix src/StellarAdmin.UI/Client --no-audit --no-fund
-        npm run check --prefix src/StellarAdmin.UI/Client
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        global-json-file: global.json
-
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-
-    - name: Check consumer reference drift
-      run: dotnet run --project tools/StellarAdmin.Cli --no-build --no-launch-profile --configuration Release -- skills check
-
-    - name: Run all .NET tests
-      env:
-        # The scenario tests drive the runner's preinstalled Chrome
-        STELLARADMIN_CHROMIUM: /usr/bin/google-chrome
-      run: dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
+    - name: Build and test
+      uses: ./.github/actions/verify
