@@ -1,10 +1,10 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -15,7 +15,7 @@ public class ResourceCustomCreateTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(Configure);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -60,7 +60,7 @@ public class ResourceCustomCreateTests
                 }
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.ProductName"] = "Custom notebook";
         values["Entity.Price"] = "12.50";
@@ -91,7 +91,7 @@ public class ResourceCustomCreateTests
         // Arrange
         var state = new ProductState([]);
         await using var sut = await StellarAdminTestHost.CreateAsync(state, Configure);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
 
         // Act
@@ -108,7 +108,7 @@ public class ResourceCustomCreateTests
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await StellarAdminTestHost.CreateAsync(state, Configure);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Edited notebook";
         values["Entity.Price"] = "15";
@@ -144,7 +144,7 @@ public class ResourceCustomCreateTests
                 : null,
         };
         await using var sut = await StellarAdminTestHost.CreateAsync(state, Configure);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.ProductName"] = "Attempted name";
         values["Entity.Price"] = "12.50";
@@ -223,7 +223,7 @@ public class ResourceCustomCreateTests
                 resource.AllowCreate().Fields(fields => fields.Add(product => product.Name));
             }
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");

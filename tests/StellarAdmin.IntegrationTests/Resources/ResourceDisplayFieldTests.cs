@@ -1,14 +1,14 @@
 using System.Net;
 using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
+using StellarAdmin.Testing;
 using StellarAdmin.UI;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -30,7 +30,7 @@ public class ResourceDisplayFieldTests
                 })
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -66,7 +66,7 @@ public class ResourceDisplayFieldTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -95,7 +95,7 @@ public class ResourceDisplayFieldTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -128,7 +128,7 @@ public class ResourceDisplayFieldTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -203,7 +203,7 @@ public class ResourceDisplayFieldTests
             },
             configureServices: services => services.AddSingleton<CategoryStore>()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync($"/stellaradmin/products/edit/{id}");
@@ -237,7 +237,7 @@ public class ResourceDisplayFieldTests
             },
             culture: "en-GB"
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -294,7 +294,7 @@ public class ResourceDisplayFieldTests
             },
             culture: "de-DE"
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -335,7 +335,7 @@ public class ResourceDisplayFieldTests
                 .Add(model => model.Weight)
                 .UseDisplay<NumberDisplay>(number => number.Format = "0.0");
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -377,7 +377,7 @@ public class ResourceDisplayFieldTests
                     image.Interaction = ImageDisplayInteraction.Preview;
                 });
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -411,7 +411,7 @@ public class ResourceDisplayFieldTests
                 details.Add(model => model.Photo).UseDisplay<ImageDisplay>().EmptyText = "None",
             model => model.Photo = null
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -442,7 +442,7 @@ public class ResourceDisplayFieldTests
                 }
             );
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -467,7 +467,7 @@ public class ResourceDisplayFieldTests
             details.Add(model => model.Active).UseBuiltInRendering();
             details.Add(model => model.Reference);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -498,7 +498,7 @@ public class ResourceDisplayFieldTests
                 model.Discontinued = null;
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -533,7 +533,7 @@ public class ResourceDisplayFieldTests
             },
             model => model.Email = null
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -577,7 +577,7 @@ public class ResourceDisplayFieldTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -646,7 +646,7 @@ public class ResourceDisplayFieldTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -685,7 +685,7 @@ public class ResourceDisplayFieldTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -716,7 +716,7 @@ public class ResourceDisplayFieldTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureEdit
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "";
         using var content = new FormUrlEncodedContent(values);
@@ -738,7 +738,7 @@ public class ResourceDisplayFieldTests
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureEdit);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Updated notebook";
         values["Entity.Price"] = "999";

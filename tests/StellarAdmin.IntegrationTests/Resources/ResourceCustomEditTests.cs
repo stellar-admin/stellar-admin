@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -19,7 +19,7 @@ public class ResourceCustomEditTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             Configure
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -59,7 +59,7 @@ public class ResourceCustomEditTests
                 }
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.ProductName"] = "Updated notebook";
         values["Entity.Price"] = "999";
@@ -88,7 +88,7 @@ public class ResourceCustomEditTests
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await StellarAdminTestHost.CreateAsync(state, Configure);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
 
         // Act
@@ -107,7 +107,7 @@ public class ResourceCustomEditTests
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await StellarAdminTestHost.CreateAsync(state, Configure);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.ProductName"] = "Updated";
         state.Products.Clear();
@@ -129,7 +129,7 @@ public class ResourceCustomEditTests
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]) { DisappearOnUpdate = true };
         await using var sut = await StellarAdminTestHost.CreateAsync(state, Configure);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.ProductName"] = "Updated";
         using var content = new FormUrlEncodedContent(values);
@@ -160,7 +160,7 @@ public class ResourceCustomEditTests
                 : null,
         };
         await using var sut = await StellarAdminTestHost.CreateAsync(state, Configure);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.ProductName"] = handlerRejection ? "Attempted name" : "";
         using var content = new FormUrlEncodedContent(values);
@@ -226,7 +226,7 @@ public class ResourceCustomEditTests
                 }
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var field = customModel ? "ProductName" : "Name";
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values[$"Entity.{field}"] = "Updated";
@@ -263,7 +263,7 @@ public class ResourceCustomEditTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.ProductName"] = "Discontinued";
         using var content = new FormUrlEncodedContent(values);

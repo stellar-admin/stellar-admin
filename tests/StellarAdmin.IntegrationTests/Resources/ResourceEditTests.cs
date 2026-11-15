@@ -1,11 +1,11 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
+using StellarAdmin.Testing;
 using StellarAdmin.UI;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -38,7 +38,7 @@ public class ResourceEditTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Attempted name";
         values["Entity.Price"] = "12.50";
@@ -119,7 +119,7 @@ public class ResourceEditTests
                 }
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var index = await client.GetDocumentAsync("/stellaradmin/products");
@@ -183,7 +183,7 @@ public class ResourceEditTests
             state,
             resource => ConfigureEdit(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = name;
         values["Entity.Price"] = price;
@@ -227,7 +227,7 @@ public class ResourceEditTests
             state,
             resource => ConfigureEdit(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(
             new Dictionary<string, string> { ["Entity.Name"] = "Changed" }
         );
@@ -254,7 +254,7 @@ public class ResourceEditTests
             state,
             resource => ConfigureEdit(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(
             await PrepareForm(client, "/stellaradmin/products/edit/7")
         );
@@ -278,7 +278,7 @@ public class ResourceEditTests
             state,
             resource => ConfigureEdit(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Changed";
         values["Entity.Price"] = "12.50";
@@ -321,7 +321,7 @@ public class ResourceEditTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["id"] = "8";
         values["Entity.Id"] = "8";
@@ -360,7 +360,7 @@ public class ResourceEditTests
                 resource.AllowEdit().Fields(fields => fields.Add(product => product.Price));
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Price"] = "12.50";
         using var content = new FormUrlEncodedContent(values);

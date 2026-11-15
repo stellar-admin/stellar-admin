@@ -1,10 +1,10 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -22,7 +22,7 @@ public class ResourceHandlerFailureTests
             state,
             resource => resource.UseKey(product => product.Id).AllowDelete()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(
             await PrepareForm(client, "/stellaradmin/products")
         );
@@ -65,7 +65,7 @@ public class ResourceHandlerFailureTests
                     create.Fields(fields => fields.Add(product => product.Name))
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Notebook";
         using var content = new FormUrlEncodedContent(values);
@@ -102,7 +102,7 @@ public class ResourceHandlerFailureTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Fountain pen";
         using var content = new FormUrlEncodedContent(values);
@@ -143,7 +143,7 @@ public class ResourceHandlerFailureTests
                 resource.AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[7].Name"] = "Fountain pen";
         using var content = new FormUrlEncodedContent(values);

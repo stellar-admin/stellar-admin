@@ -6,6 +6,7 @@ using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
+using StellarAdmin.Testing;
 using StellarAdmin.UI;
 using TUnit.Assertions.Enums;
 

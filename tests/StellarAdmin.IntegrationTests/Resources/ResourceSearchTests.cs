@@ -1,10 +1,10 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -24,7 +24,7 @@ public class ResourceSearchTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureSearch);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -50,7 +50,7 @@ public class ResourceSearchTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products?search=missing");
@@ -91,7 +91,7 @@ public class ResourceSearchTests
                 }
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -108,7 +108,7 @@ public class ResourceSearchTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureSearch);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -159,7 +159,7 @@ public class ResourceSearchTests
                 resource.UseKey(product => product.Id).AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         const string url = "/stellaradmin/products?search=lamp";
         var document = await client.GetDocumentAsync(url);
         var action = document.RequiredElement("form[data-resource-delete]").GetAttribute("action")!;
@@ -197,7 +197,7 @@ public class ResourceSearchTests
             CreateState(),
             ConfigureSearch
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products?page=9&search=lamp");

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
+using StellarAdmin.Testing;
 
 namespace StellarAdmin.IntegrationTests.Infrastructure;
 

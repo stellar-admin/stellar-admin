@@ -1,11 +1,11 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -31,7 +31,7 @@ public class ResourceSortingTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureSorting);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products" + query);
@@ -60,7 +60,7 @@ public class ResourceSortingTests
             CreateState(),
             ConfigureSorting
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -93,7 +93,7 @@ public class ResourceSortingTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureSorting);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var first = await client.GetDocumentAsync("/stellaradmin/products?sortBy=Price");
@@ -124,7 +124,7 @@ public class ResourceSortingTests
                     index.DefaultSortByDescending(product => product.Name);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -145,7 +145,7 @@ public class ResourceSortingTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -163,7 +163,7 @@ public class ResourceSortingTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureSorting);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(
@@ -194,7 +194,7 @@ public class ResourceSortingTests
                 resource.UseKey(product => product.Id).AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         const string url =
             "/stellaradmin/products?page=2&pageSize=2&sortBy=Price&sortDirection=desc";
         var document = await client.GetDocumentAsync(url);
@@ -233,7 +233,7 @@ public class ResourceSortingTests
             CreateState(),
             ConfigureSorting
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(
@@ -254,7 +254,7 @@ public class ResourceSortingTests
             CreateState(),
             ConfigureSorting
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -302,7 +302,7 @@ public class ResourceSortingTests
                 resource.UseKey(product => product.Id).AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var document = await client.GetDocumentAsync("/stellaradmin/products");
         var action = document.RequiredElement("form[data-resource-delete]").GetAttribute("action")!;
         using var content = new FormUrlEncodedContent(
@@ -342,7 +342,7 @@ public class ResourceSortingTests
             CreateState(),
             ConfigureSorting
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products?page=9");
@@ -376,7 +376,7 @@ public class ResourceSortingTests
                     })
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(

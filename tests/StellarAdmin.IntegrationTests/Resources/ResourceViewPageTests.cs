@@ -1,13 +1,13 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
+using StellarAdmin.Testing;
 using StellarAdmin.UI;
 using TUnit.Assertions.Enums;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -43,7 +43,7 @@ public class ResourceViewPageTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -101,7 +101,7 @@ public class ResourceViewPageTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -130,7 +130,7 @@ public class ResourceViewPageTests
                 resource.AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -167,7 +167,7 @@ public class ResourceViewPageTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -200,7 +200,7 @@ public class ResourceViewPageTests
                 resource.AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/view/7");
         values["origin"] = "view";
 
@@ -208,11 +208,6 @@ public class ResourceViewPageTests
         using var response = await client.PostAsync(
             "/stellaradmin/products/delete/7",
             new FormUrlEncodedContent(values)
-        );
-        client.DefaultRequestHeaders.Remove("Cookie");
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
         );
         var document = await client.GetDocumentAsync(response.Headers.Location!.OriginalString);
 
@@ -241,7 +236,7 @@ public class ResourceViewPageTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -269,7 +264,7 @@ public class ResourceViewPageTests
             },
             configureServices: services => services.AddSingleton<CategoryStore>()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/2");
@@ -308,7 +303,7 @@ public class ResourceViewPageTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -355,7 +350,7 @@ public class ResourceViewPageTests
             },
             configureServices: services => services.AddSingleton<CategoryStore>()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -414,7 +409,7 @@ public class ResourceViewPageTests
                 }
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync($"/stellaradmin/products/{path}");
@@ -437,7 +432,7 @@ public class ResourceViewPageTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -468,7 +463,7 @@ public class ResourceViewPageTests
                     )
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var index = await client.GetDocumentAsync("/stellaradmin/products");

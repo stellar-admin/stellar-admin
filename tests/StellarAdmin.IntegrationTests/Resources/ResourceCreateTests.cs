@@ -1,14 +1,14 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
+using StellarAdmin.Testing;
 using StellarAdmin.UI;
 using TUnit.Assertions.Enums;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -41,7 +41,7 @@ public class ResourceCreateTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Attempted name";
         values["Entity.Price"] = "12.50";
@@ -82,7 +82,7 @@ public class ResourceCreateTests
             var create = ConfigureLayout(resource);
             create.Fields(fields => fields.Clear());
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -120,7 +120,7 @@ public class ResourceCreateTests
                 });
             }
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -152,7 +152,7 @@ public class ResourceCreateTests
     {
         // Arrange
         await using var sut = await CreateInventoryHost([], []);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/inventory-items/create");
@@ -172,7 +172,7 @@ public class ResourceCreateTests
         var items = new List<InventoryItem>();
         var created = new List<InventoryItem>();
         await using var sut = await CreateInventoryHost(items, created);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/inventory-items/create");
         values["Entity.Name"] = name;
         values["Entity.Sku"] = "forged";
@@ -241,7 +241,7 @@ public class ResourceCreateTests
                     })
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = name;
         values["Entity.Price"] = price;
@@ -304,7 +304,7 @@ public class ResourceCreateTests
                     });
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -370,7 +370,7 @@ public class ResourceCreateTests
                     ui.ConfigureForms(forms => forms.SectionLayout = FormSectionLayout.Split)
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -392,7 +392,7 @@ public class ResourceCreateTests
         // Arrange
         var state = new ProductState([]);
         await using var sut = await StellarAdminTestHost.CreateAsync(state);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
@@ -434,7 +434,7 @@ public class ResourceCreateTests
                     ui.ConfigureForms(forms => forms.SectionLayout = FormSectionLayout.Split)
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -486,7 +486,7 @@ public class ResourceCreateTests
             state,
             resource => ConfigureLayout(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = "New notebook";
         values["Entity.Price"] = "12.50";

@@ -1,10 +1,9 @@
 using System.Net;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
@@ -42,7 +41,7 @@ public class ResourceDependentItemsTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/1");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -87,7 +86,7 @@ public class ResourceDependentItemsTests
         using var response = await client.GetAsync(
             "/stellaradmin/products/lookup/1?form=edit&field=CategoryId&Model.Number=1"
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -99,7 +98,4 @@ public class ResourceDependentItemsTests
             )
             .IsEquivalentTo(["3"]);
     }
-
-    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
-        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
 }

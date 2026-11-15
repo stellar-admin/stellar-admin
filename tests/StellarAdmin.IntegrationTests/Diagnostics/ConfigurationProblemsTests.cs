@@ -8,6 +8,7 @@ using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
+using StellarAdmin.Testing;
 using StellarAdmin.UI.Icons;
 
 namespace StellarAdmin.IntegrationTests.Diagnostics;

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Sidebar;
+using StellarAdmin.Testing;
 
 namespace StellarAdmin.IntegrationTests.Layout;
 

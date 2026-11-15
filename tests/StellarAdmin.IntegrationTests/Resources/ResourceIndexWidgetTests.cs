@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
+using StellarAdmin.Testing;
 using StellarAdmin.Widgets;
 using TUnit.Assertions.Enums;
 

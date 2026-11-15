@@ -1,10 +1,10 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -15,7 +15,7 @@ public class ResourceAddAnotherTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync();
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -39,7 +39,7 @@ public class ResourceAddAnotherTests
         await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
             ConfigureAddAnother(resource, another => another.Label = label)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -70,7 +70,7 @@ public class ResourceAddAnotherTests
             state,
             resource => ConfigureAddAnother(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = "Fountain pen";
         values["Entity.Price"] = "12.00";
@@ -79,12 +79,7 @@ public class ResourceAddAnotherTests
 
         // Act
         using var post = await client.PostAsync("/stellaradmin/products/create", content);
-        using var request = new HttpRequestMessage(HttpMethod.Get, post.Headers.Location);
-        request.Headers.Add(
-            "Cookie",
-            post.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
-        using var next = await client.SendAsync(request);
+        using var next = await client.GetAsync(post.Headers.Location);
 
         // Assert
         await Assert.That(post.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
@@ -119,7 +114,7 @@ public class ResourceAddAnotherTests
             state,
             resource => ConfigureAddAnother(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = "Fountain pen";
         values["Entity.Price"] = "12.00";
@@ -145,7 +140,7 @@ public class ResourceAddAnotherTests
             state,
             resource => ConfigureAddAnother(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = "";
         values["Entity.Price"] = "12.00";
@@ -171,7 +166,7 @@ public class ResourceAddAnotherTests
         await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
             ConfigureInlineAddAnother(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/createrow");
@@ -202,7 +197,7 @@ public class ResourceAddAnotherTests
                 create.UseInlineRow();
             });
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -223,7 +218,7 @@ public class ResourceAddAnotherTests
                 inline => inline.AfterSave = InlineRowAfterSave.KeepInPlace
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -248,7 +243,7 @@ public class ResourceAddAnotherTests
             state,
             resource => ConfigureInlineAddAnother(resource, inline => inline.Position = position)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/createrow");
         values["rows[new].Name"] = "Fountain pen";
         values["rows[new].Price"] = "12.00";
@@ -298,7 +293,7 @@ public class ResourceAddAnotherTests
             state,
             resource => ConfigureInlineAddAnother(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/createrow");
         values["rows[new].Name"] = "";
         values["rows[new].Price"] = "12.00";
@@ -329,7 +324,7 @@ public class ResourceAddAnotherTests
         await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
             ConfigureAddAnother(resource)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(

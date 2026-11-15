@@ -1,14 +1,24 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
-namespace StellarAdmin.UI.Tests.Support;
+namespace StellarAdmin.Testing;
 
-// Records what the services log, so tests can check the configuration problems that were logged
-internal sealed class RecordingLoggerProvider : ILoggerProvider
+// Records what the app logs, so tests can check the configuration problems that were logged
+public sealed class RecordingLoggerProvider : ILoggerProvider
 {
+    public const string ConfigurationCategory = "StellarAdmin.Configuration";
+
     private readonly ConcurrentQueue<RecordedLog> _logs = new();
 
     public IReadOnlyList<RecordedLog> Logs => [.. _logs];
+
+    // The configuration problems, at every level, in the order they were logged
+    public IReadOnlyList<RecordedLog> ConfigurationProblems =>
+        [
+            .. _logs.Where(log =>
+                log.Category == ConfigurationCategory && log.Level >= LogLevel.Information
+            ),
+        ];
 
     public ILogger CreateLogger(string categoryName) => new RecordingLogger(categoryName, _logs);
 
@@ -32,9 +42,4 @@ internal sealed class RecordingLoggerProvider : ILoggerProvider
     }
 }
 
-internal sealed record RecordedLog(
-    string Category,
-    LogLevel Level,
-    EventId EventId,
-    string Message
-);
+public sealed record RecordedLog(string Category, LogLevel Level, EventId EventId, string Message);

@@ -2,14 +2,14 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -58,7 +58,7 @@ public class RichTextEditorTests
                     editor.AcceptedTypes = ["image/png"];
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -87,7 +87,7 @@ public class RichTextEditorTests
     {
         // Arrange
         await using var sut = await CreateAsync(fields => fields.Add(model => model.Notes));
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -114,7 +114,7 @@ public class RichTextEditorTests
             },
             stories
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["Entity.Story"] = UnsafeHtml;
         values["Entity.Notes"] = UnsafeHtml;
@@ -143,7 +143,7 @@ public class RichTextEditorTests
             fields => fields.Add(model => model.Story).UseRichTextEditor(),
             stories
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["Entity.Story"] = html;
         using var content = new FormUrlEncodedContent(values);
@@ -166,7 +166,7 @@ public class RichTextEditorTests
             stories,
             services => services.AddSingleton<IRichTextSanitizer, UpperCaseSanitizer>()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["Entity.Story"] = "<p>quiet</p>";
         using var content = new FormUrlEncodedContent(values);
@@ -187,7 +187,7 @@ public class RichTextEditorTests
             fields => fields.Add(model => model.Story).UseRichTextEditor(Configure),
             stories
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var token = (await PrepareForm(client, EditUrl))["__RequestVerificationToken"];
 
         // Act
@@ -207,7 +207,7 @@ public class RichTextEditorTests
         await using var sut = await CreateAsync(fields =>
             fields.Add(model => model.Story).UseRichTextEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var token = (await PrepareForm(client, EditUrl))["__RequestVerificationToken"];
 
         // Act

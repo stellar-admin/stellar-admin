@@ -1,12 +1,12 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -27,7 +27,7 @@ public class FieldLabelTests
     {
         // Arrange
         await using var sut = await CreateHost();
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -43,7 +43,7 @@ public class FieldLabelTests
     {
         // Arrange
         await using var sut = await CreateHost();
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.LeadPassenger"] = "";
         values["Entity.DepartureDate"] = "soon";
@@ -92,7 +92,7 @@ public class FieldLabelTests
         await using var sut = await CreateHost(fields =>
             fields.AddDisplayField(model => model.DepartureDate)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");

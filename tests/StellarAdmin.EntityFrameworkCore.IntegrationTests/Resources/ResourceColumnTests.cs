@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
 using System.Net;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Displays;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
@@ -32,9 +32,7 @@ public class ResourceColumnTests
         using var response = await client.GetAsync(
             "/stellaradmin/products?sortBy=Category.Name&sortDirection=desc"
         );
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -104,9 +102,7 @@ public class ResourceColumnTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products");
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -136,7 +132,13 @@ public class ResourceColumnTests
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
         await Assert
-            .That(logs.ConfigurationProblems.Any(log => log.Message.Contains("The Tags column isn't sortable because it reads a collection.")))
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains(
+                        "The Tags column isn't sortable because it reads a collection."
+                    )
+                )
+            )
             .IsTrue();
     }
 
@@ -161,9 +163,7 @@ public class ResourceColumnTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products");
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -259,9 +259,7 @@ public class ResourceColumnTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products");
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);

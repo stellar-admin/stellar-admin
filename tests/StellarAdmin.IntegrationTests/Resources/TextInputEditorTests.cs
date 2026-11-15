@@ -1,11 +1,11 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -40,7 +40,7 @@ public class TextInputEditorTests
             fields.Add(model => model.Ratio);
             fields.Add(model => model.Website);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -58,7 +58,7 @@ public class TextInputEditorTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync();
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -80,7 +80,7 @@ public class TextInputEditorTests
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync();
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "";
         values["Entity.Price"] = "0";
@@ -112,7 +112,7 @@ public class TextInputEditorTests
             fields.Add(model => model.Code).Description = "Printed on the boarding pass.";
             fields.Add(model => model.Email).Description = "We send the itinerary here.";
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -142,7 +142,7 @@ public class TextInputEditorTests
                 .UseTextInputEditor(input => input.Prefix = "@")
                 .Description = "We send the itinerary here."
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -172,7 +172,7 @@ public class TextInputEditorTests
                 });
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -204,7 +204,7 @@ public class TextInputEditorTests
                 .Add(model => model.Quantity)
                 .UseTextInputEditor(input => input.Type = TextInputType.Text);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -235,7 +235,7 @@ public class TextInputEditorTests
                     input.Suffix = "/2026";
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -278,7 +278,7 @@ public class TextInputEditorTests
                 })
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Lamp";
         values["Entity.Price"] = "0";

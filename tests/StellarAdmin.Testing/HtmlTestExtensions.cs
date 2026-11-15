@@ -2,9 +2,9 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 
-namespace StellarAdmin.IntegrationTests.Infrastructure;
+namespace StellarAdmin.Testing;
 
-internal static class HtmlTestExtensions
+public static class HtmlTestExtensions
 {
     extension(HttpClient client)
     {

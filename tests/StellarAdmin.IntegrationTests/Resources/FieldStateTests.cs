@@ -1,12 +1,12 @@
 using System.Net;
 using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -27,7 +27,7 @@ public class FieldStateTests
                 fields.Add(product => product.Price);
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Fountain pen";
         values["Entity.Price"] = "12.00";
@@ -55,7 +55,7 @@ public class FieldStateTests
                 fields.Add(product => product.Price);
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Fountain pen";
         values["Entity.Price"] = "12.00";
@@ -88,7 +88,7 @@ public class FieldStateTests
                 fields.Add(product => product.Price);
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Fountain pen";
         values["Entity.Price"] = "5.00";
@@ -124,7 +124,7 @@ public class FieldStateTests
                 });
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = "Fountain pen";
         values["Entity.Price"] = "99.00";
@@ -171,7 +171,7 @@ public class FieldStateTests
                 }
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/tours/edit/7");
         values["Entity.Name"] = "Lisbon by tram";
         values[$"__sa_checkbox_group.Entity.{name}"] = "true";
@@ -202,7 +202,7 @@ public class FieldStateTests
         await using var sut = await CreateInputFieldsHost(fields =>
             AddInputField(fields, editor).ReadOnly()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -226,7 +226,7 @@ public class FieldStateTests
         await using var sut = await CreateInputFieldsHost(fields =>
             AddInputField(fields, editor).Disabled()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -249,7 +249,7 @@ public class FieldStateTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             AddChoiceField(fields, editor).ReadOnly()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -273,7 +273,7 @@ public class FieldStateTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             AddChoiceField(fields, editor).Disabled()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -292,7 +292,7 @@ public class FieldStateTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Cabin).UseRadioGroupEditor().ReadOnly()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -312,7 +312,7 @@ public class FieldStateTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields.Add(model => model.Insured).ReadOnly().Disabled()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -344,7 +344,7 @@ public class FieldStateTests
             configureServices: services =>
                 services.AddSingleton<CategoryStore>().AddScoped<CategoryLookupSource>()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -384,7 +384,7 @@ public class FieldStateTests
                 });
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/editrow/7");
@@ -418,7 +418,7 @@ public class FieldStateTests
                 });
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/editrow/7");

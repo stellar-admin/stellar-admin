@@ -1,13 +1,12 @@
 using System.Collections.Concurrent;
 using System.Net;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -33,11 +32,11 @@ public class ResourceFormEventsTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert
@@ -64,7 +63,7 @@ public class ResourceFormEventsTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Created";
 
@@ -108,7 +107,7 @@ public class ResourceFormEventsTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Rejected";
         values["Entity.Price"] = "500";
@@ -118,7 +117,7 @@ public class ResourceFormEventsTests
             "/stellaradmin/products/create",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -153,7 +152,7 @@ public class ResourceFormEventsTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Rolled back";
 
@@ -162,7 +161,7 @@ public class ResourceFormEventsTests
             "/stellaradmin/products/create",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -195,7 +194,7 @@ public class ResourceFormEventsTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Handled";
 
@@ -234,7 +233,7 @@ public class ResourceFormEventsTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Saved anyway";
         values["Entity.Price"] = "12";
@@ -281,11 +280,11 @@ public class ResourceFormEventsTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert
@@ -321,7 +320,7 @@ public class ResourceFormEventsTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
         values["Entity.Name"] = "Cheap apple";
         values["Entity.Price"] = "5";
@@ -331,7 +330,7 @@ public class ResourceFormEventsTests
             "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -367,7 +366,7 @@ public class ResourceFormEventsTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
         values["Entity.Name"] = "Renamed";
 
@@ -393,7 +392,7 @@ public class ResourceFormEventsTests
                 create.UseEvents<PricingEvents>();
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Priced";
 
@@ -410,25 +409,6 @@ public class ResourceFormEventsTests
         var created = await db.Set<Product>().SingleAsync(product => product.Name == "Priced");
         await Assert.That(created.Price).IsEqualTo(41);
     }
-
-    private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
-    {
-        using var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        var document = await ReadDocument(response);
-        var token = document
-            .QuerySelector("input[name='__RequestVerificationToken']")!
-            .GetAttribute("value")!;
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
-
-        return new() { ["__RequestVerificationToken"] = token };
-    }
-
-    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
-        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
 
     private sealed class PricingEvents(CatalogDbContext db) : EfCoreCreateEvents<Product, Product>
     {

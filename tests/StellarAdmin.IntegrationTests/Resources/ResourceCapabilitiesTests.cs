@@ -1,10 +1,10 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -19,7 +19,7 @@ public class ResourceCapabilitiesTests
         await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
             Configure(admin, fullCrud)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/inventory-items");
@@ -48,7 +48,7 @@ public class ResourceCapabilitiesTests
         await using var sut = await StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
             Configure(admin, fullCrud)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         using var content = new FormUrlEncodedContent(values);
 

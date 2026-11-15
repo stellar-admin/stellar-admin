@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -22,11 +21,11 @@ public class ResourceWrappedModelTests
             ConfigureEdit,
             configureAdmin: AddRelatedResources
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert
@@ -56,8 +55,8 @@ public class ResourceWrappedModelTests
             ConfigureEdit,
             configureAdmin: AddRelatedResources
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Product.Name", "Green apple"));
         values.Add(new("Entity.Product.Price", "22"));
         values.Add(new("Entity.Product.Details.Sku", "G-2"));
@@ -97,8 +96,8 @@ public class ResourceWrappedModelTests
             ConfigureEdit,
             configureAdmin: AddRelatedResources
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Product.Name", "Green apple"));
         values.Add(new("Entity.Product.Price", "22"));
         values.Add(new("Entity.Reason", ""));
@@ -108,7 +107,7 @@ public class ResourceWrappedModelTests
             "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -150,8 +149,8 @@ public class ResourceWrappedModelTests
                 }
             )
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Product.Name", "Green apple"));
         values.Add(new("Entity.Product.Price", "22"));
         values.Add(new("Entity.Reason", "Because"));
@@ -161,7 +160,7 @@ public class ResourceWrappedModelTests
             "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -191,8 +190,8 @@ public class ResourceWrappedModelTests
                     })
             )
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Product.Name", "Free"));
         values.Add(new("Entity.Product.Price", "22"));
 
@@ -201,7 +200,7 @@ public class ResourceWrappedModelTests
             "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -249,9 +248,9 @@ public class ResourceWrappedModelTests
                 ),
             configureAdmin: AddRelatedResources
         );
-        using var client = sut.GetTestClient();
-        var page = await ReadDocument(await client.GetAsync("/stellaradmin/products/create"));
-        var values = await PrepareForm(client, "/stellaradmin/products/create");
+        using var client = sut.CreateClient();
+        var page = await client.GetDocumentAsync("/stellaradmin/products/create");
+        var values = (await PrepareForm(client, "/stellaradmin/products/create")).ToList();
         values.Add(new("Entity.Product.Name", "Pear"));
         values.Add(new("Entity.Product.Price", "15"));
         values.Add(new("Entity.Product.CategoryId", "2"));
@@ -302,8 +301,8 @@ public class ResourceWrappedModelTests
                 }
             );
         });
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products")).ToList();
         values.Add(new("rows[2].Product.Name", "Apple pie"));
         values.Add(new("rows[2].Product.Price", "25"));
 
@@ -344,7 +343,7 @@ public class ResourceWrappedModelTests
         );
 
         // Act
-        using var response = await sut.GetTestClient().GetAsync("/stellaradmin/products");
+        using var response = await sut.CreateClient().GetAsync("/stellaradmin/products");
 
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
@@ -399,29 +398,6 @@ public class ResourceWrappedModelTests
                 );
             }
         );
-
-    private static async Task<List<KeyValuePair<string, string>>> PrepareForm(
-        HttpClient client,
-        string url
-    )
-    {
-        using var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        var document = await ReadDocument(response);
-        var token = document
-            .QuerySelector("input[name='__RequestVerificationToken']")!
-            .GetAttribute("value")!;
-        client.DefaultRequestHeaders.Remove("Cookie");
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
-
-        return [new("__RequestVerificationToken", token)];
-    }
-
-    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
-        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
 
     public sealed class CreateProductModel
     {

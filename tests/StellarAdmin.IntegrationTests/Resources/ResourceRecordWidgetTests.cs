@@ -1,11 +1,11 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
+using StellarAdmin.Testing;
 using StellarAdmin.Widgets;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -34,7 +34,7 @@ public class ResourceRecordWidgetTests
                     })
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -68,7 +68,7 @@ public class ResourceRecordWidgetTests
         await using var sut = await CreateHostAsync(resource =>
             resource.AllowView(view => view.Fields(fields => fields.Add(product => product.Name)))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -94,7 +94,7 @@ public class ResourceRecordWidgetTests
                     )
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -125,7 +125,7 @@ public class ResourceRecordWidgetTests
                     .Widgets(widgets => widgets.Add("Context", "_RecordContextWidget"))
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Fountain pen";
         values["Entity.Price"] = "0";
@@ -163,7 +163,7 @@ public class ResourceRecordWidgetTests
                 edit.Widgets(widgets => widgets.Add("Context", "_RecordContextWidget"))
             );
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -195,7 +195,7 @@ public class ResourceRecordWidgetTests
                     )
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var page = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -224,7 +224,7 @@ public class ResourceRecordWidgetTests
                     .Widgets(widgets => AddSales(widgets, "Edit"))
             );
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var view = await client.GetDocumentAsync("/stellaradmin/products/view/7");
         var url = view.RequiredElement("[data-slot='widget']").GetAttribute("hx-get")!;
 
@@ -247,7 +247,7 @@ public class ResourceRecordWidgetTests
                     .Widgets(widgets => widgets.Add<GreetingHandler>("Greeting", "_GreetingWidget"))
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var found = await client.GetAsync("/stellaradmin/products/widget/Greeting?page=view");
@@ -272,7 +272,7 @@ public class ResourceRecordWidgetTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var response = await client.GetAsync("/stellaradmin/products/widget/Greeting?page=edit");

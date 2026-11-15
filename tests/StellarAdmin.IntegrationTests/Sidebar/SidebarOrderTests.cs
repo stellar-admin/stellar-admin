@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Sidebar;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.IntegrationTests.Sidebar;

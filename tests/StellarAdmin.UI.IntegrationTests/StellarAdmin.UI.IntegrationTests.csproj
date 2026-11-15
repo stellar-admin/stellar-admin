@@ -14,5 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin.UI\StellarAdmin.UI.csproj" />
+    <ProjectReference Include="..\StellarAdmin.Testing\StellarAdmin.Testing.csproj" />
   </ItemGroup>
 </Project>

@@ -1,14 +1,14 @@
 using System.Net;
 using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using StellarAdmin.UI;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -24,7 +24,7 @@ public class LookupCreateTests
         await using var sut = await CreateHost(fields =>
             fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -54,7 +54,7 @@ public class LookupCreateTests
                     lookup.EnableCreate<Category>();
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -82,7 +82,7 @@ public class LookupCreateTests
                     lookup.EnableCreate();
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
@@ -107,7 +107,7 @@ public class LookupCreateTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             addCategoryResource: false
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
@@ -136,7 +136,7 @@ public class LookupCreateTests
                 ),
             addCategoryResource: false
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
@@ -167,7 +167,7 @@ public class LookupCreateTests
                 resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             configureServices: TestAuthenticationHandler.Register
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         TestAuthenticationHandler.SignIn(client, "ada", authorized ? ["Catalog"] : []);
 
         // Act
@@ -189,7 +189,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(CreateSheetUrl);
@@ -242,7 +242,7 @@ public class LookupCreateTests
                     })
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(CreateSheetUrl);
@@ -262,7 +262,7 @@ public class LookupCreateTests
         await using var sut = await CreateHost(fields =>
             fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -297,7 +297,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         const string url = "/stellaradmin/categories/createsheet?for=Sheet_CategoryId&level=2";
 
         // Act
@@ -317,7 +317,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         const string url = "/stellaradmin/categories/createsheet?for=Sheet_CategoryId&level=2";
         var values = await PrepareForm(client, url);
         values["Sheet2.Name"] = "Lenses";
@@ -345,7 +345,7 @@ public class LookupCreateTests
                     labels.Sheet(sheet => sheet.SaveErrorDescription = "Nothing was saved.")
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(CreateSheetUrl);
@@ -376,7 +376,7 @@ public class LookupCreateTests
                 ),
             configureServices: services => services.AddSingleton(new List<InventoryItem>())
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(url);
@@ -390,7 +390,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateSheetUrl);
         values["Sheet.Name"] = "Compact cameras";
         values["Sheet.Code"] = "CAM";
@@ -423,7 +423,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateSheetUrl);
         values["Sheet.Code"] = "LEN";
         using var content = new FormUrlEncodedContent(values);
@@ -447,7 +447,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateSheetUrl);
         values["Sheet.Name"] = "Lenses";
         values["Sheet.Code"] = "LEN";
@@ -483,7 +483,7 @@ public class LookupCreateTests
                 }),
             addCategoryResource: false
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateSheetUrl);
         values["Sheet.Name"] = "Tripods";
         using var content = new FormUrlEncodedContent(values);
@@ -503,7 +503,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var url = "/stellaradmin/products/createsheet?for=Entity_ProductId&level=1";
         var values = await PrepareForm(client, url);
         using var content = new FormUrlEncodedContent(values);
@@ -525,7 +525,7 @@ public class LookupCreateTests
         await using var sut = await CreateHost(fields =>
             fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -557,7 +557,7 @@ public class LookupCreateTests
             fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories);
             fields.Add(model => model.PrimaryCategoryId);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(

@@ -1,13 +1,13 @@
 using System.Net;
 using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -21,7 +21,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new() { CategoryId = 2 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -61,7 +61,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -98,7 +98,7 @@ public class LookupSheetEditorTests
                     }),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -134,7 +134,7 @@ public class LookupSheetEditorTests
                         })
                     )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -164,7 +164,7 @@ public class LookupSheetEditorTests
             new(),
             admin => admin.AddCategoryResource()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -183,7 +183,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new() { CategoryId = 2 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -205,7 +205,7 @@ public class LookupSheetEditorTests
                     .UseLookupSheetEditor(lookup => lookup.UseSource<CategoryLookupSource>()),
             new() { CategoryId = 2 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -233,7 +233,7 @@ public class LookupSheetEditorTests
                     }),
             new() { CategoryId = 2 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -255,7 +255,7 @@ public class LookupSheetEditorTests
                     .UseLookupSheetEditor(lookup => lookup.UseSource<CodedCategorySource>()),
             new() { CategoryId = 2 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -282,7 +282,7 @@ public class LookupSheetEditorTests
             },
             new() { CategoryId = 2, PrimaryCategoryId = 1 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -326,7 +326,7 @@ public class LookupSheetEditorTests
             },
             new() { CategoryId = 2, PrimaryCategoryId = 1 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -357,7 +357,7 @@ public class LookupSheetEditorTests
                     }),
             new() { CategoryId = 2 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -377,7 +377,7 @@ public class LookupSheetEditorTests
                 fields.Add(model => model.FixedCategoryId).UseLookupSheetEditor(UseCategories),
             new() { FixedCategoryId = 2 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -402,7 +402,7 @@ public class LookupSheetEditorTests
                 fields.Add(model => model.FixedCategoryId).UseLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -424,7 +424,7 @@ public class LookupSheetEditorTests
                 fields.Add(model => model.PrimaryCategoryId).UseLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client);
         values["Entity.PrimaryCategoryId"] = "";
         using var content = new FormUrlEncodedContent(values);
@@ -452,7 +452,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new() { CategoryId = 99 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -476,7 +476,7 @@ public class LookupSheetEditorTests
                 fields.Add(model => model.PrimaryCategoryId).UseLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -504,7 +504,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -532,7 +532,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
@@ -559,7 +559,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new() { CategoryId = 2 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -579,7 +579,7 @@ public class LookupSheetEditorTests
                 fields.Add(model => model.PrimaryCategoryId).UseLookupSheetEditor(UseCategories),
             new() { PrimaryCategoryId = 1 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -603,7 +603,7 @@ public class LookupSheetEditorTests
                     }),
             new() { PrimaryCategoryId = 1 }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -620,7 +620,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -657,7 +657,7 @@ public class LookupSheetEditorTests
                     .UseLookupSheetEditor(lookup => lookup.UseSource<CodedCategorySource>()),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -683,7 +683,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -717,7 +717,7 @@ public class LookupSheetEditorTests
                     }),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -742,7 +742,7 @@ public class LookupSheetEditorTests
                     .UseLookupSheetEditor(lookup => lookup.UseSource<NamedCodedCategorySource>()),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -772,7 +772,7 @@ public class LookupSheetEditorTests
                     .UseLookupSheetEditor(lookup => lookup.UseSource<ImageCategorySource>()),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -797,7 +797,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -825,7 +825,7 @@ public class LookupSheetEditorTests
                     }),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var first = await client.GetDocumentAsync(
@@ -862,7 +862,7 @@ public class LookupSheetEditorTests
             fields => fields.Add(model => model.CategoryId).UseLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -895,7 +895,7 @@ public class LookupSheetEditorTests
                     )
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -923,7 +923,7 @@ public class LookupSheetEditorTests
                     }),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -954,7 +954,7 @@ public class LookupSheetEditorTests
             },
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync($"/stellaradmin/products/lookup?{query}");
@@ -982,7 +982,7 @@ public class LookupSheetEditorTests
                     }),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var page = await client.GetDocumentAsync("/stellaradmin/products/create");
         var open = page.RequiredElement("[data-lookup='open']");
 
@@ -1025,7 +1025,7 @@ public class LookupSheetEditorTests
             },
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync($"/stellaradmin/products/lookupsheet?{query}");

@@ -7,6 +7,7 @@ using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.IntegrationTests.Resources;

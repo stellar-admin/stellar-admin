@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
+using StellarAdmin.Testing;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 

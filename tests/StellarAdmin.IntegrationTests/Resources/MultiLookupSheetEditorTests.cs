@@ -1,13 +1,13 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -24,7 +24,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [2, 1] }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -59,7 +59,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [2, 1] }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -99,7 +99,7 @@ public class MultiLookupSheetEditorTests
                     }),
             new() { CategoryIds = [2] }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -128,7 +128,7 @@ public class MultiLookupSheetEditorTests
                     }),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -163,7 +163,7 @@ public class MultiLookupSheetEditorTests
                     }),
             new() { CategoryIds = [1, 2] }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -200,7 +200,7 @@ public class MultiLookupSheetEditorTests
             new() { CategoryIds = [1, 2, 3, 4] },
             categories => categories.AddRange([Category(3, "Lenses"), Category(4, "Tripods")])
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -238,7 +238,7 @@ public class MultiLookupSheetEditorTests
                     labels.Lookup(lookup => lookup.MoreText = context => $"+{context.Count}")
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -266,7 +266,7 @@ public class MultiLookupSheetEditorTests
                     }),
             new() { FixedCategoryIds = [2] }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -295,7 +295,7 @@ public class MultiLookupSheetEditorTests
                     .UseMultiLookupSheetEditor(UseCategories),
             new() { FixedCategoryIds = [1, 2] }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -319,7 +319,7 @@ public class MultiLookupSheetEditorTests
                     .UseMultiLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -339,7 +339,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [1, 99] }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -362,7 +362,7 @@ public class MultiLookupSheetEditorTests
             fields => fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(EditUrl);
@@ -391,7 +391,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             state
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         using var content = new FormUrlEncodedContent(
             values.Concat([
@@ -421,7 +421,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             state
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["__sa_checkbox_group.Entity.CategoryIds"] = "true";
         using var content = new FormUrlEncodedContent(values);
@@ -447,7 +447,7 @@ public class MultiLookupSheetEditorTests
             state,
             categories => categories.Add(Category(3, "Lenses"))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         using var content = new FormUrlEncodedContent(
             values.Concat([
@@ -495,7 +495,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new() { CategoryIds = [1] }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -528,7 +528,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -563,7 +563,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -593,7 +593,7 @@ public class MultiLookupSheetEditorTests
                     }),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -616,7 +616,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -643,7 +643,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -670,7 +670,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -705,7 +705,7 @@ public class MultiLookupSheetEditorTests
             new(),
             categories => categories.Add(Category(3, "Lenses"))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -731,7 +731,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var response = await client.GetAsync(
@@ -751,7 +751,7 @@ public class MultiLookupSheetEditorTests
                 fields.Add(model => model.CategoryIds).UseMultiLookupSheetEditor(UseCategories),
             new()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var response = await client.GetAsync(

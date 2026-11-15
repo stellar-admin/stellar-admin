@@ -1,15 +1,15 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using StellarAdmin.UI;
 using TUnit.Assertions.Enums;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -38,7 +38,7 @@ public class ChoiceEditorTests
             fields.Add(model => model.Cabin);
             fields.Add(model => model.OptionalCabin);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -70,7 +70,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Extras)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -87,7 +87,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Insured)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -109,7 +109,7 @@ public class ChoiceEditorTests
                 .Add(model => model.OptionalCabin)
                 .UseSelectEditor(select => select.EmptyChoiceText = "Any cabin")
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -137,7 +137,7 @@ public class ChoiceEditorTests
                 .Add(model => model.Cabin)
                 .UseRadioGroupEditor(radio => radio.Appearance = appearance)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -169,7 +169,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.OptionalCabin).UseRadioGroupEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -195,7 +195,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Cabins).UseCheckboxGroupEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -232,7 +232,7 @@ public class ChoiceEditorTests
                 .Add(model => model.Cabins)
                 .UseCheckboxGroupEditor(editor => editor.Appearance = CheckboxGroupAppearance.Cards)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -251,7 +251,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Cabins).UseCheckboxGroupEditor(editor => editor.Columns(2))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -276,7 +276,7 @@ public class ChoiceEditorTests
                     editor.Flow = CheckboxGroupFlow.Down;
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -298,7 +298,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Cabins).UseCheckboxGroupEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -316,7 +316,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Cabin).UseRadioGroupEditor(editor => editor.Columns(2))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -341,7 +341,7 @@ public class ChoiceEditorTests
                     editor.Flow = RadioGroupFlow.Down;
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -363,7 +363,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Cabin).UseRadioGroupEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -392,7 +392,7 @@ public class ChoiceEditorTests
                     ]);
                 });
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -419,7 +419,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Cabins).UseToggleGroupEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -453,7 +453,7 @@ public class ChoiceEditorTests
                 .Add(model => model.Cabin)
                 .UseToggleGroupEditor(editor => editor.Appearance = ToggleGroupAppearance.Joined)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -479,7 +479,7 @@ public class ChoiceEditorTests
                 .Add(model => model.Insured)
                 .UseToggleGroupEditor(editor => editor.Appearance = ToggleGroupAppearance.Buttons)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -506,7 +506,7 @@ public class ChoiceEditorTests
             fields.Add(model => model.Cabins).UseToggleGroupEditor();
             fields.Add(model => model.Seat);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         // Turning every chip off posts only the marker the group renders
         values["__sa_checkbox_group.Entity.Cabins"] = "true";
@@ -540,7 +540,7 @@ public class ChoiceEditorTests
                     ])
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -568,7 +568,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Meal)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -601,7 +601,7 @@ public class ChoiceEditorTests
                     ])
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -626,7 +626,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Seat).UseSelectEditor(select => select.UseItems(SeatChoices))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -650,7 +650,7 @@ public class ChoiceEditorTests
             fields.Add(model => model.Seat).UseSelectEditor(select => select.UseItems(SeatChoices));
             fields.Add(model => model.RequiredCabin);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Seat"] = "aisle";
         values["Entity.RequiredCabin"] = "";
@@ -681,7 +681,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.RequiredCabin).UseRadioGroupEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -705,7 +705,7 @@ public class ChoiceEditorTests
                     radio.EmptyChoiceText = "No preference";
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -731,7 +731,7 @@ public class ChoiceEditorTests
                     select.UseItems([new ChoiceItem("", "Any seat"), .. SeatChoices])
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -762,7 +762,7 @@ public class ChoiceEditorTests
                 .Add(model => model.Cabins)
                 .UseCheckboxGroupEditor(group => group.EmptyChoice = EmptyChoice.Include);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -784,7 +784,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.OptionalCabin).UseSegmentedControlEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -809,7 +809,7 @@ public class ChoiceEditorTests
             fields.Add(model => model.Insured);
             fields.Add(model => model.Seat);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.OptionalCabin"] = "PremiumEconomy";
         values["Entity.Insured"] = "false";
@@ -845,7 +845,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Seat).UseSelectEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
@@ -873,7 +873,7 @@ public class ChoiceEditorTests
                 .Add(model => model.Seat)
                 .UseRadioGroupEditor(radio => radio.UseItems(MediaChoices))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -908,7 +908,7 @@ public class ChoiceEditorTests
                     radio.UseItems(MediaChoices);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -942,7 +942,7 @@ public class ChoiceEditorTests
                     ]);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -979,7 +979,7 @@ public class ChoiceEditorTests
                     toggle.UseItems(MediaChoices);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -1011,7 +1011,7 @@ public class ChoiceEditorTests
                     group.UseItems(MediaChoices);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -1039,7 +1039,7 @@ public class ChoiceEditorTests
                     group.UseItems(MediaChoices);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -1058,7 +1058,7 @@ public class ChoiceEditorTests
         await using var sut = await CreateChoiceFieldsHost(fields =>
             fields.Add(model => model.Region)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");

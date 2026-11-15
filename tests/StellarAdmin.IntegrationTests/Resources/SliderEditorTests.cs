@@ -1,12 +1,12 @@
 using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using StellarAdmin.UI;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -19,7 +19,7 @@ public class SliderEditorTests
         await using var sut = await CreateSliderFieldsHost(fields =>
             fields.Add(model => model.Passengers).UseSliderEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -46,7 +46,7 @@ public class SliderEditorTests
                 .Add(model => model.Passengers)
                 .UseSliderEditor(slider => slider.ShowValue = false)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -65,7 +65,7 @@ public class SliderEditorTests
                 .Add(model => model.Passengers)
                 .UseSliderEditor(slider => slider.ValueFormat = "{0} seats")
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -92,7 +92,7 @@ public class SliderEditorTests
                     slider.MarkLabels = SliderMarkLabels.None;
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -119,7 +119,7 @@ public class SliderEditorTests
                 .Add(model => model.Passengers)
                 .UseSliderEditor(slider => slider.MarkLabels = SliderMarkLabels.None)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -143,7 +143,7 @@ public class SliderEditorTests
                     slider.AddMark(9, "Group");
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -167,7 +167,7 @@ public class SliderEditorTests
             fields.Add(model => model.Passengers).UseSliderEditor().Description =
                 "Including children."
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -188,7 +188,7 @@ public class SliderEditorTests
         await using var sut = await CreateSliderFieldsHost(fields =>
             fields.Add(model => model.Passengers).UseSliderEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -207,7 +207,7 @@ public class SliderEditorTests
         await using var sut = await CreateSliderFieldsHost(fields =>
             fields.Add(model => model.Passengers).UseSliderEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Passengers"] = "12";
         using var content = new FormUrlEncodedContent(values);
@@ -243,7 +243,7 @@ public class SliderEditorTests
                     slider.ClassNames.MarkLabel = "mark-label-class";
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");

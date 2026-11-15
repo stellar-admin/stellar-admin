@@ -1,9 +1,9 @@
 using System.Net;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Infrastructure;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.IntegrationTests.Sidebar;
@@ -152,7 +152,7 @@ public class LogoutTests
 
     private static HttpClient CreateClient(WebApplication sut)
     {
-        var client = sut.GetTestClient();
+        var client = sut.CreateClient();
         TestAuthenticationHandler.SignIn(client, "ada");
 
         return client;

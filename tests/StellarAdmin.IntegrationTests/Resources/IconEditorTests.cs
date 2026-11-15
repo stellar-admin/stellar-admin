@@ -2,13 +2,13 @@ using System.Net;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -25,7 +25,7 @@ public class IconEditorTests
         await using var sut = await CreateAsync(fields =>
             fields.Add(model => model.Icon).UseIconEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -64,7 +64,7 @@ public class IconEditorTests
                     editor.Layout = layout;
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -91,7 +91,7 @@ public class IconEditorTests
         await using var sut = await CreateAsync(fields =>
             fields.Add(model => model.Badge).UseIconEditor(Configure)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -122,7 +122,7 @@ public class IconEditorTests
                 });
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/editrow/7");
@@ -159,7 +159,7 @@ public class IconEditorTests
             },
             icons
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["Entity.Icon"] = icon;
         values["Entity.Badge"] = badge;
@@ -183,7 +183,7 @@ public class IconEditorTests
             fields => fields.Add(model => model.Badge).UseIconEditor(Configure),
             icons
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["Entity.Badge"] = "spa-flower";
         using var content = new FormUrlEncodedContent(values);
@@ -215,7 +215,7 @@ public class IconEditorTests
             },
             icons
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["Entity.Icon"] = "coffee";
         values["Entity.Badge"] = "spa-flower";

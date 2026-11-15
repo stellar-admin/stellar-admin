@@ -1,14 +1,14 @@
 using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -23,7 +23,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new() { CountryId = 1 });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -46,7 +46,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new() { CountryId = 1, CityId = 11 });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -64,7 +64,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new() { CityId = 11 });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -87,7 +87,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new() { CountryId = 1, StopIds = [101] });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -112,7 +112,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new());
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -128,7 +128,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new() { CountryId = 1, CityId = 11 });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["changed"] = "CountryId";
         values["Model.CountryId"] = "2";
@@ -172,7 +172,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new());
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["changed"] = "PlaceId";
         using var content = new FormUrlEncodedContent(values);
@@ -189,7 +189,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new());
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -207,7 +207,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new());
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var source = sut.Services.GetRequiredService<PlaceLookupSource>();
 
         // Act
@@ -231,7 +231,7 @@ public class DependentFieldTests
     {
         // Arrange
         await using var sut = await CreateHost(new());
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(

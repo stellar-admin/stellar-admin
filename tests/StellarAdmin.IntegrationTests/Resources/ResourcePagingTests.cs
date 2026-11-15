@@ -1,10 +1,10 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -18,7 +18,7 @@ public class ResourcePagingTests
         // Arrange
         var state = empty ? new ProductState([]) : CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state, EnablePaging);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products?page=9&pageSize=2");
@@ -45,7 +45,7 @@ public class ResourcePagingTests
             state,
             resource => resource.Index(index => index.EnablePaging())
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -71,7 +71,7 @@ public class ResourcePagingTests
                 resource.UseKey(product => product.Id).AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var document = await client.GetDocumentAsync("/stellaradmin/products?page=3&pageSize=2");
         var action = document.RequiredElement("form[data-resource-delete]").GetAttribute("action")!;
         using var content = new FormUrlEncodedContent(
@@ -103,7 +103,7 @@ public class ResourcePagingTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products?page=2&pageSize=1");
@@ -123,7 +123,7 @@ public class ResourcePagingTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products?" + query);
@@ -145,7 +145,7 @@ public class ResourcePagingTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state, EnablePaging);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products?" + query);
@@ -171,7 +171,7 @@ public class ResourcePagingTests
                 resource.UseKey(product => product.Id).AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(
             await PrepareForm(client, "/stellaradmin/products?page=3&pageSize=2")
         );
@@ -219,7 +219,7 @@ public class ResourcePagingTests
         // Arrange
         var state = CreateState();
         await using var sut = await StellarAdminTestHost.CreateAsync(state, EnablePaging);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products" + query);
@@ -273,7 +273,7 @@ public class ResourcePagingTests
         // Arrange
         var state = new ProductState(CreateState().Products.Take(count).ToArray());
         await using var sut = await StellarAdminTestHost.CreateAsync(state, EnablePaging);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");

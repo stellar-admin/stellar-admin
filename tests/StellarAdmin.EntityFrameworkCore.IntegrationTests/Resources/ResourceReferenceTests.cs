@@ -1,9 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Net;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
@@ -11,7 +8,9 @@ using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -186,13 +185,13 @@ public class ResourceReferenceTests
                 )
             );
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(
             "/stellaradmin/products?sortBy=CategoryId&sortDirection=asc"
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -213,11 +212,11 @@ public class ResourceReferenceTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceCreate);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -253,11 +252,11 @@ public class ResourceReferenceTests
                 )
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -274,7 +273,7 @@ public class ResourceReferenceTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceCreate);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "New product";
         values["Entity.Price"] = "25";
@@ -301,11 +300,11 @@ public class ResourceReferenceTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceEdit);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/1");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -323,7 +322,7 @@ public class ResourceReferenceTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceEdit);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/1");
         values["Entity.CategoryId"] = "3";
         values["Entity.Name"] = "Forged";
@@ -348,9 +347,9 @@ public class ResourceReferenceTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCustomCreate);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var form = await client.GetAsync("/stellaradmin/products/create");
-        var document = await ReadDocument(form);
+        var document = await form.ReadDocumentAsync();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Custom product";
         values["Entity.CategoryId"] = "2";
@@ -378,7 +377,7 @@ public class ResourceReferenceTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCustomCreate);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.CategoryId"] = "2";
 
@@ -387,7 +386,7 @@ public class ResourceReferenceTests
             "/stellaradmin/products/create",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -406,9 +405,7 @@ public class ResourceReferenceTests
             {
                 fields.Add(product => product.Name);
                 fields.Add(product => product.Price);
-                fields
-                    .Add(product => product.CategoryId)
-                    .UseSelectEditor(ConfigureCategoryItems);
+                fields.Add(product => product.CategoryId).UseSelectEditor(ConfigureCategoryItems);
             })
         );
     }
@@ -418,9 +415,7 @@ public class ResourceReferenceTests
             create.Fields(fields =>
             {
                 fields.Add(model => model.Name);
-                fields
-                    .Add(model => model.CategoryId)
-                    .UseSelectEditor(ConfigureCategoryItems);
+                fields.Add(model => model.CategoryId).UseSelectEditor(ConfigureCategoryItems);
             })
         );
 
@@ -428,9 +423,7 @@ public class ResourceReferenceTests
     {
         resource.AllowEdit(edit =>
             edit.Fields(fields =>
-                fields
-                    .Add(product => product.CategoryId)
-                    .UseSelectEditor(ConfigureCategoryItems)
+                fields.Add(product => product.CategoryId).UseSelectEditor(ConfigureCategoryItems)
             )
         );
     }
@@ -444,25 +437,6 @@ public class ResourceReferenceTests
         );
         options.EmptyChoiceText = "Not specified";
     }
-
-    private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
-    {
-        using var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        var document = await ReadDocument(response);
-        var token = document
-            .QuerySelector("input[name='__RequestVerificationToken']")!
-            .GetAttribute("value")!;
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
-
-        return new() { ["__RequestVerificationToken"] = token };
-    }
-
-    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
-        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
 
     public sealed class CreateProductModel
     {

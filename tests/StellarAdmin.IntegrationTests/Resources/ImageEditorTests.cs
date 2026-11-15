@@ -3,14 +3,14 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -53,7 +53,7 @@ public class ImageEditorTests
                     editor.AcceptedTypes = ["image/png", "image/webp"];
                 });
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -90,7 +90,7 @@ public class ImageEditorTests
                     editor.ClassNames.Note = "italic";
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(EditUrl);
@@ -119,7 +119,7 @@ public class ImageEditorTests
             fields => fields.Add(model => model.Photo).UseImageEditor(Configure),
             photos
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var token = await PrepareTokenAsync(client);
 
         // Act
@@ -144,7 +144,7 @@ public class ImageEditorTests
             fields => fields.Add(model => model.Photo).UseImageEditor(Configure),
             photos
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await UploadAsync(client, null, Png, "lake.png", "image/png");
@@ -170,7 +170,7 @@ public class ImageEditorTests
                     }),
             photos
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var token = await PrepareTokenAsync(client);
 
         // Act
@@ -197,7 +197,7 @@ public class ImageEditorTests
             fields => fields.Add(model => model.Photo).UseImageEditor(Configure),
             photos
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var token = await PrepareTokenAsync(client);
 
         // Act
@@ -234,7 +234,7 @@ public class ImageEditorTests
                     }),
             photos
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var token = await PrepareTokenAsync(client);
 
         // Act
@@ -257,7 +257,7 @@ public class ImageEditorTests
             fields.Add(model => model.Name);
             fields.Add(model => model.Photo).UseImageEditor(Configure);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var token = await PrepareTokenAsync(client);
 
         // Act
@@ -278,7 +278,7 @@ public class ImageEditorTests
             resource => resource.RequireAuthorization(),
             TestAuthenticationHandler.Register
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await UploadAsync(client, null, Png, "lake.png", "image/png");
@@ -297,7 +297,7 @@ public class ImageEditorTests
             fields => fields.Add(model => model.Photo).UseImageEditor(Configure),
             photos
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["Entity.Photo"] = "stored/lake.png";
         using var content = new FormUrlEncodedContent(values);
@@ -328,7 +328,7 @@ public class ImageEditorTests
                 });
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/editrow/7");

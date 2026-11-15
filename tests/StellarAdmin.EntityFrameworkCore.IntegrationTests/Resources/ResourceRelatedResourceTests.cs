@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Net;
 using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,6 +9,7 @@ using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
@@ -33,7 +33,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         await Assert
@@ -64,7 +64,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/edit/1");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/1");
 
         // Assert
         var selected = document.QuerySelector("#Entity_CategoryId-selected")!;
@@ -97,7 +97,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         await Assert
@@ -123,7 +123,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/edit/2");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/2");
 
         // Assert
         var checkboxes = document.QuerySelectorAll("input[name='Entity.Tags']");
@@ -188,7 +188,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/edit/1");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/1");
 
         // Assert
         await Assert
@@ -219,7 +219,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/edit/1");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/1");
 
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
@@ -253,8 +253,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(
-            client,
+        var document = await client.GetDocumentAsync(
             "/stellaradmin/products/lookup?form=create&field=CategoryId&term=E"
         );
 
@@ -281,12 +280,10 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var search = await GetDocument(
-            client,
+        var search = await client.GetDocumentAsync(
             "/stellaradmin/products/lookup?form=create&field=CategoryId&term=e"
         );
-        var all = await GetDocument(
-            client,
+        var all = await client.GetDocumentAsync(
             "/stellaradmin/products/lookup?form=create&field=CategoryId"
         );
 
@@ -321,8 +318,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(
-            client,
+        var document = await client.GetDocumentAsync(
             "/stellaradmin/categories/lookup/1?form=edit&field=ParentId"
         );
 
@@ -350,7 +346,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/categories/create");
+        var document = await client.GetDocumentAsync("/stellaradmin/categories/create");
 
         // Assert
         await Assert
@@ -377,7 +373,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
@@ -417,7 +413,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         await Assert
@@ -439,7 +435,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert
@@ -473,7 +469,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert
@@ -507,7 +503,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/view/2");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/view/2");
 
         // Assert
         await Assert
@@ -531,7 +527,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
@@ -563,7 +559,7 @@ public class ResourceRelatedResourceTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await GetDocument(client, "/stellaradmin/products/view/2");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/view/2");
 
         // Assert
         await Assert
@@ -587,16 +583,6 @@ public class ResourceRelatedResourceTests
                 ),
             configureAdmin: admin => admin.AddEfCoreResource<Category>(configureCategories)
         );
-
-    private static async Task<IDocument> GetDocument(HttpClient client, string url)
-    {
-        using var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-
-        return await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
-    }
 
     private static string?[] ItemValues(IDocument document) =>
         document

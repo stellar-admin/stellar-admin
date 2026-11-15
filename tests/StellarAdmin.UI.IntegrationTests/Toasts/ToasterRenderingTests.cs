@@ -1,4 +1,5 @@
 using System.Net;
+using StellarAdmin.Testing;
 using StellarAdmin.UI.IntegrationTests.Infrastructure;
 
 namespace StellarAdmin.UI.IntegrationTests.Toasts;

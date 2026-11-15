@@ -1,14 +1,13 @@
 using System.Net;
 using System.Runtime.CompilerServices;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Options;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -19,15 +18,15 @@ public class ResourceCrudTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var indexResponse = await client.GetAsync("/stellaradmin/products");
-        var index = await ReadDocument(indexResponse);
+        var index = await indexResponse.ReadDocumentAsync();
         using var createResponse = await client.GetAsync("/stellaradmin/products/create");
-        var create = await ReadDocument(createResponse);
+        var create = await createResponse.ReadDocumentAsync();
         using var editResponse = await client.GetAsync("/stellaradmin/products/edit/2");
-        var edit = await ReadDocument(editResponse);
+        var edit = await editResponse.ReadDocumentAsync();
 
         // Assert
         await Assert
@@ -52,7 +51,7 @@ public class ResourceCrudTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "New product";
         values["Entity.Price"] = "25";
@@ -89,7 +88,7 @@ public class ResourceCrudTests
                 create.Fields(fields => fields.Add(product => product.Name));
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Factory product";
 
@@ -113,7 +112,7 @@ public class ResourceCrudTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "";
         values["Entity.Price"] = "-1";
@@ -123,7 +122,7 @@ public class ResourceCrudTests
             "/stellaradmin/products/create",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -140,7 +139,7 @@ public class ResourceCrudTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
         values["Entity.Name"] = "";
         values["Entity.Price"] = "-1";
@@ -150,7 +149,7 @@ public class ResourceCrudTests
             "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -169,7 +168,7 @@ public class ResourceCrudTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
         values["Entity.Name"] = "Renamed";
         values["Entity.Price"] = "26";
@@ -200,7 +199,7 @@ public class ResourceCrudTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(url);
@@ -214,7 +213,7 @@ public class ResourceCrudTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
 
         // Act
@@ -338,7 +337,7 @@ public class ResourceCrudTests
                 resource.AllowDelete();
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/categories");
 
         // Act
@@ -349,7 +348,7 @@ public class ResourceCrudTests
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
         await Assert
             .That(document.QuerySelector(".validation-summary-errors")?.TextContent)
             .Contains("This record couldn't be deleted. Other records may still refer to it.");
@@ -363,7 +362,7 @@ public class ResourceCrudTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.PostAsync(
@@ -402,23 +401,4 @@ public class ResourceCrudTests
     private static string CurrentFile([CallerFilePath] string path = "") => path;
 
     private static int CurrentLine([CallerLineNumber] int line = 0) => line;
-
-    private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
-    {
-        using var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        var document = await ReadDocument(response);
-        var token = document
-            .QuerySelector("input[name='__RequestVerificationToken']")!
-            .GetAttribute("value")!;
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
-
-        return new() { ["__RequestVerificationToken"] = token };
-    }
-
-    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
-        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
 }

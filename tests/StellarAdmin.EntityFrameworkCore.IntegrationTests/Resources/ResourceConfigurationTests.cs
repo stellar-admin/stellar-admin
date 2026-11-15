@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Options;
+using StellarAdmin.Testing;
 using TUnit.Assertions;
 using TUnit.Core;
 

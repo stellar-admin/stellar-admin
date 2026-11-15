@@ -1,6 +1,4 @@
 using System.Net;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
@@ -139,7 +138,7 @@ public class ResourceDbContextTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/1");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -203,9 +202,6 @@ public class ResourceDbContextTests
                 configureServices?.Invoke(services);
             }
         );
-
-    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
-        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
 
     public sealed class AuditDbContext(DbContextOptions<AuditDbContext> options)
         : DbContext(options);

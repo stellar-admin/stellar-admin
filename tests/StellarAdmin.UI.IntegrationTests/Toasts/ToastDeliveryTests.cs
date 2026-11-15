@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using StellarAdmin.Testing;
 using StellarAdmin.UI.IntegrationTests.Infrastructure;
 
 namespace StellarAdmin.UI.IntegrationTests.Toasts;

@@ -16,5 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin.EntityFrameworkCore\StellarAdmin.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\StellarAdmin.Testing\StellarAdmin.Testing.csproj" />
   </ItemGroup>
 </Project>

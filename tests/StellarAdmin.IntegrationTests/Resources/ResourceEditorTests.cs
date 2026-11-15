@@ -1,12 +1,12 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -21,7 +21,7 @@ public class ResourceEditorTests
             state,
             classNames => classNames.Control = "role-choices"
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -49,7 +49,7 @@ public class ResourceEditorTests
                 classNames.Root = "role-root";
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -69,7 +69,7 @@ public class ResourceEditorTests
         // Arrange
         var state = new RoleSelectionState();
         await using var sut = await CreateRoleSelectionHost(state);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -101,7 +101,7 @@ public class ResourceEditorTests
         // Arrange
         var state = new RoleSelectionState();
         await using var sut = await CreateRoleSelectionHost(state);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["__sa_checkbox_group.Entity.RoleIds"] = "true";
         using var content = new FormUrlEncodedContent(values);
@@ -120,7 +120,7 @@ public class ResourceEditorTests
         // Arrange
         var state = new RoleSelectionState();
         await using var sut = await CreateRoleSelectionHost(state);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.RoleIds"] = "manager";
         values["__sa_checkbox_group.Entity.RoleIds"] = "true";
@@ -146,7 +146,7 @@ public class ResourceEditorTests
             ),
         };
         await using var sut = await CreateRoleSelectionHost(state);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.RoleIds"] = "manager";
         values["__sa_checkbox_group.Entity.RoleIds"] = "true";
@@ -192,7 +192,7 @@ public class ResourceEditorTests
                 ),
             admin => admin.Services.AddScoped<FixedChoiceItemsProvider>()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -224,7 +224,7 @@ public class ResourceEditorTests
                 })
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var firstDocument = await client.GetDocumentAsync("/stellaradmin/products/create");
         choices.Add(new("Pen", "pen"));
 
@@ -260,7 +260,7 @@ public class ResourceEditorTests
                 resource.AllowEdit(edit => edit.Fields(ConfigureFields));
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync($"/stellaradmin/products/{page}");
@@ -305,7 +305,7 @@ public class ResourceEditorTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -334,7 +334,7 @@ public class ResourceEditorTests
                 );
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -361,7 +361,7 @@ public class ResourceEditorTests
                 });
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -381,7 +381,7 @@ public class ResourceEditorTests
     {
         // Arrange
         await using var sut = await CreateProductNameEditHost();
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -401,7 +401,7 @@ public class ResourceEditorTests
     {
         // Arrange
         await using var sut = await CreateProductNameEditHost();
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "Changed";
         values["Entity.Price"] = "not a number";

@@ -2,11 +2,11 @@ using System.Collections.Concurrent;
 using System.Net;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using AngleSharp.Html.Parser;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -21,11 +21,11 @@ public class ResourceLookupTests
             resource => ConfigureLookupEdit(resource, _ => { }),
             commands
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/1");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -47,11 +47,11 @@ public class ResourceLookupTests
                 ),
             commands
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(DisplayText(document)).IsEqualTo("Technology");
@@ -74,11 +74,11 @@ public class ResourceLookupTests
                 ),
             commands
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -100,11 +100,11 @@ public class ResourceLookupTests
                 ),
             commands
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(DescriptionText(document)).IsEqualTo("2");
@@ -124,11 +124,11 @@ public class ResourceLookupTests
                 ),
             commands
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(DescriptionText(document)).IsEqualTo("TECHNOLOGY");
@@ -142,7 +142,7 @@ public class ResourceLookupTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             ConfigureLookupEdit(resource, _ => { })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/1");
         values["Entity.CategoryId"] = "3";
         values["Entity.Price"] = "0";
@@ -152,7 +152,7 @@ public class ResourceLookupTests
             "/stellaradmin/products/edit/1",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -175,7 +175,7 @@ public class ResourceLookupTests
                 })
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.CategoryId"] = "2";
 
@@ -184,7 +184,7 @@ public class ResourceLookupTests
             "/stellaradmin/products/create",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -208,11 +208,11 @@ public class ResourceLookupTests
                 });
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -231,13 +231,13 @@ public class ResourceLookupTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             ConfigureLookupEdit(resource, _ => { })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(
             "/stellaradmin/products/lookup?form=edit&field=CategoryId&term=OFF"
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -252,16 +252,16 @@ public class ResourceLookupTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             ConfigureLookupEdit(resource, _ => { }, pageSize: 2)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var first = await client.GetAsync(
             "/stellaradmin/products/lookup?form=edit&field=CategoryId"
         );
-        var firstPage = await ReadDocument(first);
+        var firstPage = await first.ReadDocumentAsync();
         var more = firstPage.QuerySelector("[data-lookup='more']")?.GetAttribute("hx-get");
 
         // Act
         using var second = await client.GetAsync(more);
-        var secondPage = await ReadDocument(second);
+        var secondPage = await second.ReadDocumentAsync();
 
         // Assert
         await Assert.That(string.Join(',', ResultTexts(firstPage))).IsEqualTo("Beverage,Office");
@@ -283,17 +283,17 @@ public class ResourceLookupTests
                         .OrderBy(category => category.Id)
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var byText = await client.GetAsync(
             "/stellaradmin/products/lookup?form=edit&field=CategoryId&term=office"
         );
-        var byTextPage = await ReadDocument(byText);
+        var byTextPage = await byText.ReadDocumentAsync();
 
         // Act
         using var response = await client.GetAsync(
             "/stellaradmin/products/lookup?form=edit&field=CategoryId&term=code"
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(ResultTexts(byTextPage)).IsEmpty();
@@ -327,13 +327,13 @@ public class ResourceLookupTests
                         )
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(
             "/stellaradmin/products/lookup?form=edit&field=CategoryId"
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert
@@ -352,11 +352,11 @@ public class ResourceLookupTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             ConfigureLookupEdit(resource, items => items.UseIcon(_ => "tag"))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/1");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert
@@ -388,8 +388,8 @@ public class ResourceLookupTests
                     )
                 )
         );
-        using var client = sut.GetTestClient();
-        var page = await ReadDocument(await client.GetAsync("/stellaradmin/products/edit/1"));
+        using var client = sut.CreateClient();
+        var page = await client.GetDocumentAsync("/stellaradmin/products/edit/1");
         var createUrl = page.QuerySelector("[data-lookup='create']")!
             .GetAttribute("data-sheet-open")!;
         var selectionUrl = page.QuerySelector("admin-lookup-sheet-editor")!
@@ -399,10 +399,10 @@ public class ResourceLookupTests
 
         // Act
         using var created = await client.PostAsync(createUrl, new FormUrlEncodedContent(values));
-        var key = (await ReadDocument(created))
+        var key = (await created.ReadDocumentAsync())
             .QuerySelector("admin-lookup-created")
             ?.GetAttribute("value");
-        var selection = await ReadDocument(await client.GetAsync($"{selectionUrl}&value={key}"));
+        var selection = await client.GetDocumentAsync($"{selectionUrl}&value={key}");
 
         // Assert
         await Assert
@@ -439,12 +439,7 @@ public class ResourceLookupTests
     private static void ConfigureItems(
         LookupSheetEditor options,
         Action<EfCoreLookupItemsBuilder<Category>> configure
-    ) =>
-        options.UseItems<Category>(
-            category => category.Id,
-            category => category.Name,
-            configure
-        );
+    ) => options.UseItems<Category>(category => category.Id, category => category.Name, configure);
 
     private static string? DescriptionText(IDocument document) =>
         document.QuerySelector("[id$='-selected'] [data-slot='item-description']")?.TextContent;
@@ -453,25 +448,6 @@ public class ResourceLookupTests
 
     private static string? DisplayText(IDocument document) =>
         document.QuerySelector("[id$='-selected'] [data-lookup='title']")?.TextContent;
-
-    private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
-    {
-        using var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        var document = await ReadDocument(response);
-        var token = document
-            .QuerySelector("input[name='__RequestVerificationToken']")!
-            .GetAttribute("value")!;
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
-
-        return new() { ["__RequestVerificationToken"] = token };
-    }
-
-    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
-        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
 
     private static string[] ResultTexts(IDocument document) =>
         document

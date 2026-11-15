@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
+using StellarAdmin.Testing;
 
 namespace StellarAdmin.IntegrationTests.Authorization;
 

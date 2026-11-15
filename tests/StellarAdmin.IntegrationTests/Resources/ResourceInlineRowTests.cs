@@ -1,10 +1,10 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -18,7 +18,7 @@ public class ResourceInlineRowTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var index = await client.GetDocumentAsync("/stellaradmin/products");
@@ -38,7 +38,7 @@ public class ResourceInlineRowTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -58,7 +58,7 @@ public class ResourceInlineRowTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["Model.Name"] = "Changed";
         values["Model.Price"] = "9.00";
@@ -81,7 +81,7 @@ public class ResourceInlineRowTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/editrow/7");
@@ -117,7 +117,7 @@ public class ResourceInlineRowTests
                     edit: inline => inline.AfterSave = InlineRowAfterSave.KeepInPlace
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[7].Name"] = "Fountain pen";
         values["rows[7].Price"] = "12.00";
@@ -143,7 +143,7 @@ public class ResourceInlineRowTests
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureInlineRows);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[7].Name"] = "Notebook";
         values["rows[7].Price"] = "0";
@@ -172,7 +172,7 @@ public class ResourceInlineRowTests
             UpdateResult = ResourceOperationResult.ValidationFailed(null, "Notebooks are locked."),
         };
         await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureInlineRows);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[7].Name"] = "Notebook";
         values["rows[7].Price"] = "9.00";
@@ -209,7 +209,7 @@ public class ResourceInlineRowTests
                 });
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["rows[7].Name"] = "Fountain pen";
         values["rows[7].Price"] = "99.00";
@@ -232,7 +232,7 @@ public class ResourceInlineRowTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[99].Name"] = "Fountain pen";
         using var content = new FormUrlEncodedContent(values);
@@ -262,7 +262,7 @@ public class ResourceInlineRowTests
                 );
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync($"/stellaradmin/products/{path}");
@@ -279,7 +279,7 @@ public class ResourceInlineRowTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/createrow");
@@ -301,7 +301,7 @@ public class ResourceInlineRowTests
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await StellarAdminTestHost.CreateAsync(state, KeepCreatedInPlace);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[new].Name"] = "Fountain pen";
         values["rows[new].Price"] = "12.00";
@@ -325,7 +325,7 @@ public class ResourceInlineRowTests
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureInlineRows);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[new].Name"] = "";
         values["rows[new].Price"] = "12.00";
@@ -355,7 +355,7 @@ public class ResourceInlineRowTests
             CreateResult = ResourceOperationResult.Success(),
         };
         await using var sut = await StellarAdminTestHost.CreateAsync(state, KeepCreatedInPlace);
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[new].Name"] = "Fountain pen";
         values["rows[new].Price"] = "12.00";
@@ -377,7 +377,7 @@ public class ResourceInlineRowTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -418,7 +418,7 @@ public class ResourceInlineRowTests
                     }
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -448,7 +448,7 @@ public class ResourceInlineRowTests
                     }
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -483,7 +483,7 @@ public class ResourceInlineRowTests
                     edit: inline => inline.DimOtherRows = editDims
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -525,7 +525,7 @@ public class ResourceInlineRowTests
                 }
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[new].Name"] = "Fountain pen";
         values["rows[new].Price"] = "12.00";
@@ -556,7 +556,7 @@ public class ResourceInlineRowTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureSearchableInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(
@@ -588,7 +588,7 @@ public class ResourceInlineRowTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigureSearchableInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(
@@ -611,7 +611,7 @@ public class ResourceInlineRowTests
             state,
             ConfigureSearchableInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[7].Name"] = "Notepad";
         values["rows[7].Price"] = "9.00";
@@ -650,7 +650,7 @@ public class ResourceInlineRowTests
             state,
             ConfigureSearchableInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[7].Name"] = "Fountain pen";
         values["rows[7].Price"] = "9.00";
@@ -686,7 +686,7 @@ public class ResourceInlineRowTests
             state,
             ConfigureSearchableInlineRows
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[new].Name"] = name;
         values["rows[new].Price"] = "12.00";
@@ -739,7 +739,7 @@ public class ResourceInlineRowTests
                     })
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[7].Name"] = "Fountain pen";
         values["rows[7].Price"] = "9.00";

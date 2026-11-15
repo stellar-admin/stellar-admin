@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Infrastructure;
+using StellarAdmin.Testing;
 
 namespace StellarAdmin.IntegrationTests.Theme;
 

@@ -1,12 +1,12 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -34,7 +34,7 @@ public class InputEditorTests
             fields.Add(model => model.DepartureDate);
             fields.Add(model => model.Gate);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -76,7 +76,7 @@ public class InputEditorTests
                     time.Step = TimeSpan.FromMinutes(5);
                 });
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -101,7 +101,7 @@ public class InputEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields.Add(model => model.Insured).Description = "Covers lost luggage."
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -129,7 +129,7 @@ public class InputEditorTests
                 .Add(model => model.Insured)
                 .UseToggleEditor(toggle => toggle.ClassNames.Control = "insured-switch")
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -161,7 +161,7 @@ public class InputEditorTests
                 field.UseToggleEditor();
             }
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/create");
@@ -187,7 +187,7 @@ public class InputEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields.Add(model => model.Seat)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -217,7 +217,7 @@ public class InputEditorTests
                     textarea.Rows = 6;
                 });
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -241,7 +241,7 @@ public class InputEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields.Add(model => model.Passengers).UseSliderEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -269,7 +269,7 @@ public class InputEditorTests
                     slider.Step = 2;
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -290,7 +290,7 @@ public class InputEditorTests
             fields.Add(model => model.BookingCode).UseOneTimeCodeEditor();
             fields.Add(model => model.PromoCode).UseOneTimeCodeEditor(code => code.Length = 8);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -313,7 +313,7 @@ public class InputEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields.Add(model => model.BookingCode).UseOneTimeCodeEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.BookingCode"] = "12345";
         using var content = new FormUrlEncodedContent(values);
@@ -344,7 +344,7 @@ public class InputEditorTests
             fields.Add(model => model.BookingCode);
             fields.Add(model => model.Passengers).UseSliderEditor();
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.BookingCode"] = "12345";
         values["Entity.Passengers"] = "7";

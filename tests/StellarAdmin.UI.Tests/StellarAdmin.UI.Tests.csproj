@@ -13,4 +13,7 @@
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="TUnit" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StellarAdmin.Testing\StellarAdmin.Testing.csproj" />
+  </ItemGroup>
 </Project>

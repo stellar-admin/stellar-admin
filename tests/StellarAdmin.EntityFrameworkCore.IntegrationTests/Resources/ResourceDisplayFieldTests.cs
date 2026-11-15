@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using System.Net;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
+using StellarAdmin.Testing;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -33,9 +33,7 @@ public class ResourceDisplayFieldTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/1");
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);

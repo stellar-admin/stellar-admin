@@ -2,7 +2,6 @@ using System.Net;
 using System.Text.Json;
 using AngleSharp.Dom;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
@@ -10,8 +9,9 @@ using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
+using StellarAdmin.Testing;
 using StellarAdmin.UI;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -33,7 +33,7 @@ public class CollectionEditorTests
                     fields.Add(tour => tour.LocalNames);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(CreateUrl);
@@ -70,7 +70,7 @@ public class CollectionEditorTests
                         })
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(CreateUrl);
@@ -116,7 +116,7 @@ public class CollectionEditorTests
                         })
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(CreateUrl);
@@ -148,7 +148,7 @@ public class CollectionEditorTests
                     fields.Add(tour => tour.SeasonalPrices);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateUrl);
         values["Entity.Highlights[0]"] = "Tram 28 to Alfama";
         values["Entity.Highlights[1]"] = "Pastéis de Belém";
@@ -191,7 +191,7 @@ public class CollectionEditorTests
                     fields.Add(tour => tour.LocalNames);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, EditUrl);
         values["__sa_checkbox_group.Entity.Highlights"] = "true";
         values["__sa_checkbox_group.Entity.LocalNames"] = "true";
@@ -218,7 +218,7 @@ public class CollectionEditorTests
                     fields.Add(tour => tour.Highlights).UseListEditor(list => list.Unique = true)
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateUrl);
         values["Entity.Highlights[0]"] = "Fado night";
         values["Entity.Highlights[1]"] = "fado night ";
@@ -247,7 +247,7 @@ public class CollectionEditorTests
                     fields.Add(tour => tour.Highlights).UseListEditor(list => list.MinItems = 2)
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateUrl);
         values["__sa_checkbox_group.Entity.Highlights"] = "true";
         values["Entity.Highlights[0]"] = "Fado night";
@@ -271,7 +271,7 @@ public class CollectionEditorTests
             new(),
             create => create.Fields(fields => fields.Add(tour => tour.Themes))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateUrl);
         values["__sa_checkbox_group.Entity.Themes"] = "true";
         using var content = new FormUrlEncodedContent(values);
@@ -312,7 +312,7 @@ public class CollectionEditorTests
                         });
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateUrl);
         values["Entity.Highlights[0]"] = "fado night";
         values["Entity.Highlights[1]"] = "Tram 28 to Alfama";
@@ -351,7 +351,7 @@ public class CollectionEditorTests
                         })
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateUrl);
         values["Entity.LocalNames[0].Key"] = "pt";
         values["Entity.LocalNames[0].Value"] = "Passeio por Lisboa";
@@ -391,7 +391,7 @@ public class CollectionEditorTests
                     fields.Add(tour => tour.LocalNames);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateUrl);
         values["Entity.Highlights[0]"] = "Fado night";
         values["Entity.Highlights[1]"] = "Sintra palaces";
@@ -433,7 +433,7 @@ public class CollectionEditorTests
                     })
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, CreateUrl);
         values["__sa_checkbox_group.Entity.Highlights"] = "true";
         using var content = new FormUrlEncodedContent(values);
@@ -479,7 +479,7 @@ public class CollectionEditorTests
                     fields.Add(tour => tour.SeasonalPrices);
                 })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/tours/view/7");
@@ -516,7 +516,7 @@ public class CollectionEditorTests
                     column => column.UseDisplay<BadgeDisplay>(badge => badge.Limit = 2)
                 )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/tours");
@@ -555,7 +555,7 @@ public class CollectionEditorTests
             },
             configureIndex: columns => columns.Add(tour => tour.Highlights)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/tours/editrow/7");
@@ -594,7 +594,7 @@ public class CollectionEditorTests
             },
             configureIndex: columns => columns.Add(tour => tour.Highlights)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareRowForm(client, "/stellaradmin/tours/editrow/7");
         values["rows[7].Name"] = "Lisbon by tram";
         using var content = new FormUrlEncodedContent(values);
@@ -665,10 +665,6 @@ public class CollectionEditorTests
         var token = (await response.ReadRowsAsync())
             .RequiredElement("input[name='__RequestVerificationToken']")
             .GetAttribute("value")!;
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
 
         return new() { ["__RequestVerificationToken"] = token };
     }

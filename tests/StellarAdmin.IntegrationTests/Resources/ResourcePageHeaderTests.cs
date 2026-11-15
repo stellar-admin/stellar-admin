@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -20,7 +20,7 @@ public class ResourcePageHeaderTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigurePages
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync(url);
@@ -39,7 +39,7 @@ public class ResourcePageHeaderTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigurePages
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -67,7 +67,7 @@ public class ResourcePageHeaderTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigurePages
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -94,7 +94,7 @@ public class ResourcePageHeaderTests
             new ProductState([new(7, "Notebook", 8.50m)]),
             ConfigurePages
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.Name"] = "";
         values["Entity.Price"] = "8.50";
@@ -131,7 +131,7 @@ public class ResourcePageHeaderTests
                 });
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var view = await client.GetDocumentAsync("/stellaradmin/products/view/7");
@@ -166,7 +166,7 @@ public class ResourcePageHeaderTests
                 labels.View(view => view.Title = resource => $"{resource.SingularLabel} details")
             );
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/custom-products/view/item-1");

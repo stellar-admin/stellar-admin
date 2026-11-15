@@ -1,11 +1,10 @@
 using System.Net;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -24,13 +23,13 @@ public class ResourceOwnedObjectTests
                 index.DefaultSortBy(product => product.Details.Sku);
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(
             "/stellaradmin/products?sortBy=Details.Sku&sortDirection=desc"
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -62,11 +61,11 @@ public class ResourceOwnedObjectTests
                 index.DefaultSortBy(product => product.Details.Sku);
             })
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -96,7 +95,7 @@ public class ResourceOwnedObjectTests
                 })
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "New product";
         values["Entity.Price"] = "25";
@@ -132,7 +131,7 @@ public class ResourceOwnedObjectTests
                 )
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
         values["Entity.Details.Sku"] = "NEW-2";
         values["Entity.Details.InternalNote"] = "Forged";
@@ -163,11 +162,11 @@ public class ResourceOwnedObjectTests
                 edit.Fields(fields => fields.Add(product => product.Details.Sku))
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -185,7 +184,7 @@ public class ResourceOwnedObjectTests
                 edit.Fields(fields => fields.Add(product => product.Details.Sku))
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
         values["Entity.Details.Sku"] = "SKU-TOO-LONG";
 
@@ -194,7 +193,7 @@ public class ResourceOwnedObjectTests
             "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -206,23 +205,4 @@ public class ResourceOwnedObjectTests
         var unchanged = await db.Set<Product>().SingleAsync(product => product.Number == 2);
         await Assert.That(unchanged.Details.Sku).IsEqualTo("A-2");
     }
-
-    private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
-    {
-        using var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        var document = await ReadDocument(response);
-        var token = document
-            .QuerySelector("input[name='__RequestVerificationToken']")!
-            .GetAttribute("value")!;
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
-
-        return new() { ["__RequestVerificationToken"] = token };
-    }
-
-    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
-        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
 }

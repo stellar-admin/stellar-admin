@@ -1,9 +1,9 @@
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -25,7 +25,7 @@ public class ResourceDeleteTests
                 resource.AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
@@ -44,7 +44,7 @@ public class ResourceDeleteTests
         await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
             resource.UseKey(product => product.Id).AllowDelete()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
@@ -72,7 +72,7 @@ public class ResourceDeleteTests
                 resource.AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["origin"] = "edit";
 
@@ -113,7 +113,7 @@ public class ResourceDeleteTests
                 resource.AllowDelete();
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["origin"] = "edit";
 
@@ -121,11 +121,6 @@ public class ResourceDeleteTests
         using var response = await client.PostAsync(
             "/stellaradmin/products/delete/7",
             new FormUrlEncodedContent(values)
-        );
-        client.DefaultRequestHeaders.Remove("Cookie");
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
         );
         var document = await client.GetDocumentAsync(response.Headers.Location!.OriginalString);
 
@@ -157,7 +152,7 @@ public class ResourceDeleteTests
             state,
             resource => resource.UseKey(product => product.Id).AllowDelete()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(
             await PrepareForm(client, "/stellaradmin/products")
         );
@@ -256,7 +251,7 @@ public class ResourceDeleteTests
                 }
             }
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
@@ -303,7 +298,7 @@ public class ResourceDeleteTests
             state,
             resource => resource.UseKey(product => product.Id).AllowDelete()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["id"] = "8";
         values["Entity.Id"] = "8";
@@ -341,7 +336,7 @@ public class ResourceDeleteTests
             state,
             resource => resource.UseKey(product => product.Id).AllowDelete()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(
             await PrepareForm(client, "/stellaradmin/products")
         );
@@ -366,7 +361,7 @@ public class ResourceDeleteTests
             state,
             resource => resource.UseKey(product => product.Id).AllowDelete()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
 
         // Act
@@ -391,7 +386,7 @@ public class ResourceDeleteTests
             state,
             resource => resource.AllowDelete()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         using var content = new FormUrlEncodedContent(await PrepareForm(client));
 
         // Act

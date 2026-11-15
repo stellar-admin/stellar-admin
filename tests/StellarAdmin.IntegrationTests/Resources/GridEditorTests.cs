@@ -1,12 +1,12 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
-using static StellarAdmin.IntegrationTests.Infrastructure.FormTestHelpers;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -26,7 +26,7 @@ public class GridEditorTests
             fields.Add(model => model.Gate);
             fields.Add(model => model.Notes);
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/grid-cells/create");
@@ -67,7 +67,7 @@ public class GridEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields.Add(model => model.Insured).UseToggleEditor()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/grid-cells/create");
@@ -91,7 +91,7 @@ public class GridEditorTests
             fields.Add(model => model.Boarding).UseDateTimeInputEditor();
             fields.Add(model => model.OptionalInsured).UseSegmentedControlEditor();
         });
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/grid-cells/create");
@@ -118,7 +118,7 @@ public class GridEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields.Add(model => model.Seat)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/grid-cells/create");
@@ -143,7 +143,7 @@ public class GridEditorTests
             fields => fields.Add(model => model.Notes).UseTextareaEditor(),
             environment
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/grid-cells/create");
@@ -169,7 +169,7 @@ public class GridEditorTests
         await using var sut = await CreateInputFieldsHost(fields =>
             fields.Add(model => model.Passengers)
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
         var values = await PrepareForm(client, "/stellaradmin/grid-cells/create");
         values["Entity.Passengers"] = "12";
         using var content = new FormUrlEncodedContent(values);
@@ -212,7 +212,7 @@ public class GridEditorTests
             configureServices: services =>
                 services.AddSingleton<CategoryStore>().AddScoped<CategoryLookupSource>()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/grid-cells/create");

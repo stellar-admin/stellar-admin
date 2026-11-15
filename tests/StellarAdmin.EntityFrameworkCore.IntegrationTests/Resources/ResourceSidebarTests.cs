@@ -1,6 +1,6 @@
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
+using StellarAdmin.Testing;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -19,9 +19,7 @@ public class ResourceSidebarTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products");
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert

@@ -108,7 +108,7 @@ Use parameterized tests when the scenario and operation are identical and only i
 
 Create fresh mutable SUT instances and data for each test. Tests must pass alone, in any order, and alongside other tests. Avoid shared mutable fixtures, execution dependencies, sleeps, and dependence on machine-specific data. TUnit [runs tests in parallel by default](https://tunit.dev/docs/execution/parallelism/); fix isolation instead of disabling parallelism to accommodate shared unit-test state. Dispose resources owned by the test.
 
-Keep setup understandable within the method. Small private helpers and nested fake types are appropriate; extract shared support only when multiple classes need it, and keep it within the owning test project. Avoid a general-purpose test base class or helper that hides the behavior being exercised. Prefer simple real values and small fakes over unnecessary mocking infrastructure.
+Keep setup understandable within the method. Small private helpers and nested fake types are appropriate; extract shared support only when multiple classes need it, and keep it within the owning test project. Helpers that several test projects need (HTML parsing, antiforgery form tokens, a cookie-carrying test client, a recording logger provider) live in the `tests/StellarAdmin.Testing` library instead of being copied. Avoid a general-purpose test base class or helper that hides the behavior being exercised. Prefer simple real values and small fakes over unnecessary mocking infrastructure.
 
 ## Assertions and coverage
 

@@ -1,8 +1,5 @@
 using System.Net;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,6 +10,8 @@ using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
+using StellarAdmin.Testing;
+using static StellarAdmin.Testing.FormTestHelpers;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -29,11 +28,11 @@ public class ResourceManyToManyTests
                 edit.Fields(editor == "checkboxGroup" ? UseCheckboxGroup : UseToggleGroup)
             )
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         var checkboxes = document.QuerySelectorAll("input[type='checkbox'][name='Entity.Tags']");
@@ -57,8 +56,8 @@ public class ResourceManyToManyTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowEdit(edit => edit.Fields(UseCheckboxGroup))
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Tags", "2"));
         values.Add(new("Entity.Tags", "3"));
 
@@ -81,8 +80,8 @@ public class ResourceManyToManyTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowEdit(edit => edit.Fields(UseCheckboxGroup))
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
 
         // Act
         using var response = await client.PostAsync(
@@ -103,8 +102,8 @@ public class ResourceManyToManyTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowEdit(edit => edit.Fields(UseCheckboxGroup))
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Tags", "3"));
         values.Add(new("Entity.Tags", "99"));
 
@@ -113,7 +112,7 @@ public class ResourceManyToManyTests
             "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -137,8 +136,8 @@ public class ResourceManyToManyTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowEdit(edit => edit.Fields(UseCheckboxGroup))
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Tags", "1"));
         values.Add(new("Entity.Tags", "2"));
         values.Add(new("Entity.Tags", "3"));
@@ -148,7 +147,7 @@ public class ResourceManyToManyTests
             "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -172,8 +171,8 @@ public class ResourceManyToManyTests
                 })
             )
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/create");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/create")).ToList();
         values.Add(new("Entity.Name", "Tagged"));
         values.Add(new("Entity.Price", "15"));
         values.Add(new("Entity.Tags", "1"));
@@ -203,11 +202,11 @@ public class ResourceManyToManyTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowEdit(edit => edit.Fields(UseMultiLookupSheet))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         var editor = document.QuerySelector("admin-multi-lookup-sheet-editor")!;
@@ -230,8 +229,8 @@ public class ResourceManyToManyTests
             resource => resource.AllowEdit(edit => edit.Fields(UseCheckboxGroup)),
             configureAdmin: admin => admin.Services.AddSingleton(new ReservedTags(3))
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Tags", "3"));
 
         // Act
@@ -239,7 +238,7 @@ public class ResourceManyToManyTests
             "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -256,7 +255,7 @@ public class ResourceManyToManyTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowEdit(edit => edit.Fields(UseMultiLookupSheet))
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync(
@@ -277,8 +276,8 @@ public class ResourceManyToManyTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.AllowEdit(edit => edit.Fields(UseMultiLookupSheet))
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Tags", ""));
         values.Add(new("Entity.Tags", "3"));
 
@@ -317,8 +316,8 @@ public class ResourceManyToManyTests
                 edit.UseInlineRow();
             });
         });
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products")).ToList();
         values.Add(new("rows[2].Tags", "3"));
 
         // Act
@@ -339,28 +338,6 @@ public class ResourceManyToManyTests
 
         return await db.Set<Tag>().CountAsync();
     }
-
-    private static async Task<List<KeyValuePair<string, string>>> PrepareForm(
-        HttpClient client,
-        string url
-    )
-    {
-        using var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        var document = await ReadDocument(response);
-        var token = document
-            .QuerySelector("input[name='__RequestVerificationToken']")!
-            .GetAttribute("value")!;
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
-
-        return [new("__RequestVerificationToken", token)];
-    }
-
-    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
-        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
 
     private static async Task<int[]> ReadTagIds(WebApplication sut, int number)
     {
@@ -435,11 +412,11 @@ public class ResourceManyToManyTests
                 ),
             configureAdmin: admin => admin.AddEfCoreResource<Tag>()
         );
-        using var client = sut.GetTestClient();
+        using var client = sut.CreateClient();
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/edit/2");
-        var document = await ReadDocument(response);
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert
@@ -464,8 +441,8 @@ public class ResourceManyToManyTests
                 ),
             configureAdmin: admin => admin.AddEfCoreResource<Tag>()
         );
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
+        using var client = sut.CreateClient();
+        var values = (await PrepareForm(client, "/stellaradmin/products/edit/2")).ToList();
         values.Add(new("Entity.Tags", "3"));
 
         // Act
@@ -550,16 +527,12 @@ public class ResourceManyToManyTests
     private static void UseCheckboxGroup(ResourceFieldsBuilder<Product> fields) =>
         fields
             .Add(product => product.Tags)
-            .UseCheckboxGroupEditor(editor =>
-                editor.UseItems<Tag>(tag => tag.Id, tag => tag.Name)
-            );
+            .UseCheckboxGroupEditor(editor => editor.UseItems<Tag>(tag => tag.Id, tag => tag.Name));
 
     private static void UseToggleGroup(ResourceFieldsBuilder<Product> fields) =>
         fields
             .Add(product => product.Tags)
-            .UseToggleGroupEditor(editor =>
-                editor.UseItems<Tag>(tag => tag.Id, tag => tag.Name)
-            );
+            .UseToggleGroupEditor(editor => editor.UseItems<Tag>(tag => tag.Id, tag => tag.Name));
 
     private static void UseMultiLookupSheet(ResourceFieldsBuilder<Product> fields) =>
         fields

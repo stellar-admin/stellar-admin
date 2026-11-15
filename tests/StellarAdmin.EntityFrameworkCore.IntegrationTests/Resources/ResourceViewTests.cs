@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
 using System.Net;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Displays;
+using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
@@ -37,9 +37,7 @@ public class ResourceViewTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/view/1");
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -93,9 +91,7 @@ public class ResourceViewTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/view/2");
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -146,9 +142,7 @@ public class ResourceViewTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/view/2");
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -188,9 +182,7 @@ public class ResourceViewTests
 
         // Act
         using var response = await client.GetAsync("/stellaradmin/products/view/2");
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
