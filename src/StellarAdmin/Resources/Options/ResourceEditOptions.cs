@@ -18,4 +18,7 @@ public abstract class ResourceEditOptions : ResourceFormOptions
     ///     Gets the type of the model the edit form binds to.
     /// </summary>
     public abstract Type ModelType { get; }
+
+    // The page's record summary: its own, or once checked, the resource's when the form edits the resource
+    internal ResourceSummaryOptions? Summary { get; set; }
 }

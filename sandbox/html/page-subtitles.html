@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Page subtitles prototype (2026-11-17): a line under the title of the view, edit and create pages
+         (docs/plans/page-subtitles.md). Styles A–I for the line, then the chosen style across the pages, fixed text
+         against a per-record line, and other resources. The page header markup is what <sa-page-header sticky="true">
+         emits; each frame scrolls on its own so the sticky header behaves as on a real page. -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page subtitles</title>
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css">
+    <link rel="stylesheet" id="theme">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400..700&family=Figtree:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <!-- Candidate CSS, written as the library would write it -->
+    <style>
+        @layer sa.components {
+            /* B: the identifier in the mono font */
+            .sa-page-header-description .sa-page-header-code {
+                font-family: var(--sa-font-mono);
+                font-size: 0.95em;
+                color: var(--sa-color-ink);
+            }
+            .sa-page-header-description .sa-page-header-sep {
+                margin-inline: calc(1.5 * var(--sa-unit));
+                opacity: 0.6;
+            }
+
+            /* C, G: badges in the description row */
+            .sa-page-header-description:has(.sa-badge) {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: calc(1.5 * var(--sa-unit));
+            }
+            .sa-page-header-description .sa-badge.sa-page-header-code { font-family: var(--sa-font-mono); }
+
+            /* D: a meta row of icon + text items */
+            .sa-page-header-meta {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: var(--sa-unit) calc(4 * var(--sa-unit));
+                color: var(--sa-color-ink-muted);
+                font-size: var(--sa-text-sm);
+                line-height: var(--sa-leading-ui);
+                grid-column-start: 1;
+            }
+            .sa-page-header-meta-item {
+                display: inline-flex;
+                align-items: center;
+                gap: calc(1.5 * var(--sa-unit));
+                & svg { width: 0.95em; height: 0.95em; flex: none; opacity: 0.8; }
+            }
+
+            /* E: an eyebrow above the title */
+            .sa-page-header-eyebrow {
+                grid-column-start: 1;
+                grid-row: 1;
+                margin-bottom: calc(-1 * var(--sa-unit));
+                color: var(--sa-color-ink-muted);
+                font-size: var(--sa-text-xs, 0.75rem);
+                font-weight: 500;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+            }
+            .sa-page-header:has(> .sa-page-header-eyebrow) > .sa-page-header-title { grid-row: 2; }
+            @media (width >= 40rem) {
+                .sa-page-header:has(> .sa-page-header-eyebrow) > .sa-page-header-actions { grid-row: 1 / span 2; align-self: center; }
+            }
+
+            /* F: beside the title, on its baseline */
+            .sa-page-header-title .sa-page-header-title-aside {
+                margin-inline-start: calc(2.5 * var(--sa-unit));
+                color: var(--sa-color-ink-muted);
+                font-family: var(--sa-font-sans);
+                font-size: var(--sa-text-sm);
+                font-weight: 400;
+                letter-spacing: 0;
+            }
+
+            /* H: a copy button on the identifier */
+            .sa-page-header-copy {
+                display: inline-flex;
+                align-items: center;
+                gap: var(--sa-unit);
+                margin: calc(-0.5 * var(--sa-unit)) calc(-1 * var(--sa-unit));
+                padding: calc(0.5 * var(--sa-unit)) var(--sa-unit);
+                border-radius: var(--sa-radius-control);
+                color: inherit;
+                font: inherit;
+                cursor: pointer;
+                & svg { width: 0.85em; height: 0.85em; opacity: 0; transition: opacity var(--sa-motion-fast); }
+                &:hover { background: var(--sa-color-hover); & svg { opacity: 0.7; } }
+                &:focus-visible svg { opacity: 0.7; }
+                &[data-copied] svg { opacity: 1; color: var(--sa-color-success); }
+            }
+
+            /* I: the line folds away once the header is stuck, keeping the stuck header slim */
+            .sa-page-header[data-sticky] > .sa-page-header-description {
+                transition: opacity var(--sa-motion-fast), margin var(--sa-motion-fast);
+            }
+            [data-collapse-when-stuck] .sa-page-header[data-stuck] > .sa-page-header-description {
+                opacity: 0;
+                margin-bottom: calc(-1 * var(--sa-leading-ui) * 1em - 1.5 * var(--sa-unit));
+                pointer-events: none;
+            }
+        }
+
+        /* ---- Prototype scaffolding (not extracted) ---- */
+        body { margin: 0; padding: 2rem 2rem 6rem; background: var(--sa-color-surface-sunken); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+        .intro { max-width: 60rem; margin-bottom: 2rem; }
+        .intro h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 .5rem; }
+        .intro p { color: var(--sa-color-ink-muted); margin: .25rem 0; font-size: .9rem; }
+        section { margin-bottom: 3rem; }
+        section > h2 { font-size: 1.1rem; font-weight: 600; margin: 0 0 .25rem; }
+        section > p { color: var(--sa-color-ink-muted); margin: 0 0 1rem; font-size: .875rem; max-width: 60rem; }
+        .strips { display: grid; grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr)); gap: 1.25rem; }
+        .strips.wide { grid-template-columns: 1fr; }
+        figure { margin: 0; }
+        figcaption { font-size: .8rem; color: var(--sa-color-ink-muted); margin-top: .4rem; }
+        figcaption b { color: var(--sa-color-ink); }
+        .frame { border: 1px solid var(--sa-color-line); border-radius: 10px; overflow: hidden; background: var(--sa-color-canvas, var(--sa-color-surface)); }
+        .frame .viewport { height: 15rem; overflow: auto; }
+        .frame .sa-app-header { position: static; }
+        .rows { display: grid; grid-template-columns: 9rem 1fr; gap: .6rem 1rem; font-size: var(--sa-text-sm); }
+        .rows dt { color: var(--sa-color-ink-muted); }
+        .rows dd { margin: 0; }
+        .ctl { position: fixed; right: 1rem; bottom: 1rem; z-index: 50; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; padding: .5rem .75rem; border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-surface); box-shadow: 0 4px 16px rgb(0 0 0 / .12); font-size: .8rem; }
+        .ctl label { display: flex; gap: .35rem; align-items: center; }
+        .ctl select { font: inherit; }
+        .tag { display: inline-block; min-width: 1.4em; text-align: center; font-weight: 700; margin-right: .3rem; }
+    </style>
+</head>
+<body>
+
+<div class="intro">
+    <h1>Page subtitles</h1>
+    <p>A line under the title of the view, edit and create pages. Each frame scrolls: scroll one to see the sticky header pass over the content.</p>
+    <p>The first section compares styles for the line itself. The <b>Style</b> picker in the control bar (bottom right) then applies one of them to every frame in the sections below it.</p>
+</div>
+
+<section>
+    <h2>1. Styles for a per-record line</h2>
+    <p>The view page of a product, with <code>UseSubtitle(p =&gt; …)</code> giving its sku and category. A is today's <code>&lt;sa-page-header-description&gt;</code> unchanged; the others add markup or a slot.</p>
+    <div class="strips" id="styles"></div>
+</section>
+
+<section>
+    <h2>2. Across the pages</h2>
+    <p>The chosen style on each page of the resource. Which pages show a line, and whether the create page (no record yet) gets fixed text or nothing, is open.</p>
+    <div class="strips" id="pages"></div>
+</section>
+
+<section>
+    <h2>3. Fixed text, per-record, or both</h2>
+    <p>The edit page with the two shapes from the plan: a fixed text per page (<code>edit.Subtitle = "…"</code>), the per-record line, and both together.</p>
+    <div class="strips" id="shapes"></div>
+</section>
+
+<section>
+    <h2>4. Other resources and edge cases</h2>
+    <p>Bookings and customers, a long title, a long line, and the line folding away once the header is stuck (scroll the last frame).</p>
+    <div class="strips" id="others"></div>
+</section>
+
+<div class="ctl">
+    <label>Style
+        <select id="style-picker">
+            <option value="A">A · Plain line</option>
+            <option value="B">B · Mono identifier</option>
+            <option value="C">C · Badges</option>
+            <option value="D">D · Meta row with icons</option>
+            <option value="E">E · Eyebrow above title</option>
+            <option value="F">F · Beside the title</option>
+            <option value="G">G · Status badge + line</option>
+            <option value="H">H · Copyable identifier</option>
+        </select>
+    </label>
+    <label>Theme
+        <select id="theme-picker">
+            <option value="">Default</option>
+            <option value="ops">Ops</option>
+            <option value="soft">Soft</option>
+            <option value="ledger">Ledger</option>
+        </select>
+    </label>
+    <label><input type="checkbox" id="dark-toggle"> Dark</label>
+    <label>Density
+        <select id="density-picker">
+            <option value="">Default</option>
+            <option value="compact">Compact</option>
+            <option value="comfortable">Comfortable</option>
+        </select>
+    </label>
+</div>
+
+<script type="module">
+    const ICONS = {
+        chevronRight: '<path d="m9 18 6-6-6-6"/>',
+        hash: '<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>',
+        tag: '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>',
+        clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+        users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+        mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+        copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+        check: '<path d="M20 6 9 17l-5-5"/>',
+    };
+    const icon = (name) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+    const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+    // Records: an identifier, the parts after it, an optional status and an optional "updated" note
+    const PRODUCT = { title: "Waxed Canvas Daypack", code: "BAG-011", parts: [["tag", "Bags"]], status: "Active", updated: "Updated 3 days ago" };
+    const BOOKING = { title: "Lisbon City Break", code: "BK-20431", parts: [["calendar", "12–16 Mar 2027"], ["users", "2 travellers"]], status: "Confirmed", updated: "Booked 6 Nov 2026" };
+    const CUSTOMER = { title: "Amara Okafor", code: null, parts: [["mail", "amara.okafor@example.com"], ["clock", "Customer since 2023"]], status: "VIP", updated: null };
+    const LONG_TITLE = { ...PRODUCT, title: "Waxed Canvas Roll-Top Daypack with Padded Laptop Sleeve and Detachable Hip Belt" };
+    const LONG_LINE = { title: "Patagonia Trek", code: "TR-0087", parts: [["tag", "Guided tours"], ["calendar", "14 days, 3 departures a year"], ["users", "Up to 12 travellers"], ["clock", "Runs October to March"]], status: "Active", updated: "Updated yesterday" };
+
+    const sep = '<span class="sa-page-header-sep" aria-hidden="true">·</span>';
+    const plainParts = (r) => [r.code, ...r.parts.map(([, t]) => t)].filter(Boolean);
+    const badge = (variant, text, cls = "") => `<span data-slot="badge" data-variant="${variant}" class="sa-badge ${cls}">${esc(text)}</span>`;
+    const desc = (inner) => `<p data-slot="page-header-description" class="sa-page-header-description">${inner}</p>`;
+
+    // The line in each style. Returns { before, titleAside, after } pieces of the header
+    const STYLES = {
+        A: { name: "Plain line", note: "today's description, text only: <code>{Sku} · {Category}</code>",
+            render: (r) => ({ after: desc(plainParts(r).map(esc).join(' <span aria-hidden="true">·</span> ')) }) },
+        B: { name: "Mono identifier", note: "the identifier in <code>--sa-font-mono</code> and ink colour; parts muted",
+            render: (r) => ({ after: desc([r.code && `<span class="sa-page-header-code">${esc(r.code)}</span>`, ...r.parts.map(([, t]) => esc(t))].filter(Boolean).join(sep)) }) },
+        C: { name: "Badges", note: "identifier as an outline badge (mono), each part a secondary badge",
+            render: (r) => ({ after: desc([r.code && badge("outline", r.code, "sa-page-header-code"), ...r.parts.map(([, t]) => badge("secondary", t))].filter(Boolean).join("")) }) },
+        D: { name: "Meta row with icons", note: "icon + text items, wrapping; room for an \"updated\" note",
+            render: (r) => ({ after: `<div data-slot="page-header-meta" class="sa-page-header-meta">${[r.code && ["hash", r.code], ...r.parts, r.updated && ["clock", r.updated]].filter(Boolean).map(([i, t]) => `<span class="sa-page-header-meta-item">${icon(i)}${esc(t)}</span>`).join("")}</div>` }) },
+        E: { name: "Eyebrow above the title", note: "small uppercase line above the title, xs / 500 / 0.06em tracking",
+            render: (r) => ({ before: `<p data-slot="page-header-eyebrow" class="sa-page-header-eyebrow">${plainParts(r).map(esc).join(" · ")}</p>` }) },
+        F: { name: "Beside the title", note: "on the title's baseline, text-sm muted; wraps under a long title",
+            render: (r) => ({ titleAside: `<span class="sa-page-header-title-aside">${plainParts(r).map(esc).join(" · ")}</span>` }) },
+        G: { name: "Status badge + line", note: "a status badge leading the plain line",
+            render: (r) => ({ after: desc([r.status && badge("secondary", r.status), `<span>${plainParts(r).map(esc).join(' <span aria-hidden="true">·</span> ')}</span>`].filter(Boolean).join("")) }) },
+        H: { name: "Copyable identifier", note: "hover the identifier: a copy button, ✓ once copied",
+            render: (r) => ({ after: desc([r.code && `<button type="button" class="sa-page-header-copy sa-page-header-code" data-copy="${esc(r.code)}" aria-label="Copy ${esc(r.code)}">${esc(r.code)}${icon("copy")}</button>`, ...r.parts.map(([, t]) => esc(t))].filter(Boolean).join(sep)) }) },
+    };
+
+    const button = (text, variant = "outline") => `<a href="#" data-slot="button" class="sa-button sa-button-variant-${variant} sa-button-size-default">${text}</a>`;
+    const ACTIONS = {
+        view: button("Delete", "outline-destructive") + button("Back") + button("Edit", "default"),
+        edit: button("Cancel") + button("Save Product", "default"),
+        create: button("Cancel") + button("Add another") + button("Add Product", "default"),
+        index: button("New product", "default"),
+    };
+    const breadcrumb = (...items) => `<nav aria-label="breadcrumb" data-slot="breadcrumb"><ol data-slot="breadcrumb-list" class="sa-breadcrumb-list">${items.map((item, i) => i < items.length - 1
+        ? `<li data-slot="breadcrumb-item" class="sa-breadcrumb-item"><a href="#" data-slot="breadcrumb-link" class="sa-breadcrumb-link">${esc(item)}</a></li><li role="presentation" aria-hidden="true" data-slot="breadcrumb-separator" class="sa-breadcrumb-separator">${icon("chevronRight")}</li>`
+        : `<li data-slot="breadcrumb-item" class="sa-breadcrumb-item"><span aria-current="page" data-slot="breadcrumb-page" class="sa-breadcrumb-page">${esc(item)}</span></li>`).join("")}</ol></nav>`;
+
+    const filler = (n = 8) => `<div data-slot="card" class="sa-card"><div data-slot="card-content" class="sa-card-content"><dl class="rows">${
+        ["Name", "Sku", "Category", "Price", "Stock", "Weight", "Colour", "Supplier", "Created", "Updated"].slice(0, n).map((l) => `<dt>${l}</dt><dd>—</dd>`).join("")}</dl></div></div>`;
+
+    // A frame: app header with the breadcrumb, then the page container with the sticky header and some content
+    const frame = ({ crumbs, title, line = {}, fixed, fixedPlacement = "after", actions, attrs = "" }) => {
+        const fixedDesc = fixed ? desc(esc(fixed)) : "";
+        return `<div class="frame"${attrs}><div class="viewport">
+            <header data-slot="app-header" class="sa-app-header">${breadcrumb(...crumbs)}</header>
+            <div class="sa-page-container sa-page-container-width-large" data-slot="page-container" data-width="large">
+                <header class="sa-page-header" data-slot="page-header" data-sticky>
+                    ${line.before ?? ""}
+                    <h1 data-slot="page-header-title" class="sa-page-header-title">${esc(title)}${line.titleAside ?? ""}</h1>
+                    ${fixedPlacement === "before" ? fixedDesc : ""}${line.after ?? ""}${fixedPlacement === "after" ? fixedDesc : ""}
+                    <div data-slot="page-header-actions" class="sa-page-header-actions">${actions}</div>
+                </header>
+                ${filler()}
+            </div>
+        </div></div>`;
+    };
+    const fig = (caption, html) => `<figure>${html}<figcaption>${caption}</figcaption></figure>`;
+
+    const renderStyles = () => {
+        document.getElementById("styles").innerHTML = Object.entries(STYLES).map(([key, s]) =>
+            fig(`<span class="tag">${key}</span><b>${s.name}</b>: ${s.note}`,
+                frame({ crumbs: ["Products", PRODUCT.title], title: PRODUCT.title, line: s.render(PRODUCT), actions: ACTIONS.view }))).join("");
+    };
+
+    const renderPicked = () => {
+        const key = document.getElementById("style-picker").value;
+        const s = STYLES[key];
+        const line = (r) => s.render(r);
+        const label = `<span class="tag">${key}</span>`;
+
+        document.getElementById("pages").innerHTML = [
+            fig(`${label}<b>Index</b>: a fixed description for the resource (open: does the index get one?)`,
+                frame({ crumbs: ["Products"], title: "Products", fixed: "Gear and accessories sold in the Voyager travel shop.", actions: ACTIONS.index })),
+            fig(`${label}<b>View</b>: the per-record line`,
+                frame({ crumbs: ["Products", PRODUCT.title], title: PRODUCT.title, line: line(PRODUCT), actions: ACTIONS.view })),
+            fig(`${label}<b>Edit</b>: the same line as the view page`,
+                frame({ crumbs: ["Products", PRODUCT.title, "Edit"], title: PRODUCT.title, line: line(PRODUCT), actions: ACTIONS.edit })),
+            fig(`${label}<b>Create, nothing</b>: no record yet, so no line`,
+                frame({ crumbs: ["Products", "New product"], title: "New product", actions: ACTIONS.create })),
+            fig(`${label}<b>Create, fixed text</b>: <code>create.Subtitle = "…"</code>`,
+                frame({ crumbs: ["Products", "New product"], title: "New product", fixed: "Products go on sale in the shop once saved.", actions: ACTIONS.create })),
+        ].join("");
+
+        document.getElementById("shapes").innerHTML = [
+            fig(`<b>Fixed text only</b>: the same for every record`,
+                frame({ crumbs: ["Products", PRODUCT.title, "Edit"], title: PRODUCT.title, fixed: "Changes show in the shop as soon as you save.", actions: ACTIONS.edit })),
+            fig(`${label}<b>Per-record only</b>`,
+                frame({ crumbs: ["Products", PRODUCT.title, "Edit"], title: PRODUCT.title, line: line(PRODUCT), actions: ACTIONS.edit })),
+            fig(`${label}<b>Both</b>: per-record line, fixed text under it`,
+                frame({ crumbs: ["Products", PRODUCT.title, "Edit"], title: PRODUCT.title, line: line(PRODUCT), fixed: "Changes show in the shop as soon as you save.", actions: ACTIONS.edit })),
+            fig(`${label}<b>Both</b>: fixed text first, per-record line under it`,
+                frame({ crumbs: ["Products", PRODUCT.title, "Edit"], title: PRODUCT.title, line: line(PRODUCT), fixed: "Changes show in the shop as soon as you save.", fixedPlacement: "before", actions: ACTIONS.edit })),
+        ].join("");
+
+        document.getElementById("others").innerHTML = [
+            fig(`${label}<b>Booking</b>: reference, dates, travellers`,
+                frame({ crumbs: ["Bookings", BOOKING.title], title: BOOKING.title, line: line(BOOKING), actions: ACTIONS.view })),
+            fig(`${label}<b>Customer</b>: no identifier; email and since-when`,
+                frame({ crumbs: ["Customers", CUSTOMER.title], title: CUSTOMER.title, line: line(CUSTOMER), actions: ACTIONS.view })),
+            fig(`${label}<b>Long title</b>`,
+                frame({ crumbs: ["Products", "Waxed Canvas Roll-Top…"], title: LONG_TITLE.title, line: line(LONG_TITLE), actions: ACTIONS.view })),
+            fig(`${label}<b>Long line</b>: four parts`,
+                frame({ crumbs: ["Tours", LONG_LINE.title], title: LONG_LINE.title, line: line(LONG_LINE), actions: ACTIONS.view })),
+            fig(`${label}<b>I · Folds away when stuck</b>: scroll this frame; the stuck header drops the line to stay slim`,
+                frame({ crumbs: ["Products", PRODUCT.title], title: PRODUCT.title, line: line(PRODUCT), actions: ACTIONS.view, attrs: " data-collapse-when-stuck" })),
+        ].join("");
+    };
+
+    // Stuck detection: the header is stuck once its frame has scrolled
+    document.addEventListener("scroll", (e) => {
+        const vp = e.target.closest?.(".viewport");
+        if (!vp) return;
+        vp.querySelector(".sa-page-header").toggleAttribute("data-stuck", vp.scrollTop > 4);
+    }, true);
+
+    // Copy buttons (H)
+    document.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".sa-page-header-copy");
+        if (btn) {
+            try { await navigator.clipboard.writeText(btn.dataset.copy); } catch { /* not over https or localhost */ }
+            btn.setAttribute("data-copied", "");
+            btn.querySelector("svg").innerHTML = ICONS.check;
+            setTimeout(() => { btn.removeAttribute("data-copied"); btn.querySelector("svg").innerHTML = ICONS.copy; }, 1200);
+        }
+        if (e.target.closest('a[href="#"]')) e.preventDefault();
+    });
+
+    document.getElementById("style-picker").addEventListener("change", renderPicked);
+    document.getElementById("theme-picker").addEventListener("change", (e) => {
+        const theme = document.getElementById("theme");
+        if (e.target.value) theme.href = `../../util/theme-check/presets/${e.target.value}.css`;
+        else theme.removeAttribute("href");
+    });
+    document.getElementById("dark-toggle").addEventListener("change", (e) => document.documentElement.classList.toggle("dark", e.target.checked));
+    document.getElementById("density-picker").addEventListener("change", (e) => {
+        if (e.target.value) document.body.setAttribute("data-sa-density", e.target.value);
+        else document.body.removeAttribute("data-sa-density");
+    });
+
+    renderStyles();
+    renderPicked();
+</script>
+</body>
+</html>

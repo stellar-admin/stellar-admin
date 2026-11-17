@@ -469,6 +469,34 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
+    ///     Configures the record summary shown under the title of the view and edit pages.
+    /// </summary>
+    /// <param name="configure">A delegate that adds the summary's items.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Applies to the view and edit pages that display the resource itself, not a model of
+    ///     their own. A page's own <c>Summary</c> replaces it.
+    /// </remarks>
+    public TBuilder Summary(Action<ResourceSummaryBuilder<TResource>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        Services.Configure<ResourceOptions<TResource>>(options => options.Summary ??= new());
+        configure(
+            new(action =>
+                Services.Configure<ResourceOptions<TResource>>(options =>
+                    action(options.Summary ??= new())
+                )
+            )
+        );
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
     ///     Sets the expression that selects a record's title, which names the record wherever
     ///     another record refers to it, such as in a lookup.
     /// </summary>

@@ -93,6 +93,28 @@ public class ResourceEditBuilder<TModel>
     }
 
     /// <summary>
+    ///     Configures the record summary shown under the page title.
+    /// </summary>
+    /// <param name="configure">A delegate that adds the summary's items.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces the resource's summary on this page. The summary shows the record as stored,
+    ///     also when a save is rejected.
+    /// </remarks>
+    public ResourceEditBuilder<TModel> Summary(Action<ResourceSummaryBuilder<TModel>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        _configure(options => options.Summary ??= new());
+        configure(new(action => _configure(options => action(options.Summary ??= new()))));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Edits resources in their index grid row instead of on the edit page.
     /// </summary>
     /// <returns>A builder that configures the inline row.</returns>

@@ -1,0 +1,25 @@
+@{
+    var summary = ViewData[ViewDataKeys.Summary] as PageSummaryViewModel;
+}
+@* A view or edit page's record summary under its title: fields in their compact displays, text and separators, in one
+   row that wraps *@
+@if (summary is not null)
+{
+    <div class="sa-page-summary" data-slot="page-summary">
+        @foreach (var item in summary.Items)
+        {
+            switch (item)
+            {
+                case PageSummaryFieldViewModel field:
+                    @await PageSummaryRenderer.RenderFieldAsync(ViewContext, field)
+                    break;
+                case PageSummaryTextViewModel text:
+                    <span class="sa-page-summary-text" data-slot="page-summary-text">@text.Text</span>
+                    break;
+                default:
+                    <span class="sa-page-summary-separator" data-slot="page-summary-separator" aria-hidden="true">·</span>
+                    break;
+            }
+        }
+    </div>
+}

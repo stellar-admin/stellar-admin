@@ -1135,6 +1135,40 @@
         padding: 0;
     }
 
+    /* A view or edit page's record summary under its title: one row of compact displays, text and separators that
+       wraps, beside the actions from the sm breakpoint. It shows at every width. */
+    .sa-page-summary {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--sa-unit) calc(2 * var(--sa-unit));
+        min-width: 0;
+        color: var(--sa-color-ink-muted);
+        font-size: var(--sa-text-sm);
+        line-height: var(--sa-leading-ui);
+    }
+
+    .sa-page-summary-field {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sa-unit);
+        min-width: 0;
+    }
+
+    .sa-page-summary-separator {
+        opacity: 0.6;
+    }
+
+    @media (width >= 40rem) {
+        .sa-page-header > .sa-page-summary {
+            grid-column-start: 1;
+        }
+
+        .sa-page-header:has(> .sa-page-summary) > .sa-page-header-actions {
+            grid-row: 1 / span 2;
+        }
+    }
+
     /* A column of widgets beside a page's content, once the page is wide enough for both; below it otherwise. A
        column whose widgets the user doesn't see is hidden, and the content takes the whole width. */
     .sa-widgets-aside {

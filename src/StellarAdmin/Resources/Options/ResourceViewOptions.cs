@@ -53,6 +53,9 @@ public abstract class ResourceViewOptions : IFormScope
 
     internal ConfigurationSource? Source { get; set; }
 
+    // The page's record summary: its own, or once checked, the resource's when the page displays the resource
+    internal ResourceSummaryOptions? Summary { get; set; }
+
     // The widgets as configured, then, once checked, those that can be shown
     internal List<WidgetOptions> Widgets { get; } = [];
 

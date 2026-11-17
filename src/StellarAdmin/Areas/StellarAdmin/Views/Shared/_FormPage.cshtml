@@ -11,10 +11,7 @@
        the submit buttons name it with their form attribute *@
     <sa-page-header sticky="true">
         <sa-page-header-title>@Model.Title</sa-page-header-title>
-        @if (Model.Subtitle is not null)
-        {
-            <sa-page-header-description>@Model.Subtitle</sa-page-header-description>
-        }
+        <partial name="_PageSummary" />
         <sa-page-header-actions>
             <sa-slot-outlet name="form-leading-actions"/>
             <sa-slot-outlet name="pre-form-actions"/>

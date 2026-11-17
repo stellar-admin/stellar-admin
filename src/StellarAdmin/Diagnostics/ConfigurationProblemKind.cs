@@ -78,4 +78,6 @@ internal enum ConfigurationProblemKind
     UnusableWidgetHandler = 1103,
     MismatchedWidgetParameters = 1104,
     IgnoredWidgetSetting = 1105,
+
+    SeparatorWithSeparateItems = 1110,
 }
