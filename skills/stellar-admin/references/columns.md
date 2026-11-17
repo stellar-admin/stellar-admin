@@ -80,11 +80,11 @@ In order of precedence:
 
 1. The display set with `UseDisplay<TDisplay>(...)`.
 2. Plain text after `UseBuiltInRendering()`.
-3. The grid template named by the property's `[UIHint("Name")]`: the view `GridDisplayTemplates/Name.cshtml`.
+3. The compact template named by the property's `[UIHint("Name")]`: the view `DisplayTemplates/Compact/Name.cshtml`.
 4. The default display for the property's data type, then its CLR type (table below).
 5. Plain text formatted with `[DisplayFormat]`.
 
-A cell's template is always `GridDisplayTemplates/{TemplateName}.cshtml`, never `DisplayTemplates/`. MVC finds it in `Areas/StellarAdmin/Views/Shared/`, `Views/Shared/` or `Pages/Shared/`.
+A cell's template is always `DisplayTemplates/Compact/{TemplateName}.cshtml`, never `DisplayTemplates/{TemplateName}.cshtml`. MVC finds it in `Areas/StellarAdmin/Views/Shared/`, `Views/Shared/` or `Pages/Shared/`.
 
 Displays with a handler (`IFieldDisplay<THandler>`) throw in columns; use them on forms and view pages only.
 
@@ -117,7 +117,7 @@ columns.Add(destination => destination.Photo, column => column.UseDisplay<ImageD
 
 ## A badge styled by value
 
-`BadgeDisplay` applies one variant to every value. To pick the variant per value, write a display class and its grid template.
+`BadgeDisplay` applies one variant to every value. To pick the variant per value, write a display class and its compact template.
 
 ```csharp
 // Admin/BookingStatusDisplay.cs
@@ -132,7 +132,7 @@ public sealed class BookingStatusDisplay : FieldDisplay
 ```
 
 ```razor
-@* Areas/StellarAdmin/Views/Shared/GridDisplayTemplates/BookingStatus.cshtml *@
+@* Areas/StellarAdmin/Views/Shared/DisplayTemplates/Compact/BookingStatus.cshtml *@
 @using StellarAdmin.Areas.StellarAdmin
 @using StellarAdmin.UI
 @using Voyager.Admin
@@ -157,7 +157,7 @@ columns.Add(booking => booking.Status, column => column.UseDisplay<BookingStatus
 - The template's `Model` is the cell value (as `object?`), `Display` is the configured display, and `FormatValue()` formats the value (enum members by their `[Display(Name)]`, else their humanized names).
 - The template needs the `StellarAdmin.UI` tag helpers: put it under `Areas/StellarAdmin/Views/` with an area `_ViewImports.cshtml` ([customization](customization.md#view-imports)), or add `@addTagHelper *, StellarAdmin.UI` to it.
 - To show the same badge on a view page or as a form display field, add the same markup as `DisplayTemplates/BookingStatus.cshtml`; display fields use `DisplayTemplates/`.
-- Alternative: mark the property `[UIHint("BookingStatus")]` and write `GridDisplayTemplates/BookingStatus.cshtml` with `@model BookingStatus`. The hint then applies wherever the property is displayed, and display fields require a `DisplayTemplates/BookingStatus.cshtml` too (a missing one throws).
+- Alternative: mark the property `[UIHint("BookingStatus")]` and write `DisplayTemplates/Compact/BookingStatus.cshtml` with `@model BookingStatus`. The hint then applies wherever the property is displayed, and display fields require a `DisplayTemplates/BookingStatus.cshtml` too (a missing one throws).
 
 ## Empty values
 

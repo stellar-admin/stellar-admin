@@ -15,7 +15,7 @@ public abstract class FieldEditor
     /// </summary>
     /// <value>
     ///     The template name. The template is found at <c>EditorTemplates/{name}</c>, and at
-    ///     <c>GridEditorTemplates/{name}</c> in index grid cells.
+    ///     <c>EditorTemplates/Compact/{name}</c> in index grid cells.
     /// </value>
     public abstract string TemplateName { get; }
 

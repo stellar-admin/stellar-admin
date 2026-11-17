@@ -39,7 +39,7 @@ resource.AllowView(view =>
 - Every field is a display field: `fields.Add` returns the display field builder (`Title`, `EmptyText`, `Orientation`, `UseDisplay`, `UseBuiltInRendering`, spans and starts). Rendering and displays are in [fields](fields.md).
 - Layout uses the same `Columns`, `AddSection`, `AddGroup`, spans and starts as forms ([forms](forms.md#layout-columns-sections-and-groups)). Sections take `Description`, `Layout`, `Orientation`, `Columns`, `ColumnSpan` and `ColumnStart`; a section's `Orientation` applies to the fields inside it. View pages have no `AddDetails`; use sections.
 - References (`booking.Customer!.Email`) are loaded with the record for EF Core resources. A related record of a registered resource (`booking => booking.Customer`) shows its title, and a collection of them shows in badges with `UseDisplay<BadgeDisplay>()` ([relationships](relationships.md#showing-related-values)).
-- A custom display used here needs `DisplayTemplates/{TemplateName}.cshtml` (index cells use `GridDisplayTemplates/`).
+- A custom display used here needs `DisplayTemplates/{TemplateName}.cshtml` (index cells use `DisplayTemplates/Compact/`).
 - The header shows Delete (with `AllowDelete`), Back and Edit (with `AllowEdit`).
 - The page title is `view.Title` when set, else the record's title (`UseTitle` or the convention), else `View {singular label}` when the title would only be the key; the row action label is `index.ViewLabel`.
 - Custom data sources need `IResourceViewHandler<T>` (`FindAsync`); `IResourceEditHandler<T>` includes it.
@@ -70,7 +70,7 @@ resource.Summary(summary =>
 ```
 
 - A field shows its value only, without a label; label it with `AddText(...)` before it. A summary of only text shows the same text for every record.
-- A field renders its compact display, the same one index cells use (`GridDisplayTemplates/`): `UseDisplay<TDisplay>()`, else the property's `[UIHint]`, else the default display for the type. `UseBuiltInRendering()` formats with `[DisplayFormat]`. The item builder has no `Title`, `EmptyText` or spans.
+- A field renders its compact display, the same one index cells use (`DisplayTemplates/Compact/`): `UseDisplay<TDisplay>()`, else the property's `[UIHint]`, else the default display for the type. `UseBuiltInRendering()` formats with `[DisplayFormat]`. The item builder has no `Title`, `EmptyText` or spans.
 - An empty value shows `[DisplayFormat(NullDisplayText = ...)]`, else a dash; the item stays.
 - Use `SeparateItems` or `AddSeparator()`, not both: with `SeparateItems = true`, added separators are dropped and a configuration problem is reported. Separators are never inferred.
 - `view.Summary(...)` and `edit.Summary(...)` replace the resource's summary on that page; `summary.Clear()` hides it. A page with its own model (`AllowView<TModel, THandler>`, `AllowEdit<TModel, THandler>`) doesn't get the resource's summary; give it its own with the page model's fields.

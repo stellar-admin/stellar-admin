@@ -9,9 +9,9 @@ using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Areas.StellarAdmin;
 
-// Renders a field's editor in a grid cell. The editor's template name resolves in GridEditorTemplates/, as a form
+// Renders a field's editor in a grid cell. The editor's template name resolves in EditorTemplates/Compact/, as a form
 // resolves it in EditorTemplates/: the handler's template for a field with an editor, or else the default for its
-// property. A field without a grid template renders an error naming the template in development, and nothing in
+// property. A field without a compact template renders an error naming the template in development, and nothing in
 // production.
 internal static class GridEditorRenderer
 {
@@ -52,11 +52,11 @@ internal static class GridEditorRenderer
         var view = field.Editor is { } editor
             ? EditorTemplateFinder.FindView(
                 viewContext,
-                EditorTemplateFinder.GridFolder,
+                EditorTemplateFinder.CompactFolder,
                 editor.TemplateName
             )
             : EditorTemplateFinder
-                .FindDefault(viewContext, EditorTemplateFinder.GridFolder, explorer.Metadata)
+                .FindDefault(viewContext, EditorTemplateFinder.CompactFolder, explorer.Metadata)
                 ?.View;
         if (view is null)
         {
@@ -147,13 +147,13 @@ internal static class GridEditorRenderer
             : EditorTemplateFinder.GetTemplateNames(metadata);
         var names = string.Join(
             ", ",
-            templateNames.Select(name => $"{EditorTemplateFinder.GridFolder}/{name}")
+            templateNames.Select(name => $"{EditorTemplateFinder.CompactFolder}/{name}")
         );
         var span = new TagBuilder("span");
         span.AddCssClass("sa-cell-error");
         span.Attributes["data-slot"] = "cell-editor-missing";
         span.InnerHtml.Append(
-            $"The field '{field.FieldName}' has no grid editor template. Add one of: {names}."
+            $"The field '{field.FieldName}' has no compact editor template. Add one of: {names}."
         );
 
         return span;

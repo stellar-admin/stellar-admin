@@ -15,7 +15,7 @@ This index lists the live plans: proposed, open, deferred or in progress. Comple
 - [app-header-breadcrumb](app-header-breadcrumb.md) (proposed): a breadcrumb in the app header in place of the brand title.
 - [unsaved-changes](unsaved-changes.md) (proposed): an unsaved changes indicator beside a form's Save button.
 - [page-subtitles](page-subtitles.md) (done): a record summary under the title of the view and edit pages; implemented and documented.
-- [template-folders](template-folders.md) (open): rename the display and editor template folders to `DisplayTemplates/` and `EditorTemplates/`, each with compact and full-size subfolders.
+- [template-folders](template-folders.md) (done): move the compact display and editor templates into `Compact/` subfolders of `DisplayTemplates/` and `EditorTemplates/`, replacing `GridDisplayTemplates/` and `GridEditorTemplates/`.
 - [efcore-model-validation](efcore-model-validation.md) (proposed): form validation from the EF model's rules, not only attributes.
 - [global-labels-rework](global-labels-rework.md) (proposed): global labels covering all the admin panel's text, and the docs page to match.
 - [overridable-partials](overridable-partials.md) (proposed): a catalogue of overridable partial views, more of them, and better docs.

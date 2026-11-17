@@ -23,9 +23,9 @@ public static class GridEditorHtmlHelperExtensions
     ///     <see langword="null" />.
     /// </exception>
     /// <remarks>
-    ///     The editor's template is found in <c>GridEditorTemplates/</c>, as a form's is found in
-    ///     <c>EditorTemplates/</c>. Without a grid template, the cell shows an error that names the
-    ///     template in development, and is empty otherwise.
+    ///     The editor's template is found in <c>EditorTemplates/Compact/</c>, as a form's is found
+    ///     in <c>EditorTemplates/</c>. Without a compact template, the cell shows an error that
+    ///     names the template in development, and is empty otherwise.
     /// </remarks>
     public static Task<IHtmlContent> GridEditorAsync(
         this IHtmlHelper html,

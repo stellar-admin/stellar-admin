@@ -129,9 +129,9 @@ In `StellarAdmin.Resources.Displays`; the same displays render index cells ([col
 
 ## Display templates
 
-To render a value differently everywhere it is displayed, mark the property `[UIHint("BookingStatus")]` and add `DisplayTemplates/BookingStatus.cshtml` (for display fields) and `GridDisplayTemplates/BookingStatus.cshtml` (for index cells), with `@model BookingStatus`. Put them in `Areas/StellarAdmin/Views/Shared/` (with the area `_ViewImports.cshtml`, see [customization](customization.md#view-imports)) or `Views/Shared/`.
+To render a value differently everywhere it is displayed, mark the property `[UIHint("BookingStatus")]` and add `DisplayTemplates/BookingStatus.cshtml` (for display fields) and `DisplayTemplates/Compact/BookingStatus.cshtml` (for index cells), with `@model BookingStatus`. Put them in `Areas/StellarAdmin/Views/Shared/` (with the area `_ViewImports.cshtml`, see [customization](customization.md#view-imports)) or `Views/Shared/`.
 
-To change a built-in display for the whole panel, add a view at its path, for example `Areas/StellarAdmin/Views/Shared/DisplayTemplates/Displays/Boolean.cshtml` (and `GridDisplayTemplates/Displays/Boolean.cshtml` for cells).
+To change a built-in display for the whole panel, add a view at its path, for example `Areas/StellarAdmin/Views/Shared/DisplayTemplates/Displays/Boolean.cshtml` (and `DisplayTemplates/Compact/Displays/Boolean.cshtml` for cells).
 
 ## Custom displays
 
@@ -157,6 +157,6 @@ details.Add(booking => booking.Status, field => field.UseDisplay<StatusBadgeDisp
 ```
 
 - The template inherits `FieldDisplayView<TDisplay>`: `Model` is the value (`object?`), `Display` the configured settings, `FormatValue(format)` the value formatted with a format string, else `[DisplayFormat]`, with enum members by their `[Display(Name)]`, else their humanized names.
-- Display fields use `DisplayTemplates/{TemplateName}`; index columns use `GridDisplayTemplates/{TemplateName}`. Provide both if the display is used in both places.
+- Display fields use `DisplayTemplates/{TemplateName}`; index columns use `DisplayTemplates/Compact/{TemplateName}`. Provide both if the display is used in both places.
 - An empty value normally shows the field's empty text and skips the template. Override `public override bool RendersEmptyValue => true;` when the template shows something of its own for an empty value, such as initials for a missing avatar; the template then receives null and blank values.
 - A display that needs request data (a lookup by an id that has no navigation) also implements `IFieldDisplay<THandler>`. The handler derives from `FieldDisplayHandler<TDisplay>`, takes services in its constructor, and returns data from `PrepareAsync(FieldDisplayContext context, CancellationToken cancellationToken)`; the template reads it as `DisplayData`. Displays with handlers work on forms and view pages, not in index columns.

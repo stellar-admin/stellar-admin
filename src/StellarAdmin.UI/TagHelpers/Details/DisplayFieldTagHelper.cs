@@ -402,39 +402,18 @@ public sealed class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlac
 
     private async Task<IHtmlContent> RenderTemplateAsync(string templateName)
     {
-        var viewName =
-            templateName.StartsWith('/') || templateName.StartsWith("~/", StringComparison.Ordinal)
-                ? templateName
-                : $"DisplayTemplates/{templateName}";
-
-        // Templates resolve by name only, never by type, so the framework's built-in display
-        // templates (a bool as a disabled checkbox) never apply. A missing template throws
-        // rather than falling back, so a mistyped name is caught.
-        var getViewResult = _viewEngine.GetView(
-            ViewContext.ExecutingFilePath,
-            viewName,
-            isMainPage: false
+        var view = DisplayTemplateFinder.Find(
+            _viewEngine,
+            ViewContext,
+            DisplayTemplateFinder.Folder,
+            templateName
         );
-        var result = getViewResult.Success
-            ? getViewResult
-            : _viewEngine.FindView(ViewContext, viewName, isMainPage: false);
-        if (!result.Success)
-        {
-            var searchedLocations = getViewResult
-                .SearchedLocations.Concat(result.SearchedLocations)
-                .Distinct();
-            throw new InvalidOperationException(
-                $"The display template '{viewName}' was not found. The following locations "
-                    + $"were searched: {string.Join(", ", searchedLocations)}."
-            );
-        }
-
         var viewData = new ViewDataDictionary<object?>(ViewContext.ViewData, For!.Model)
         {
             ModelExplorer = For.ModelExplorer,
         };
         await using var writer = new StringWriter();
-        await result.View.RenderAsync(new ViewContext(ViewContext, result.View, viewData, writer));
+        await view.RenderAsync(new ViewContext(ViewContext, view, viewData, writer));
 
         return new HtmlString(writer.ToString());
     }

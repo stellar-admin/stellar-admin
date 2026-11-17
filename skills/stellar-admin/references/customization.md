@@ -194,7 +194,7 @@ Add a view at the same path to replace the panel's markup everywhere:
 | --- | --- |
 | A built-in editor | `Areas/StellarAdmin/Views/Shared/EditorTemplates/Editors/{Name}.cshtml` (`TextInput`, `Select`, `RadioGroup`, ...) |
 | A built-in display, in forms and view pages | `Areas/StellarAdmin/Views/Shared/DisplayTemplates/Displays/{Name}.cshtml` |
-| A built-in display, in index cells | `Areas/StellarAdmin/Views/Shared/GridDisplayTemplates/Displays/{Name}.cshtml` |
+| A built-in display, in index cells | `Areas/StellarAdmin/Views/Shared/DisplayTemplates/Compact/Displays/{Name}.cshtml` |
 | The environment indicator | `Areas/StellarAdmin/Views/Shared/_EnvironmentIndicator.cshtml` (model: `EnvironmentIndicator`) |
 | A row details partial | `Areas/StellarAdmin/Views/{slug}/_Name.cshtml` or `Shared/` |
 

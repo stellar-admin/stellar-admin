@@ -154,7 +154,7 @@ public class GridEditorTests
         {
             await Assert
                 .That(cell.RequiredElement("[data-slot='cell-editor-missing']").TextContent)
-                .Contains("GridEditorTemplates/Editors/Textarea");
+                .Contains("EditorTemplates/Compact/Editors/Textarea");
         }
         else
         {

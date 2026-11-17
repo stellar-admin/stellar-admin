@@ -2,7 +2,6 @@ using System.Collections;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
@@ -119,25 +118,13 @@ internal static class PageSummaryRenderer
         var viewName =
             templateName.StartsWith('/') || templateName.StartsWith("~/", StringComparison.Ordinal)
                 ? templateName
-                : $"GridDisplayTemplates/{templateName}";
-        var viewEngine =
-            viewContext.HttpContext.RequestServices.GetRequiredService<ICompositeViewEngine>();
-        var getViewResult = viewEngine.GetView(
-            viewContext.ExecutingFilePath,
-            viewName,
-            isMainPage: false
-        );
-        var result = getViewResult.Success
-            ? getViewResult
-            : viewEngine.FindView(viewContext, viewName, isMainPage: false);
+                : $"{TemplateFinder.CompactDisplayFolder}/{templateName}";
+        var result = TemplateFinder.Find(viewContext, viewName);
         if (!result.Success)
         {
-            var searchedLocations = getViewResult
-                .SearchedLocations.Concat(result.SearchedLocations)
-                .Distinct();
             throw new InvalidOperationException(
-                $"The grid display template '{viewName}' was not found. The following "
-                    + $"locations were searched: {string.Join(", ", searchedLocations)}."
+                $"The display template '{viewName}' was not found. The following locations were "
+                    + $"searched: {string.Join(", ", result.SearchedLocations)}."
             );
         }
 

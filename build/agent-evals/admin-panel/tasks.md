@@ -33,7 +33,7 @@ Starts from: `task-2` (StellarAdmin installed; Bookings has three plain columns)
 
 1. Customer column reads through the reference (`booking => booking.Customer!.Name`) with a "Customer" title.
 2. Total uses `NumberDisplay` with a currency format (or `[DisplayFormat]`).
-3. Status badge per value: a display template named by `[UIHint]` placed in `GridDisplayTemplates/` (a column renders `GridDisplayTemplates/{name}`, not `DisplayTemplates/`); `BadgeDisplay` alone cannot vary the variant by value.
+3. Status badge per value: a display template named by `[UIHint]` placed in `DisplayTemplates/Compact/` (a column renders `DisplayTemplates/Compact/{name}`, not `DisplayTemplates/{name}`); `BadgeDisplay` alone cannot vary the variant by value.
 4. `index.EnableSearch(term => booking => ...)` covering reference and customer name.
 5. `index.EnableScopes(...)` with an unfiltered "all" scope, one predicate per status and `DefaultScope`.
 6. `Sortable()` on departure date and total, `DefaultSortBy(booking => booking.DepartureDate)`.

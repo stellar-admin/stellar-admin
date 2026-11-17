@@ -1,19 +1,18 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace StellarAdmin.Areas.StellarAdmin;
 
-// Finds editor templates in EditorTemplates/ for a form and GridEditorTemplates/ for a grid cell. A field without an
-// editor goes through the names MVC tries for its property's [UIHint], [DataType] and type, most specific first: a
+// Finds editor templates in EditorTemplates/ for a form and EditorTemplates/Compact/ for a grid cell. A field without
+// an editor goes through the names MVC tries for its property's [UIHint], [DataType] and type, most specific first: a
 // template the application adds under a name wins, and otherwise the built-in editor the name maps to, when the folder
 // has one. A grid has no textarea or rich text editor, so multiline text and HTML fall through to a text input there.
 internal static class EditorTemplateFinder
 {
     public const string FormFolder = "EditorTemplates";
 
-    public const string GridFolder = "GridEditorTemplates";
+    public const string CompactFolder = "EditorTemplates/Compact";
 
     private const string TextInput = "Editors/TextInput";
 
@@ -82,15 +81,7 @@ internal static class EditorTemplateFinder
 
     public static IView? FindView(ViewContext viewContext, string folder, string templateName)
     {
-        var viewEngine =
-            viewContext.HttpContext.RequestServices.GetRequiredService<ICompositeViewEngine>();
-        var viewName = $"{folder}/{templateName}";
-        var result = viewEngine.GetView(viewContext.ExecutingFilePath, viewName, false);
-        if (!result.Success)
-        {
-            result = viewEngine.FindView(viewContext, viewName, false);
-        }
-
+        var result = TemplateFinder.Find(viewContext, $"{folder}/{templateName}");
         return result.Success ? result.View : null;
     }
 

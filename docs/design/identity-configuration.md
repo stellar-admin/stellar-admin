@@ -200,7 +200,7 @@ The ladder, coarse to fine (app paths under `Areas/StellarAdmin/Views/`):
 
 | To change... | App file / config | Scope |
 |---|---|---|
-| One grid cell | `.Template("X")` or `[UIHint("X")]` + `GridDisplayTemplates/X.cshtml` | one column |
+| One grid cell | `.Template("X")` or `[UIHint("X")]` + `DisplayTemplates/Compact/X.cshtml` | one column |
 | One form field | `.Template("X")` / `[UIHint]` / by type + `EditorTemplates/X.cshtml` | one field |
 | The grid | `Users/_IndexDataGrid.cshtml` (one resource) or `Shared/_IndexDataGrid.cshtml` (all) | grid |
 | Page chrome | `Shared/_IndexPage.cshtml`, `Shared/_IndexDeleteDialog.cshtml`, `Shared/_FormPage.cshtml`, `Shared/_FormFields.cshtml`, `Shared/_FormDeleteDialog.cshtml` | all resources |

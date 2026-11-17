@@ -174,7 +174,7 @@ public sealed class ResourceColumnBuilder<TResource>
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     /// <remarks>
-    ///     Without a display, the cells render the grid display template their property's
+    ///     Without a display, the cells render the compact display template their property's
     ///     <c>[UIHint]</c> names, or the default display for its type. Columns don't support
     ///     displays with a handler: one is a configuration problem, and the column keeps its
     ///     default display.
