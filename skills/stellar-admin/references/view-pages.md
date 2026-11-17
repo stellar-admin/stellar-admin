@@ -46,3 +46,32 @@ resource.AllowView(view =>
 - `AllowView<TModel, THandler>(...)` shows a different model, loaded by `THandler : IResourceViewHandler<TModel>`.
 
 To add content to the page (related records, actions), override it ([customization](customization.md#add-content-to-a-generated-page)); `sa-view-page` has `pre-page-actions`, `post-page-actions`, `pre-view-fields` and `post-view-fields` slots.
+
+## Record summary
+
+`resource.Summary(summary => ...)` shows a line of the record's key values under the title of the view and edit pages (not the create page). Items show in the order added, in one row that wraps.
+
+```csharp
+resource.Summary(summary =>
+{
+    summary.SeparateItems = true;                 // a "·" between every two items
+    summary.Add(booking => booking.Reference);
+    summary.Add(booking => booking.Customer);     // the customer's title
+    summary.Add(booking => booking.Status, item => item.UseDisplay<BadgeDisplay>());
+});
+
+resource.Summary(summary =>
+{
+    summary.AddText("Total");                     // printed as given; no ":" is added
+    summary.Add(booking => booking.Total, item => item.UseDisplay<NumberDisplay>(number => number.Format = "C"));
+    summary.AddSeparator();                       // a separator at this point only
+    summary.Add(booking => booking.DepartureDate);
+});
+```
+
+- A field shows its value only, without a label; label it with `AddText(...)` before it. A summary of only text shows the same text for every record.
+- A field renders its compact display, the same one index cells use (`GridDisplayTemplates/`): `UseDisplay<TDisplay>()`, else the property's `[UIHint]`, else the default display for the type. `UseBuiltInRendering()` formats with `[DisplayFormat]`. The item builder has no `Title`, `EmptyText` or spans.
+- An empty value shows `[DisplayFormat(NullDisplayText = ...)]`, else a dash; the item stays.
+- Use `SeparateItems` or `AddSeparator()`, not both: with `SeparateItems = true`, added separators are dropped and a configuration problem is reported. Separators are never inferred.
+- `view.Summary(...)` and `edit.Summary(...)` replace the resource's summary on that page; `summary.Clear()` hides it. A page with its own model (`AllowView<TModel, THandler>`, `AllowEdit<TModel, THandler>`) doesn't get the resource's summary; give it its own with the page model's fields.
+- The edit page summarizes the stored record, also after a save fails validation. EF Core resources load the references the summary reads.

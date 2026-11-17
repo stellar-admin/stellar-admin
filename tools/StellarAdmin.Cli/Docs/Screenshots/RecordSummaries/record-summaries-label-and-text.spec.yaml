@@ -1,0 +1,9 @@
+# A trip's view page header with Code and Days labels in the summary, in light and dark
+scenario: record-summaries-label-and-text
+steps:
+  - viewport: { width: 1280, height: 420 }
+  - goto: /stellaradmin/trips/view/1
+  - expectVisible: "[data-slot='page-summary']"
+  - screenshot: { name: record-summaries-label-and-text, locator: "[data-slot='page-header']", margin: { top: 8, right: 8, bottom: 8, left: 8 } }
+  - colorScheme: dark
+  - screenshot: { name: record-summaries-label-and-text-dark, locator: "[data-slot='page-header']", margin: { top: 8, right: 8, bottom: 8, left: 8 } }

@@ -43,6 +43,8 @@ resource.AllowCreate(create => create.Fields(fields =>
 | `SubmitLabel` | `Create {singular label}` | `Save {singular label}` |
 | `SectionLayout` | The app-wide forms setting | The app-wide forms setting |
 
+The edit page also shows the resource's record summary under its title; `edit.Summary(...)` replaces it and `edit.Summary(summary => summary.Clear())` hides it ([view pages](view-pages.md#record-summary)).
+
 `SectionLayout` is a `FormSectionLayout` from `StellarAdmin.UI`: `Stacked`, `Split` (title and description beside the fields) or `Card`. Set it for every form with `admin.ConfigureUI(ui => ui.ConfigureForms(forms => forms.SectionLayout = FormSectionLayout.Card))`, or per section with `section.Layout`.
 
 ## Defaults and generated values

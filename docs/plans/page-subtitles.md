@@ -1,6 +1,6 @@
 # Page subtitles: record summary
 
-Status: in progress (2026-11-17). Implemented and tested; docs and consumer skills outstanding.
+Status: done (2026-11-17). Implemented, tested and documented.
 
 A summary of the record under the title of the view and edit pages, such as a product's sku and category under its name. Split out of [page layout](archive/page-layout.md)'s page header pass (Jerrie, 2026-11-01). It started as a subtitle; once the mockups showed badges, icons and statuses it became a summary of the record (Jerrie, 2026-11-17).
 
@@ -80,6 +80,9 @@ products.Summary(summary =>
 - AdminPlayground: a resource summary on products (view page) and an edit summary on the wrapped edit model.
 - Checks run: new tests `ResourcePageSummaryTests` (9), `ResourceSummaryBuilderTests` (2), and two EF Core include tests; full `StellarAdmin.Tests` (360), `StellarAdmin.IntegrationTests` (770) and `StellarAdmin.EntityFrameworkCore.IntegrationTests` (172) pass. Checked in the AdminPlayground: view and edit pages, and a rejected edit save keeping the stored values.
 
-## Outstanding
+## Docs and skills (2026-11-17)
 
-- The docs page, the consumer skill references and a docs screenshot.
+- Website: new page `content/docs/admin/record-summaries.mdx` (Resources section, after Titles and references) with an open `record-summaries-overview` screenshot placeholder; a link from the view pages' "Changing the title" section. `pnpm types:check` passes.
+- Consumer skill `stellar-admin`: a "Record summary" section in `references/view-pages.md`, a line in `forms.md` page settings, `_PageSummary` for custom page partials in `customization.md`, a task row in `SKILL.md`. `build/skill-validation` check and `skills check` pass.
+
+- Screenshots: `record-summaries-overview` and `record-summaries-label-and-text` (light and dark), from scenarios and specs in `tools/StellarAdmin.Cli/Docs/Screenshots/RecordSummaries/`; generated, `docs check` reports 0 open, 0 unused, 0 misnamed.
