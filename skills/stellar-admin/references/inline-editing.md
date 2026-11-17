@@ -115,11 +115,11 @@ resource.AllowCreate(create =>
 
 ## Editors in cells
 
-A cell renders the field's editor through a grid editor template, resolved in `GridEditorTemplates/` instead of `EditorTemplates/`. These editors have one: text input (including number, email, URL and the other text types), select, checkbox, toggle, date, time and date-time inputs, segmented control, lookup sheet, image (a thumbnail button) and icon (a small button that opens the picker). Textarea, rich text, radio group, checkbox group, toggle group, slider, one-time code and multi-lookup sheet do not.
+A cell renders the field's editor through a compact editor template, resolved in `EditorTemplates/Compact/` instead of `EditorTemplates/`. These editors have one: text input (including number, email, URL and the other text types), select, checkbox, toggle, date, time and date-time inputs, segmented control, lookup sheet, image (a thumbnail button) and icon (a small button that opens the picker). Textarea, rich text, radio group, checkbox group, toggle group, slider, one-time code and multi-lookup sheet do not.
 
-A field whose editor has no grid template does not fail at startup: in development its cell shows an error naming the missing template, and in production the cell is empty. Saving binds only the fields whose cells rendered an editor, so it never overwrites a value; on create, a required field without an editor fails validation in the row message.
+A field whose editor has no compact template does not fail at startup: in development its cell shows an error naming the missing template, and in production the cell is empty. Saving binds only the fields whose cells rendered an editor, so it never overwrites a value; on create, a required field without an editor fails validation in the row message.
 
-A custom editor ([editors](editors.md#overriding-and-custom-editors)) works in a cell once a view with the same `TemplateName` exists under `GridEditorTemplates/`, for example `Areas/StellarAdmin/Views/Shared/GridEditorTemplates/{TemplateName}.cshtml`. Render one compact input without a label; the cell supplies the field's label as its accessible name. To change a built-in cell editor, add `GridEditorTemplates/Editors/{Name}.cshtml`, for example `Editors/TextInput.cshtml`.
+A custom editor ([editors](editors.md#overriding-and-custom-editors)) works in a cell once a view with the same `TemplateName` exists under `EditorTemplates/Compact/`, for example `Areas/StellarAdmin/Views/Shared/EditorTemplates/Compact/{TemplateName}.cshtml`. Render one compact input without a label; the cell supplies the field's label as its accessible name. To change a built-in cell editor, add `EditorTemplates/Compact/Editors/{Name}.cshtml`, for example `Editors/TextInput.cshtml`.
 
 ## Labels
 

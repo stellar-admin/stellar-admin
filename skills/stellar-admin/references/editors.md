@@ -332,4 +332,4 @@ public sealed class ColorEditor : FieldEditor
 
 An editor that needs request data also implements `IFieldEditor<THandler>`. The handler derives from `FieldEditorHandler<TEditor>` (or implements `IFieldEditorHandler<TEditor>`), takes the editor and any services in its constructor, and returns data from `PrepareAsync(FieldEditorContext context, CancellationToken cancellationToken)`; the template reads it as `EditorData`.
 
-Write the template's markup with `sa-*` components (stellar-admin-ui skill). For the editor to work in an inline row's cell, add a second template under `GridEditorTemplates/` ([inline editing](inline-editing.md#editors-in-cells)).
+Write the template's markup with `sa-*` components (stellar-admin-ui skill). For the editor to work in an inline row's cell, add a second template under `EditorTemplates/Compact/` ([inline editing](inline-editing.md#editors-in-cells)).

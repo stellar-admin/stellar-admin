@@ -29,11 +29,11 @@ internal sealed class DataGridContext
     public DataGridRowContext? CurrentRow { get; set; }
 
     /// <summary>
-    ///     Grid display templates resolved by columns during the collect pass, keyed by
+    ///     Compact display templates resolved by columns during the collect pass, keyed by
     ///     template name, so row passes render an already-resolved view instead of querying
     ///     the view engine per row.
     /// </summary>
-    public Dictionary<string, IView> GridDisplayTemplates { get; } = [];
+    public Dictionary<string, IView> CompactDisplayTemplates { get; } = [];
 
     /// <summary>
     ///     Field display metadata resolved by columns during the collect pass, keyed by field

@@ -14,7 +14,7 @@ public abstract class FieldDisplay
     /// </summary>
     /// <value>
     ///     The template name. The template is found at <c>DisplayTemplates/{name}</c>, and at
-    ///     <c>GridDisplayTemplates/{name}</c> in index grid cells.
+    ///     <c>DisplayTemplates/Compact/{name}</c> in index grid cells and record summaries.
     /// </value>
     public abstract string TemplateName { get; }
 

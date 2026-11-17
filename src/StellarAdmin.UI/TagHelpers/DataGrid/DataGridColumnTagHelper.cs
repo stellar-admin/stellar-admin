@@ -18,7 +18,7 @@ namespace StellarAdmin.UI;
 ///     <para>
 ///         A cell shows the first of these that the column has: an
 ///         <c>sa-data-grid-item-template</c>, its content, or the value of <c>field</c> or
-///         <c>field-for</c>. A field value renders through a grid display template when the
+///         <c>field-for</c>. A field value renders through a compact display template when the
 ///         column sets <c>template</c> or the property has a <c>[UIHint]</c>.
 ///     </para>
 ///     <para>
@@ -94,7 +94,7 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
     /// </value>
     /// <remarks>
     ///     The display format comes from <c>[DisplayFormat(DataFormatString)]</c>. Ignored when
-    ///     the cell renders through a grid display template.
+    ///     the cell renders through a compact display template.
     /// </remarks>
     [HtmlAttributeName("format")]
     public string? Format { get; set; }
@@ -123,11 +123,11 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
     public string? SortField { get; set; }
 
     /// <summary>
-    ///     Gets or sets the name of the grid display template that renders the column's cells.
+    ///     Gets or sets the name of the compact display template that renders the column's cells.
     /// </summary>
     /// <value>
-    ///     A name that resolves like a partial view named <c>GridDisplayTemplates/{template}</c>,
-    ///     such as one in <c>/Views/Shared/GridDisplayTemplates/</c>. A path that starts with
+    ///     A name that resolves like a partial view named <c>DisplayTemplates/Compact/{template}</c>,
+    ///     such as one in <c>/Views/Shared/DisplayTemplates/Compact/</c>. A path that starts with
     ///     <c>~/</c> or <c>/</c> is used as is.
     /// </value>
     /// <remarks>
@@ -176,7 +176,7 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
     /// <summary>
     ///     Initializes a new instance of the <see cref="DataGridColumnTagHelper" /> class.
     /// </summary>
-    /// <param name="viewEngine">The view engine that finds grid display templates.</param>
+    /// <param name="viewEngine">The view engine that finds compact display templates.</param>
     /// <param name="metadataProvider">The provider of the field properties' metadata.</param>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="viewEngine" /> or <paramref name="metadataProvider" /> is
@@ -505,36 +505,18 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
 
     private IView ResolveDisplayTemplate(DataGridContext gridContext, string templateName)
     {
-        if (gridContext.GridDisplayTemplates.TryGetValue(templateName, out var resolvedView))
+        if (gridContext.CompactDisplayTemplates.TryGetValue(templateName, out var resolvedView))
         {
             return resolvedView;
         }
 
-        var viewName =
-            templateName.StartsWith('/') || templateName.StartsWith("~/", StringComparison.Ordinal)
-                ? templateName
-                : $"GridDisplayTemplates/{templateName}";
-
-        var getViewResult = _viewEngine.GetView(
-            ViewContext.ExecutingFilePath,
-            viewName,
-            isMainPage: false
+        var view = DisplayTemplateFinder.Find(
+            _viewEngine,
+            ViewContext,
+            DisplayTemplateFinder.CompactFolder,
+            templateName
         );
-        var result = getViewResult.Success
-            ? getViewResult
-            : _viewEngine.FindView(ViewContext, viewName, isMainPage: false);
-        if (!result.Success)
-        {
-            var searchedLocations = getViewResult
-                .SearchedLocations.Concat(result.SearchedLocations)
-                .Distinct();
-            throw new InvalidOperationException(
-                $"The grid display template '{viewName}' was not found. The following "
-                    + $"locations were searched: {string.Join(", ", searchedLocations)}."
-            );
-        }
-
-        gridContext.GridDisplayTemplates[templateName] = result.View;
-        return result.View;
+        gridContext.CompactDisplayTemplates[templateName] = view;
+        return view;
     }
 }
