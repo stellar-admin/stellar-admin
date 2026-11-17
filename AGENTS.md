@@ -46,6 +46,7 @@ Canonical development skills live in `.agents/skills/`; `.claude/skills/` contai
 - [write-website-docs](.agents/skills/write-website-docs/SKILL.md): writing rules for the public website docs pages.
 - [write-scenario-specs](.agents/skills/write-scenario-specs/SKILL.md): screenshots, annotated images and recordings of the admin panel from a scenario and a YAML spec, described in plain English.
 - [write-docs-screenshot-specs](.agents/skills/write-docs-screenshot-specs/SKILL.md): scenarios and specs for the website docs' open `<Screenshot>` placeholders, then generating and checking their images.
+- [list-plans](.agents/skills/list-plans/SKILL.md): the outstanding plans in `docs/plans/`, each with its title, status and a one-sentence description.
 - [csharp-docs](.agents/skills/csharp-docs/SKILL.md): XML documentation wording for C# APIs, from [github/awesome-copilot](https://github.com/github/awesome-copilot/tree/main/skills/csharp-docs). The [XML documentation](docs/conventions/xml-documentation.md) convention overrides it on internal members, `<value>` and examples.
 
 See [agent setup](docs/agents.md) for discovery and handoffs. Theme variables and tokens are specified in [docs/design/tokens.md](docs/design/tokens.md).
