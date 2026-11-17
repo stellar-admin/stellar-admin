@@ -73,6 +73,27 @@ public sealed class ResourceViewBuilder<TModel>
     }
 
     /// <summary>
+    ///     Configures the record summary shown under the page title.
+    /// </summary>
+    /// <param name="configure">A delegate that adds the summary's items.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces the resource's summary on this page.
+    /// </remarks>
+    public ResourceViewBuilder<TModel> Summary(Action<ResourceSummaryBuilder<TModel>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        _configure(options => options.Summary ??= new());
+        configure(new(action => _configure(options => action(options.Summary ??= new()))));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Configures the widgets shown on the view page.
     /// </summary>
     /// <param name="configure">A delegate that adds the widgets.</param>

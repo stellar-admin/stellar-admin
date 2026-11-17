@@ -28,6 +28,14 @@ internal static class ProductResourceRegistration
                 item.Icon = "package";
                 item.Order = 10;
             });
+            // Under the title of the view page; the edit page shows a model of its own, so it sets its own summary
+            resource.Summary(summary =>
+            {
+                summary.SeparateItems = true;
+                summary.Add(product => product.Details.Sku);
+                summary.Add(product => product.Category);
+                summary.Add(product => product.Tags, item => item.UseDisplay<BadgeDisplay>());
+            });
             resource.AllowCreate(create =>
                 create
                     .Fields(fields =>
@@ -74,6 +82,18 @@ internal static class ProductResourceRegistration
 
                             return Task.CompletedTask;
                         };
+                    });
+                    // The stored price, also after a rejected save
+                    edit.Summary(summary =>
+                    {
+                        summary.AddText("SKU");
+                        summary.Add(model => model.Product.Details.Sku);
+                        summary.AddSeparator();
+                        summary.AddText("Price");
+                        summary.Add(
+                            model => model.Product.Price,
+                            item => item.UseDisplay<NumberDisplay>(number => number.Format = "0.00")
+                        );
                     });
                     edit.Fields(fields =>
                         {

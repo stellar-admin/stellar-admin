@@ -122,6 +122,33 @@ public class ResourceWrappedModelTests
     }
 
     [Test]
+    public async Task Edit_WithSummaryThroughReference_LoadsReferenceWithEntity()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowEdit<EditProductModel>(
+                model => model.Product,
+                edit =>
+                {
+                    edit.Fields(fields => fields.Add(model => model.Product.Name));
+                    edit.Summary(summary => summary.Add(model => model.Product.Category!.Name));
+                }
+            )
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/edit/2");
+        var document = await response.ReadDocumentAsync();
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(document.QuerySelector("[data-slot='page-summary-field']")!.TextContent.Trim())
+            .IsEqualTo("Technology");
+    }
+
+    [Test]
     public async Task Edit_FailOnEntityField_ShowsErrorAndSubmittedValues()
     {
         // Arrange

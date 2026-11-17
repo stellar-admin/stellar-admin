@@ -53,6 +53,35 @@ public class ResourceViewTests
     }
 
     [Test]
+    public async Task View_WithSummaryThroughReference_LoadsReferenceWithEntity()
+    {
+        // Arrange
+        var commands = new ConcurrentQueue<string>();
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+            {
+                resource.Summary(summary => summary.Add(product => product.Category!.Name));
+                resource.AllowView(view =>
+                    view.Fields(fields => fields.Add(product => product.CategoryId))
+                );
+            },
+            commands
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/view/1");
+        var document = await response.ReadDocumentAsync();
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(document.QuerySelector("[data-slot='page-summary-field']")!.TextContent.Trim())
+            .IsEqualTo("Office");
+        await Assert.That(commands.Single()).Contains("JOIN \"Category\"");
+    }
+
+    [Test]
     public async Task View_WithFieldsOnOwnProperties_DoesNotJoinReferences()
     {
         // Arrange

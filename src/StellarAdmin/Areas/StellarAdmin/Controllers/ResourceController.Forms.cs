@@ -324,7 +324,13 @@ internal sealed partial class ResourceController<TResource>
 
         AddDeleteErrors();
 
-        return await EditView(resource, id, FindRecordTitle(resource), cancellationToken);
+        return await EditView(
+            resource,
+            id,
+            FindRecordTitle(resource),
+            await CreateSummaryAsync(_resourceOptions.Edit.Summary, resource, cancellationToken),
+            cancellationToken
+        );
     }
 
     [HttpPost]
@@ -350,8 +356,13 @@ internal sealed partial class ResourceController<TResource>
             return NotFound();
         }
 
-        // The stored record's title, before binding changes the record to the values that weren't saved
+        // The stored record's title and summary, before binding changes the record to the values that weren't saved
         var recordTitle = FindRecordTitle(resource);
+        var summary = await CreateSummaryAsync(
+            _resourceOptions.Edit.Summary,
+            resource,
+            cancellationToken
+        );
         var fields = GetEditFieldNames(resource);
         var valid = await TryBindConfiguredFieldsAsync(
             resource,
@@ -362,7 +373,7 @@ internal sealed partial class ResourceController<TResource>
         );
         if (!valid)
         {
-            return await EditView(resource, id, recordTitle, cancellationToken);
+            return await EditView(resource, id, recordTitle, summary, cancellationToken);
         }
 
         var result = await UpdateAsync(id, resource, cancellationToken);
@@ -379,7 +390,7 @@ internal sealed partial class ResourceController<TResource>
                 _resourceOptions.Edit.Fields,
                 ResourceFormPageViewModel.BindingPrefix
             );
-            return await EditView(resource, id, recordTitle, cancellationToken);
+            return await EditView(resource, id, recordTitle, summary, cancellationToken);
         }
 
         return RedirectToAction(nameof(Index), new { id = (string?)null });
@@ -492,6 +503,11 @@ internal sealed partial class ResourceController<TResource>
 
         var labels = CreateLabelContext();
         var fields = view.Fields;
+        ViewData[ViewDataKeys.Summary] = await CreateSummaryAsync(
+            view.Summary,
+            resource,
+            cancellationToken
+        );
         ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
             view.Widgets,
             CreateWidgetContext(typeof(RecordWidgetContext<>), view.ModelType, id, resource),
@@ -635,10 +651,12 @@ internal sealed partial class ResourceController<TResource>
         object resource,
         string id,
         string? recordTitle,
+        PageSummaryViewModel? summary,
         CancellationToken cancellationToken
     )
     {
         var edit = _resourceOptions.Edit!;
+        ViewData[ViewDataKeys.Summary] = summary;
         var labels = CreateLabelContext();
         var editors = await PrepareEditorsAsync(edit.Fields, resource, cancellationToken);
         var displayData = await PrepareDisplaysAsync(
@@ -695,6 +713,38 @@ internal sealed partial class ResourceController<TResource>
         }
 
         return fields;
+    }
+
+    // The page's record summary, its values read now; null when the page has none or it has no items
+    private async Task<PageSummaryViewModel?> CreateSummaryAsync(
+        ResourceSummaryOptions? summary,
+        object model,
+        CancellationToken cancellationToken
+    )
+    {
+        if (summary is not { Items.Count: > 0 })
+        {
+            return null;
+        }
+
+        var displayData = await PrepareDisplaysAsync(summary.Fields, model, cancellationToken);
+        var items = summary
+            .GetRenderedItems()
+            .Select(item =>
+                item switch
+                {
+                    SummaryFieldItem { Field: var field } => new PageSummaryFieldViewModel(
+                        field,
+                        field.GetValue(model),
+                        displayData.GetValueOrDefault(field)
+                    ),
+                    SummaryTextItem { Text: var text } => new PageSummaryTextViewModel(text),
+                    _ => (PageSummaryItemViewModel)new PageSummarySeparatorViewModel(),
+                }
+            )
+            .ToArray();
+
+        return new(items);
     }
 
     private async Task<IReadOnlyDictionary<FormDisplayFieldOptions, object?>> PrepareDisplaysAsync(

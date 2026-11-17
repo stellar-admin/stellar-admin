@@ -371,7 +371,7 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
 
         // Lookup editors display the selected item from the reference loaded with the entity, with
         // the references its text reads through, many-to-many fields show the related entities' keys,
-        // and display fields read through the references on their paths and load the collections they
+        // and display fields and record summaries read through the references on their paths and load the collections they
         // show, or those their computed values read, and what the title of related records they show reads. The edit and view pages load through the same method, so the entity carries the
         // navigations either page needs
         if (includeLookups)
@@ -395,12 +395,16 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
                     ? reference.FindIncludePaths(entityType, fieldName)
                     : []
             );
-            var displayExpressions = (editEntity is null ? [] : edit!.DisplayFields)
+            var displayExpressions = (
+                editEntity is null ? [] : edit!.DisplayFields.Concat(edit.Summary?.Fields ?? [])
+            )
                 .Select(field => editEntity!.FindEntityExpression(field.FieldExpression))
                 .Concat(
-                    (view?.ModelType == typeof(TEntity) ? view.Fields : []).Select(field =>
-                        field.FieldExpression
-                    )
+                    (
+                        view?.ModelType == typeof(TEntity)
+                            ? view.Fields.Concat(view.Summary?.Fields ?? [])
+                            : []
+                    ).Select(field => field.FieldExpression)
                 )
                 .OfType<LambdaExpression>();
             var collections = editFields.Select(field =>

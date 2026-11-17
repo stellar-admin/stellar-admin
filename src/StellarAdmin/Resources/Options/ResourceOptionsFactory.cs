@@ -79,6 +79,7 @@ internal sealed class ResourceOptionsFactory<TResource>(
         DependencyCheck.Run(options);
         GridLayoutCheck.Run(options);
         ResourceHandlerCheck.RunViewFields(options);
+        SummaryCheck.Run(options);
         InlineRowCheck.Run(options);
         RowDetailsCheck.Run(options);
         AddAnotherCheck.Run(options);

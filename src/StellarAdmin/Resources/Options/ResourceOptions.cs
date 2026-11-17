@@ -173,6 +173,9 @@ public sealed class ResourceOptions<TResource>
     >? ViewLoader { get; set; }
     internal List<ConfigurationProblem> Problems { get; } = [];
 
+    // The record summary of the view and edit pages whose model is the resource
+    internal ResourceSummaryOptions? Summary { get; set; }
+
     private static string DefaultSingularLabel => typeof(TResource).Name.Split('`')[0].Humanize();
 
     /// <summary>

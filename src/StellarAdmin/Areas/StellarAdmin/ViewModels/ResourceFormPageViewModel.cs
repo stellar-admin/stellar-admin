@@ -87,11 +87,6 @@ public sealed class ResourceFormPageViewModel
     public string SubmitLabel { get; internal init; } = "";
 
     /// <summary>
-    ///     Gets the page subtitle, or <see langword="null" /> for none.
-    /// </summary>
-    public string? Subtitle { get; internal init; }
-
-    /// <summary>
     ///     Gets the page title.
     /// </summary>
     public string Title { get; internal init; } = "";

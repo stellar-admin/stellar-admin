@@ -58,6 +58,9 @@ public static class ViewDataKeys
     // A resource page's widgets by placement
     internal const string Widgets = "StellarAdminWidgets";
 
+    // A view or edit page's record summary
+    internal const string Summary = "StellarAdminSummary";
+
     // The stack level of the create sheet a form renders in, so its lookups bind and open the next level
     internal const string SheetLevel = "StellarAdminSheetLevel";
 }
