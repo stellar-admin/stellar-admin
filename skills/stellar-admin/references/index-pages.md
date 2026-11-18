@@ -1,6 +1,6 @@
 # Index pages
 
-The index page lists a resource's records in a grid. Everything is configured in `resource.Index(index => ...)`. Columns are in [columns](columns.md), editing and adding in the grid's rows in [inline editing](inline-editing.md), and blocks above, beside or below the grid in [widgets](widgets.md#index-pages).
+The index page lists a resource's records in a grid. Everything is configured in `resource.Index(index => ...)`. Columns are in [columns](columns.md), editing and adding in the grid's rows in [inline editing](inline-editing.md), and blocks above, beside or below the grid in [widgets](widgets.md#index-pages). Several tables or partial views with a switcher are in [layouts](layouts.md).
 
 ## Contents
 
