@@ -393,7 +393,7 @@ public static class StellarAdminBuilderExtensions
     }
 
     // A collection or a related record has no single value to order rows by, unless the column sorts by an expression
-    // of its own
+    // of its own. A table with a handler sorts its own rows
     private static void DisableEntitySorting<TEntity>(
         ResourceOptions<TEntity> options,
         IEntityType entity
@@ -401,7 +401,7 @@ public static class StellarAdminBuilderExtensions
     {
         foreach (
             var column in options
-                .Index.Tables.SelectMany(table => table.Columns)
+                .Index.RecordTables.SelectMany(table => table.Columns)
                 .Where(column => column is { Sortable: true, SortExpression: null })
         )
         {

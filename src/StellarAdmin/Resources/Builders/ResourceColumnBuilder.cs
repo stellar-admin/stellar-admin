@@ -8,7 +8,9 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures a column of the index page.
 /// </summary>
-/// <typeparam name="TResource">The type of the resource.</typeparam>
+/// <typeparam name="TResource">
+///     The type of the table's rows: the resource, or the items a handler loads.
+/// </typeparam>
 public sealed class ResourceColumnBuilder<TResource>
 {
     private readonly List<Action<DataGridColumnOptions>> _configuration = [];

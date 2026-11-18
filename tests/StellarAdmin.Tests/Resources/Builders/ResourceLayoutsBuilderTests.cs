@@ -97,6 +97,143 @@ public class ResourceLayoutsBuilderTests
     }
 
     [Test]
+    public async Task AddPartialWithHandler_WithRecordKey_KeysItsItems()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services
+            .AddStellarAdmin()
+            .AddResource<Product>()
+            .Index(
+                _ => { },
+                layouts =>
+                    layouts.AddPartial<ProductCount, ProductCountHandler>(
+                        "counts",
+                        "_ProductCounts",
+                        counts => counts.HasRecordKey(count => count.Count)
+                    )
+            );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var counts = options.Index.Layouts.Single();
+        await Assert.That(counts.RecordKey!(new ProductCount(7))).IsEqualTo("7");
+        await Assert.That(counts.Link).IsNull();
+    }
+
+    [Test]
+    public async Task AddPartialWithHandler_WithLinkAndRecordKey_Throws()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var resource = services.AddStellarAdmin().AddResource<Product>();
+
+        // Act
+        var act = () =>
+            resource.Index(
+                _ => { },
+                layouts =>
+                    layouts.AddPartial<ProductCount, ProductCountHandler>(
+                        "counts",
+                        "_ProductCounts",
+                        counts =>
+                            counts
+                                .LinkTo<Product>(count => count.Count)
+                                .HasRecordKey(count => count.Count)
+                    )
+            );
+
+        // Assert
+        await Assert.That(act).Throws<InvalidOperationException>();
+    }
+
+    [Test]
+    public async Task AddTableWithHandler_AddsATableWithItsColumnsAndRegistersTheHandler()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services
+            .AddStellarAdmin()
+            .AddResource<Product>()
+            .Index(
+                _ => { },
+                layouts =>
+                {
+                    layouts.AddTable("products");
+                    layouts.AddTable<ProductCount, ProductCountHandler>(
+                        "counts",
+                        counts =>
+                        {
+                            counts.HasRecordKey(count => count.Count);
+                            counts.Columns(columns =>
+                                columns.Add(count => count.Count, column => column.Sortable())
+                            );
+                            counts.DefaultSortByDescending(count => count.Count);
+                            counts.EnablePaging(paging => paging.PageSize = 5);
+                        }
+                    );
+                }
+            );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var counts = await Assert
+            .That(options.Index.Layouts[1])
+            .IsTypeOf<ResourceTableLayoutOptions>();
+        await Assert.That(counts!.Key).IsEqualTo("counts");
+        await Assert.That(counts.Loader).IsNotNull();
+        await Assert.That(counts.RecordKey!(new ProductCount(7))).IsEqualTo("7");
+        await Assert.That(counts.Columns.Single().SortField).IsEqualTo(nameof(ProductCount.Count));
+        await Assert
+            .That(counts.DefaultSort)
+            .IsEqualTo(
+                new ResourceSort(nameof(ProductCount.Count), ResourceSortDirection.Descending)
+            );
+        await Assert.That(counts.Paging!.PageSize).IsEqualTo(5);
+        await Assert
+            .That(options.Index.RecordTables.Select(table => table.Key))
+            .IsEquivalentTo(["products"]);
+        await Assert
+            .That(
+                services
+                    .Single(service => service.ServiceType == typeof(ProductCountHandler))
+                    .Lifetime
+            )
+            .IsEqualTo(ServiceLifetime.Scoped);
+    }
+
+    [Test]
+    public async Task AddTableWithHandler_WithRecordKeyAndLink_Throws()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var resource = services.AddStellarAdmin().AddResource<Product>();
+
+        // Act
+        var act = () =>
+            resource.Index(
+                _ => { },
+                layouts =>
+                    layouts.AddTable<ProductCount, ProductCountHandler>(
+                        "counts",
+                        counts =>
+                            counts
+                                .HasRecordKey(count => count.Count)
+                                .LinkTo<Product>(count => count.Count)
+                    )
+            );
+
+        // Assert
+        await Assert.That(act).Throws<InvalidOperationException>();
+    }
+
+    [Test]
     public async Task AddPartial_WithKeyATableUses_Throws()
     {
         // Arrange

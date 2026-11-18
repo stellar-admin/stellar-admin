@@ -133,7 +133,7 @@ internal static class EfCoreResourceReference
     )
     {
         if (
-            options.Index.Tables.FirstOrDefault() is not { DefaultSort: { } sort } table
+            options.Index.RecordTables.FirstOrDefault() is not { DefaultSort: { } sort } table
             || table.Columns.FirstOrDefault(column =>
                 column.Sortable && column.SortField == sort.Field
             )

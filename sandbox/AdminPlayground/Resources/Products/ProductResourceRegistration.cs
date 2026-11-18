@@ -323,6 +323,86 @@ internal static class ProductResourceRegistration
                         {
                             categories.Title = "Prices per category";
                             categories.Icon = "chart-column";
+                            // Each card's title links to its category, apart from the products without one
+                            categories.LinkTo<Category>(summary => summary.CategoryId);
+                        }
+                    );
+                    // Each product against its category's average, from a handler that sorts and pages the rows. Each
+                    // row is a product, so it has the product's row actions
+                    layouts.AddTable<ProductPriceCheck, ProductPriceCheckHandler>(
+                        "price-check",
+                        table =>
+                        {
+                            table.Title = "Price check";
+                            table.Icon = "scale";
+                            table.HasRecordKey(row => row.ProductId);
+                            table.DefaultSortBy(row => row.Name);
+                            table.EnablePaging(paging => paging.PageSize = 10);
+                            table.Columns(columns =>
+                            {
+                                columns.Add(row => row.Name, column => column.Sortable());
+                                columns.Add(
+                                    row => row.Category,
+                                    column =>
+                                    {
+                                        column.Sortable();
+                                        column.EmptyText = "No category";
+                                    }
+                                );
+                                columns.Add(
+                                    row => row.Price,
+                                    column =>
+                                    {
+                                        column.Sortable();
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "0.00"
+                                        );
+                                    }
+                                );
+                                columns.Add(
+                                    row => row.CategoryAverage,
+                                    column =>
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "0.00"
+                                        )
+                                );
+                                columns.Add(
+                                    row => row.Difference,
+                                    column =>
+                                    {
+                                        column.Sortable();
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "+0.00;-0.00;0.00"
+                                        );
+                                    }
+                                );
+                            });
+                        }
+                    );
+                    // The products per category, each row linking to its category's view page
+                    layouts.AddTable<CategorySummary, CategorySummaryHandler>(
+                        "category-summary",
+                        table =>
+                        {
+                            table.Title = "Category summary";
+                            table.Icon = "tags";
+                            table.LinkTo<Category>(row => row.CategoryId);
+                            table.Columns(columns =>
+                            {
+                                columns.Add(row => row.Category, column => column.Sortable());
+                                columns.Add(row => row.Products, column => column.Sortable());
+                                columns.Add(
+                                    row => row.Average,
+                                    column =>
+                                    {
+                                        column.Title = "Average price";
+                                        column.Sortable();
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "0.00"
+                                        );
+                                    }
+                                );
+                            });
                         }
                     );
                 }

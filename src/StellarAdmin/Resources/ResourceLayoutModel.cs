@@ -47,8 +47,8 @@ public sealed class ResourceLayoutModel<TItem>
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>
-    ///     The URL, or <see langword="null" /> when the resource has no edit page or the items come
-    ///     from a handler.
+    ///     The URL, or <see langword="null" /> when the resource has no edit page or the item isn't
+    ///     one of its records.
     /// </returns>
     public string? GetEditUrl(TItem item) => _editUrl(item);
 
@@ -67,8 +67,8 @@ public sealed class ResourceLayoutModel<TItem>
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>
-    ///     The URL, or <see langword="null" /> when the resource has no view page or the items come
-    ///     from a handler.
+    ///     The URL of the record's view page, or of another resource's for a layout that links to
+    ///     one; or <see langword="null" /> when the item has no view link.
     /// </returns>
     public string? GetViewUrl(TItem item) => _viewUrl(item);
 }

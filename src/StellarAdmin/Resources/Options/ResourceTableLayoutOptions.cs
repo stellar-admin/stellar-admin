@@ -49,6 +49,9 @@ public sealed class ResourceTableLayoutOptions : ResourceLayoutOptions
 
     internal ConfigurationSource? DefaultSortSource { get; set; }
 
+    // Lists the rows of a table with a handler, or null for one that shows the resource's own rows
+    internal ResourceTableLoader? Loader { get; set; }
+
     internal List<DataGridColumnOptions> MutableColumns { get; } = [];
 
     internal ResourceTableLayoutOptions(string key)

@@ -102,7 +102,7 @@ public sealed class ResourceLayoutsBuilder<TResource>
     ///     <paramref name="key" /> or <paramref name="partialName" /> is empty or whitespace, or
     ///     another layout already uses <paramref name="key" />.
     /// </exception>
-    public ResourcePartialLayoutBuilder<TResource> AddPartial<TItem, THandler>(
+    public ResourceHandlerPartialLayoutBuilder<TResource, TItem> AddPartial<TItem, THandler>(
         string key,
         string partialName
     )
@@ -142,7 +142,7 @@ public sealed class ResourceLayoutsBuilder<TResource>
     public ResourceLayoutsBuilder<TResource> AddPartial<TItem, THandler>(
         string key,
         string partialName,
-        Action<ResourcePartialLayoutBuilder<TResource>> configure
+        Action<ResourceHandlerPartialLayoutBuilder<TResource, TItem>> configure
     )
         where THandler : class, IResourceLayoutHandler<TItem>
     {
@@ -189,6 +189,64 @@ public sealed class ResourceLayoutsBuilder<TResource>
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(AddTable(key));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds a layout that shows items a handler loads in a table.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the rows the table shows.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the rows.</typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <returns>A builder that configures the table.</returns>
+    /// <remarks>
+    ///     The handler receives the scope, search, sort and page, and applies them itself.
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    public ResourceHandlerTableLayoutBuilder<TResource, TItem> AddTable<TItem, THandler>(string key)
+        where THandler : class, IResourceLayoutHandler<TItem>
+    {
+        var loader = HandlerLayoutLoader.CreateTable<TItem, THandler>(_services);
+        AddLayout(key, index => index.GetOrAddTable(key).Loader = loader);
+
+        return new(_services, key);
+    }
+
+    /// <summary>
+    ///     Adds and configures a layout that shows items a handler loads in a table.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the rows the table shows.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the rows.</typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="configure">A delegate that configures the table.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The handler receives the scope, search, sort and page, and applies them itself.
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    public ResourceLayoutsBuilder<TResource> AddTable<TItem, THandler>(
+        string key,
+        Action<ResourceHandlerTableLayoutBuilder<TResource, TItem>> configure
+    )
+        where THandler : class, IResourceLayoutHandler<TItem>
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AddTable<TItem, THandler>(key));
 
         return this;
     }

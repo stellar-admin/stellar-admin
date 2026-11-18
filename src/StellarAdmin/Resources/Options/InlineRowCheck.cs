@@ -55,7 +55,7 @@ internal static class InlineRowCheck
         }
 
         // Inline rows edit in the default table
-        var columns = options.Index.Tables.FirstOrDefault()?.Columns ?? [];
+        var columns = options.Index.RecordTables.FirstOrDefault()?.Columns ?? [];
         var editedFields = columns
             .Select(column => column.EditsFieldName ?? column.FieldName)
             .OfType<string>()

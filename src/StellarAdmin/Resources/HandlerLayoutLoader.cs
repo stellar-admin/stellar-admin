@@ -11,18 +11,44 @@ internal static class HandlerLayoutLoader
     {
         services.TryAddScoped<THandler>();
 
-        return (provider, request, indexUrl, cancellationToken) =>
+        return (provider, request, urls, cancellationToken) =>
             CreateModelAsync(
                 provider.GetRequiredService<THandler>().ListAsync(request, cancellationToken),
                 request,
-                indexUrl
+                urls
+            );
+    }
+
+    public static ResourceTableLoader CreateTable<TItem, THandler>(IServiceCollection services)
+        where THandler : class, IResourceLayoutHandler<TItem>
+    {
+        services.TryAddScoped<THandler>();
+
+        return (provider, request, cancellationToken) =>
+            ListRowsAsync(
+                provider.GetRequiredService<THandler>().ListAsync(request, cancellationToken)
             );
     }
 
     public static async Task<object> CreateModelAsync<TItem>(
         Task<ResourceListResult<TItem>> list,
         ResourceListRequest request,
-        Func<object?, string> indexUrl
+        ResourceLayoutUrls urls
     ) =>
-        new ResourceLayoutModel<TItem>((await list).Items, request, _ => null, _ => null, indexUrl);
+        new ResourceLayoutModel<TItem>(
+            (await list).Items,
+            request,
+            item => item is null ? null : urls.ViewUrl(item),
+            item => item is null ? null : urls.EditUrl(item),
+            urls.IndexUrl
+        );
+
+    public static async Task<ResourceListResult<object>> ListRowsAsync<TItem>(
+        Task<ResourceListResult<TItem>> list
+    )
+    {
+        var result = await list;
+
+        return new(result.Items.Cast<object>().ToArray(), result.TotalCount);
+    }
 }

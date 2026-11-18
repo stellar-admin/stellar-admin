@@ -144,6 +144,11 @@ public sealed class ResourceIndexOptions
     // Whether the two-argument Index overload declared the layouts
     internal bool HasDeclaredLayouts { get; private set; }
 
+    // The tables that show the resource's own rows, in layout order. The first one has the inline rows, and lookups and
+    // references sort by its default sort
+    internal IEnumerable<ResourceTableLayoutOptions> RecordTables =>
+        Tables.Where(table => table.Loader is null);
+
     // The tables, in layout order
     internal IEnumerable<ResourceTableLayoutOptions> Tables =>
         MutableLayouts.OfType<ResourceTableLayoutOptions>();

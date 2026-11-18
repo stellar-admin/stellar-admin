@@ -111,7 +111,8 @@ public sealed class IconCategorySource(CategoryStore store) : CategoryLookupSour
 // Creates categories with the resource as the create model, so the resource's key selector returns the new key
 public sealed class CategoryDataSource(CategoryStore store)
     : IResourceDataSource<Category>,
-        IResourceCreateHandler<Category>
+        IResourceCreateHandler<Category>,
+        IResourceViewHandler<Category>
 {
     public Task<ResourceOperationResult> CreateAsync(
         Category model,
@@ -133,6 +134,9 @@ public sealed class CategoryDataSource(CategoryStore store)
 
         return Task.FromResult(ResourceOperationResult.Success());
     }
+
+    public Task<Category?> FindAsync(string id, CancellationToken cancellationToken) =>
+        Task.FromResult(store.Categories.FirstOrDefault(category => category.Id.ToString() == id));
 
     public Task<ResourceListResult<Category>> ListAsync(
         ResourceListRequest request,

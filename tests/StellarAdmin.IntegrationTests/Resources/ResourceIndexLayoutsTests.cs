@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
@@ -318,6 +319,279 @@ public class ResourceIndexLayoutsTests
             .That(document.RequiredElement("[data-test='index-url']").GetAttribute("href"))
             .IsEqualTo("/stellaradmin/products?layout=products&scope=cheap&search=lamp");
     }
+
+    [Test]
+    public async Task HandlerTable_ListsTheHandlersRowsWithTheRequestsSortAndPaging()
+    {
+        // Arrange
+        var state = CreateState();
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            resource =>
+                ConfigureRowsTable(
+                    resource,
+                    rows =>
+                        rows.EnablePaging(paging =>
+                        {
+                            paging.PageSize = 2;
+                            paging.PageSizes = [2, 3];
+                        })
+                )
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products?layout=rows&scope=cheap&search=lamp&sortBy=price&sortDirection=desc&page=2"
+        );
+
+        // Assert
+        await Assert.That(state.ListRequests).IsEmpty();
+        var request = state.HandlerRequests.Single();
+        await Assert.That(request.Layout).IsEqualTo("rows");
+        await Assert.That(request.Scope).IsEqualTo("cheap");
+        await Assert.That(request.Search).IsEqualTo("lamp");
+        await Assert
+            .That(request.Sort)
+            .IsEqualTo(
+                new ResourceSort(nameof(ProductRow.Price), ResourceSortDirection.Descending)
+            );
+        await Assert.That(request.Paging).IsEqualTo(new ResourcePaging(2, 2));
+        await Assert
+            .That(RowLabels(document))
+            .IsEquivalentTo(["Red lamp", "Blue lamp"], CollectionOrdering.Matching);
+        await Assert.That(document.QuerySelector("#index-page-grid tbody a")).IsNull();
+    }
+
+    [Test]
+    public async Task HandlerTableWithRecordKey_GivesRecordRowsTheResourcesRowActions()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+            {
+                ConfigureRowsTable(
+                    resource,
+                    rows =>
+                        rows.HasRecordKey(row => row.ProductId)
+                            .RowActions(actions => actions.Edit = false)
+                );
+                resource
+                    .UseKey(product => product.Id)
+                    .AllowEdit(edit => edit.Fields(fields => fields.Add(product => product.Name)))
+                    .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
+                resource.AllowDelete();
+            }
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products?layout=rows");
+
+        // Assert
+        var rows = document.QuerySelectorAll("#index-page-grid tbody tr").ToArray();
+        await Assert
+            .That(rows[0].RequiredElement("a[href*='/view/']").GetAttribute("href"))
+            .IsEqualTo("/stellaradmin/products/view/1");
+        await Assert.That(rows[0].QuerySelector("a[href*='/edit/']")).IsNull();
+        await Assert
+            .That(rows[0].RequiredElement("form[data-resource-delete]").GetAttribute("action"))
+            .StartsWith("/stellaradmin/products/delete/1?layout=rows");
+        await Assert.That(rows[^1].TextContent).Contains("Total");
+        await Assert.That(rows[^1].QuerySelector("a, form")).IsNull();
+    }
+
+    [Test]
+    public async Task HandlerTableWithLink_LinksRowsToTheOtherResourcesViewPage()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+            {
+                ConfigureRowsTable(resource, rows => rows.LinkTo<Category>(row => row.CategoryId));
+                resource
+                    .UseKey(product => product.Id)
+                    .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
+                resource.AllowDelete();
+            },
+            admin =>
+                admin.AddCategoryResource(categories =>
+                    categories.AllowView(view =>
+                        view.Fields(fields => fields.Add(category => category.Name))
+                    )
+                ),
+            services => services.AddSingleton<CategoryStore>()
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products?layout=rows");
+
+        // Assert
+        var rows = document.QuerySelectorAll("#index-page-grid tbody tr").ToArray();
+        await Assert
+            .That(rows[0].QuerySelectorAll("a").Select(link => link.GetAttribute("href")))
+            .IsEquivalentTo(["/stellaradmin/categories/view/11"]);
+        await Assert.That(rows[0].QuerySelector("form")).IsNull();
+        await Assert.That(rows[^1].QuerySelector("a")).IsNull();
+    }
+
+    [Test]
+    public async Task HandlerTableWithLinkToAResourceWithoutAViewPage_HasNoLinksAndReportsIt()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+                ConfigureRowsTable(resource, rows => rows.LinkTo<Category>(row => row.CategoryId)),
+            admin => admin.AddCategoryResource(),
+            services => services.AddSingleton<CategoryStore>()
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products?layout=rows");
+
+        // Assert
+        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
+        await Assert.That(document.QuerySelector("#index-page-grid tbody a")).IsNull();
+        await Assert
+            .That(
+                logs.ConfigurationProblems.Any(log =>
+                    log.Message.Contains("don't link to Category")
+                )
+            )
+            .IsTrue();
+    }
+
+    [Test]
+    public async Task HandlerPartialWithRecordKey_LinksItemsToTheirRecordsPages()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+            {
+                ConfigureRowsPartial(resource, rows => rows.HasRecordKey(row => row.ProductId));
+                resource
+                    .UseKey(product => product.Id)
+                    .AllowEdit(edit => edit.Fields(fields => fields.Add(product => product.Name)))
+                    .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
+            }
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products?layout=rows");
+
+        // Assert
+        var rows = document.QuerySelectorAll("[data-test='row']").ToArray();
+        await Assert
+            .That(rows[0].GetAttribute("data-view"))
+            .IsEqualTo("/stellaradmin/products/view/1");
+        await Assert
+            .That(rows[0].GetAttribute("data-edit"))
+            .IsEqualTo("/stellaradmin/products/edit/1");
+        await Assert.That(rows[^1].TextContent).IsEqualTo("Total");
+        await Assert.That(rows[^1].GetAttribute("data-view")).IsEqualTo("none");
+        await Assert.That(rows[^1].GetAttribute("data-edit")).IsEqualTo("none");
+    }
+
+    [Test]
+    public async Task HandlerPartialWithLink_LinksItemsToTheOtherResourcesViewPage()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+            {
+                ConfigureRowsPartial(
+                    resource,
+                    rows => rows.LinkTo<Category>(row => row.CategoryId)
+                );
+                resource
+                    .UseKey(product => product.Id)
+                    .AllowEdit(edit => edit.Fields(fields => fields.Add(product => product.Name)));
+            },
+            admin =>
+                admin.AddCategoryResource(categories =>
+                    categories.AllowView(view =>
+                        view.Fields(fields => fields.Add(category => category.Name))
+                    )
+                ),
+            services => services.AddSingleton<CategoryStore>()
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products?layout=rows");
+
+        // Assert
+        var rows = document.QuerySelectorAll("[data-test='row']").ToArray();
+        await Assert
+            .That(rows[0].GetAttribute("data-view"))
+            .IsEqualTo("/stellaradmin/categories/view/11");
+        await Assert.That(rows[0].GetAttribute("data-edit")).IsEqualTo("none");
+        await Assert.That(rows[^1].GetAttribute("data-view")).IsEqualTo("none");
+    }
+
+    // The products table, then a partial of rows its handler loads
+    private static void ConfigureRowsPartial(
+        ResourceBuilder<Product> resource,
+        Action<ResourceHandlerPartialLayoutBuilder<Product, ProductRow>> configure
+    ) =>
+        resource.Index(
+            _ => { },
+            layouts =>
+            {
+                layouts.AddTable("products");
+                layouts.AddPartial<ProductRow, ProductRowsHandler>(
+                    "rows",
+                    "_ProductRows",
+                    configure
+                );
+            }
+        );
+
+    // The products table, then a table of rows its handler loads
+    private static void ConfigureRowsTable(
+        ResourceBuilder<Product> resource,
+        Action<ResourceHandlerTableLayoutBuilder<Product, ProductRow>> configure
+    ) =>
+        resource.Index(
+            index =>
+            {
+                index.EnableScopes(scopes =>
+                {
+                    scopes.Add("all", "All");
+                    scopes.Add("cheap", "Cheap");
+                });
+                index.EnableSearch();
+            },
+            layouts =>
+            {
+                layouts.AddTable("products");
+                layouts.AddTable<ProductRow, ProductRowsHandler>(
+                    "rows",
+                    rows =>
+                    {
+                        rows.Columns(columns =>
+                        {
+                            columns.Add(row => row.Label);
+                            columns.Add(row => row.Price, column => column.Sortable());
+                        });
+                        configure(rows);
+                    }
+                );
+            }
+        );
+
+    private static IEnumerable<string> RowLabels(AngleSharp.Dom.IDocument document) =>
+        document
+            .QuerySelectorAll("#index-page-grid tbody tr")
+            .Select(row => row.QuerySelector("td")!.TextContent.Trim());
 
     private static void ConfigureLayouts(ResourceBuilder<Product> resource) =>
         resource.Index(

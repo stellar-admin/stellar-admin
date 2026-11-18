@@ -13,19 +13,40 @@ internal static class EfCoreLayoutLoader
     {
         services.TryAddScoped<THandler>();
 
-        return (provider, request, indexUrl, cancellationToken) =>
+        return (provider, request, urls, cancellationToken) =>
             HandlerLayoutLoader.CreateModelAsync(
-                provider
-                    .GetRequiredService<THandler>()
-                    .ListAsync(
-                        provider
-                            .GetRequiredService<EfCoreResourceDataSource<TEntity>>()
-                            .Narrow(request),
-                        request,
-                        cancellationToken
-                    ),
+                ListAsync<TEntity, TItem, THandler>(provider, request, cancellationToken),
                 request,
-                indexUrl
+                urls
             );
     }
+
+    public static ResourceTableLoader CreateTable<TEntity, TItem, THandler>(
+        IServiceCollection services
+    )
+        where TEntity : class
+        where THandler : class, IEfCoreLayoutHandler<TEntity, TItem>
+    {
+        services.TryAddScoped<THandler>();
+
+        return (provider, request, cancellationToken) =>
+            HandlerLayoutLoader.ListRowsAsync(
+                ListAsync<TEntity, TItem, THandler>(provider, request, cancellationToken)
+            );
+    }
+
+    private static Task<ResourceListResult<TItem>> ListAsync<TEntity, TItem, THandler>(
+        IServiceProvider provider,
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    )
+        where TEntity : class
+        where THandler : class, IEfCoreLayoutHandler<TEntity, TItem> =>
+        provider
+            .GetRequiredService<THandler>()
+            .ListAsync(
+                provider.GetRequiredService<EfCoreResourceDataSource<TEntity>>().Narrow(request),
+                request,
+                cancellationToken
+            );
 }

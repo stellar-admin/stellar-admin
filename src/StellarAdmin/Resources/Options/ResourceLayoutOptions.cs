@@ -47,5 +47,11 @@ public abstract class ResourceLayoutOptions
     /// </value>
     public string? Title { get; internal set; }
 
+    // The view page of another resource that each of a handler's items links to, or null
+    internal ResourceRowLink? Link { get; set; }
+
+    // The key of the resource's record that each of a handler's items is, which links it to the record's pages; or null
+    internal Func<object, string?>? RecordKey { get; set; }
+
     private protected ResourceLayoutOptions(string key) => Key = key;
 }

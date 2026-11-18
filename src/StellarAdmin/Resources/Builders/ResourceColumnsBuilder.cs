@@ -1,23 +1,21 @@
 using System.Linq.Expressions;
-using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures the columns of a resource's index page.
+///     Configures the columns of a table on a resource's index page.
 /// </summary>
-/// <typeparam name="TResource">The type of the resource.</typeparam>
+/// <typeparam name="TResource">
+///     The type of the table's rows: the resource, or the items a handler loads.
+/// </typeparam>
 public sealed class ResourceColumnsBuilder<TResource>
 {
-    private readonly IServiceCollection _services;
-    private readonly string _tableKey;
+    // Configures the table, once the resource's options are built
+    private readonly Action<Action<ResourceTableLayoutOptions>> _configureTable;
 
-    internal ResourceColumnsBuilder(IServiceCollection services, string tableKey)
-    {
-        _services = services;
-        _tableKey = tableKey;
-    }
+    internal ResourceColumnsBuilder(Action<Action<ResourceTableLayoutOptions>> configureTable) =>
+        _configureTable = configureTable;
 
     /// <summary>
     ///     Adds a column.
@@ -41,9 +39,7 @@ public sealed class ResourceColumnsBuilder<TResource>
         ArgumentNullException.ThrowIfNull(field);
 
         var column = new ResourceColumnBuilder<TResource>(field);
-        _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.GetOrAddTable(_tableKey).MutableColumns.Add(column.Build())
-        );
+        _configureTable(table => table.MutableColumns.Add(column.Build()));
 
         return column;
     }
@@ -79,9 +75,7 @@ public sealed class ResourceColumnsBuilder<TResource>
     /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceColumnsBuilder<TResource> Clear()
     {
-        _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.GetOrAddTable(_tableKey).MutableColumns.Clear()
-        );
+        _configureTable(table => table.MutableColumns.Clear());
 
         return this;
     }

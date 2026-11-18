@@ -242,7 +242,6 @@ StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.CreateLab
 StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Delete.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexDeleteDialogViewModel?
 StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.DeleteLabel.get -> string?
 StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.EditLabel.get -> string?
-StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.GetKey(object! resource) -> string!
 StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.InlineRows.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexInlineRowsViewModel?
 StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Items.get -> System.Collections.IEnumerable!
 StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Paging.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPagingViewModel?
@@ -2250,6 +2249,22 @@ StellarAdmin.Resources.Options.ResourcePartialLayoutOptions.PartialName.get -> s
 StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
 StellarAdmin.Resources.IResourceLayoutHandler<TItem>
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!
 StellarAdmin.Resources.IResourceLayoutHandler<TItem>.ListAsync(StellarAdmin.Resources.ResourceListRequest! request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.ResourceListResult<TItem>!>!
+StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.GetViewUrl(object! resource) -> string?
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.GetKey(object! resource) -> string?
+StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>.Columns(System.Action<StellarAdmin.Resources.Builders.ResourceColumnsBuilder<TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>.DefaultSortBy<TProperty>(System.Linq.Expressions.Expression<System.Func<TItem, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>.EnablePaging() -> StellarAdmin.Resources.Builders.ResourcePagingBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>.EnablePaging(System.Action<StellarAdmin.Resources.Builders.ResourcePagingBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>.HasRecordKey(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddTable<TItem, THandler>(string! key) -> StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddTable<TItem, THandler>(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>.LinkTo<TOther>(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>.DefaultSortByDescending<TProperty>(System.Linq.Expressions.Expression<System.Func<TItem, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>.RowActions(System.Action<StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceHandlerTableLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerPartialLayoutBuilder<TResource, TItem>
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourceHandlerPartialLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceHandlerPartialLayoutBuilder<TResource, TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceHandlerPartialLayoutBuilder<TResource, TItem>.HasRecordKey(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerPartialLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerPartialLayoutBuilder<TResource, TItem>.LinkTo<TOther>(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerPartialLayoutBuilder<TResource, TItem>!

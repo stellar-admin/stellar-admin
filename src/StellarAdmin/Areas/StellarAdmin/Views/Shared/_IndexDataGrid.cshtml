@@ -74,21 +74,23 @@
         <sa-data-grid-column sortable="false" class="@(inline is null ? "w-px whitespace-nowrap" : "w-px whitespace-nowrap sa-inline-row-actions")">
             <sa-data-grid-item-template>
                 @{
-                    var resourceId = Model.GetKey(Html.GridItem<object>());
+                    // A row a table's handler loads may not be a record, and then has no actions
+                    var item = Html.GridItem<object>();
+                    var resourceId = Model.GetKey(item);
                     var deleteTooltipId = $"--resource-delete-{resourceId}";
                     var editTooltipId = $"--resource-edit-{resourceId}";
                     var viewTooltipId = $"--resource-view-{resourceId}";
                 }
-                @if (Model.CanView)
+                @if (Model.CanView && Model.GetViewUrl(item) is { } viewUrl)
                 {
                     <sa-link-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
-                                   asp-action="View" asp-route-id="@resourceId" hx-boost="false"
+                                   href="@viewUrl" hx-boost="false"
                                    aria-label="@Model.ViewLabel" interestfor="@viewTooltipId">
                         <sa-icon name="eye" />
                     </sa-link-button>
                     <sa-tooltip id="@viewTooltipId">@Model.ViewLabel</sa-tooltip>
                 }
-                @if (Model.CanEdit)
+                @if (Model.CanEdit && resourceId is not null)
                 {
                     <sa-link-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    asp-action="Edit" asp-route-id="@resourceId" hx-boost="false"
@@ -108,7 +110,7 @@
                     </sa-button>
                     <sa-tooltip id="@editTooltipId">@Model.EditLabel</sa-tooltip>
                 }
-                @if (Model.Delete is not null)
+                @if (Model.Delete is not null && resourceId is not null)
                 {
                     <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-layout="@Model.Query.Layout" asp-route-page="@(Model.Query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@Model.Query.PageSize" asp-route-search="@Model.Query.Search" asp-route-scope="@Model.Query.Scope" asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection" class="inline-block" data-resource-delete
                           hx-confirm="js:confirmResourceDelete()" hx-push-url="false">

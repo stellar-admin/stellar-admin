@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
+using StellarAdmin.Diagnostics;
+using StellarAdmin.Infrastructure.Authorization;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Options;
 using StellarAdmin.UI;
@@ -138,19 +140,45 @@ internal sealed partial class ResourceController<TResource>
         object? editModel = null,
         object? newItem = null,
         int added = 0,
-        object? layoutModel = null
+        object? layoutModel = null,
+        IReadOnlyList<object>? handlerRows = null,
+        Func<object, string?>? linkUrl = null
     )
     {
         var labels = CreateLabelContext();
         var layout = IndexLayout;
         var table = layout as ResourceTableLayoutOptions;
-        var actions = table?.RowActions;
+
+        // A table's handler loads rows that are the resource's records when it has a record key, and that otherwise link
+        // to another resource's view page or nowhere. Only records get the row actions
+        Func<object, string?>? rowKey = table switch
+        {
+            { Loader: null } or null => null,
+            { RecordKey: { } recordKey } => recordKey,
+            { Link: { } link } => link.Key,
+            _ => _ => null,
+        };
+        var actions = table is { Loader: null } or { RecordKey: not null }
+            ? table.RowActions
+            : null;
+        var keySelector = _resourceOptions.KeySelector;
+        Func<object, string?>? viewUrl = null;
+        if (table?.Link is not null)
+        {
+            viewUrl = linkUrl;
+        }
+        else if (HasViewPage && actions?.View == true)
+        {
+            var viewKey = rowKey ?? (resource => keySelector!((TResource)resource));
+            viewUrl = resource =>
+                viewKey(resource) is { } id ? Url.Action(ViewActionName, new { id }) : null;
+        }
 
         return new ResourceIndexPageViewModel<TResource>
         {
             CanCreate = HasCreatePage,
             CanEdit = HasEditPage && actions?.Edit == true,
-            CanView = HasViewPage && actions?.View == true,
+            CanView = viewUrl is not null,
             Columns = table?.Columns.ToArray() ?? [],
             CreateLabel =
                 _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
@@ -172,6 +200,7 @@ internal sealed partial class ResourceController<TResource>
             EditLabel = _resourceOptions.Index.EditLabel ?? _labelOptions.Index.EditLabel(labels),
             KeySelector = _resourceOptions.KeySelector,
             InlineRows = CreateInlineRows(labels, editingKey, editModel, newItem, added),
+            HandlerRows = handlerRows,
             Items = items,
             Layouts = CreateLayoutSwitcher(layout),
             Paging = pagingModel,
@@ -180,6 +209,7 @@ internal sealed partial class ResourceController<TResource>
                 : null,
             Query = query,
             RowDetails = GetRowDetails(),
+            RowKey = rowKey,
             RowsOnly = rowsOnly,
             Scopes =
                 _resourceOptions.Index.Scopes is { } scopes && !layout.IgnoresScopes
@@ -209,6 +239,7 @@ internal sealed partial class ResourceController<TResource>
                 : null,
             Title = _resourceOptions.Index.Title ?? _labelOptions.Index.Title(labels),
             ViewLabel = _resourceOptions.Index.ViewLabel ?? _labelOptions.Index.ViewLabel(labels),
+            ViewUrl = viewUrl,
         };
     }
 
@@ -282,7 +313,10 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         // Inline rows edit the columns of the first table, which the inline row check matched to the form's fields
-        if (IndexTable is not { } table || table != _resourceOptions.Index.Tables.FirstOrDefault())
+        if (
+            IndexTable is not { } table
+            || table != _resourceOptions.Index.RecordTables.FirstOrDefault()
+        )
         {
             return null;
         }
@@ -389,19 +423,19 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         // A layout with a handler lists its own items instead of the resource's
-        if (IndexLayout is ResourcePartialLayoutOptions { Loader: { } loader })
+        if (IndexLayout is ResourcePartialLayoutOptions { Loader: { } loader } partial)
         {
             var layoutModel = await loader(
                 HttpContext.RequestServices,
                 request,
-                CreateLayoutIndexUrl(query),
+                await CreateLayoutUrlsAsync(partial, query),
                 cancellationToken
             );
 
             return await IndexResultAsync([], null, layoutModel);
         }
 
-        var result = await dataSource.ListAsync(request, cancellationToken);
+        var result = await ListRowsAsync(request, cancellationToken);
         ResourceIndexPagingViewModel? pagingModel = null;
         if (request.Paging is { } paging)
         {
@@ -435,13 +469,7 @@ internal sealed partial class ResourceController<TResource>
                 {
                     Page = (int)totalPages,
                 };
-                result = await dataSource.ListAsync(
-                    request with
-                    {
-                        Paging = paging,
-                    },
-                    cancellationToken
-                );
+                result = await ListRowsAsync(request with { Paging = paging }, cancellationToken);
                 totalPages = Math.Max(
                     1,
                     result.TotalCount / paging.PageSize
@@ -458,14 +486,29 @@ internal sealed partial class ResourceController<TResource>
             );
         }
 
-        loaded?.Invoke(result.Items);
+        // A table's handler loads rows of its own, which link to another resource's view page when the user may open it
+        if (IndexTable is { Loader: not null } handlerTable)
+        {
+            return await IndexResultAsync(
+                [],
+                pagingModel,
+                null,
+                result.Items,
+                await CreateLinkUrlAsync(handlerTable)
+            );
+        }
 
-        return await IndexResultAsync(result.Items, pagingModel, null);
+        var items = result.Items.Cast<TResource>().ToArray();
+        loaded?.Invoke(items);
+
+        return await IndexResultAsync(items, pagingModel, null);
 
         async Task<IActionResult> IndexResultAsync(
             IReadOnlyList<TResource> items,
             ResourceIndexPagingViewModel? paging,
-            object? layoutModel
+            object? layoutModel,
+            IReadOnlyList<object>? handlerRows = null,
+            Func<object, string?>? linkUrl = null
         )
         {
             ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
@@ -478,9 +521,106 @@ internal sealed partial class ResourceController<TResource>
 
             return ResourceView(
                 nameof(Index),
-                CreateIndexModel(items, query, request, paging, layoutModel: layoutModel)
+                CreateIndexModel(
+                    items,
+                    query,
+                    request,
+                    paging,
+                    layoutModel: layoutModel,
+                    handlerRows: handlerRows,
+                    linkUrl: linkUrl
+                )
             );
         }
+    }
+
+    // The rows of the shown table: the resources from the data source, or the items its handler loads
+    private async Task<ResourceListResult<object>> ListRowsAsync(
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    ) =>
+        IndexTable?.Loader is { } loader
+            ? await loader(HttpContext.RequestServices, request, cancellationToken)
+            : await HandlerLayoutLoader.ListRowsAsync(
+                dataSource.ListAsync(request, cancellationToken)
+            );
+
+    // A partial handler's items link to the resource's pages when they're its records, or to another resource's view
+    // page when the user may open it
+    private async Task<ResourceLayoutUrls> CreateLayoutUrlsAsync(
+        ResourcePartialLayoutOptions partial,
+        ResourceIndexQuery query
+    )
+    {
+        var viewUrl = await CreateLinkUrlAsync(partial) ?? (_ => null);
+        Func<object, string?> editUrl = _ => null;
+        if (partial.RecordKey is { } key)
+        {
+            if (HasViewPage)
+            {
+                viewUrl = item =>
+                    key(item) is { } id ? Url.Action(ViewActionName, new { id }) : null;
+            }
+
+            if (HasEditPage)
+            {
+                editUrl = item => key(item) is { } id ? Url.Action(nameof(Edit), new { id }) : null;
+            }
+        }
+
+        return new(viewUrl, editUrl, CreateLayoutIndexUrl(query));
+    }
+
+    // The view page of another resource that a handler layout's items link to, or null when the resource has no view
+    // page or the user may not open it
+    private async Task<Func<object, string?>?> CreateLinkUrlAsync(ResourceLayoutOptions layout)
+    {
+        if (layout.Link is not { } link)
+        {
+            return null;
+        }
+
+        var services = HttpContext.RequestServices;
+        var registration = services
+            .GetServices<ResourceRegistration>()
+            .FirstOrDefault(registration => registration.ResourceType == link.ResourceType);
+        if (registration is null || !registration.ResolveCanView(services))
+        {
+            // Other resources aren't known while this resource's options are built, so this is found when the layout
+            // renders
+            var name = link.ResourceType.Name;
+            services
+                .GetRequiredService<ConfigurationProblems>()
+                .Report(
+                    new(
+                        ConfigurationProblemKind.RowLinkUnavailable,
+                        registration is null
+                            ? $"The items of the `{layout.Key}` layout don't link to `{name}` because no resource is registered for it."
+                            : $"The items of the `{layout.Key}` layout don't link to `{name}` because the `{registration.ControllerName}` resource has no view page.",
+                        registration is null
+                            ? $"Add a resource for `{name}`, or remove `LinkTo`."
+                            : $"Allow view on the `{registration.ControllerName}` resource, or remove `LinkTo`."
+                    ),
+                    HttpContext.GetRouteValue("controller") as string
+                );
+
+            return null;
+        }
+
+        if (
+            !await AuthorizationMetadata.AuthorizeAsync(
+                registration.ResolveAuthorizationMetadata(services),
+                HttpContext
+            )
+        )
+        {
+            return null;
+        }
+
+        return resource =>
+            link.Key(resource) is { } id
+                ? Url.Action(ViewActionName, registration.ControllerName, new { id })
+                : null;
     }
 
     // A row as the index displays it, through the index query, whatever the scope or search

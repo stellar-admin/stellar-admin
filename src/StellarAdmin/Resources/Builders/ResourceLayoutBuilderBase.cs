@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources.Options;
 
@@ -14,6 +15,9 @@ namespace StellarAdmin.Resources.Builders;
 public abstract class ResourceLayoutBuilderBase<TResource, TBuilder>
     where TBuilder : ResourceLayoutBuilderBase<TResource, TBuilder>
 {
+    // Which of HasRecordKey and LinkTo was called, since a handler's item links to one place
+    private string? _linkMethod;
+
     /// <summary>
     ///     Sets the name of the icon on the layout's switcher segment.
     /// </summary>
@@ -62,6 +66,35 @@ public abstract class ResourceLayoutBuilderBase<TResource, TBuilder>
         LayoutKey = key;
     }
 
+    // Links each of a handler's items to another resource's view page, with the key of the record it links to
+    private protected void ConfigureLink<TOther, TItem>(Func<TItem, object?> key)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        UseLink("LinkTo");
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            options.Index.GetLayout(LayoutKey).Link = new(
+                typeof(TOther),
+                item => FormatKey(key((TItem)item))
+            )
+        );
+    }
+
+    // Makes each of a handler's items a record of the resource, with the key of the record it is
+    private protected void ConfigureRecordKey<TItem>(Func<TItem, object?> key)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        UseLink("HasRecordKey");
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            options.Index.GetLayout(LayoutKey).RecordKey = item => FormatKey(key((TItem)item))
+        );
+    }
+
+    // Configures the table the builder configures, once the resource's options are built
+    private protected void ConfigureTable(Action<ResourceTableLayoutOptions> configure) =>
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            configure(options.Index.GetOrAddTable(LayoutKey))
+        );
+
     /// <summary>
     ///     Hides the scopes and lists every resource while the layout is shown.
     /// </summary>
@@ -92,5 +125,20 @@ public abstract class ResourceLayoutBuilderBase<TResource, TBuilder>
         );
 
         return (TBuilder)this;
+    }
+
+    private static string? FormatKey(object? key) =>
+        key is null ? null : Convert.ToString(key, CultureInfo.InvariantCulture);
+
+    private void UseLink(string method)
+    {
+        if (_linkMethod is not null && _linkMethod != method)
+        {
+            throw new InvalidOperationException(
+                $"The '{LayoutKey}' layout can't call both HasRecordKey and LinkTo, since an item links to one place."
+            );
+        }
+
+        _linkMethod = method;
     }
 }

@@ -81,11 +81,16 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
         CancellationToken cancellationToken
     )
     {
+        // A table with a handler shows other rows, so a request without a layout arranges the entities as the first
+        // table of entities does
         var query = Narrow(request);
         var totalCount = await query.LongCountAsync(cancellationToken);
+        var layout = _resourceOptions.Index.FindLayout(request.Layout);
         query = Arrange(
             query,
-            _resourceOptions.Index.FindLayout(request.Layout) as ResourceTableLayoutOptions,
+            layout is ResourceTableLayoutOptions { Loader: not null }
+                ? _resourceOptions.Index.RecordTables.FirstOrDefault()
+                : layout as ResourceTableLayoutOptions,
             request
         );
 

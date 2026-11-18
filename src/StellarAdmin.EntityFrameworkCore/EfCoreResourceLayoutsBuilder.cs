@@ -115,14 +115,14 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     ///     <typeparamref name="THandler" /> implements neither handler interface for
     ///     <typeparamref name="TItem" />.
     /// </exception>
-    public ResourcePartialLayoutBuilder<TEntity> AddPartial<TItem, THandler>(
+    public ResourceHandlerPartialLayoutBuilder<TEntity, TItem> AddPartial<TItem, THandler>(
         string key,
         string partialName
     )
         where THandler : class
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(partialName);
-        var loader = CreateLoader<TItem, THandler>();
+        var loader = (ResourceLayoutLoader)CreateLoader<TItem, THandler>(table: false);
         AddLayout(key, index => index.AddPartial(key, partialName, loader));
 
         return new(_services, key);
@@ -164,7 +164,7 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     public EfCoreResourceLayoutsBuilder<TEntity> AddPartial<TItem, THandler>(
         string key,
         string partialName,
-        Action<ResourcePartialLayoutBuilder<TEntity>> configure
+        Action<ResourceHandlerPartialLayoutBuilder<TEntity, TItem>> configure
     )
         where THandler : class
     {
@@ -215,18 +215,91 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
         return this;
     }
 
-    // An EF handler receives the entities the scope and search select; another handler loads its own data
-    private ResourceLayoutLoader CreateLoader<TItem, THandler>()
+    /// <summary>
+    ///     Adds a layout that shows items a handler loads in a table.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the rows the table shows.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the rows: an
+    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
+    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
+    ///     data.
+    /// </typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <returns>A builder that configures the table.</returns>
+    /// <remarks>
+    ///     The handler sorts and pages the rows. Registers <typeparamref name="THandler" /> as a
+    ///     scoped service if it isn't registered already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     <typeparamref name="THandler" /> implements neither handler interface.
+    /// </exception>
+    public ResourceHandlerTableLayoutBuilder<TEntity, TItem> AddTable<TItem, THandler>(string key)
+        where THandler : class
+    {
+        var loader = (ResourceTableLoader)CreateLoader<TItem, THandler>(table: true);
+        AddLayout(key, index => index.GetOrAddTable(key).Loader = loader);
+
+        return new(_services, key);
+    }
+
+    /// <summary>
+    ///     Adds and configures a layout that shows items a handler loads in a table.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the rows the table shows.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the rows: an
+    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
+    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
+    ///     data.
+    /// </typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="configure">A delegate that configures the table.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The handler sorts and pages the rows. Registers <typeparamref name="THandler" /> as a
+    ///     scoped service if it isn't registered already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     <typeparamref name="THandler" /> implements neither handler interface.
+    /// </exception>
+    public EfCoreResourceLayoutsBuilder<TEntity> AddTable<TItem, THandler>(
+        string key,
+        Action<ResourceHandlerTableLayoutBuilder<TEntity, TItem>> configure
+    )
+        where THandler : class
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AddTable<TItem, THandler>(key));
+
+        return this;
+    }
+
+    // An EF handler receives the entities the scope and search select; another handler loads its own data. A table gets
+    // a ResourceTableLoader, and a partial a ResourceLayoutLoader
+    private Delegate CreateLoader<TItem, THandler>(bool table)
         where THandler : class
     {
         string factory;
         if (typeof(IEfCoreLayoutHandler<TEntity, TItem>).IsAssignableFrom(typeof(THandler)))
         {
-            factory = nameof(CreateEfCoreLoader);
+            factory = table ? nameof(CreateEfCoreTableLoader) : nameof(CreateEfCoreLoader);
         }
         else if (typeof(IResourceLayoutHandler<TItem>).IsAssignableFrom(typeof(THandler)))
         {
-            factory = nameof(CreateHandlerLoader);
+            factory = table ? nameof(CreateHandlerTableLoader) : nameof(CreateHandlerLoader);
         }
         else
         {
@@ -237,7 +310,7 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
             );
         }
 
-        return (ResourceLayoutLoader)
+        return (Delegate)
             typeof(EfCoreResourceLayoutsBuilder<TEntity>)
                 .GetMethod(factory, BindingFlags.NonPublic | BindingFlags.Instance)!
                 .MakeGenericMethod(typeof(TItem), typeof(THandler))
@@ -251,6 +324,14 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     private ResourceLayoutLoader CreateHandlerLoader<TItem, THandler>()
         where THandler : class, IResourceLayoutHandler<TItem> =>
         HandlerLayoutLoader.Create<TItem, THandler>(_services);
+
+    private ResourceTableLoader CreateEfCoreTableLoader<TItem, THandler>()
+        where THandler : class, IEfCoreLayoutHandler<TEntity, TItem> =>
+        EfCoreLayoutLoader.CreateTable<TEntity, TItem, THandler>(_services);
+
+    private ResourceTableLoader CreateHandlerTableLoader<TItem, THandler>()
+        where THandler : class, IResourceLayoutHandler<TItem> =>
+        HandlerLayoutLoader.CreateTable<TItem, THandler>(_services);
 
     // Adds the layout now, so the switcher's order is the order of the calls
     private void AddLayout(string key, Action<ResourceIndexOptions> add)

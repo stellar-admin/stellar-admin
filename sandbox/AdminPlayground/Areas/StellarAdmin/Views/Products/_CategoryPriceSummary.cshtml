@@ -12,7 +12,16 @@ else
         {
             <sa-card size="CardSize.Small">
                 <sa-card-header>
-                    <sa-card-title>@summary.Category</sa-card-title>
+                    <sa-card-title>
+                        @if (Model.GetViewUrl(summary) is { } viewUrl)
+                        {
+                            <a class="underline-offset-4 hover:underline" href="@viewUrl">@summary.Category</a>
+                        }
+                        else
+                        {
+                            @summary.Category
+                        }
+                    </sa-card-title>
                     <sa-card-description>@summary.Products @(summary.Products == 1 ? "product" : "products")</sa-card-description>
                 </sa-card-header>
                 <sa-card-content>

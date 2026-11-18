@@ -32,7 +32,7 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(new(Services, LayoutKey));
+        configure(new(ConfigureTable));
 
         return (TBuilder)this;
     }

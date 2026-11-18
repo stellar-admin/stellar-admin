@@ -6,6 +6,7 @@ using StellarAdmin.Resources;
 namespace AdminPlayground.Resources.Products;
 
 public sealed record CategoryPriceSummary(
+    int? CategoryId,
     string Category,
     int Products,
     decimal Lowest,
@@ -28,14 +29,16 @@ public sealed class CategoryPriceSummaryHandler
         var prices = await entities
             .Select(product => new
             {
+                product.CategoryId,
                 Category = product.Category != null ? product.Category.Name : null,
                 product.Price,
             })
             .ToListAsync(cancellationToken);
         var items = prices
-            .GroupBy(product => product.Category ?? "No category")
+            .GroupBy(product => (product.CategoryId, Name: product.Category ?? "No category"))
             .Select(category => new CategoryPriceSummary(
-                category.Key,
+                category.Key.CategoryId,
+                category.Key.Name,
                 category.Count(),
                 category.Min(product => product.Price),
                 category.Average(product => product.Price),
