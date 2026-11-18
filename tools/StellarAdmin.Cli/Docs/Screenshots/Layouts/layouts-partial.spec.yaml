@@ -2,7 +2,7 @@
 scenario: layouts-partial
 steps:
   # A short window, so the shot ends after the second row of cards
-  - viewport: { width: 1280, height: 580 }
+  - viewport: { width: 1280, height: 610 }
   # The partial view has no paging, so a search keeps it to the first ten bookings
   - goto: /stellaradmin/bookings?layout=cards&search=VB-10000
   - screenshot: layouts-partial

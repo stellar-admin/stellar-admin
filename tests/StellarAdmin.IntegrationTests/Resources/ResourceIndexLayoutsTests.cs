@@ -39,7 +39,7 @@ public class ResourceIndexLayoutsTests
 
         // Assert
         var switcher = document.RequiredElement(
-            ".sa-resource-index-controls > .sa-resource-index-layouts"
+            ".sa-resource-index-layouts-row > .sa-resource-index-layouts"
         );
         await Assert
             .That(

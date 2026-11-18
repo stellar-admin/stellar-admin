@@ -78,22 +78,25 @@
         margin-inline-start: auto;
     }
 
-    /* The layout switcher ends the controls row: beside the search, or on its own at the end without one. A segment
-       with an icon only is as narrow as its icon */
+    /* The layout switcher on its own row just above the list card, right-aligned. The row and the card stay together,
+       so an aside column of widgets sits beside both. A segment with an icon only is as narrow as its icon */
+    .sa-resource-index-list-stack {
+        display: grid;
+        gap: calc(2 * var(--sa-unit));
+        min-width: 0;
+    }
+
+    .sa-resource-index-layouts-row {
+        display: flex;
+        justify-content: flex-end;
+    }
+
     .sa-resource-index-layouts {
         flex: none;
 
         & .sa-segmented-control-item:has(> .sr-only) {
             padding-inline: calc(2 * var(--sa-unit));
         }
-    }
-
-    .sa-resource-index-controls > .sa-resource-index-layouts {
-        margin-inline-start: calc(-1 * var(--sa-unit));
-    }
-
-    .sa-resource-index-controls:not(:has(> .sa-resource-index-search)) > .sa-resource-index-layouts {
-        margin-inline-start: auto;
     }
 
     /* A partial layout in place of the grid, inset like the card's content */
@@ -117,12 +120,6 @@
 
         .sa-resource-index-search {
             width: 100%;
-        }
-
-        /* The search shares its row with the switcher */
-        .sa-resource-index-controls:has(> .sa-resource-index-layouts) .sa-resource-index-search {
-            flex: 1;
-            width: auto;
         }
     }
 

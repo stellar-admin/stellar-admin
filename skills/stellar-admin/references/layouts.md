@@ -1,6 +1,6 @@
 # Index layouts
 
-An index page can switch between several *layouts*: tables with their own columns, sort, paging and row details, and partial views of your own (cards, a summary). A switcher at the end of the controls row (after the scopes and search) lists them; it appears only with two or more layouts. Layouts can show the resource's records or items of another shape loaded by a handler.
+An index page can switch between several *layouts*: tables with their own columns, sort, paging and row details, and partial views of your own (cards, a summary). A switcher right-aligned above the list card lists them; it appears only with two or more layouts. Layouts can show the resource's records or items of another shape loaded by a handler.
 
 ## Contents
 

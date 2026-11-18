@@ -3,7 +3,7 @@
 <head>
     <!-- Index layouts prototype (2026-11-17): a layout switcher on the index page. Some layouts draw the same rows
          differently (table, cards, board); others have a data shape of their own (map: one row per destination;
-         calendar: departures per day; chart: revenue per month). Placements A (controls row) and A2 (page header).
+         calendar: departures per day; chart: revenue per month). The switcher sits above the list card, right-aligned.
          Every frame is live. Build both libraries first (npm run build in src/StellarAdmin.UI/Client and
          src/StellarAdmin/Client). -->
     <meta charset="utf-8">
@@ -18,16 +18,23 @@
     <!-- Candidate CSS, written as the library would write it -->
     <style>
         @layer components {
-            /* The layout switcher: a segmented control at the end of the controls row (A) or in the header (A2) */
+            /* The layout switcher: a segmented control on its own row, right-aligned above the list card */
             .sa-resource-index-layouts { flex: none; }
             .sa-resource-index-layouts .sa-segmented-control-item:not(:has(> span)) { padding-inline: calc(2 * var(--sa-unit)); }
-            .sa-resource-index-controls > .sa-resource-index-layouts { margin-inline-start: calc(-1 * var(--sa-unit)); }
-            .sa-resource-index-controls:not(:has(.sa-resource-index-search)) > .sa-resource-index-layouts { margin-inline-start: auto; }
+            .sa-resource-index-layouts-above { display: flex; justify-content: flex-end; margin-bottom: calc(-1 * var(--sa-space-container-sm, 0px)); }
+            /* With aside widgets, the list column holds the switcher row and the card */
+            .sa-resource-index-list-column { display: grid; gap: calc(4 * var(--sa-unit)); min-width: 0; }
+            .sa-resource-index-list-column > .sa-resource-index-layouts-above { margin-bottom: 0; }
 
-            @container sa-resource-index-list (width < 44rem) {
-                .sa-resource-index-controls:has(> .sa-resource-index-layouts) .sa-resource-index-search { flex: 1; width: auto; }
-            }
-
+            /* Prototype widgets */
+            .proto-stat .sa-card-description { font-size: var(--sa-text-sm); }
+            .proto-stat .sa-card-title { font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+            .proto-stat small { color: var(--sa-color-ink-muted); font-size: var(--sa-text-xs); }
+            .proto-rank { display: grid; gap: calc(2 * var(--sa-unit)); font-size: var(--sa-text-sm); }
+            .proto-rank > div { display: grid; grid-template-columns: 1fr auto; gap: calc(3 * var(--sa-unit)); align-items: center; }
+            .proto-rank i { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: var(--sa-color-line); overflow: hidden; }
+            .proto-rank i::before { content: ""; display: block; height: 100%; width: var(--_w); background: var(--sa-color-accent); }
+            .proto-rank span:last-child { font-variant-numeric: tabular-nums; color: var(--sa-color-ink-muted); }
             /* The filter bar inside the list card, under the controls */
             .sa-resource-index-filters {
                 display: flex;
@@ -300,6 +307,7 @@
         figcaption b { color: var(--sa-color-ink); }
         .frame { border: 1px solid var(--sa-color-line); border-radius: 10px; overflow: hidden; background: var(--sa-color-canvas, var(--sa-color-surface)); }
         .frame .viewport { max-height: 44rem; overflow: auto; padding: 1.5rem; }
+        .frame[data-tall] .viewport { max-height: none; }
         .frame .viewport > .sa-page-container { max-width: none; padding: 0; }
         .url { display: flex; justify-content: space-between; gap: 1rem; font: 12px/1.4 var(--sa-font-mono, monospace); color: var(--sa-color-ink-muted); padding: .4rem .75rem; border-top: 1px solid var(--sa-color-line); background: var(--sa-color-surface); }
         .url b { color: var(--sa-color-ink); font-weight: 500; }
@@ -358,8 +366,8 @@
 </div>
 
 <section>
-    <h2>1. Placement</h2>
-    <p>The same switcher in two places. Use <b>Switcher</b> in the bar at the bottom right for icons only or icons with labels.</p>
+    <h2>1. Above the card, right-aligned</h2>
+    <p>The switcher on its own row just outside the card, with and without widgets. Use <b>Switcher</b> in the bar at the bottom right for icons only or icons with labels.</p>
     <div class="strips" id="s1"></div>
 </section>
 
@@ -370,9 +378,9 @@
 </section>
 
 <section>
-    <h2>3. Narrow</h2>
-    <p>Under 44rem the scopes get their own row (as today) and the search shares the next row with the switcher. A layout without search puts the switcher alone at the end.</p>
-    <div class="strips narrow" id="s3"></div>
+    <h2>3. Screen sizes</h2>
+    <p>Top and aside widgets at laptop, tablet and phone widths, then a phone without widgets.</p>
+    <div class="strips" id="s3"></div>
 </section>
 
 <div class="ctl">
@@ -485,7 +493,7 @@
         const f = { id: `f${FRAMES.length}`, cfg, state: { layout: cfg.layouts[0], scope: "", search: {}, filters: structuredClone(DEFAULT_FILTERS), selected: null, month: "2026-11", ...state } };
         FRAMES.push(f);
         const fig = document.createElement("figure");
-        fig.innerHTML = `<figcaption><span class="tag">${tag}</span> ${caption}</figcaption><div class="frame" data-frame="${f.id}" ${cfg.width ? `style="max-width:${cfg.width}"` : ""}><div class="viewport"></div><div class="url"></div></div>`;
+        fig.innerHTML = `<figcaption><span class="tag">${tag}</span> ${caption}</figcaption><div class="frame" data-frame="${f.id}" ${cfg.width ? `style="max-width:${cfg.width}"` : ""} ${cfg.widgets ? "data-tall" : ""}><div class="viewport"></div><div class="url"></div></div>`;
         document.getElementById(target).append(fig);
         render(f);
     }
@@ -497,6 +505,7 @@
     }
     function renderBody(f) {
         document.querySelector(`[data-frame="${f.id}"] [data-body]`).outerHTML = bodyHtml(f);
+        renderWidgets(f);
         renderUrl(f);
     }
     function renderUrl(f) {
@@ -512,18 +521,62 @@
     }
 
     function pageHtml(f) {
-        const header = f.cfg.place === "header" ? switcher(f) : "";
-        return `<div data-slot="page-container" class="sa-page-container">
-            <header data-slot="page-header" class="sa-page-header">
-                <h1 data-slot="page-header-title" class="sa-page-header-title">Bookings</h1>
-                <div data-slot="page-header-actions" class="sa-page-header-actions">${header}<a href="#" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default">New booking</a></div>
-            </header>
-            <div data-slot="card" class="sa-card sa-resource-index-list">
+        const w = f.cfg.widgets ?? "";
+        const list = `<div data-slot="card" class="sa-card sa-resource-index-list">
                 ${controlsHtml(f)}
                 ${filtersHtml(f)}
                 ${bodyHtml(f)}
-            </div>
+            </div>`;
+        const above = `<div class="sa-resource-index-layouts-above">${switcher(f)}</div>`;
+        const main = w.includes("aside")
+            ? `<div class="sa-widgets-aside"><div class="sa-widgets-aside-grid">
+                <div class="sa-resource-index-list-column">${above}${list}</div>
+                <div class="sa-widgets-column" data-widgets-aside>${asideWidgets(f)}</div>
+            </div></div>`
+            : above + list;
+        return `<div data-slot="page-container" class="sa-page-container">
+            <header data-slot="page-header" class="sa-page-header">
+                <h1 data-slot="page-header-title" class="sa-page-header-title">Bookings</h1>
+                <div data-slot="page-header-actions" class="sa-page-header-actions"><a href="#" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default">New booking</a></div>
+            </header>
+            ${w.includes("top") ? `<div data-widgets-top>${topWidgets(f)}</div>` : ""}
+            ${main}
         </div>`;
+    }
+
+    /* ---------- Widgets: built from the same scoped, filtered bookings, so they follow scopes and filters ---------- */
+    const widgetGrid = (cells) => `<div class="sa-widgets" data-slot="widgets"><div class="sa-widgets-grid">${cells.join("")}</div></div>`;
+    const stat = (span, label, value, note) => `<div class="sa-widget" data-slot="widget" data-span="${span}" data-state="loaded"><div data-slot="card" class="sa-card proto-stat">
+            <div data-slot="card-header" class="sa-card-header"><div data-slot="card-description" class="sa-card-description">${label}</div><div data-slot="card-title" class="sa-card-title">${value}</div><small>${note}</small></div>
+        </div></div>`;
+    function topWidgets(f) {
+        const bs = bookings(f), live = bs.filter((b) => b.status !== "Cancelled");
+        const upcoming = live.filter((b) => b.departure >= TODAY).length, pending = bs.filter((b) => b.status === "Pending").length;
+        return widgetGrid([
+            stat(3, "Bookings", bs.length, `${upcoming} still to depart`),
+            stat(3, "Travellers", live.reduce((n, b) => n + b.travellers, 0), "excluding cancelled"),
+            stat(3, "Revenue", money(live.reduce((n, b) => n + b.amount, 0)), "excluding cancelled"),
+            stat(3, "Pending", pending, "awaiting confirmation"),
+        ]);
+    }
+    function asideWidgets(f) {
+        const live = bookings(f).filter((b) => b.status !== "Cancelled");
+        const rank = (key, label) => {
+            const counts = {};
+            live.forEach((b) => counts[key(b)] = (counts[key(b)] ?? 0) + b.amount);
+            const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5), max = rows[0]?.[1] ?? 1;
+            return `<div class="sa-widget" data-slot="widget" data-span="12" data-state="loaded"><div data-slot="card" class="sa-card">
+                <div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">${label}</div><div data-slot="card-description" class="sa-card-description">Revenue, excluding cancelled</div></div>
+                <div data-slot="card-content" class="sa-card-content"><div class="proto-rank">${rows.map(([k, v]) => `<div><span>${k}</span><span>${kmoney(v)}</span><i style="--_w:${Math.round(v / max * 100)}%"></i></div>`).join("") || "Nothing to show"}</div></div>
+            </div></div>`;
+        };
+        return widgetGrid([rank((b) => DEST[b.dest].name, "Top destinations"), rank((b) => b.agent, "By agent")]);
+    }
+    function renderWidgets(f) {
+        const root = document.querySelector(`[data-frame="${f.id}"]`);
+        const top = root.querySelector("[data-widgets-top]"), aside = root.querySelector("[data-widgets-aside]");
+        if (top) top.innerHTML = topWidgets(f);
+        if (aside) aside.innerHTML = asideWidgets(f);
     }
 
     function switcher(f) {
@@ -543,7 +596,7 @@
             <input data-slot="input-group-control" class="sa-input sa-input-group-input" placeholder="${l.search}" aria-label="${l.search}" value="${esc(state.search[state.layout] ?? "")}" data-search>
             <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">${icon("search")}</div>
         </div>` : "";
-        return `<div class="sa-resource-index-controls">${tabs}${search}${f.cfg.place === "toolbar" ? switcher(f) : ""}</div>`;
+        return `<div class="sa-resource-index-controls">${tabs}${search}</div>`;
     }
 
     function filtersHtml(f) {
@@ -700,13 +753,18 @@
 
     /* ---------- Frames on the page ---------- */
     const ALL = ["table", "cards", "board", "map", "calendar", "chart"];
-    addFrame("s1", "A", "<b>At the end of the controls row</b>, beside the search. Sits with the controls every layout shares; costs the scopes no room.", { layouts: ALL, place: "toolbar" });
-    addFrame("s1", "A2", "<b>In the page header</b>, beside <i>New booking</i>. Reads as page-level, but sits away from the controls that drive the list.", { layouts: ALL, place: "header" });
-    addFrame("s2", "1", "<b>Map: one item per destination.</b> The list beside the map is destinations, not bookings; the search finds destinations; click a destination or a bubble for its totals.", { layouts: ALL, place: "toolbar" }, { layout: "map" });
-    addFrame("s2", "2", "<b>Calendar: departures per day.</b> A month at a time; the month is part of the URL. Bookings search narrows what each day shows.", { layouts: ALL, place: "toolbar" }, { layout: "calendar" });
-    addFrame("s2", "3", "<b>Chart: revenue per departure month</b>, stacked by status, with the same months as a table. No search, so the switcher moves up beside the scopes.", { layouts: ALL, place: "toolbar" }, { layout: "chart" });
-    addFrame("s3", "A", "<b>Narrow, table.</b>", { layouts: ALL, place: "toolbar", width: "36rem" });
-    addFrame("s3", "A", "<b>Narrow, chart</b> (no search).", { layouts: ALL, place: "toolbar", width: "36rem" }, { layout: "chart" });
+    const H = { layouts: ALL };
+    addFrame("s1", "1", "<b>No widgets.</b> The switcher sits on its own row just above the card, right-aligned; the controls row keeps scopes and search.", H);
+    addFrame("s1", "2", "<b>Top widgets.</b> The switcher stays with the list, between the widgets and the card.", { ...H, widgets: "top" });
+    addFrame("s1", "3", "<b>Aside widgets.</b> The switcher row belongs to the list column, so it lines up with the card's right edge, not the page's.", { ...H, widgets: "aside" });
+    addFrame("s1", "4", "<b>Top and aside widgets.</b>", { ...H, widgets: "top aside" });
+    addFrame("s2", "1", "<b>Map: one item per destination.</b> The list beside the map is destinations, not bookings; the search finds destinations; click a destination or a bubble for its totals.", H, { layout: "map" });
+    addFrame("s2", "2", "<b>Calendar: departures per day.</b> A month at a time; the month is part of the URL. Bookings search narrows what each day shows.", H, { layout: "calendar" });
+    addFrame("s2", "3", "<b>Chart: revenue per departure month</b>, stacked by status, with the same months as a table. No search.", H, { layout: "chart" });
+    for (const [w, note] of [["64rem", "Laptop. The aside column is still beside the list."], ["50rem", "Tablet. Under 56rem the aside widgets drop below the list; top widgets go two to a row."], ["36rem", "Small tablet. Scopes get their own row."], ["24rem", "Phone. Top widgets stack."]]) {
+        addFrame("s3", w, `<b>${note}</b>`, { ...H, widgets: "top aside", width: w });
+    }
+    addFrame("s3", "24rem", "<b>Phone, no widgets.</b>", { ...H, width: "24rem" });
 
     /* ---------- Interaction ---------- */
     document.addEventListener("click", (e) => {
