@@ -1,0 +1,13 @@
+@using StellarAdmin.Resources
+@model ResourceLayoutModel<StellarAdmin.IntegrationTests.Fixtures.Product>
+<a data-test="index-url" href="@Model.GetIndexUrl(new { layout = "products", page = 2 })">Products</a>
+<ul>
+    @foreach (var product in Model.Items)
+    {
+        <li data-test="tile">
+            @product.Name
+            <a data-test="view" href="@Model.GetViewUrl(product)">View</a>
+            <a data-test="edit" href="@Model.GetEditUrl(product)">Edit</a>
+        </li>
+    }
+</ul>

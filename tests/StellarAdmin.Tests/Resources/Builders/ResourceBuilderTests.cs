@@ -93,11 +93,11 @@ public partial class ResourceBuilderTests
         // Assert
         await Assert.That(firstOptions).IsNotSameReferenceAs(secondOptions);
         await Assert
-            .That(firstOptions.Index.Paging!.PageSizes)
-            .IsNotSameReferenceAs(secondOptions.Index.Paging!.PageSizes);
+            .That(firstOptions.Index.Tables.Single().Paging!.PageSizes)
+            .IsNotSameReferenceAs(secondOptions.Index.Tables.Single().Paging!.PageSizes);
         await Assert
-            .That(firstOptions.Index.Columns[0])
-            .IsNotSameReferenceAs(secondOptions.Index.Columns[0]);
+            .That(firstOptions.Index.Tables.Single().Columns[0])
+            .IsNotSameReferenceAs(secondOptions.Index.Tables.Single().Columns[0]);
         await Assert
             .That(firstOptions.Create!.Items[0])
             .IsNotSameReferenceAs(secondOptions.Create!.Items[0]);
@@ -129,7 +129,7 @@ public partial class ResourceBuilderTests
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(options.Index.DefaultSort).IsNull();
+        await Assert.That(options.Index.Tables.Single().DefaultSort).IsNull();
         await Assert
             .That(options.Problems.Single().Kind)
             .IsEqualTo(ConfigurationProblemKind.UnsortableDefaultSort);
@@ -167,9 +167,11 @@ public partial class ResourceBuilderTests
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(options.Index.Paging!.PageSize).IsEqualTo(expectedPageSize);
         await Assert
-            .That(string.Join(",", options.Index.Paging.PageSizes))
+            .That(options.Index.Tables.Single().Paging!.PageSize)
+            .IsEqualTo(expectedPageSize);
+        await Assert
+            .That(string.Join(",", options.Index.Tables.Single().Paging!.PageSizes))
             .IsEqualTo(expectedSizes);
         await Assert.That(options.Problems).IsNotEmpty();
     }

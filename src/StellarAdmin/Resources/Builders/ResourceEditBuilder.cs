@@ -120,7 +120,7 @@ public class ResourceEditBuilder<TModel>
     /// <returns>A builder that configures the inline row.</returns>
     /// <remarks>
     ///     Every editable field must match an index column, by name or through
-    ///     <see cref="ResourceColumnBuilder{TResource}.EditsField(string)" />. The resource needs a
+    ///     <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. The resource needs a
     ///     key. The edit page is not available.
     /// </remarks>
     public ResourceInlineEditBuilder UseInlineRow()
@@ -141,7 +141,7 @@ public class ResourceEditBuilder<TModel>
     /// </exception>
     /// <remarks>
     ///     Every editable field must match an index column, by name or through
-    ///     <see cref="ResourceColumnBuilder{TResource}.EditsField(string)" />. The resource needs a
+    ///     <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. The resource needs a
     ///     key. The edit page is not available.
     /// </remarks>
     public ResourceEditBuilder<TModel> UseInlineRow(Action<ResourceInlineEditBuilder> configure)

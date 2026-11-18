@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources.Builders;
+using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.EntityFrameworkCore;
 
@@ -159,6 +160,37 @@ public sealed class EfCoreResourceBuilder<TEntity>
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(new(Services));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures the index page with layouts the user can switch between.
+    /// </summary>
+    /// <param name="configure">
+    ///     A delegate that configures the settings every layout shares, such as the scopes and the
+    ///     search.
+    /// </param>
+    /// <param name="layouts">A delegate that adds the layouts.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The first layout is the one the page shows by default. With two or more layouts, a
+    ///     switcher at the end of the controls row switches between them.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> or <paramref name="layouts" /> is <see langword="null" />.
+    /// </exception>
+    public EfCoreResourceBuilder<TEntity> Index(
+        Action<EfCoreResourceSharedIndexBuilder<TEntity>> configure,
+        Action<EfCoreResourceLayoutsBuilder<TEntity>> layouts
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        ArgumentNullException.ThrowIfNull(layouts);
+
+        Services.Configure<ResourceOptions<TEntity>>(options => options.Index.DeclareLayouts());
+        configure(new(Services));
+        layouts(new(Services));
 
         return this;
     }

@@ -54,8 +54,10 @@ internal static class InlineRowCheck
             );
         }
 
-        var editedFields = options
-            .Index.Columns.Select(column => column.EditsFieldName ?? column.FieldName)
+        // Inline rows edit in the default table
+        var columns = options.Index.RecordTables.FirstOrDefault()?.Columns ?? [];
+        var editedFields = columns
+            .Select(column => column.EditsFieldName ?? column.FieldName)
             .OfType<string>()
             .ToHashSet(StringComparer.Ordinal);
         var unmatched = form

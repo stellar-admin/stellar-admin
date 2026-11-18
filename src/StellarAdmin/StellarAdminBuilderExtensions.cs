@@ -120,6 +120,11 @@ public static partial class StellarAdminBuilderExtensions
                         services =>
                             services
                                 .GetRequiredService<IOptions<ResourceOptions<TResource>>>()
+                                .Value
+                                is { View: not null, KeySelector: not null, IsUnavailable: false },
+                        services =>
+                            services
+                                .GetRequiredService<IOptions<ResourceOptions<TResource>>>()
                                 .Value.Problems,
                         services =>
                             services

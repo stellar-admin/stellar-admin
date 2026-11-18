@@ -6,6 +6,12 @@ namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 public sealed class ResourceIndexQuery
 {
     /// <summary>
+    ///     Gets or sets the key of the selected layout, or <see langword="null" /> for the first
+    ///     layout.
+    /// </summary>
+    public string? Layout { get; set; }
+
+    /// <summary>
     ///     Gets or sets the number of the requested page, starting at 1.
     /// </summary>
     public int? Page { get; set; }

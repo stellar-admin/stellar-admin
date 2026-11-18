@@ -73,14 +73,25 @@ public interface IResourceIndexPageViewModel
     ResourceIndexInlineRowsViewModel? InlineRows { get; }
 
     /// <summary>
-    ///     Gets the resources on the current page.
+    ///     Gets the rows on the current page: the resources, or the items a table's handler loads.
     /// </summary>
     IEnumerable Items { get; }
+
+    /// <summary>
+    ///     Gets the segments of the layout switcher, which is empty when the index has one layout.
+    /// </summary>
+    IReadOnlyList<ResourceIndexLayoutViewModel> Layouts { get; }
 
     /// <summary>
     ///     Gets the paging controls, or <see langword="null" /> when paging is turned off.
     /// </summary>
     ResourceIndexPagingViewModel? Paging { get; }
+
+    /// <summary>
+    ///     Gets the partial view that renders the shown layout, or <see langword="null" /> when the
+    ///     layout is a table.
+    /// </summary>
+    ResourceIndexPartialLayoutViewModel? PartialLayout { get; }
 
     /// <summary>
     ///     Gets the index settings that the query string supplies.
@@ -127,9 +138,22 @@ public interface IResourceIndexPageViewModel
     string? ViewLabel { get; }
 
     /// <summary>
-    ///     Returns the key of a resource, for use in links.
+    ///     Returns the key of a row's record, for use in links.
     /// </summary>
-    /// <param name="resource">The resource.</param>
-    /// <returns>The key of the resource.</returns>
-    string GetKey(object resource);
+    /// <param name="resource">The row.</param>
+    /// <returns>
+    ///     The key of the record, or <see langword="null" /> when a row that a table's handler loads
+    ///     isn't a record.
+    /// </returns>
+    string? GetKey(object resource);
+
+    /// <summary>
+    ///     Returns the URL of the view page that a row links to.
+    /// </summary>
+    /// <param name="resource">The row.</param>
+    /// <returns>
+    ///     The URL of the resource's view page, or of another resource's for a table that links to
+    ///     one; or <see langword="null" /> when the row has no view link.
+    /// </returns>
+    string? GetViewUrl(object resource);
 }

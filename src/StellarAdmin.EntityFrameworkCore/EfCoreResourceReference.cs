@@ -127,14 +127,14 @@ internal static class EfCoreResourceReference
         : reference.MediaType == typeof(ItemMedia.Image) ? EfCoreItemMedia<TEntity>.Image(media)
         : null;
 
-    // The order of the index's default sort, when its column is sortable
+    // The order of the default table's default sort, when its column is sortable
     private static Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? FindDefaultOrder<TEntity>(
         ResourceOptions<TEntity> options
     )
     {
         if (
-            options.Index.DefaultSort is not { } sort
-            || options.Index.Columns.FirstOrDefault(column =>
+            options.Index.RecordTables.FirstOrDefault() is not { DefaultSort: { } sort } table
+            || table.Columns.FirstOrDefault(column =>
                 column.Sortable && column.SortField == sort.Field
             )
                 is not { } column

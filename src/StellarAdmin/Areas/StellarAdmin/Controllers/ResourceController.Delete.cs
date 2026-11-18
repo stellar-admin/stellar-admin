@@ -69,6 +69,7 @@ internal sealed partial class ResourceController<TResource>
             new
             {
                 id = (string?)null,
+                layout = query.Layout,
                 page = query.Page,
                 pageSize = query.PageSize,
                 search = query.Search,

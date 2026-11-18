@@ -1,0 +1,18 @@
+@using AdminPlayground.Resources.Destinations
+@using StellarAdmin.Resources
+@model ResourceLayoutModel<DestinationCountry>
+@* The destinations per country, from DestinationCountriesHandler *@
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    @foreach (var country in Model.Items)
+    {
+        <sa-card size="CardSize.Small">
+            <sa-card-header>
+                <sa-card-title>@country.Country</sa-card-title>
+                <sa-card-description>@country.Destinations.Count @(country.Destinations.Count == 1 ? "destination" : "destinations")</sa-card-description>
+            </sa-card-header>
+            <sa-card-content>
+                <p class="text-sm">@string.Join(", ", country.Destinations)</p>
+            </sa-card-content>
+        </sa-card>
+    }
+</div>

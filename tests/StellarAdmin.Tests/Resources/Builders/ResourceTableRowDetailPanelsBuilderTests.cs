@@ -4,7 +4,7 @@ using StellarAdmin.Resources.Builders;
 
 namespace StellarAdmin.Tests.Resources.Builders;
 
-public class ResourceRowDetailPanelsBuilderTests
+public class ResourceTableRowDetailPanelsBuilderTests
 {
     [Test]
     [Arguments("Pricing", "pricing")]

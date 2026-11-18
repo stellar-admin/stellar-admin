@@ -81,69 +81,18 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
         CancellationToken cancellationToken
     )
     {
-        var query = Db.Set<TEntity>().AsNoTracking();
-        if (request.Keys is { } keys)
-        {
-            query = query.Where(EfCoreResourceKey.CreatePredicate<TEntity>(Db, keys));
-        }
-
-        if (
-            _resourceOptions.Index.Scopes?.Items.FirstOrDefault(scope => scope.Id == request.Scope)
-            is EfCoreResourceScopeOptions<TEntity> { Predicate: { } predicate }
-        )
-        {
-            query = query.Where(predicate);
-        }
-
-        if (
-            request.Search is { } term
-            && _resourceOptions.Index.Search is EfCoreResourceSearchOptions<TEntity> search
-        )
-        {
-            query = query.Where(search.Predicate(term));
-        }
-
+        // A table with a handler shows other rows, so a request without a layout arranges the entities as the first
+        // table of entities does
+        var query = Narrow(request);
         var totalCount = await query.LongCountAsync(cancellationToken);
-
-        // Columns read through the references on their paths, such as Category for p => p.Category.Name,
-        // and load the collections they show, such as Tags for p => p.Tags. A column that computes its
-        // value loads what each path it reads needs, and one that shows related records loads what their
-        // title reads, such as Category.Parent.
-        var entityType = Db.Model.FindEntityType(typeof(TEntity))!;
-        query = Include(
+        var layout = _resourceOptions.Index.FindLayout(request.Layout);
+        query = Arrange(
             query,
-            _resourceOptions.Index.Columns.SelectMany(column =>
-                FindDisplayIncludePaths(entityType, column.FieldExpression)
-            )
+            layout is ResourceTableLayoutOptions { Loader: not null }
+                ? _resourceOptions.Index.RecordTables.FirstOrDefault()
+                : layout as ResourceTableLayoutOptions,
+            request
         );
-
-        var parameter = Expression.Parameter(typeof(TEntity), "entity");
-        var keyProperty = entityType.FindPrimaryKey()!.Properties.Single();
-        var key = Expression.Lambda(Expression.Property(parameter, keyProperty.Name), parameter);
-
-        if (request.Sort is { } sort)
-        {
-            var column = _resourceOptions.Index.Columns.Single(column =>
-                column.Sortable && column.SortField == sort.Field
-            );
-            query = Order(
-                query,
-                column.SortExpression ?? column.FieldExpression,
-                sort.Direction == ResourceSortDirection.Descending
-                    ? nameof(Queryable.OrderByDescending)
-                    : nameof(Queryable.OrderBy)
-            );
-            query = Order(query, key, nameof(Queryable.ThenBy));
-        }
-        else
-        {
-            query = Order(query, key, nameof(Queryable.OrderBy));
-        }
-
-        if (request.Paging is { } paging)
-        {
-            query = query.Skip(checked((paging.Page - 1) * paging.PageSize)).Take(paging.PageSize);
-        }
 
         return new(await query.ToListAsync(cancellationToken), totalCount);
     }
@@ -228,6 +177,34 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
             cancellationToken
         );
 
+    // The entities the request's keys, scope and search leave, which every layout of the index starts from
+    internal IQueryable<TEntity> Narrow(ResourceListRequest request)
+    {
+        var query = Db.Set<TEntity>().AsNoTracking();
+        if (request.Keys is { } keys)
+        {
+            query = query.Where(EfCoreResourceKey.CreatePredicate<TEntity>(Db, keys));
+        }
+
+        if (
+            _resourceOptions.Index.Scopes?.Items.FirstOrDefault(scope => scope.Id == request.Scope)
+            is EfCoreResourceScopeOptions<TEntity> { Predicate: { } predicate }
+        )
+        {
+            query = query.Where(predicate);
+        }
+
+        if (
+            request.Search is { } term
+            && _resourceOptions.Index.Search is EfCoreResourceSearchOptions<TEntity> search
+        )
+        {
+            query = query.Where(search.Predicate(term));
+        }
+
+        return query;
+    }
+
     // Copies the form's fields of the entity onto the stored one, and runs the update events around saving it. While
     // the events run, the model holds the stored entity; a failed save gives it back the submitted one, which the form
     // shows again
@@ -286,6 +263,56 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
         }
 
         return ResourceOperationResult.Success();
+    }
+
+    // A table's includes, sort and page of the narrowed entities. Columns read through the references on their paths,
+    // such as Category for p => p.Category.Name, and load the collections they show, such as Tags for p => p.Tags. A
+    // column that computes its value loads what each path it reads needs, and one that shows related records loads
+    // what their title reads, such as Category.Parent.
+    private IQueryable<TEntity> Arrange(
+        IQueryable<TEntity> query,
+        ResourceTableLayoutOptions? table,
+        ResourceListRequest request
+    )
+    {
+        var columns = table?.Columns ?? [];
+        var entityType = Db.Model.FindEntityType(typeof(TEntity))!;
+        query = Include(
+            query,
+            columns.SelectMany(column =>
+                FindDisplayIncludePaths(entityType, column.FieldExpression)
+            )
+        );
+
+        var parameter = Expression.Parameter(typeof(TEntity), "entity");
+        var keyProperty = entityType.FindPrimaryKey()!.Properties.Single();
+        var key = Expression.Lambda(Expression.Property(parameter, keyProperty.Name), parameter);
+
+        if (request.Sort is { } sort)
+        {
+            var column = columns.Single(column =>
+                column.Sortable && column.SortField == sort.Field
+            );
+            query = Order(
+                query,
+                column.SortExpression ?? column.FieldExpression,
+                sort.Direction == ResourceSortDirection.Descending
+                    ? nameof(Queryable.OrderByDescending)
+                    : nameof(Queryable.OrderBy)
+            );
+            query = Order(query, key, nameof(Queryable.ThenBy));
+        }
+        else
+        {
+            query = Order(query, key, nameof(Queryable.OrderBy));
+        }
+
+        if (request.Paging is { } paging)
+        {
+            query = query.Skip(checked((paging.Page - 1) * paging.PageSize)).Take(paging.PageSize);
+        }
+
+        return query;
     }
 
     private static TModel CreateModel<TModel>() => Activator.CreateInstance<TModel>();

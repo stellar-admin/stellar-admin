@@ -393,16 +393,16 @@ public static class StellarAdminBuilderExtensions
     }
 
     // A collection or a related record has no single value to order rows by, unless the column sorts by an expression
-    // of its own
+    // of its own. A table with a handler sorts its own rows
     private static void DisableEntitySorting<TEntity>(
         ResourceOptions<TEntity> options,
         IEntityType entity
     )
     {
         foreach (
-            var column in options.Index.Columns.Where(column =>
-                column is { Sortable: true, SortExpression: null }
-            )
+            var column in options
+                .Index.RecordTables.SelectMany(table => table.Columns)
+                .Where(column => column is { Sortable: true, SortExpression: null })
         )
         {
             if (EfCorePropertyPaths.GetPropertyPath(column.FieldExpression) is not { } path)

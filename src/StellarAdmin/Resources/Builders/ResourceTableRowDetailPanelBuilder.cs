@@ -5,7 +5,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures a panel in a row's details.
 /// </summary>
-public sealed class ResourceRowDetailPanelBuilder
+public sealed class ResourceTableRowDetailPanelBuilder
 {
     private readonly ResourceRowDetailPanelOptions _options;
 
@@ -48,6 +48,6 @@ public sealed class ResourceRowDetailPanelBuilder
         }
     }
 
-    internal ResourceRowDetailPanelBuilder(ResourceRowDetailPanelOptions options) =>
+    internal ResourceTableRowDetailPanelBuilder(ResourceRowDetailPanelOptions options) =>
         _options = options;
 }

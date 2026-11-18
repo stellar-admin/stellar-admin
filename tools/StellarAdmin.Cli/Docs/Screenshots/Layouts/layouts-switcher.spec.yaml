@@ -1,0 +1,10 @@
+# The bookings index with the Bookings, Finance and Cards layouts, Bookings selected, in light and dark
+scenario: layouts-switcher
+steps:
+  # A short window, so the shot shows the controls row and the first rows
+  - viewport: { width: 1280, height: 520 }
+  - goto: /stellaradmin/bookings
+  - annotate: { locator: ".sa-resource-index-layouts" }
+  - screenshot: layouts-switcher
+  - colorScheme: dark
+  - screenshot: layouts-switcher-dark

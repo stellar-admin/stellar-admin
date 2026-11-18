@@ -83,7 +83,10 @@ internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceIte
     {
         var result = await GetDataSource(services)
             .ListAsync(
-                new ResourceListRequest { Sort = _options.Index.DefaultSort },
+                new ResourceListRequest
+                {
+                    Sort = _options.Index.RecordTables.FirstOrDefault()?.DefaultSort,
+                },
                 cancellationToken
             );
 
@@ -104,7 +107,7 @@ internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceIte
                 {
                     Paging = new ResourcePaging(query.Skip / take + 1, take),
                     Search = query.Term,
-                    Sort = _options.Index.DefaultSort,
+                    Sort = _options.Index.RecordTables.FirstOrDefault()?.DefaultSort,
                 },
                 cancellationToken
             );

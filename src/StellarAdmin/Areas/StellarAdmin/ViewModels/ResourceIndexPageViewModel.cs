@@ -39,7 +39,14 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     /// <summary>
     ///     Gets the resources on the current page.
     /// </summary>
+    /// <remarks>
+    ///     Empty when the shown table's handler loads its rows; <see cref="IResourceIndexPageViewModel.Items" />
+    ///     has them.
+    /// </remarks>
     public required IReadOnlyList<TResource> Items { get; init; }
+
+    /// <inheritdoc />
+    public IReadOnlyList<ResourceIndexLayoutViewModel> Layouts { get; init; } = [];
 
     /// <summary>
     ///     Gets a delegate that returns the key of a resource, or <see langword="null" /> when the
@@ -49,6 +56,9 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
 
     /// <inheritdoc />
     public ResourceIndexPagingViewModel? Paging { get; init; }
+
+    /// <inheritdoc />
+    public ResourceIndexPartialLayoutViewModel? PartialLayout { get; init; }
 
     /// <inheritdoc />
     public ResourceIndexQuery Query { get; init; } = new();
@@ -74,9 +84,21 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     /// <inheritdoc />
     public string? ViewLabel { get; init; }
 
-    IEnumerable IResourceIndexPageViewModel.Items => Items;
+    IEnumerable IResourceIndexPageViewModel.Items => (IEnumerable?)HandlerRows ?? Items;
+
+    // The rows a table's handler loads, or null when the table shows the resources
+    internal IReadOnlyList<object>? HandlerRows { get; init; }
+
+    // The key of a row's record, or null to use KeySelector
+    internal Func<object, string?>? RowKey { get; init; }
+
+    // The URL of the view page a row links to
+    internal Func<object, string?>? ViewUrl { get; init; }
 
     internal ResourceIndexPageViewModel() { }
 
-    string IResourceIndexPageViewModel.GetKey(object resource) => KeySelector!((TResource)resource);
+    string? IResourceIndexPageViewModel.GetKey(object resource) =>
+        RowKey is { } rowKey ? rowKey(resource) : KeySelector!((TResource)resource);
+
+    string? IResourceIndexPageViewModel.GetViewUrl(object resource) => ViewUrl?.Invoke(resource);
 }

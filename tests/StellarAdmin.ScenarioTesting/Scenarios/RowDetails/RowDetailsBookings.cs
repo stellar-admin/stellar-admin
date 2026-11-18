@@ -12,7 +12,7 @@ internal static class RowDetailsBookings
     // The booking whose history the handler can't find, as if it was deleted after the grid loaded
     public const int MissingHistoryId = 2;
 
-    public static void AddColumns(ResourceColumnsBuilder<Booking> columns)
+    public static void AddColumns(ResourceTableColumnsBuilder<Booking> columns)
     {
         columns.Add(booking => booking.Reference);
         columns.Add(booking => booking.BookedAt);

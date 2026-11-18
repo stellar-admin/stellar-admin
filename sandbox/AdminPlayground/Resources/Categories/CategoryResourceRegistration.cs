@@ -51,6 +51,10 @@ internal static class CategoryResourceRegistration
             resource.AllowEdit(edit =>
                 edit.Fields(fields => fields.Add(category => category.Name))
             );
+            // The products' category summary links its rows here
+            resource.AllowView(view =>
+                view.Fields(fields => fields.Add(category => category.Name))
+            );
         });
     }
 }

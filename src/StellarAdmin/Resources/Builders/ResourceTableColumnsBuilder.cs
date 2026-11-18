@@ -1,18 +1,22 @@
 using System.Linq.Expressions;
-using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures the columns of a resource's index page.
+///     Configures the columns of a table on a resource's index page.
 /// </summary>
-/// <typeparam name="TResource">The type of the resource.</typeparam>
-public sealed class ResourceColumnsBuilder<TResource>
+/// <typeparam name="TItem">
+///     The type of the table's rows: the resource, or the items a handler loads.
+/// </typeparam>
+public sealed class ResourceTableColumnsBuilder<TItem>
 {
-    private readonly IServiceCollection _services;
+    // Configures the table, once the resource's options are built
+    private readonly Action<Action<ResourceTableLayoutOptions>> _configureTable;
 
-    internal ResourceColumnsBuilder(IServiceCollection services) => _services = services;
+    internal ResourceTableColumnsBuilder(
+        Action<Action<ResourceTableLayoutOptions>> configureTable
+    ) => _configureTable = configureTable;
 
     /// <summary>
     ///     Adds a column.
@@ -29,16 +33,14 @@ public sealed class ResourceColumnsBuilder<TResource>
     /// <remarks>
     ///     A column that computes its value requires a title, and sorts only by an expression.
     /// </remarks>
-    public ResourceColumnBuilder<TResource> Add<TProperty>(
-        Expression<Func<TResource, TProperty>> field
+    public ResourceTableColumnBuilder<TItem> Add<TProperty>(
+        Expression<Func<TItem, TProperty>> field
     )
     {
         ArgumentNullException.ThrowIfNull(field);
 
-        var column = new ResourceColumnBuilder<TResource>(field);
-        _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.MutableColumns.Add(column.Build())
-        );
+        var column = new ResourceTableColumnBuilder<TItem>(field);
+        _configureTable(table => table.MutableColumns.Add(column.Build()));
 
         return column;
     }
@@ -56,9 +58,9 @@ public sealed class ResourceColumnsBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceColumnsBuilder<TResource> Add<TProperty>(
-        Expression<Func<TResource, TProperty>> field,
-        Action<ResourceColumnBuilder<TResource>> configure
+    public ResourceTableColumnsBuilder<TItem> Add<TProperty>(
+        Expression<Func<TItem, TProperty>> field,
+        Action<ResourceTableColumnBuilder<TItem>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -72,11 +74,9 @@ public sealed class ResourceColumnsBuilder<TResource>
     ///     Removes all columns added so far.
     /// </summary>
     /// <returns>The builder, so that calls can be chained.</returns>
-    public ResourceColumnsBuilder<TResource> Clear()
+    public ResourceTableColumnsBuilder<TItem> Clear()
     {
-        _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.MutableColumns.Clear()
-        );
+        _configureTable(table => table.MutableColumns.Clear());
 
         return this;
     }

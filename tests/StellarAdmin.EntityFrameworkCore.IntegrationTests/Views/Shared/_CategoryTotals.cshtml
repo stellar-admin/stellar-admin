@@ -1,0 +1,6 @@
+@using StellarAdmin.Resources
+@model ResourceLayoutModel<StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures.CategoryTotal>
+@foreach (var total in Model.Items)
+{
+    <p data-test="total">@total.Category: @total.Products</p>
+}

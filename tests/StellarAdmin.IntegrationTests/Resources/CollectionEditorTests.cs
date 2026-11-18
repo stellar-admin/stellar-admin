@@ -614,7 +614,7 @@ public class CollectionEditorTests
         Action<StellarAdminBuilder>? configureAdmin = null,
         Action<ResourceEditBuilder<Tour>>? edit = null,
         Action<ResourceViewBuilder<Tour>>? view = null,
-        Action<ResourceColumnsBuilder<Tour>>? configureIndex = null
+        Action<ResourceTableColumnsBuilder<Tour>>? configureIndex = null
     ) =>
         StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
         {

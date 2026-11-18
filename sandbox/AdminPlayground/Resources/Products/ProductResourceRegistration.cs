@@ -153,102 +153,260 @@ internal static class ProductResourceRegistration
                     .Widgets(widgets => AddCategoryPricesWidget(widgets, product => product.Id))
             );
             resource.AllowDelete();
-            resource.Index(index =>
-            {
-                index.EnableScopes(scopes =>
+            // Two tables the switcher at the end of the controls row moves between: the catalog, and prices from the
+            // most expensive. The scopes, search and widgets are shared, so they carry over when switching
+            resource.Index(
+                index =>
                 {
-                    scopes.Add("all", "All products");
-                    scopes.Add("under-50", "Under 50", product => product.Price < 50);
-                    scopes.Add("50-and-over", "50 and over", product => product.Price >= 50);
-                    scopes.DefaultScope = "all";
-                });
-                index.EnableSearch(
-                    term => product => product.Name.Contains(term),
-                    search => search.Placeholder = "Search products..."
-                );
-                index.DefaultSortBy(product => product.Name);
-                // Pricing loads when it's first opened, with one query for that product. Overview renders with
-                // the index, and Related loads when it's first opened
-                index.EnableRowDetails(panels =>
-                {
-                    panels.Add(
-                        "Pricing",
-                        "_ProductPricing",
-                        product => new ProductPricing(
-                            product.Name,
-                            product.Details.Sku,
-                            product.Category != null ? product.Category.Name : null,
-                            product.Price
-                        ),
-                        panel => panel.Icon = "tag"
+                    index.EnableScopes(scopes =>
+                    {
+                        scopes.Add("all", "All products");
+                        scopes.Add("under-50", "Under 50", product => product.Price < 50);
+                        scopes.Add("50-and-over", "50 and over", product => product.Price >= 50);
+                        scopes.DefaultScope = "all";
+                    });
+                    index.EnableSearch(
+                        term => product => product.Name.Contains(term),
+                        search => search.Placeholder = "Search products..."
                     );
-                    panels.Add("Overview", "_ProductOverview", panel => panel.Icon = "package");
-                    panels.Add<RelatedProducts, RelatedProductsHandler>(
-                        "Related",
-                        "_RelatedProducts",
-                        panel => panel.Icon = "link"
-                    );
-                });
-                index.EnablePaging(paging =>
+                    // A price summary of the listed products above the grid, which follows the scope and search, and the
+                    // top categories beside it
+                    index.Widgets(widgets =>
+                    {
+                        widgets.Add<ProductPriceSummaryHandler>(
+                            "Price summary",
+                            "_ProductPriceSummaryWidget",
+                            widget =>
+                                widget.Parameters(context => new ProductPriceSummaryParameters(
+                                    context.Scope,
+                                    context.Search
+                                ))
+                        );
+                        widgets.Add<TopCategoriesHandler>(
+                            "Top categories",
+                            "_TopCategoriesWidget",
+                            widget =>
+                            {
+                                widget.Placement = WidgetPlacement.Aside;
+                                widget.Parameters(_ => new TopCategoriesParameters(Count: 5));
+                            }
+                        );
+                    });
+                },
+                layouts =>
                 {
-                    paging.PageSize = 10;
-                    paging.PageSizes = [10, 25, 50];
-                });
-                // A price summary of the listed products above the grid, which follows the scope and search, and the
-                // top categories beside it
-                index.Widgets(widgets =>
-                {
-                    widgets.Add<ProductPriceSummaryHandler>(
-                        "Price summary",
-                        "_ProductPriceSummaryWidget",
-                        widget =>
-                            widget.Parameters(context => new ProductPriceSummaryParameters(
-                                context.Scope,
-                                context.Search
-                            ))
-                    );
-                    widgets.Add<TopCategoriesHandler>(
-                        "Top categories",
-                        "_TopCategoriesWidget",
-                        widget =>
+                    layouts.AddTable(
+                        "catalog",
+                        table =>
                         {
-                            widget.Placement = WidgetPlacement.Aside;
-                            widget.Parameters(_ => new TopCategoriesParameters(Count: 5));
+                            table.Title = "Catalog";
+                            table.Icon = "table";
+                            table.DefaultSortBy(product => product.Name);
+                            // Pricing loads when it's first opened, with one query for that product. Overview renders with
+                            // the index, and Related loads when it's first opened
+                            table.EnableRowDetails(panels =>
+                            {
+                                panels.Add(
+                                    "Pricing",
+                                    "_ProductPricing",
+                                    product => new ProductPricing(
+                                        product.Name,
+                                        product.Details.Sku,
+                                        product.Category != null ? product.Category.Name : null,
+                                        product.Price
+                                    ),
+                                    panel => panel.Icon = "tag"
+                                );
+                                panels.Add(
+                                    "Overview",
+                                    "_ProductOverview",
+                                    panel => panel.Icon = "package"
+                                );
+                                panels.Add<RelatedProducts, RelatedProductsHandler>(
+                                    "Related",
+                                    "_RelatedProducts",
+                                    panel => panel.Icon = "link"
+                                );
+                            });
+                            table.EnablePaging(paging =>
+                            {
+                                paging.PageSize = 10;
+                                paging.PageSizes = [10, 25, 50];
+                            });
+                            table.Columns(columns =>
+                            {
+                                columns.Add(product => product.Id);
+                                columns.Add(
+                                    product => product.Details.Sku,
+                                    column => column.Sortable()
+                                );
+                                columns.Add(
+                                    product => product.Category,
+                                    column => column.Sortable(product => product.Category!.Name)
+                                );
+                                columns.Add(
+                                    product => product.Name,
+                                    column => column.Sortable(product => product.Name.ToLower())
+                                );
+                                columns.Add(
+                                    product => product.Price,
+                                    column =>
+                                    {
+                                        column.Sortable();
+                                        column.Title = "Unit price";
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "0.00"
+                                        );
+                                    }
+                                );
+                                // columns.Add(product => product.Tags, column => column.UseDisplay<BadgeDisplay>());
+                                columns.Add(
+                                    product => string.Join(",", product.Tags.Select(t => t.Name)),
+                                    column =>
+                                    {
+                                        column.Title = "Tags";
+                                        column.Sortable(c => c.Tags.Count);
+                                    }
+                                );
+                            });
                         }
                     );
-                });
-                index.Columns(columns =>
-                {
-                    columns.Add(product => product.Id);
-                    columns.Add(product => product.Details.Sku, column => column.Sortable());
-                    columns.Add(
-                        product => product.Category,
-                        column => column.Sortable(product => product.Category!.Name)
-                    );
-                    columns.Add(
-                        product => product.Name,
-                        column => column.Sortable(product => product.Name.ToLower())
-                    );
-                    columns.Add(
-                        product => product.Price,
-                        column =>
+                    // Its own columns, sort and page size, and no delete button
+                    layouts.AddTable(
+                        "pricing",
+                        table =>
                         {
-                            column.Sortable();
-                            column.Title = "Unit price";
-                            column.UseDisplay<NumberDisplay>(number => number.Format = "0.00");
+                            table.Title = "Pricing";
+                            table.Icon = "tag";
+                            table.DefaultSortByDescending(product => product.Price);
+                            table.EnablePaging(paging => paging.PageSize = 25);
+                            table.RowActions(actions => actions.Delete = false);
+                            table.Columns(columns =>
+                            {
+                                columns.Add(
+                                    product => product.Name,
+                                    column => column.Sortable(product => product.Name.ToLower())
+                                );
+                                columns.Add(
+                                    product => product.Category,
+                                    column => column.Sortable(product => product.Category!.Name)
+                                );
+                                columns.Add(
+                                    product => product.Price,
+                                    column =>
+                                    {
+                                        column.Sortable();
+                                        column.Title = "Unit price";
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "0.00"
+                                        );
+                                    }
+                                );
+                            });
                         }
                     );
-                    // columns.Add(product => product.Tags, column => column.UseDisplay<BadgeDisplay>());
-                    columns.Add(
-                        product => string.Join(",", product.Tags.Select(t => t.Name)),
-                        column =>
+                    // Every listed product as a card, from Areas/StellarAdmin/Views/Products/_ProductCards
+                    layouts.AddPartial(
+                        "cards",
+                        "_ProductCards",
+                        cards =>
                         {
-                            column.Title = "Tags";
-                            column.Sortable(c => c.Tags.Count);
+                            cards.Title = "Cards";
+                            cards.Icon = "layout-grid";
                         }
                     );
-                });
-            });
+                    // Prices per category of the products the scope and search select, from the narrowed query
+                    layouts.AddPartial<CategoryPriceSummary, CategoryPriceSummaryHandler>(
+                        "categories",
+                        "_CategoryPriceSummary",
+                        categories =>
+                        {
+                            categories.Title = "Prices per category";
+                            categories.Icon = "chart-column";
+                            // Each card's title links to its category, apart from the products without one
+                            categories.LinkTo<Category>(summary => summary.CategoryId);
+                        }
+                    );
+                    // Each product against its category's average, from a handler that sorts and pages the rows. Each
+                    // row is a product, so it has the product's row actions
+                    layouts.AddTable<ProductPriceCheck, ProductPriceCheckHandler>(
+                        "price-check",
+                        table =>
+                        {
+                            table.Title = "Price check";
+                            table.Icon = "scale";
+                            table.HasRecordKey(row => row.ProductId);
+                            table.DefaultSortBy(row => row.Name);
+                            table.EnablePaging(paging => paging.PageSize = 10);
+                            table.Columns(columns =>
+                            {
+                                columns.Add(row => row.Name, column => column.Sortable());
+                                columns.Add(
+                                    row => row.Category,
+                                    column =>
+                                    {
+                                        column.Sortable();
+                                        column.EmptyText = "No category";
+                                    }
+                                );
+                                columns.Add(
+                                    row => row.Price,
+                                    column =>
+                                    {
+                                        column.Sortable();
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "0.00"
+                                        );
+                                    }
+                                );
+                                columns.Add(
+                                    row => row.CategoryAverage,
+                                    column =>
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "0.00"
+                                        )
+                                );
+                                columns.Add(
+                                    row => row.Difference,
+                                    column =>
+                                    {
+                                        column.Sortable();
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "+0.00;-0.00;0.00"
+                                        );
+                                    }
+                                );
+                            });
+                        }
+                    );
+                    // The products per category, each row linking to its category's view page
+                    layouts.AddTable<CategorySummary, CategorySummaryHandler>(
+                        "category-summary",
+                        table =>
+                        {
+                            table.Title = "Category summary";
+                            table.Icon = "tags";
+                            table.LinkTo<Category>(row => row.CategoryId);
+                            table.Columns(columns =>
+                            {
+                                columns.Add(row => row.Category, column => column.Sortable());
+                                columns.Add(row => row.Products, column => column.Sortable());
+                                columns.Add(
+                                    row => row.Average,
+                                    column =>
+                                    {
+                                        column.Title = "Average price";
+                                        column.Sortable();
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "0.00"
+                                        );
+                                    }
+                                );
+                            });
+                        }
+                    );
+                }
+            );
         });
     }
 

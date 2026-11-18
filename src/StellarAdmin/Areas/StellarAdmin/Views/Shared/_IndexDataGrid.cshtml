@@ -32,7 +32,7 @@
     // A row's requests carry the page's query, so a save can reload the page as it shows
     var query = Model.Query;
     var queryPage = query.Page is null ? null : Model.Paging?.Page ?? query.Page;
-    string? RowUrl(string action, string? id, bool? another = null, int? added = null) => Url.Action(action, new { id, page = queryPage, pageSize = query.PageSize, search = query.Search, scope = query.Scope, sortBy = query.SortBy, sortDirection = query.SortDirection, another, added });
+    string? RowUrl(string action, string? id, bool? another = null, int? added = null) => Url.Action(action, new { id, layout = query.Layout, page = queryPage, pageSize = query.PageSize, search = query.Search, scope = query.Scope, sortBy = query.SortBy, sortDirection = query.SortDirection, another, added });
 }
 
 <sa-data-grid id="index-page-grid" items="Model.Items" class="sa-resource-index-grid" key-field="@inline?.KeyField"
@@ -74,21 +74,23 @@
         <sa-data-grid-column sortable="false" class="@(inline is null ? "w-px whitespace-nowrap" : "w-px whitespace-nowrap sa-inline-row-actions")">
             <sa-data-grid-item-template>
                 @{
-                    var resourceId = Model.GetKey(Html.GridItem<object>());
+                    // A row a table's handler loads may not be a record, and then has no actions
+                    var item = Html.GridItem<object>();
+                    var resourceId = Model.GetKey(item);
                     var deleteTooltipId = $"--resource-delete-{resourceId}";
                     var editTooltipId = $"--resource-edit-{resourceId}";
                     var viewTooltipId = $"--resource-view-{resourceId}";
                 }
-                @if (Model.CanView)
+                @if (Model.CanView && Model.GetViewUrl(item) is { } viewUrl)
                 {
                     <sa-link-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
-                                   asp-action="View" asp-route-id="@resourceId" hx-boost="false"
+                                   href="@viewUrl" hx-boost="false"
                                    aria-label="@Model.ViewLabel" interestfor="@viewTooltipId">
                         <sa-icon name="eye" />
                     </sa-link-button>
                     <sa-tooltip id="@viewTooltipId">@Model.ViewLabel</sa-tooltip>
                 }
-                @if (Model.CanEdit)
+                @if (Model.CanEdit && resourceId is not null)
                 {
                     <sa-link-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    asp-action="Edit" asp-route-id="@resourceId" hx-boost="false"
@@ -108,9 +110,9 @@
                     </sa-button>
                     <sa-tooltip id="@editTooltipId">@Model.EditLabel</sa-tooltip>
                 }
-                @if (Model.Delete is not null)
+                @if (Model.Delete is not null && resourceId is not null)
                 {
-                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@(Model.Query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@Model.Query.PageSize" asp-route-search="@Model.Query.Search" asp-route-scope="@Model.Query.Scope" asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection" class="inline-block" data-resource-delete
+                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-layout="@Model.Query.Layout" asp-route-page="@(Model.Query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@Model.Query.PageSize" asp-route-search="@Model.Query.Search" asp-route-scope="@Model.Query.Scope" asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection" class="inline-block" data-resource-delete
                           hx-confirm="js:confirmResourceDelete()" hx-push-url="false">
                         <sa-button type="submit" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    aria-label="@Model.DeleteLabel" interestfor="@deleteTooltipId">
@@ -203,7 +205,7 @@
                     var panel = rowDetails.Panels[0];
                     if (panel.LoadsOnDemand)
                     {
-                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()) })"
+                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), layout = query.Layout })"
                              hx-trigger='rowdetailexpand from:"closest tr" once'
                              hx-target="this" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
                             <partial name="_IndexRowDetailLoading" />
@@ -238,7 +240,7 @@
                             {
                                 @* The first panel loads when the row expands, the others when their tab is first shown *@
                                 <sa-tab-panel id="@panelId"
-                                              hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), panel = panel.Name })"
+                                              hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), layout = query.Layout, panel = panel.Name })"
                                               hx-trigger='@(index == 0 ? "rowdetailexpand from:\"closest tr\" once" : "tabshow once")'
                                               hx-target="this" hx-swap="innerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
                                     <partial name="_IndexRowDetailLoading" />
@@ -267,7 +269,7 @@
                                     @if (panel.LoadsOnDemand)
                                     {
                                         @* Loads when the panel is first opened *@
-                                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), panel = panel.Name })"
+                                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), layout = query.Layout, panel = panel.Name })"
                                              hx-trigger='toggle once from:"closest details"'
                                              hx-target="this" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
                                             <partial name="_IndexRowDetailLoading" />

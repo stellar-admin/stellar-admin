@@ -64,6 +64,12 @@ internal sealed class ResourceOptionsFactory<TResource>(
         IReadOnlySet<Type> resourceTypes
     )
     {
+        // An index without layouts, such as one never configured, shows a table
+        if (options.Index.Layouts.Count == 0)
+        {
+            options.Index.GetOrAddTable(ResourceIndexOptions.ImplicitTableKey);
+        }
+
         options.RepairLabels();
         ResourceHandlerCheck.Run(options);
         ValueTextCheck.Run(options, resourceTypes);

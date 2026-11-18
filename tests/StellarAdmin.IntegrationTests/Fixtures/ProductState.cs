@@ -18,6 +18,10 @@ public sealed class ProductState(IReadOnlyList<Product> products)
     public Exception? WriteException { get; set; }
 
     public List<Product> Products { get; } = [.. products];
+
+    // The requests a layout's handler received
+    public List<ResourceListRequest> HandlerRequests { get; } = [];
+
     public List<ResourceListRequest> ListRequests { get; } = [];
 
     public List<Guid> Requests { get; } = [];

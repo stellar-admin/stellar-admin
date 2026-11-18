@@ -11,6 +11,7 @@ internal sealed record ResourceRegistration(
     Func<IServiceProvider, ResourceSidebarItem> ResolveSidebarItem,
     Func<IServiceProvider, IReadOnlyList<object>> ResolveAuthorizationMetadata,
     Func<IServiceProvider, bool> ResolveCanCreate,
+    Func<IServiceProvider, bool> ResolveCanView,
     Func<IServiceProvider, IReadOnlyList<ConfigurationProblem>> ResolveProblems,
     Func<IServiceProvider, ResourceReference> ResolveReference
 )

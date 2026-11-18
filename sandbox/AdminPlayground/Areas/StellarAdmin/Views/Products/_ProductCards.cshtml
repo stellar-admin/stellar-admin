@@ -1,0 +1,38 @@
+@using StellarAdmin.Resources
+@model ResourceLayoutModel<Product>
+@* Every product the scope and search select, as cards: a partial layout has no paging *@
+@if (Model.Items.Count == 0)
+{
+    <p class="text-sm text-muted-foreground">No products match.</p>
+}
+else
+{
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        @foreach (var product in Model.Items)
+        {
+            <sa-card size="CardSize.Small">
+                <sa-card-header>
+                    <sa-card-title>@product.Name</sa-card-title>
+                    <sa-card-description>@(string.IsNullOrEmpty(product.Details.Sku) ? "No SKU" : product.Details.Sku)</sa-card-description>
+                </sa-card-header>
+                <sa-card-content>
+                    <p class="text-2xl font-semibold tabular-nums">@product.Price.ToString("0.00")</p>
+                </sa-card-content>
+                <sa-card-footer class="gap-2">
+                    @if (Model.GetViewUrl(product) is { } viewUrl)
+                    {
+                        <sa-link-button href="@viewUrl" variant="ButtonVariant.Outline" size="ButtonSize.Small">View</sa-link-button>
+                    }
+                    @if (Model.GetEditUrl(product) is { } editUrl)
+                    {
+                        <sa-link-button href="@editUrl" variant="ButtonVariant.Outline" size="ButtonSize.Small">Edit</sa-link-button>
+                    }
+                </sa-card-footer>
+            </sa-card>
+        }
+    </div>
+    <p class="mt-4 text-sm text-muted-foreground">
+        @Model.Items.Count products.
+        <a class="underline underline-offset-4" href="@Model.GetIndexUrl(new { layout = "pricing" })">Compare their prices</a>
+    </p>
+}

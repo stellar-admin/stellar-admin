@@ -1,6 +1,6 @@
 ---
 name: stellar-admin
-description: "Build admin panels with StellarAdmin in ASP.NET Core: register resources (EF Core or custom data sources), configure index pages (columns, search, scopes, sorting, paging, row details), create and edit forms (fields, layout, editors, lookups, read-only display fields), view pages, the sidebar, authorization, and view overrides. Use when working with AddStellarAdmin, AddEfCoreResource, AddResource or files under Areas/StellarAdmin. Installing the panel is the stellar-admin-setup skill; hand-written sa-* markup is the stellar-admin-ui skill."
+description: "Build admin panels with StellarAdmin in ASP.NET Core: register resources (EF Core or custom data sources), configure index pages (columns, search, scopes, sorting, paging, row details, switchable layouts), create and edit forms (fields, layout, editors, lookups, read-only display fields), view pages, the sidebar, authorization, and view overrides. Use when working with AddStellarAdmin, AddEfCoreResource, AddResource or files under Areas/StellarAdmin. Installing the panel is the stellar-admin-setup skill; hand-written sa-* markup is the stellar-admin-ui skill."
 metadata:
   author: StellarAdmin
 ---
@@ -21,6 +21,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | --- | --- | --- |
 | Register an entity, slugs, labels, enable create/edit/view/delete, custom data source | `AddEfCoreResource<TEntity>`, `AddResource<T>`, `Allow*`, `UseDataSource` | [resources](references/resources.md) |
 | Search, scope tabs, default sort, paging, expandable rows | `Index(index => ...)`, `EnableSearch`, `EnableScopes`, `DefaultSortBy`, `EnablePaging`, `EnableRowDetails` | [index-pages](references/index-pages.md) |
+| Several tables or your own partial views on one index page, with a switcher; summaries of another shape from a handler, linked to records | `Index(index => ..., layouts => ...)`, `AddTable`, `AddPartial`, `ResourceLayoutModel<T>`, `IEfCoreLayoutHandler<TEntity, TItem>`, `IResourceLayoutHandler<TItem>`, `HasRecordKey`, `LinkTo<T>` | [layouts](references/layouts.md) |
 | Grid columns: titles, sorting, currency, badges, values through references | `Columns(columns => columns.Add(...))`, `Sortable`, `UseDisplay` | [columns](references/columns.md) |
 | Create and edit pages: layout, sections, validation, defaults, save and add another, custom models | `AllowCreate`, `AllowEdit`, `Fields`, `AddSection`, `Columns`, `UseFactory`, `EnableAddAnother` | [forms](references/forms.md) |
 | Run code when an EF Core form loads or saves: audit rows, defaults from services, rules, `UserManager`, extra form fields | `Events`, `UseEvents`, `OnCreating`, `OnUpdating`, `Fail`, `AllowEdit<TModel>(model => model.Entity, ...)` | [forms](references/forms.md#ef-core-form-events) |
@@ -169,11 +170,11 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 | Namespace | Package | Contains |
 | --- | --- | --- |
 | `StellarAdmin` | StellarAdmin | `AddStellarAdmin`, `MapStellarAdmin`, `StellarAdminLayouts`, `EnvironmentIndicator`, `EnvironmentColor` |
-| `StellarAdmin.EntityFrameworkCore` | StellarAdmin.EntityFrameworkCore | `AddEfCoreResource`, and the EF `UseItems<TEntity>` overloads on editors for types that aren't resources |
+| `StellarAdmin.EntityFrameworkCore` | StellarAdmin.EntityFrameworkCore | `AddEfCoreResource`, `IEfCoreLayoutHandler<TEntity, TItem>`, and the EF `UseItems<TEntity>` overloads on editors for types that aren't resources |
 | `StellarAdmin.Resources.Editors` | StellarAdmin | Editors, `ChoiceItem`, `ItemMedia`, `LookupSource` |
 | `StellarAdmin.Resources.Displays` | StellarAdmin | Displays such as `NumberDisplay`, `BadgeDisplay`, `FieldDisplay` |
 | `StellarAdmin.Resources.Builders` | StellarAdmin | Builder types, for helper methods such as `void BookingFields(ResourceFieldsBuilder<Booking> fields)` |
-| `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `InlineCreatePosition`, `InlineAddButton` |
+| `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `ResourceLayoutModel<TItem>`, `InlineCreatePosition`, `InlineAddButton` |
 | `StellarAdmin.Resources.Options` | StellarAdmin | Resolved options such as `ResourceOptions<T>` and `FormFieldOptions`, for post-configuration |
 | `StellarAdmin.Sidebar` | StellarAdmin | `SidebarLinkTarget`, `BrandingLogo`, `UserMenuItem` |
 | `StellarAdmin.Areas.StellarAdmin.ViewModels` | StellarAdmin | Page view models for overrides (`ResourceIndexPageViewModel<T>`) |
@@ -214,6 +215,7 @@ Say so rather than inventing an API:
 
 - Custom row or page actions and bulk actions (row actions are view, edit and delete).
 - Index filters other than scope tabs.
+- Built-in board, map, calendar or card layouts (build them as partial layouts with `AddPartial`).
 - Changing the user menu's "Log out" text, and hiding user menu items by authorization (replace `_SidebarUserMenu.cshtml` for either).
 - Form tabs and wizards.
 - File upload editors other than images (`ImageEditor`, and images in `RichTextEditor`), and deleting replaced or removed images: StellarAdmin never deletes them, so the app cleans up files no record references.

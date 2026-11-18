@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Index layouts prototype (2026-11-17): a layout switcher on the index page. Some layouts draw the same rows
+         differently (table, cards, board); others have a data shape of their own (map: one row per destination;
+         calendar: departures per day; chart: revenue per month). Placements A (controls row) and A2 (page header).
+         Every frame is live. Build both libraries first (npm run build in src/StellarAdmin.UI/Client and
+         src/StellarAdmin/Client). -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Index layouts</title>
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css">
+    <link rel="stylesheet" id="theme">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400..700&family=Figtree:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <!-- Candidate CSS, written as the library would write it -->
+    <style>
+        @layer components {
+            /* The layout switcher: a segmented control at the end of the controls row (A) or in the header (A2) */
+            .sa-resource-index-layouts { flex: none; }
+            .sa-resource-index-layouts .sa-segmented-control-item:not(:has(> span)) { padding-inline: calc(2 * var(--sa-unit)); }
+            .sa-resource-index-controls > .sa-resource-index-layouts { margin-inline-start: calc(-1 * var(--sa-unit)); }
+            .sa-resource-index-controls:not(:has(.sa-resource-index-search)) > .sa-resource-index-layouts { margin-inline-start: auto; }
+
+            @container sa-resource-index-list (width < 44rem) {
+                .sa-resource-index-controls:has(> .sa-resource-index-layouts) .sa-resource-index-search { flex: 1; width: auto; }
+            }
+
+            /* The filter bar inside the list card, under the controls */
+            .sa-resource-index-filters {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: calc(1.5 * var(--sa-unit));
+                padding: calc(2.5 * var(--sa-unit)) var(--_card-p);
+                border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+            }
+
+            /* A bar over layouts without column headers: what is shown, and the layout's own controls */
+            .sa-resource-index-layout-bar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: calc(2 * var(--sa-unit));
+                padding: calc(2 * var(--sa-unit)) var(--_card-p);
+                color: var(--sa-color-ink-muted);
+                font-size: var(--sa-text-sm);
+                & b { color: var(--sa-color-ink); font-weight: 500; }
+                & > div { display: flex; align-items: center; gap: var(--sa-unit); }
+            }
+
+            /* Cards */
+            .sa-resource-index-cards {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+                gap: calc(4 * var(--sa-unit));
+                padding: var(--sa-unit) var(--_card-p) var(--_card-p);
+            }
+            .sa-resource-index-cards > .sa-card {
+                --_card-p: var(--sa-space-container-sm);
+                --_card-gap: calc(3 * var(--sa-unit));
+                &:has(> .sa-resource-index-card-media:first-child) { padding-top: 0; }
+            }
+            .sa-resource-index-card-media {
+                position: relative;
+                height: 5.5rem;
+                display: flex;
+                align-items: end;
+                padding: calc(2 * var(--sa-unit)) var(--_card-p);
+                background: linear-gradient(135deg, oklch(0.72 0.11 var(--_hue)), oklch(0.52 0.13 calc(var(--_hue) + 40)));
+                color: white;
+                font-size: var(--sa-text-xs);
+                font-weight: 500;
+                text-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+                & .sa-badge { position: absolute; top: calc(2 * var(--sa-unit)); right: calc(2 * var(--sa-unit)); background: var(--sa-color-surface); color: var(--sa-color-ink); text-shadow: none; }
+            }
+            .sa-resource-index-card-facts {
+                display: grid;
+                gap: calc(1.5 * var(--sa-unit));
+                color: var(--sa-color-ink-muted);
+                font-size: var(--sa-text-sm);
+                & > div { display: flex; align-items: center; gap: calc(2 * var(--sa-unit)); }
+                & svg { width: 0.875rem; height: 0.875rem; flex: none; }
+            }
+
+            /* Board */
+            .sa-resource-index-board {
+                display: grid;
+                grid-auto-columns: minmax(13rem, 1fr);
+                grid-auto-flow: column;
+                gap: calc(3 * var(--sa-unit));
+                padding: var(--sa-unit) var(--_card-p) var(--_card-p);
+                overflow-x: auto;
+            }
+            .sa-resource-index-board-column {
+                display: flex;
+                flex-direction: column;
+                gap: calc(2 * var(--sa-unit));
+                min-width: 0;
+                max-height: 28rem;
+                overflow-y: auto;
+                padding: calc(2 * var(--sa-unit));
+                border-radius: var(--sa-radius-control);
+                background: var(--sa-color-tint);
+            }
+            .sa-resource-index-board-head {
+                display: flex;
+                align-items: center;
+                gap: calc(2 * var(--sa-unit));
+                padding: var(--sa-unit) var(--sa-unit) 0;
+                font-size: var(--sa-text-sm);
+                font-weight: 500;
+                & > .count { color: var(--sa-color-ink-muted); font-weight: 400; }
+            }
+            .sa-resource-index-board-card {
+                display: grid;
+                gap: var(--sa-unit);
+                padding: calc(2.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
+                border: var(--sa-border-width) solid var(--sa-color-line);
+                border-radius: var(--sa-radius-control);
+                background: var(--sa-color-surface);
+                box-shadow: var(--sa-shadow-control);
+                font-size: var(--sa-text-sm);
+                & .meta { display: flex; justify-content: space-between; gap: calc(2 * var(--sa-unit)); color: var(--sa-color-ink-muted); font-size: var(--sa-text-xs); }
+            }
+            .sa-resource-index-board-empty { padding: calc(4 * var(--sa-unit)); text-align: center; color: var(--sa-color-ink-muted); font-size: var(--sa-text-xs); }
+
+            /* Map: destinations, a list beside the map */
+            .sa-resource-index-map-split { display: grid; grid-template-columns: 17rem minmax(0, 1fr); border-top: var(--sa-border-width) solid var(--sa-color-line); }
+            .sa-resource-index-map-list {
+                display: flex;
+                flex-direction: column;
+                max-height: 26rem;
+                overflow-y: auto;
+                border-inline-end: var(--sa-border-width) solid var(--sa-color-line);
+            }
+            .sa-resource-index-map-item {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                align-items: center;
+                gap: 2px calc(2.5 * var(--sa-unit));
+                padding: calc(2 * var(--sa-unit)) calc(3 * var(--sa-unit));
+                border: 0;
+                border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+                background: transparent;
+                color: inherit;
+                font: inherit;
+                font-size: var(--sa-text-sm);
+                text-align: start;
+                cursor: pointer;
+                &:hover, &[data-selected] { background: var(--sa-color-hover); }
+                &[data-selected] { box-shadow: inset 3px 0 0 var(--sa-color-accent-fill); }
+                & > b { font-weight: 500; }
+                & > small { color: var(--sa-color-ink-muted); font-size: var(--sa-text-xs); }
+                & > .num { color: var(--sa-color-ink-muted); font-size: var(--sa-text-xs); }
+            }
+            .sa-resource-index-map {
+                position: relative;
+                container-type: inline-size;
+                aspect-ratio: 2.1;
+                overflow: hidden;
+                background: #aad3df;
+                & .world { position: absolute; left: 0; width: 100%; aspect-ratio: 1; top: calc(-0.2071 * 100cqw); display: grid; grid-template-columns: repeat(4, 1fr); }
+                & .world img { display: block; width: 100%; height: auto; }
+                & .attribution { position: absolute; right: 4px; bottom: 2px; font-size: 10px; color: #333; background: rgb(255 255 255 / 0.7); padding: 0 4px; border-radius: 3px; }
+            }
+            .dark .sa-resource-index-map .world { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9); }
+            .sa-resource-index-map-pin {
+                position: absolute;
+                translate: -50% -50%;
+                border: 2px solid white;
+                border-radius: 999px;
+                background: var(--sa-color-accent-fill);
+                box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+                opacity: 0.85;
+                cursor: pointer;
+                transition: scale 120ms;
+                &:hover, &[data-hot], &[data-selected] { scale: 1.2; z-index: 2; opacity: 1; }
+                &[data-selected] { outline: 3px solid color-mix(in oklab, var(--sa-color-accent-fill) 40%, transparent); }
+            }
+            .sa-resource-index-map-label {
+                position: absolute;
+                translate: -50% 0.9rem;
+                padding: 1px 6px;
+                border-radius: 4px;
+                background: rgb(255 255 255 / 0.85);
+                color: #111;
+                font-size: 11px;
+                font-weight: 500;
+                white-space: nowrap;
+                pointer-events: none;
+            }
+            .sa-resource-index-map-card {
+                position: absolute;
+                top: calc(3 * var(--sa-unit));
+                left: calc(3 * var(--sa-unit));
+                width: 15rem;
+                z-index: 3;
+                font-size: var(--sa-text-sm);
+                & dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; }
+                & dt { color: var(--sa-color-ink-muted); }
+                & dd { margin: 0; text-align: end; font-variant-numeric: tabular-nums; }
+            }
+
+            /* Calendar: departures per day */
+            .sa-resource-index-calendar {
+                display: grid;
+                grid-template-columns: repeat(7, minmax(0, 1fr));
+                border-top: var(--sa-border-width) solid var(--sa-color-line);
+            }
+            .sa-resource-index-calendar-weekday {
+                padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+                border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+                color: var(--sa-color-ink-muted);
+                font-size: var(--sa-text-xs);
+                font-weight: 500;
+            }
+            .sa-resource-index-calendar-day {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+                min-width: 0;
+                min-height: 6.25rem;
+                padding: calc(1.5 * var(--sa-unit));
+                border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+                &:not(:nth-child(7n)) { border-inline-end: var(--sa-border-width) solid var(--sa-color-line); }
+                &[data-outside] { background: var(--sa-color-surface-subtle); & > .date { opacity: 0.5; } }
+                & > .date { align-self: start; min-width: 1.5rem; padding: 2px 6px; border-radius: 999px; font-size: var(--sa-text-xs); text-align: center; font-variant-numeric: tabular-nums; }
+                &[data-today] > .date { background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); font-weight: 600; }
+                & > .more { padding-inline: 4px; color: var(--sa-color-ink-muted); font-size: var(--sa-text-2xs); }
+            }
+            .sa-resource-index-calendar-event {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                min-width: 0;
+                padding: 2px 5px;
+                border-radius: var(--sa-radius-item);
+                background: var(--sa-color-tint);
+                font-size: var(--sa-text-2xs);
+                line-height: 1.3;
+                white-space: nowrap;
+                cursor: pointer;
+                &:hover { background: var(--sa-color-hover); }
+                & > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+            }
+
+            /* Chart: revenue per departure month, with the months as a table under it */
+            .sa-resource-index-chart {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 0 calc(2 * var(--sa-unit));
+                padding: calc(2 * var(--sa-unit)) var(--_card-p) calc(4 * var(--sa-unit));
+                border-top: var(--sa-border-width) solid var(--sa-color-line);
+            }
+            .sa-resource-index-chart-axis { display: flex; flex-direction: column; justify-content: space-between; height: 14rem; color: var(--sa-color-ink-muted); font-size: var(--sa-text-2xs); text-align: end; font-variant-numeric: tabular-nums; translate: 0 0.4em; }
+            .sa-resource-index-chart-plot {
+                display: grid;
+                grid-auto-columns: minmax(0, 1fr);
+                grid-auto-flow: column;
+                align-items: end;
+                gap: calc(4 * var(--sa-unit));
+                height: 14rem;
+                padding-inline: calc(2 * var(--sa-unit));
+                background: repeating-linear-gradient(to top, var(--sa-color-line) 0 1px, transparent 1px 25%);
+                border-bottom: var(--sa-border-width) solid var(--sa-color-line-control);
+            }
+            .sa-resource-index-chart-bar {
+                position: relative;
+                height: 100%;
+                & > [data-series] { position: absolute; inset-inline: 0; }
+                & > [data-series]:last-of-type { border-radius: 4px 4px 0 0; }
+                & > .value { position: absolute; left: 50%; translate: -50% calc(-100% - 4px); font-size: var(--sa-text-2xs); color: var(--sa-color-ink-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+            }
+            .sa-resource-index-chart-x { grid-column: 2; display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; gap: calc(4 * var(--sa-unit)); padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit)) 0; color: var(--sa-color-ink-muted); font-size: var(--sa-text-xs); text-align: center; }
+            .sa-resource-index-chart-legend { display: flex; flex-wrap: wrap; gap: calc(3 * var(--sa-unit)); font-size: var(--sa-text-xs); & > span { display: inline-flex; align-items: center; gap: 6px; } }
+            [data-series="Confirmed"] { --_series: var(--sa-color-success); }
+            [data-series="Pending"] { --_series: var(--sa-color-warning); }
+            [data-series="Completed"] { --_series: var(--sa-color-info); }
+            .sa-resource-index-chart-bar > [data-series] { background: var(--_series); }
+            .sa-resource-index-chart-legend i { width: 0.625rem; height: 0.625rem; border-radius: 2px; background: var(--_series); }
+        }
+
+        /* ---- Prototype scaffolding (not extracted) ---- */
+        body { margin: 0; padding: 2rem 2rem 6rem; background: var(--sa-color-surface-sunken); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+        .intro { max-width: 62rem; margin-bottom: 2rem; }
+        .intro h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 .5rem; }
+        .intro p, .intro li { color: var(--sa-color-ink-muted); margin: .25rem 0; font-size: .9rem; }
+        .intro b { color: var(--sa-color-ink); }
+        section { margin-bottom: 3rem; }
+        section > h2 { font-size: 1.1rem; font-weight: 600; margin: 0 0 .25rem; }
+        section > p { color: var(--sa-color-ink-muted); margin: 0 0 1rem; font-size: .875rem; max-width: 62rem; }
+        .strips { display: grid; gap: 2rem; }
+        .strips.narrow { grid-template-columns: repeat(auto-fill, minmax(30rem, 36rem)); }
+        figure { margin: 0; }
+        figcaption { font-size: .85rem; color: var(--sa-color-ink-muted); margin-bottom: .5rem; max-width: 62rem; }
+        figcaption b { color: var(--sa-color-ink); }
+        .frame { border: 1px solid var(--sa-color-line); border-radius: 10px; overflow: hidden; background: var(--sa-color-canvas, var(--sa-color-surface)); }
+        .frame .viewport { max-height: 44rem; overflow: auto; padding: 1.5rem; }
+        .frame .viewport > .sa-page-container { max-width: none; padding: 0; }
+        .url { display: flex; justify-content: space-between; gap: 1rem; font: 12px/1.4 var(--sa-font-mono, monospace); color: var(--sa-color-ink-muted); padding: .4rem .75rem; border-top: 1px solid var(--sa-color-line); background: var(--sa-color-surface); }
+        .url b { color: var(--sa-color-ink); font-weight: 500; }
+        .url .shape { font-family: var(--sa-font-sans); }
+        .ctl { position: fixed; right: 1rem; bottom: 1rem; z-index: 50; display: flex; flex-wrap: wrap; gap: .5rem .75rem; align-items: center; padding: .5rem .75rem; border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-surface); box-shadow: 0 4px 16px rgb(0 0 0 / .12); font-size: .8rem; }
+        .ctl label { display: flex; gap: .35rem; align-items: center; }
+        .ctl select { font: inherit; }
+        .tag { display: inline-block; min-width: 1.6em; font-weight: 700; color: var(--sa-color-ink); }
+
+        /* Prototype helpers for the data */
+        .status-dot { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%; flex: none; background: var(--_dot, var(--sa-color-ink-muted)); }
+        .status-dot[data-status="Confirmed"] { --_dot: var(--sa-color-success); }
+        .status-dot[data-status="Pending"] { --_dot: var(--sa-color-warning); }
+        .status-dot[data-status="Completed"] { --_dot: var(--sa-color-info); }
+        .status-dot[data-status="Cancelled"] { --_dot: color-mix(in oklab, var(--sa-color-ink-muted) 60%, transparent); }
+        .cell-agent { display: flex; align-items: center; gap: 8px; }
+        .cell-muted { color: var(--sa-color-ink-muted); }
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .mini-avatar.sa-avatar { --_size: 1.25rem; --_text: 0.55rem; }
+        .mono { font-family: var(--sa-font-mono, monospace); font-size: .92em; }
+        .sa-filter-chip-media .status-dot + .status-dot { margin-inline-start: -2px; }
+
+        /* Filter pills, copied from the filter-bar prototype (explore/index-filters) */
+        .sa-filter-chip {
+            --_bg: var(--sa-color-surface);
+            display: inline-flex; align-items: stretch; max-width: 100%; height: var(--sa-control-h-sm); overflow: hidden;
+            border: var(--sa-border-width) solid var(--sa-color-line-control); border-radius: var(--sa-radius-control-sm);
+            background: var(--_bg); box-shadow: var(--sa-shadow-control); color: var(--sa-color-ink); font-size: var(--sa-text-xs); line-height: 1; white-space: nowrap;
+        }
+        .sa-filter-chip-part {
+            display: inline-flex; align-items: center; gap: calc(1.5 * var(--sa-unit)); min-width: 0; padding-inline: calc(2 * var(--sa-unit));
+            border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer;
+            & + & { border-inline-start: var(--sa-border-width) solid var(--sa-color-line); }
+            &:hover { background: var(--sa-color-hover); }
+            & > svg { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+        }
+        .sa-filter-chip-field { font-weight: 500; & > svg { color: var(--sa-color-ink-muted); } }
+        .sa-filter-chip-op { color: var(--sa-color-ink-muted); }
+        .sa-filter-chip-value { font-weight: 500; }
+        .sa-filter-chip-remove { padding-inline: calc(1.5 * var(--sa-unit)); color: var(--sa-color-ink-muted); }
+        .sa-filter-chip-media { display: inline-flex; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div class="intro">
+    <h1>Index layouts</h1>
+    <p>A layout switcher on Voyager Travel's bookings index. Some layouts draw <b>the same rows</b> differently; others have <b>a data shape of their own</b>, built from the same bookings:</p>
+    <ul>
+        <li><b>Table, Cards, Board</b>: one item per booking.</li>
+        <li><b>Map</b>: one item per <i>destination</i> (bookings, travellers, revenue, next departure). Its search finds destinations.</li>
+        <li><b>Calendar</b>: one cell per <i>day</i>, holding that day's departures, a month at a time.</li>
+        <li><b>Chart</b>: one bar per <i>departure month</i>, revenue stacked by status. No search.</li>
+    </ul>
+    <p>Scopes and filters narrow the bookings every layout is built from, so they carry across. The search belongs to the layout. Every frame is live: scopes, search, filter pills (<b>+ Filter</b> puts them back), the switcher, pins and calendar months. Under each frame are its URL and the shape of what the layout lists.</p>
+</div>
+
+<section>
+    <h2>1. Placement</h2>
+    <p>The same switcher in two places. Use <b>Switcher</b> in the bar at the bottom right for icons only or icons with labels.</p>
+    <div class="strips" id="s1"></div>
+</section>
+
+<section>
+    <h2>2. Layouts with their own data shape</h2>
+    <p>Each frame opens on one of them; the switcher still works.</p>
+    <div class="strips" id="s2"></div>
+</section>
+
+<section>
+    <h2>3. Narrow</h2>
+    <p>Under 44rem the scopes get their own row (as today) and the search shares the next row with the switcher. A layout without search puts the switcher alone at the end.</p>
+    <div class="strips narrow" id="s3"></div>
+</section>
+
+<div class="ctl">
+    <label>Switcher
+        <select id="labels-picker">
+            <option value="">Icons</option>
+            <option value="labels">Icons + labels</option>
+        </select>
+    </label>
+    <label>Theme
+        <select id="theme-picker">
+            <option value="">Default</option>
+            <option value="ops">Ops</option>
+            <option value="soft">Soft</option>
+            <option value="ledger">Ledger</option>
+        </select>
+    </label>
+    <label><input type="checkbox" id="dark-toggle"> Dark</label>
+    <label>Density
+        <select id="density-picker">
+            <option value="">Default</option>
+            <option value="compact">Compact</option>
+            <option value="comfortable">Comfortable</option>
+        </select>
+    </label>
+    <label><input type="checkbox" id="filters-toggle" checked> Filter bar</label>
+</div>
+
+<script type="module">
+    /* ---------- Helpers ---------- */
+    const ICONS = {
+        search: '<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>',
+        x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+        plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+        chevronLeft: '<path d="m15 18-6-6 6-6"/>',
+        chevronRight: '<path d="m9 18 6-6-6-6"/>',
+        status: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/>',
+        users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+        calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+        table: '<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
+        grid: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+        map: '<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/>',
+        board: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 7v7"/><path d="M12 7v4"/><path d="M16 7v9"/>',
+        chart: '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+        more: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+        sort: '<path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/>',
+    };
+    const icon = (name) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    const btn = (label, { variant = "default", size = "default", iconName, attrs = "", cls = "" } = {}) =>
+        `<button type="button" data-slot="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}${cls ? " " + cls : ""}" ${attrs}>${iconName ? icon(iconName) : ""}${label}</button>`;
+    const money = (n) => "$" + Math.round(n).toLocaleString("en-US");
+    const kmoney = (n) => n >= 1000 ? "$" + (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace(/\.0$/, "") + "k" : money(n);
+    const fmtDate = (iso) => new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+    const monthName = (ym, style = "long") => new Date(ym + "-01T00:00:00Z").toLocaleDateString("en-GB", { month: style, year: "numeric", timeZone: "UTC" });
+    const initials = (name) => name.split(" ").map((p) => p[0]).join("").slice(0, 2);
+    const avatar = (name) => `<span data-slot="avatar" class="sa-avatar mini-avatar"><span data-slot="avatar-fallback" class="sa-avatar-fallback">${initials(name)}</span></span>`;
+    const dot = (s) => `<span class="status-dot" data-status="${s}"></span>`;
+    const statusBadge = (s) => `<span data-slot="badge" class="sa-badge sa-badge-variant-outline">${dot(s)}${s}</span>`;
+
+    /* ---------- Voyager Travel data ---------- */
+    const TODAY = "2026-11-17";
+    const DESTS = [
+        { key: "kyoto", name: "Kyoto", country: "Japan", lat: 35.01, lng: 135.77, hue: 20 },
+        { key: "queenstown", name: "Queenstown", country: "New Zealand", lat: -45.03, lng: 168.66, hue: 200 },
+        { key: "capetown", name: "Cape Town", country: "South Africa", lat: -33.92, lng: 18.42, hue: 40 },
+        { key: "reykjavik", name: "Reykjavík", country: "Iceland", lat: 64.15, lng: -21.94, hue: 230 },
+        { key: "lisbon", name: "Lisbon", country: "Portugal", lat: 38.72, lng: -9.14, hue: 60 },
+        { key: "cusco", name: "Cusco", country: "Peru", lat: -13.53, lng: -71.97, hue: 140 },
+        { key: "banff", name: "Banff", country: "Canada", lat: 51.18, lng: -115.57, hue: 170 },
+        { key: "marrakech", name: "Marrakech", country: "Morocco", lat: 31.63, lng: -7.99, hue: 10 },
+        { key: "ubud", name: "Ubud", country: "Indonesia", lat: -8.51, lng: 115.26, hue: 110 },
+        { key: "santorini", name: "Santorini", country: "Greece", lat: 36.39, lng: 25.46, hue: 250 },
+    ];
+    const DEST = Object.fromEntries(DESTS.map((d) => [d.key, d]));
+    const AGENTS = ["Amara Okafor", "Liam Chen", "Sofia Rossi", "Noah Fischer"];
+    const FIRST = ["Hannah", "Kenji", "Elena", "Tom", "Priya", "Lucas", "Aisha", "Oliver", "Mei", "Jonas", "Chloé", "Mateo", "Grace", "Ravi", "Isla", "Felix", "Zara", "Ethan", "Nora", "Diego", "Leah", "Samuel", "Ava", "Yusuf"];
+    const LAST = ["Moore", "Watanabe", "García", "Becker", "Nair", "Martin", "Bello", "Smith", "Lin", "Berg", "Dubois", "Silva", "Kim", "Patel", "Murray", "Wagner", "Ahmed", "Wright", "Jensen", "Romero", "Cohen", "Osei", "Thompson", "Demir"];
+    const STATUSES = ["Pending", "Confirmed", "Completed", "Cancelled"];
+    const TYPES = ["Package", "Tour", "Flights", "Cruise"];
+    const BOOKINGS = Array.from({ length: 64 }, (_, i) => {
+        const departure = new Date(Date.UTC(2026, 8, 6) + Math.floor(i * 2.6 + ((i * 7) % 3)) * 86400000).toISOString().slice(0, 10);
+        const status = i % 11 === 6 ? "Cancelled" : departure < TODAY ? "Completed" : i % 4 === 1 ? "Pending" : "Confirmed";
+        return {
+            ref: `VT-${10421 + i}`, traveller: `${FIRST[i % 24]} ${LAST[(i * 7 + 3) % 24]}`, dest: DESTS[(i * 3 + Math.floor(i / 10)) % 10].key,
+            departure, status, agent: AGENTS[(i * 3 + 1) % 4], type: TYPES[(i * 5) % 4], travellers: 1 + ((i * 7) % 4), amount: 900 + ((i * 2731) % 8200),
+        };
+    });
+    const SCOPES = [
+        { key: "", label: "All", test: () => true },
+        { key: "upcoming", label: "Upcoming", test: (b) => b.departure >= TODAY && b.status !== "Cancelled" },
+        { key: "pending", label: "Pending", test: (b) => b.status === "Pending" },
+        { key: "cancelled", label: "Cancelled", test: (b) => b.status === "Cancelled" },
+    ];
+    const DEFAULT_FILTERS = { status: ["Confirmed", "Pending", "Completed"], after: "2026-09-30" };
+
+    /* ---------- Layouts ---------- */
+    const LAYOUTS = {
+        table: { title: "Table", icon: "table", search: "Search bookings…", shape: "Booking", per: "booking" },
+        cards: { title: "Cards", icon: "grid", search: "Search bookings…", shape: "Booking", per: "booking" },
+        board: { title: "Board", icon: "board", search: "Search bookings…", shape: "Booking", per: "booking, grouped by status" },
+        map: { title: "Map", icon: "map", search: "Search destinations…", shape: "DestinationSummary", per: "destination", own: true },
+        calendar: { title: "Calendar", icon: "calendar", search: "Search bookings…", shape: "DepartureDay", per: "day of the month", own: true },
+        chart: { title: "Chart", icon: "chart", search: null, shape: "MonthRevenue", per: "departure month", own: true },
+    };
+
+    /* ---------- Frames ---------- */
+    const FRAMES = [];
+    function addFrame(target, tag, caption, cfg, state = {}) {
+        const f = { id: `f${FRAMES.length}`, cfg, state: { layout: cfg.layouts[0], scope: "", search: {}, filters: structuredClone(DEFAULT_FILTERS), selected: null, month: "2026-11", ...state } };
+        FRAMES.push(f);
+        const fig = document.createElement("figure");
+        fig.innerHTML = `<figcaption><span class="tag">${tag}</span> ${caption}</figcaption><div class="frame" data-frame="${f.id}" ${cfg.width ? `style="max-width:${cfg.width}"` : ""}><div class="viewport"></div><div class="url"></div></div>`;
+        document.getElementById(target).append(fig);
+        render(f);
+    }
+    const frameOf = (el) => FRAMES.find((f) => f.id === el.closest("[data-frame]")?.dataset.frame);
+
+    function render(f) {
+        document.querySelector(`[data-frame="${f.id}"] .viewport`).innerHTML = pageHtml(f);
+        renderUrl(f);
+    }
+    function renderBody(f) {
+        document.querySelector(`[data-frame="${f.id}"] [data-body]`).outerHTML = bodyHtml(f);
+        renderUrl(f);
+    }
+    function renderUrl(f) {
+        const s = f.state, l = LAYOUTS[s.layout], p = new URLSearchParams();
+        if (s.layout !== f.cfg.layouts[0]) p.set("layout", s.layout);
+        if (s.scope) p.set("scope", s.scope);
+        if (l.search && s.search[s.layout]) p.set("search", s.search[s.layout]);
+        if (s.filters.status) p.set("status", s.filters.status.join(","));
+        if (s.filters.after) p.set("departure", "gt:" + s.filters.after);
+        if (s.layout === "calendar") p.set("month", s.month);
+        const q = p.toString().replaceAll("%2C", ",").replaceAll("%3A", ":");
+        document.querySelector(`[data-frame="${f.id}"] .url`).innerHTML = `<span>/admin/bookings${q ? "<b>?" + esc(q) + "</b>" : ""}</span><span class="shape">${l.own ? "Own shape: " : ""}one <b>${l.shape}</b> per ${l.per}</span>`;
+    }
+
+    function pageHtml(f) {
+        const header = f.cfg.place === "header" ? switcher(f) : "";
+        return `<div data-slot="page-container" class="sa-page-container">
+            <header data-slot="page-header" class="sa-page-header">
+                <h1 data-slot="page-header-title" class="sa-page-header-title">Bookings</h1>
+                <div data-slot="page-header-actions" class="sa-page-header-actions">${header}<a href="#" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default">New booking</a></div>
+            </header>
+            <div data-slot="card" class="sa-card sa-resource-index-list">
+                ${controlsHtml(f)}
+                ${filtersHtml(f)}
+                ${bodyHtml(f)}
+            </div>
+        </div>`;
+    }
+
+    function switcher(f) {
+        const labels = document.getElementById("labels-picker").value === "labels";
+        return `<div role="radiogroup" aria-label="Layout" data-slot="segmented-control" class="sa-segmented-control sa-resource-index-layouts">
+            ${f.cfg.layouts.map((k) => `<label data-slot="segmented-control-item" class="sa-segmented-control-item" title="${LAYOUTS[k].title}">
+                <input type="radio" class="sa-segmented-control-input" name="${f.id}-layout" value="${k}" aria-label="${LAYOUTS[k].title}" ${k === f.state.layout ? "checked" : ""}>${icon(LAYOUTS[k].icon)}${labels ? `<span>${LAYOUTS[k].title}</span>` : ""}</label>`).join("")}
+        </div>`;
+    }
+
+    function controlsHtml(f) {
+        const { state } = f, l = LAYOUTS[state.layout];
+        const tabs = `<div data-slot="tabs" class="sa-tabs" data-orientation="horizontal"><div role="tablist" data-slot="tabs-list" data-variant="line" class="sa-tabs-list sa-tabs-list-variant-line">
+            ${SCOPES.map((s) => `<a href="#" role="tab" data-slot="tabs-trigger" class="sa-tabs-trigger" aria-selected="${s.key === state.scope}" ${s.key === state.scope ? "data-active" : ""} data-scope="${s.key}">${s.label}</a>`).join("")}
+        </div></div>`;
+        const search = l.search ? `<div role="group" data-slot="input-group" class="sa-input-group sa-resource-index-search">
+            <input data-slot="input-group-control" class="sa-input sa-input-group-input" placeholder="${l.search}" aria-label="${l.search}" value="${esc(state.search[state.layout] ?? "")}" data-search>
+            <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">${icon("search")}</div>
+        </div>` : "";
+        return `<div class="sa-resource-index-controls">${tabs}${search}${f.cfg.place === "toolbar" ? switcher(f) : ""}</div>`;
+    }
+
+    function filtersHtml(f) {
+        if (!document.getElementById("filters-toggle").checked) return "";
+        const fl = f.state.filters, pills = [];
+        if (fl.status) pills.push(`<span class="sa-filter-chip"><button type="button" class="sa-filter-chip-part sa-filter-chip-field">${icon("status")}Status</button><button type="button" class="sa-filter-chip-part sa-filter-chip-op">is any of</button><button type="button" class="sa-filter-chip-part sa-filter-chip-value"><span class="sa-filter-chip-media">${fl.status.map(dot).join("")}</span>${fl.status.length > 2 ? `${fl.status.length} statuses` : fl.status.join(", ")}</button><button type="button" class="sa-filter-chip-part sa-filter-chip-remove" aria-label="Remove filter" data-remove="status">${icon("x")}</button></span>`);
+        if (fl.after) pills.push(`<span class="sa-filter-chip"><button type="button" class="sa-filter-chip-part sa-filter-chip-field">${icon("calendar")}Departure</button><button type="button" class="sa-filter-chip-part sa-filter-chip-op">after</button><button type="button" class="sa-filter-chip-part sa-filter-chip-value">${fmtDate(fl.after)}</button><button type="button" class="sa-filter-chip-part sa-filter-chip-remove" aria-label="Remove filter" data-remove="after">${icon("x")}</button></span>`);
+        return `<div class="sa-resource-index-filters">${pills.join("")}${btn(`${icon("plus")}Filter <kbd data-slot="kbd" class="sa-kbd">F</kbd>`, { variant: "ghost", size: "sm", attrs: "data-add-filters" })}</div>`;
+    }
+
+    /* ---------- Data sources: the bookings every layout starts from, then each layout's own shape ---------- */
+    function bookings(f, search = "") {
+        const { state } = f, fl = state.filters, scope = SCOPES.find((s) => s.key === state.scope) ?? SCOPES[0], q = search.trim().toLowerCase();
+        return BOOKINGS.filter((b) => scope.test(b)
+            && (!fl.status || fl.status.includes(b.status))
+            && (!fl.after || b.departure > fl.after)
+            && (!q || [b.ref, b.traveller, DEST[b.dest].name, DEST[b.dest].country, b.agent].some((t) => t.toLowerCase().includes(q))))
+            .sort((a, b) => a.departure.localeCompare(b.departure));
+    }
+    function destinationSummaries(f) {
+        const q = (f.state.search.map ?? "").trim().toLowerCase(), rows = bookings(f);
+        return DESTS.map((d) => {
+            const bs = rows.filter((b) => b.dest === d.key), live = bs.filter((b) => b.status !== "Cancelled"), next = live.find((b) => b.departure >= TODAY);
+            return { ...d, bookings: bs.length, travellers: live.reduce((n, b) => n + b.travellers, 0), revenue: live.reduce((n, b) => n + b.amount, 0), next: next?.departure };
+        }).filter((d) => d.bookings && (!q || (d.name + " " + d.country).toLowerCase().includes(q))).sort((a, b) => b.revenue - a.revenue);
+    }
+    function departureDays(f) {
+        const [y, m] = f.state.month.split("-").map(Number), first = new Date(Date.UTC(y, m - 1, 1));
+        const start = new Date(first); start.setUTCDate(1 - ((first.getUTCDay() + 6) % 7));
+        const rows = bookings(f, f.state.search.calendar ?? "");
+        return Array.from({ length: 42 }, (_, i) => {
+            const d = new Date(start); d.setUTCDate(start.getUTCDate() + i);
+            const iso = d.toISOString().slice(0, 10);
+            return { date: iso, day: d.getUTCDate(), outside: d.getUTCMonth() !== m - 1, departures: rows.filter((b) => b.departure === iso) };
+        }).filter((d, i, all) => i < 35 || all.slice(35).some((x) => !x.outside));
+    }
+    function monthRevenue(f) {
+        const rows = bookings(f).filter((b) => b.status !== "Cancelled"), months = [...new Set(rows.map((b) => b.departure.slice(0, 7)))].sort();
+        return months.map((ym) => {
+            const bs = rows.filter((b) => b.departure.startsWith(ym));
+            const by = Object.fromEntries(["Completed", "Confirmed", "Pending"].map((s) => [s, bs.filter((b) => b.status === s).reduce((n, b) => n + b.amount, 0)]));
+            return { month: ym, bookings: bs.length, travellers: bs.reduce((n, b) => n + b.travellers, 0), revenue: bs.reduce((n, b) => n + b.amount, 0), by };
+        });
+    }
+
+    /* ---------- Bodies ---------- */
+    function bodyHtml(f) {
+        const html = { table: bookingTable, cards: bookingCards, board: bookingBoard, map: destinationMap, calendar: calendar, chart: chart }[f.state.layout](f);
+        return `<div data-body>${html}</div>`;
+    }
+    const table = (heads, rows, cols) => `<div class="sa-table-container" data-slot="table-container"><table class="sa-table" data-slot="table">
+        <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row">${heads.map((h, i) => `<th class="sa-table-head${cols?.[i] === "num" ? " num" : ""}" data-slot="table-head">${h}</th>`).join("")}</tr></thead>
+        <tbody class="sa-table-body" data-slot="table-body">${rows.length ? rows.map((r) => `<tr class="sa-table-row" data-slot="table-row">${r.map((c, i) => `<td class="sa-table-cell${cols?.[i] === "num" ? " num" : ""}" data-slot="table-cell">${c}</td>`).join("")}</tr>`).join("") : `<tr class="sa-table-row"><td class="sa-table-cell" colspan="${heads.length}">${empty()}</td></tr>`}</tbody>
+    </table></div>`;
+    const empty = () => `<div data-slot="empty" class="sa-empty" style="padding-block:2rem"><div data-slot="empty-header" class="sa-empty-header"><div data-slot="empty-title" class="sa-empty-title">Nothing matches</div><p data-slot="empty-description" class="sa-empty-description">Try removing a filter or changing the search.</p></div></div>`;
+    const pager = (shown, total) => `<div class="sa-card-footer sa-data-grid-footer" data-slot="card-footer">
+        <span class="sa-data-grid-range" data-slot="data-grid-range">${total ? `<span class="sa-data-grid-range-value">1–${shown}</span> of ${total}` : "0 results"}</span>
+        <div style="margin-inline-start:auto;display:flex;gap:4px">${btn("", { variant: "outline", size: "icon-sm", iconName: "chevronLeft", attrs: 'disabled aria-label="Previous page"' })}${btn("", { variant: "outline", size: "icon-sm", iconName: "chevronRight", attrs: `${shown >= total ? "disabled" : ""} aria-label="Next page"` })}</div>
+    </div>`;
+    const grid = (inner) => `<div data-slot="data-grid" class="sa-data-grid sa-card sa-resource-index-grid">${inner}</div>`;
+    const bar = (left, right = "") => `<div class="sa-resource-index-layout-bar"><span>${left}</span><div>${right}</div></div>`;
+    const sortBtn = (label) => btn(`${icon("sort")}${label}`, { variant: "ghost", size: "sm" });
+
+    function bookingTable(f) {
+        const rows = bookings(f, f.state.search.table ?? ""), page = rows.slice(0, 8);
+        return grid(table(["Booking", "Traveller", "Destination", "Departure", "Status", "Agent", "Amount"],
+            page.map((b) => [`<span class="mono">${b.ref}</span>`, esc(b.traveller), `${DEST[b.dest].name}<span class="cell-muted">, ${DEST[b.dest].country}</span>`, fmtDate(b.departure), statusBadge(b.status), `<span class="cell-agent">${avatar(b.agent)}${b.agent.split(" ")[0]}</span>`, money(b.amount)]),
+            [, , , , , , "num"]) + pager(page.length, rows.length));
+    }
+
+    function bookingCards(f) {
+        const rows = bookings(f, f.state.search.cards ?? ""), page = rows.slice(0, 9);
+        const cards = page.map((b) => { const d = DEST[b.dest]; return `<div data-slot="card" class="sa-card">
+            <div class="sa-resource-index-card-media" style="--_hue:${d.hue}">${d.name}, ${d.country}${statusBadge(b.status)}</div>
+            <div data-slot="card-header" class="sa-card-header">
+                <div data-slot="card-title" class="sa-card-title">${esc(b.traveller)}</div>
+                <div data-slot="card-description" class="sa-card-description"><span class="mono">${b.ref}</span> · ${b.type}</div>
+                <div data-slot="card-action" class="sa-card-action">${btn("", { variant: "ghost", size: "icon-sm", iconName: "more", attrs: 'aria-label="Actions"' })}</div>
+            </div>
+            <div data-slot="card-content" class="sa-card-content sa-resource-index-card-facts">
+                <div>${icon("calendar")}${fmtDate(b.departure)}</div>
+                <div>${icon("users")}${b.travellers} traveller${b.travellers > 1 ? "s" : ""}</div>
+                <div>${avatar(b.agent)}${b.agent}<span style="margin-inline-start:auto;color:var(--sa-color-ink);font-weight:500" class="num">${money(b.amount)}</span></div>
+            </div>
+        </div>`; }).join("");
+        return bar(`<b>${rows.length}</b> bookings`, sortBtn("Departure")) + (page.length ? `<div class="sa-resource-index-cards">${cards}</div>` : empty()) + pager(page.length, rows.length);
+    }
+
+    function bookingBoard(f) {
+        const rows = bookings(f, f.state.search.board ?? "");
+        const cols = STATUSES.map((s) => { const bs = rows.filter((b) => b.status === s); return `<div class="sa-resource-index-board-column">
+            <div class="sa-resource-index-board-head">${dot(s)}${s}<span class="count">${bs.length}</span></div>
+            ${bs.length ? bs.slice(0, 12).map((b) => `<div class="sa-resource-index-board-card"><b style="font-weight:500">${esc(b.traveller)}</b><span class="cell-muted">${DEST[b.dest].name} · ${fmtDate(b.departure)}</span><div class="meta"><span class="cell-agent">${avatar(b.agent)}${b.agent.split(" ")[0]}</span><span class="num">${money(b.amount)}</span></div></div>`).join("") + (bs.length > 12 ? `<div class="sa-resource-index-board-empty">${bs.length - 12} more</div>` : "") : `<div class="sa-resource-index-board-empty">No bookings</div>`}
+        </div>`; }).join("");
+        return bar(`<b>${rows.length}</b> bookings`, sortBtn("Departure")) + `<div class="sa-resource-index-board">${cols}</div>`;
+    }
+
+    /* Web Mercator on zoom-2 OpenStreetMap tiles, cropped to latitudes 72° N – 56° S */
+    const project = (lat, lng) => {
+        const x = (lng + 180) / 360, y = (1 - Math.asinh(Math.tan((lat * Math.PI) / 180)) / Math.PI) / 2;
+        return { left: x * 100, top: ((y - 0.2071) / 0.476) * 100 };
+    };
+    const tiles = `<div class="world">${[0, 1, 2, 3].flatMap((y) => [0, 1, 2, 3].map((x) => `<img src="https://tile.openstreetmap.org/2/${x}/${y}.png" alt="" loading="lazy">`)).join("")}</div><span class="attribution">© OpenStreetMap</span>`;
+
+    function destinationMap(f) {
+        const rows = destinationSummaries(f), max = Math.max(1, ...rows.map((d) => d.revenue)), sel = rows.find((d) => d.key === f.state.selected);
+        const total = rows.reduce((n, d) => n + d.bookings, 0);
+        const bubbles = rows.map((d) => { const p = project(d.lat, d.lng), size = 14 + 30 * Math.sqrt(d.revenue / max);
+            return `<button type="button" class="sa-resource-index-map-pin" data-pin="${d.key}" ${sel?.key === d.key ? "data-selected" : ""} style="left:${p.left}%;top:${p.top}%;width:${size}px;height:${size}px" title="${d.name}"></button><span class="sa-resource-index-map-label" style="left:${p.left}%;top:${p.top}%">${d.name}</span>`; }).join("");
+        const card = sel ? `<div data-slot="card" data-size="sm" class="sa-card sa-resource-index-map-card">
+            <div data-slot="card-header" class="sa-card-header"><div data-slot="card-title" class="sa-card-title">${sel.name}</div><div data-slot="card-description" class="sa-card-description">${sel.country}</div>
+                <div data-slot="card-action" class="sa-card-action">${btn("", { variant: "ghost", size: "icon-sm", iconName: "x", attrs: 'data-clear-pin aria-label="Close"' })}</div></div>
+            <div data-slot="card-content" class="sa-card-content"><dl><dt>Bookings</dt><dd>${sel.bookings}</dd><dt>Travellers</dt><dd>${sel.travellers}</dd><dt>Revenue</dt><dd>${money(sel.revenue)}</dd><dt>Next departure</dt><dd>${sel.next ? fmtDate(sel.next) : "—"}</dd></dl></div>
+        </div>` : "";
+        const list = rows.map((d) => `<button type="button" class="sa-resource-index-map-item" data-pin="${d.key}" data-hover-pin="${d.key}" ${sel?.key === d.key ? "data-selected" : ""}><b>${d.name}</b><span class="num">${money(d.revenue)}</span><small>${d.country}</small><small class="num">${d.bookings} booking${d.bookings > 1 ? "s" : ""}</small></button>`).join("");
+        return bar(`<b>${rows.length}</b> destinations · ${total} bookings`, sortBtn("Revenue")) + `<div class="sa-resource-index-map-split">
+            <div class="sa-resource-index-map-list">${list || empty()}</div>
+            <div class="sa-resource-index-map">${tiles}${bubbles}${card}</div>
+        </div>`;
+    }
+
+    function calendar(f) {
+        const days = departureDays(f), inMonth = days.filter((d) => !d.outside).reduce((n, d) => n + d.departures.length, 0);
+        const [y, m] = f.state.month.split("-").map(Number);
+        const shift = (n) => new Date(Date.UTC(y, m - 1 + n, 1)).toISOString().slice(0, 7);
+        const nav = `${btn("", { variant: "outline", size: "icon-sm", iconName: "chevronLeft", attrs: `data-month="${shift(-1)}" aria-label="Previous month"` })}${btn("Today", { variant: "outline", size: "sm", attrs: `data-month="${TODAY.slice(0, 7)}"` })}${btn("", { variant: "outline", size: "icon-sm", iconName: "chevronRight", attrs: `data-month="${shift(1)}" aria-label="Next month"` })}`;
+        const cells = days.map((d) => {
+            const shown = d.departures.slice(0, 3);
+            return `<div class="sa-resource-index-calendar-day" ${d.outside ? "data-outside" : ""} ${d.date === TODAY ? "data-today" : ""}><span class="date">${d.day}</span>
+                ${shown.map((b) => `<span class="sa-resource-index-calendar-event" title="${esc(b.traveller)} · ${DEST[b.dest].name}">${dot(b.status)}<span>${esc(b.traveller.split(" ")[1])} · ${DEST[b.dest].name}</span></span>`).join("")}
+                ${d.departures.length > 3 ? `<span class="more">${d.departures.length - 3} more</span>` : ""}</div>`;
+        }).join("");
+        return bar(`<b>${monthName(f.state.month)}</b> · ${inMonth} departure${inMonth === 1 ? "" : "s"}`, nav)
+            + `<div class="sa-resource-index-calendar">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((w) => `<div class="sa-resource-index-calendar-weekday">${w}</div>`).join("")}${cells}</div>`;
+    }
+
+    function chart(f) {
+        const months = monthRevenue(f), top = Math.max(1, ...months.map((m) => m.revenue));
+        const step = Math.ceil(top / 4 / 5000) * 5000, max = step * 4;
+        const series = ["Completed", "Confirmed", "Pending"];
+        const bars = months.map((m) => `<div class="sa-resource-index-chart-bar" title="${monthName(m.month)}: ${money(m.revenue)}">
+            ${(() => { let at = 0; return series.filter((s) => m.by[s]).map((s) => { const h = (m.by[s] / max) * 100, seg = `<span data-series="${s}" style="bottom:${at}%;height:${h}%"></span>`; at += h; return seg; }).join(""); })()}
+            <span class="value" style="top:${100 - (m.revenue / max) * 100}%">${m.revenue ? kmoney(m.revenue) : ""}</span></div>`).join("");
+        const legend = `<span class="sa-resource-index-chart-legend">${series.map((s) => `<span data-series="${s}"><i></i>${s}</span>`).join("")}</span>`;
+        const total = months.reduce((n, m) => n + m.revenue, 0);
+        return bar(`Revenue by departure month · <b>${money(total)}</b>`, legend)
+            + `<div class="sa-resource-index-chart">
+                <div class="sa-resource-index-chart-axis">${[4, 3, 2, 1, 0].map((i) => `<span>${kmoney(i * step)}</span>`).join("")}</div>
+                <div class="sa-resource-index-chart-plot">${bars}</div>
+                <div class="sa-resource-index-chart-x">${months.map((m) => `<span>${monthName(m.month, "short").replace(" 20", " ’")}</span>`).join("")}</div>
+            </div>`
+            + grid(table(["Month", "Bookings", "Travellers", "Revenue"], months.map((m) => [monthName(m.month), m.bookings, m.travellers, money(m.revenue)]), [, "num", "num", "num"]));
+    }
+
+    /* ---------- Frames on the page ---------- */
+    const ALL = ["table", "cards", "board", "map", "calendar", "chart"];
+    addFrame("s1", "A", "<b>At the end of the controls row</b>, beside the search. Sits with the controls every layout shares; costs the scopes no room.", { layouts: ALL, place: "toolbar" });
+    addFrame("s1", "A2", "<b>In the page header</b>, beside <i>New booking</i>. Reads as page-level, but sits away from the controls that drive the list.", { layouts: ALL, place: "header" });
+    addFrame("s2", "1", "<b>Map: one item per destination.</b> The list beside the map is destinations, not bookings; the search finds destinations; click a destination or a bubble for its totals.", { layouts: ALL, place: "toolbar" }, { layout: "map" });
+    addFrame("s2", "2", "<b>Calendar: departures per day.</b> A month at a time; the month is part of the URL. Bookings search narrows what each day shows.", { layouts: ALL, place: "toolbar" }, { layout: "calendar" });
+    addFrame("s2", "3", "<b>Chart: revenue per departure month</b>, stacked by status, with the same months as a table. No search, so the switcher moves up beside the scopes.", { layouts: ALL, place: "toolbar" }, { layout: "chart" });
+    addFrame("s3", "A", "<b>Narrow, table.</b>", { layouts: ALL, place: "toolbar", width: "36rem" });
+    addFrame("s3", "A", "<b>Narrow, chart</b> (no search).", { layouts: ALL, place: "toolbar", width: "36rem" }, { layout: "chart" });
+
+    /* ---------- Interaction ---------- */
+    document.addEventListener("click", (e) => {
+        const t = e.target, f = frameOf(t);
+        if (t.closest('a[href="#"]')) e.preventDefault();
+        if (!f) return;
+        const scopeEl = t.closest("[data-scope]");
+        if (scopeEl) { f.state.scope = scopeEl.dataset.scope; render(f); return; }
+        const rm = t.closest("[data-remove]");
+        if (rm) { delete f.state.filters[rm.dataset.remove]; render(f); return; }
+        if (t.closest("[data-add-filters]")) { f.state.filters = structuredClone(DEFAULT_FILTERS); render(f); return; }
+        const month = t.closest("[data-month]");
+        if (month) { f.state.month = month.dataset.month; renderBody(f); return; }
+        const pin = t.closest("[data-pin]");
+        if (pin) { f.state.selected = f.state.selected === pin.dataset.pin ? null : pin.dataset.pin; renderBody(f); return; }
+        if (t.closest("[data-clear-pin]")) { f.state.selected = null; renderBody(f); }
+    });
+    document.addEventListener("change", (e) => {
+        const f = frameOf(e.target);
+        /* Switching layout re-renders the controls too: the search belongs to the layout */
+        if (f && e.target.matches(".sa-resource-index-layouts input")) { f.state.layout = e.target.value; f.state.selected = null; render(f); }
+    });
+    document.addEventListener("input", (e) => {
+        const f = frameOf(e.target);
+        if (f && e.target.matches("[data-search]")) { f.state.search[f.state.layout] = e.target.value; renderBody(f); }
+    });
+    document.addEventListener("mouseover", (e) => {
+        const item = e.target.closest?.(".sa-resource-index-map-item"), body = item?.closest("[data-body]");
+        document.querySelectorAll(".sa-resource-index-map-pin[data-hot]").forEach((p) => p.removeAttribute("data-hot"));
+        if (item) body.querySelector(`.sa-resource-index-map-pin[data-pin="${item.dataset.hoverPin}"]`)?.setAttribute("data-hot", "");
+    });
+
+    document.getElementById("theme-picker").addEventListener("change", (e) => {
+        const theme = document.getElementById("theme");
+        if (e.target.value) theme.href = `../../util/theme-check/presets/${e.target.value}.css`;
+        else theme.removeAttribute("href");
+    });
+    document.getElementById("dark-toggle").addEventListener("change", (e) => document.documentElement.classList.toggle("dark", e.target.checked));
+    document.getElementById("density-picker").addEventListener("change", (e) => {
+        if (e.target.value) document.body.setAttribute("data-sa-density", e.target.value);
+        else document.body.removeAttribute("data-sa-density");
+    });
+    document.getElementById("filters-toggle").addEventListener("change", () => FRAMES.forEach(render));
+    document.getElementById("labels-picker").addEventListener("change", () => FRAMES.forEach(render));
+</script>
+</body>
+</html>

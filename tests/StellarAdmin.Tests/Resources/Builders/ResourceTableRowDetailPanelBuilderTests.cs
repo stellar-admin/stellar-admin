@@ -3,7 +3,7 @@ using StellarAdmin.Resources.Builders;
 
 namespace StellarAdmin.Tests.Resources.Builders;
 
-public class ResourceRowDetailPanelBuilderTests
+public class ResourceTableRowDetailPanelBuilderTests
 {
     [Test]
     public async Task Icon_WhenSet_SetsPanelIcon()
