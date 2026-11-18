@@ -29,12 +29,12 @@ public sealed class EfCoreResourceTableLayoutBuilder<TEntity>
     /// <remarks>
     ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout.
     /// </remarks>
-    public ResourceRowDetailsBuilder<TEntity> EnableRowDetails(
-        Action<EfCoreRowDetailPanelsBuilder<TEntity>> panels
+    public ResourceTableRowDetailsBuilder<TEntity> EnableRowDetails(
+        Action<EfCoreResourceTableRowDetailPanelsBuilder<TEntity>> panels
     )
     {
         ArgumentNullException.ThrowIfNull(panels);
-        var builder = new EfCoreRowDetailPanelsBuilder<TEntity>(Services);
+        var builder = new EfCoreResourceTableRowDetailPanelsBuilder<TEntity>(Services);
         panels(builder);
 
         return RegisterRowDetails(builder);
@@ -57,7 +57,7 @@ public sealed class EfCoreResourceTableLayoutBuilder<TEntity>
     /// <exception cref="ArgumentException">
     ///     <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailsBuilder<TEntity> EnableRowDetails<TModel>(
+    public ResourceTableRowDetailsBuilder<TEntity> EnableRowDetails<TModel>(
         string partialName,
         Expression<Func<TEntity, TModel>> select
     )
@@ -88,7 +88,7 @@ public sealed class EfCoreResourceTableLayoutBuilder<TEntity>
     public EfCoreResourceTableLayoutBuilder<TEntity> EnableRowDetails<TModel>(
         string partialName,
         Expression<Func<TEntity, TModel>> select,
-        Action<ResourceRowDetailsBuilder<TEntity>> configure
+        Action<ResourceTableRowDetailsBuilder<TEntity>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -113,8 +113,8 @@ public sealed class EfCoreResourceTableLayoutBuilder<TEntity>
     ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout.
     /// </remarks>
     public EfCoreResourceTableLayoutBuilder<TEntity> EnableRowDetails(
-        Action<EfCoreRowDetailPanelsBuilder<TEntity>> panels,
-        Action<ResourceRowDetailsBuilder<TEntity>> configure
+        Action<EfCoreResourceTableRowDetailPanelsBuilder<TEntity>> panels,
+        Action<ResourceTableRowDetailsBuilder<TEntity>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);

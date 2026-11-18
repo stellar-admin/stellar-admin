@@ -12,7 +12,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <remarks>
 ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout.
 /// </remarks>
-public abstract class ResourceRowDetailPanelsBuilder<TResource>
+public abstract class ResourceTableRowDetailPanelsBuilder<TResource>
 {
     private readonly List<ResourceRowDetailPanelOptions> _panels = [];
 
@@ -25,10 +25,11 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
 
     /// <summary>
     ///     Initializes a new instance of the
-    ///     <see cref="ResourceRowDetailPanelsBuilder{TResource}" /> class.
+    ///     <see cref="ResourceTableRowDetailPanelsBuilder{TResource}" /> class.
     /// </summary>
     /// <param name="services">The service collection to register the panels' handlers in.</param>
-    protected ResourceRowDetailPanelsBuilder(IServiceCollection services) => Services = services;
+    protected ResourceTableRowDetailPanelsBuilder(IServiceCollection services) =>
+        Services = services;
 
     /// <summary>
     ///     Adds a panel that shows a partial view.
@@ -45,7 +46,7 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <exception cref="ArgumentException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailPanelBuilder Add(string title, string partialName) =>
+    public ResourceTableRowDetailPanelBuilder Add(string title, string partialName) =>
         AddPanel(title, partialName, null);
 
     /// <summary>
@@ -65,10 +66,10 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <exception cref="ArgumentException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailPanelsBuilder<TResource> Add(
+    public ResourceTableRowDetailPanelsBuilder<TResource> Add(
         string title,
         string partialName,
-        Action<ResourceRowDetailPanelBuilder> configure
+        Action<ResourceTableRowDetailPanelBuilder> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -95,7 +96,10 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <exception cref="ArgumentException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailPanelBuilder Add<TModel, THandler>(string title, string partialName)
+    public ResourceTableRowDetailPanelBuilder Add<TModel, THandler>(
+        string title,
+        string partialName
+    )
         where THandler : class, IResourceRowDetailHandler<TModel> =>
         AddPanel(title, partialName, HandlerRowDetailLoader.Create<TModel, THandler>(Services));
 
@@ -120,10 +124,10 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     /// <exception cref="ArgumentException">
     ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailPanelsBuilder<TResource> Add<TModel, THandler>(
+    public ResourceTableRowDetailPanelsBuilder<TResource> Add<TModel, THandler>(
         string title,
         string partialName,
-        Action<ResourceRowDetailPanelBuilder> configure
+        Action<ResourceTableRowDetailPanelBuilder> configure
     )
         where THandler : class, IResourceRowDetailHandler<TModel>
     {
@@ -170,7 +174,7 @@ public abstract class ResourceRowDetailPanelsBuilder<TResource>
     ///     An empty or white space title or partial name is a configuration problem, and the panel
     ///     is left out.
     /// </remarks>
-    protected ResourceRowDetailPanelBuilder AddPanel(
+    protected ResourceTableRowDetailPanelBuilder AddPanel(
         string title,
         string partialName,
         Func<IServiceProvider, string, CancellationToken, Task<object?>>? loader

@@ -6,12 +6,12 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures a column of the index page.
+///     Configures a column of a table on a resource's index page.
 /// </summary>
-/// <typeparam name="TResource">
+/// <typeparam name="TItem">
 ///     The type of the table's rows: the resource, or the items a handler loads.
 /// </typeparam>
-public sealed class ResourceColumnBuilder<TResource>
+public sealed class ResourceTableColumnBuilder<TItem>
 {
     private readonly List<Action<DataGridColumnOptions>> _configuration = [];
     private readonly LambdaExpression _field;
@@ -45,7 +45,7 @@ public sealed class ResourceColumnBuilder<TResource>
         set => _configuration.Add(options => options.Title = value);
     }
 
-    internal ResourceColumnBuilder(LambdaExpression field) => _field = field;
+    internal ResourceTableColumnBuilder(LambdaExpression field) => _field = field;
 
     /// <summary>
     ///     Sets the form field the column edits in an inline row.
@@ -61,8 +61,8 @@ public sealed class ResourceColumnBuilder<TResource>
     ///     the column edits the field with the same property path. An expression that doesn't
     ///     select a property path is a configuration problem, and the call is ignored.
     /// </remarks>
-    public ResourceColumnBuilder<TResource> EditsField<TProperty>(
-        Expression<Func<TResource, TProperty>> field
+    public ResourceTableColumnBuilder<TItem> EditsField<TProperty>(
+        Expression<Func<TItem, TProperty>> field
     )
     {
         ArgumentNullException.ThrowIfNull(field);
@@ -99,7 +99,7 @@ public sealed class ResourceColumnBuilder<TResource>
     ///     the column edits the field with the same property path. An empty or white space name
     ///     is a configuration problem, and the call is ignored.
     /// </remarks>
-    public ResourceColumnBuilder<TResource> EditsField(string fieldName)
+    public ResourceTableColumnBuilder<TItem> EditsField(string fieldName)
     {
         ArgumentNullException.ThrowIfNull(fieldName);
 
@@ -129,9 +129,9 @@ public sealed class ResourceColumnBuilder<TResource>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
     ///     A column that computes its value fails at startup with this method; sort it with
-    ///     <see cref="Sortable{TSort}(Expression{Func{TResource, TSort}})" /> instead.
+    ///     <see cref="Sortable{TSort}(Expression{Func{TItem, TSort}})" /> instead.
     /// </remarks>
-    public ResourceColumnBuilder<TResource> Sortable()
+    public ResourceTableColumnBuilder<TItem> Sortable()
     {
         _configuration.Add(options =>
         {
@@ -151,8 +151,8 @@ public sealed class ResourceColumnBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="selector" /> is <see langword="null" />.
     /// </exception>
-    public ResourceColumnBuilder<TResource> Sortable<TSort>(
-        Expression<Func<TResource, TSort>> selector
+    public ResourceTableColumnBuilder<TItem> Sortable<TSort>(
+        Expression<Func<TItem, TSort>> selector
     )
     {
         ArgumentNullException.ThrowIfNull(selector);
@@ -181,7 +181,7 @@ public sealed class ResourceColumnBuilder<TResource>
     ///     displays with a handler: one is a configuration problem, and the column keeps its
     ///     default display.
     /// </remarks>
-    public ResourceColumnBuilder<TResource> UseDisplay<TDisplay>(Action<TDisplay> configure)
+    public ResourceTableColumnBuilder<TItem> UseDisplay<TDisplay>(Action<TDisplay> configure)
         where TDisplay : FieldDisplay, new()
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -221,7 +221,7 @@ public sealed class ResourceColumnBuilder<TResource>
     ///     Columns don't support displays with a handler: one is a configuration problem, and the
     ///     column keeps its default display.
     /// </remarks>
-    public ResourceColumnBuilder<TResource> UseDisplay<TDisplay>()
+    public ResourceTableColumnBuilder<TItem> UseDisplay<TDisplay>()
         where TDisplay : FieldDisplay, new() => UseDisplay<TDisplay>(_ => { });
 
     /// <summary>
@@ -231,7 +231,7 @@ public sealed class ResourceColumnBuilder<TResource>
     /// <remarks>
     ///     The value is formatted with the property's <c>[DisplayFormat]</c>.
     /// </remarks>
-    public ResourceColumnBuilder<TResource> UseBuiltInRendering()
+    public ResourceTableColumnBuilder<TItem> UseBuiltInRendering()
     {
         _configuration.Add(options =>
         {

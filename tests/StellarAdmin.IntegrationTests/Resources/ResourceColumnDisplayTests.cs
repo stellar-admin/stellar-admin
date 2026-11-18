@@ -411,7 +411,7 @@ public class ResourceColumnDisplayTests
         document.QuerySelectorAll("tbody tr:first-child td").ToArray();
 
     private static Task<WebApplication> CreateAsync(
-        Action<ResourceColumnsBuilder<ProductFactsModel>> columns,
+        Action<ResourceTableColumnsBuilder<ProductFactsModel>> columns,
         Action<IServiceCollection>? configureServices = null,
         Action<ProductFactsModel>? change = null
     )

@@ -9,7 +9,7 @@ namespace StellarAdmin.Resources.Builders;
 ///     Configures how index rows expand to show their details.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
-public sealed class ResourceRowDetailsBuilder<TResource>
+public sealed class ResourceTableRowDetailsBuilder<TResource>
 {
     private readonly IServiceCollection _services;
     private readonly string _tableKey;
@@ -133,7 +133,7 @@ public sealed class ResourceRowDetailsBuilder<TResource>
         set => Configure(options => options.Toggle = value);
     }
 
-    internal ResourceRowDetailsBuilder(IServiceCollection services, string tableKey)
+    internal ResourceTableRowDetailsBuilder(IServiceCollection services, string tableKey)
     {
         _services = services;
         _tableKey = tableKey;

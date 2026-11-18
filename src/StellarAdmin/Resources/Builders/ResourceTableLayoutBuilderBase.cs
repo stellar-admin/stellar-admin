@@ -28,7 +28,7 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public TBuilder Columns(Action<ResourceColumnsBuilder<TResource>> configure)
+    public TBuilder Columns(Action<ResourceTableColumnsBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 
@@ -78,7 +78,7 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     ///     Enables paging on the table.
     /// </summary>
     /// <returns>A builder that configures paging.</returns>
-    public ResourcePagingBuilder<TResource> EnablePaging()
+    public ResourceTablePagingBuilder<TResource> EnablePaging()
     {
         Services.Configure<ResourceOptions<TResource>>(options =>
             options.Index.GetOrAddTable(LayoutKey).Paging = new()
@@ -95,7 +95,7 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public TBuilder EnablePaging(Action<ResourcePagingBuilder<TResource>> configure)
+    public TBuilder EnablePaging(Action<ResourceTablePagingBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(EnablePaging());
@@ -117,7 +117,7 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentException">
     ///     <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailsBuilder<TResource> EnableRowDetails(string partialName) =>
+    public ResourceTableRowDetailsBuilder<TResource> EnableRowDetails(string partialName) =>
         RegisterRowDetails(partialName, null);
 
     /// <summary>
@@ -138,7 +138,7 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     /// </exception>
     public TBuilder EnableRowDetails(
         string partialName,
-        Action<ResourceRowDetailsBuilder<TResource>> configure
+        Action<ResourceTableRowDetailsBuilder<TResource>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -164,7 +164,7 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentException">
     ///     <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public ResourceRowDetailsBuilder<TResource> EnableRowDetails<TModel, THandler>(
+    public ResourceTableRowDetailsBuilder<TResource> EnableRowDetails<TModel, THandler>(
         string partialName
     )
         where THandler : class, IResourceRowDetailHandler<TModel> =>
@@ -192,7 +192,7 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     /// </exception>
     public TBuilder EnableRowDetails<TModel, THandler>(
         string partialName,
-        Action<ResourceRowDetailsBuilder<TResource>> configure
+        Action<ResourceTableRowDetailsBuilder<TResource>> configure
     )
         where THandler : class, IResourceRowDetailHandler<TModel>
     {
@@ -215,8 +215,8 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="panels" /> is <see langword="null" />.
     /// </exception>
-    public ResourceRowDetailsBuilder<TResource> EnableRowDetails(
-        Action<ResourceRowDetailPanelsBuilder<TResource>> panels
+    public ResourceTableRowDetailsBuilder<TResource> EnableRowDetails(
+        Action<ResourceTableRowDetailPanelsBuilder<TResource>> panels
     )
     {
         ArgumentNullException.ThrowIfNull(panels);
@@ -241,8 +241,8 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     ///     <paramref name="panels" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     public TBuilder EnableRowDetails(
-        Action<ResourceRowDetailPanelsBuilder<TResource>> panels,
-        Action<ResourceRowDetailsBuilder<TResource>> configure
+        Action<ResourceTableRowDetailPanelsBuilder<TResource>> panels,
+        Action<ResourceTableRowDetailsBuilder<TResource>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -287,7 +287,7 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     ///     An empty or white space partial name is a configuration problem, and rows don't
     ///     expand.
     /// </remarks>
-    protected ResourceRowDetailsBuilder<TResource> RegisterRowDetails(
+    protected ResourceTableRowDetailsBuilder<TResource> RegisterRowDetails(
         string partialName,
         Func<IServiceProvider, string, CancellationToken, Task<object?>>? loader
     )
@@ -331,8 +331,8 @@ public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
     ///     problems. A panel without a name, and the later panel with a repeated name, are left
     ///     out, and without panels rows don't expand.
     /// </remarks>
-    protected ResourceRowDetailsBuilder<TResource> RegisterRowDetails(
-        ResourceRowDetailPanelsBuilder<TResource> panels
+    protected ResourceTableRowDetailsBuilder<TResource> RegisterRowDetails(
+        ResourceTableRowDetailPanelsBuilder<TResource> panels
     )
     {
         ArgumentNullException.ThrowIfNull(panels);

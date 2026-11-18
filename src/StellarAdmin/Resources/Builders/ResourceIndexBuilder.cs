@@ -19,7 +19,7 @@ public sealed class ResourceIndexBuilder<TResource>
 
     /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.Columns" />
     public ResourceIndexBuilder<TResource> Columns(
-        Action<ResourceColumnsBuilder<TResource>> configure
+        Action<ResourceTableColumnsBuilder<TResource>> configure
     )
     {
         _table.Columns(configure);
@@ -48,11 +48,11 @@ public sealed class ResourceIndexBuilder<TResource>
     }
 
     /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnablePaging()" />
-    public ResourcePagingBuilder<TResource> EnablePaging() => _table.EnablePaging();
+    public ResourceTablePagingBuilder<TResource> EnablePaging() => _table.EnablePaging();
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnablePaging(Action{ResourcePagingBuilder{TResource}})" />
+    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnablePaging(Action{ResourceTablePagingBuilder{TResource}})" />
     public ResourceIndexBuilder<TResource> EnablePaging(
-        Action<ResourcePagingBuilder<TResource>> configure
+        Action<ResourceTablePagingBuilder<TResource>> configure
     )
     {
         _table.EnablePaging(configure);
@@ -61,18 +61,18 @@ public sealed class ResourceIndexBuilder<TResource>
     }
 
     /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(string)" />
-    public ResourceRowDetailsBuilder<TResource> EnableRowDetails(string partialName) =>
+    public ResourceTableRowDetailsBuilder<TResource> EnableRowDetails(string partialName) =>
         _table.EnableRowDetails(partialName);
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(Action{ResourceRowDetailPanelsBuilder{TResource}})" />
-    public ResourceRowDetailsBuilder<TResource> EnableRowDetails(
-        Action<ResourceRowDetailPanelsBuilder<TResource>> panels
+    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(Action{ResourceTableRowDetailPanelsBuilder{TResource}})" />
+    public ResourceTableRowDetailsBuilder<TResource> EnableRowDetails(
+        Action<ResourceTableRowDetailPanelsBuilder<TResource>> panels
     ) => _table.EnableRowDetails(panels);
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(string, Action{ResourceRowDetailsBuilder{TResource}})" />
+    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(string, Action{ResourceTableRowDetailsBuilder{TResource}})" />
     public ResourceIndexBuilder<TResource> EnableRowDetails(
         string partialName,
-        Action<ResourceRowDetailsBuilder<TResource>> configure
+        Action<ResourceTableRowDetailsBuilder<TResource>> configure
     )
     {
         _table.EnableRowDetails(partialName, configure);
@@ -80,10 +80,10 @@ public sealed class ResourceIndexBuilder<TResource>
         return this;
     }
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(Action{ResourceRowDetailPanelsBuilder{TResource}}, Action{ResourceRowDetailsBuilder{TResource}})" />
+    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(Action{ResourceTableRowDetailPanelsBuilder{TResource}}, Action{ResourceTableRowDetailsBuilder{TResource}})" />
     public ResourceIndexBuilder<TResource> EnableRowDetails(
-        Action<ResourceRowDetailPanelsBuilder<TResource>> panels,
-        Action<ResourceRowDetailsBuilder<TResource>> configure
+        Action<ResourceTableRowDetailPanelsBuilder<TResource>> panels,
+        Action<ResourceTableRowDetailsBuilder<TResource>> configure
     )
     {
         _table.EnableRowDetails(panels, configure);
@@ -92,16 +92,16 @@ public sealed class ResourceIndexBuilder<TResource>
     }
 
     /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails{TModel, THandler}(string)" />
-    public ResourceRowDetailsBuilder<TResource> EnableRowDetails<TModel, THandler>(
+    public ResourceTableRowDetailsBuilder<TResource> EnableRowDetails<TModel, THandler>(
         string partialName
     )
         where THandler : class, IResourceRowDetailHandler<TModel> =>
         _table.EnableRowDetails<TModel, THandler>(partialName);
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails{TModel, THandler}(string, Action{ResourceRowDetailsBuilder{TResource}})" />
+    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails{TModel, THandler}(string, Action{ResourceTableRowDetailsBuilder{TResource}})" />
     public ResourceIndexBuilder<TResource> EnableRowDetails<TModel, THandler>(
         string partialName,
-        Action<ResourceRowDetailsBuilder<TResource>> configure
+        Action<ResourceTableRowDetailsBuilder<TResource>> configure
     )
         where THandler : class, IResourceRowDetailHandler<TModel>
     {

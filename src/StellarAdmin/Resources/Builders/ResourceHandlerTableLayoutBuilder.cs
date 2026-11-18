@@ -33,7 +33,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     public ResourceHandlerTableLayoutBuilder<TResource, TItem> Columns(
-        Action<ResourceColumnsBuilder<TItem>> configure
+        Action<ResourceTableColumnsBuilder<TItem>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -89,7 +89,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     ///     The handler pages the rows: <see cref="ResourceListRequest.Paging" /> holds the page,
     ///     and the total it returns counts the pages.
     /// </remarks>
-    public ResourcePagingBuilder<TResource> EnablePaging()
+    public ResourceTablePagingBuilder<TResource> EnablePaging()
     {
         ConfigureTable(table => table.Paging = new());
 
@@ -105,7 +105,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     public ResourceHandlerTableLayoutBuilder<TResource, TItem> EnablePaging(
-        Action<ResourcePagingBuilder<TResource>> configure
+        Action<ResourceTablePagingBuilder<TResource>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);

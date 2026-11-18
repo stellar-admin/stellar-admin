@@ -157,7 +157,7 @@ public class ResourceCreateBuilder<TModel>
     /// <returns>A builder that configures the inline row.</returns>
     /// <remarks>
     ///     Every editable field must match an index column, by name or through
-    ///     <see cref="ResourceColumnBuilder{TResource}.EditsField(string)" />. Every
+    ///     <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. Every
     ///     <c>[Required]</c> model property must have an editable field. The resource needs a key.
     ///     The create page is not available.
     /// </remarks>
@@ -179,7 +179,7 @@ public class ResourceCreateBuilder<TModel>
     /// </exception>
     /// <remarks>
     ///     Every editable field must match an index column, by name or through
-    ///     <see cref="ResourceColumnBuilder{TResource}.EditsField(string)" />. Every
+    ///     <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. Every
     ///     <c>[Required]</c> model property must have an editable field. The resource needs a key.
     ///     The create page is not available.
     /// </remarks>

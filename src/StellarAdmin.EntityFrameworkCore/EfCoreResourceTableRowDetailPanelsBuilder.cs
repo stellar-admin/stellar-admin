@@ -12,10 +12,11 @@ namespace StellarAdmin.EntityFrameworkCore;
 /// <remarks>
 ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout.
 /// </remarks>
-public sealed class EfCoreRowDetailPanelsBuilder<TEntity> : ResourceRowDetailPanelsBuilder<TEntity>
+public sealed class EfCoreResourceTableRowDetailPanelsBuilder<TEntity>
+    : ResourceTableRowDetailPanelsBuilder<TEntity>
     where TEntity : class
 {
-    internal EfCoreRowDetailPanelsBuilder(IServiceCollection services)
+    internal EfCoreResourceTableRowDetailPanelsBuilder(IServiceCollection services)
         : base(services) { }
 
     /// <summary>
@@ -38,7 +39,7 @@ public sealed class EfCoreRowDetailPanelsBuilder<TEntity> : ResourceRowDetailPan
     /// <remarks>
     ///     The model loads when the panel is first shown.
     /// </remarks>
-    public ResourceRowDetailPanelBuilder Add<TModel>(
+    public ResourceTableRowDetailPanelBuilder Add<TModel>(
         string title,
         string partialName,
         Expression<Func<TEntity, TModel>> select
@@ -71,11 +72,11 @@ public sealed class EfCoreRowDetailPanelsBuilder<TEntity> : ResourceRowDetailPan
     /// <remarks>
     ///     The model loads when the panel is first shown.
     /// </remarks>
-    public EfCoreRowDetailPanelsBuilder<TEntity> Add<TModel>(
+    public EfCoreResourceTableRowDetailPanelsBuilder<TEntity> Add<TModel>(
         string title,
         string partialName,
         Expression<Func<TEntity, TModel>> select,
-        Action<ResourceRowDetailPanelBuilder> configure
+        Action<ResourceTableRowDetailPanelBuilder> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);

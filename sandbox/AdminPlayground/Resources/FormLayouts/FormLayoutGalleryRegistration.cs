@@ -73,7 +73,7 @@ internal static class FormLayoutGalleryRegistration
         int order,
         FormSectionLayout sectionLayout,
         Action<ResourceFieldsBuilder<TRecord>> configureFields,
-        Action<ResourceColumnsBuilder<TRecord>>? configureColumns = null,
+        Action<ResourceTableColumnsBuilder<TRecord>>? configureColumns = null,
         Action<ResourceViewFieldsBuilder<TRecord>>? configureView = null
     )
         where TRecord : FieldEditorGalleryRecord, IFieldEditorGalleryRecord<TRecord>
@@ -118,7 +118,7 @@ internal static class FormLayoutGalleryRegistration
 
     // Every column shows its type's default display
     private static void ConfigureDisplayFieldsColumns(
-        ResourceColumnsBuilder<DisplayFieldsLayoutGallery> columns
+        ResourceTableColumnsBuilder<DisplayFieldsLayoutGallery> columns
     )
     {
         columns.Add(record => record.TravellerName);
@@ -504,9 +504,7 @@ internal static class FormLayoutGalleryRegistration
             {
                 section.Description =
                     "New opens the destination create form in the sheet. Its section is Split with Small(2), and the sheet stacks it.";
-                section
-                    .Add(model => model.Destination)
-                    .UseLookupSheetEditor(UseDestinations);
+                section.Add(model => model.Destination).UseLookupSheetEditor(UseDestinations);
             }
         );
     }
@@ -535,9 +533,7 @@ internal static class FormLayoutGalleryRegistration
                 section.Columns(3);
                 section.Add(model => model.TravellerName);
                 section.Add(model => model.Cabin).UseSelectEditor();
-                section
-                    .Add(model => model.Destination)
-                    .UseLookupSheetEditor(UseDestinations);
+                section.Add(model => model.Destination).UseLookupSheetEditor(UseDestinations);
                 section.Add(model => model.Departure);
                 section.Add(model => model.CheckedBags);
                 section.Add(model => model.SeatCabin).UseRadioGroupEditor();

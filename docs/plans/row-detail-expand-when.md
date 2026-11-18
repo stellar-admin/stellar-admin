@@ -82,7 +82,7 @@ Tag helpers:
 
 ## Phase 2 — Admin panel
 
-- `ResourceRowDetailsBuilder<TResource>.ExpandWhen(Func<TResource, RowDetailExpansion>)` and `ExpandWhen(Func<TResource, bool>)`; repeated calls replace the rule. Stored on `ResourceRowDetailsOptions` as an internal `Func<object, RowDetailExpansion>`.
+- `ResourceTableRowDetailsBuilder<TResource>.ExpandWhen(Func<TResource, RowDetailExpansion>)` and `ExpandWhen(Func<TResource, bool>)`; repeated calls replace the rule. Stored on `ResourceRowDetailsOptions` as an internal `Func<object, RowDetailExpansion>`.
 - `_IndexDataGrid` passes it to `expand-when`; the row counter for panel ids is unaffected.
 - Integration tests: denied rows render no detail row and no partial, the reason renders as the toggle's tooltip, the bool overload, and an inline partial is not rendered for a denied row.
 - Playground: Products denies rows under 10.00 with a reason naming the product; Customers denies one case without a reason.

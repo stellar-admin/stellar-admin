@@ -8,7 +8,7 @@ namespace StellarAdmin.Resources.Builders;
 ///     Configures paging on a resource's index page.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
-public sealed class ResourcePagingBuilder<TResource>
+public sealed class ResourceTablePagingBuilder<TResource>
 {
     private readonly IServiceCollection _services;
     private readonly string _tableKey;
@@ -62,7 +62,7 @@ public sealed class ResourcePagingBuilder<TResource>
         }
     }
 
-    internal ResourcePagingBuilder(IServiceCollection services, string tableKey)
+    internal ResourceTablePagingBuilder(IServiceCollection services, string tableKey)
     {
         _services = services;
         _tableKey = tableKey;

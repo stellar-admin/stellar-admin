@@ -129,10 +129,10 @@ public class FieldDisplayDefaultsTests
 
     private static DataGridColumnOptions BuildColumn<TProperty>(
         Expression<Func<Model, TProperty>> field,
-        Action<ResourceColumnBuilder<Model>> configure
+        Action<ResourceTableColumnBuilder<Model>> configure
     )
     {
-        var builder = new ResourceColumnBuilder<Model>(field);
+        var builder = new ResourceTableColumnBuilder<Model>(field);
         configure(builder);
 
         return builder.Build();

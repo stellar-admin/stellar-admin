@@ -4,13 +4,13 @@ using StellarAdmin.Resources.Displays;
 
 namespace StellarAdmin.Tests.Resources.Builders;
 
-public class ResourceColumnBuilderTests
+public class ResourceTableColumnBuilderTests
 {
     [Test]
     public async Task UseDisplay_ConfiguresDisplay()
     {
         // Arrange
-        var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+        var sut = new ResourceTableColumnBuilder<Product>((Product product) => product.Name);
 
         // Act
         sut.UseDisplay<TextDisplay>(text => text.LineClamp = 2);
@@ -25,7 +25,7 @@ public class ResourceColumnBuilderTests
     public async Task UseBuiltInRendering_AfterUseDisplay_ClearsDisplay()
     {
         // Arrange
-        var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+        var sut = new ResourceTableColumnBuilder<Product>((Product product) => product.Name);
         sut.UseDisplay<TextDisplay>();
 
         // Act
@@ -41,7 +41,7 @@ public class ResourceColumnBuilderTests
     public async Task UseDisplay_AfterUseBuiltInRendering_UsesDisplay()
     {
         // Arrange
-        var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+        var sut = new ResourceTableColumnBuilder<Product>((Product product) => product.Name);
         sut.UseBuiltInRendering();
 
         // Act
@@ -57,7 +57,7 @@ public class ResourceColumnBuilderTests
     public async Task UseDisplay_WithHandlerDisplay_KeepsDefaultDisplay()
     {
         // Arrange
-        var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+        var sut = new ResourceTableColumnBuilder<Product>((Product product) => product.Name);
         sut.UseDisplay<PreparedDisplay>();
         var outer = ResourceProblemSink.Open();
 
@@ -76,7 +76,7 @@ public class ResourceColumnBuilderTests
     public async Task EmptyText_SetsEmptyText()
     {
         // Arrange
-        var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+        var sut = new ResourceTableColumnBuilder<Product>((Product product) => product.Name);
 
         // Act
         sut.EmptyText = "Unnamed";
@@ -90,7 +90,7 @@ public class ResourceColumnBuilderTests
     public async Task EditsField_WithPropertyPath_UsesPathAsFieldName()
     {
         // Arrange
-        var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+        var sut = new ResourceTableColumnBuilder<Product>((Product product) => product.Name);
 
         // Act
         sut.EditsField(product => product.Name.Length);
@@ -104,7 +104,7 @@ public class ResourceColumnBuilderTests
     public async Task EditsField_WithComputedValue_IgnoresCall()
     {
         // Arrange
-        var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+        var sut = new ResourceTableColumnBuilder<Product>((Product product) => product.Name);
         sut.EditsField(product => product.Name.ToUpperInvariant());
         var outer = ResourceProblemSink.Open();
 
