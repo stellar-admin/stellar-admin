@@ -8,7 +8,18 @@ internal static class RowDetailsCheck
 {
     public static void Run<TResource>(ResourceOptions<TResource> options)
     {
-        if (options.Index.RowDetails is not { } rowDetails)
+        foreach (var table in options.Index.Tables)
+        {
+            Run(options, table);
+        }
+    }
+
+    private static void Run<TResource>(
+        ResourceOptions<TResource> options,
+        ResourceTableLayoutOptions table
+    )
+    {
+        if (table.RowDetails is not { } rowDetails)
         {
             return;
         }
@@ -29,7 +40,7 @@ internal static class RowDetailsCheck
 
         if (rowDetails.Panels.Count == 0)
         {
-            options.Index.RowDetails = null;
+            table.RowDetails = null;
 
             return;
         }

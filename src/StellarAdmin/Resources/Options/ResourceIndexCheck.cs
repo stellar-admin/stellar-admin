@@ -7,14 +7,21 @@ internal static class ResourceIndexCheck
 {
     public static void Run<TResource>(ResourceOptions<TResource> options)
     {
-        CheckPaging(options);
+        foreach (var table in options.Index.Tables)
+        {
+            CheckPaging(options, table);
+            CheckDefaultSort(options, table);
+        }
+
         CheckScopes(options);
-        CheckDefaultSort(options);
     }
 
-    private static void CheckPaging<TResource>(ResourceOptions<TResource> options)
+    private static void CheckPaging<TResource>(
+        ResourceOptions<TResource> options,
+        ResourceTableLayoutOptions table
+    )
     {
-        if (options.Index.Paging is not { } paging)
+        if (table.Paging is not { } paging)
         {
             return;
         }
@@ -118,16 +125,18 @@ internal static class ResourceIndexCheck
         }
     }
 
-    private static void CheckDefaultSort<TResource>(ResourceOptions<TResource> options)
+    private static void CheckDefaultSort<TResource>(
+        ResourceOptions<TResource> options,
+        ResourceTableLayoutOptions table
+    )
     {
-        var index = options.Index;
         if (
-            index.DefaultSort is { } sort
-            && !index.Columns.Any(column => column.Sortable && column.SortField == sort.Field)
+            table.DefaultSort is { } sort
+            && !table.Columns.Any(column => column.Sortable && column.SortField == sort.Field)
         )
         {
-            index.DefaultSort = null;
-            var hasColumn = index.Columns.Any(column => column.SortField == sort.Field);
+            table.DefaultSort = null;
+            var hasColumn = table.Columns.Any(column => column.SortField == sort.Field);
             options.Report(
                 ConfigurationProblemKind.UnsortableDefaultSort,
                 hasColumn
@@ -136,7 +145,7 @@ internal static class ResourceIndexCheck
                 hasColumn
                     ? $"Make the `{sort.Field}` column sortable, or sort by another column."
                     : $"Add a sortable `{sort.Field}` column, or sort by another column.",
-                index.DefaultSortSource
+                table.DefaultSortSource
             );
         }
     }

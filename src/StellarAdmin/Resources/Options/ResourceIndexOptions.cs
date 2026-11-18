@@ -8,6 +8,9 @@ namespace StellarAdmin.Resources.Options;
 /// </summary>
 public sealed class ResourceIndexOptions
 {
+    // The key of the table layout that the one-argument Index overload configures
+    internal const string ImplicitTableKey = "table";
+
     /// <summary>
     ///     Gets the label of the cancel button on an inline row.
     /// </summary>
@@ -17,11 +20,6 @@ public sealed class ResourceIndexOptions
     ///     <see langword="null" />.
     /// </value>
     public string? CancelLabel { get; internal set; }
-
-    /// <summary>
-    ///     Gets the columns, in display order.
-    /// </summary>
-    public IReadOnlyList<DataGridColumnOptions> Columns => MutableColumns;
 
     /// <summary>
     ///     Gets the label of the create button.
@@ -45,18 +43,6 @@ public sealed class ResourceIndexOptions
     public string? CreatedMessage { get; internal set; }
 
     /// <summary>
-    ///     Gets the sort order used when the user hasn't sorted the list.
-    /// </summary>
-    /// <value>
-    ///     The sort order, or <see langword="null" /> to use the data source's order. The default
-    ///     is <see langword="null" />.
-    /// </value>
-    /// <remarks>
-    ///     The sort order must select a sortable column.
-    /// </remarks>
-    public ResourceSort? DefaultSort { get; internal set; }
-
-    /// <summary>
     ///     Gets the label of the delete button.
     /// </summary>
     /// <value>
@@ -77,6 +63,14 @@ public sealed class ResourceIndexOptions
     public string? EditLabel { get; internal set; }
 
     /// <summary>
+    ///     Gets the layouts, in the order the user can switch between them.
+    /// </summary>
+    /// <remarks>
+    ///     The first layout is the one the page shows by default.
+    /// </remarks>
+    public IReadOnlyList<ResourceLayoutOptions> Layouts => MutableLayouts;
+
+    /// <summary>
     ///     Gets the description of the toast shown when a saved inline row isn't on the
     ///     reloaded page.
     /// </summary>
@@ -86,24 +80,6 @@ public sealed class ResourceIndexOptions
     ///     <see langword="null" />.
     /// </value>
     public string? NotShownMessage { get; internal set; }
-
-    /// <summary>
-    ///     Gets the paging configuration.
-    /// </summary>
-    /// <value>
-    ///     The configuration, or <see langword="null" /> when the list isn't paged. The default is
-    ///     <see langword="null" />.
-    /// </value>
-    public ResourcePagingOptions? Paging { get; internal set; }
-
-    /// <summary>
-    ///     Gets the configuration of rows that expand to show details.
-    /// </summary>
-    /// <value>
-    ///     The configuration, or <see langword="null" /> when rows don't expand. The default is
-    ///     <see langword="null" />.
-    /// </value>
-    public ResourceRowDetailsOptions? RowDetails { get; internal set; }
 
     /// <summary>
     ///     Gets the label of the save button on an inline row.
@@ -163,10 +139,31 @@ public sealed class ResourceIndexOptions
     /// </value>
     public string? ViewLabel { get; internal set; }
 
-    internal ConfigurationSource? DefaultSortSource { get; set; }
+    internal List<ResourceLayoutOptions> MutableLayouts { get; } = [];
 
-    internal List<DataGridColumnOptions> MutableColumns { get; } = [];
+    // The tables, in layout order
+    internal IEnumerable<ResourceTableLayoutOptions> Tables =>
+        MutableLayouts.OfType<ResourceTableLayoutOptions>();
 
     // The widgets as configured, then, once checked, those that can be shown
     internal List<WidgetOptions> Widgets { get; } = [];
+
+    // The layout the page shows for a key, or the first layout when the key matches none
+    internal ResourceLayoutOptions? FindLayout(string? key) =>
+        MutableLayouts.FirstOrDefault(layout =>
+            string.Equals(layout.Key, key, StringComparison.OrdinalIgnoreCase)
+        ) ?? MutableLayouts.FirstOrDefault();
+
+    internal ResourceTableLayoutOptions GetOrAddTable(string key)
+    {
+        if (MutableLayouts.Find(layout => layout.Key == key) is ResourceTableLayoutOptions table)
+        {
+            return table;
+        }
+
+        table = new(key);
+        MutableLayouts.Add(table);
+
+        return table;
+    }
 }

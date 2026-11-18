@@ -12,6 +12,7 @@ namespace StellarAdmin.Resources.Builders;
 public sealed class ResourceRowDetailsBuilder<TResource>
 {
     private readonly IServiceCollection _services;
+    private readonly string _tableKey;
 
     /// <summary>
     ///     Sets a value that indicates whether details animate open and closed.
@@ -132,10 +133,14 @@ public sealed class ResourceRowDetailsBuilder<TResource>
         set => Configure(options => options.Toggle = value);
     }
 
-    internal ResourceRowDetailsBuilder(IServiceCollection services) => _services = services;
+    internal ResourceRowDetailsBuilder(IServiceCollection services, string tableKey)
+    {
+        _services = services;
+        _tableKey = tableKey;
+    }
 
     private void Configure(Action<ResourceRowDetailsOptions> configure) =>
         _services.Configure<ResourceOptions<TResource>>(options =>
-            configure(options.Index.RowDetails!)
+            configure(options.Index.GetOrAddTable(_tableKey).RowDetails!)
         );
 }

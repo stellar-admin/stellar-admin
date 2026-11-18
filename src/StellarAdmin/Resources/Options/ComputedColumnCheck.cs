@@ -8,12 +8,22 @@ internal static class ComputedColumnCheck
 {
     public static void Run<TResource>(ResourceOptions<TResource> options)
     {
-        var index = options.Index;
-        foreach (var column in index.Columns.Where(column => column.FieldName is null).ToArray())
+        foreach (var table in options.Index.Tables)
+        {
+            Run(options, table);
+        }
+    }
+
+    private static void Run<TResource>(
+        ResourceOptions<TResource> options,
+        ResourceTableLayoutOptions table
+    )
+    {
+        foreach (var column in table.Columns.Where(column => column.FieldName is null).ToArray())
         {
             if (string.IsNullOrWhiteSpace(column.Title))
             {
-                index.MutableColumns.Remove(column);
+                table.MutableColumns.Remove(column);
                 options.Report(
                     ConfigurationProblemKind.ComputedColumnWithoutTitle,
                     "This column isn't shown because it's computed, so it has no property name to use as its title.",
@@ -33,7 +43,7 @@ internal static class ComputedColumnCheck
             }
             else if (
                 column.Sortable
-                && index.Columns.Any(other =>
+                && table.Columns.Any(other =>
                     other != column
                     && other.Sortable
                     && string.Equals(

@@ -23,7 +23,7 @@ public class ResourceIndexBuilderBaseTests
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(options.Index.RowDetails).IsNull();
+        await Assert.That(options.Index.Tables.Single().RowDetails).IsNull();
         await Assert
             .That(options.Problems.Single().Kind)
             .IsEqualTo(ConfigurationProblemKind.RowDetailsWithoutPanels);
@@ -70,7 +70,8 @@ public class ResourceIndexBuilderBaseTests
         using var provider = services.BuildServiceProvider();
         var rowDetails = provider
             .GetRequiredService<IOptions<ResourceOptions<Product>>>()
-            .Value.Index.RowDetails!;
+            .Value.Index.Tables.Single()
+            .RowDetails!;
         await Assert
             .That(rowDetails.Panels.Select(panel => (panel.Name, panel.Title, panel.LoadsOnDemand)))
             .IsEquivalentTo(
@@ -95,7 +96,7 @@ public class ResourceIndexBuilderBaseTests
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(options.Index.RowDetails).IsNull();
+        await Assert.That(options.Index.Tables.Single().RowDetails).IsNull();
         await Assert
             .That(options.Problems.Single().Kind)
             .IsEqualTo(ConfigurationProblemKind.RowDetailsWithoutPanels);
@@ -121,7 +122,7 @@ public class ResourceIndexBuilderBaseTests
 
         // Assert
         await Assert
-            .That(options.Index.RowDetails!.Panels.Select(panel => panel.Title))
+            .That(options.Index.Tables.Single().RowDetails!.Panels.Select(panel => panel.Title))
             .IsEquivalentTo(["Order history"]);
         await Assert.That(options.Problems.Single().Message).Contains("order-history");
     }
@@ -158,7 +159,7 @@ public class ResourceIndexBuilderBaseTests
 
         // Assert
         await Assert
-            .That(options.Index.RowDetails!.Panels.Select(panel => panel.Title))
+            .That(options.Index.Tables.Single().RowDetails!.Panels.Select(panel => panel.Title))
             .IsEquivalentTo(["Notes"]);
         await Assert
             .That(options.Problems.Single().Kind)

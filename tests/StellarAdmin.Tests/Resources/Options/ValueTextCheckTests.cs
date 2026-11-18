@@ -164,7 +164,7 @@ public class ValueTextCheckTests
         var options = GetOptions(provider);
 
         // Assert
-        await Assert.That(options.Index.Columns.Count).IsEqualTo(7);
+        await Assert.That(options.Index.Tables.Single().Columns.Count).IsEqualTo(7);
     }
 
     [Test]
@@ -190,7 +190,7 @@ public class ValueTextCheckTests
                 )
             )
             .IsFalse();
-        await Assert.That(options.Index.Columns.Count).IsEqualTo(1);
+        await Assert.That(options.Index.Tables.Single().Columns.Count).IsEqualTo(1);
     }
 
     [Test]
@@ -214,7 +214,7 @@ public class ValueTextCheckTests
         var options = GetOptions(provider);
 
         // Assert
-        await Assert.That(options.Index.Columns.Count).IsEqualTo(1);
+        await Assert.That(options.Index.Tables.Single().Columns.Count).IsEqualTo(1);
     }
 
     [Test]

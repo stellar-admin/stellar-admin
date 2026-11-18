@@ -1573,16 +1573,12 @@ StellarAdmin.Resources.Options.ResourceIndexLabelOptions.ViewLabel.get -> System
 StellarAdmin.Resources.Options.ResourceIndexLabelOptions.ViewLabel.set -> void
 StellarAdmin.Resources.Options.ResourceIndexOptions
 StellarAdmin.Resources.Options.ResourceIndexOptions.CancelLabel.get -> string?
-StellarAdmin.Resources.Options.ResourceIndexOptions.Columns.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.DataGridColumnOptions!>!
 StellarAdmin.Resources.Options.ResourceIndexOptions.CreatedMessage.get -> string?
 StellarAdmin.Resources.Options.ResourceIndexOptions.CreateLabel.get -> string?
-StellarAdmin.Resources.Options.ResourceIndexOptions.DefaultSort.get -> StellarAdmin.Resources.ResourceSort?
 StellarAdmin.Resources.Options.ResourceIndexOptions.DeleteLabel.get -> string?
 StellarAdmin.Resources.Options.ResourceIndexOptions.EditLabel.get -> string?
 StellarAdmin.Resources.Options.ResourceIndexOptions.NotShownMessage.get -> string?
-StellarAdmin.Resources.Options.ResourceIndexOptions.Paging.get -> StellarAdmin.Resources.Options.ResourcePagingOptions?
 StellarAdmin.Resources.Options.ResourceIndexOptions.ResourceIndexOptions() -> void
-StellarAdmin.Resources.Options.ResourceIndexOptions.RowDetails.get -> StellarAdmin.Resources.Options.ResourceRowDetailsOptions?
 StellarAdmin.Resources.Options.ResourceIndexOptions.SavedMessage.get -> string?
 StellarAdmin.Resources.Options.ResourceIndexOptions.SaveLabel.get -> string?
 StellarAdmin.Resources.Options.ResourceIndexOptions.Scopes.get -> StellarAdmin.Resources.Options.ResourceScopesOptions?
@@ -2177,3 +2173,11 @@ StellarAdmin.Resources.Builders.ResourceSummaryItemBuilder.UseBuiltInRendering()
 StellarAdmin.Resources.Builders.ResourceSummaryItemBuilder.UseDisplay<TDisplay>() -> StellarAdmin.Resources.Builders.ResourceSummaryItemBuilder!
 StellarAdmin.Resources.Builders.ResourceSummaryItemBuilder.UseDisplay<TDisplay>(System.Action<TDisplay!>! configure) -> StellarAdmin.Resources.Builders.ResourceSummaryItemBuilder!
 StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>.Summary(System.Action<StellarAdmin.Resources.Builders.ResourceSummaryBuilder<TModel>!>! configure) -> StellarAdmin.Resources.Builders.ResourceViewBuilder<TModel>!
+StellarAdmin.Resources.Options.ResourceIndexOptions.Layouts.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.ResourceLayoutOptions!>!
+StellarAdmin.Resources.Options.ResourceLayoutOptions
+StellarAdmin.Resources.Options.ResourceLayoutOptions.Key.get -> string!
+StellarAdmin.Resources.Options.ResourceTableLayoutOptions
+StellarAdmin.Resources.Options.ResourceTableLayoutOptions.Columns.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.DataGridColumnOptions!>!
+StellarAdmin.Resources.Options.ResourceTableLayoutOptions.DefaultSort.get -> StellarAdmin.Resources.ResourceSort?
+StellarAdmin.Resources.Options.ResourceTableLayoutOptions.Paging.get -> StellarAdmin.Resources.Options.ResourcePagingOptions?
+StellarAdmin.Resources.Options.ResourceTableLayoutOptions.RowDetails.get -> StellarAdmin.Resources.Options.ResourceRowDetailsOptions?

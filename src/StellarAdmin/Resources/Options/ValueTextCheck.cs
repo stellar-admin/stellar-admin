@@ -19,7 +19,23 @@ internal static class ValueTextCheck
         IReadOnlySet<Type> resourceTypes
     )
     {
-        foreach (var column in options.Index.Columns.ToArray())
+        foreach (var table in options.Index.Tables)
+        {
+            CheckColumns(options, table, resourceTypes);
+        }
+
+        CheckFields(options, "view page", options.View, resourceTypes);
+        CheckFields(options, "create form", options.Create, resourceTypes);
+        CheckFields(options, "edit form", options.Edit, resourceTypes);
+    }
+
+    private static void CheckColumns<TResource>(
+        ResourceOptions<TResource> options,
+        ResourceTableLayoutOptions table,
+        IReadOnlySet<Type> resourceTypes
+    )
+    {
+        foreach (var column in table.Columns.ToArray())
         {
             if (
                 FindProblem(
@@ -31,7 +47,7 @@ internal static class ValueTextCheck
                 is var (message, fix)
             )
             {
-                options.Index.MutableColumns.Remove(column);
+                table.MutableColumns.Remove(column);
                 options.Report(
                     ConfigurationProblemKind.ValueWithoutText,
                     message,
@@ -40,10 +56,6 @@ internal static class ValueTextCheck
                 );
             }
         }
-
-        CheckFields(options, "view page", options.View, resourceTypes);
-        CheckFields(options, "create form", options.Create, resourceTypes);
-        CheckFields(options, "edit form", options.Edit, resourceTypes);
     }
 
     private static void CheckFields<TResource>(

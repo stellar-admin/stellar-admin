@@ -1,6 +1,6 @@
 # Index layouts
 
-Status: approved, not started (2026-11-18). API and stages agreed with Jerrie; nothing is implemented. Work stage by stage (see Stages) and pause at every checkpoint.
+Status: approved, stage 1 implemented (2026-11-18). API and stages agreed with Jerrie; stage 1 awaits review. Work stage by stage (see Stages) and pause at every checkpoint.
 
 Let an index page switch between layouts, with a switcher at the end of the controls row. A layout can show the resource's own rows or use a handler to load a different data shape (for example, revenue per month summarised from bookings).
 
@@ -188,7 +188,7 @@ Conventions to follow throughout: `docs/conventions/options-builders.md`, `cshar
 
 ## Progress
 
-- Stage 1: not started.
+- Stage 1: implemented 2026-11-18, awaiting review. `ResourceLayoutOptions` (key) and `ResourceTableLayoutOptions` (columns, default sort, paging, row details) hold the table settings; `ResourceIndexOptions.Layouts` lists them, and the one-argument `Index` fills a table keyed `table` (`ResourceIndexOptions.ImplicitTableKey`), also added for an index that is never configured. The index builder and its columns, paging and row-details builders target a table by key (`TableKey`, the implicit one for now). The checks (columns, badges, computed columns, row details, paging, default sort) run per table; inline rows check the default table; references sort by the first table's default sort. `EfCoreResourceDataSource.ListAsync` is split into `Narrow` (keys, scope, search) and `Arrange` (a table's includes, sort and paging); the controller reads `IndexTable`, which is the first layout until stage 2 adds `?layout=`. Verified: the full solution test run passes (2168 tests), plus two new `ResourceOptionsFactoryTests`; 69 playground index URLs (every index, its sort, page, page-size and scope links, and searches) and three htmx grid swaps return the same HTML as a baseline build of `HEAD`, once tokens, generated ids and checkout paths are normalized. No playground example, since nothing is visible.
 - Stage 2: not started.
 - Stage 3: not started.
 - Stage 4: not started.

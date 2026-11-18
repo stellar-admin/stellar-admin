@@ -11,8 +11,13 @@ namespace StellarAdmin.Resources.Builders;
 public sealed class ResourceColumnsBuilder<TResource>
 {
     private readonly IServiceCollection _services;
+    private readonly string _tableKey;
 
-    internal ResourceColumnsBuilder(IServiceCollection services) => _services = services;
+    internal ResourceColumnsBuilder(IServiceCollection services, string tableKey)
+    {
+        _services = services;
+        _tableKey = tableKey;
+    }
 
     /// <summary>
     ///     Adds a column.
@@ -37,7 +42,7 @@ public sealed class ResourceColumnsBuilder<TResource>
 
         var column = new ResourceColumnBuilder<TResource>(field);
         _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.MutableColumns.Add(column.Build())
+            options.Index.GetOrAddTable(_tableKey).MutableColumns.Add(column.Build())
         );
 
         return column;
@@ -75,7 +80,7 @@ public sealed class ResourceColumnsBuilder<TResource>
     public ResourceColumnsBuilder<TResource> Clear()
     {
         _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.MutableColumns.Clear()
+            options.Index.GetOrAddTable(_tableKey).MutableColumns.Clear()
         );
 
         return this;

@@ -181,6 +181,9 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// </summary>
     protected IServiceCollection Services { get; }
 
+    // The key of the table layout that the table members configure
+    private protected string TableKey { get; } = ResourceIndexOptions.ImplicitTableKey;
+
     /// <summary>
     ///     Initializes a new instance of the
     ///     <see cref="ResourceIndexBuilderBase{TResource, TBuilder}" /> class.
@@ -202,7 +205,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(new(Services));
+        configure(new(Services, TableKey));
 
         return (TBuilder)this;
     }
@@ -250,9 +253,11 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// <returns>A builder that configures paging.</returns>
     public ResourcePagingBuilder<TResource> EnablePaging()
     {
-        Services.Configure<ResourceOptions<TResource>>(options => options.Index.Paging = new());
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            options.Index.GetOrAddTable(TableKey).Paging = new()
+        );
 
-        return new(Services);
+        return new(Services, TableKey);
     }
 
     /// <summary>
@@ -498,7 +503,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
         {
             if (string.IsNullOrWhiteSpace(partialName))
             {
-                options.Index.RowDetails = null;
+                options.Index.GetOrAddTable(TableKey).RowDetails = null;
                 options.Report(
                     ConfigurationProblemKind.RowDetailsWithoutPanels,
                     "Rows don't expand because the row details name a blank partial view.",
@@ -509,13 +514,13 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
                 return;
             }
 
-            options.Index.RowDetails = new()
+            options.Index.GetOrAddTable(TableKey).RowDetails = new()
             {
                 MutablePanels = { new(partialName, loader) { Source = source } },
             };
         });
 
-        return new(Services);
+        return new(Services, TableKey);
     }
 
     /// <summary>
@@ -603,18 +608,19 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
             options.Problems.AddRange(problems);
             if (registered.Count == 0)
             {
-                options.Index.RowDetails = null;
+                options.Index.GetOrAddTable(TableKey).RowDetails = null;
                 return;
             }
 
-            options.Index.RowDetails = new();
+            var table = options.Index.GetOrAddTable(TableKey);
+            table.RowDetails = new();
             foreach (var panel in registered)
             {
-                options.Index.RowDetails.MutablePanels.Add(panel);
+                table.RowDetails.MutablePanels.Add(panel);
             }
         });
 
-        return new(Services);
+        return new(Services, TableKey);
     }
 
     private TBuilder ConfigureDefaultSort(LambdaExpression field, ResourceSortDirection direction)
@@ -637,8 +643,9 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
 
         Services.Configure<ResourceOptions<TResource>>(options =>
         {
-            options.Index.DefaultSort = new(ResourcePropertyPath.GetName(properties), direction);
-            options.Index.DefaultSortSource = source;
+            var table = options.Index.GetOrAddTable(TableKey);
+            table.DefaultSort = new(ResourcePropertyPath.GetName(properties), direction);
+            table.DefaultSortSource = source;
         });
 
         return (TBuilder)this;

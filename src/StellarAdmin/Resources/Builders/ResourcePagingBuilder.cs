@@ -11,6 +11,7 @@ namespace StellarAdmin.Resources.Builders;
 public sealed class ResourcePagingBuilder<TResource>
 {
     private readonly IServiceCollection _services;
+    private readonly string _tableKey;
 
     /// <summary>
     ///     Sets the number of resources per page when the user hasn't chosen a page size.
@@ -28,8 +29,8 @@ public sealed class ResourcePagingBuilder<TResource>
             var source = ConfigurationSource.Capture();
             _services.Configure<ResourceOptions<TResource>>(options =>
             {
-                options.Index.Paging!.PageSize = value;
-                options.Index.Paging.PageSizeSource = source;
+                options.Index.GetOrAddTable(_tableKey).Paging!.PageSize = value;
+                options.Index.GetOrAddTable(_tableKey).Paging!.PageSizeSource = source;
             });
         }
     }
@@ -55,11 +56,15 @@ public sealed class ResourcePagingBuilder<TResource>
             var source = ConfigurationSource.Capture();
             _services.Configure<ResourceOptions<TResource>>(options =>
             {
-                options.Index.Paging!.PageSizes = sizes.ToArray();
-                options.Index.Paging.PageSizesSource = source;
+                options.Index.GetOrAddTable(_tableKey).Paging!.PageSizes = sizes.ToArray();
+                options.Index.GetOrAddTable(_tableKey).Paging!.PageSizesSource = source;
             });
         }
     }
 
-    internal ResourcePagingBuilder(IServiceCollection services) => _services = services;
+    internal ResourcePagingBuilder(IServiceCollection services, string tableKey)
+    {
+        _services = services;
+        _tableKey = tableKey;
+    }
 }

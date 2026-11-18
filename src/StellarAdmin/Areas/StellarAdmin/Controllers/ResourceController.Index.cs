@@ -22,6 +22,11 @@ internal sealed partial class ResourceController<TResource>
     private const string IndexGridId = "index-page-data-grid";
     private const string IndexSearchInputId = "index-page-search-input";
 
+    // The table the index page shows
+    private ResourceTableLayoutOptions IndexTable =>
+        _resourceOptions.Index.FindLayout(null) as ResourceTableLayoutOptions
+        ?? throw new InvalidOperationException("The index page has no table layout.");
+
     [HttpGet]
     public async Task<IActionResult> Index(
         [FromQuery] ResourceIndexQuery query,
@@ -57,9 +62,7 @@ internal sealed partial class ResourceController<TResource>
         if (
             string.IsNullOrEmpty(id)
             || _resourceOptions.KeySelector is null
-            || _resourceOptions.Index.RowDetails?.Panels.FirstOrDefault(options =>
-                options.Name == panel
-            )
+            || IndexTable.RowDetails?.Panels.FirstOrDefault(options => options.Name == panel)
                 is not { Loader: { } loader } panelOptions
         )
         {
@@ -139,7 +142,7 @@ internal sealed partial class ResourceController<TResource>
             CanCreate = HasCreatePage,
             CanEdit = HasEditPage,
             CanView = _resourceOptions.View is not null && _resourceOptions.KeySelector is not null,
-            Columns = _resourceOptions.Index.Columns.ToArray(),
+            Columns = IndexTable.Columns.ToArray(),
             CreateLabel =
                 _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
             Delete =
@@ -235,8 +238,8 @@ internal sealed partial class ResourceController<TResource>
         {
             var remaining = form.Fields.ToList();
 
-            return _resourceOptions
-                .Index.Columns.Select(column =>
+            return IndexTable
+                .Columns.Select(column =>
                 {
                     var name = column.EditsFieldName ?? column.FieldName;
                     var field = remaining.FirstOrDefault(field =>
@@ -280,7 +283,7 @@ internal sealed partial class ResourceController<TResource>
     // Rows load details by their key, so details that load on demand need one
     private ResourceRowDetailsOptions? GetRowDetails()
     {
-        var rowDetails = _resourceOptions.Index.RowDetails;
+        var rowDetails = IndexTable.RowDetails;
         if (
             rowDetails?.Panels.Any(panel => panel.LoadsOnDemand) == true
             && _resourceOptions.KeySelector is null
@@ -355,7 +358,7 @@ internal sealed partial class ResourceController<TResource>
                 paging.PageSize,
                 result.TotalCount,
                 totalPages,
-                _resourceOptions.Index.Paging!.PageSizes
+                IndexTable.Paging!.PageSizes
             );
         }
 
@@ -488,7 +491,7 @@ internal sealed partial class ResourceController<TResource>
             return false;
         }
 
-        var column = _resourceOptions.Index.Columns.FirstOrDefault(column =>
+        var column = IndexTable.Columns.FirstOrDefault(column =>
             column.Sortable
             && string.Equals(column.SortField, query.SortBy, StringComparison.OrdinalIgnoreCase)
         );
@@ -507,7 +510,7 @@ internal sealed partial class ResourceController<TResource>
                     ? null
                     : query.Search.Trim(),
             Sort = column is null
-                ? _resourceOptions.Index.DefaultSort
+                ? IndexTable.DefaultSort
                 : new(
                     column.SortField!,
                     direction == "desc"
@@ -515,7 +518,7 @@ internal sealed partial class ResourceController<TResource>
                         : ResourceSortDirection.Ascending
                 ),
         };
-        if (_resourceOptions.Index.Paging is not { } options)
+        if (IndexTable.Paging is not { } options)
         {
             return true;
         }

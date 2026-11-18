@@ -9,18 +9,33 @@ internal static class BadgeDisplayCheck
 {
     public static void Run<TResource>(ResourceOptions<TResource> options)
     {
-        foreach (var column in options.Index.Columns.ToArray())
+        foreach (var table in options.Index.Tables)
+        {
+            CheckColumns(options, table);
+        }
+
+        CheckFields(options, "view page", options.View);
+        CheckFields(options, "create form", options.Create);
+        CheckFields(options, "edit form", options.Edit);
+    }
+
+    private static void CheckColumns<TResource>(
+        ResourceOptions<TResource> options,
+        ResourceTableLayoutOptions table
+    )
+    {
+        foreach (var column in table.Columns.ToArray())
         {
             if (
                 FindProblem(
                     $"The `{column.FieldName ?? column.FieldExpression.ToString()}` column isn't shown",
                     column.Display,
                     column.FieldExpression.ReturnType
-                ) is
-                var (message, fix)
+                )
+                is var (message, fix)
             )
             {
-                options.Index.MutableColumns.Remove(column);
+                table.MutableColumns.Remove(column);
                 options.Report(
                     ConfigurationProblemKind.MismatchedBadgeText,
                     message,
@@ -29,10 +44,6 @@ internal static class BadgeDisplayCheck
                 );
             }
         }
-
-        CheckFields(options, "view page", options.View);
-        CheckFields(options, "create form", options.Create);
-        CheckFields(options, "edit form", options.Edit);
     }
 
     private static void CheckFields<TResource>(
@@ -48,8 +59,8 @@ internal static class BadgeDisplayCheck
                     $"The `{field.FieldName ?? field.Title ?? field.FieldExpression.ToString()}` field isn't on the {page}",
                     field.Display,
                     field.FieldExpression.ReturnType
-                ) is
-                var (message, fix)
+                )
+                is var (message, fix)
             )
             {
                 FormItems.Remove(scope!, field);
