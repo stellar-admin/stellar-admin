@@ -56,6 +56,47 @@ public class ResourceLayoutsBuilderTests
     }
 
     [Test]
+    public async Task AddPartialWithHandler_AddsThePartialAndRegistersTheHandler()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services
+            .AddStellarAdmin()
+            .AddResource<Product>()
+            .Index(
+                _ => { },
+                layouts =>
+                {
+                    layouts.AddTable("products");
+                    layouts.AddPartial<ProductCount, ProductCountHandler>(
+                        "counts",
+                        "_ProductCounts",
+                        counts => counts.IgnoreScopes()
+                    );
+                }
+            );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var counts = await Assert
+            .That(options.Index.Layouts[1])
+            .IsTypeOf<ResourcePartialLayoutOptions>();
+        await Assert.That(counts!.Key).IsEqualTo("counts");
+        await Assert.That(counts.PartialName).IsEqualTo("_ProductCounts");
+        await Assert.That(counts.IgnoresScopes).IsTrue();
+        await Assert
+            .That(
+                services
+                    .Single(service => service.ServiceType == typeof(ProductCountHandler))
+                    .Lifetime
+            )
+            .IsEqualTo(ServiceLifetime.Scoped);
+    }
+
+    [Test]
     public async Task AddPartial_WithKeyATableUses_Throws()
     {
         // Arrange
@@ -257,5 +298,15 @@ public class ResourceLayoutsBuilderTests
         public string Name { get; set; } = "";
 
         public decimal Price { get; set; }
+    }
+
+    private sealed record ProductCount(int Count);
+
+    private sealed class ProductCountHandler : IResourceLayoutHandler<ProductCount>
+    {
+        public Task<ResourceListResult<ProductCount>> ListAsync(
+            ResourceListRequest request,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(new ResourceListResult<ProductCount>([new(0)], 1));
     }
 }

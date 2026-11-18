@@ -2249,3 +2249,7 @@ StellarAdmin.Resources.ResourceLayoutModel<TItem>.GetViewUrl(TItem item) -> stri
 StellarAdmin.Resources.Options.ResourcePartialLayoutOptions.PartialName.get -> string!
 StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
+StellarAdmin.Resources.IResourceLayoutHandler<TItem>
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!
+StellarAdmin.Resources.IResourceLayoutHandler<TItem>.ListAsync(StellarAdmin.Resources.ResourceListRequest! request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.ResourceListResult<TItem>!>!

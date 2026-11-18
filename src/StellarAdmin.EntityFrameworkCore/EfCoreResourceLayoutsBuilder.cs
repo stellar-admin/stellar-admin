@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
@@ -84,6 +85,96 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
+    ///     Adds a layout that renders items a handler loads with a partial view.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the items the layout shows.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the items: an
+    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
+    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
+    ///     data.
+    /// </typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="partialName">
+    ///     The name of the partial view, which receives a
+    ///     <see cref="ResourceLayoutModel{TItem}" /> of the items.
+    /// </param>
+    /// <returns>A builder that configures the layout.</returns>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> or <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> or <paramref name="partialName" /> is empty or whitespace, or
+    ///     another layout already uses <paramref name="key" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     <typeparamref name="THandler" /> implements neither handler interface for
+    ///     <typeparamref name="TItem" />.
+    /// </exception>
+    public ResourcePartialLayoutBuilder<TEntity> AddPartial<TItem, THandler>(
+        string key,
+        string partialName
+    )
+        where THandler : class
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(partialName);
+        var loader = CreateLoader<TItem, THandler>();
+        AddLayout(key, index => index.AddPartial(key, partialName, loader));
+
+        return new(_services, key);
+    }
+
+    /// <summary>
+    ///     Adds and configures a layout that renders items a handler loads with a partial view.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the items the layout shows.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the items: an
+    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
+    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
+    ///     data.
+    /// </typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="partialName">
+    ///     The name of the partial view, which receives a
+    ///     <see cref="ResourceLayoutModel{TItem}" /> of the items.
+    /// </param>
+    /// <param name="configure">A delegate that configures the layout.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" />, <paramref name="partialName" /> or <paramref name="configure" />
+    ///     is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> or <paramref name="partialName" /> is empty or whitespace, or
+    ///     another layout already uses <paramref name="key" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     <typeparamref name="THandler" /> implements neither handler interface for
+    ///     <typeparamref name="TItem" />.
+    /// </exception>
+    public EfCoreResourceLayoutsBuilder<TEntity> AddPartial<TItem, THandler>(
+        string key,
+        string partialName,
+        Action<ResourcePartialLayoutBuilder<TEntity>> configure
+    )
+        where THandler : class
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AddPartial<TItem, THandler>(key, partialName));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds a layout that shows the resources in a table.
     /// </summary>
     /// <param name="key">The key that identifies the layout in the page's URL.</param>
@@ -123,6 +214,43 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
 
         return this;
     }
+
+    // An EF handler receives the entities the scope and search select; another handler loads its own data
+    private ResourceLayoutLoader CreateLoader<TItem, THandler>()
+        where THandler : class
+    {
+        string factory;
+        if (typeof(IEfCoreLayoutHandler<TEntity, TItem>).IsAssignableFrom(typeof(THandler)))
+        {
+            factory = nameof(CreateEfCoreLoader);
+        }
+        else if (typeof(IResourceLayoutHandler<TItem>).IsAssignableFrom(typeof(THandler)))
+        {
+            factory = nameof(CreateHandlerLoader);
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                $"The layout handler {typeof(THandler).Name} must implement "
+                    + $"IEfCoreLayoutHandler<{typeof(TEntity).Name}, {typeof(TItem).Name}> or "
+                    + $"IResourceLayoutHandler<{typeof(TItem).Name}>."
+            );
+        }
+
+        return (ResourceLayoutLoader)
+            typeof(EfCoreResourceLayoutsBuilder<TEntity>)
+                .GetMethod(factory, BindingFlags.NonPublic | BindingFlags.Instance)!
+                .MakeGenericMethod(typeof(TItem), typeof(THandler))
+                .Invoke(this, null)!;
+    }
+
+    private ResourceLayoutLoader CreateEfCoreLoader<TItem, THandler>()
+        where THandler : class, IEfCoreLayoutHandler<TEntity, TItem> =>
+        EfCoreLayoutLoader.Create<TEntity, TItem, THandler>(_services);
+
+    private ResourceLayoutLoader CreateHandlerLoader<TItem, THandler>()
+        where THandler : class, IResourceLayoutHandler<TItem> =>
+        HandlerLayoutLoader.Create<TItem, THandler>(_services);
 
     // Adds the layout now, so the switcher's order is the order of the calls
     private void AddLayout(string key, Action<ResourceIndexOptions> add)

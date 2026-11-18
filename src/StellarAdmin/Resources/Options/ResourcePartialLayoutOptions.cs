@@ -10,6 +10,17 @@ public sealed class ResourcePartialLayoutOptions : ResourceLayoutOptions
     /// </summary>
     public string PartialName { get; }
 
-    internal ResourcePartialLayoutOptions(string key, string partialName)
-        : base(key) => PartialName = partialName;
+    // Lists the items of a layout with a handler, or null for one that shows the resource's own rows
+    internal ResourceLayoutLoader? Loader { get; }
+
+    internal ResourcePartialLayoutOptions(
+        string key,
+        string partialName,
+        ResourceLayoutLoader? loader = null
+    )
+        : base(key)
+    {
+        PartialName = partialName;
+        Loader = loader;
+    }
 }

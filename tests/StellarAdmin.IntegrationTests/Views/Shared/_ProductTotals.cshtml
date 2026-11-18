@@ -1,0 +1,7 @@
+@using StellarAdmin.Resources
+@model ResourceLayoutModel<StellarAdmin.IntegrationTests.Fixtures.ProductTotal>
+<a data-test="index-url" href="@Model.GetIndexUrl(new { layout = "products" })">Products</a>
+@foreach (var total in Model.Items)
+{
+    <p data-test="total" data-view="@(Model.GetViewUrl(total) ?? "none")">@total.Layout/@total.Scope/@(total.Search ?? "none")/@total.Products</p>
+}

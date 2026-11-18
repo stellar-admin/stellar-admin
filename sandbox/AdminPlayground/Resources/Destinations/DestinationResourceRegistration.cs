@@ -7,7 +7,7 @@ namespace AdminPlayground.Resources.Destinations;
 
 // Image fields: thumbnails in the grid, a photo edited in an inline row and on the create form,
 // and the photo as a figure on the view page. Valparaíso's photo is missing, to show a broken image.
-// The create form saves and adds another, keeping the country.
+// The create form saves and adds another, keeping the country. A second layout lists the destinations per country.
 internal static class DestinationResourceRegistration
 {
     internal static void AddDestinationResource(this StellarAdminBuilder admin)
@@ -25,16 +25,38 @@ internal static class DestinationResourceRegistration
             resource.UseDataSource<DestinationDataSource>();
             resource.UseKey(destination => destination.Id);
             resource.AllowDelete();
-            resource.Index(index =>
-                index.Columns(columns =>
+            // The destinations in a table, and grouped by country with a handler that loads its own data
+            resource.Index(
+                _ => { },
+                layouts =>
                 {
-                    columns.Add(
-                        destination => destination.Photo,
-                        column => column.UseDisplay<ImageDisplay>(ConfigureDisplay)
+                    layouts.AddTable(
+                        "destinations",
+                        table =>
+                        {
+                            table.Title = "Destinations";
+                            table.Icon = "table";
+                            table.Columns(columns =>
+                            {
+                                columns.Add(
+                                    destination => destination.Photo,
+                                    column => column.UseDisplay<ImageDisplay>(ConfigureDisplay)
+                                );
+                                columns.Add(destination => destination.Name);
+                                columns.Add(destination => destination.Country);
+                            });
+                        }
                     );
-                    columns.Add(destination => destination.Name);
-                    columns.Add(destination => destination.Country);
-                })
+                    layouts.AddPartial<DestinationCountry, DestinationCountriesHandler>(
+                        "countries",
+                        "_DestinationCountries",
+                        countries =>
+                        {
+                            countries.Title = "Countries";
+                            countries.Icon = "globe";
+                        }
+                    );
+                }
             );
             resource.AllowView(view =>
                 view.Fields(fields =>

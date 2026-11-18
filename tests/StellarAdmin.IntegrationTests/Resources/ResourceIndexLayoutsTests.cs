@@ -49,7 +49,7 @@ public class ResourceIndexLayoutsTests
                     )
             )
             .IsEquivalentTo(
-                ["products: All products", "prices: Prices", "tiles: Tiles"],
+                ["products: All products", "prices: Prices", "tiles: Tiles", "totals: Totals"],
                 CollectionOrdering.Matching
             );
         await Assert
@@ -285,6 +285,40 @@ public class ResourceIndexLayoutsTests
         await Assert.That(response.StatusCode).IsEqualTo(System.Net.HttpStatusCode.NotFound);
     }
 
+    [Test]
+    public async Task HandlerLayout_RendersItsPartialWithTheHandlersItemsInsteadOfTheResources()
+    {
+        // Arrange
+        var state = CreateState();
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            resource =>
+            {
+                ConfigureLayouts(resource);
+                resource
+                    .UseKey(product => product.Id)
+                    .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
+            }
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products?layout=totals&scope=cheap&search=lamp"
+        );
+
+        // Assert
+        await Assert.That(state.ListRequests).IsEmpty();
+        var total = document.RequiredElement("#index-page-data-grid [data-test='total']");
+        await Assert.That(total.TextContent.Trim()).IsEqualTo("totals/cheap/none/3");
+        await Assert.That(total.GetAttribute("data-view")).IsEqualTo("none");
+        await Assert.That(document.QuerySelector("#index-page-scopes")).IsNotNull();
+        await Assert.That(document.QuerySelector("#index-page-search")).IsNull();
+        await Assert
+            .That(document.RequiredElement("[data-test='index-url']").GetAttribute("href"))
+            .IsEqualTo("/stellaradmin/products?layout=products&scope=cheap&search=lamp");
+    }
+
     private static void ConfigureLayouts(ResourceBuilder<Product> resource) =>
         resource.Index(
             index =>
@@ -333,6 +367,11 @@ public class ResourceIndexLayoutsTests
                     }
                 );
                 layouts.AddPartial("tiles", "_ProductTiles");
+                layouts.AddPartial<ProductTotal, ProductTotalsHandler>(
+                    "totals",
+                    "_ProductTotals",
+                    totals => totals.IgnoreSearch()
+                );
             }
         );
 

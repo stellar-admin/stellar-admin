@@ -14,7 +14,8 @@ public sealed class ResourceLayoutModel<TItem>
     ///     Gets the items the layout shows.
     /// </summary>
     /// <remarks>
-    ///     A partial layout receives every item the scope and search select; it has no paging.
+    ///     A partial layout receives every resource the scope and search select, or every item its
+    ///     handler returns; it has no paging.
     /// </remarks>
     public IReadOnlyList<TItem> Items { get; }
 
@@ -46,7 +47,8 @@ public sealed class ResourceLayoutModel<TItem>
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>
-    ///     The URL, or <see langword="null" /> when the resource has no edit page.
+    ///     The URL, or <see langword="null" /> when the resource has no edit page or the items come
+    ///     from a handler.
     /// </returns>
     public string? GetEditUrl(TItem item) => _editUrl(item);
 
@@ -65,7 +67,8 @@ public sealed class ResourceLayoutModel<TItem>
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>
-    ///     The URL, or <see langword="null" /> when the resource has no view page.
+    ///     The URL, or <see langword="null" /> when the resource has no view page or the items come
+    ///     from a handler.
     /// </returns>
     public string? GetViewUrl(TItem item) => _viewUrl(item);
 }

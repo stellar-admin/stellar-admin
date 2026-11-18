@@ -168,8 +168,8 @@ public sealed class ResourceIndexOptions
         }
     }
 
-    internal void AddPartial(string key, string partialName) =>
-        MutableLayouts.Add(new ResourcePartialLayoutOptions(key, partialName));
+    internal void AddPartial(string key, string partialName, ResourceLayoutLoader? loader = null) =>
+        MutableLayouts.Add(new ResourcePartialLayoutOptions(key, partialName, loader));
 
     // The layout with a key, which its Add call has already added
     internal ResourceLayoutOptions GetLayout(string key) =>

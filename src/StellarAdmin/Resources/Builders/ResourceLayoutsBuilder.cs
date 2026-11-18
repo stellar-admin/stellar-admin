@@ -81,6 +81,78 @@ public sealed class ResourceLayoutsBuilder<TResource>
     }
 
     /// <summary>
+    ///     Adds a layout that renders items a handler loads with a partial view.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the items the layout shows.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the items.</typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="partialName">
+    ///     The name of the partial view, which receives a
+    ///     <see cref="ResourceLayoutModel{TItem}" /> of the items.
+    /// </param>
+    /// <returns>A builder that configures the layout.</returns>
+    /// <remarks>
+    ///     The handler receives the scope and search and applies them itself. Registers
+    ///     <typeparamref name="THandler" /> as a scoped service if it isn't registered already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> or <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> or <paramref name="partialName" /> is empty or whitespace, or
+    ///     another layout already uses <paramref name="key" />.
+    /// </exception>
+    public ResourcePartialLayoutBuilder<TResource> AddPartial<TItem, THandler>(
+        string key,
+        string partialName
+    )
+        where THandler : class, IResourceLayoutHandler<TItem>
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(partialName);
+        var loader = HandlerLayoutLoader.Create<TItem, THandler>(_services);
+        AddLayout(key, index => index.AddPartial(key, partialName, loader));
+
+        return new(_services, key);
+    }
+
+    /// <summary>
+    ///     Adds and configures a layout that renders items a handler loads with a partial view.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the items the layout shows.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the items.</typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="partialName">
+    ///     The name of the partial view, which receives a
+    ///     <see cref="ResourceLayoutModel{TItem}" /> of the items.
+    /// </param>
+    /// <param name="configure">A delegate that configures the layout.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The handler receives the scope and search and applies them itself. Registers
+    ///     <typeparamref name="THandler" /> as a scoped service if it isn't registered already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" />, <paramref name="partialName" /> or <paramref name="configure" />
+    ///     is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> or <paramref name="partialName" /> is empty or whitespace, or
+    ///     another layout already uses <paramref name="key" />.
+    /// </exception>
+    public ResourceLayoutsBuilder<TResource> AddPartial<TItem, THandler>(
+        string key,
+        string partialName,
+        Action<ResourcePartialLayoutBuilder<TResource>> configure
+    )
+        where THandler : class, IResourceLayoutHandler<TItem>
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AddPartial<TItem, THandler>(key, partialName));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds a layout that shows the resources in a table.
     /// </summary>
     /// <param name="key">The key that identifies the layout in the page's URL.</param>

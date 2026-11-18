@@ -137,7 +137,8 @@ internal sealed partial class ResourceController<TResource>
         string? editingKey = null,
         object? editModel = null,
         object? newItem = null,
-        int added = 0
+        int added = 0,
+        object? layoutModel = null
     )
     {
         var labels = CreateLabelContext();
@@ -175,7 +176,7 @@ internal sealed partial class ResourceController<TResource>
             Layouts = CreateLayoutSwitcher(layout),
             Paging = pagingModel,
             PartialLayout = layout is ResourcePartialLayoutOptions partial
-                ? new(partial.PartialName, CreateLayoutModel(items, query, request))
+                ? new(partial.PartialName, layoutModel ?? CreateLayoutModel(items, query, request))
                 : null,
             Query = query,
             RowDetails = GetRowDetails(),
@@ -211,8 +212,7 @@ internal sealed partial class ResourceController<TResource>
         };
     }
 
-    // A partial's items with links to their pages, and to the index as it shows: the layout, scope and search the
-    // query string holds, though the layout ignores them
+    // A partial's items with links to their pages, and to the index as it shows
     private ResourceLayoutModel<TResource> CreateLayoutModel(
         IReadOnlyList<TResource> items,
         ResourceIndexQuery query,
@@ -229,23 +229,27 @@ internal sealed partial class ResourceController<TResource>
                 HasEditPage
                     ? Url.Action(nameof(Edit), new { id = _resourceOptions.KeySelector!(item) })
                     : null,
-            values =>
-            {
-                var routeValues = new RouteValueDictionary
-                {
-                    ["id"] = null,
-                    ["layout"] = query.Layout,
-                    ["scope"] = query.Scope,
-                    ["search"] = query.Search,
-                };
-                foreach (var (name, value) in new RouteValueDictionary(values))
-                {
-                    routeValues[name] = value;
-                }
-
-                return Url.Action(nameof(Index), routeValues)!;
-            }
+            CreateLayoutIndexUrl(query)
         );
+
+    // The index as it shows, with the layout, scope and search the query string holds, plus or replacing the values
+    private Func<object?, string> CreateLayoutIndexUrl(ResourceIndexQuery query) =>
+        values =>
+        {
+            var routeValues = new RouteValueDictionary
+            {
+                ["id"] = null,
+                ["layout"] = query.Layout,
+                ["scope"] = query.Scope,
+                ["search"] = query.Search,
+            };
+            foreach (var (name, value) in new RouteValueDictionary(values))
+            {
+                routeValues[name] = value;
+            }
+
+            return Url.Action(nameof(Index), routeValues)!;
+        };
 
     // The switcher's segments, which link to each layout with the page's scope and search. Sort and paging belong to
     // the table they were chosen in. The first layout links without a key
@@ -384,6 +388,19 @@ internal sealed partial class ResourceController<TResource>
         bool renderWidgets = true
     )
     {
+        // A layout with a handler lists its own items instead of the resource's
+        if (IndexLayout is ResourcePartialLayoutOptions { Loader: { } loader })
+        {
+            var layoutModel = await loader(
+                HttpContext.RequestServices,
+                request,
+                CreateLayoutIndexUrl(query),
+                cancellationToken
+            );
+
+            return await IndexResultAsync([], null, layoutModel);
+        }
+
         var result = await dataSource.ListAsync(request, cancellationToken);
         ResourceIndexPagingViewModel? pagingModel = null;
         if (request.Paging is { } paging)
@@ -442,18 +459,28 @@ internal sealed partial class ResourceController<TResource>
         }
 
         loaded?.Invoke(result.Items);
-        ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
-            _resourceOptions.Index.Widgets,
-            new IndexWidgetContext<TResource>(HttpContext, request.Scope, request.Search),
-            null,
-            cancellationToken,
-            renderWidgets
-        );
 
-        return ResourceView(
-            nameof(Index),
-            CreateIndexModel(result.Items, query, request, pagingModel)
-        );
+        return await IndexResultAsync(result.Items, pagingModel, null);
+
+        async Task<IActionResult> IndexResultAsync(
+            IReadOnlyList<TResource> items,
+            ResourceIndexPagingViewModel? paging,
+            object? layoutModel
+        )
+        {
+            ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
+                _resourceOptions.Index.Widgets,
+                new IndexWidgetContext<TResource>(HttpContext, request.Scope, request.Search),
+                null,
+                cancellationToken,
+                renderWidgets
+            );
+
+            return ResourceView(
+                nameof(Index),
+                CreateIndexModel(items, query, request, paging, layoutModel: layoutModel)
+            );
+        }
     }
 
     // A row as the index displays it, through the index query, whatever the scope or search

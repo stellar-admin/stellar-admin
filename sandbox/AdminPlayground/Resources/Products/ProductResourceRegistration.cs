@@ -315,6 +315,16 @@ internal static class ProductResourceRegistration
                             cards.Icon = "layout-grid";
                         }
                     );
+                    // Prices per category of the products the scope and search select, from the narrowed query
+                    layouts.AddPartial<CategoryPriceSummary, CategoryPriceSummaryHandler>(
+                        "categories",
+                        "_CategoryPriceSummary",
+                        categories =>
+                        {
+                            categories.Title = "Prices per category";
+                            categories.Icon = "chart-column";
+                        }
+                    );
                 }
             );
         });
