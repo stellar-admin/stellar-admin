@@ -2232,3 +2232,20 @@ StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexLayoutViewModel.Title.ge
 StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.Layouts.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexLayoutViewModel!>!
 StellarAdmin.Resources.ResourceListRequest.Layout.init -> void
 StellarAdmin.Resources.ResourceListRequest.Layout.get -> string?
+StellarAdmin.Resources.ResourceLayoutModel<TItem>
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPartialLayoutViewModel
+StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>
+StellarAdmin.Resources.Options.ResourcePartialLayoutOptions
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPartialLayoutViewModel.Model.get -> object!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPartialLayoutViewModel.PartialName.get -> string!
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.PartialLayout.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPartialLayoutViewModel?
+StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPageViewModel<TResource>.PartialLayout.init -> void
+StellarAdmin.Areas.StellarAdmin.ViewModels.IResourceIndexPageViewModel.PartialLayout.get -> StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceIndexPartialLayoutViewModel?
+StellarAdmin.Resources.ResourceLayoutModel<TItem>.Items.get -> System.Collections.Generic.IReadOnlyList<TItem>!
+StellarAdmin.Resources.ResourceLayoutModel<TItem>.Request.get -> StellarAdmin.Resources.ResourceListRequest!
+StellarAdmin.Resources.ResourceLayoutModel<TItem>.GetEditUrl(TItem item) -> string?
+StellarAdmin.Resources.ResourceLayoutModel<TItem>.GetIndexUrl(object? values = null) -> string!
+StellarAdmin.Resources.ResourceLayoutModel<TItem>.GetViewUrl(TItem item) -> string?
+StellarAdmin.Resources.Options.ResourcePartialLayoutOptions.PartialName.get -> string!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourcePartialLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!

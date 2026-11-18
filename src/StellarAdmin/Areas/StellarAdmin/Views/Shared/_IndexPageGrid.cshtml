@@ -1,6 +1,7 @@
 @model IResourceIndexPageViewModel
 
-@* The index page's grid, which its paging, sorting and search replace *@
+@* The index page's grid, which its paging, sorting and search replace. A partial layout takes the grid's place, and
+   its links and forms navigate normally instead of swapping the grid *@
 <div id="index-page-data-grid"
      hx-boost:inherited="true"
      hx-target:inherited="#index-page-data-grid"
@@ -8,5 +9,14 @@
      hx-swap:inherited="outerHTML"
      hx-select-oob:inherited="#index-page-search, #index-page-scopes">
     @Html.ValidationSummary(excludePropertyErrors: true)
-    <partial name="_IndexDataGrid" />
+    @if (Model.PartialLayout is { } partialLayout)
+    {
+        <div class="sa-resource-index-partial" hx-boost:inherited="false">
+            <partial name="@partialLayout.PartialName" model="partialLayout.Model" />
+        </div>
+    }
+    else
+    {
+        <partial name="_IndexDataGrid" />
+    }
 </div>

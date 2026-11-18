@@ -8,6 +8,93 @@ namespace StellarAdmin.Tests.Resources.Builders;
 public class ResourceLayoutsBuilderTests
 {
     [Test]
+    public async Task AddPartial_AddsThePartialInCallOrderWithItsSettings()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services
+            .AddStellarAdmin()
+            .AddResource<Product>()
+            .Index(
+                _ => { },
+                layouts =>
+                {
+                    layouts.AddTable("products");
+                    layouts.AddPartial(
+                        "cards",
+                        "_ProductCards",
+                        cards =>
+                        {
+                            cards.Title = "Cards";
+                            cards.Icon = "layout-grid";
+                            cards.IgnoreSearch();
+                        }
+                    );
+                    layouts.AddTable("prices");
+                }
+            );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert
+            .That(options.Index.Layouts.Select(layout => layout.Key))
+            .IsEquivalentTo(
+                ["products", "cards", "prices"],
+                TUnit.Assertions.Enums.CollectionOrdering.Matching
+            );
+        var cards = await Assert
+            .That(options.Index.Layouts[1])
+            .IsTypeOf<ResourcePartialLayoutOptions>();
+        await Assert.That(cards!.PartialName).IsEqualTo("_ProductCards");
+        await Assert.That(cards.Title).IsEqualTo("Cards");
+        await Assert.That(cards.Icon).IsEqualTo("layout-grid");
+        await Assert.That(cards.IgnoresSearch).IsTrue();
+        await Assert.That(cards.IgnoresScopes).IsFalse();
+    }
+
+    [Test]
+    public async Task AddPartial_WithKeyATableUses_Throws()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var resource = services.AddStellarAdmin().AddResource<Product>();
+
+        // Act
+        var act = () =>
+            resource.Index(
+                _ => { },
+                layouts =>
+                {
+                    layouts.AddTable("products");
+                    layouts.AddPartial("Products", "_ProductCards");
+                }
+            );
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    [Arguments("")]
+    [Arguments(" ")]
+    public async Task AddPartial_WithBlankPartialName_Throws(string partialName)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var resource = services.AddStellarAdmin().AddResource<Product>();
+
+        // Act
+        var act = () =>
+            resource.Index(_ => { }, layouts => layouts.AddPartial("cards", partialName));
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
     public async Task AddTable_AddsTablesInCallOrder()
     {
         // Arrange

@@ -96,6 +96,11 @@
         margin-inline-start: auto;
     }
 
+    /* A partial layout in place of the grid, inset like the card's content */
+    .sa-resource-index-partial {
+        padding: var(--_card-p);
+    }
+
     @container sa-resource-index-list (width < 44rem) {
         .sa-resource-index-controls:has(> .sa-tabs) {
             flex-wrap: wrap;

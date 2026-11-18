@@ -2,6 +2,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
@@ -28,10 +29,8 @@ internal sealed partial class ResourceController<TResource>
         _resourceOptions.Index.FindLayout(Request.Query["layout"].ToString())
         ?? throw new InvalidOperationException("The index page has no layouts.");
 
-    // The table the index page shows
-    private ResourceTableLayoutOptions IndexTable =>
-        IndexLayout as ResourceTableLayoutOptions
-        ?? throw new InvalidOperationException("The index page's layout isn't a table.");
+    // The table the index page shows, or null when its layout is a partial
+    private ResourceTableLayoutOptions? IndexTable => IndexLayout as ResourceTableLayoutOptions;
 
     [HttpGet]
     public async Task<IActionResult> Index(
@@ -68,7 +67,7 @@ internal sealed partial class ResourceController<TResource>
         if (
             string.IsNullOrEmpty(id)
             || _resourceOptions.KeySelector is null
-            || IndexTable.RowDetails?.Panels.FirstOrDefault(options => options.Name == panel)
+            || IndexTable?.RowDetails?.Panels.FirstOrDefault(options => options.Name == panel)
                 is not { Loader: { } loader } panelOptions
         )
         {
@@ -142,22 +141,20 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         var labels = CreateLabelContext();
-        var table = IndexTable;
-        var actions = table.RowActions;
+        var layout = IndexLayout;
+        var table = layout as ResourceTableLayoutOptions;
+        var actions = table?.RowActions;
 
         return new ResourceIndexPageViewModel<TResource>
         {
             CanCreate = HasCreatePage,
-            CanEdit = HasEditPage && actions.Edit,
-            CanView =
-                actions.View
-                && _resourceOptions.View is not null
-                && _resourceOptions.KeySelector is not null,
-            Columns = table.Columns.ToArray(),
+            CanEdit = HasEditPage && actions?.Edit == true,
+            CanView = HasViewPage && actions?.View == true,
+            Columns = table?.Columns.ToArray() ?? [],
             CreateLabel =
                 _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
             Delete =
-                !actions.Delete
+                actions?.Delete != true
                 || _resourceOptions.Delete is null
                 || _resourceOptions.KeySelector is null
                     ? null
@@ -175,13 +172,16 @@ internal sealed partial class ResourceController<TResource>
             KeySelector = _resourceOptions.KeySelector,
             InlineRows = CreateInlineRows(labels, editingKey, editModel, newItem, added),
             Items = items,
-            Layouts = CreateLayoutSwitcher(table),
+            Layouts = CreateLayoutSwitcher(layout),
             Paging = pagingModel,
+            PartialLayout = layout is ResourcePartialLayoutOptions partial
+                ? new(partial.PartialName, CreateLayoutModel(items, query, request))
+                : null,
             Query = query,
             RowDetails = GetRowDetails(),
             RowsOnly = rowsOnly,
             Scopes =
-                _resourceOptions.Index.Scopes is { } scopes && !table.IgnoresScopes
+                _resourceOptions.Index.Scopes is { } scopes && !layout.IgnoresScopes
                     ? scopes
                         .Items.Select(scope => new ResourceIndexScopeViewModel(
                             scope.Id,
@@ -192,7 +192,7 @@ internal sealed partial class ResourceController<TResource>
                         .ToArray()
                     : [],
             Search =
-                _resourceOptions.Index.Search is { } search && !table.IgnoresSearch
+                _resourceOptions.Index.Search is { } search && !layout.IgnoresSearch
                     ? new(
                         request.Search,
                         search.Placeholder ?? _labelOptions.Index.SearchPlaceholder(labels)
@@ -210,6 +210,42 @@ internal sealed partial class ResourceController<TResource>
             ViewLabel = _resourceOptions.Index.ViewLabel ?? _labelOptions.Index.ViewLabel(labels),
         };
     }
+
+    // A partial's items with links to their pages, and to the index as it shows: the layout, scope and search the
+    // query string holds, though the layout ignores them
+    private ResourceLayoutModel<TResource> CreateLayoutModel(
+        IReadOnlyList<TResource> items,
+        ResourceIndexQuery query,
+        ResourceListRequest request
+    ) =>
+        new(
+            items,
+            request,
+            item =>
+                HasViewPage
+                    ? Url.Action(ViewActionName, new { id = _resourceOptions.KeySelector!(item) })
+                    : null,
+            item =>
+                HasEditPage
+                    ? Url.Action(nameof(Edit), new { id = _resourceOptions.KeySelector!(item) })
+                    : null,
+            values =>
+            {
+                var routeValues = new RouteValueDictionary
+                {
+                    ["id"] = null,
+                    ["layout"] = query.Layout,
+                    ["scope"] = query.Scope,
+                    ["search"] = query.Search,
+                };
+                foreach (var (name, value) in new RouteValueDictionary(values))
+                {
+                    routeValues[name] = value;
+                }
+
+                return Url.Action(nameof(Index), routeValues)!;
+            }
+        );
 
     // The switcher's segments, which link to each layout with the page's scope and search. Sort and paging belong to
     // the table they were chosen in. The first layout links without a key
@@ -242,12 +278,12 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         // Inline rows edit the columns of the first table, which the inline row check matched to the form's fields
-        if (IndexTable != _resourceOptions.Index.Tables.FirstOrDefault())
+        if (IndexTable is not { } table || table != _resourceOptions.Index.Tables.FirstOrDefault())
         {
             return null;
         }
 
-        var edit = IndexTable.RowActions.Edit ? _resourceOptions.Edit?.InlineRow : null;
+        var edit = table.RowActions.Edit ? _resourceOptions.Edit?.InlineRow : null;
         var create = _resourceOptions.Create?.InlineRow;
         if (
             (edit is null && create is null) || _resourceOptions.KeyPropertyName is not { } keyField
@@ -280,7 +316,7 @@ internal sealed partial class ResourceController<TResource>
         {
             var remaining = form.Fields.ToList();
 
-            return IndexTable
+            return table
                 .Columns.Select(column =>
                 {
                     var name = column.EditsFieldName ?? column.FieldName;
@@ -325,7 +361,7 @@ internal sealed partial class ResourceController<TResource>
     // Rows load details by their key, so details that load on demand need one
     private ResourceRowDetailsOptions? GetRowDetails()
     {
-        var rowDetails = IndexTable.RowDetails;
+        var rowDetails = IndexTable?.RowDetails;
         if (
             rowDetails?.Panels.Any(panel => panel.LoadsOnDemand) == true
             && _resourceOptions.KeySelector is null
@@ -401,7 +437,7 @@ internal sealed partial class ResourceController<TResource>
                 paging.PageSize,
                 result.TotalCount,
                 totalPages,
-                IndexTable.Paging!.PageSizes
+                IndexTable!.Paging!.PageSizes
             );
         }
 
@@ -537,17 +573,19 @@ internal sealed partial class ResourceController<TResource>
             return false;
         }
 
-        // A layout that ignores the scopes or the search lists without them, though they stay in the query string
-        var table = IndexTable;
-        var column = table.Columns.FirstOrDefault(column =>
+        // A layout that ignores the scopes or the search lists without them, though they stay in the query string. A
+        // partial lists every item in the data source's order
+        var layout = IndexLayout;
+        var table = layout as ResourceTableLayoutOptions;
+        var column = table?.Columns.FirstOrDefault(column =>
             column.Sortable
             && string.Equals(column.SortField, query.SortBy, StringComparison.OrdinalIgnoreCase)
         );
         request = new()
         {
-            Layout = table.Key,
+            Layout = layout.Key,
             Scope =
-                _resourceOptions.Index.Scopes is { } scopes && !table.IgnoresScopes
+                _resourceOptions.Index.Scopes is { } scopes && !layout.IgnoresScopes
                     ? scopes
                         .Items.FirstOrDefault(scope =>
                             string.Equals(scope.Id, query.Scope, StringComparison.OrdinalIgnoreCase)
@@ -557,12 +595,12 @@ internal sealed partial class ResourceController<TResource>
                     : null,
             Search =
                 _resourceOptions.Index.Search is null
-                || table.IgnoresSearch
+                || layout.IgnoresSearch
                 || string.IsNullOrWhiteSpace(query.Search)
                     ? null
                     : query.Search.Trim(),
             Sort = column is null
-                ? table.DefaultSort
+                ? table?.DefaultSort
                 : new(
                     column.SortField!,
                     direction == "desc"
@@ -570,7 +608,7 @@ internal sealed partial class ResourceController<TResource>
                         : ResourceSortDirection.Ascending
                 ),
         };
-        if (table.Paging is not { } options)
+        if (table?.Paging is not { } options)
         {
             return true;
         }

@@ -88,6 +88,12 @@ public interface IResourceIndexPageViewModel
     ResourceIndexPagingViewModel? Paging { get; }
 
     /// <summary>
+    ///     Gets the partial view that renders the shown layout, or <see langword="null" /> when the
+    ///     layout is a table.
+    /// </summary>
+    ResourceIndexPartialLayoutViewModel? PartialLayout { get; }
+
+    /// <summary>
     ///     Gets the index settings that the query string supplies.
     /// </summary>
     ResourceIndexQuery Query { get; }

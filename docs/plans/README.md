@@ -8,7 +8,7 @@ This index lists the live plans: proposed, open, deferred or in progress. Comple
 - [widgets](widgets.md) (in progress): widgets on the home page and resource pages; phases 1 to 3 implemented, open questions on index placement and reloading.
 - [predefined-widgets](predefined-widgets.md) (proposed): ready-made widgets on the widget mechanism, stats first.
 - [index-page-refreshing](index-page-refreshing.md) (open): selective htmx refreshes on the index page, so scopes and search stop flashing the page.
-- [index-layouts](index-layouts.md) (approved, stage 2 implemented): switchable index layouts, first additional tables and custom partials (including a different data shape); board, map and others later.
+- [index-layouts](index-layouts.md) (approved, stage 3 implemented): switchable index layouts, first additional tables and custom partials (including a different data shape); board, map and others later.
 - [row-detail-expand-when](row-detail-expand-when.md) (deferred): per-row expand rules for row details, until an application needs them.
 - [configured-row-details](configured-row-details.md) (proposed): row-detail panels configured from display fields instead of hand-written partials.
 - [display-defaults](display-defaults.md) (proposed): app-level default displays, and display handlers in index columns.

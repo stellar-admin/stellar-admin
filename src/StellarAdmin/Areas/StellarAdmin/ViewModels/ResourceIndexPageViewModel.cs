@@ -54,6 +54,9 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public ResourceIndexPagingViewModel? Paging { get; init; }
 
     /// <inheritdoc />
+    public ResourceIndexPartialLayoutViewModel? PartialLayout { get; init; }
+
+    /// <inheritdoc />
     public ResourceIndexQuery Query { get; init; } = new();
 
     /// <inheritdoc />

@@ -49,7 +49,7 @@ public class ResourceIndexLayoutsTests
                     )
             )
             .IsEquivalentTo(
-                ["products: All products", "prices: Prices"],
+                ["products: All products", "prices: Prices", "tiles: Tiles"],
                 CollectionOrdering.Matching
             );
         await Assert
@@ -190,6 +190,101 @@ public class ResourceIndexLayoutsTests
         await Assert.That(prices.QuerySelector("form[data-resource-delete]")).IsNull();
     }
 
+    [Test]
+    public async Task PartialLayout_RendersItsPartialWithEveryItemTheSearchSelects()
+    {
+        // Arrange
+        var state = CreateState();
+        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureLayouts);
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products?layout=tiles&search=lamp"
+        );
+
+        // Assert
+        var request = state.ListRequests.Single();
+        await Assert.That(request.Layout).IsEqualTo("tiles");
+        await Assert.That(request.Search).IsEqualTo("lamp");
+        await Assert.That(request.Sort).IsNull();
+        await Assert.That(request.Paging).IsNull();
+        await Assert.That(document.QuerySelector("#index-page-grid")).IsNull();
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("#index-page-data-grid [data-test='tile']")
+                    .Select(tile => tile.FirstChild!.TextContent.Trim())
+            )
+            .IsEquivalentTo(["Blue lamp", "Red lamp"], CollectionOrdering.Matching);
+        await Assert.That(document.QuerySelector("#index-page-search")).IsNotNull();
+        await Assert
+            .That(
+                document
+                    .RequiredElement(".sa-resource-index-layouts input:checked")
+                    .GetAttribute("value")
+            )
+            .IsEqualTo("tiles");
+    }
+
+    [Test]
+    public async Task PartialLayout_LinksToRecordPagesAndToTheIndexWithItsState()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+            {
+                ConfigureLayouts(resource);
+                resource
+                    .UseKey(product => product.Id)
+                    .AllowEdit(edit => edit.Fields(fields => fields.Add(product => product.Name)))
+                    .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
+            }
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products?layout=tiles&scope=cheap&search=desk"
+        );
+
+        // Assert
+        var tile = document.RequiredElement("[data-test='tile']");
+        await Assert
+            .That(tile.RequiredElement("[data-test='view']").GetAttribute("href"))
+            .IsEqualTo("/stellaradmin/products/view/2");
+        await Assert
+            .That(tile.RequiredElement("[data-test='edit']").GetAttribute("href"))
+            .IsEqualTo("/stellaradmin/products/edit/2");
+        await Assert
+            .That(document.RequiredElement("[data-test='index-url']").GetAttribute("href"))
+            .IsEqualTo("/stellaradmin/products?layout=products&scope=cheap&search=desk&page=2");
+    }
+
+    [Test]
+    public async Task PartialLayout_HasNoRowDetails()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+            {
+                ConfigureLayouts(resource);
+                resource.UseKey(product => product.Id);
+            }
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        using var response = await client.GetAsync(
+            "/stellaradmin/products/rowdetail/1?layout=tiles"
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(System.Net.HttpStatusCode.NotFound);
+    }
+
     private static void ConfigureLayouts(ResourceBuilder<Product> resource) =>
         resource.Index(
             index =>
@@ -237,6 +332,7 @@ public class ResourceIndexLayoutsTests
                         table.IgnoreSearch();
                     }
                 );
+                layouts.AddPartial("tiles", "_ProductTiles");
             }
         );
 

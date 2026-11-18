@@ -305,6 +305,16 @@ internal static class ProductResourceRegistration
                             });
                         }
                     );
+                    // Every listed product as a card, from Areas/StellarAdmin/Views/Products/_ProductCards
+                    layouts.AddPartial(
+                        "cards",
+                        "_ProductCards",
+                        cards =>
+                        {
+                            cards.Title = "Cards";
+                            cards.Icon = "layout-grid";
+                        }
+                    );
                 }
             );
         });
