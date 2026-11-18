@@ -85,7 +85,7 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
         var totalCount = await query.LongCountAsync(cancellationToken);
         query = Arrange(
             query,
-            _resourceOptions.Index.FindLayout(null) as ResourceTableLayoutOptions,
+            _resourceOptions.Index.FindLayout(request.Layout) as ResourceTableLayoutOptions,
             request
         );
 

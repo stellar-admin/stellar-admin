@@ -35,6 +35,37 @@ public sealed class ResourceBuilder<TResource>
     }
 
     /// <summary>
+    ///     Configures the index page with layouts the user can switch between.
+    /// </summary>
+    /// <param name="configure">
+    ///     A delegate that configures the settings every layout shares, such as the scopes and the
+    ///     search.
+    /// </param>
+    /// <param name="layouts">A delegate that adds the layouts.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The first layout is the one the page shows by default. With two or more layouts, a
+    ///     switcher at the end of the controls row switches between them.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> or <paramref name="layouts" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceBuilder<TResource> Index(
+        Action<ResourceSharedIndexBuilder<TResource>> configure,
+        Action<ResourceLayoutsBuilder<TResource>> layouts
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        ArgumentNullException.ThrowIfNull(layouts);
+
+        Services.Configure<ResourceOptions<TResource>>(options => options.Index.DeclareLayouts());
+        configure(new(Services));
+        layouts(new(Services));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Configures how the resource's records look when another record refers to them, such as
     ///     in a lookup.
     /// </summary>

@@ -1,3 +1,4 @@
+using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -22,10 +23,15 @@ internal sealed partial class ResourceController<TResource>
     private const string IndexGridId = "index-page-data-grid";
     private const string IndexSearchInputId = "index-page-search-input";
 
+    // The layout the index page shows, which the query string selects. Every request from the page carries it
+    private ResourceLayoutOptions IndexLayout =>
+        _resourceOptions.Index.FindLayout(Request.Query["layout"].ToString())
+        ?? throw new InvalidOperationException("The index page has no layouts.");
+
     // The table the index page shows
     private ResourceTableLayoutOptions IndexTable =>
-        _resourceOptions.Index.FindLayout(null) as ResourceTableLayoutOptions
-        ?? throw new InvalidOperationException("The index page has no table layout.");
+        IndexLayout as ResourceTableLayoutOptions
+        ?? throw new InvalidOperationException("The index page's layout isn't a table.");
 
     [HttpGet]
     public async Task<IActionResult> Index(
@@ -136,17 +142,24 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         var labels = CreateLabelContext();
+        var table = IndexTable;
+        var actions = table.RowActions;
 
         return new ResourceIndexPageViewModel<TResource>
         {
             CanCreate = HasCreatePage,
-            CanEdit = HasEditPage,
-            CanView = _resourceOptions.View is not null && _resourceOptions.KeySelector is not null,
-            Columns = IndexTable.Columns.ToArray(),
+            CanEdit = HasEditPage && actions.Edit,
+            CanView =
+                actions.View
+                && _resourceOptions.View is not null
+                && _resourceOptions.KeySelector is not null,
+            Columns = table.Columns.ToArray(),
             CreateLabel =
                 _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
             Delete =
-                _resourceOptions.Delete is null || _resourceOptions.KeySelector is null
+                !actions.Delete
+                || _resourceOptions.Delete is null
+                || _resourceOptions.KeySelector is null
                     ? null
                     : new(
                         _resourceOptions.Delete.Title ?? _labelOptions.Delete.Title(labels),
@@ -162,26 +175,29 @@ internal sealed partial class ResourceController<TResource>
             KeySelector = _resourceOptions.KeySelector,
             InlineRows = CreateInlineRows(labels, editingKey, editModel, newItem, added),
             Items = items,
+            Layouts = CreateLayoutSwitcher(table),
             Paging = pagingModel,
             Query = query,
             RowDetails = GetRowDetails(),
             RowsOnly = rowsOnly,
-            Scopes = _resourceOptions.Index.Scopes is { } scopes
-                ? scopes
-                    .Items.Select(scope => new ResourceIndexScopeViewModel(
-                        scope.Id,
-                        scope.Title,
-                        scope.Id == request.Scope,
-                        scope.Id == scopes.DefaultScope ? null : scope.Id
-                    ))
-                    .ToArray()
-                : [],
-            Search = _resourceOptions.Index.Search is { } search
-                ? new(
-                    request.Search,
-                    search.Placeholder ?? _labelOptions.Index.SearchPlaceholder(labels)
-                )
-                : null,
+            Scopes =
+                _resourceOptions.Index.Scopes is { } scopes && !table.IgnoresScopes
+                    ? scopes
+                        .Items.Select(scope => new ResourceIndexScopeViewModel(
+                            scope.Id,
+                            scope.Title,
+                            scope.Id == request.Scope,
+                            scope.Id == scopes.DefaultScope ? null : scope.Id
+                        ))
+                        .ToArray()
+                    : [],
+            Search =
+                _resourceOptions.Index.Search is { } search && !table.IgnoresSearch
+                    ? new(
+                        request.Search,
+                        search.Placeholder ?? _labelOptions.Index.SearchPlaceholder(labels)
+                    )
+                    : null,
             Sort = request.Sort is { } sort
                 ? new(
                     sort.Field,
@@ -195,6 +211,26 @@ internal sealed partial class ResourceController<TResource>
         };
     }
 
+    // The switcher's segments, which link to each layout with the page's scope and search. Sort and paging belong to
+    // the table they were chosen in. The first layout links without a key
+    private ResourceIndexLayoutViewModel[] CreateLayoutSwitcher(ResourceLayoutOptions active)
+    {
+        var layouts = _resourceOptions.Index.Layouts;
+        if (layouts.Count < 2)
+        {
+            return [];
+        }
+
+        return layouts
+            .Select(layout => new ResourceIndexLayoutViewModel(
+                layout.Key,
+                layout.Title ?? layout.Key.Humanize(),
+                layout.Icon,
+                layout == active
+            ))
+            .ToArray();
+    }
+
     // The inline rows' fields by column position: each field is edited by the first column that shows it, or that names
     // it with EditsField
     private ResourceIndexInlineRowsViewModel? CreateInlineRows(
@@ -205,7 +241,13 @@ internal sealed partial class ResourceController<TResource>
         int added
     )
     {
-        var edit = _resourceOptions.Edit?.InlineRow;
+        // Inline rows edit the columns of the first table, which the inline row check matched to the form's fields
+        if (IndexTable != _resourceOptions.Index.Tables.FirstOrDefault())
+        {
+            return null;
+        }
+
+        var edit = IndexTable.RowActions.Edit ? _resourceOptions.Edit?.InlineRow : null;
         var create = _resourceOptions.Create?.InlineRow;
         if (
             (edit is null && create is null) || _resourceOptions.KeyPropertyName is not { } keyField
@@ -324,6 +366,7 @@ internal sealed partial class ResourceController<TResource>
                         new
                         {
                             id = (string?)null,
+                            layout = query.Layout,
                             page = totalPages,
                             pageSize = query.PageSize,
                             search = query.Search,
@@ -380,7 +423,10 @@ internal sealed partial class ResourceController<TResource>
     // A row as the index displays it, through the index query, whatever the scope or search
     private async Task<TResource[]> LoadRowsAsync(string key, CancellationToken cancellationToken)
     {
-        var result = await dataSource.ListAsync(new() { Keys = [key] }, cancellationToken);
+        var result = await dataSource.ListAsync(
+            new() { Keys = [key], Layout = IndexLayout.Key },
+            cancellationToken
+        );
 
         return result
             .Items.Where(item => _resourceOptions.KeySelector!(item) == key)
@@ -491,26 +537,32 @@ internal sealed partial class ResourceController<TResource>
             return false;
         }
 
-        var column = IndexTable.Columns.FirstOrDefault(column =>
+        // A layout that ignores the scopes or the search lists without them, though they stay in the query string
+        var table = IndexTable;
+        var column = table.Columns.FirstOrDefault(column =>
             column.Sortable
             && string.Equals(column.SortField, query.SortBy, StringComparison.OrdinalIgnoreCase)
         );
         request = new()
         {
-            Scope = _resourceOptions.Index.Scopes is { } scopes
-                ? scopes
-                    .Items.FirstOrDefault(scope =>
-                        string.Equals(scope.Id, query.Scope, StringComparison.OrdinalIgnoreCase)
-                    )
-                    ?.Id
-                    ?? scopes.DefaultScope
-                : null,
+            Layout = table.Key,
+            Scope =
+                _resourceOptions.Index.Scopes is { } scopes && !table.IgnoresScopes
+                    ? scopes
+                        .Items.FirstOrDefault(scope =>
+                            string.Equals(scope.Id, query.Scope, StringComparison.OrdinalIgnoreCase)
+                        )
+                        ?.Id
+                        ?? scopes.DefaultScope
+                    : null,
             Search =
-                _resourceOptions.Index.Search is null || string.IsNullOrWhiteSpace(query.Search)
+                _resourceOptions.Index.Search is null
+                || table.IgnoresSearch
+                || string.IsNullOrWhiteSpace(query.Search)
                     ? null
                     : query.Search.Trim(),
             Sort = column is null
-                ? IndexTable.DefaultSort
+                ? table.DefaultSort
                 : new(
                     column.SortField!,
                     direction == "desc"
@@ -518,7 +570,7 @@ internal sealed partial class ResourceController<TResource>
                         : ResourceSortDirection.Ascending
                 ),
         };
-        if (IndexTable.Paging is not { } options)
+        if (table.Paging is not { } options)
         {
             return true;
         }

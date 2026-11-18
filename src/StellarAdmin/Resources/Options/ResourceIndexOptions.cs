@@ -141,6 +141,9 @@ public sealed class ResourceIndexOptions
 
     internal List<ResourceLayoutOptions> MutableLayouts { get; } = [];
 
+    // Whether the two-argument Index overload declared the layouts
+    internal bool HasDeclaredLayouts { get; private set; }
+
     // The tables, in layout order
     internal IEnumerable<ResourceTableLayoutOptions> Tables =>
         MutableLayouts.OfType<ResourceTableLayoutOptions>();
@@ -153,6 +156,21 @@ public sealed class ResourceIndexOptions
         MutableLayouts.FirstOrDefault(layout =>
             string.Equals(layout.Key, key, StringComparison.OrdinalIgnoreCase)
         ) ?? MutableLayouts.FirstOrDefault();
+
+    // The layouts route replaces the implicit table that an earlier one-argument Index call configured, such as a
+    // default an application overrides
+    internal void DeclareLayouts()
+    {
+        if (!HasDeclaredLayouts)
+        {
+            MutableLayouts.Clear();
+            HasDeclaredLayouts = true;
+        }
+    }
+
+    // The layout with a key, which its Add call has already added
+    internal ResourceLayoutOptions GetLayout(string key) =>
+        MutableLayouts.First(layout => layout.Key == key);
 
     internal ResourceTableLayoutOptions GetOrAddTable(string key)
     {

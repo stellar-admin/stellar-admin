@@ -41,6 +41,9 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     /// </summary>
     public required IReadOnlyList<TResource> Items { get; init; }
 
+    /// <inheritdoc />
+    public IReadOnlyList<ResourceIndexLayoutViewModel> Layouts { get; init; } = [];
+
     /// <summary>
     ///     Gets a delegate that returns the key of a resource, or <see langword="null" /> when the
     ///     resource has no key.

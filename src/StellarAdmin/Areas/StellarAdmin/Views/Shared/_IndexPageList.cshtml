@@ -14,7 +14,7 @@
 
 @* The list as one card: the scopes and the search above the grid. The search stays outside the grid its typing replaces *@
 <sa-card class="sa-resource-index-list">
-    @if (Model.Search is not null || Model.Scopes.Count > 0)
+    @if (Model.Search is not null || Model.Scopes.Count > 0 || Model.Layouts.Count > 0)
     {
         <div class="sa-resource-index-controls">
             @if (Model.Scopes.Count > 0)
@@ -23,6 +23,7 @@
                     @foreach (var scope in Model.Scopes)
                     {
                         <sa-tab-link active="scope.IsActive" asp-action="Index" asp-route-id="@((string?)null)"
+                                     asp-route-layout="@Model.Query.Layout"
                                      asp-route-scope="@scope.QueryValue" asp-route-search="@Model.Query.Search"
                                      asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection"
                                      asp-route-pageSize="@Model.Query.PageSize">
@@ -43,6 +44,7 @@
                                           hx-get="@Url.Action("Index", new
                                                   {
                                                       id = (string?)null,
+                                                      layout = Model.Query.Layout,
                                                       scope = Model.Query.Scope,
                                                       sortBy = Model.Query.SortBy,
                                                       sortDirection = Model.Query.SortDirection,
@@ -58,6 +60,32 @@
                         <sa-icon name="search" />
                     </sa-input-group-addon>
                 </sa-input-group>
+            }
+            @if (Model.Layouts.Count > 0)
+            {
+                @* Switching layout loads the whole page, since the layout decides which controls show. It keeps the scope
+                   and the search; sort and paging belong to the table they were chosen in. Without a settle, htmx would
+                   carry the old radios' attributes over to the new ones that share their ids, and lose the selection *@
+                <sa-segmented-control name="layout" value="@Model.Layouts.First(layout => layout.IsActive).Key"
+                                      aria-label="Layout" class="sa-resource-index-layouts"
+                                      hx-get="@Url.Action("Index", new { id = (string?)null, scope = Model.Query.Scope, search = Model.Query.Search })"
+                                      hx-trigger="change" hx-include="find input:checked"
+                                      hx-target="body" hx-swap="innerHTML settle:0" hx-push-url="true">
+                    @foreach (var layout in Model.Layouts)
+                    {
+                        <sa-segmented-control-item value="@layout.Key" title="@layout.Title">
+                            @if (layout.Icon is { } icon)
+                            {
+                                <sa-icon name="@icon" />
+                                <span class="sr-only">@layout.Title</span>
+                            }
+                            else
+                            {
+                                @layout.Title
+                            }
+                        </sa-segmented-control-item>
+                    }
+                </sa-segmented-control>
             }
         </div>
     }

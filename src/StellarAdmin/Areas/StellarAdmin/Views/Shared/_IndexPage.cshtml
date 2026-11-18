@@ -21,7 +21,7 @@
                     ? ("#index-page-grid .sa-table-add-row", top ? "afterend" : "beforebegin")
                     : ("#index-page-grid .sa-table-body", top ? "afterbegin" : "beforeend");
                 var query = Model.Query;
-                <sa-button data-row-add hx-get="@Url.Action("CreateRow", new { id = (string?)null, page = query.Page is null ? null : Model.Paging?.Page, pageSize = query.PageSize, search = query.Search, scope = query.Scope, sortBy = query.SortBy, sortDirection = query.SortDirection })"
+                <sa-button data-row-add hx-get="@Url.Action("CreateRow", new { id = (string?)null, layout = query.Layout, page = query.Page is null ? null : Model.Paging?.Page, pageSize = query.PageSize, search = query.Search, scope = query.Scope, sortBy = query.SortBy, sortDirection = query.SortDirection })"
                            hx-target="@addTarget" hx-swap="@addSwap" hx-push-url="false">
                     @Model.CreateLabel
                 </sa-button>

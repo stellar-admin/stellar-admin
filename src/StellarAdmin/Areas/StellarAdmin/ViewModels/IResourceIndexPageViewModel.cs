@@ -78,6 +78,11 @@ public interface IResourceIndexPageViewModel
     IEnumerable Items { get; }
 
     /// <summary>
+    ///     Gets the segments of the layout switcher, which is empty when the index has one layout.
+    /// </summary>
+    IReadOnlyList<ResourceIndexLayoutViewModel> Layouts { get; }
+
+    /// <summary>
     ///     Gets the paging controls, or <see langword="null" /> when paging is turned off.
     /// </summary>
     ResourceIndexPagingViewModel? Paging { get; }

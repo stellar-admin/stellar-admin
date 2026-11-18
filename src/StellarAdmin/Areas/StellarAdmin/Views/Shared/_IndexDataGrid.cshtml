@@ -32,7 +32,7 @@
     // A row's requests carry the page's query, so a save can reload the page as it shows
     var query = Model.Query;
     var queryPage = query.Page is null ? null : Model.Paging?.Page ?? query.Page;
-    string? RowUrl(string action, string? id, bool? another = null, int? added = null) => Url.Action(action, new { id, page = queryPage, pageSize = query.PageSize, search = query.Search, scope = query.Scope, sortBy = query.SortBy, sortDirection = query.SortDirection, another, added });
+    string? RowUrl(string action, string? id, bool? another = null, int? added = null) => Url.Action(action, new { id, layout = query.Layout, page = queryPage, pageSize = query.PageSize, search = query.Search, scope = query.Scope, sortBy = query.SortBy, sortDirection = query.SortDirection, another, added });
 }
 
 <sa-data-grid id="index-page-grid" items="Model.Items" class="sa-resource-index-grid" key-field="@inline?.KeyField"
@@ -110,7 +110,7 @@
                 }
                 @if (Model.Delete is not null)
                 {
-                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@(Model.Query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@Model.Query.PageSize" asp-route-search="@Model.Query.Search" asp-route-scope="@Model.Query.Scope" asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection" class="inline-block" data-resource-delete
+                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-layout="@Model.Query.Layout" asp-route-page="@(Model.Query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@Model.Query.PageSize" asp-route-search="@Model.Query.Search" asp-route-scope="@Model.Query.Scope" asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection" class="inline-block" data-resource-delete
                           hx-confirm="js:confirmResourceDelete()" hx-push-url="false">
                         <sa-button type="submit" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    aria-label="@Model.DeleteLabel" interestfor="@deleteTooltipId">
@@ -203,7 +203,7 @@
                     var panel = rowDetails.Panels[0];
                     if (panel.LoadsOnDemand)
                     {
-                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()) })"
+                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), layout = query.Layout })"
                              hx-trigger='rowdetailexpand from:"closest tr" once'
                              hx-target="this" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
                             <partial name="_IndexRowDetailLoading" />
@@ -238,7 +238,7 @@
                             {
                                 @* The first panel loads when the row expands, the others when their tab is first shown *@
                                 <sa-tab-panel id="@panelId"
-                                              hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), panel = panel.Name })"
+                                              hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), layout = query.Layout, panel = panel.Name })"
                                               hx-trigger='@(index == 0 ? "rowdetailexpand from:\"closest tr\" once" : "tabshow once")'
                                               hx-target="this" hx-swap="innerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
                                     <partial name="_IndexRowDetailLoading" />
@@ -267,7 +267,7 @@
                                     @if (panel.LoadsOnDemand)
                                     {
                                         @* Loads when the panel is first opened *@
-                                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), panel = panel.Name })"
+                                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), layout = query.Layout, panel = panel.Name })"
                                              hx-trigger='toggle once from:"closest details"'
                                              hx-target="this" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
                                             <partial name="_IndexRowDetailLoading" />

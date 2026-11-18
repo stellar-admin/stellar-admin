@@ -34,6 +34,11 @@ public sealed class ResourceTableLayoutOptions : ResourceLayoutOptions
     public ResourcePagingOptions? Paging { get; internal set; }
 
     /// <summary>
+    ///     Gets which of the resource's row actions the table shows.
+    /// </summary>
+    public ResourceRowActionsOptions RowActions { get; } = new();
+
+    /// <summary>
     ///     Gets the configuration of rows that expand to show details.
     /// </summary>
     /// <value>
