@@ -13,7 +13,7 @@ In scope: cards of the resource's own rows, with a default sort, paging and the 
 
 Later, each its own stage or plan:
 
-- Handler cards, `AddCards<TItem, THandler>(key)` with `HasRecordKey` and `LinkTo<TOther>` as on handler tables (stage 3 below).
+- Handler cards, `AddCards<TItem, THandler>(key)` with `HasRecordKey` and `LinkTo<TOther>` as on handler tables (stage 2 below).
 - A sort menu fed by a `cards.Sortable(...)` list (see Sorting).
 - The selection checkbox: it waits for bulk actions, which the product doesn't have yet.
 - A built-in value-to-variant mapping for badges; it belongs on `BadgeDisplay` and would serve tables too.
@@ -85,8 +85,8 @@ Where the prototype differs from the product: its ⋯ buttons are plain buttons 
 ## Stages
 
 1. **Cards of the resource's rows.** Options (`ResourceCardsLayoutOptions` and the card's part options), the builders and enums, `AddCards` on both layouts builders, the controller (default sort and paging as tables), the view and its CSS in `@layer sa.components` extracted from the prototype, using real `sa-*` components in the view. Tests for the builders, the title from `UseTitle`, the stats limit, sort and paging. Playground: a Cards layout on an image-bearing resource. Checkpoint: Jerrie reviews the playground in the themes, light and dark.
-2. **Docs.** Website (`../website`): a Cards section in the layouts docs with screenshot placeholders; consumer skill `skills/stellar-admin/references/layouts.md`, removing cards from its Not supported line. Checkpoint.
-3. **Handler cards.** `AddCards<TItem, THandler>(key)` and the `configure` overload on both layouts builders, with `HasRecordKey` and `LinkTo<TOther>`; the handler gets the sort and page. Docs in the layout data page. Checkpoint.
+2. **Handler cards.** `AddCards<TItem, THandler>(key)` and the `configure` overload on both layouts builders, with `HasRecordKey` and `LinkTo<TOther>`; the handler is the same `IResourceLayoutHandler<TItem>` as handler tables and partial layouts, and gets the sort and page. Checkpoint.
+3. **Docs**, after both kinds of cards so they are written and screenshotted once. Website (`../website`): a Cards section in the layouts docs with screenshot placeholders, and handler cards in the layout data page; consumer skill `skills/stellar-admin/references/layouts.md`, removing cards from its Not supported line. Checkpoint.
 
 ## Progress
 
@@ -109,7 +109,9 @@ Decisions 1 and 4 done 2026-11-19: `ResourceCardStatsBuilder` and `ResourceCardF
 
 Decisions 5 to 8 done 2026-11-19: `ResourceCardBadgeBuilder`; `card.Arrangement` with `ResourceCardArrangement` (the view marks cards and the grid with `data-arrangement`), and `CardOverlayWithoutImage = 1122` reported as a warning; `ResourceCardsPagingBuilder` (the table paging builder is back to its original form); `CardsLayoutCheck` fills only the title. Verified: StellarAdmin.Tests 398, StellarAdmin.IntegrationTests 800, StellarAdmin.EntityFrameworkCore.IntegrationTests 183 pass; the playground builds and its Destinations cards render.
 
-Next: Jerrie's checkpoint review (themes, dark mode, open menus, horizontal and overlay cards). Nothing committed since 6b84a9b; the playground runs on http://localhost:5191 (started by Claude; stop it when he's done).
+Stages reordered 2026-11-19 (Jerrie): handler cards before the docs.
+
+Next: Jerrie's stage 1 checkpoint review (themes, dark mode, open menus, the Destinations overlay and horizontal cards), then stage 2. Stage 1 committed as 4f86669; the playground runs on http://localhost:5191 (started by Claude; stop it when he's done).
 
 ### Stage 1 (built 2026-11-19, checkpoint review pending)
 
