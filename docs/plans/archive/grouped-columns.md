@@ -1,6 +1,6 @@
 # Grouped columns
 
-Status: in progress (2026-11-19). Stage 1 (UI components) is implemented and documented; stage 2 (the admin panel API) is implemented and documented, the docs uncommitted.
+Status: done (2026-11-19). Stage 1 (UI components) and stage 2 (the admin panel API) are implemented and documented, in the product and the website.
 
 Column groups in the data grid header: a group label spanning the columns under it, nested to any depth, with the columns inside still sortable one field at a time.
 
@@ -50,11 +50,11 @@ Column groups in the data grid header: a group label spanning the columns under 
 - Done: `sa-data-grid-column-group` (`DataGridColumnGroupTagHelper`, `DataGridColumnGroupAlign`), `align` on `sa-data-grid-column` (`DataGridColumnAlign`), the header rows built from the group tree in `DataGridTagHelper.RenderHeader`, edge marks, the sort-link margin moved into `data-grid.css`, the dividers and group line in `table.css`.
 - Demos: DocsSamples `Pages/DataGrid/_ColumnGroups.cshtml` (sortable, end-aligned Amount) and `_NestedColumnGroups.cshtml`; `_ColumnGroups` added to the skills examples manifest and the skills reference regenerated (`skills check` passes).
 - Checks run: `StellarAdmin.UI.Tests` (824 passed, 7 new in `DataGridTagHelperTests.ColumnGroups.cs`), `StellarAdmin.IntegrationTests` (787 passed); screenshots of both demos, the intro grid and row details (default, Ops dark, Soft) on DocsSamples :5206.
-- Website (uncommitted in `../website`): demos exported with `docs generate demos` (both new demos, the data grid snippets switched to `align`, and the stylesheet hash on every demo); `content/docs/ui/components/data-grid.mdx` gained "Aligning columns" and "Column groups" sections with the `<sa-data-grid-column-group>` table. `pnpm types:check` and `pnpm build` pass; `pnpm lint` fails only on formatting in three untouched files (`.vscode/settings.json`, `src/routes/docs/$.tsx`, `src/styles/app.css`).
+- Website (`../website`): demos exported with `docs generate demos` (both new demos, the data grid snippets switched to `align`, and the stylesheet hash on every demo); `content/docs/ui/components/data-grid.mdx` gained "Aligning columns" and "Column groups" sections with the `<sa-data-grid-column-group>` table. `pnpm types:check` and `pnpm build` pass; `pnpm lint` fails only on formatting in three untouched files (`.vscode/settings.json`, `src/routes/docs/$.tsx`, `src/styles/app.css`).
 
 ## Stage 2: admin panel API
 
-Designed and agreed 2026-11-19, not implemented. It builds on the list request fields rework ([list-request-fields](archive/list-request-fields.md)).
+Designed and agreed 2026-11-19, then implemented. It builds on the list request fields rework ([list-request-fields](list-request-fields.md)).
 
 `ResourceTableLayoutOptions.Columns` stays the flat list of columns in display order, and each column refers to its innermost group. Because of this, `Fields`, `FindSort`, `SortableColumns`, the inline-row field mapping (`rowFields?[index]` in `_IndexDataGrid.cshtml`, `GetColumnFields` in `ResourceController.Index.cs`, `InlineRowCheck`) and the checks that remove columns (`ComputedColumnCheck`, `BadgeDisplayCheck`, `ValueTextCheck`) don't change. A group whose columns are all removed isn't rendered.
 
@@ -125,7 +125,7 @@ Follow-up: tests, `PublicAPI.Unshipped.txt`, the consumer skills references and 
 - `_IndexDataGrid.cshtml` renders the columns with recursive local functions (`RenderColumns`, `RenderColumn`, `FindChildGroup`) and renders `align` instead of `text-right`.
 - Change to stage 1, approved by Jerrie: `sa-data-grid-column` and `sa-data-grid-column-group` no longer have a `ParentTag` restriction. Razor checks `ParentTag` at compile time, and markup in a local function has no parent element, so neither tag helper matched there. Both already do nothing outside a grid.
 - Tests: `ResourceTableColumnsBuilderTests` (new) and `ResourceTableColumnBuilderTests` (`Align`); `ResourceColumnGroupTests` (new integration tests); `ResourceColumnDisplayTests` asserts `data-align` instead of `text-right` and gained an alignment override test.
-- Checks run: full solution test run (`dotnet test --solution StellarAdmin.slnx --configuration Release`), 2239 passed. Not checked in a browser.
+- Checks run: full solution test run (`dotnet test --solution StellarAdmin.slnx --configuration Release`), 2239 passed. Checked in a browser through the `columns-groups` screenshots and the AdminPlayground Trips index on :5207.
 - Consumer skills: `skills/stellar-admin/references/columns.md` gained "Alignment" and "Column groups" sections and the `Align` row; the `SKILL.md` columns row names `Align` and `AddGroup`. `skills generate` rewrote `skills/stellar-admin-ui/references/components/data-grid.md`: the duplicate rows from the old two `ParentTag` targets went, and the examples use `align`. `skills check` passes.
-- Website (uncommitted in `../website`): `content/docs/admin/columns.mdx` gained "Aligning columns" and "Grouping columns" sections, an `Align` row and the `columns-groups` screenshot, generated from `tools/StellarAdmin.Cli/Docs/Screenshots/Columns/ColumnsGroupsScenario.cs` and `columns-groups.spec.yaml` (light and dark, checked by eye). `pnpm types:check` and `pnpm build` pass.
+- Website (`../website`, committed in be03791b): `content/docs/admin/columns.mdx` gained "Aligning columns" and "Grouping columns" sections, an `Align` row and the `columns-groups` screenshot, generated from `tools/StellarAdmin.Cli/Docs/Screenshots/Columns/ColumnsGroupsScenario.cs` and `columns-groups.spec.yaml` (light and dark, checked by eye). `pnpm types:check` and `pnpm build` pass.
 - AdminPlayground: the Trips index groups Country and City under Location, inside Destination with Arrival airport.
