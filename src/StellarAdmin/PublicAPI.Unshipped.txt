@@ -2358,3 +2358,14 @@ StellarAdmin.Resources.ResourceCardArrangement
 StellarAdmin.Resources.ResourceCardArrangement.Horizontal = 1 -> StellarAdmin.Resources.ResourceCardArrangement
 StellarAdmin.Resources.ResourceCardArrangement.Overlay = 2 -> StellarAdmin.Resources.ResourceCardArrangement
 StellarAdmin.Resources.ResourceCardArrangement.Vertical = 0 -> StellarAdmin.Resources.ResourceCardArrangement
+StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>
+StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>.Card(System.Action<StellarAdmin.Resources.Builders.ResourceCardBuilder<TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>.DefaultSortByDescending<TProperty>(System.Linq.Expressions.Expression<System.Func<TItem, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>.DefaultSortBy<TProperty>(System.Linq.Expressions.Expression<System.Func<TItem, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>.EnablePaging() -> StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>.EnablePaging(System.Action<StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>.HasRecordKey(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>.LinkTo<TOther>(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>.RowActions(System.Action<StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddCards<TItem, THandler>(string! key) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddCards<TItem, THandler>(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceHandlerCardsLayoutBuilder<TResource, TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!

@@ -21,8 +21,8 @@ public sealed class ResourceCardsLayoutBuilder<TResource>
     /// <param name="configure">A delegate that configures the card.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     A part that isn't set comes from the resource: the title from its title, and the
-    ///     description and image from its reference.
+    ///     A card shows only the parts it sets, except the title: without one it is the resource's
+    ///     title, then the record's key.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.

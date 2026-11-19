@@ -85,4 +85,5 @@ internal enum ConfigurationProblemKind
     TooManyCardStats = 1120,
     CardDisplayWithHandler = 1121,
     CardOverlayWithoutImage = 1122,
+    UntitledHandlerCards = 1123,
 }

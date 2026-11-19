@@ -1,6 +1,6 @@
 # Cards layout
 
-Status: in progress (2026-11-19). Visuals and API agreed with Jerrie in conversation; stage 1 built and awaiting its checkpoint. Work stage by stage and pause at every checkpoint.
+Status: in progress (2026-11-19). Visuals and API agreed with Jerrie in conversation; stages 1 and 2 built, stage 2 awaiting its checkpoint. Work stage by stage and pause at every checkpoint.
 
 A built-in Cards layout for the index page: `layouts.AddCards(key)` shows each record as a card in a grid, composed from configuration. Anything beyond these options is a partial layout (`AddPartial`).
 
@@ -111,7 +111,7 @@ Decisions 5 to 8 done 2026-11-19: `ResourceCardBadgeBuilder`; `card.Arrangement`
 
 Stages reordered 2026-11-19 (Jerrie): handler cards before the docs.
 
-Next: Jerrie's stage 1 checkpoint review (themes, dark mode, open menus, the Destinations overlay and horizontal cards), then stage 2. Stage 1 committed as 4f86669; the playground runs on http://localhost:5191 (started by Claude; stop it when he's done).
+Next: Jerrie's checkpoint review of stages 1 and 2 (themes, dark mode, open menus, the Destinations overlay and horizontal cards, the Products handler cards), then stage 3. Stage 1 committed as 4f86669; stage 2 is uncommitted. The playground runs on http://localhost:5191 (started by Claude; stop it when he's done).
 
 ### Stage 1 (built 2026-11-19, checkpoint review pending)
 
@@ -130,3 +130,12 @@ Differences from the plan (decided above where marked):
 - The pager is a simple Previous/Next `sa-pagination`, not the data grid's pager (decision 1).
 - The title over the image uses the image's shape (widescreen by default); the prototype's 4:3 for an overlay without a shape is dropped (decision 3).
 - The hover lift applies only to a card whose title links somewhere.
+
+### Stage 2 (built 2026-11-19, checkpoint review pending)
+
+- `AddCards<TItem, THandler>(key)` and its `configure` overload on `ResourceLayoutsBuilder` and `EfCoreResourceLayoutsBuilder` (an EF handler or a resource handler, as on tables), returning `ResourceHandlerCardsLayoutBuilder<TResource, TItem>`: `Card(...)` over `TItem`, `DefaultSortBy`/`DefaultSortByDescending`, `EnablePaging` (the cards' paging builder), `HasRecordKey`, `LinkTo<TOther>`, `RowActions`, and the base's `Title`, `Icon`, `IgnoreScopes`, `IgnoreSearch`.
+- `ResourceCardsLayoutOptions` has the handler's loader, the same one handler tables use. The controller treats a cards layout with a handler as it does a handler table: the handler gets the scope, search, sort and page, only record cards get row actions, and `LinkTo` cards link to the other resource's view page.
+- Handler cards don't take the resource's `UseTitle`, which is over the resource and not the item. Without `card.Title(...)` a card shows its record or link key; with neither, the cards have no title and it's a reported configuration problem (`UntitledHandlerCards`, Jerrie 2026-11-19).
+- Playground: Products `price-check-cards` (record cards with row actions, paged) and `category-cards` (linking to categories).
+- Tests: three integration tests in `ResourceCardsLayoutTests` (sort, paging and request; record key; link), one EF test in `ResourceLayoutsTests`, two unit tests for the title warning.
+- Verified 2026-11-19: StellarAdmin.Tests 400, StellarAdmin.IntegrationTests 803 and StellarAdmin.EntityFrameworkCore.IntegrationTests 184 pass; both playground layouts render (default light theme, desktop) with no new configuration problems.

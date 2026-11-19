@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources;
@@ -375,6 +376,126 @@ public class ResourceCardsLayoutTests
     }
 
     [Test]
+    public async Task HandlerCards_ListTheHandlersItemsWithTheRequestsSortAndPaging()
+    {
+        // Arrange
+        var state = CreateState();
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            resource =>
+                ConfigureHandlerCards(
+                    resource,
+                    rows =>
+                        rows.DefaultSortByDescending(row => row.Price)
+                            .EnablePaging(paging => paging.PageSize = 2)
+                )
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products?layout=rows&scope=cheap&search=lamp&page=2"
+        );
+
+        // Assert
+        await Assert.That(state.ListRequests).IsEmpty();
+        var request = state.HandlerRequests.Single();
+        await Assert.That(request.Layout).IsEqualTo("rows");
+        await Assert.That(request.Scope).IsEqualTo("cheap");
+        await Assert.That(request.Search).IsEqualTo("lamp");
+        await Assert
+            .That(request.Sort! with { Selector = null })
+            .IsEqualTo(
+                new ResourceSort(nameof(ProductRow.Price), ResourceSortDirection.Descending)
+            );
+        await Assert.That(request.Paging).IsEqualTo(new ResourcePaging(2, 2));
+        await Assert
+            .That(CardTitles(document))
+            .IsEquivalentTo(["Red lamp", "Blue lamp"], CollectionOrdering.Matching);
+        await Assert
+            .That(document.QuerySelector(".sa-resource-card a, .sa-resource-card form"))
+            .IsNull();
+        await Assert
+            .That(document.RequiredElement(".sa-resource-cards-pager-status").TextContent.Trim())
+            .IsEqualTo("Page 2 of 2");
+    }
+
+    [Test]
+    public async Task HandlerCardsWithRecordKey_GiveRecordCardsTheResourcesRowActions()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+            {
+                ConfigureHandlerCards(
+                    resource,
+                    rows =>
+                        rows.HasRecordKey(row => row.ProductId)
+                            .RowActions(actions => actions.Edit = false)
+                );
+                ConfigureRecordPages(resource);
+            }
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products?layout=rows");
+
+        // Assert
+        var cards = document.QuerySelectorAll(".sa-resource-card").ToArray();
+        await Assert.That(cards[0].GetAttribute("data-key")).IsEqualTo("1");
+        await Assert
+            .That(cards[0].RequiredElement(".sa-card-title > a").GetAttribute("href"))
+            .IsEqualTo("/stellaradmin/products/view/1");
+        await Assert.That(cards[0].QuerySelector("a[href*='/edit/']")).IsNull();
+        await Assert
+            .That(cards[0].RequiredElement("form[data-resource-delete]").GetAttribute("action"))
+            .StartsWith("/stellaradmin/products/delete/1?layout=rows");
+        await Assert.That(cards[^1].TextContent).Contains("Total");
+        await Assert.That(cards[^1].QuerySelector("a, form")).IsNull();
+    }
+
+    [Test]
+    public async Task HandlerCardsWithLink_LinkCardsToTheOtherResourcesViewPage()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+            {
+                ConfigureHandlerCards(
+                    resource,
+                    rows => rows.LinkTo<Category>(row => row.CategoryId)
+                );
+                ConfigureRecordPages(resource);
+            },
+            admin =>
+                admin.AddCategoryResource(categories =>
+                    categories.AllowView(view =>
+                        view.Fields(fields => fields.Add(category => category.Name))
+                    )
+                ),
+            services => services.AddSingleton<CategoryStore>()
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products?layout=rows");
+
+        // Assert
+        var cards = document.QuerySelectorAll(".sa-resource-card").ToArray();
+        await Assert
+            .That(cards[0].QuerySelectorAll("a").Select(link => link.GetAttribute("href")))
+            .IsEquivalentTo([
+                "/stellaradmin/categories/view/11",
+                "/stellaradmin/categories/view/11",
+            ]);
+        await Assert.That(cards[0].QuerySelector("form")).IsNull();
+        await Assert.That(cards[^1].QuerySelector("a")).IsNull();
+    }
+
+    [Test]
     public async Task NoRecords_ShowsTheEmptyState()
     {
         // Arrange
@@ -393,6 +514,40 @@ public class ResourceCardsLayoutTests
             .That(document.RequiredElement(".sa-resource-cards-empty").TextContent)
             .Contains("No records found");
     }
+
+    private static IEnumerable<string> CardTitles(AngleSharp.Dom.IDocument document) =>
+        document
+            .QuerySelectorAll(".sa-resource-card .sa-card-title")
+            .Select(title => title.TextContent.Trim());
+
+    // The products' cards, then cards of rows the handler loads, titled with their labels
+    private static void ConfigureHandlerCards(
+        ResourceBuilder<Product> resource,
+        Action<ResourceHandlerCardsLayoutBuilder<Product, ProductRow>> configure
+    ) =>
+        resource.Index(
+            index =>
+            {
+                index.EnableScopes(scopes =>
+                {
+                    scopes.Add("all", "All");
+                    scopes.Add("cheap", "Cheap");
+                });
+                index.EnableSearch();
+            },
+            layouts =>
+            {
+                layouts.AddCards("cards");
+                layouts.AddCards<ProductRow, ProductRowsHandler>(
+                    "rows",
+                    rows =>
+                    {
+                        rows.Card(card => card.Title(row => row.Label));
+                        configure(rows);
+                    }
+                );
+            }
+        );
 
     private static void ConfigureRecordPages(ResourceBuilder<Product> resource)
     {

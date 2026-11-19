@@ -136,6 +136,65 @@ public class ResourceCardsLayoutBuilderTests
     }
 
     [Test]
+    public async Task HandlerCards_WithoutTitleOrKey_ReportIt()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services
+            .AddStellarAdmin()
+            .AddResource<Product>()
+            .UseTitle(product => product.Name)
+            .Index(
+                _ => { },
+                layouts =>
+                {
+                    layouts.AddCards("cards");
+                    layouts.AddCards<ProductTotal, ProductTotalsHandler>("totals");
+                }
+            );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var cards = options.Index.Cards.ToArray();
+        await Assert
+            .That(cards[0].Card.TitleField?.ToString())
+            .IsEqualTo("product => product.Name");
+        await Assert.That(cards[1].Card.TitleField).IsNull();
+        var problem = options.Problems.Single();
+        await Assert.That(problem.Kind).IsEqualTo(ConfigurationProblemKind.UntitledHandlerCards);
+        await Assert.That(problem.Level).IsEqualTo(ConfigurationProblemLevel.Warning);
+        await Assert.That(problem.Message).Contains("`totals`");
+    }
+
+    [Test]
+    public async Task HandlerCards_WithRecordKey_DoNotReportAMissingTitle()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services
+            .AddStellarAdmin()
+            .AddResource<Product>()
+            .Index(
+                _ => { },
+                layouts =>
+                    layouts.AddCards<ProductTotal, ProductTotalsHandler>(
+                        "totals",
+                        totals => totals.HasRecordKey(total => total.Name)
+                    )
+            );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert.That(options.Problems).IsEmpty();
+    }
+
+    [Test]
     public async Task DefaultSortBy_WithComputedValue_LeavesTheSortUnsetAndReportsIt()
     {
         // Arrange
@@ -183,6 +242,16 @@ public class ResourceCardsLayoutBuilderTests
         public double Rating { get; set; }
 
         public int Stock { get; set; }
+    }
+
+    public sealed record ProductTotal(string Name, int Count);
+
+    public sealed class ProductTotalsHandler : IResourceLayoutHandler<ProductTotal>
+    {
+        public Task<ResourceListResult<ProductTotal>> ListAsync(
+            ResourceListRequest request,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(new ResourceListResult<ProductTotal>([], 0));
     }
 
     public sealed class PreparedDisplay : FieldDisplay, IFieldDisplay<PreparedDisplayHandler>

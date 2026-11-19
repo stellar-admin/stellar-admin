@@ -41,6 +41,12 @@ public sealed class ResourceCardsLayoutOptions : ResourceLayoutOptions
 
     internal ConfigurationSource? DefaultSortSource { get; set; }
 
+    // Where a layout with a handler was added
+    internal ConfigurationSource? Source { get; set; }
+
+    // Lists the cards of a layout with a handler, or null for one that shows the resource's own rows
+    internal ResourceTableLoader? Loader { get; set; }
+
     internal override IReadOnlyList<LambdaExpression> Fields =>
         [
             .. new[]

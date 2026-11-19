@@ -162,6 +162,51 @@ public class ResourceLayoutsTests
     }
 
     [Test]
+    public async Task EfCoreHandlerCards_ShowTheReshapedEntities()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.Index(
+                index => index.EnableSearch(term => product => product.Name.Contains(term)),
+                layouts =>
+                {
+                    layouts.AddTable("products");
+                    layouts.AddCards<CategoryTotal, CategoryTotalsHandler>(
+                        "totals",
+                        totals =>
+                            totals.Card(card =>
+                            {
+                                card.Title(total => total.Category);
+                                card.Stats(stats => stats.Add(total => total.Products));
+                            })
+                    );
+                }
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync(
+            "/stellaradmin/products?layout=totals&search=Apple"
+        );
+        var document = await response.ReadDocumentAsync();
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll(".sa-resource-card")
+                    .Select(card =>
+                        card.QuerySelector(".sa-card-title")!.TextContent.Trim()
+                        + " / "
+                        + card.QuerySelector(".sa-resource-card-stats dd")!.TextContent.Trim()
+                    )
+            )
+            .IsEquivalentTo(["Technology / 2"]);
+    }
+
+    [Test]
     public async Task ResourceHandler_LoadsItsOwnData()
     {
         // Arrange

@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Options;
@@ -59,6 +60,88 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(AddCards(key));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds a layout that shows items a handler loads as cards.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the items the cards show.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the items: an
+    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
+    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
+    ///     data.
+    /// </typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <returns>A builder that configures the cards.</returns>
+    /// <remarks>
+    ///     The handler sorts and pages the items. Registers <typeparamref name="THandler" /> as a
+    ///     scoped service if it isn't registered already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     <typeparamref name="THandler" /> implements neither handler interface.
+    /// </exception>
+    public ResourceHandlerCardsLayoutBuilder<TEntity, TItem> AddCards<TItem, THandler>(string key)
+        where THandler : class
+    {
+        var source = ConfigurationSource.Capture();
+        var loader = (ResourceTableLoader)CreateLoader<TItem, THandler>(table: true);
+        AddLayout(
+            key,
+            index =>
+            {
+                index.AddCards(key);
+                var cards = index.GetCards(key);
+                cards.Loader = loader;
+                cards.Source = source;
+            }
+        );
+
+        return new(_services, key);
+    }
+
+    /// <summary>
+    ///     Adds and configures a layout that shows items a handler loads as cards.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the items the cards show.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the items: an
+    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
+    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
+    ///     data.
+    /// </typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="configure">A delegate that configures the cards.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The handler sorts and pages the items. Registers <typeparamref name="THandler" /> as a
+    ///     scoped service if it isn't registered already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     <typeparamref name="THandler" /> implements neither handler interface.
+    /// </exception>
+    public EfCoreResourceLayoutsBuilder<TEntity> AddCards<TItem, THandler>(
+        string key,
+        Action<ResourceHandlerCardsLayoutBuilder<TEntity, TItem>> configure
+    )
+        where THandler : class
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AddCards<TItem, THandler>(key));
 
         return this;
     }

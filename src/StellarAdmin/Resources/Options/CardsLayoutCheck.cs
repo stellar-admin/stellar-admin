@@ -2,8 +2,9 @@ using StellarAdmin.Diagnostics;
 
 namespace StellarAdmin.Resources.Options;
 
-// A card's title comes from the resource when the card doesn't set one, so the list request loads it; nothing else
-// does. A card shows up to four stats, and the title and description sit over the image only when there is one
+// A card of the resource's rows takes its title from the resource when the card doesn't set one, so the list request
+// loads it; nothing else does. A handler's items have no resource title, so handler cards with neither a title nor a key
+// are reported. A card shows up to four stats, and the title and description sit over the image only when there is one
 internal static class CardsLayoutCheck
 {
     private const int MaxStats = 4;
@@ -13,7 +14,20 @@ internal static class CardsLayoutCheck
         foreach (var cards in options.Index.Cards)
         {
             var card = cards.Card;
-            card.TitleField ??= options.Title;
+            if (cards.Loader is null)
+            {
+                card.TitleField ??= options.Title;
+            }
+            else if (card.TitleField is null && cards is { RecordKey: null, Link: null })
+            {
+                options.Report(
+                    ConfigurationProblemKind.UntitledHandlerCards,
+                    $"The cards of the `{cards.Key}` layout have no title, because a handler's items have neither the resource's title nor a key to show instead.",
+                    "Add a title with `card.Title(...)`, or a key with `HasRecordKey` or `LinkTo`.",
+                    cards.Source
+                );
+            }
+
             if (card is { Arrangement: ResourceCardArrangement.Overlay, Image: null })
             {
                 card.Arrangement = ResourceCardArrangement.Vertical;

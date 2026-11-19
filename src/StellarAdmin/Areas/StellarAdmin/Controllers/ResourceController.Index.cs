@@ -37,6 +37,9 @@ internal sealed partial class ResourceController<TResource>
     // The paging of the table or cards the index page shows, or null when they aren't paged
     private ResourcePagingOptions? IndexPaging => IndexTable?.Paging ?? IndexCards?.Paging;
 
+    // The handler that lists the shown table's or cards' items, or null when they show the resource's own rows
+    private ResourceTableLoader? IndexLoader => IndexTable?.Loader ?? IndexCards?.Loader;
+
     // The table the index page shows, or null when its layout is a partial or cards
     private ResourceTableLayoutOptions? IndexTable => IndexLayout as ResourceTableLayoutOptions;
 
@@ -155,21 +158,23 @@ internal sealed partial class ResourceController<TResource>
         var layout = IndexLayout;
         var table = layout as ResourceTableLayoutOptions;
 
-        // A table's handler loads rows that are the resource's records when it has a record key, and that otherwise link
-        // to another resource's view page or nowhere. Only records get the row actions
-        Func<object, string?>? rowKey = table switch
+        // A table's or cards' handler loads items that are the resource's records when it has a record key, and that
+        // otherwise link to another resource's view page or nowhere. Only records get the row actions
+        var handler = IndexLoader is not null;
+        Func<object, string?>? rowKey = layout switch
         {
-            { Loader: null } or null => null,
+            _ when !handler => null,
             { RecordKey: { } recordKey } => recordKey,
             { Link: { } link } => link.Key,
             _ => _ => null,
         };
-        var actions = table is { Loader: null } or { RecordKey: not null }
-            ? table.RowActions
+        var actions =
+            handler && layout.RecordKey is null ? null
+            : table is not null ? table.RowActions
             : (layout as ResourceCardsLayoutOptions)?.RowActions;
         var keySelector = _resourceOptions.KeySelector;
         Func<object, string?>? viewUrl = null;
-        if (table?.Link is not null)
+        if (handler && layout.Link is not null)
         {
             viewUrl = linkUrl;
         }
@@ -492,15 +497,16 @@ internal sealed partial class ResourceController<TResource>
             );
         }
 
-        // A table's handler loads rows of its own, which link to another resource's view page when the user may open it
-        if (IndexTable is { Loader: not null } handlerTable)
+        // A table's or cards' handler loads items of its own, which link to another resource's view page when the user
+        // may open it
+        if (IndexLoader is not null)
         {
             return await IndexResultAsync(
                 [],
                 pagingModel,
                 null,
                 result.Items,
-                await CreateLinkUrlAsync(handlerTable)
+                await CreateLinkUrlAsync(IndexLayout)
             );
         }
 
@@ -541,12 +547,12 @@ internal sealed partial class ResourceController<TResource>
         }
     }
 
-    // The rows of the shown table: the resources from the data source, or the items its handler loads
+    // The rows of the shown table or cards: the resources from the data source, or the items their handler loads
     private async Task<ResourceListResult<object>> ListRowsAsync(
         ResourceListRequest request,
         CancellationToken cancellationToken
     ) =>
-        IndexTable?.Loader is { } loader
+        IndexLoader is { } loader
             ? await loader(HttpContext.RequestServices, request, cancellationToken)
             : await HandlerLayoutLoader.ListRowsAsync(
                 dataSource.ListAsync(request, cancellationToken)

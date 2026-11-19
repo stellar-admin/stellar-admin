@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Builders;
@@ -55,6 +56,74 @@ public sealed class ResourceLayoutsBuilder<TResource>
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(AddCards(key));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds a layout that shows items a handler loads as cards.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the items the cards show.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the items.</typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <returns>A builder that configures the cards.</returns>
+    /// <remarks>
+    ///     The handler receives the scope, search, sort and page, and applies them itself.
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    public ResourceHandlerCardsLayoutBuilder<TResource, TItem> AddCards<TItem, THandler>(string key)
+        where THandler : class, IResourceLayoutHandler<TItem>
+    {
+        var source = ConfigurationSource.Capture();
+        var loader = HandlerLayoutLoader.CreateTable<TItem, THandler>(_services);
+        AddLayout(
+            key,
+            index =>
+            {
+                index.AddCards(key);
+                var cards = index.GetCards(key);
+                cards.Loader = loader;
+                cards.Source = source;
+            }
+        );
+
+        return new(_services, key);
+    }
+
+    /// <summary>
+    ///     Adds and configures a layout that shows items a handler loads as cards.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the items the cards show.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the items.</typeparam>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="configure">A delegate that configures the cards.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The handler receives the scope, search, sort and page, and applies them itself.
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    public ResourceLayoutsBuilder<TResource> AddCards<TItem, THandler>(
+        string key,
+        Action<ResourceHandlerCardsLayoutBuilder<TResource, TItem>> configure
+    )
+        where THandler : class, IResourceLayoutHandler<TItem>
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AddCards<TItem, THandler>(key));
 
         return this;
     }

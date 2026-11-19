@@ -450,6 +450,82 @@ internal static class ProductResourceRegistration
                             });
                         }
                     );
+                    // The price check as cards. Each card is a product, so it has the product's row actions
+                    layouts.AddCards<ProductPriceCheck, ProductPriceCheckHandler>(
+                        "price-check-cards",
+                        cards =>
+                        {
+                            cards.Title = "Price check cards";
+                            cards.Icon = "wallet-cards";
+                            cards.HasRecordKey(row => row.ProductId);
+                            cards.DefaultSortBy(row => row.Name);
+                            cards.EnablePaging(paging =>
+                            {
+                                paging.PageSize = 12;
+                                paging.PageSizes = [12, 24, 48];
+                            });
+                            cards.Card(card =>
+                            {
+                                card.Title(row => row.Name);
+                                card.Badge(row => row.Category);
+                                card.Stats(stats =>
+                                {
+                                    stats.Add(
+                                        row => row.Price,
+                                        stat =>
+                                            stat.UseDisplay<NumberDisplay>(number =>
+                                                number.Format = "0.00"
+                                            )
+                                    );
+                                    stats.Add(
+                                        row => row.CategoryAverage,
+                                        stat =>
+                                        {
+                                            stat.Title = "Average";
+                                            stat.UseDisplay<NumberDisplay>(number =>
+                                                number.Format = "0.00"
+                                            );
+                                        }
+                                    );
+                                    stats.Add(
+                                        row => row.Difference,
+                                        stat =>
+                                            stat.UseDisplay<NumberDisplay>(number =>
+                                                number.Format = "+0.00;-0.00;0.00"
+                                            )
+                                    );
+                                });
+                            });
+                        }
+                    );
+                    // The products per category as cards, each linking to its category's view page
+                    layouts.AddCards<CategorySummary, CategorySummaryHandler>(
+                        "category-cards",
+                        cards =>
+                        {
+                            cards.Title = "Category cards";
+                            cards.Icon = "tag";
+                            cards.LinkTo<Category>(row => row.CategoryId);
+                            cards.Card(card =>
+                            {
+                                card.Title(row => row.Category);
+                                card.Stats(stats =>
+                                {
+                                    stats.Add(row => row.Products);
+                                    stats.Add(
+                                        row => row.Average,
+                                        stat =>
+                                        {
+                                            stat.Title = "Average price";
+                                            stat.UseDisplay<NumberDisplay>(number =>
+                                                number.Format = "0.00"
+                                            );
+                                        }
+                                    );
+                                });
+                            });
+                        }
+                    );
                 }
             );
         });
