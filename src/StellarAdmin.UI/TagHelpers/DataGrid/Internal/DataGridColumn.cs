@@ -13,6 +13,11 @@ internal sealed class DataGridColumn
     /// <summary>The author's <c>class</c> attribute, applied to both the header and body cells.</summary>
     public string? CssClass { get; init; }
 
+    public DataGridColumnAlign Align { get; init; }
+
+    /// <summary>The innermost group the column sits in, or <c>null</c> for a column in the grid.</summary>
+    public DataGridColumnGroup? Group { get; init; }
+
     /// <summary>Whether the column header renders a sort link.</summary>
     public bool Sortable { get; init; }
 

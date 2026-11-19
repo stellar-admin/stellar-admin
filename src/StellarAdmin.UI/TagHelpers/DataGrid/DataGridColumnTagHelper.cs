@@ -25,12 +25,31 @@ namespace StellarAdmin.UI;
 ///         The <c>class</c> applies to the column's header and body cells. In a row in edit mode,
 ///         an <c>sa-data-grid-edit-template</c> renders instead.
 ///     </para>
+///     <para>
+///         Place the column in the grid, or in an <c>sa-data-grid-column-group</c> to show it
+///         under the group's head.
+///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-data-grid-column", ParentTag = "sa-data-grid")]
+[HtmlTargetElement("sa-data-grid-column", ParentTag = "sa-data-grid-column-group")]
 public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
 {
     private readonly IModelMetadataProvider _metadataProvider;
     private readonly ICompositeViewEngine _viewEngine;
+
+    /// <summary>
+    ///     Gets or sets how the column aligns its head and cells.
+    /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the alignment. The default is
+    ///     <see cref="DataGridColumnAlign.Start" />.
+    /// </value>
+    /// <remarks>
+    ///     Use <see cref="DataGridColumnAlign.End" /> for numbers. A sort link in the head lines
+    ///     up with the cells.
+    /// </remarks>
+    [HtmlAttributeName("align")]
+    public DataGridColumnAlign? Align { get; set; }
 
     /// <summary>
     ///     Gets or sets the name of the item property whose value the cells show.
@@ -291,6 +310,8 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
                                 : null
                         ),
                     HeaderHtml = columnContext.HeaderContent,
+                    Align = Align ?? DataGridColumnAlign.Start,
+                    Group = gridContext.CurrentGroup,
                     CssClass = output.GetUserSuppliedClass() is { Length: > 0 } cssClass
                         ? cssClass
                         : null,
@@ -367,7 +388,8 @@ public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
         currentRow.Cells.Add(
             new DataGridCell(
                 output.GetUserSuppliedClass() is { Length: > 0 } cellCssClass ? cellCssClass : null,
-                cellHtml
+                cellHtml,
+                Align ?? DataGridColumnAlign.Start
             )
         );
         output.SuppressOutput();

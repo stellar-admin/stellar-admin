@@ -1,6 +1,6 @@
 ---
 component: DataGrid
-tags: [sa-data-grid, sa-data-grid-add-row, sa-data-grid-column, sa-data-grid-edit-template, sa-data-grid-empty, sa-data-grid-header-template, sa-data-grid-item-template, sa-data-grid-pager, sa-data-grid-row-detail, sa-data-grid-selection, sa-data-grid-sort]
+tags: [sa-data-grid, sa-data-grid-add-row, sa-data-grid-column, sa-data-grid-column, sa-data-grid-column-group, sa-data-grid-column-group, sa-data-grid-edit-template, sa-data-grid-empty, sa-data-grid-header-template, sa-data-grid-item-template, sa-data-grid-pager, sa-data-grid-row-detail, sa-data-grid-selection, sa-data-grid-sort]
 generated: true
 ---
 
@@ -15,6 +15,9 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
 | `<sa-data-grid>` | Renders a table of items, with columns declared by `sa-data-grid-column` children. |
 | `<sa-data-grid-add-row>` | Renders a full-width row in a data grid, for a button that adds an item. |
 | `<sa-data-grid-column>` | Defines a column of a data grid. |
+| `<sa-data-grid-column>` | Defines a column of a data grid. |
+| `<sa-data-grid-column-group>` | Groups data grid columns under a head that spans them. |
+| `<sa-data-grid-column-group>` | Groups data grid columns under a head that spans them. |
 | `<sa-data-grid-edit-template>` | Renders the editor of a data grid column in rows that are in edit mode. |
 | `<sa-data-grid-empty>` | Renders custom content in a full-width row when the data grid has no items. |
 | `<sa-data-grid-header-template>` | Renders custom header content for a data grid column. |
@@ -50,6 +53,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
+| `align` | `DataGridColumnAlign` | `Start` | `Start`, `Center`, `End` |
 | `field` | `string` | — | — |
 | `empty-text` | `string` | — | — |
 | `field-for` | `LambdaExpression` | — | — |
@@ -58,6 +62,38 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
 | `sort-field` | `string` | — | — |
 | `template` | `string` | — | — |
 | `template-renders-empty` | `bool` | `false` | `true`, `false` |
+| `title` | `string` | — | — |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
+### `<sa-data-grid-column>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `align` | `DataGridColumnAlign` | `Start` | `Start`, `Center`, `End` |
+| `field` | `string` | — | — |
+| `empty-text` | `string` | — | — |
+| `field-for` | `LambdaExpression` | — | — |
+| `format` | `string` | — | — |
+| `sortable` | `bool` | `false` | `true`, `false` |
+| `sort-field` | `string` | — | — |
+| `template` | `string` | — | — |
+| `template-renders-empty` | `bool` | `false` | `true`, `false` |
+| `title` | `string` | — | — |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
+### `<sa-data-grid-column-group>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `align` | `DataGridColumnGroupAlign` | `Center` | `Start`, `Center`, `End` |
+| `title` | `string` | — | — |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
+### `<sa-data-grid-column-group>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `align` | `DataGridColumnGroupAlign` | `Center` | `Start`, `Center`, `End` |
 | `title` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -192,6 +228,42 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
             alert(`Delete bookings:\n${selection.selectedValues.join("\n")}`));
     })();
 </script>
+```
+
+*From `Pages/DataGrid/_ColumnGroups.cshtml`*
+
+```razor
+    var sortField = Context.Request.Query["groupSortBy"].ToString();
+    var sortDirection = Context.Request.Query["groupSortDir"] == "desc"
+        ? DataGridSortDirection.Descending
+        : DataGridSortDirection.Ascending;
+
+    IEnumerable<Booking> bookings = StaticData.Bookings;
+    bookings = (sortField.ToLowerInvariant(), sortDirection) switch
+    {
+        ("destination", DataGridSortDirection.Ascending) => bookings.OrderBy(b => b.Destination),
+        ("destination", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Destination),
+        ("amount", DataGridSortDirection.Ascending) => bookings.OrderBy(b => b.Amount),
+        ("amount", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Amount),
+        _ => bookings
+    };
+}
+<sa-data-grid items="bookings">
+    <sa-data-grid-sort sort-field="@sortField" sort-direction="sortDirection"
+                       asp-page="/DataGrid/Index"
+                       asp-route-groupSortBy="{sortField}" asp-route-groupSortDir="{sortDirection}"
+                       preserve-query="true"/>
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column-group title="Traveller">
+        <sa-data-grid-column title="Name" field-for="(Booking b) => StaticData.DetailsFor(b.Id).Traveller"/>
+        <sa-data-grid-column title="Email" field-for="(Booking b) => StaticData.DetailsFor(b.Id).Email"/>
+    </sa-data-grid-column-group>
+    <sa-data-grid-column-group title="Trip">
+        <sa-data-grid-column title="Destination" field="Destination" sortable="true"/>
+        <sa-data-grid-column title="Status" field="Status"/>
+    </sa-data-grid-column-group>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End" sortable="true"/>
+</sa-data-grid>
 ```
 
 *From `Pages/DataGrid/_RowDetails.cshtml`*

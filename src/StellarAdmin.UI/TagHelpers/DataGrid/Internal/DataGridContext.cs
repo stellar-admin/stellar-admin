@@ -46,6 +46,12 @@ internal sealed class DataGridContext
     /// <summary>True during the collect pass — derived from <see cref="CurrentRow" />.</summary>
     public bool Collecting => CurrentRow is null;
 
+    /// <summary>
+    ///     The column group whose content the collect pass is executing, or <c>null</c> outside
+    ///     any group.
+    /// </summary>
+    public DataGridColumnGroup? CurrentGroup { get; set; }
+
     /// <summary>Column definitions registered during the collect pass, in document order.</summary>
     public List<DataGridColumn> Columns { get; } = [];
 

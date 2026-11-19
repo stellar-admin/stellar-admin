@@ -11,7 +11,7 @@
             <partial name="_DestinationEditor" for="@Html.GridItem<Booking>().Destination"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
-    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End">
         <sa-data-grid-edit-template>
             @* Named: EditorTemplates/Currency.cshtml *@
             @Html.EditorFor(_ => Html.GridItem<Booking>().Amount, "Currency")

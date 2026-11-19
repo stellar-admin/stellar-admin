@@ -13,8 +13,12 @@
 
     /* Only the grid's own rows: rows of a table nested in a cell (such as a row's details) keep their
        padding, and the detail cell stays unpadded since its content measures its insets from the row. */
-    & tr:not(td tr) > :first-child:not(.sa-table-row-detail-cell) { padding-inline-start: var(--_card-p); }
-    & tr:not(td tr) > :last-child:not(.sa-table-row-detail-cell) { padding-inline-end: var(--_card-p); }
+    & tr:not(td tr, thead tr) > :first-child:not(.sa-table-row-detail-cell) { padding-inline-start: var(--_card-p); }
+    & tr:not(td tr, thead tr) > :last-child:not(.sa-table-row-detail-cell) { padding-inline-end: var(--_card-p); }
+    /* In a header of several rows a row's first or last head can sit inside the table; the grid marks
+       the heads on the table's edges. */
+    & thead:not(td thead) > tr > [data-edge-start] { padding-inline-start: var(--_card-p); }
+    & thead:not(td thead) > tr > [data-edge-end] { padding-inline-end: var(--_card-p); }
   }
   .sa-card-footer.sa-data-grid-footer {
     justify-content: flex-end;
@@ -47,8 +51,18 @@
     font-weight: var(--sa-weight-control);
   }
 
-  /* A sort link is a small ghost button (button.css) that takes on the column head's type. */
+  /* A column's alignment (data-align) applies to its head and cells. */
+  .sa-data-grid :is(.sa-table-head, .sa-table-cell) {
+    &[data-align="start"] { text-align: start; }
+    &[data-align="center"] { text-align: center; }
+    &[data-align="end"] { text-align: end; }
+  }
+
+  /* A sort link is a small ghost button (button.css) that takes on the column head's type. Its
+     padding reaches out of the head's, so its label lines up with the cells: at the start, or at the
+     end in an end-aligned column. */
   .sa-table-head > .sa-button[data-slot="data-grid-sort-link"] {
+    margin-inline-start: calc(-1 * var(--sa-control-px));
     color: inherit;
     font-family: inherit;
     font-size: inherit;
@@ -57,5 +71,10 @@
     text-transform: inherit;
     & svg { color: var(--sa-color-ink-muted); }
     &[data-active="true"] svg { color: currentColor; }
+    [data-align="center"] > & { margin-inline-start: 0; }
+    [data-align="end"] > & {
+      margin-inline-start: 0;
+      margin-inline-end: calc(-1 * var(--sa-control-px));
+    }
   }
 }

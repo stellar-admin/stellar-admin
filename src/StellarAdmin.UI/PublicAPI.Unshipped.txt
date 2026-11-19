@@ -2812,3 +2812,20 @@ StellarAdmin.UI.AccordionTagHelper.Variant.set -> void
 StellarAdmin.UI.AccordionVariant
 StellarAdmin.UI.AccordionVariant.Contained = 1 -> StellarAdmin.UI.AccordionVariant
 StellarAdmin.UI.AccordionVariant.Default = 0 -> StellarAdmin.UI.AccordionVariant
+StellarAdmin.UI.DataGridColumnAlign
+StellarAdmin.UI.DataGridColumnAlign.Center = 1 -> StellarAdmin.UI.DataGridColumnAlign
+StellarAdmin.UI.DataGridColumnAlign.End = 2 -> StellarAdmin.UI.DataGridColumnAlign
+StellarAdmin.UI.DataGridColumnAlign.Start = 0 -> StellarAdmin.UI.DataGridColumnAlign
+StellarAdmin.UI.DataGridColumnGroupAlign
+StellarAdmin.UI.DataGridColumnGroupAlign.Center = 1 -> StellarAdmin.UI.DataGridColumnGroupAlign
+StellarAdmin.UI.DataGridColumnGroupAlign.End = 2 -> StellarAdmin.UI.DataGridColumnGroupAlign
+StellarAdmin.UI.DataGridColumnGroupAlign.Start = 0 -> StellarAdmin.UI.DataGridColumnGroupAlign
+StellarAdmin.UI.DataGridColumnGroupTagHelper
+StellarAdmin.UI.DataGridColumnGroupTagHelper.Align.get -> StellarAdmin.UI.DataGridColumnGroupAlign?
+StellarAdmin.UI.DataGridColumnGroupTagHelper.Align.set -> void
+StellarAdmin.UI.DataGridColumnGroupTagHelper.DataGridColumnGroupTagHelper() -> void
+StellarAdmin.UI.DataGridColumnGroupTagHelper.Title.get -> string?
+StellarAdmin.UI.DataGridColumnGroupTagHelper.Title.set -> void
+override StellarAdmin.UI.DataGridColumnGroupTagHelper.ProcessAsync(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext! context, Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput! output) -> System.Threading.Tasks.Task!
+StellarAdmin.UI.DataGridColumnTagHelper.Align.get -> StellarAdmin.UI.DataGridColumnAlign?
+StellarAdmin.UI.DataGridColumnTagHelper.Align.set -> void

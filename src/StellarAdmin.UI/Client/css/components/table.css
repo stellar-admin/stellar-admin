@@ -27,7 +27,12 @@
     font-size: var(--sa-text-body);
     line-height: var(--sa-leading-ui);
   }
-  .sa-table-header { background: color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-column-head-fill) * 100%), transparent); }
+  .sa-table-header {
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+    background: color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-column-head-fill) * 100%), transparent);
+    /* The header's rows run into each other; the header's own line closes it off from the body. */
+    & > .sa-table-row { border-bottom-width: 0; }
+  }
   .sa-table-row {
     border-bottom: var(--sa-border-width) solid var(--sa-color-line);
     transition: background-color var(--sa-motion-fast) var(--sa-motion-ease);
@@ -50,6 +55,27 @@
     vertical-align: middle;
     white-space: nowrap;
     &:has([role="checkbox"]) { padding-inline-end: 0; }
+  }
+  /* Dividers: a line before every head but the table's first, and under every group head. The plain
+     line all but disappears on the header band, so these use the control line. A header that marks
+     the heads on its edges (data-edge-start, as the data grid does) also gets a line before a row's
+     first head when that head sits inside the table. */
+  .sa-table-header .sa-table-head:not(:first-child),
+  .sa-table-header:has([data-edge-start]) .sa-table-head:not([data-edge-start]) {
+    border-inline-start: var(--sa-border-width) solid var(--sa-color-line-control);
+  }
+  .sa-table-header:has([data-edge-start]) .sa-table-head[data-edge-start] { border-inline-start-width: 0; }
+  /* A group head (scope="colgroup"): centred over its columns, shorter than the column heads. */
+  .sa-table-head[scope="colgroup"] {
+    height: calc(8 * var(--sa-unit));
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line-control);
+    text-align: center;
+  }
+  /* A column head spanning group rows sits on the column heads' line. */
+  .sa-table-head[rowspan]:not([rowspan="1"]) {
+    padding-bottom: calc((10 * var(--sa-unit) - 1lh) / 2);
+    vertical-align: bottom;
+    &:has(> .sa-button) { padding-bottom: calc((10 * var(--sa-unit) - var(--sa-control-h-sm)) / 2); }
   }
   .sa-table-cell {
     padding: var(--sa-space-cell-y) var(--sa-space-cell-x);

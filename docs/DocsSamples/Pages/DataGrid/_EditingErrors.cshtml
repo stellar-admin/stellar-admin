@@ -11,7 +11,7 @@
             <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Destination"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
-    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End">
         <sa-data-grid-edit-template>
             <sa-input class="sa-cell-editor text-right" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
             <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Amount"/>
