@@ -6,18 +6,18 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Provides the settings shared by the builders that configure a table layout of a resource's
-///     index page.
+///     Provides the settings shared by the builders that configure a table data layout of a
+///     resource's index page.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 /// <typeparam name="TBuilder">
 ///     The type of the derived builder that methods return for chaining.
 /// </typeparam>
-public abstract class ResourceTableLayoutBuilderBase<TResource, TBuilder>
-    : ResourceLayoutBuilderBase<TResource, TBuilder>
-    where TBuilder : ResourceTableLayoutBuilderBase<TResource, TBuilder>
+public abstract class ResourceTableDataLayoutBuilderBase<TResource, TBuilder>
+    : ResourceDataLayoutBuilderBase<TResource, TBuilder>
+    where TBuilder : ResourceTableDataLayoutBuilderBase<TResource, TBuilder>
 {
-    private protected ResourceTableLayoutBuilderBase(IServiceCollection services, string key)
+    private protected ResourceTableDataLayoutBuilderBase(IServiceCollection services, string key)
         : base(services, key) { }
 
     /// <summary>

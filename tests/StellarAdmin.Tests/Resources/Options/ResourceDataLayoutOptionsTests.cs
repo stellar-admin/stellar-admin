@@ -6,7 +6,7 @@ using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Tests.Resources.Options;
 
-public class ResourceLayoutOptionsTests
+public class ResourceDataLayoutOptionsTests
 {
     [Test]
     public async Task Fields_OfPartial_IsEmpty()

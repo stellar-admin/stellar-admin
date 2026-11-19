@@ -5,14 +5,14 @@ using StellarAdmin.Resources.Builders;
 namespace StellarAdmin.EntityFrameworkCore;
 
 /// <summary>
-///     Configures a table layout of the index page of a resource that EF Core loads.
+///     Configures a table data layout of the index page of a resource that EF Core loads.
 /// </summary>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
-public sealed class EfCoreResourceTableLayoutBuilder<TEntity>
-    : ResourceTableLayoutBuilderBase<TEntity, EfCoreResourceTableLayoutBuilder<TEntity>>
+public sealed class EfCoreResourceTableDataLayoutBuilder<TEntity>
+    : ResourceTableDataLayoutBuilderBase<TEntity, EfCoreResourceTableDataLayoutBuilder<TEntity>>
     where TEntity : class
 {
-    internal EfCoreResourceTableLayoutBuilder(IServiceCollection services, string key)
+    internal EfCoreResourceTableDataLayoutBuilder(IServiceCollection services, string key)
         : base(services, key) { }
 
     /// <summary>
@@ -85,7 +85,7 @@ public sealed class EfCoreResourceTableLayoutBuilder<TEntity>
     /// <exception cref="ArgumentException">
     ///     <paramref name="partialName" /> is empty or whitespace.
     /// </exception>
-    public EfCoreResourceTableLayoutBuilder<TEntity> EnableRowDetails<TModel>(
+    public EfCoreResourceTableDataLayoutBuilder<TEntity> EnableRowDetails<TModel>(
         string partialName,
         Expression<Func<TEntity, TModel>> select,
         Action<ResourceTableRowDetailsBuilder<TEntity>> configure
@@ -112,7 +112,7 @@ public sealed class EfCoreResourceTableLayoutBuilder<TEntity>
     /// <remarks>
     ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout.
     /// </remarks>
-    public EfCoreResourceTableLayoutBuilder<TEntity> EnableRowDetails(
+    public EfCoreResourceTableDataLayoutBuilder<TEntity> EnableRowDetails(
         Action<EfCoreResourceTableRowDetailPanelsBuilder<TEntity>> panels,
         Action<ResourceTableRowDetailsBuilder<TEntity>> configure
     )

@@ -5,7 +5,7 @@ using StellarAdmin.Resources.Builders;
 namespace StellarAdmin.EntityFrameworkCore;
 
 /// <summary>
-///     Configures the settings that every layout of the index page of a resource that EF Core
+///     Configures the settings that every data layout of the index page of a resource that EF Core
 ///     loads shares.
 /// </summary>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>

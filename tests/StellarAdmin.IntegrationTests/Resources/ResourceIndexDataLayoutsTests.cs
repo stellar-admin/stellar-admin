@@ -8,7 +8,7 @@ using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
-public class ResourceIndexLayoutsTests
+public class ResourceIndexDataLayoutsTests
 {
     [Test]
     public async Task OneLayout_HasNoSwitcher()
@@ -545,7 +545,7 @@ public class ResourceIndexLayoutsTests
     // The products table, then a partial of rows its handler loads
     private static void ConfigureRowsPartial(
         ResourceBuilder<Product> resource,
-        Action<ResourceHandlerPartialLayoutBuilder<Product, ProductRow>> configure
+        Action<ResourceHandlerPartialDataLayoutBuilder<Product, ProductRow>> configure
     ) =>
         resource.Index(
             _ => { },
@@ -563,7 +563,7 @@ public class ResourceIndexLayoutsTests
     // The products table, then a table of rows its handler loads
     private static void ConfigureRowsTable(
         ResourceBuilder<Product> resource,
-        Action<ResourceHandlerTableLayoutBuilder<Product, ProductRow>> configure
+        Action<ResourceHandlerTableDataLayoutBuilder<Product, ProductRow>> configure
     ) =>
         resource.Index(
             index =>

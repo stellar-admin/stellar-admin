@@ -165,17 +165,17 @@ public sealed class EfCoreResourceBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Configures the index page with layouts the user can switch between.
+    ///     Configures the index page with data layouts the user can switch between.
     /// </summary>
     /// <param name="configure">
-    ///     A delegate that configures the settings every layout shares, such as the scopes and the
-    ///     search.
+    ///     A delegate that configures the settings every data layout shares, such as the scopes and
+    ///     the search.
     /// </param>
     /// <param name="layouts">A delegate that adds the layouts.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     The first layout is the one the page shows by default. With two or more layouts, a
-    ///     switcher at the end of the controls row switches between them.
+    ///     The first data layout is the one the page shows by default. With two or more data
+    ///     layouts, a switcher at the end of the controls row switches between them.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> or <paramref name="layouts" /> is <see langword="null" />.

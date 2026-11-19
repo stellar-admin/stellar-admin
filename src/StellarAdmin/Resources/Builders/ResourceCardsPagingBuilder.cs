@@ -5,7 +5,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures paging on a cards layout.
+///     Configures paging on a cards data layout.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 public sealed class ResourceCardsPagingBuilder<TResource>

@@ -8,7 +8,7 @@ namespace StellarAdmin.Resources.Options;
 /// </summary>
 public sealed class ResourceIndexOptions
 {
-    // The key of the table layout that the one-argument Index overload configures
+    // The key of the table data layout that the one-argument Index overload configures
     internal const string ImplicitTableKey = "table";
 
     /// <summary>
@@ -63,12 +63,12 @@ public sealed class ResourceIndexOptions
     public string? EditLabel { get; internal set; }
 
     /// <summary>
-    ///     Gets the layouts, in the order the user can switch between them.
+    ///     Gets the data layouts, in the order the user can switch between them.
     /// </summary>
     /// <remarks>
-    ///     The first layout is the one the page shows by default.
+    ///     The first data layout is the one the page shows by default.
     /// </remarks>
-    public IReadOnlyList<ResourceLayoutOptions> Layouts => MutableLayouts;
+    public IReadOnlyList<ResourceDataLayoutOptions> Layouts => MutableLayouts;
 
     /// <summary>
     ///     Gets the description of the toast shown when a saved inline row isn't on the
@@ -139,34 +139,34 @@ public sealed class ResourceIndexOptions
     /// </value>
     public string? ViewLabel { get; internal set; }
 
-    // The cards layouts, in layout order
-    internal IEnumerable<ResourceCardsLayoutOptions> Cards =>
-        MutableLayouts.OfType<ResourceCardsLayoutOptions>();
+    // The cards data layouts, in data layout order
+    internal IEnumerable<ResourceCardsDataLayoutOptions> Cards =>
+        MutableLayouts.OfType<ResourceCardsDataLayoutOptions>();
 
-    internal List<ResourceLayoutOptions> MutableLayouts { get; } = [];
+    internal List<ResourceDataLayoutOptions> MutableLayouts { get; } = [];
 
-    // Whether the two-argument Index overload declared the layouts
+    // Whether the two-argument Index overload declared the data layouts
     internal bool HasDeclaredLayouts { get; private set; }
 
-    // The tables that show the resource's own rows, in layout order. The first one has the inline rows, and lookups and
-    // references sort by its default sort
-    internal IEnumerable<ResourceTableLayoutOptions> RecordTables =>
+    // The tables that show the resource's own rows, in data layout order. The first one has the inline rows, and
+    // lookups and references sort by its default sort
+    internal IEnumerable<ResourceTableDataLayoutOptions> RecordTables =>
         Tables.Where(table => table.Loader is null);
 
-    // The tables, in layout order
-    internal IEnumerable<ResourceTableLayoutOptions> Tables =>
-        MutableLayouts.OfType<ResourceTableLayoutOptions>();
+    // The tables, in data layout order
+    internal IEnumerable<ResourceTableDataLayoutOptions> Tables =>
+        MutableLayouts.OfType<ResourceTableDataLayoutOptions>();
 
     // The widgets as configured, then, once checked, those that can be shown
     internal List<WidgetOptions> Widgets { get; } = [];
 
-    // The layout the page shows for a key, or the first layout when the key matches none
-    internal ResourceLayoutOptions? FindLayout(string? key) =>
+    // The data layout the page shows for a key, or the first data layout when the key matches none
+    internal ResourceDataLayoutOptions? FindLayout(string? key) =>
         MutableLayouts.FirstOrDefault(layout =>
             string.Equals(layout.Key, key, StringComparison.OrdinalIgnoreCase)
         ) ?? MutableLayouts.FirstOrDefault();
 
-    // The layouts route replaces the implicit table that an earlier one-argument Index call configured, such as a
+    // The data layouts route replaces the implicit table that an earlier one-argument Index call configured, such as a
     // default an application overrides
     internal void DeclareLayouts()
     {
@@ -177,22 +177,28 @@ public sealed class ResourceIndexOptions
         }
     }
 
-    internal void AddCards(string key) => MutableLayouts.Add(new ResourceCardsLayoutOptions(key));
+    internal void AddCards(string key) =>
+        MutableLayouts.Add(new ResourceCardsDataLayoutOptions(key));
 
-    internal void AddPartial(string key, string partialName, ResourceLayoutLoader? loader = null) =>
-        MutableLayouts.Add(new ResourcePartialLayoutOptions(key, partialName, loader));
+    internal void AddPartial(
+        string key,
+        string partialName,
+        ResourceDataLayoutLoader? loader = null
+    ) => MutableLayouts.Add(new ResourcePartialDataLayoutOptions(key, partialName, loader));
 
-    // The cards layout with a key, which its AddCards call has already added
-    internal ResourceCardsLayoutOptions GetCards(string key) =>
-        (ResourceCardsLayoutOptions)GetLayout(key);
+    // The cards data layout with a key, which its AddCards call has already added
+    internal ResourceCardsDataLayoutOptions GetCards(string key) =>
+        (ResourceCardsDataLayoutOptions)GetLayout(key);
 
-    // The layout with a key, which its Add call has already added
-    internal ResourceLayoutOptions GetLayout(string key) =>
+    // The data layout with a key, which its Add call has already added
+    internal ResourceDataLayoutOptions GetLayout(string key) =>
         MutableLayouts.First(layout => layout.Key == key);
 
-    internal ResourceTableLayoutOptions GetOrAddTable(string key)
+    internal ResourceTableDataLayoutOptions GetOrAddTable(string key)
     {
-        if (MutableLayouts.Find(layout => layout.Key == key) is ResourceTableLayoutOptions table)
+        if (
+            MutableLayouts.Find(layout => layout.Key == key) is ResourceTableDataLayoutOptions table
+        )
         {
             return table;
         }

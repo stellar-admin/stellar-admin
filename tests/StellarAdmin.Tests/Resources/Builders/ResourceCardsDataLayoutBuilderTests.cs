@@ -8,7 +8,7 @@ using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Tests.Resources.Builders;
 
-public class ResourceCardsLayoutBuilderTests
+public class ResourceCardsDataLayoutBuilderTests
 {
     [Test]
     public async Task Stats_WithMoreThanFour_KeepsTheFirstFourAndReportsIt()
@@ -246,7 +246,7 @@ public class ResourceCardsLayoutBuilderTests
 
     public sealed record ProductTotal(string Name, int Count);
 
-    public sealed class ProductTotalsHandler : IResourceLayoutHandler<ProductTotal>
+    public sealed class ProductTotalsHandler : IResourceDataLayoutHandler<ProductTotal>
     {
         public Task<ResourceListResult<ProductTotal>> ListAsync(
             ResourceListRequest request,

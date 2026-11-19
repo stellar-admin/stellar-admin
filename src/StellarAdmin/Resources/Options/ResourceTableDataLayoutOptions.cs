@@ -4,9 +4,9 @@ using StellarAdmin.Diagnostics;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Stores the configuration of an index layout that shows the resources in a table.
+///     Stores the configuration of an index data layout that shows the resources in a table.
 /// </summary>
-public sealed class ResourceTableLayoutOptions : ResourceLayoutOptions
+public sealed class ResourceTableDataLayoutOptions : ResourceDataLayoutOptions
 {
     /// <summary>
     ///     Gets the columns, in display order.
@@ -62,7 +62,7 @@ public sealed class ResourceTableLayoutOptions : ResourceLayoutOptions
     internal IEnumerable<DataGridColumnOptions> SortableColumns =>
         Columns.Where(column => column.Sortable);
 
-    internal ResourceTableLayoutOptions(string key)
+    internal ResourceTableDataLayoutOptions(string key)
         : base(key) { }
 
     // The default sort with the expression to order by, or null when there's none or its column isn't sortable

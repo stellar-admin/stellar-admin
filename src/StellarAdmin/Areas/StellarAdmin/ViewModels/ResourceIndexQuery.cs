@@ -6,8 +6,8 @@ namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 public sealed class ResourceIndexQuery
 {
     /// <summary>
-    ///     Gets or sets the key of the selected layout, or <see langword="null" /> for the first
-    ///     layout.
+    ///     Gets or sets the key of the selected data layout, or <see langword="null" /> for the
+    ///     first data layout.
     /// </summary>
     public string? Layout { get; set; }
 

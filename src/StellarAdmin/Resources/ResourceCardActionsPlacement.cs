@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     Specifies where the row actions sit on the cards of a cards layout.
+///     Specifies where the row actions sit on the cards of a cards data layout.
 /// </summary>
 public enum ResourceCardActionsPlacement
 {

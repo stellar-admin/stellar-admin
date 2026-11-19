@@ -132,7 +132,7 @@ internal static class ResourceIndexCheck
 
     private static void CheckDefaultSort<TResource>(
         ResourceOptions<TResource> options,
-        ResourceTableLayoutOptions table
+        ResourceTableDataLayoutOptions table
     )
     {
         if (table.DefaultSort is { } sort && table.FindSort(sort.Field, sort.Direction) is null)

@@ -1,5 +1,5 @@
 @using StellarAdmin.Resources
-@model ResourceLayoutModel<StellarAdmin.IntegrationTests.Fixtures.ProductRow>
+@model ResourceDataLayoutModel<StellarAdmin.IntegrationTests.Fixtures.ProductRow>
 @foreach (var row in Model.Items)
 {
     <p data-test="row" data-view="@(Model.GetViewUrl(row) ?? "none")" data-edit="@(Model.GetEditUrl(row) ?? "none")">@row.Label</p>

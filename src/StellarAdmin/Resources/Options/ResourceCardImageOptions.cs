@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Stores the configuration of the image on the cards of a cards layout.
+///     Stores the configuration of the image on the cards of a cards data layout.
 /// </summary>
 public sealed class ResourceCardImageOptions
 {

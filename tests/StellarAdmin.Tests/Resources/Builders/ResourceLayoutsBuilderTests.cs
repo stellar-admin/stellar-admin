@@ -47,7 +47,7 @@ public class ResourceLayoutsBuilderTests
             );
         var cards = await Assert
             .That(options.Index.Layouts[1])
-            .IsTypeOf<ResourcePartialLayoutOptions>();
+            .IsTypeOf<ResourcePartialDataLayoutOptions>();
         await Assert.That(cards!.PartialName).IsEqualTo("_ProductCards");
         await Assert.That(cards.Title).IsEqualTo("Cards");
         await Assert.That(cards.Icon).IsEqualTo("layout-grid");
@@ -83,7 +83,7 @@ public class ResourceLayoutsBuilderTests
         // Assert
         var counts = await Assert
             .That(options.Index.Layouts[1])
-            .IsTypeOf<ResourcePartialLayoutOptions>();
+            .IsTypeOf<ResourcePartialDataLayoutOptions>();
         await Assert.That(counts!.Key).IsEqualTo("counts");
         await Assert.That(counts.PartialName).IsEqualTo("_ProductCounts");
         await Assert.That(counts.IgnoresScopes).IsTrue();
@@ -185,7 +185,7 @@ public class ResourceLayoutsBuilderTests
         // Assert
         var counts = await Assert
             .That(options.Index.Layouts[1])
-            .IsTypeOf<ResourceTableLayoutOptions>();
+            .IsTypeOf<ResourceTableDataLayoutOptions>();
         await Assert.That(counts!.Key).IsEqualTo("counts");
         await Assert.That(counts.Loader).IsNotNull();
         await Assert.That(counts.RecordKey!(new ProductCount(7))).IsEqualTo("7");
@@ -301,7 +301,7 @@ public class ResourceLayoutsBuilderTests
                 TUnit.Assertions.Enums.CollectionOrdering.Matching
             );
         await Assert
-            .That(options.Index.Layouts.All(layout => layout is ResourceTableLayoutOptions))
+            .That(options.Index.Layouts.All(layout => layout is ResourceTableDataLayoutOptions))
             .IsTrue();
     }
 
@@ -351,8 +351,8 @@ public class ResourceLayoutsBuilderTests
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        var products = (ResourceTableLayoutOptions)options.Index.Layouts[0];
-        var prices = (ResourceTableLayoutOptions)options.Index.Layouts[1];
+        var products = (ResourceTableDataLayoutOptions)options.Index.Layouts[0];
+        var prices = (ResourceTableDataLayoutOptions)options.Index.Layouts[1];
         await Assert.That(products.Title).IsEqualTo("Products");
         await Assert.That(products.Icon).IsEqualTo("table");
         await Assert.That(products.Columns.Single().FieldName).IsEqualTo(nameof(Product.Name));
@@ -439,7 +439,7 @@ public class ResourceLayoutsBuilderTests
 
     private sealed record ProductCount(int Count);
 
-    private sealed class ProductCountHandler : IResourceLayoutHandler<ProductCount>
+    private sealed class ProductCountHandler : IResourceDataLayoutHandler<ProductCount>
     {
         public Task<ResourceListResult<ProductCount>> ListAsync(
             ResourceListRequest request,

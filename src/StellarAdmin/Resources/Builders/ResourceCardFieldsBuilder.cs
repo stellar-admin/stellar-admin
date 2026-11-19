@@ -4,7 +4,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures the fields of the cards of a cards layout.
+///     Configures the fields of the cards of a cards data layout.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 public sealed class ResourceCardFieldsBuilder<TResource>
@@ -16,7 +16,7 @@ public sealed class ResourceCardFieldsBuilder<TResource>
     ///     Sets how the fields are arranged.
     /// </summary>
     /// <value>
-    ///     The layout. The default is <see cref="ResourceCardFieldLayout.Rows" />.
+    ///     The data layout. The default is <see cref="ResourceCardFieldLayout.Rows" />.
     /// </value>
     public ResourceCardFieldLayout Layout
     {

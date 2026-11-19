@@ -28,7 +28,7 @@ public class ResourceOptionsFactoryTests
         // Assert
         var table = await Assert
             .That(options.Index.Layouts.Single())
-            .IsTypeOf<ResourceTableLayoutOptions>();
+            .IsTypeOf<ResourceTableDataLayoutOptions>();
         await Assert.That(table!.Key).IsEqualTo(ResourceIndexOptions.ImplicitTableKey);
         await Assert.That(table.Columns.Count).IsEqualTo(1);
         await Assert.That(table.DefaultSort!.Field).IsEqualTo(nameof(Product.Name));
@@ -49,7 +49,7 @@ public class ResourceOptionsFactoryTests
         // Assert
         var table = await Assert
             .That(options.Index.Layouts.Single())
-            .IsTypeOf<ResourceTableLayoutOptions>();
+            .IsTypeOf<ResourceTableDataLayoutOptions>();
         await Assert.That(table!.Key).IsEqualTo(ResourceIndexOptions.ImplicitTableKey);
         await Assert.That(table.Columns).IsEmpty();
     }

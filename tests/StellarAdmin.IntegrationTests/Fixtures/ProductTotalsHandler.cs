@@ -2,7 +2,8 @@ using StellarAdmin.Resources;
 
 namespace StellarAdmin.IntegrationTests.Fixtures;
 
-public sealed class ProductTotalsHandler(ProductState state) : IResourceLayoutHandler<ProductTotal>
+public sealed class ProductTotalsHandler(ProductState state)
+    : IResourceDataLayoutHandler<ProductTotal>
 {
     public Task<ResourceListResult<ProductTotal>> ListAsync(
         ResourceListRequest request,

@@ -3,7 +3,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures the image on the cards of a cards layout.
+///     Configures the image on the cards of a cards data layout.
 /// </summary>
 public sealed class ResourceCardImageBuilder
 {

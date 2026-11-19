@@ -5,7 +5,7 @@ namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 
 // Every category with no products counted: a handler that loads its own data, whatever the scope and search
 public sealed class CategoryNamesHandler(CatalogDbContext db)
-    : IResourceLayoutHandler<CategoryTotal>
+    : IResourceDataLayoutHandler<CategoryTotal>
 {
     public async Task<ResourceListResult<CategoryTotal>> ListAsync(
         ResourceListRequest request,

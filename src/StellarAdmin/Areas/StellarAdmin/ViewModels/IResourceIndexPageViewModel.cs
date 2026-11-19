@@ -78,9 +78,10 @@ public interface IResourceIndexPageViewModel
     IEnumerable Items { get; }
 
     /// <summary>
-    ///     Gets the segments of the layout switcher, which is empty when the index has one layout.
+    ///     Gets the segments of the data layout switcher, which is empty when the index has one
+    ///     data layout.
     /// </summary>
-    IReadOnlyList<ResourceIndexLayoutViewModel> Layouts { get; }
+    IReadOnlyList<ResourceIndexDataLayoutViewModel> Layouts { get; }
 
     /// <summary>
     ///     Gets the paging controls, or <see langword="null" /> when paging is turned off.
@@ -88,10 +89,10 @@ public interface IResourceIndexPageViewModel
     ResourceIndexPagingViewModel? Paging { get; }
 
     /// <summary>
-    ///     Gets the partial view that renders the shown layout, or <see langword="null" /> when the
-    ///     layout is a table.
+    ///     Gets the partial view that renders the shown data layout, or <see langword="null" />
+    ///     when the data layout is a table.
     /// </summary>
-    ResourceIndexPartialLayoutViewModel? PartialLayout { get; }
+    ResourceIndexPartialDataLayoutViewModel? PartialLayout { get; }
 
     /// <summary>
     ///     Gets the index settings that the query string supplies.

@@ -4,7 +4,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Adds the stats of the cards of a cards layout.
+///     Adds the stats of the cards of a cards data layout.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 public sealed class ResourceCardStatsBuilder<TResource>

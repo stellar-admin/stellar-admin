@@ -6,13 +6,13 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures a cards layout of a resource's index page.
+///     Configures a cards data layout of a resource's index page.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
-public sealed class ResourceCardsLayoutBuilder<TResource>
-    : ResourceLayoutBuilderBase<TResource, ResourceCardsLayoutBuilder<TResource>>
+public sealed class ResourceCardsDataLayoutBuilder<TResource>
+    : ResourceDataLayoutBuilderBase<TResource, ResourceCardsDataLayoutBuilder<TResource>>
 {
-    internal ResourceCardsLayoutBuilder(IServiceCollection services, string key)
+    internal ResourceCardsDataLayoutBuilder(IServiceCollection services, string key)
         : base(services, key) { }
 
     /// <summary>
@@ -27,7 +27,7 @@ public sealed class ResourceCardsLayoutBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceCardsLayoutBuilder<TResource> Card(
+    public ResourceCardsDataLayoutBuilder<TResource> Card(
         Action<ResourceCardBuilder<TResource>> configure
     )
     {
@@ -46,7 +46,7 @@ public sealed class ResourceCardsLayoutBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    public ResourceCardsLayoutBuilder<TResource> DefaultSortBy<TProperty>(
+    public ResourceCardsDataLayoutBuilder<TResource> DefaultSortBy<TProperty>(
         Expression<Func<TResource, TProperty>> field
     ) => ConfigureDefaultSort(field, ResourceSortDirection.Ascending);
 
@@ -59,7 +59,7 @@ public sealed class ResourceCardsLayoutBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    public ResourceCardsLayoutBuilder<TResource> DefaultSortByDescending<TProperty>(
+    public ResourceCardsDataLayoutBuilder<TResource> DefaultSortByDescending<TProperty>(
         Expression<Func<TResource, TProperty>> field
     ) => ConfigureDefaultSort(field, ResourceSortDirection.Descending);
 
@@ -84,7 +84,7 @@ public sealed class ResourceCardsLayoutBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceCardsLayoutBuilder<TResource> EnablePaging(
+    public ResourceCardsDataLayoutBuilder<TResource> EnablePaging(
         Action<ResourceCardsPagingBuilder<TResource>> configure
     )
     {
@@ -105,7 +105,7 @@ public sealed class ResourceCardsLayoutBuilder<TResource>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceCardsLayoutBuilder<TResource> RowActions(
+    public ResourceCardsDataLayoutBuilder<TResource> RowActions(
         Action<ResourceRowActionsBuilder<TResource>> configure
     )
     {
@@ -120,7 +120,7 @@ public sealed class ResourceCardsLayoutBuilder<TResource>
             configure(options.Index.GetCards(LayoutKey).Card)
         );
 
-    private ResourceCardsLayoutBuilder<TResource> ConfigureDefaultSort(
+    private ResourceCardsDataLayoutBuilder<TResource> ConfigureDefaultSort(
         LambdaExpression field,
         ResourceSortDirection direction
     )

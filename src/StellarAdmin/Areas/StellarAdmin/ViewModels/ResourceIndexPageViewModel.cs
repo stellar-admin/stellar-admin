@@ -46,7 +46,7 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public required IReadOnlyList<TResource> Items { get; init; }
 
     /// <inheritdoc />
-    public IReadOnlyList<ResourceIndexLayoutViewModel> Layouts { get; init; } = [];
+    public IReadOnlyList<ResourceIndexDataLayoutViewModel> Layouts { get; init; } = [];
 
     /// <summary>
     ///     Gets a delegate that returns the key of a resource, or <see langword="null" /> when the
@@ -58,7 +58,7 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public ResourceIndexPagingViewModel? Paging { get; init; }
 
     /// <inheritdoc />
-    public ResourceIndexPartialLayoutViewModel? PartialLayout { get; init; }
+    public ResourceIndexPartialDataLayoutViewModel? PartialLayout { get; init; }
 
     /// <inheritdoc />
     public ResourceIndexQuery Query { get; init; } = new();

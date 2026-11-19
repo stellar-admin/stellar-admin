@@ -5,21 +5,21 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Provides the settings shared by the builders that configure a layout of a resource's index
-///     page.
+///     Provides the settings shared by the builders that configure a data layout of a resource's
+///     index page.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 /// <typeparam name="TBuilder">
 ///     The type of the derived builder that methods return for chaining.
 /// </typeparam>
-public abstract class ResourceLayoutBuilderBase<TResource, TBuilder>
-    where TBuilder : ResourceLayoutBuilderBase<TResource, TBuilder>
+public abstract class ResourceDataLayoutBuilderBase<TResource, TBuilder>
+    where TBuilder : ResourceDataLayoutBuilderBase<TResource, TBuilder>
 {
     // Which of HasRecordKey and LinkTo was called, since a handler's item links to one place
     private string? _linkMethod;
 
     /// <summary>
-    ///     Sets the name of the icon on the layout's switcher segment.
+    ///     Sets the name of the icon on the data layout's switcher segment.
     /// </summary>
     /// <value>
     ///     The icon name, or <see langword="null" /> to show the title instead. The default is
@@ -34,15 +34,15 @@ public abstract class ResourceLayoutBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Sets the layout's title, which names its switcher segment.
+    ///     Sets the data layout's title, which names its switcher segment.
     /// </summary>
     /// <value>
     ///     The title, or <see langword="null" /> to use the key. The default is
     ///     <see langword="null" />.
     /// </value>
     /// <remarks>
-    ///     The title is the segment's tooltip and accessible name, and its text when the layout has
-    ///     no icon.
+    ///     The title is the segment's tooltip and accessible name, and its text when the data
+    ///     layout has no icon.
     /// </remarks>
     public string? Title
     {
@@ -57,10 +57,10 @@ public abstract class ResourceLayoutBuilderBase<TResource, TBuilder>
     /// </summary>
     protected IServiceCollection Services { get; }
 
-    // The key of the layout the builder configures
+    // The key of the data layout the builder configures
     private protected string LayoutKey { get; }
 
-    private protected ResourceLayoutBuilderBase(IServiceCollection services, string key)
+    private protected ResourceDataLayoutBuilderBase(IServiceCollection services, string key)
     {
         Services = services;
         LayoutKey = key;
@@ -90,17 +90,18 @@ public abstract class ResourceLayoutBuilderBase<TResource, TBuilder>
     }
 
     // Configures the table the builder configures, once the resource's options are built
-    private protected void ConfigureTable(Action<ResourceTableLayoutOptions> configure) =>
+    private protected void ConfigureTable(Action<ResourceTableDataLayoutOptions> configure) =>
         Services.Configure<ResourceOptions<TResource>>(options =>
             configure(options.Index.GetOrAddTable(LayoutKey))
         );
 
     /// <summary>
-    ///     Hides the scopes and lists every resource while the layout is shown.
+    ///     Hides the scopes and lists every resource while the data layout is shown.
     /// </summary>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     The selected scope stays in the URL, so switching to another layout applies it again.
+    ///     The selected scope stays in the URL, so switching to another data layout applies it
+    ///     again.
     /// </remarks>
     public TBuilder IgnoreScopes()
     {
@@ -112,11 +113,11 @@ public abstract class ResourceLayoutBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Hides the search box and leaves the list unsearched while the layout is shown.
+    ///     Hides the search box and leaves the list unsearched while the data layout is shown.
     /// </summary>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     The search term stays in the URL, so switching to another layout applies it again.
+    ///     The search term stays in the URL, so switching to another data layout applies it again.
     /// </remarks>
     public TBuilder IgnoreSearch()
     {
@@ -135,7 +136,7 @@ public abstract class ResourceLayoutBuilderBase<TResource, TBuilder>
         if (_linkMethod is not null && _linkMethod != method)
         {
             throw new InvalidOperationException(
-                $"The '{LayoutKey}' layout can't call both HasRecordKey and LinkTo, since an item links to one place."
+                $"The '{LayoutKey}' data layout can't call both HasRecordKey and LinkTo, since an item links to one place."
             );
         }
 

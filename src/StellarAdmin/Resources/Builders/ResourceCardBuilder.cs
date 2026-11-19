@@ -5,7 +5,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures the parts of the cards of a cards layout.
+///     Configures the parts of the cards of a cards data layout.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 public sealed class ResourceCardBuilder<TResource>

@@ -26,13 +26,14 @@ internal sealed partial class ResourceController<TResource>
     private const string IndexGridId = "index-page-data-grid";
     private const string IndexSearchInputId = "index-page-search-input";
 
-    // The layout the index page shows, which the query string selects. Every request from the page carries it
-    private ResourceLayoutOptions IndexLayout =>
+    // The data layout the index page shows, which the query string selects. Every request from the page carries it
+    private ResourceDataLayoutOptions IndexLayout =>
         _resourceOptions.Index.FindLayout(Request.Query["layout"].ToString())
-        ?? throw new InvalidOperationException("The index page has no layouts.");
+        ?? throw new InvalidOperationException("The index page has no data layouts.");
 
-    // The cards the index page shows, or null when its layout isn't a cards layout
-    private ResourceCardsLayoutOptions? IndexCards => IndexLayout as ResourceCardsLayoutOptions;
+    // The cards the index page shows, or null when its data layout isn't a cards data layout
+    private ResourceCardsDataLayoutOptions? IndexCards =>
+        IndexLayout as ResourceCardsDataLayoutOptions;
 
     // The paging of the table or cards the index page shows, or null when they aren't paged
     private ResourcePagingOptions? IndexPaging => IndexTable?.Paging ?? IndexCards?.Paging;
@@ -40,8 +41,9 @@ internal sealed partial class ResourceController<TResource>
     // The handler that lists the shown table's or cards' items, or null when they show the resource's own rows
     private ResourceTableLoader? IndexLoader => IndexTable?.Loader ?? IndexCards?.Loader;
 
-    // The table the index page shows, or null when its layout is a partial or cards
-    private ResourceTableLayoutOptions? IndexTable => IndexLayout as ResourceTableLayoutOptions;
+    // The table the index page shows, or null when its data layout is a partial or cards
+    private ResourceTableDataLayoutOptions? IndexTable =>
+        IndexLayout as ResourceTableDataLayoutOptions;
 
     [HttpGet]
     public async Task<IActionResult> Index(
@@ -156,7 +158,7 @@ internal sealed partial class ResourceController<TResource>
     {
         var labels = CreateLabelContext();
         var layout = IndexLayout;
-        var table = layout as ResourceTableLayoutOptions;
+        var table = layout as ResourceTableDataLayoutOptions;
 
         // A table's or cards' handler loads items that are the resource's records when it has a record key, and that
         // otherwise link to another resource's view page or nowhere. Only records get the row actions
@@ -171,7 +173,7 @@ internal sealed partial class ResourceController<TResource>
         var actions =
             handler && layout.RecordKey is null ? null
             : table is not null ? table.RowActions
-            : (layout as ResourceCardsLayoutOptions)?.RowActions;
+            : (layout as ResourceCardsDataLayoutOptions)?.RowActions;
         var keySelector = _resourceOptions.KeySelector;
         Func<object, string?>? viewUrl = null;
         if (handler && layout.Link is not null)
@@ -215,7 +217,7 @@ internal sealed partial class ResourceController<TResource>
             Items = items,
             Layouts = CreateLayoutSwitcher(layout),
             Paging = pagingModel,
-            PartialLayout = layout is ResourcePartialLayoutOptions partial
+            PartialLayout = layout is ResourcePartialDataLayoutOptions partial
                 ? new(partial.PartialName, layoutModel ?? CreateLayoutModel(items, query, request))
                 : null,
             Query = query,
@@ -255,7 +257,7 @@ internal sealed partial class ResourceController<TResource>
     }
 
     // A partial's items with links to their pages, and to the index as it shows
-    private ResourceLayoutModel<TResource> CreateLayoutModel(
+    private ResourceDataLayoutModel<TResource> CreateLayoutModel(
         IReadOnlyList<TResource> items,
         ResourceIndexQuery query,
         ResourceListRequest request
@@ -274,7 +276,8 @@ internal sealed partial class ResourceController<TResource>
             CreateLayoutIndexUrl(query)
         );
 
-    // The index as it shows, with the layout, scope and search the query string holds, plus or replacing the values
+    // The index as it shows, with the data layout, scope and search the query string holds, plus or replacing the
+    // values
     private Func<object?, string> CreateLayoutIndexUrl(ResourceIndexQuery query) =>
         values =>
         {
@@ -293,9 +296,11 @@ internal sealed partial class ResourceController<TResource>
             return Url.Action(nameof(Index), routeValues)!;
         };
 
-    // The switcher's segments, which link to each layout with the page's scope and search. Sort and paging belong to
-    // the table they were chosen in. The first layout links without a key
-    private ResourceIndexLayoutViewModel[] CreateLayoutSwitcher(ResourceLayoutOptions active)
+    // The switcher's segments, which link to each data layout with the page's scope and search. Sort and paging belong
+    // to the table they were chosen in. The first data layout links without a key
+    private ResourceIndexDataLayoutViewModel[] CreateLayoutSwitcher(
+        ResourceDataLayoutOptions active
+    )
     {
         var layouts = _resourceOptions.Index.Layouts;
         if (layouts.Count < 2)
@@ -304,7 +309,7 @@ internal sealed partial class ResourceController<TResource>
         }
 
         return layouts
-            .Select(layout => new ResourceIndexLayoutViewModel(
+            .Select(layout => new ResourceIndexDataLayoutViewModel(
                 layout.Key,
                 layout.Title ?? layout.Key.Humanize(),
                 layout.Icon,
@@ -433,8 +438,8 @@ internal sealed partial class ResourceController<TResource>
         bool renderWidgets = true
     )
     {
-        // A layout with a handler lists its own items instead of the resource's
-        if (IndexLayout is ResourcePartialLayoutOptions { Loader: { } loader } partial)
+        // A data layout with a handler lists its own items instead of the resource's
+        if (IndexLayout is ResourcePartialDataLayoutOptions { Loader: { } loader } partial)
         {
             var layoutModel = await loader(
                 HttpContext.RequestServices,
@@ -554,14 +559,14 @@ internal sealed partial class ResourceController<TResource>
     ) =>
         IndexLoader is { } loader
             ? await loader(HttpContext.RequestServices, request, cancellationToken)
-            : await HandlerLayoutLoader.ListRowsAsync(
+            : await HandlerDataLayoutLoader.ListRowsAsync(
                 dataSource.ListAsync(request, cancellationToken)
             );
 
     // A partial handler's items link to the resource's pages when they're its records, or to another resource's view
     // page when the user may open it
-    private async Task<ResourceLayoutUrls> CreateLayoutUrlsAsync(
-        ResourcePartialLayoutOptions partial,
+    private async Task<ResourceDataLayoutUrls> CreateLayoutUrlsAsync(
+        ResourcePartialDataLayoutOptions partial,
         ResourceIndexQuery query
     )
     {
@@ -584,9 +589,9 @@ internal sealed partial class ResourceController<TResource>
         return new(viewUrl, editUrl, CreateLayoutIndexUrl(query));
     }
 
-    // The view page of another resource that a handler layout's items link to, or null when the resource has no view
-    // page or the user may not open it
-    private async Task<Func<object, string?>?> CreateLinkUrlAsync(ResourceLayoutOptions layout)
+    // The view page of another resource that a handler data layout's items link to, or null when the resource has no
+    // view page or the user may not open it
+    private async Task<Func<object, string?>?> CreateLinkUrlAsync(ResourceDataLayoutOptions layout)
     {
         if (layout.Link is not { } link)
         {
@@ -599,8 +604,8 @@ internal sealed partial class ResourceController<TResource>
             .FirstOrDefault(registration => registration.ResourceType == link.ResourceType);
         if (registration is null || !registration.ResolveCanView(services))
         {
-            // Other resources aren't known while this resource's options are built, so this is found when the layout
-            // renders
+            // Other resources aren't known while this resource's options are built, so this is found when the data
+            // layout renders
             var name = link.ResourceType.Name;
             services
                 .GetRequiredService<ConfigurationProblems>()
@@ -608,8 +613,8 @@ internal sealed partial class ResourceController<TResource>
                     new(
                         ConfigurationProblemKind.RowLinkUnavailable,
                         registration is null
-                            ? $"The items of the `{layout.Key}` layout don't link to `{name}` because no resource is registered for it."
-                            : $"The items of the `{layout.Key}` layout don't link to `{name}` because the `{registration.ControllerName}` resource has no view page.",
+                            ? $"The items of the `{layout.Key}` data layout don't link to `{name}` because no resource is registered for it."
+                            : $"The items of the `{layout.Key}` data layout don't link to `{name}` because the `{registration.ControllerName}` resource has no view page.",
                         registration is null
                             ? $"Add a resource for `{name}`, or remove `LinkTo`."
                             : $"Allow view on the `{registration.ControllerName}` resource, or remove `LinkTo`."
@@ -758,11 +763,11 @@ internal sealed partial class ResourceController<TResource>
             return false;
         }
 
-        // A layout that ignores the scopes or the search lists without them, though they stay in the query string. A
-        // partial lists every item in the data source's order. Cards sort only by their default sort's field for now
+        // A data layout that ignores the scopes or the search lists without them, though they stay in the query string.
+        // A partial lists every item in the data source's order. Cards sort only by their default sort's field for now
         var layout = IndexLayout;
-        var table = layout as ResourceTableLayoutOptions;
-        var cards = layout as ResourceCardsLayoutOptions;
+        var table = layout as ResourceTableDataLayoutOptions;
+        var cards = layout as ResourceCardsDataLayoutOptions;
         var sortDirection =
             direction == "desc"
                 ? ResourceSortDirection.Descending

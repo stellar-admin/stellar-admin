@@ -4,12 +4,12 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures which of the resource's row actions a table or cards layout shows.
+///     Configures which of the resource's row actions a table or cards data layout shows.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 /// <remarks>
-///     A layout shows an action only when the resource also allows it, so these settings can only
-///     turn actions off.
+///     A data layout shows an action only when the resource also allows it, so these settings can
+///     only turn actions off.
 /// </remarks>
 public sealed class ResourceRowActionsBuilder<TResource>
 {
@@ -64,7 +64,7 @@ public sealed class ResourceRowActionsBuilder<TResource>
     internal ResourceRowActionsBuilder(IServiceCollection services, string tableKey)
         : this(services, index => index.GetOrAddTable(tableKey).RowActions) { }
 
-    // Configures the row actions the delegate finds, such as a cards layout's
+    // Configures the row actions the delegate finds, such as a cards data layout's
     internal ResourceRowActionsBuilder(
         IServiceCollection services,
         Func<ResourceIndexOptions, ResourceRowActionsOptions> actions

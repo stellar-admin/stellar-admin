@@ -3,21 +3,24 @@ using Microsoft.Extensions.DependencyInjection;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures an index layout that renders items a handler loads with a partial view.
+///     Configures an index data layout that renders items a handler loads with a partial view.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 /// <typeparam name="TItem">The type of the items the handler loads.</typeparam>
 /// <remarks>
 ///     By default the items don't link anywhere, so
-///     <see cref="ResourceLayoutModel{TItem}.GetViewUrl" /> and
-///     <see cref="ResourceLayoutModel{TItem}.GetEditUrl" /> return <see langword="null" />.
+///     <see cref="ResourceDataLayoutModel{TItem}.GetViewUrl" /> and
+///     <see cref="ResourceDataLayoutModel{TItem}.GetEditUrl" /> return <see langword="null" />.
 ///     <see cref="HasRecordKey" /> makes each item a record of the resource, and
 ///     <see cref="LinkTo{TOther}" /> links each item to another resource.
 /// </remarks>
-public sealed class ResourceHandlerPartialLayoutBuilder<TResource, TItem>
-    : ResourceLayoutBuilderBase<TResource, ResourceHandlerPartialLayoutBuilder<TResource, TItem>>
+public sealed class ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>
+    : ResourceDataLayoutBuilderBase<
+        TResource,
+        ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>
+    >
 {
-    internal ResourceHandlerPartialLayoutBuilder(IServiceCollection services, string key)
+    internal ResourceHandlerPartialDataLayoutBuilder(IServiceCollection services, string key)
         : base(services, key) { }
 
     /// <summary>
@@ -33,9 +36,9 @@ public sealed class ResourceHandlerPartialLayoutBuilder<TResource, TItem>
     ///     <paramref name="key" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    ///     <see cref="LinkTo{TOther}" /> was called on the layout.
+    ///     <see cref="LinkTo{TOther}" /> was called on the data layout.
     /// </exception>
-    public ResourceHandlerPartialLayoutBuilder<TResource, TItem> HasRecordKey(
+    public ResourceHandlerPartialDataLayoutBuilder<TResource, TItem> HasRecordKey(
         Func<TItem, object?> key
     )
     {
@@ -61,9 +64,9 @@ public sealed class ResourceHandlerPartialLayoutBuilder<TResource, TItem>
     ///     <paramref name="key" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    ///     <see cref="HasRecordKey" /> was called on the layout.
+    ///     <see cref="HasRecordKey" /> was called on the data layout.
     /// </exception>
-    public ResourceHandlerPartialLayoutBuilder<TResource, TItem> LinkTo<TOther>(
+    public ResourceHandlerPartialDataLayoutBuilder<TResource, TItem> LinkTo<TOther>(
         Func<TItem, object?> key
     )
     {

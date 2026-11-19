@@ -31,7 +31,7 @@ internal static class ValueTextCheck
 
     private static void CheckColumns<TResource>(
         ResourceOptions<TResource> options,
-        ResourceTableLayoutOptions table,
+        ResourceTableDataLayoutOptions table,
         IReadOnlySet<Type> resourceTypes
     )
     {

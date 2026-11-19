@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     Specifies how the image and the content are arranged on the cards of a cards layout.
+///     Specifies how the image and the content are arranged on the cards of a cards data layout.
 /// </summary>
 public enum ResourceCardArrangement
 {

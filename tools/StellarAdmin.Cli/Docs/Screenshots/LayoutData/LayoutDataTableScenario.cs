@@ -58,7 +58,7 @@ public sealed class LayoutDataTableScenario : Scenario
 
     // The docs' handler, except that SQLite can't sum a decimal, so it sums the amounts as doubles
     public sealed class DestinationRevenueHandler
-        : IEfCoreLayoutHandler<Booking, DestinationRevenue>
+        : IEfCoreDataLayoutHandler<Booking, DestinationRevenue>
     {
         public async Task<ResourceListResult<DestinationRevenue>> ListAsync(
             IQueryable<Booking> bookings,

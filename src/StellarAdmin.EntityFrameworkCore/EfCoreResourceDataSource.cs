@@ -168,7 +168,7 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
             cancellationToken
         );
 
-    // The entities the request's keys, scope and search leave, which every layout of the index starts from
+    // The entities the request's keys, scope and search leave, which every data layout of the index starts from
     internal IQueryable<TEntity> Narrow(ResourceListRequest request)
     {
         var query = Db.Set<TEntity>().AsNoTracking();

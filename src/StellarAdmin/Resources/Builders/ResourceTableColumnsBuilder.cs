@@ -12,10 +12,10 @@ namespace StellarAdmin.Resources.Builders;
 public sealed class ResourceTableColumnsBuilder<TItem>
 {
     // Configures the table, once the resource's options are built
-    private readonly Action<Action<ResourceTableLayoutOptions>> _configureTable;
+    private readonly Action<Action<ResourceTableDataLayoutOptions>> _configureTable;
 
     internal ResourceTableColumnsBuilder(
-        Action<Action<ResourceTableLayoutOptions>> configureTable
+        Action<Action<ResourceTableDataLayoutOptions>> configureTable
     ) => _configureTable = configureTable;
 
     /// <summary>

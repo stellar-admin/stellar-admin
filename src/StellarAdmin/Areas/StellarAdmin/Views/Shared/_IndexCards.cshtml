@@ -2,7 +2,7 @@
 @using StellarAdmin.Resources.Displays
 @model IResourceIndexPageViewModel
 @{
-    var layout = (ResourceCardsLayoutOptions)ViewData[ViewDataKeys.IndexCards]!;
+    var layout = (ResourceCardsDataLayoutOptions)ViewData[ViewDataKeys.IndexCards]!;
     var card = layout.Card;
     var horizontal = card.Arrangement == ResourceCardArrangement.Horizontal;
     var image = card.Image;

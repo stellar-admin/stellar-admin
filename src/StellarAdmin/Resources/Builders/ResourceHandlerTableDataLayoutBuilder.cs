@@ -6,7 +6,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures a table layout of a resource's index page whose rows a handler loads.
+///     Configures a table data layout of a resource's index page whose rows a handler loads.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 /// <typeparam name="TItem">The type of the rows the handler loads.</typeparam>
@@ -14,10 +14,13 @@ namespace StellarAdmin.Resources.Builders;
 ///     By default the rows don't link anywhere. <see cref="HasRecordKey" /> makes each row a record
 ///     of the resource, and <see cref="LinkTo{TOther}" /> links each row to another resource.
 /// </remarks>
-public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
-    : ResourceLayoutBuilderBase<TResource, ResourceHandlerTableLayoutBuilder<TResource, TItem>>
+public sealed class ResourceHandlerTableDataLayoutBuilder<TResource, TItem>
+    : ResourceDataLayoutBuilderBase<
+        TResource,
+        ResourceHandlerTableDataLayoutBuilder<TResource, TItem>
+    >
 {
-    internal ResourceHandlerTableLayoutBuilder(IServiceCollection services, string key)
+    internal ResourceHandlerTableDataLayoutBuilder(IServiceCollection services, string key)
         : base(services, key) { }
 
     /// <summary>
@@ -32,7 +35,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerTableLayoutBuilder<TResource, TItem> Columns(
+    public ResourceHandlerTableDataLayoutBuilder<TResource, TItem> Columns(
         Action<ResourceTableColumnsBuilder<TItem>> configure
     )
     {
@@ -58,7 +61,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerTableLayoutBuilder<TResource, TItem> DefaultSortBy<TProperty>(
+    public ResourceHandlerTableDataLayoutBuilder<TResource, TItem> DefaultSortBy<TProperty>(
         Expression<Func<TItem, TProperty>> field
     ) => ConfigureDefaultSort(field, ResourceSortDirection.Ascending);
 
@@ -77,9 +80,11 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerTableLayoutBuilder<TResource, TItem> DefaultSortByDescending<TProperty>(
-        Expression<Func<TItem, TProperty>> field
-    ) => ConfigureDefaultSort(field, ResourceSortDirection.Descending);
+    public ResourceHandlerTableDataLayoutBuilder<
+        TResource,
+        TItem
+    > DefaultSortByDescending<TProperty>(Expression<Func<TItem, TProperty>> field) =>
+        ConfigureDefaultSort(field, ResourceSortDirection.Descending);
 
     /// <summary>
     ///     Enables paging on the table.
@@ -104,7 +109,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerTableLayoutBuilder<TResource, TItem> EnablePaging(
+    public ResourceHandlerTableDataLayoutBuilder<TResource, TItem> EnablePaging(
         Action<ResourceTablePagingBuilder<TResource>> configure
     )
     {
@@ -133,7 +138,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     /// <exception cref="InvalidOperationException">
     ///     <see cref="LinkTo{TOther}" /> was called on the table.
     /// </exception>
-    public ResourceHandlerTableLayoutBuilder<TResource, TItem> HasRecordKey(
+    public ResourceHandlerTableDataLayoutBuilder<TResource, TItem> HasRecordKey(
         Func<TItem, object?> key
     )
     {
@@ -161,7 +166,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     /// <exception cref="InvalidOperationException">
     ///     <see cref="HasRecordKey" /> was called on the table.
     /// </exception>
-    public ResourceHandlerTableLayoutBuilder<TResource, TItem> LinkTo<TOther>(
+    public ResourceHandlerTableDataLayoutBuilder<TResource, TItem> LinkTo<TOther>(
         Func<TItem, object?> key
     )
     {
@@ -182,7 +187,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerTableLayoutBuilder<TResource, TItem> RowActions(
+    public ResourceHandlerTableDataLayoutBuilder<TResource, TItem> RowActions(
         Action<ResourceRowActionsBuilder<TResource>> configure
     )
     {
@@ -192,7 +197,7 @@ public sealed class ResourceHandlerTableLayoutBuilder<TResource, TItem>
         return this;
     }
 
-    private ResourceHandlerTableLayoutBuilder<TResource, TItem> ConfigureDefaultSort(
+    private ResourceHandlerTableDataLayoutBuilder<TResource, TItem> ConfigureDefaultSort(
         LambdaExpression field,
         ResourceSortDirection direction
     )

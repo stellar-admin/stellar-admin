@@ -6,7 +6,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures a cards layout of a resource's index page whose items a handler loads.
+///     Configures a cards data layout of a resource's index page whose items a handler loads.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 /// <typeparam name="TItem">The type of the items the handler loads.</typeparam>
@@ -15,10 +15,13 @@ namespace StellarAdmin.Resources.Builders;
 ///     record of the resource, and <see cref="LinkTo{TOther}" /> links each card to another
 ///     resource.
 /// </remarks>
-public sealed class ResourceHandlerCardsLayoutBuilder<TResource, TItem>
-    : ResourceLayoutBuilderBase<TResource, ResourceHandlerCardsLayoutBuilder<TResource, TItem>>
+public sealed class ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>
+    : ResourceDataLayoutBuilderBase<
+        TResource,
+        ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>
+    >
 {
-    internal ResourceHandlerCardsLayoutBuilder(IServiceCollection services, string key)
+    internal ResourceHandlerCardsDataLayoutBuilder(IServiceCollection services, string key)
         : base(services, key) { }
 
     /// <summary>
@@ -34,7 +37,7 @@ public sealed class ResourceHandlerCardsLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerCardsLayoutBuilder<TResource, TItem> Card(
+    public ResourceHandlerCardsDataLayoutBuilder<TResource, TItem> Card(
         Action<ResourceCardBuilder<TItem>> configure
     )
     {
@@ -56,7 +59,7 @@ public sealed class ResourceHandlerCardsLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerCardsLayoutBuilder<TResource, TItem> DefaultSortBy<TProperty>(
+    public ResourceHandlerCardsDataLayoutBuilder<TResource, TItem> DefaultSortBy<TProperty>(
         Expression<Func<TItem, TProperty>> field
     ) => ConfigureDefaultSort(field, ResourceSortDirection.Ascending);
 
@@ -72,9 +75,11 @@ public sealed class ResourceHandlerCardsLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="field" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerCardsLayoutBuilder<TResource, TItem> DefaultSortByDescending<TProperty>(
-        Expression<Func<TItem, TProperty>> field
-    ) => ConfigureDefaultSort(field, ResourceSortDirection.Descending);
+    public ResourceHandlerCardsDataLayoutBuilder<
+        TResource,
+        TItem
+    > DefaultSortByDescending<TProperty>(Expression<Func<TItem, TProperty>> field) =>
+        ConfigureDefaultSort(field, ResourceSortDirection.Descending);
 
     /// <summary>
     ///     Enables paging on the cards.
@@ -99,7 +104,7 @@ public sealed class ResourceHandlerCardsLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerCardsLayoutBuilder<TResource, TItem> EnablePaging(
+    public ResourceHandlerCardsDataLayoutBuilder<TResource, TItem> EnablePaging(
         Action<ResourceCardsPagingBuilder<TResource>> configure
     )
     {
@@ -128,7 +133,7 @@ public sealed class ResourceHandlerCardsLayoutBuilder<TResource, TItem>
     /// <exception cref="InvalidOperationException">
     ///     <see cref="LinkTo{TOther}" /> was called on the cards.
     /// </exception>
-    public ResourceHandlerCardsLayoutBuilder<TResource, TItem> HasRecordKey(
+    public ResourceHandlerCardsDataLayoutBuilder<TResource, TItem> HasRecordKey(
         Func<TItem, object?> key
     )
     {
@@ -156,7 +161,7 @@ public sealed class ResourceHandlerCardsLayoutBuilder<TResource, TItem>
     /// <exception cref="InvalidOperationException">
     ///     <see cref="HasRecordKey" /> was called on the cards.
     /// </exception>
-    public ResourceHandlerCardsLayoutBuilder<TResource, TItem> LinkTo<TOther>(
+    public ResourceHandlerCardsDataLayoutBuilder<TResource, TItem> LinkTo<TOther>(
         Func<TItem, object?> key
     )
     {
@@ -177,7 +182,7 @@ public sealed class ResourceHandlerCardsLayoutBuilder<TResource, TItem>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
-    public ResourceHandlerCardsLayoutBuilder<TResource, TItem> RowActions(
+    public ResourceHandlerCardsDataLayoutBuilder<TResource, TItem> RowActions(
         Action<ResourceRowActionsBuilder<TResource>> configure
     )
     {
@@ -187,12 +192,12 @@ public sealed class ResourceHandlerCardsLayoutBuilder<TResource, TItem>
         return this;
     }
 
-    private void ConfigureCards(Action<ResourceCardsLayoutOptions> configure) =>
+    private void ConfigureCards(Action<ResourceCardsDataLayoutOptions> configure) =>
         Services.Configure<ResourceOptions<TResource>>(options =>
             configure(options.Index.GetCards(LayoutKey))
         );
 
-    private ResourceHandlerCardsLayoutBuilder<TResource, TItem> ConfigureDefaultSort(
+    private ResourceHandlerCardsDataLayoutBuilder<TResource, TItem> ConfigureDefaultSort(
         LambdaExpression field,
         ResourceSortDirection direction
     )

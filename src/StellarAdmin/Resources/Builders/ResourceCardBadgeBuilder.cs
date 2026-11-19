@@ -4,7 +4,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures the badge on the cards of a cards layout.
+///     Configures the badge on the cards of a cards data layout.
 /// </summary>
 public sealed class ResourceCardBadgeBuilder
 {

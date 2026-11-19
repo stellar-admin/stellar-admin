@@ -9,7 +9,7 @@ using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
-public class ResourceCardsLayoutTests
+public class ResourceCardsDataLayoutTests
 {
     [Test]
     public async Task CardsWithoutParts_ShowOnlyTheResourcesTitle()
@@ -523,7 +523,7 @@ public class ResourceCardsLayoutTests
     // The products' cards, then cards of rows the handler loads, titled with their labels
     private static void ConfigureHandlerCards(
         ResourceBuilder<Product> resource,
-        Action<ResourceHandlerCardsLayoutBuilder<Product, ProductRow>> configure
+        Action<ResourceHandlerCardsDataLayoutBuilder<Product, ProductRow>> configure
     ) =>
         resource.Index(
             index =>

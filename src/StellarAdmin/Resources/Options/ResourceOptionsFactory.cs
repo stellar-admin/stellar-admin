@@ -64,7 +64,7 @@ internal sealed class ResourceOptionsFactory<TResource>(
         IReadOnlySet<Type> resourceTypes
     )
     {
-        // An index without layouts, such as one never configured, shows a table
+        // An index without data layouts, such as one never configured, shows a table
         if (options.Index.Layouts.Count == 0)
         {
             options.Index.GetOrAddTable(ResourceIndexOptions.ImplicitTableKey);
@@ -90,7 +90,7 @@ internal sealed class ResourceOptionsFactory<TResource>(
         RowDetailsCheck.Run(options);
         AddAnotherCheck.Run(options);
         ResourceIndexCheck.Run(options);
-        CardsLayoutCheck.Run(options);
+        CardsDataLayoutCheck.Run(options);
         options.Problems.AddRange(WidgetsCheck.Run(options.Index.Widgets, null, true));
         if (options.View is { } view)
         {

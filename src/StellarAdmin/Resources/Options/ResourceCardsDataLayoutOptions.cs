@@ -4,9 +4,9 @@ using StellarAdmin.Diagnostics;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Stores the configuration of an index layout that shows the resources as cards.
+///     Stores the configuration of an index data layout that shows the resources as cards.
 /// </summary>
-public sealed class ResourceCardsLayoutOptions : ResourceLayoutOptions
+public sealed class ResourceCardsDataLayoutOptions : ResourceDataLayoutOptions
 {
     /// <summary>
     ///     Gets the configuration of each card.
@@ -41,10 +41,10 @@ public sealed class ResourceCardsLayoutOptions : ResourceLayoutOptions
 
     internal ConfigurationSource? DefaultSortSource { get; set; }
 
-    // Where a layout with a handler was added
+    // Where a data layout with a handler was added
     internal ConfigurationSource? Source { get; set; }
 
-    // Lists the cards of a layout with a handler, or null for one that shows the resource's own rows
+    // Lists the cards of a data layout with a handler, or null for one that shows the resource's own rows
     internal ResourceTableLoader? Loader { get; set; }
 
     internal override IReadOnlyList<LambdaExpression> Fields =>
@@ -62,7 +62,7 @@ public sealed class ResourceCardsLayoutOptions : ResourceLayoutOptions
                 .Select(entry => entry.FieldExpression),
         ];
 
-    internal ResourceCardsLayoutOptions(string key)
+    internal ResourceCardsDataLayoutOptions(string key)
         : base(key) { }
 
     // The default sort with the expression to order by, or null when there's none

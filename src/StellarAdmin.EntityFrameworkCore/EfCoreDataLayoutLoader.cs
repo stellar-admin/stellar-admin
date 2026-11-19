@@ -5,16 +5,18 @@ using StellarAdmin.Resources;
 namespace StellarAdmin.EntityFrameworkCore;
 
 // Registers the handler, and creates the loader that reshapes the entities the scope and search select with it
-internal static class EfCoreLayoutLoader
+internal static class EfCoreDataLayoutLoader
 {
-    public static ResourceLayoutLoader Create<TEntity, TItem, THandler>(IServiceCollection services)
+    public static ResourceDataLayoutLoader Create<TEntity, TItem, THandler>(
+        IServiceCollection services
+    )
         where TEntity : class
-        where THandler : class, IEfCoreLayoutHandler<TEntity, TItem>
+        where THandler : class, IEfCoreDataLayoutHandler<TEntity, TItem>
     {
         services.TryAddScoped<THandler>();
 
         return (provider, request, urls, cancellationToken) =>
-            HandlerLayoutLoader.CreateModelAsync(
+            HandlerDataLayoutLoader.CreateModelAsync(
                 ListAsync<TEntity, TItem, THandler>(provider, request, cancellationToken),
                 request,
                 urls
@@ -25,12 +27,12 @@ internal static class EfCoreLayoutLoader
         IServiceCollection services
     )
         where TEntity : class
-        where THandler : class, IEfCoreLayoutHandler<TEntity, TItem>
+        where THandler : class, IEfCoreDataLayoutHandler<TEntity, TItem>
     {
         services.TryAddScoped<THandler>();
 
         return (provider, request, cancellationToken) =>
-            HandlerLayoutLoader.ListRowsAsync(
+            HandlerDataLayoutLoader.ListRowsAsync(
                 ListAsync<TEntity, TItem, THandler>(provider, request, cancellationToken)
             );
     }
@@ -41,7 +43,7 @@ internal static class EfCoreLayoutLoader
         CancellationToken cancellationToken
     )
         where TEntity : class
-        where THandler : class, IEfCoreLayoutHandler<TEntity, TItem> =>
+        where THandler : class, IEfCoreDataLayoutHandler<TEntity, TItem> =>
         provider
             .GetRequiredService<THandler>()
             .ListAsync(

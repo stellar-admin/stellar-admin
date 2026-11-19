@@ -4,7 +4,7 @@ using StellarAdmin.Diagnostics;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Stores the configuration of the cards of a cards layout.
+///     Stores the configuration of the cards of a cards data layout.
 /// </summary>
 public sealed class ResourceCardOptions
 {
@@ -46,7 +46,7 @@ public sealed class ResourceCardOptions
     ///     Gets how the fields are arranged.
     /// </summary>
     /// <value>
-    ///     The layout. The default is <see cref="ResourceCardFieldLayout.Rows" />.
+    ///     The data layout. The default is <see cref="ResourceCardFieldLayout.Rows" />.
     /// </value>
     public ResourceCardFieldLayout FieldLayout { get; internal set; }
 

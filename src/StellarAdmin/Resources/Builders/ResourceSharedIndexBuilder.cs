@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures the settings that every layout of a resource's index page shares.
+///     Configures the settings that every data layout of a resource's index page shares.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 public sealed class ResourceSharedIndexBuilder<TResource>

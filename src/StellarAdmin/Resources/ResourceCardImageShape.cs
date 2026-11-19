@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     Specifies the aspect ratio of the image on the cards of a cards layout.
+///     Specifies the aspect ratio of the image on the cards of a cards data layout.
 /// </summary>
 public enum ResourceCardImageShape
 {

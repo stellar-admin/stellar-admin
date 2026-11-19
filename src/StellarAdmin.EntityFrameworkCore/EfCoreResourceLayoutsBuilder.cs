@@ -8,12 +8,12 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.EntityFrameworkCore;
 
 /// <summary>
-///     Adds the layouts of the index page of a resource that EF Core loads.
+///     Adds the data layouts of the index page of a resource that EF Core loads.
 /// </summary>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
 /// <remarks>
-///     The first layout is the one the page shows by default, and the switcher lists the layouts in
-///     the order they are added.
+///     The first data layout is the one the page shows by default, and the switcher lists the data
+///     layouts in the order they are added.
 /// </remarks>
 public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     where TEntity : class
@@ -24,17 +24,17 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     internal EfCoreResourceLayoutsBuilder(IServiceCollection services) => _services = services;
 
     /// <summary>
-    ///     Adds a layout that shows the resources as cards.
+    ///     Adds a data layout that shows the resources as cards.
     /// </summary>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <returns>A builder that configures the cards.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="key" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    ///     <paramref name="key" /> is empty or whitespace, or another data layout already uses it.
     /// </exception>
-    public ResourceCardsLayoutBuilder<TEntity> AddCards(string key)
+    public ResourceCardsDataLayoutBuilder<TEntity> AddCards(string key)
     {
         AddLayout(key, index => index.AddCards(key));
 
@@ -42,20 +42,20 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds and configures a layout that shows the resources as cards.
+    ///     Adds and configures a data layout that shows the resources as cards.
     /// </summary>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <param name="configure">A delegate that configures the cards.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="key" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    ///     <paramref name="key" /> is empty or whitespace, or another data layout already uses it.
     /// </exception>
     public EfCoreResourceLayoutsBuilder<TEntity> AddCards(
         string key,
-        Action<ResourceCardsLayoutBuilder<TEntity>> configure
+        Action<ResourceCardsDataLayoutBuilder<TEntity>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -65,16 +65,16 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds a layout that shows items a handler loads as cards.
+    ///     Adds a data layout that shows items a handler loads as cards.
     /// </summary>
     /// <typeparam name="TItem">The type of the items the cards show.</typeparam>
     /// <typeparam name="THandler">
-    ///     The type of the handler that loads the items: an
-    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
-    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
-    ///     data.
+    ///     The type of the handler that loads the items: an <see
+    ///     cref="IEfCoreDataLayoutHandler{TEntity, TItem}" />, which reshapes the entities the
+    ///     scope and search select, or an <see cref="IResourceDataLayoutHandler{TItem}" />, which
+    ///     loads its own data.
     /// </typeparam>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <returns>A builder that configures the cards.</returns>
     /// <remarks>
     ///     The handler sorts and pages the items. Registers <typeparamref name="THandler" /> as a
@@ -84,12 +84,14 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     ///     <paramref name="key" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    ///     <paramref name="key" /> is empty or whitespace, or another data layout already uses it.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     <typeparamref name="THandler" /> implements neither handler interface.
     /// </exception>
-    public ResourceHandlerCardsLayoutBuilder<TEntity, TItem> AddCards<TItem, THandler>(string key)
+    public ResourceHandlerCardsDataLayoutBuilder<TEntity, TItem> AddCards<TItem, THandler>(
+        string key
+    )
         where THandler : class
     {
         var source = ConfigurationSource.Capture();
@@ -109,16 +111,16 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds and configures a layout that shows items a handler loads as cards.
+    ///     Adds and configures a data layout that shows items a handler loads as cards.
     /// </summary>
     /// <typeparam name="TItem">The type of the items the cards show.</typeparam>
     /// <typeparam name="THandler">
-    ///     The type of the handler that loads the items: an
-    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
-    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
-    ///     data.
+    ///     The type of the handler that loads the items: an <see
+    ///     cref="IEfCoreDataLayoutHandler{TEntity, TItem}" />, which reshapes the entities the
+    ///     scope and search select, or an <see cref="IResourceDataLayoutHandler{TItem}" />, which
+    ///     loads its own data.
     /// </typeparam>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <param name="configure">A delegate that configures the cards.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
@@ -129,14 +131,14 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     ///     <paramref name="key" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    ///     <paramref name="key" /> is empty or whitespace, or another data layout already uses it.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     <typeparamref name="THandler" /> implements neither handler interface.
     /// </exception>
     public EfCoreResourceLayoutsBuilder<TEntity> AddCards<TItem, THandler>(
         string key,
-        Action<ResourceHandlerCardsLayoutBuilder<TEntity, TItem>> configure
+        Action<ResourceHandlerCardsDataLayoutBuilder<TEntity, TItem>> configure
     )
         where THandler : class
     {
@@ -147,14 +149,14 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds a layout that renders the resources with a partial view.
+    ///     Adds a data layout that renders the resources with a partial view.
     /// </summary>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <param name="partialName">
     ///     The name of the partial view, which receives a
-    ///     <see cref="ResourceLayoutModel{TItem}" /> of the resources.
+    ///     <see cref="ResourceDataLayoutModel{TItem}" /> of the resources.
     /// </param>
-    /// <returns>A builder that configures the layout.</returns>
+    /// <returns>A builder that configures the data layout.</returns>
     /// <remarks>
     ///     The partial view receives every resource the scope and search select; a partial has no
     ///     paging.
@@ -164,9 +166,9 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     <paramref name="key" /> or <paramref name="partialName" /> is empty or whitespace, or
-    ///     another layout already uses <paramref name="key" />.
+    ///     another data layout already uses <paramref name="key" />.
     /// </exception>
-    public ResourcePartialLayoutBuilder<TEntity> AddPartial(string key, string partialName)
+    public ResourcePartialDataLayoutBuilder<TEntity> AddPartial(string key, string partialName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(partialName);
         AddLayout(key, index => index.AddPartial(key, partialName));
@@ -175,14 +177,14 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds and configures a layout that renders the resources with a partial view.
+    ///     Adds and configures a data layout that renders the resources with a partial view.
     /// </summary>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <param name="partialName">
     ///     The name of the partial view, which receives a
-    ///     <see cref="ResourceLayoutModel{TItem}" /> of the resources.
+    ///     <see cref="ResourceDataLayoutModel{TItem}" /> of the resources.
     /// </param>
-    /// <param name="configure">A delegate that configures the layout.</param>
+    /// <param name="configure">A delegate that configures the data layout.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
     ///     The partial view receives every resource the scope and search select; a partial has no
@@ -194,12 +196,12 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     <paramref name="key" /> or <paramref name="partialName" /> is empty or whitespace, or
-    ///     another layout already uses <paramref name="key" />.
+    ///     another data layout already uses <paramref name="key" />.
     /// </exception>
     public EfCoreResourceLayoutsBuilder<TEntity> AddPartial(
         string key,
         string partialName,
-        Action<ResourcePartialLayoutBuilder<TEntity>> configure
+        Action<ResourcePartialDataLayoutBuilder<TEntity>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -209,21 +211,21 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds a layout that renders items a handler loads with a partial view.
+    ///     Adds a data layout that renders items a handler loads with a partial view.
     /// </summary>
-    /// <typeparam name="TItem">The type of the items the layout shows.</typeparam>
+    /// <typeparam name="TItem">The type of the items the data layout shows.</typeparam>
     /// <typeparam name="THandler">
-    ///     The type of the handler that loads the items: an
-    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
-    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
-    ///     data.
+    ///     The type of the handler that loads the items: an <see
+    ///     cref="IEfCoreDataLayoutHandler{TEntity, TItem}" />, which reshapes the entities the
+    ///     scope and search select, or an <see cref="IResourceDataLayoutHandler{TItem}" />, which
+    ///     loads its own data.
     /// </typeparam>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <param name="partialName">
     ///     The name of the partial view, which receives a
-    ///     <see cref="ResourceLayoutModel{TItem}" /> of the items.
+    ///     <see cref="ResourceDataLayoutModel{TItem}" /> of the items.
     /// </param>
-    /// <returns>A builder that configures the layout.</returns>
+    /// <returns>A builder that configures the data layout.</returns>
     /// <remarks>
     ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
     ///     already.
@@ -233,41 +235,42 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     <paramref name="key" /> or <paramref name="partialName" /> is empty or whitespace, or
-    ///     another layout already uses <paramref name="key" />.
+    ///     another data layout already uses <paramref name="key" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     <typeparamref name="THandler" /> implements neither handler interface for
     ///     <typeparamref name="TItem" />.
     /// </exception>
-    public ResourceHandlerPartialLayoutBuilder<TEntity, TItem> AddPartial<TItem, THandler>(
+    public ResourceHandlerPartialDataLayoutBuilder<TEntity, TItem> AddPartial<TItem, THandler>(
         string key,
         string partialName
     )
         where THandler : class
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(partialName);
-        var loader = (ResourceLayoutLoader)CreateLoader<TItem, THandler>(table: false);
+        var loader = (ResourceDataLayoutLoader)CreateLoader<TItem, THandler>(table: false);
         AddLayout(key, index => index.AddPartial(key, partialName, loader));
 
         return new(_services, key);
     }
 
     /// <summary>
-    ///     Adds and configures a layout that renders items a handler loads with a partial view.
+    ///     Adds and configures a data layout that renders items a handler loads with a partial
+    ///     view.
     /// </summary>
-    /// <typeparam name="TItem">The type of the items the layout shows.</typeparam>
+    /// <typeparam name="TItem">The type of the items the data layout shows.</typeparam>
     /// <typeparam name="THandler">
-    ///     The type of the handler that loads the items: an
-    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
-    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
-    ///     data.
+    ///     The type of the handler that loads the items: an <see
+    ///     cref="IEfCoreDataLayoutHandler{TEntity, TItem}" />, which reshapes the entities the
+    ///     scope and search select, or an <see cref="IResourceDataLayoutHandler{TItem}" />, which
+    ///     loads its own data.
     /// </typeparam>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <param name="partialName">
     ///     The name of the partial view, which receives a
-    ///     <see cref="ResourceLayoutModel{TItem}" /> of the items.
+    ///     <see cref="ResourceDataLayoutModel{TItem}" /> of the items.
     /// </param>
-    /// <param name="configure">A delegate that configures the layout.</param>
+    /// <param name="configure">A delegate that configures the data layout.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
     ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
@@ -279,7 +282,7 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     /// </exception>
     /// <exception cref="ArgumentException">
     ///     <paramref name="key" /> or <paramref name="partialName" /> is empty or whitespace, or
-    ///     another layout already uses <paramref name="key" />.
+    ///     another data layout already uses <paramref name="key" />.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     <typeparamref name="THandler" /> implements neither handler interface for
@@ -288,7 +291,7 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     public EfCoreResourceLayoutsBuilder<TEntity> AddPartial<TItem, THandler>(
         string key,
         string partialName,
-        Action<ResourceHandlerPartialLayoutBuilder<TEntity, TItem>> configure
+        Action<ResourceHandlerPartialDataLayoutBuilder<TEntity, TItem>> configure
     )
         where THandler : class
     {
@@ -299,17 +302,17 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds a layout that shows the resources in a table.
+    ///     Adds a data layout that shows the resources in a table.
     /// </summary>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <returns>A builder that configures the table.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="key" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    ///     <paramref name="key" /> is empty or whitespace, or another data layout already uses it.
     /// </exception>
-    public EfCoreResourceTableLayoutBuilder<TEntity> AddTable(string key)
+    public EfCoreResourceTableDataLayoutBuilder<TEntity> AddTable(string key)
     {
         AddLayout(key, index => index.GetOrAddTable(key));
 
@@ -317,20 +320,20 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds and configures a layout that shows the resources in a table.
+    ///     Adds and configures a data layout that shows the resources in a table.
     /// </summary>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <param name="configure">A delegate that configures the table.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="key" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    ///     <paramref name="key" /> is empty or whitespace, or another data layout already uses it.
     /// </exception>
     public EfCoreResourceLayoutsBuilder<TEntity> AddTable(
         string key,
-        Action<EfCoreResourceTableLayoutBuilder<TEntity>> configure
+        Action<EfCoreResourceTableDataLayoutBuilder<TEntity>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -340,16 +343,16 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds a layout that shows items a handler loads in a table.
+    ///     Adds a data layout that shows items a handler loads in a table.
     /// </summary>
     /// <typeparam name="TItem">The type of the rows the table shows.</typeparam>
     /// <typeparam name="THandler">
-    ///     The type of the handler that loads the rows: an
-    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
-    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
-    ///     data.
+    ///     The type of the handler that loads the rows: an <see
+    ///     cref="IEfCoreDataLayoutHandler{TEntity, TItem}" />, which reshapes the entities the
+    ///     scope and search select, or an <see cref="IResourceDataLayoutHandler{TItem}" />, which
+    ///     loads its own data.
     /// </typeparam>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <returns>A builder that configures the table.</returns>
     /// <remarks>
     ///     The handler sorts and pages the rows. Registers <typeparamref name="THandler" /> as a
@@ -359,12 +362,14 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     ///     <paramref name="key" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    ///     <paramref name="key" /> is empty or whitespace, or another data layout already uses it.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     <typeparamref name="THandler" /> implements neither handler interface.
     /// </exception>
-    public ResourceHandlerTableLayoutBuilder<TEntity, TItem> AddTable<TItem, THandler>(string key)
+    public ResourceHandlerTableDataLayoutBuilder<TEntity, TItem> AddTable<TItem, THandler>(
+        string key
+    )
         where THandler : class
     {
         var loader = (ResourceTableLoader)CreateLoader<TItem, THandler>(table: true);
@@ -374,16 +379,16 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Adds and configures a layout that shows items a handler loads in a table.
+    ///     Adds and configures a data layout that shows items a handler loads in a table.
     /// </summary>
     /// <typeparam name="TItem">The type of the rows the table shows.</typeparam>
     /// <typeparam name="THandler">
-    ///     The type of the handler that loads the rows: an
-    ///     <see cref="IEfCoreLayoutHandler{TEntity, TItem}" />, which reshapes the entities the scope
-    ///     and search select, or an <see cref="IResourceLayoutHandler{TItem}" />, which loads its own
-    ///     data.
+    ///     The type of the handler that loads the rows: an <see
+    ///     cref="IEfCoreDataLayoutHandler{TEntity, TItem}" />, which reshapes the entities the
+    ///     scope and search select, or an <see cref="IResourceDataLayoutHandler{TItem}" />, which
+    ///     loads its own data.
     /// </typeparam>
-    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="key">The key that identifies the data layout in the page's URL.</param>
     /// <param name="configure">A delegate that configures the table.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
@@ -394,14 +399,14 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     ///     <paramref name="key" /> or <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     /// <exception cref="ArgumentException">
-    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    ///     <paramref name="key" /> is empty or whitespace, or another data layout already uses it.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     ///     <typeparamref name="THandler" /> implements neither handler interface.
     /// </exception>
     public EfCoreResourceLayoutsBuilder<TEntity> AddTable<TItem, THandler>(
         string key,
-        Action<ResourceHandlerTableLayoutBuilder<TEntity, TItem>> configure
+        Action<ResourceHandlerTableDataLayoutBuilder<TEntity, TItem>> configure
     )
         where THandler : class
     {
@@ -412,25 +417,25 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     }
 
     // An EF handler receives the entities the scope and search select; another handler loads its own data. A table gets
-    // a ResourceTableLoader, and a partial a ResourceLayoutLoader
+    // a ResourceTableLoader, and a partial a ResourceDataLayoutLoader
     private Delegate CreateLoader<TItem, THandler>(bool table)
         where THandler : class
     {
         string factory;
-        if (typeof(IEfCoreLayoutHandler<TEntity, TItem>).IsAssignableFrom(typeof(THandler)))
+        if (typeof(IEfCoreDataLayoutHandler<TEntity, TItem>).IsAssignableFrom(typeof(THandler)))
         {
             factory = table ? nameof(CreateEfCoreTableLoader) : nameof(CreateEfCoreLoader);
         }
-        else if (typeof(IResourceLayoutHandler<TItem>).IsAssignableFrom(typeof(THandler)))
+        else if (typeof(IResourceDataLayoutHandler<TItem>).IsAssignableFrom(typeof(THandler)))
         {
             factory = table ? nameof(CreateHandlerTableLoader) : nameof(CreateHandlerLoader);
         }
         else
         {
             throw new InvalidOperationException(
-                $"The layout handler {typeof(THandler).Name} must implement "
-                    + $"IEfCoreLayoutHandler<{typeof(TEntity).Name}, {typeof(TItem).Name}> or "
-                    + $"IResourceLayoutHandler<{typeof(TItem).Name}>."
+                $"The data layout handler {typeof(THandler).Name} must implement "
+                    + $"IEfCoreDataLayoutHandler<{typeof(TEntity).Name}, {typeof(TItem).Name}> or "
+                    + $"IResourceDataLayoutHandler<{typeof(TItem).Name}>."
             );
         }
 
@@ -441,30 +446,30 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
                 .Invoke(this, null)!;
     }
 
-    private ResourceLayoutLoader CreateEfCoreLoader<TItem, THandler>()
-        where THandler : class, IEfCoreLayoutHandler<TEntity, TItem> =>
-        EfCoreLayoutLoader.Create<TEntity, TItem, THandler>(_services);
+    private ResourceDataLayoutLoader CreateEfCoreLoader<TItem, THandler>()
+        where THandler : class, IEfCoreDataLayoutHandler<TEntity, TItem> =>
+        EfCoreDataLayoutLoader.Create<TEntity, TItem, THandler>(_services);
 
-    private ResourceLayoutLoader CreateHandlerLoader<TItem, THandler>()
-        where THandler : class, IResourceLayoutHandler<TItem> =>
-        HandlerLayoutLoader.Create<TItem, THandler>(_services);
+    private ResourceDataLayoutLoader CreateHandlerLoader<TItem, THandler>()
+        where THandler : class, IResourceDataLayoutHandler<TItem> =>
+        HandlerDataLayoutLoader.Create<TItem, THandler>(_services);
 
     private ResourceTableLoader CreateEfCoreTableLoader<TItem, THandler>()
-        where THandler : class, IEfCoreLayoutHandler<TEntity, TItem> =>
-        EfCoreLayoutLoader.CreateTable<TEntity, TItem, THandler>(_services);
+        where THandler : class, IEfCoreDataLayoutHandler<TEntity, TItem> =>
+        EfCoreDataLayoutLoader.CreateTable<TEntity, TItem, THandler>(_services);
 
     private ResourceTableLoader CreateHandlerTableLoader<TItem, THandler>()
-        where THandler : class, IResourceLayoutHandler<TItem> =>
-        HandlerLayoutLoader.CreateTable<TItem, THandler>(_services);
+        where THandler : class, IResourceDataLayoutHandler<TItem> =>
+        HandlerDataLayoutLoader.CreateTable<TItem, THandler>(_services);
 
-    // Adds the layout now, so the switcher's order is the order of the calls
+    // Adds the data layout now, so the switcher's order is the order of the calls
     private void AddLayout(string key, Action<ResourceIndexOptions> add)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         if (!_keys.Add(key))
         {
             throw new ArgumentException(
-                $"Another layout already uses the key '{key}'.",
+                $"Another data layout already uses the key '{key}'.",
                 nameof(key)
             );
         }

@@ -16,12 +16,12 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
     where TEntity : class
 {
     // The index's one table, which the table members configure
-    private readonly EfCoreResourceTableLayoutBuilder<TEntity> _table;
+    private readonly EfCoreResourceTableDataLayoutBuilder<TEntity> _table;
 
     internal EfCoreResourceIndexBuilder(IServiceCollection services)
         : base(services) => _table = new(services, ResourceIndexOptions.ImplicitTableKey);
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.Columns" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.Columns" />
     public EfCoreResourceIndexBuilder<TEntity> Columns(
         Action<ResourceTableColumnsBuilder<TEntity>> configure
     )
@@ -31,7 +31,7 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
         return this;
     }
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.DefaultSortBy" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.DefaultSortBy" />
     public EfCoreResourceIndexBuilder<TEntity> DefaultSortBy<TProperty>(
         Expression<Func<TEntity, TProperty>> field
     )
@@ -41,7 +41,7 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
         return this;
     }
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.DefaultSortByDescending" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.DefaultSortByDescending" />
     public EfCoreResourceIndexBuilder<TEntity> DefaultSortByDescending<TProperty>(
         Expression<Func<TEntity, TProperty>> field
     )
@@ -51,10 +51,10 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
         return this;
     }
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnablePaging()" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.EnablePaging()" />
     public ResourceTablePagingBuilder<TEntity> EnablePaging() => _table.EnablePaging();
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnablePaging(Action{ResourceTablePagingBuilder{TResource}})" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.EnablePaging(Action{ResourceTablePagingBuilder{TResource}})" />
     public EfCoreResourceIndexBuilder<TEntity> EnablePaging(
         Action<ResourceTablePagingBuilder<TEntity>> configure
     )
@@ -64,27 +64,27 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
         return this;
     }
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(string)" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(string)" />
     public ResourceTableRowDetailsBuilder<TEntity> EnableRowDetails(string partialName) =>
         _table.EnableRowDetails(partialName);
 
-    /// <inheritdoc cref="EfCoreResourceTableLayoutBuilder{TEntity}.EnableRowDetails(Action{EfCoreResourceTableRowDetailPanelsBuilder{TEntity}})" />
+    /// <inheritdoc cref="EfCoreResourceTableDataLayoutBuilder{TEntity}.EnableRowDetails(Action{EfCoreResourceTableRowDetailPanelsBuilder{TEntity}})" />
     public ResourceTableRowDetailsBuilder<TEntity> EnableRowDetails(
         Action<EfCoreResourceTableRowDetailPanelsBuilder<TEntity>> panels
     ) => _table.EnableRowDetails(panels);
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(Action{ResourceTableRowDetailPanelsBuilder{TResource}})" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(Action{ResourceTableRowDetailPanelsBuilder{TResource}})" />
     public ResourceTableRowDetailsBuilder<TEntity> EnableRowDetails(
         Action<ResourceTableRowDetailPanelsBuilder<TEntity>> panels
     ) => _table.EnableRowDetails(panels);
 
-    /// <inheritdoc cref="EfCoreResourceTableLayoutBuilder{TEntity}.EnableRowDetails{TModel}(string, Expression{Func{TEntity, TModel}})" />
+    /// <inheritdoc cref="EfCoreResourceTableDataLayoutBuilder{TEntity}.EnableRowDetails{TModel}(string, Expression{Func{TEntity, TModel}})" />
     public ResourceTableRowDetailsBuilder<TEntity> EnableRowDetails<TModel>(
         string partialName,
         Expression<Func<TEntity, TModel>> select
     ) => _table.EnableRowDetails(partialName, select);
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(string, Action{ResourceTableRowDetailsBuilder{TResource}})" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(string, Action{ResourceTableRowDetailsBuilder{TResource}})" />
     public EfCoreResourceIndexBuilder<TEntity> EnableRowDetails(
         string partialName,
         Action<ResourceTableRowDetailsBuilder<TEntity>> configure
@@ -95,7 +95,7 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
         return this;
     }
 
-    /// <inheritdoc cref="EfCoreResourceTableLayoutBuilder{TEntity}.EnableRowDetails(Action{EfCoreResourceTableRowDetailPanelsBuilder{TEntity}}, Action{ResourceTableRowDetailsBuilder{TEntity}})" />
+    /// <inheritdoc cref="EfCoreResourceTableDataLayoutBuilder{TEntity}.EnableRowDetails(Action{EfCoreResourceTableRowDetailPanelsBuilder{TEntity}}, Action{ResourceTableRowDetailsBuilder{TEntity}})" />
     public EfCoreResourceIndexBuilder<TEntity> EnableRowDetails(
         Action<EfCoreResourceTableRowDetailPanelsBuilder<TEntity>> panels,
         Action<ResourceTableRowDetailsBuilder<TEntity>> configure
@@ -106,7 +106,7 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
         return this;
     }
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(Action{ResourceTableRowDetailPanelsBuilder{TResource}}, Action{ResourceTableRowDetailsBuilder{TResource}})" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails(Action{ResourceTableRowDetailPanelsBuilder{TResource}}, Action{ResourceTableRowDetailsBuilder{TResource}})" />
     public EfCoreResourceIndexBuilder<TEntity> EnableRowDetails(
         Action<ResourceTableRowDetailPanelsBuilder<TEntity>> panels,
         Action<ResourceTableRowDetailsBuilder<TEntity>> configure
@@ -117,7 +117,7 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
         return this;
     }
 
-    /// <inheritdoc cref="EfCoreResourceTableLayoutBuilder{TEntity}.EnableRowDetails{TModel}(string, Expression{Func{TEntity, TModel}}, Action{ResourceTableRowDetailsBuilder{TEntity}})" />
+    /// <inheritdoc cref="EfCoreResourceTableDataLayoutBuilder{TEntity}.EnableRowDetails{TModel}(string, Expression{Func{TEntity, TModel}}, Action{ResourceTableRowDetailsBuilder{TEntity}})" />
     public EfCoreResourceIndexBuilder<TEntity> EnableRowDetails<TModel>(
         string partialName,
         Expression<Func<TEntity, TModel>> select,
@@ -129,14 +129,14 @@ public sealed class EfCoreResourceIndexBuilder<TEntity>
         return this;
     }
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails{TModel, THandler}(string)" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails{TModel, THandler}(string)" />
     public ResourceTableRowDetailsBuilder<TEntity> EnableRowDetails<TModel, THandler>(
         string partialName
     )
         where THandler : class, IResourceRowDetailHandler<TModel> =>
         _table.EnableRowDetails<TModel, THandler>(partialName);
 
-    /// <inheritdoc cref="ResourceTableLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails{TModel, THandler}(string, Action{ResourceTableRowDetailsBuilder{TResource}})" />
+    /// <inheritdoc cref="ResourceTableDataLayoutBuilderBase{TResource, TBuilder}.EnableRowDetails{TModel, THandler}(string, Action{ResourceTableRowDetailsBuilder{TResource}})" />
     public EfCoreResourceIndexBuilder<TEntity> EnableRowDetails<TModel, THandler>(
         string partialName,
         Action<ResourceTableRowDetailsBuilder<TEntity>> configure

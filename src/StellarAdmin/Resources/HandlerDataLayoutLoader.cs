@@ -3,11 +3,11 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace StellarAdmin.Resources;
 
-// Registers the handler, and creates the loader that lists a layout's items with it
-internal static class HandlerLayoutLoader
+// Registers the handler, and creates the loader that lists a data layout's items with it
+internal static class HandlerDataLayoutLoader
 {
-    public static ResourceLayoutLoader Create<TItem, THandler>(IServiceCollection services)
-        where THandler : class, IResourceLayoutHandler<TItem>
+    public static ResourceDataLayoutLoader Create<TItem, THandler>(IServiceCollection services)
+        where THandler : class, IResourceDataLayoutHandler<TItem>
     {
         services.TryAddScoped<THandler>();
 
@@ -20,7 +20,7 @@ internal static class HandlerLayoutLoader
     }
 
     public static ResourceTableLoader CreateTable<TItem, THandler>(IServiceCollection services)
-        where THandler : class, IResourceLayoutHandler<TItem>
+        where THandler : class, IResourceDataLayoutHandler<TItem>
     {
         services.TryAddScoped<THandler>();
 
@@ -33,9 +33,9 @@ internal static class HandlerLayoutLoader
     public static async Task<object> CreateModelAsync<TItem>(
         Task<ResourceListResult<TItem>> list,
         ResourceListRequest request,
-        ResourceLayoutUrls urls
+        ResourceDataLayoutUrls urls
     ) =>
-        new ResourceLayoutModel<TItem>(
+        new ResourceDataLayoutModel<TItem>(
             (await list).Items,
             request,
             item => item is null ? null : urls.ViewUrl(item),

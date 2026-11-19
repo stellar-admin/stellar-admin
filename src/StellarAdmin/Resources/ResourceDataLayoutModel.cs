@@ -1,33 +1,34 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     Represents the model of a partial view that renders a layout of a resource's index page.
+///     Represents the model of a partial view that renders a data layout of a resource's index
+///     page.
 /// </summary>
-/// <typeparam name="TItem">The type of the items the layout shows.</typeparam>
-public sealed class ResourceLayoutModel<TItem>
+/// <typeparam name="TItem">The type of the items the data layout shows.</typeparam>
+public sealed class ResourceDataLayoutModel<TItem>
 {
     private readonly Func<TItem, string?> _editUrl;
     private readonly Func<object?, string> _indexUrl;
     private readonly Func<TItem, string?> _viewUrl;
 
     /// <summary>
-    ///     Gets the items the layout shows.
+    ///     Gets the items the data layout shows.
     /// </summary>
     /// <remarks>
-    ///     A partial layout receives every resource the scope and search select, or every item its
-    ///     handler returns; it has no paging.
+    ///     A partial data layout receives every resource the scope and search select, or every item
+    ///     its handler returns; it has no paging.
     /// </remarks>
     public IReadOnlyList<TItem> Items { get; }
 
     /// <summary>
-    ///     Gets the request that listed the items, with the layout's key, scope and search.
+    ///     Gets the request that listed the items, with the data layout's key, scope and search.
     /// </summary>
     /// <remarks>
-    ///     A scope or search that the layout ignores is <see langword="null" /> here.
+    ///     A scope or search that the data layout ignores is <see langword="null" /> here.
     /// </remarks>
     public ResourceListRequest Request { get; }
 
-    internal ResourceLayoutModel(
+    internal ResourceDataLayoutModel(
         IReadOnlyList<TItem> items,
         ResourceListRequest request,
         Func<TItem, string?> viewUrl,
@@ -53,7 +54,8 @@ public sealed class ResourceLayoutModel<TItem>
     public string? GetEditUrl(TItem item) => _editUrl(item);
 
     /// <summary>
-    ///     Returns the URL of the index page as it shows, with the current layout, scope and search.
+    ///     Returns the URL of the index page as it shows, with the current data layout, scope and
+    ///     search.
     /// </summary>
     /// <param name="values">
     ///     An object whose properties add query string values or replace the current ones, such as
@@ -67,8 +69,8 @@ public sealed class ResourceLayoutModel<TItem>
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>
-    ///     The URL of the record's view page, or of another resource's for a layout that links to
-    ///     one; or <see langword="null" /> when the item has no view link.
+    ///     The URL of the record's view page, or of another resource's for a data layout that links
+    ///     to one; or <see langword="null" /> when the item has no view link.
     /// </returns>
     public string? GetViewUrl(TItem item) => _viewUrl(item);
 }

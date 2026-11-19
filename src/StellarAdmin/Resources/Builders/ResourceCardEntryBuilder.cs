@@ -5,7 +5,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures a stat or field of the cards of a cards layout.
+///     Configures a stat or field of the cards of a cards data layout.
 /// </summary>
 public sealed class ResourceCardEntryBuilder
 {
