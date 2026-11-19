@@ -130,10 +130,7 @@ internal static class ResourceIndexCheck
         ResourceTableLayoutOptions table
     )
     {
-        if (
-            table.DefaultSort is { } sort
-            && !table.Columns.Any(column => column.Sortable && column.SortField == sort.Field)
-        )
+        if (table.DefaultSort is { } sort && table.FindSort(sort.Field, sort.Direction) is null)
         {
             table.DefaultSort = null;
             var hasColumn = table.Columns.Any(column => column.SortField == sort.Field);

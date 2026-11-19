@@ -133,17 +133,13 @@ internal static class EfCoreResourceReference
     )
     {
         if (
-            options.Index.RecordTables.FirstOrDefault() is not { DefaultSort: { } sort } table
-            || table.Columns.FirstOrDefault(column =>
-                column.Sortable && column.SortField == sort.Field
-            )
-                is not { } column
+            options.Index.RecordTables.FirstOrDefault()?.FindDefaultSort()
+            is not { Selector: { } selector } sort
         )
         {
             return null;
         }
 
-        var selector = column.SortExpression ?? column.FieldExpression;
         var method =
             sort.Direction == ResourceSortDirection.Descending
                 ? nameof(Queryable.OrderByDescending)

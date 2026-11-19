@@ -38,8 +38,9 @@ public class ResourceSortingTests
 
         // Assert
         await Assert
-            .That(state.ListRequests.Single().Sort)
+            .That(state.ListRequests.Single().Sort! with { Selector = null })
             .IsEqualTo(new ResourceSort(field, direction));
+        await Assert.That(state.ListRequests.Single().Sort!.Selector).IsNotNull();
         await Assert
             .That(document.RequiredElement("tbody td").TextContent.Trim())
             .IsEqualTo(firstName);
@@ -131,7 +132,7 @@ public class ResourceSortingTests
 
         // Assert
         await Assert
-            .That(state.ListRequests.Single().Sort)
+            .That(state.ListRequests.Single().Sort! with { Selector = null })
             .IsEqualTo(new ResourceSort("Name", ResourceSortDirection.Descending));
         await Assert
             .That(document.RequiredElement("tbody td").TextContent.Trim())
@@ -385,8 +386,11 @@ public class ResourceSortingTests
 
         // Assert
         await Assert
-            .That(state.ListRequests.Single().Sort)
+            .That(state.ListRequests.Single().Sort! with { Selector = null })
             .IsEqualTo(new ResourceSort("DoublePrice", ResourceSortDirection.Descending));
+        await Assert
+            .That(state.ListRequests.Single().Sort!.Selector?.ToString())
+            .IsEqualTo("product => product.Price");
         await Assert
             .That(
                 document.RequiredElement("[data-slot='data-grid-sort-link']").GetAttribute("href")

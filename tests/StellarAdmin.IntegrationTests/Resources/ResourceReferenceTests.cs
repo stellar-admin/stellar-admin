@@ -76,11 +76,15 @@ public class ResourceReferenceTests
                 supplier.Reference(reference => reference.UseDescription(item => item.Country))
         );
         using var client = sut.GetTestClient();
+        var dataSource = sut.Services.GetRequiredService<SupplierDataSource>();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
+        await Assert
+            .That(dataSource.Requests.Last().Fields.Select(field => field.ToString()))
+            .Contains("item => item.Country");
         var selected = document.RequiredElement("#Entity_SupplierId-selected");
         await Assert
             .That(selected.RequiredElement("[data-slot='item-title']").TextContent.Trim())
@@ -112,8 +116,10 @@ public class ResourceReferenceTests
         await Assert.That(request.Search).IsEqualTo("supplier");
         await Assert.That(request.Paging).IsEqualTo(new ResourcePaging(1, 20));
         await Assert
-            .That(request.Sort)
+            .That(request.Sort! with { Selector = null })
             .IsEqualTo(new ResourceSort(nameof(Supplier.Name), ResourceSortDirection.Ascending));
+        await Assert.That(request.Sort!.Selector?.ToString()).IsEqualTo("item => item.Name");
+        await Assert.That(request.Fields.Count).IsEqualTo(1);
         var values = document
             .QuerySelectorAll("[data-lookup='item']")
             .Select(item => item.GetAttribute("data-value"))

@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
@@ -46,6 +48,9 @@ public abstract class ResourceLayoutOptions
     ///     <see langword="null" />.
     /// </value>
     public string? Title { get; internal set; }
+
+    // The expressions the layout reads from each item, which its list requests carry so the data source can load them
+    internal virtual IReadOnlyList<LambdaExpression> Fields => [];
 
     // The view page of another resource that each of a handler's items links to, or null
     internal ResourceRowLink? Link { get; set; }

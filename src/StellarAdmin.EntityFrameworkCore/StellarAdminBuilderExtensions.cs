@@ -401,8 +401,8 @@ public static class StellarAdminBuilderExtensions
     {
         foreach (
             var column in options
-                .Index.RecordTables.SelectMany(table => table.Columns)
-                .Where(column => column is { Sortable: true, SortExpression: null })
+                .Index.RecordTables.SelectMany(table => table.SortableColumns)
+                .Where(column => column.SortExpression is null)
         )
         {
             if (EfCorePropertyPaths.GetPropertyPath(column.FieldExpression) is not { } path)

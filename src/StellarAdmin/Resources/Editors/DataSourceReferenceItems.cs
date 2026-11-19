@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Globalization;
+using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Resources.Editors;
 
 // The items of fields that refer to a resource, loaded through its data source: selected records by their keys, and
-// searches and choice lists in the order of the index's default sort. A data source applies no filters.
+// searches and choice lists in the order of the index's default sort. Each request carries the title, description and
+// media expressions the items read. A data source applies no filters.
 internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceItems
 {
     private readonly Func<TResource, string?>? _description;
+    private readonly IReadOnlyList<LambdaExpression> _fields;
     private readonly Func<TResource, string> _key;
     private readonly Func<TResource, ItemMedia?>? _media;
     private readonly ResourceOptions<TResource> _options;
@@ -27,6 +30,15 @@ internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceIte
         var mediaType = options.Reference.MediaType;
 
         _options = options;
+        _fields =
+        [
+            .. new LambdaExpression?[]
+            {
+                options.Title,
+                options.Reference.Description,
+                options.Reference.Media,
+            }.OfType<LambdaExpression>(),
+        ];
         _key = options.KeySelector!;
         _rawKey = record => keyProperty.GetValue(record);
         _title = title;
@@ -59,7 +71,10 @@ internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceIte
             .Select(value => Convert.ToString(value, CultureInfo.InvariantCulture) ?? "")
             .ToArray();
         var result = await GetDataSource(services)
-            .ListAsync(new ResourceListRequest { Keys = keys }, cancellationToken);
+            .ListAsync(
+                new ResourceListRequest { Fields = _fields, Keys = keys },
+                cancellationToken
+            );
 
         // A value the data source no longer has is still displayed, so the selection stays visible. A value type's
         // default, such as a new record's key of 0, is no selection
@@ -83,10 +98,7 @@ internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceIte
     {
         var result = await GetDataSource(services)
             .ListAsync(
-                new ResourceListRequest
-                {
-                    Sort = _options.Index.RecordTables.FirstOrDefault()?.DefaultSort,
-                },
+                new ResourceListRequest { Fields = _fields, Sort = FindDefaultSort() },
                 cancellationToken
             );
 
@@ -105,9 +117,10 @@ internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceIte
             .ListAsync(
                 new ResourceListRequest
                 {
+                    Fields = _fields,
                     Paging = new ResourcePaging(query.Skip / take + 1, take),
                     Search = query.Term,
-                    Sort = _options.Index.RecordTables.FirstOrDefault()?.DefaultSort,
+                    Sort = FindDefaultSort(),
                 },
                 cancellationToken
             );
@@ -143,4 +156,7 @@ internal sealed class DataSourceReferenceItems<TResource> : ResourceReferenceIte
             Description = _description?.Invoke(record),
             Media = _media?.Invoke(record),
         };
+
+    private ResourceSort? FindDefaultSort() =>
+        _options.Index.RecordTables.FirstOrDefault()?.FindDefaultSort();
 }

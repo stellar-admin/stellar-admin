@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace StellarAdmin.Resources;
 
 /// <summary>
@@ -5,6 +7,19 @@ namespace StellarAdmin.Resources;
 /// </summary>
 public sealed record ResourceListRequest
 {
+    /// <summary>
+    ///     Gets the expressions the caller reads from each returned resource, such as an index
+    ///     column's <c>p =&gt; p.Category.Name</c>.
+    /// </summary>
+    /// <value>
+    ///     The expressions, which take the resource as their parameter. The default is empty.
+    /// </value>
+    /// <remarks>
+    ///     A data source can use them to load related data the caller reads. A data source that
+    ///     ignores them still works.
+    /// </remarks>
+    public IReadOnlyList<LambdaExpression> Fields { get; init; } = [];
+
     /// <summary>
     ///     Gets the keys of the only resources to return, or <see langword="null" /> to return all
     ///     matching resources.

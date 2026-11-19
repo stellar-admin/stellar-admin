@@ -81,18 +81,9 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
         CancellationToken cancellationToken
     )
     {
-        // A table with a handler shows other rows, so a request without a layout arranges the entities as the first
-        // table of entities does
         var query = Narrow(request);
         var totalCount = await query.LongCountAsync(cancellationToken);
-        var layout = _resourceOptions.Index.FindLayout(request.Layout);
-        query = Arrange(
-            query,
-            layout is ResourceTableLayoutOptions { Loader: not null }
-                ? _resourceOptions.Index.RecordTables.FirstOrDefault()
-                : layout as ResourceTableLayoutOptions,
-            request
-        );
+        query = Arrange(query, request);
 
         return new(await query.ToListAsync(cancellationToken), totalCount);
     }
@@ -265,22 +256,17 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
         return ResourceOperationResult.Success();
     }
 
-    // A table's includes, sort and page of the narrowed entities. Columns read through the references on their paths,
-    // such as Category for p => p.Category.Name, and load the collections they show, such as Tags for p => p.Tags. A
-    // column that computes its value loads what each path it reads needs, and one that shows related records loads
-    // what their title reads, such as Category.Parent.
-    private IQueryable<TEntity> Arrange(
-        IQueryable<TEntity> query,
-        ResourceTableLayoutOptions? table,
-        ResourceListRequest request
-    )
+    // The request's includes, sort and page of the narrowed entities. The fields read through the references on their
+    // paths, such as Category for p => p.Category.Name, and load the collections they show, such as Tags for
+    // p => p.Tags. A field that computes its value loads what each path it reads needs, and one that shows related
+    // records loads what their title reads, such as Category.Parent.
+    private IQueryable<TEntity> Arrange(IQueryable<TEntity> query, ResourceListRequest request)
     {
-        var columns = table?.Columns ?? [];
         var entityType = Db.Model.FindEntityType(typeof(TEntity))!;
         query = Include(
             query,
-            columns.SelectMany(column =>
-                FindDisplayIncludePaths(entityType, column.FieldExpression)
+            request.Fields.SelectMany(field =>
+                FindDisplayIncludePaths(entityType, CheckParameter(field, nameof(request.Fields)))
             )
         );
 
@@ -290,12 +276,14 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
 
         if (request.Sort is { } sort)
         {
-            var column = columns.Single(column =>
-                column.Sortable && column.SortField == sort.Field
-            );
+            var selector =
+                sort.Selector
+                ?? throw new InvalidOperationException(
+                    $"The list of {typeof(TEntity).Name} can't be sorted by `{sort.Field}` because the sort has no selector."
+                );
             query = Order(
                 query,
-                column.SortExpression ?? column.FieldExpression,
+                CheckParameter(selector, nameof(request.Sort)),
                 sort.Direction == ResourceSortDirection.Descending
                     ? nameof(Queryable.OrderByDescending)
                     : nameof(Queryable.OrderBy)
@@ -314,6 +302,15 @@ internal sealed class EfCoreResourceDataSource<TEntity>(
 
         return query;
     }
+
+    // A request's expression must read the entity, since only lists of entities reach the data source
+    private static LambdaExpression CheckParameter(LambdaExpression expression, string paramName) =>
+        expression.Parameters is [var parameter] && parameter.Type == typeof(TEntity)
+            ? expression
+            : throw new ArgumentException(
+                $"The expression `{expression}` must take a single {typeof(TEntity).Name} parameter.",
+                paramName
+            );
 
     private static TModel CreateModel<TModel>() => Activator.CreateInstance<TModel>();
 

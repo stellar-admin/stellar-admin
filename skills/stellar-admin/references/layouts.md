@@ -56,6 +56,7 @@ resource.Index(
 - With nothing to share, pass an empty first callback: `resource.Index(index => { }, layouts => ...)`.
 - The one-callback `Index(index => ...)` is still the single-table index; don't mix the two for one resource (the two-callback overload replaces an earlier one-callback table).
 - A custom data source receives the active layout's key as `ResourceListRequest.Layout`, for tables that sort on different columns.
+- `ResourceListRequest.Fields` holds the expressions the active layout reads from each item: a table's column expressions, nothing for a partial. A data source can load related data from them.
 
 ## Title and icon
 
@@ -166,7 +167,7 @@ layouts.AddTable<DestinationRevenue, DestinationRevenueHandler>("revenue", table
 layouts.AddPartial<DestinationRevenue, DestinationRevenueHandler>("revenue-cards", "_RevenueCards");
 ```
 
-- A handler table sorts and pages through the handler: `request.Sort.Field` is the column's property name, `request.Paging` the page. Return the total of all items so the pager counts pages.
+- A handler table sorts and pages through the handler: `request.Sort.Field` is the column's property name, `request.Sort.Selector` its sort expression over the row type, `request.Paging` the page. Return the total of all items so the pager counts pages.
 - A handler partial's request has no `Sort` or `Paging`; return every item. Its model is `ResourceLayoutModel<TItem>`.
 - Handler tables have no row details and no inline editing.
 

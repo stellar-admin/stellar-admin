@@ -1659,6 +1659,8 @@ StellarAdmin.Resources.ResourceLabelContext.SingularLabel.get -> string!
 StellarAdmin.Resources.ResourceListRequest
 StellarAdmin.Resources.ResourceListRequest.<Clone>$() -> StellarAdmin.Resources.ResourceListRequest!
 StellarAdmin.Resources.ResourceListRequest.Equals(StellarAdmin.Resources.ResourceListRequest? other) -> bool
+StellarAdmin.Resources.ResourceListRequest.Fields.get -> System.Collections.Generic.IReadOnlyList<System.Linq.Expressions.LambdaExpression!>!
+StellarAdmin.Resources.ResourceListRequest.Fields.init -> void
 StellarAdmin.Resources.ResourceListRequest.Keys.get -> System.Collections.Generic.IReadOnlyList<string!>?
 StellarAdmin.Resources.ResourceListRequest.Keys.init -> void
 StellarAdmin.Resources.ResourceListRequest.Paging.get -> StellarAdmin.Resources.ResourcePaging?
@@ -1702,6 +1704,8 @@ StellarAdmin.Resources.ResourceSort.Equals(StellarAdmin.Resources.ResourceSort? 
 StellarAdmin.Resources.ResourceSort.Field.get -> string!
 StellarAdmin.Resources.ResourceSort.Field.init -> void
 StellarAdmin.Resources.ResourceSort.ResourceSort(string! Field, StellarAdmin.Resources.ResourceSortDirection Direction) -> void
+StellarAdmin.Resources.ResourceSort.Selector.get -> System.Linq.Expressions.LambdaExpression?
+StellarAdmin.Resources.ResourceSort.Selector.init -> void
 StellarAdmin.Resources.ResourceSortDirection
 StellarAdmin.Resources.ResourceSortDirection.Ascending = 0 -> StellarAdmin.Resources.ResourceSortDirection
 StellarAdmin.Resources.ResourceSortDirection.Descending = 1 -> StellarAdmin.Resources.ResourceSortDirection
