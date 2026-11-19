@@ -1,6 +1,6 @@
 # Grouped columns
 
-Status: in progress (2026-11-19). Stage 1 (UI components) is implemented except the website docs; stage 2 (the admin panel API) has not been designed.
+Status: in progress (2026-11-19). Stage 1 (UI components) is implemented and documented, the website changes uncommitted; stage 2 (the admin panel API) has not been designed.
 
 Column groups in the data grid header: a group label spanning the columns under it, nested to any depth, with the columns inside still sortable one field at a time.
 
@@ -50,7 +50,7 @@ Column groups in the data grid header: a group label spanning the columns under 
 - Done: `sa-data-grid-column-group` (`DataGridColumnGroupTagHelper`, `DataGridColumnGroupAlign`), `align` on `sa-data-grid-column` (`DataGridColumnAlign`), the header rows built from the group tree in `DataGridTagHelper.RenderHeader`, edge marks, the sort-link margin moved into `data-grid.css`, the dividers and group line in `table.css`.
 - Demos: DocsSamples `Pages/DataGrid/_ColumnGroups.cshtml` (sortable, end-aligned Amount) and `_NestedColumnGroups.cshtml`; `_ColumnGroups` added to the skills examples manifest and the skills reference regenerated (`skills check` passes).
 - Checks run: `StellarAdmin.UI.Tests` (824 passed, 7 new in `DataGridTagHelperTests.ColumnGroups.cs`), `StellarAdmin.IntegrationTests` (787 passed); screenshots of both demos, the intro grid and row details (default, Ops dark, Soft) on DocsSamples :5206.
-- Outstanding: the website docs page for the data grid and the demo export.
+- Website (uncommitted in `../website`): demos exported with `docs generate demos` (both new demos, the data grid snippets switched to `align`, and the stylesheet hash on every demo); `content/docs/ui/components/data-grid.mdx` gained "Aligning columns" and "Column groups" sections with the `<sa-data-grid-column-group>` table. `pnpm types:check` and `pnpm build` pass; `pnpm lint` fails only on formatting in three untouched files (`.vscode/settings.json`, `src/routes/docs/$.tsx`, `src/styles/app.css`).
 
 ## Stage 2: admin panel API
 
