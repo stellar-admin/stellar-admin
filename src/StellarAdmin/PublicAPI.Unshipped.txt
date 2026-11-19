@@ -2272,3 +2272,16 @@ StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>.UseDisplay<TDi
 StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>.UseDisplay<TDisplay>() -> StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>!
 StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>.EmptyText.set -> void
 StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>.UseBuiltInRendering() -> StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>!
+StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>.Align.set -> void
+StellarAdmin.Resources.Builders.ResourceTableColumnGroupBuilder<TItem>
+StellarAdmin.Resources.Builders.ResourceTableColumnGroupBuilder<TItem>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TItem, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>!
+StellarAdmin.Resources.Builders.ResourceTableColumnGroupBuilder<TItem>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TItem, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceTableColumnGroupBuilder<TItem>!
+StellarAdmin.Resources.Builders.ResourceTableColumnGroupBuilder<TItem>.AddGroup(string! title, System.Action<StellarAdmin.Resources.Builders.ResourceTableColumnGroupBuilder<TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceTableColumnGroupBuilder<TItem>!
+StellarAdmin.Resources.Builders.ResourceTableColumnGroupBuilder<TItem>.Align.set -> void
+StellarAdmin.Resources.Builders.ResourceTableColumnsBuilder<TItem>.AddGroup(string! title, System.Action<StellarAdmin.Resources.Builders.ResourceTableColumnGroupBuilder<TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceTableColumnsBuilder<TItem>!
+StellarAdmin.Resources.Options.DataGridColumnGroupOptions
+StellarAdmin.Resources.Options.DataGridColumnGroupOptions.Align.get -> StellarAdmin.UI.DataGridColumnGroupAlign
+StellarAdmin.Resources.Options.DataGridColumnGroupOptions.Parent.get -> StellarAdmin.Resources.Options.DataGridColumnGroupOptions?
+StellarAdmin.Resources.Options.DataGridColumnGroupOptions.Title.get -> string!
+StellarAdmin.Resources.Options.DataGridColumnOptions.Align.get -> StellarAdmin.UI.DataGridColumnAlign?
+StellarAdmin.Resources.Options.DataGridColumnOptions.Group.get -> StellarAdmin.Resources.Options.DataGridColumnGroupOptions?

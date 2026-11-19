@@ -61,7 +61,7 @@ public class ResourceColumnDisplayTests
     }
 
     [Test]
-    public async Task Index_WithNumberDisplay_FormatsAndRightAlignsColumn()
+    public async Task Index_WithNumberDisplay_FormatsAndAlignsColumnToEnd()
     {
         // Arrange
         await using var sut = await CreateAsync(columns =>
@@ -78,10 +78,33 @@ public class ResourceColumnDisplayTests
         // Assert
         var cell = Cells(document)[0];
         await Assert.That(cell.TextContent.Trim()).IsEqualTo("8.50");
-        await Assert.That(cell.ClassList.Contains("text-right")).IsTrue();
+        await Assert.That(cell.GetAttribute("data-align")).IsEqualTo("end");
         await Assert
-            .That(document.RequiredElement("thead th").ClassList.Contains("text-right"))
-            .IsTrue();
+            .That(document.RequiredElement("thead th").GetAttribute("data-align"))
+            .IsEqualTo("end");
+    }
+
+    [Test]
+    public async Task Index_WithAlign_OverridesNumberDisplayAlignment()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(columns =>
+        {
+            columns.Add(facts => facts.Price, column => column.Align = DataGridColumnAlign.Start);
+            columns.Add(
+                facts => facts.ProductName,
+                column => column.Align = DataGridColumnAlign.Center
+            );
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/facts");
+
+        // Assert
+        var cells = Cells(document);
+        await Assert.That(cells[0].HasAttribute("data-align")).IsFalse();
+        await Assert.That(cells[1].GetAttribute("data-align")).IsEqualTo("center");
     }
 
     [Test]
@@ -241,7 +264,7 @@ public class ResourceColumnDisplayTests
         var cell = Cells(document)[0];
         await Assert.That(cell.TextContent.Trim()).IsEqualTo("1.250");
         await Assert.That(cell.QuerySelector(".sa-number-display")).IsNull();
-        await Assert.That(cell.ClassList.Contains("text-right")).IsFalse();
+        await Assert.That(cell.HasAttribute("data-align")).IsFalse();
     }
 
     [Test]

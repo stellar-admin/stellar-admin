@@ -28,23 +28,35 @@ internal static class TripResourceRegistration
                 index.Columns(columns =>
                 {
                     columns.Add(trip => trip.Name);
-                    columns.Add(
-                        trip => TripCatalog.CountryName(trip.CountryId),
-                        column =>
+                    columns.AddGroup(
+                        "Destination",
+                        destination =>
                         {
-                            column.Title = "Country";
-                            column.EditsField(trip => trip.CountryId);
+                            destination.AddGroup(
+                                "Location",
+                                location =>
+                                {
+                                    location.Add(
+                                        trip => TripCatalog.CountryName(trip.CountryId),
+                                        column =>
+                                        {
+                                            column.Title = "Country";
+                                            column.EditsField(trip => trip.CountryId);
+                                        }
+                                    );
+                                    location.Add(
+                                        trip => TripCatalog.CityName(trip.CityId),
+                                        column =>
+                                        {
+                                            column.Title = "City";
+                                            column.EditsField(trip => trip.CityId);
+                                        }
+                                    );
+                                }
+                            );
+                            destination.Add(trip => trip.ArrivalAirport);
                         }
                     );
-                    columns.Add(
-                        trip => TripCatalog.CityName(trip.CityId),
-                        column =>
-                        {
-                            column.Title = "City";
-                            column.EditsField(trip => trip.CityId);
-                        }
-                    );
-                    columns.Add(trip => trip.ArrivalAirport);
                 })
             );
             resource.AllowCreate(create =>

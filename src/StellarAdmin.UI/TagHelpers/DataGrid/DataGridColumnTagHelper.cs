@@ -30,8 +30,7 @@ namespace StellarAdmin.UI;
 ///         under the group's head.
 ///     </para>
 /// </remarks>
-[HtmlTargetElement("sa-data-grid-column", ParentTag = "sa-data-grid")]
-[HtmlTargetElement("sa-data-grid-column", ParentTag = "sa-data-grid-column-group")]
+[HtmlTargetElement("sa-data-grid-column")]
 public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
 {
     private readonly IModelMetadataProvider _metadataProvider;

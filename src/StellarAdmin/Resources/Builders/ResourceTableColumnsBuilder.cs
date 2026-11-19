@@ -71,7 +71,33 @@ public sealed class ResourceTableColumnsBuilder<TItem>
     }
 
     /// <summary>
-    ///     Removes all columns added so far.
+    ///     Adds a group of columns, whose head spans the columns in it.
+    /// </summary>
+    /// <param name="title">The group's head text.</param>
+    /// <param name="configure">A delegate that adds the group's columns and configures it.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="title" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Groups nest, and the table's header gets a row for each level of groups. A column
+    ///     outside a group spans the group rows.
+    /// </remarks>
+    public ResourceTableColumnsBuilder<TItem> AddGroup(
+        string title,
+        Action<ResourceTableColumnGroupBuilder<TItem>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(title);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(_configureTable, new(title, null)));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Removes all columns added so far, including those in groups.
     /// </summary>
     /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceTableColumnsBuilder<TItem> Clear()

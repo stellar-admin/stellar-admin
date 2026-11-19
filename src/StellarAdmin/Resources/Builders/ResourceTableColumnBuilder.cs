@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Options;
+using StellarAdmin.UI;
 
 namespace StellarAdmin.Resources.Builders;
 
@@ -15,7 +16,20 @@ public sealed class ResourceTableColumnBuilder<TItem>
 {
     private readonly List<Action<DataGridColumnOptions>> _configuration = [];
     private readonly LambdaExpression _field;
+    private readonly DataGridColumnGroupOptions? _group;
     private readonly ConfigurationSource? _source = ConfigurationSource.Capture();
+
+    /// <summary>
+    ///     Sets how the column aligns its head and cells.
+    /// </summary>
+    /// <value>
+    ///     The default is <see cref="DataGridColumnAlign.End" /> for a column whose display is
+    ///     <see cref="NumberDisplay" />, and <see cref="DataGridColumnAlign.Start" /> otherwise.
+    /// </value>
+    public DataGridColumnAlign Align
+    {
+        set => _configuration.Add(options => options.Align = value);
+    }
 
     /// <summary>
     ///     Sets the text a cell shows when its value is empty.
@@ -45,7 +59,14 @@ public sealed class ResourceTableColumnBuilder<TItem>
         set => _configuration.Add(options => options.Title = value);
     }
 
-    internal ResourceTableColumnBuilder(LambdaExpression field) => _field = field;
+    internal ResourceTableColumnBuilder(
+        LambdaExpression field,
+        DataGridColumnGroupOptions? group = null
+    )
+    {
+        _field = field;
+        _group = group;
+    }
 
     /// <summary>
     ///     Sets the form field the column edits in an inline row.
@@ -251,6 +272,7 @@ public sealed class ResourceTableColumnBuilder<TItem>
                 : null
         )
         {
+            Group = _group,
             Source = _source,
         };
         foreach (var configure in _configuration)

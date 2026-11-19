@@ -1,6 +1,6 @@
 # Grouped columns
 
-Status: in progress (2026-11-19). Stage 1 (UI components) is implemented and documented, the website changes uncommitted; stage 2 (the admin panel API) has not been designed.
+Status: in progress (2026-11-19). Stage 1 (UI components) is implemented and documented; stage 2 (the admin panel API) is implemented, with the skills references and website docs outstanding.
 
 Column groups in the data grid header: a group label spanning the columns under it, nested to any depth, with the columns inside still sortable one field at a time.
 
@@ -54,4 +54,76 @@ Column groups in the data grid header: a group label spanning the columns under 
 
 ## Stage 2: admin panel API
 
-Not designed. It includes switching `_IndexDataGrid.cshtml` from `text-right` to `align="End"`.
+Designed and agreed 2026-11-19, not implemented. It builds on the list request fields rework ([list-request-fields](archive/list-request-fields.md)).
+
+`ResourceTableLayoutOptions.Columns` stays the flat list of columns in display order, and each column refers to its innermost group. Because of this, `Fields`, `FindSort`, `SortableColumns`, the inline-row field mapping (`rowFields?[index]` in `_IndexDataGrid.cshtml`, `GetColumnFields` in `ResourceController.Index.cs`, `InlineRowCheck`) and the checks that remove columns (`ComputedColumnCheck`, `BadgeDisplayCheck`, `ValueTextCheck`) don't change. A group whose columns are all removed isn't rendered.
+
+```csharp
+index.Columns(columns =>
+{
+    columns.Add(b => b.Reference).Sortable();
+    columns.AddGroup("Trip", trip =>
+    {
+        trip.Add(b => b.Destination).Sortable();
+        trip.AddGroup("Dates", dates =>
+        {
+            dates.Align = DataGridColumnGroupAlign.Start;
+            dates.Add(b => b.Departs).Sortable();
+            dates.Add(b => b.Returns).Sortable();
+        });
+    });
+    columns.Add(b => b.Total, total => total.Align = DataGridColumnAlign.End);
+});
+```
+
+Builders (`src/StellarAdmin/Resources/Builders`), shared by record and handler tables:
+
+```csharp
+// ResourceTableColumnsBuilder<TItem>
+public ResourceTableColumnsBuilder<TItem> AddGroup(string title, Action<ResourceTableColumnGroupBuilder<TItem>> configure);
+
+// New: ResourceTableColumnGroupBuilder<TItem>, with no Clear()
+public DataGridColumnGroupAlign Align { set; }
+public ResourceTableColumnBuilder<TItem> Add<TProperty>(Expression<Func<TItem, TProperty>> field);
+public ResourceTableColumnGroupBuilder<TItem> Add<TProperty>(Expression<Func<TItem, TProperty>> field, Action<ResourceTableColumnBuilder<TItem>> configure);
+public ResourceTableColumnGroupBuilder<TItem> AddGroup(string title, Action<ResourceTableColumnGroupBuilder<TItem>> configure);
+
+// ResourceTableColumnBuilder<TItem>: set-only, like Title and EmptyText
+public DataGridColumnAlign Align { set; }
+```
+
+Options (`src/StellarAdmin/Resources/Options`):
+
+```csharp
+// DataGridColumnOptions
+public DataGridColumnAlign? Align { get; }            // null: End for a NumberDisplay column, otherwise Start
+public DataGridColumnGroupOptions? Group { get; }     // the innermost group, or null
+
+// New
+public sealed class DataGridColumnGroupOptions
+{
+    public string Title { get; }
+    public DataGridColumnGroupAlign Align { get; }    // default Center
+    public DataGridColumnGroupOptions? Parent { get; }
+}
+```
+
+Decisions (agreed 2026-11-19):
+
+1. The group builder is its own type, without `Clear()`. `Clear()` on the top-level builder removes every column, grouped or not.
+2. `AddGroup` requires the title.
+3. A column without `Align` is `End` when its display is `NumberDisplay`, otherwise `Start`. `_IndexDataGrid.cshtml` drops `text-right` and renders `align`.
+4. Groups get no class option, as admin columns have none.
+
+The options reuse the StellarAdmin.UI enums `DataGridColumnAlign` and `DataGridColumnGroupAlign`, as `RowDetails` reuses `DataGridRowDetailToggle`. `_IndexDataGrid.cshtml` builds the group tree from runs of consecutive columns that share a group, and renders nested `sa-data-grid-column-group` elements recursively. The builders keep a group's columns together, so a group is always one run.
+
+Follow-up: tests, `PublicAPI.Unshipped.txt`, the consumer skills references and the website admin docs, per the usual workflow.
+
+### Stage 2 progress (2026-11-19)
+
+- Done: `DataGridColumnGroupOptions`, `Align` and `Group` on `DataGridColumnOptions`, `Align` on `ResourceTableColumnBuilder`, `AddGroup` on `ResourceTableColumnsBuilder`, the new `ResourceTableColumnGroupBuilder`, and the `PublicAPI.Unshipped.txt` entries.
+- `_IndexDataGrid.cshtml` renders the columns with recursive local functions (`RenderColumns`, `RenderColumn`, `FindChildGroup`) and renders `align` instead of `text-right`.
+- Change to stage 1, approved by Jerrie: `sa-data-grid-column` and `sa-data-grid-column-group` no longer have a `ParentTag` restriction. Razor checks `ParentTag` at compile time, and markup in a local function has no parent element, so neither tag helper matched there. Both already do nothing outside a grid.
+- Tests: `ResourceTableColumnsBuilderTests` (new) and `ResourceTableColumnBuilderTests` (`Align`); `ResourceColumnGroupTests` (new integration tests); `ResourceColumnDisplayTests` asserts `data-align` instead of `text-right` and gained an alignment override test.
+- Checks run: full solution test run (`dotnet test --solution StellarAdmin.slnx --configuration Release`), 2239 passed. Not checked in a browser.
+- Outstanding: the consumer skills references and the website admin docs.

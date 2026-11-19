@@ -1,6 +1,7 @@
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
+using StellarAdmin.UI;
 
 namespace StellarAdmin.Tests.Resources.Builders;
 
@@ -70,6 +71,33 @@ public class ResourceTableColumnBuilderTests
         await Assert
             .That(problems.Single().Kind)
             .IsEqualTo(ConfigurationProblemKind.ColumnDisplayWithHandler);
+    }
+
+    [Test]
+    public async Task Align_SetsAlign()
+    {
+        // Arrange
+        var sut = new ResourceTableColumnBuilder<Product>((Product product) => product.Name);
+
+        // Act
+        sut.Align = DataGridColumnAlign.End;
+        var options = sut.Build();
+
+        // Assert
+        await Assert.That(options.Align).IsEqualTo(DataGridColumnAlign.End);
+    }
+
+    [Test]
+    public async Task Build_WithoutAlign_LeavesAlignUnset()
+    {
+        // Arrange
+        var sut = new ResourceTableColumnBuilder<Product>((Product product) => product.Name);
+
+        // Act
+        var options = sut.Build();
+
+        // Assert
+        await Assert.That(options.Align).IsNull();
     }
 
     [Test]

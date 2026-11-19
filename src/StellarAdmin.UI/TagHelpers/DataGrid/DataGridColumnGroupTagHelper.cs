@@ -16,8 +16,7 @@ namespace StellarAdmin.UI;
 ///         applies to the group's head.
 ///     </para>
 /// </remarks>
-[HtmlTargetElement("sa-data-grid-column-group", ParentTag = "sa-data-grid")]
-[HtmlTargetElement("sa-data-grid-column-group", ParentTag = "sa-data-grid-column-group")]
+[HtmlTargetElement("sa-data-grid-column-group")]
 public sealed class DataGridColumnGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
