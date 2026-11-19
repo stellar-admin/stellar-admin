@@ -1,6 +1,6 @@
 # Cards layout
 
-Status: in progress (2026-11-19). Visuals and API agreed with Jerrie in conversation; stages 1 and 2 built, stage 2 awaiting its checkpoint. Work stage by stage and pause at every checkpoint.
+Status: in progress (2026-11-19). Visuals and API agreed with Jerrie in conversation; stages 1 and 2 built and reviewed; the docs moved to index-data-layouts. Work stage by stage and pause at every checkpoint.
 
 A built-in Cards layout for the index page: `layouts.AddCards(key)` shows each record as a card in a grid, composed from configuration. Anything beyond these options is a partial layout (`AddPartial`).
 
@@ -86,7 +86,7 @@ Where the prototype differs from the product: its ⋯ buttons are plain buttons 
 
 1. **Cards of the resource's rows.** Options (`ResourceCardsLayoutOptions` and the card's part options), the builders and enums, `AddCards` on both layouts builders, the controller (default sort and paging as tables), the view and its CSS in `@layer sa.components` extracted from the prototype, using real `sa-*` components in the view. Tests for the builders, the title from `UseTitle`, the stats limit, sort and paging. Playground: a Cards layout on an image-bearing resource. Checkpoint: Jerrie reviews the playground in the themes, light and dark.
 2. **Handler cards.** `AddCards<TItem, THandler>(key)` and the `configure` overload on both layouts builders, with `HasRecordKey` and `LinkTo<TOther>`; the handler is the same `IResourceLayoutHandler<TItem>` as handler tables and partial layouts, and gets the sort and page. Checkpoint.
-3. **Docs**, after both kinds of cards so they are written and screenshotted once. Website (`../website`): a Cards section in the layouts docs with screenshot placeholders, and handler cards in the layout data page; consumer skill `skills/stellar-admin/references/layouts.md`, removing cards from its Not supported line. Checkpoint.
+3. **Docs**, after both kinds of cards so they are written and screenshotted once. Website (`../website`): a Cards section in the layouts docs with screenshot placeholders, and handler cards in the layout data page; consumer skill `skills/stellar-admin/references/layouts.md`, removing cards from its Not supported line. Checkpoint. *Moved to [index-data-layouts](index-data-layouts.md) stage 4 (2026-11-20), so the docs are written once against the new API.*
 
 ## Progress
 
@@ -111,7 +111,7 @@ Decisions 5 to 8 done 2026-11-19: `ResourceCardBadgeBuilder`; `card.Arrangement`
 
 Stages reordered 2026-11-19 (Jerrie): handler cards before the docs.
 
-Next: Jerrie's checkpoint review of stages 1 and 2 (themes, dark mode, open menus, the Destinations overlay and horizontal cards, the Products handler cards), then stage 3. Stage 1 committed as 4f86669; stage 2 is uncommitted. The playground runs on http://localhost:5191 (started by Claude; stop it when he's done).
+Next: the [index-data-layouts](index-data-layouts.md) plan, which takes over stage 3 (the docs) after the index API change. Jerrie reviewed stages 1 and 2 on 2026-11-20; another visual sweep of the cards follows that work. Stage 1 committed as 4f86669, stage 2 as a892b8e.
 
 ### Stage 1 (built 2026-11-19, checkpoint review pending)
 
