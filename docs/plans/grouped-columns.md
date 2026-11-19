@@ -1,6 +1,6 @@
 # Grouped columns
 
-Status: in progress (2026-11-19). Stage 1 (UI components) is implemented and documented; stage 2 (the admin panel API) is implemented, with the skills references and website docs outstanding.
+Status: in progress (2026-11-19). Stage 1 (UI components) is implemented and documented; stage 2 (the admin panel API) is implemented and documented, the docs uncommitted.
 
 Column groups in the data grid header: a group label spanning the columns under it, nested to any depth, with the columns inside still sortable one field at a time.
 
@@ -126,4 +126,6 @@ Follow-up: tests, `PublicAPI.Unshipped.txt`, the consumer skills references and 
 - Change to stage 1, approved by Jerrie: `sa-data-grid-column` and `sa-data-grid-column-group` no longer have a `ParentTag` restriction. Razor checks `ParentTag` at compile time, and markup in a local function has no parent element, so neither tag helper matched there. Both already do nothing outside a grid.
 - Tests: `ResourceTableColumnsBuilderTests` (new) and `ResourceTableColumnBuilderTests` (`Align`); `ResourceColumnGroupTests` (new integration tests); `ResourceColumnDisplayTests` asserts `data-align` instead of `text-right` and gained an alignment override test.
 - Checks run: full solution test run (`dotnet test --solution StellarAdmin.slnx --configuration Release`), 2239 passed. Not checked in a browser.
-- Outstanding: the consumer skills references and the website admin docs.
+- Consumer skills: `skills/stellar-admin/references/columns.md` gained "Alignment" and "Column groups" sections and the `Align` row; the `SKILL.md` columns row names `Align` and `AddGroup`. `skills generate` rewrote `skills/stellar-admin-ui/references/components/data-grid.md`: the duplicate rows from the old two `ParentTag` targets went, and the examples use `align`. `skills check` passes.
+- Website (uncommitted in `../website`): `content/docs/admin/columns.mdx` gained "Aligning columns" and "Grouping columns" sections, an `Align` row and the `columns-groups` screenshot, generated from `tools/StellarAdmin.Cli/Docs/Screenshots/Columns/ColumnsGroupsScenario.cs` and `columns-groups.spec.yaml` (light and dark, checked by eye). `pnpm types:check` and `pnpm build` pass.
+- AdminPlayground: the Trips index groups Country and City under Location, inside Destination with Arrival airport.

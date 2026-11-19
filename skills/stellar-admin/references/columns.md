@@ -7,6 +7,8 @@ Index columns are configured in `index.Columns(columns => ...)`. They start empt
 - [Adding columns](#adding-columns)
 - [Values through references](#values-through-references)
 - [Computed values](#computed-values)
+- [Alignment](#alignment)
+- [Column groups](#column-groups)
 - [How a cell renders](#how-a-cell-renders)
 - [Built-in displays in cells](#built-in-displays-in-cells)
 - [A badge styled by value](#a-badge-styled-by-value)
@@ -31,12 +33,13 @@ index.Columns(columns =>
 | Column builder member | Effect |
 | --- | --- |
 | `Title` | Header text. Defaults to `[Display(Name)]`, else the property name split into words, as form labels show it. |
+| `Align` | `DataGridColumnAlign.Start`, `Center` or `End` for the header and cells ([alignment](#alignment)). |
 | `EmptyText` | Text for null or empty values. |
 | `Sortable()` / `Sortable(selector)` | Opts into sorting by the column's value, or by another expression ([index-pages](index-pages.md#sorting)). |
 | `UseDisplay<TDisplay>()` / `UseDisplay<TDisplay>(display => ...)` | Renders cells with a display and its settings. |
 | `UseBuiltInRendering()` | Renders the value as plain text, formatted with `[DisplayFormat]`. |
 
-`columns.Add(selector)` without a callback returns the column builder, so `columns.Add(b => b.Total).Sortable();` works too. `columns.Clear()` removes earlier columns.
+`columns.Add(selector)` without a callback returns the column builder, so `columns.Add(b => b.Total).Sortable();` works too. `columns.Clear()` removes earlier columns, including those in groups.
 
 ## Values through references
 
@@ -74,6 +77,45 @@ columns.Add(booking => booking.Nights * booking.NightlyRate, column =>
 - Reading a property of a null value, or calling one of its methods, gives null (or zero or false), which shows the empty text; extension methods such as `Select` still throw on a null collection.
 - Display fields compute values the same way ([fields](fields.md#computed-values)).
 
+## Alignment
+
+A column without `Align` is aligned to the end when its display is `NumberDisplay`, and to the start otherwise. `Align` (from `StellarAdmin.UI`) applies to the header and the cells; a sortable column aligned to the end keeps its sort button flush with the values. Don't add `text-right` classes for this.
+
+```csharp
+columns.Add(booking => booking.Status, column => column.Align = DataGridColumnAlign.Center);
+```
+
+## Column groups
+
+`AddGroup(title, group => ...)` puts a header over the columns added in the callback. Groups nest; the header gets a row per level, and a column outside a group spans the group rows.
+
+```csharp
+index.Columns(columns =>
+{
+    columns.Add(booking => booking.Reference);
+    columns.AddGroup("Departure", departure =>
+    {
+        departure.Add(booking => booking.Departure.Trip.Title, column => column.Title = "Trip");
+        departure.AddGroup("Dates", dates =>
+        {
+            dates.Align = DataGridColumnGroupAlign.Start;
+            dates.Add(booking => booking.Departure.StartDate, column =>
+            {
+                column.Title = "Starts";
+                column.Sortable();
+            });
+            dates.Add(booking => booking.Departure.EndDate, column => column.Title = "Ends");
+        });
+    });
+    columns.Add(booking => booking.TotalAmount);
+});
+```
+
+- The group builder has `Add(...)` (the same column builder as `columns.Add`), `AddGroup(...)` and `Align` (`DataGridColumnGroupAlign.Start`, `Center` or `End`, default `Center`). It has no `Clear()`.
+- A group isn't sortable; its columns sort as usual. Inline rows and row details work the same with groups.
+- Handler tables (`AddTable<TItem, THandler>`) group their columns the same way.
+- A group whose columns are all left out (such as a computed column without a title) isn't shown.
+
 ## How a cell renders
 
 In order of precedence:
@@ -96,7 +138,7 @@ All in `StellarAdmin.Resources.Displays`. The same displays are used by display 
 | --- | --- | --- |
 | `TextDisplay` | Strings | `LineClamp` (in a cell, line breaks show only when it is set) |
 | `HtmlDisplay` | `[DataType(DataType.Html)]` | The HTML's text without formatting, clamped to `LineClamp` lines (default 2) |
-| `NumberDisplay` | Numeric types; right-aligned in cells | `Format` (`"C"`, `"N2"`, `"0.0"`), else `[DisplayFormat]` |
+| `NumberDisplay` | Numeric types; aligned to the end in cells unless the column sets `Align` | `Format` (`"C"`, `"N2"`, `"0.0"`), else `[DisplayFormat]` |
 | `DateDisplay` | `DateTime`, `DateTimeOffset`, `DateOnly`, `TimeOnly` | `Format` (`"d MMM yyyy"`), else `[DisplayFormat]`, else the culture's long date without the weekday and with short month names (`Oct 14, 2026` in en-US), its short time, or both joined by a space. `[DataType(DataType.Date)]` brings MVC's short date format (`10/14/2026` in en-US), so set `Format` for those |
 | `BooleanDisplay` | `bool` | `Appearance` (`BooleanDisplayAppearance.Icon`, `Text`, `IconAndText`), `TrueText`, `FalseText` |
 | `EnumDisplay` | Non-flags enums | Uses each member's `[Display(Name)]`, else its humanized name |
