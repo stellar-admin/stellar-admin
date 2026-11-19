@@ -77,8 +77,12 @@ public class ResourceIndexLayoutsTests
         var request = state.ListRequests.Single();
         await Assert.That(request.Layout).IsEqualTo("prices");
         await Assert
-            .That(request.Sort)
+            .That(request.Sort! with { Selector = null })
             .IsEqualTo(new ResourceSort(nameof(Product.Price), ResourceSortDirection.Descending));
+        await Assert.That(request.Sort!.Selector?.ToString()).IsEqualTo("product => product.Price");
+        await Assert
+            .That(request.Fields.Select(field => field.ToString()))
+            .IsEquivalentTo(["product => product.Price"]);
         await Assert.That(request.Paging).IsEqualTo(new ResourcePaging(1, 2));
         await Assert
             .That(
@@ -207,6 +211,7 @@ public class ResourceIndexLayoutsTests
         // Assert
         var request = state.ListRequests.Single();
         await Assert.That(request.Layout).IsEqualTo("tiles");
+        await Assert.That(request.Fields).IsEmpty();
         await Assert.That(request.Search).IsEqualTo("lamp");
         await Assert.That(request.Sort).IsNull();
         await Assert.That(request.Paging).IsNull();
@@ -352,7 +357,7 @@ public class ResourceIndexLayoutsTests
         await Assert.That(request.Scope).IsEqualTo("cheap");
         await Assert.That(request.Search).IsEqualTo("lamp");
         await Assert
-            .That(request.Sort)
+            .That(request.Sort! with { Selector = null })
             .IsEqualTo(
                 new ResourceSort(nameof(ProductRow.Price), ResourceSortDirection.Descending)
             );

@@ -114,7 +114,7 @@ public class ResourceScopesTests
         await Assert.That(state.ListRequests.Last().Scope).IsEqualTo("under-50");
         await Assert.That(state.ListRequests.Last().Search).IsEqualTo("lamp");
         await Assert
-            .That(state.ListRequests.Last().Sort)
+            .That(state.ListRequests.Last().Sort! with { Selector = null })
             .IsEqualTo(new ResourceSort("Name", ResourceSortDirection.Descending));
         await Assert.That(state.ListRequests.Last().Paging).IsEqualTo(new ResourcePaging(1, 2));
     }

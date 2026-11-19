@@ -627,7 +627,12 @@ internal sealed partial class ResourceController<TResource>
     private async Task<TResource[]> LoadRowsAsync(string key, CancellationToken cancellationToken)
     {
         var result = await dataSource.ListAsync(
-            new() { Keys = [key], Layout = IndexLayout.Key },
+            new()
+            {
+                Fields = IndexLayout.Fields,
+                Keys = [key],
+                Layout = IndexLayout.Key,
+            },
             cancellationToken
         );
 
@@ -744,12 +749,9 @@ internal sealed partial class ResourceController<TResource>
         // partial lists every item in the data source's order
         var layout = IndexLayout;
         var table = layout as ResourceTableLayoutOptions;
-        var column = table?.Columns.FirstOrDefault(column =>
-            column.Sortable
-            && string.Equals(column.SortField, query.SortBy, StringComparison.OrdinalIgnoreCase)
-        );
         request = new()
         {
+            Fields = layout.Fields,
             Layout = layout.Key,
             Scope =
                 _resourceOptions.Index.Scopes is { } scopes && !layout.IgnoresScopes
@@ -766,14 +768,13 @@ internal sealed partial class ResourceController<TResource>
                 || string.IsNullOrWhiteSpace(query.Search)
                     ? null
                     : query.Search.Trim(),
-            Sort = column is null
-                ? table?.DefaultSort
-                : new(
-                    column.SortField!,
+            Sort =
+                table?.FindSort(
+                    query.SortBy,
                     direction == "desc"
                         ? ResourceSortDirection.Descending
                         : ResourceSortDirection.Ascending
-                ),
+                ) ?? table?.FindDefaultSort(),
         };
         if (table?.Paging is not { } options)
         {

@@ -124,7 +124,7 @@ public class ResourceSearchTests
         await Assert.That(state.ListRequests.Last().Search).IsNull();
         await Assert.That(state.ListRequests.Last().Paging).IsEqualTo(new ResourcePaging(1, 2));
         await Assert
-            .That(state.ListRequests.Last().Sort)
+            .That(state.ListRequests.Last().Sort! with { Selector = null })
             .IsEqualTo(new ResourceSort("Name", ResourceSortDirection.Descending));
         await Assert
             .That(cleared.RequiredElement("[data-slot='data-grid-range']").TextContent)

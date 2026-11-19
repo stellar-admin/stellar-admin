@@ -1,6 +1,6 @@
 # List request fields
 
-Status: approved (2026-11-19), not started. Jerrie agreed the direction and decisions 1 to 4; the names `Fields` and `Selector` are still open.
+Status: implemented (2026-11-19), awaiting review and not committed. Jerrie agreed the direction and decisions 1 to 4; the names `Fields` and `Selector` are still open.
 
 The index tells its data source what each item will be read for, so the EF data source stops looking up the layout again to find its columns. This prepares for grouped table columns and card layouts, which both change where a layout's fields live.
 
@@ -115,6 +115,31 @@ Working agreement: implement on the `layout-column-collection` branch, then stop
   - a request with no fields includes nothing.
 - Existing index layout, inline edit and reference tests pass unchanged.
 - Full solution test run.
+
+## Implementation (2026-11-19)
+
+- `ResourceListRequest.Fields` and `ResourceSort.Selector` added, with XML docs and `PublicAPI.Unshipped.txt` entries.
+- `ResourceLayoutOptions.Fields` (internal virtual, empty) and `ResourceTableLayoutOptions`:
+  - `Fields`: the columns' field expressions.
+  - `SortableColumns`.
+  - `FindSort(field, direction)`: case-insensitive on `SortField`, returns the canonical field and selector.
+  - `FindDefaultSort()`: resolves `DefaultSort`, or returns null when its column isn't sortable.
+- `SortableColumns` is a third member next to the planned two, because `DisableEntitySorting` walks every sortable column rather than finding one by name.
+- `ResourceIndexCheck.CheckDefaultSort` also uses `FindSort`.
+- The controller's `TryCreateListRequest` and `LoadRowsAsync` set `Fields` from the shown layout and resolve `Sort` through `FindSort`, falling back to `FindDefaultSort`.
+- `DataSourceReferenceItems` passes `Title`, `Reference.Description` and `Reference.Media` as `Fields`, and the first record table's `FindDefaultSort()`.
+- `EfCoreResourceReference.FindDefaultOrder` uses `FindDefaultSort()`.
+- `EfCoreResourceDataSource.ListAsync` no longer reads the layout. `Arrange` includes from `request.Fields` and orders by `Sort.Selector`. A missing selector throws `InvalidOperationException`; a field or selector that doesn't take a single `TEntity` throws `ArgumentException`.
+- Consumer references updated by hand: `skills/stellar-admin/references/layouts.md` and `resources.md`. Website docs are still to do, batched with the website.
+
+Checks run 2026-11-19:
+
+- New unit tests: `tests/StellarAdmin.Tests/Resources/Options/ResourceLayoutOptionsTests.cs`.
+- New EF integration tests: `tests/StellarAdmin.EntityFrameworkCore.IntegrationTests/Resources/ResourceDataSourceTests.cs`.
+- Existing core integration tests that compared whole `ResourceSort` records now compare them without the selector, and they assert the selector and fields where relevant.
+- Full solution run (`dotnet test --solution StellarAdmin.slnx --configuration Release`): 2220 passed.
+- `skills check`: up to date.
+- Not checked in a browser.
 
 ## Docs and references
 
