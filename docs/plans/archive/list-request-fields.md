@@ -1,10 +1,10 @@
 # List request fields
 
-Status: implemented (2026-11-19), awaiting review and not committed. Jerrie agreed the direction and decisions 1 to 4; the names `Fields` and `Selector` are still open.
+Status: completed (2026-11-19). Implemented on `layout-column-collection` and closed by Jerrie. Docs screenshots regenerated with no changes beyond seed dates and GIF timing.
 
 The index tells its data source what each item will be read for, so the EF data source stops looking up the layout again to find its columns. This prepares for grouped table columns and card layouts, which both change where a layout's fields live.
 
-- Related: [index-layouts](index-layouts.md) (stage 3 recorded that an EF partial gets no includes) and the `card-layout` and `grouped-columns` worktrees.
+- Related: [index-layouts](../index-layouts.md) (stage 3 recorded that an EF partial gets no includes) and the `card-layout` and `grouped-columns` worktrees.
 
 ## Problem
 
@@ -143,5 +143,5 @@ Checks run 2026-11-19:
 
 ## Docs and references
 
-- `skills/stellar-admin/references/layouts.md:58` and the other consumer references that describe `ResourceListRequest` gain `Fields` and `Selector`, regenerated per [skills](../repos/skills.md).
+- `skills/stellar-admin/references/layouts.md:58` and the other consumer references that describe `ResourceListRequest` gain `Fields` and `Selector`, regenerated per [skills](../../repos/skills.md).
 - Website docs pages that describe custom data sources need the same addition, batched with the website.
