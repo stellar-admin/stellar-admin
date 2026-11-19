@@ -2285,3 +2285,76 @@ StellarAdmin.Resources.Options.DataGridColumnGroupOptions.Parent.get -> StellarA
 StellarAdmin.Resources.Options.DataGridColumnGroupOptions.Title.get -> string!
 StellarAdmin.Resources.Options.DataGridColumnOptions.Align.get -> StellarAdmin.UI.DataGridColumnAlign?
 StellarAdmin.Resources.Options.DataGridColumnOptions.Group.get -> StellarAdmin.Resources.Options.DataGridColumnGroupOptions?
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.ActionsPlacement.set -> void
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.Description(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! description) -> StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.Fields(System.Action<StellarAdmin.Resources.Builders.ResourceCardFieldsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.Image(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! imageUrl) -> StellarAdmin.Resources.Builders.ResourceCardImageBuilder!
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.Image(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! imageUrl, System.Action<StellarAdmin.Resources.Builders.ResourceCardImageBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.Stats(System.Action<StellarAdmin.Resources.Builders.ResourceCardStatsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.Title(System.Linq.Expressions.Expression<System.Func<TResource, string?>!>! title) -> StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardFieldsBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceCardFieldsBuilder<TResource>.Layout.set -> void
+StellarAdmin.Resources.Builders.ResourceCardStatsBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceCardFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceCardEntryBuilder!
+StellarAdmin.Resources.Builders.ResourceCardStatsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceCardEntryBuilder!
+StellarAdmin.Resources.Builders.ResourceCardFieldsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceCardEntryBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardFieldsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardStatsBuilder<TResource>.Add<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceCardEntryBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardStatsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardEntryBuilder
+StellarAdmin.Resources.Builders.ResourceCardEntryBuilder.EmptyText.set -> void
+StellarAdmin.Resources.Builders.ResourceCardEntryBuilder.Title.set -> void
+StellarAdmin.Resources.Builders.ResourceCardEntryBuilder.UseDisplay<TDisplay>() -> StellarAdmin.Resources.Builders.ResourceCardEntryBuilder!
+StellarAdmin.Resources.Builders.ResourceCardEntryBuilder.UseDisplay<TDisplay>(System.Action<TDisplay!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardEntryBuilder!
+StellarAdmin.Resources.Builders.ResourceCardImageBuilder
+StellarAdmin.Resources.Builders.ResourceCardImageBuilder.Shape.set -> void
+StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>.Card(System.Action<StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>.DefaultSortByDescending<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>.DefaultSortBy<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>.RowActions(System.Action<StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddCards(string! key) -> StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddCards(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
+StellarAdmin.Resources.Options.ResourceCardImageOptions
+StellarAdmin.Resources.Options.ResourceCardImageOptions.Field.get -> System.Linq.Expressions.LambdaExpression!
+StellarAdmin.Resources.Options.ResourceCardImageOptions.Shape.get -> StellarAdmin.Resources.ResourceCardImageShape
+StellarAdmin.Resources.Options.ResourceCardOptions
+StellarAdmin.Resources.Options.ResourceCardOptions.ActionsPlacement.get -> StellarAdmin.Resources.ResourceCardActionsPlacement
+StellarAdmin.Resources.Options.ResourceCardOptions.Badge.get -> StellarAdmin.Resources.Options.FormDisplayFieldOptions?
+StellarAdmin.Resources.Options.ResourceCardOptions.DescriptionField.get -> System.Linq.Expressions.LambdaExpression?
+StellarAdmin.Resources.Options.ResourceCardOptions.FieldLayout.get -> StellarAdmin.Resources.ResourceCardFieldLayout
+StellarAdmin.Resources.Options.ResourceCardOptions.Fields.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormDisplayFieldOptions!>!
+StellarAdmin.Resources.Options.ResourceCardOptions.Image.get -> StellarAdmin.Resources.Options.ResourceCardImageOptions?
+StellarAdmin.Resources.Options.ResourceCardOptions.Stats.get -> System.Collections.Generic.IReadOnlyList<StellarAdmin.Resources.Options.FormDisplayFieldOptions!>!
+StellarAdmin.Resources.Options.ResourceCardOptions.TitleField.get -> System.Linq.Expressions.LambdaExpression?
+StellarAdmin.Resources.Options.ResourceCardsLayoutOptions
+StellarAdmin.Resources.Options.ResourceCardsLayoutOptions.Card.get -> StellarAdmin.Resources.Options.ResourceCardOptions!
+StellarAdmin.Resources.Options.ResourceCardsLayoutOptions.DefaultSort.get -> StellarAdmin.Resources.ResourceSort?
+StellarAdmin.Resources.Options.ResourceCardsLayoutOptions.Paging.get -> StellarAdmin.Resources.Options.ResourcePagingOptions?
+StellarAdmin.Resources.Options.ResourceCardsLayoutOptions.RowActions.get -> StellarAdmin.Resources.Options.ResourceRowActionsOptions!
+StellarAdmin.Resources.ResourceCardActionsPlacement
+StellarAdmin.Resources.ResourceCardActionsPlacement.Footer = 1 -> StellarAdmin.Resources.ResourceCardActionsPlacement
+StellarAdmin.Resources.ResourceCardActionsPlacement.Menu = 0 -> StellarAdmin.Resources.ResourceCardActionsPlacement
+StellarAdmin.Resources.ResourceCardFieldLayout
+StellarAdmin.Resources.ResourceCardFieldLayout.Grid = 1 -> StellarAdmin.Resources.ResourceCardFieldLayout
+StellarAdmin.Resources.ResourceCardFieldLayout.Rows = 0 -> StellarAdmin.Resources.ResourceCardFieldLayout
+StellarAdmin.Resources.ResourceCardImageShape
+StellarAdmin.Resources.ResourceCardImageShape.Banner = 1 -> StellarAdmin.Resources.ResourceCardImageShape
+StellarAdmin.Resources.ResourceCardImageShape.Landscape = 2 -> StellarAdmin.Resources.ResourceCardImageShape
+StellarAdmin.Resources.ResourceCardImageShape.Square = 3 -> StellarAdmin.Resources.ResourceCardImageShape
+StellarAdmin.Resources.ResourceCardImageShape.Widescreen = 0 -> StellarAdmin.Resources.ResourceCardImageShape
+StellarAdmin.Resources.Builders.ResourceCardBadgeBuilder
+StellarAdmin.Resources.Builders.ResourceCardBadgeBuilder.UseDisplay<TDisplay>() -> StellarAdmin.Resources.Builders.ResourceCardBadgeBuilder!
+StellarAdmin.Resources.Builders.ResourceCardBadgeBuilder.UseDisplay<TDisplay>(System.Action<TDisplay!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardBadgeBuilder!
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.Arrangement.set -> void
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.Badge<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceCardBadgeBuilder!
+StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>.Badge<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field, System.Action<StellarAdmin.Resources.Builders.ResourceCardBadgeBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>.EnablePaging() -> StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>.EnablePaging(System.Action<StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardsLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>
+StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>.PageSize.set -> void
+StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>.PageSizes.set -> void
+StellarAdmin.Resources.Options.ResourceCardOptions.Arrangement.get -> StellarAdmin.Resources.ResourceCardArrangement
+StellarAdmin.Resources.ResourceCardArrangement
+StellarAdmin.Resources.ResourceCardArrangement.Horizontal = 1 -> StellarAdmin.Resources.ResourceCardArrangement
+StellarAdmin.Resources.ResourceCardArrangement.Overlay = 2 -> StellarAdmin.Resources.ResourceCardArrangement
+StellarAdmin.Resources.ResourceCardArrangement.Vertical = 0 -> StellarAdmin.Resources.ResourceCardArrangement

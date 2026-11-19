@@ -315,6 +315,51 @@ internal static class ProductResourceRegistration
                             cards.Icon = "layout-grid";
                         }
                     );
+                    // The built-in cards layout, without images: the category as a badge, the price and id as stats,
+                    // and the SKU and tags in a grid. Edit is a button in the footer, and delete is in its menu
+                    layouts.AddCards(
+                        "built-in-cards",
+                        cards =>
+                        {
+                            cards.Title = "Built-in cards";
+                            cards.Icon = "layout-dashboard";
+                            cards.DefaultSortBy(product => product.Name);
+                            cards.EnablePaging(paging =>
+                            {
+                                paging.PageSize = 12;
+                                paging.PageSizes = [12, 24, 48];
+                            });
+                            cards.Card(card =>
+                            {
+                                card.Title(product => product.Name);
+                                card.Description(product => product.Details.Sku);
+                                card.Badge(product => product.Category!.Name);
+                                card.Stats(stats =>
+                                {
+                                    stats.Add(
+                                        product => product.Price,
+                                        stat =>
+                                        {
+                                            stat.Title = "Unit price";
+                                            stat.UseDisplay<NumberDisplay>(number =>
+                                                number.Format = "0.00"
+                                            );
+                                        }
+                                    );
+                                    stats.Add(product => product.Id);
+                                });
+                                card.Fields(fields =>
+                                {
+                                    fields.Layout = ResourceCardFieldLayout.Grid;
+                                    fields.Add(product => product.Category);
+                                    fields
+                                        .Add(product => product.Tags)
+                                        .UseDisplay<BadgeDisplay>(badge => badge.Limit = 2);
+                                });
+                                card.ActionsPlacement = ResourceCardActionsPlacement.Footer;
+                            });
+                        }
+                    );
                     // Prices per category of the products the scope and search select, from the narrowed query
                     layouts.AddPartial<CategoryPriceSummary, CategoryPriceSummaryHandler>(
                         "categories",

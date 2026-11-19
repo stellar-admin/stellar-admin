@@ -9,8 +9,13 @@ internal static class ResourceIndexCheck
     {
         foreach (var table in options.Index.Tables)
         {
-            CheckPaging(options, table);
+            CheckPaging(options, table.Paging);
             CheckDefaultSort(options, table);
+        }
+
+        foreach (var cards in options.Index.Cards)
+        {
+            CheckPaging(options, cards.Paging);
         }
 
         CheckScopes(options);
@@ -18,10 +23,10 @@ internal static class ResourceIndexCheck
 
     private static void CheckPaging<TResource>(
         ResourceOptions<TResource> options,
-        ResourceTableLayoutOptions table
+        ResourcePagingOptions? layoutPaging
     )
     {
-        if (table.Paging is not { } paging)
+        if (layoutPaging is not { } paging)
         {
             return;
         }

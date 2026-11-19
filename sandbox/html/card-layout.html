@@ -274,6 +274,12 @@
     <div class="frame"><div class="narrow" id="narrow"></div></div>
 </section>
 
+<section>
+    <h2>9. Title over the image: which shape by default</h2>
+    <p>The same overlay card twice. Built now: the title sits over the image in the image's shape, which defaults to widescreen (16:9). The prototype's earlier default: an overlay card without a shape set is 4:3, taller, so the shade and the title cover less of the photo. A shape set explicitly wins either way.</p>
+    <div class="frame" id="overlay-shape"></div>
+</section>
+
 <div class="ctl">
     <label>Theme
         <select id="theme-picker">
@@ -450,6 +456,12 @@
 
     /* ---------- 8. Narrow screens ---------- */
     document.getElementById("narrow").innerHTML = `<div data-slot="card" class="sa-card sa-resource-index-list" style="padding:0"><div class="sa-resource-cards" style="padding:var(--_card-p)">${[KYOTO, CAPE].map((r) => card(r, { ...base, orientation: "horizontal" }, { bulk: true })).join("")}</div></div>`;
+
+    /* ---------- 9. Title over the image: default shape ---------- */
+    variants("overlay-shape", [
+        { label: "Built now", note: "widescreen, 16:9", code: ["Placement overlay"], cfg: { ...base, placement: "overlay", shape: "widescreen" } },
+        { label: "Earlier prototype default", note: "4:3 when no shape is set", code: ["Placement overlay"], cfg: { ...base, placement: "overlay" } },
+    ]);
 
     /* ---------- Controls ---------- */
     document.addEventListener("click", (e) => { if (e.target.closest('a[href="#"]')) e.preventDefault(); });

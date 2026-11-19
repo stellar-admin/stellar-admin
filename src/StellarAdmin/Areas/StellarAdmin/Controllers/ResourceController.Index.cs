@@ -31,7 +31,13 @@ internal sealed partial class ResourceController<TResource>
         _resourceOptions.Index.FindLayout(Request.Query["layout"].ToString())
         ?? throw new InvalidOperationException("The index page has no layouts.");
 
-    // The table the index page shows, or null when its layout is a partial
+    // The cards the index page shows, or null when its layout isn't a cards layout
+    private ResourceCardsLayoutOptions? IndexCards => IndexLayout as ResourceCardsLayoutOptions;
+
+    // The paging of the table or cards the index page shows, or null when they aren't paged
+    private ResourcePagingOptions? IndexPaging => IndexTable?.Paging ?? IndexCards?.Paging;
+
+    // The table the index page shows, or null when its layout is a partial or cards
     private ResourceTableLayoutOptions? IndexTable => IndexLayout as ResourceTableLayoutOptions;
 
     [HttpGet]
@@ -160,7 +166,7 @@ internal sealed partial class ResourceController<TResource>
         };
         var actions = table is { Loader: null } or { RecordKey: not null }
             ? table.RowActions
-            : null;
+            : (layout as ResourceCardsLayoutOptions)?.RowActions;
         var keySelector = _resourceOptions.KeySelector;
         Func<object, string?>? viewUrl = null;
         if (table?.Link is not null)
@@ -482,7 +488,7 @@ internal sealed partial class ResourceController<TResource>
                 paging.PageSize,
                 result.TotalCount,
                 totalPages,
-                IndexTable!.Paging!.PageSizes
+                IndexPaging!.PageSizes
             );
         }
 
@@ -511,6 +517,7 @@ internal sealed partial class ResourceController<TResource>
             Func<object, string?>? linkUrl = null
         )
         {
+            ViewData[ViewDataKeys.IndexCards] = IndexCards;
             ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
                 _resourceOptions.Index.Widgets,
                 new IndexWidgetContext<TResource>(HttpContext, request.Scope, request.Search),
@@ -746,9 +753,14 @@ internal sealed partial class ResourceController<TResource>
         }
 
         // A layout that ignores the scopes or the search lists without them, though they stay in the query string. A
-        // partial lists every item in the data source's order
+        // partial lists every item in the data source's order. Cards sort only by their default sort's field for now
         var layout = IndexLayout;
         var table = layout as ResourceTableLayoutOptions;
+        var cards = layout as ResourceCardsLayoutOptions;
+        var sortDirection =
+            direction == "desc"
+                ? ResourceSortDirection.Descending
+                : ResourceSortDirection.Ascending;
         request = new()
         {
             Fields = layout.Fields,
@@ -769,14 +781,12 @@ internal sealed partial class ResourceController<TResource>
                     ? null
                     : query.Search.Trim(),
             Sort =
-                table?.FindSort(
-                    query.SortBy,
-                    direction == "desc"
-                        ? ResourceSortDirection.Descending
-                        : ResourceSortDirection.Ascending
-                ) ?? table?.FindDefaultSort(),
+                table?.FindSort(query.SortBy, sortDirection)
+                ?? table?.FindDefaultSort()
+                ?? cards?.FindSort(query.SortBy, sortDirection)
+                ?? cards?.FindDefaultSort(),
         };
-        if (table?.Paging is not { } options)
+        if (IndexPaging is not { } options)
         {
             return true;
         }

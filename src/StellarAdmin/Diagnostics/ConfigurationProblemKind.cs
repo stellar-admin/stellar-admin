@@ -81,4 +81,8 @@ internal enum ConfigurationProblemKind
     IgnoredWidgetSetting = 1105,
 
     SeparatorWithSeparateItems = 1110,
+
+    TooManyCardStats = 1120,
+    CardDisplayWithHandler = 1121,
+    CardOverlayWithoutImage = 1122,
 }

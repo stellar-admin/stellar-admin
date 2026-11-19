@@ -23,6 +23,47 @@ public sealed class EfCoreResourceLayoutsBuilder<TEntity>
     internal EfCoreResourceLayoutsBuilder(IServiceCollection services) => _services = services;
 
     /// <summary>
+    ///     Adds a layout that shows the resources as cards.
+    /// </summary>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <returns>A builder that configures the cards.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    public ResourceCardsLayoutBuilder<TEntity> AddCards(string key)
+    {
+        AddLayout(key, index => index.AddCards(key));
+
+        return new(_services, key);
+    }
+
+    /// <summary>
+    ///     Adds and configures a layout that shows the resources as cards.
+    /// </summary>
+    /// <param name="key">The key that identifies the layout in the page's URL.</param>
+    /// <param name="configure">A delegate that configures the cards.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> is empty or whitespace, or another layout already uses it.
+    /// </exception>
+    public EfCoreResourceLayoutsBuilder<TEntity> AddCards(
+        string key,
+        Action<ResourceCardsLayoutBuilder<TEntity>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AddCards(key));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds a layout that renders the resources with a partial view.
     /// </summary>
     /// <param name="key">The key that identifies the layout in the page's URL.</param>

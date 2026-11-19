@@ -1,0 +1,284 @@
+@using StellarAdmin.Resources
+@using StellarAdmin.Resources.Displays
+@model IResourceIndexPageViewModel
+@{
+    var layout = (ResourceCardsLayoutOptions)ViewData[ViewDataKeys.IndexCards]!;
+    var card = layout.Card;
+    var horizontal = card.Arrangement == ResourceCardArrangement.Horizontal;
+    var image = card.Image;
+
+    // The check makes an overlay card without an image vertical. The badge sits on the image whenever a card that
+    // isn't horizontal has one
+    var overlay = card.Arrangement == ResourceCardArrangement.Overlay && image is not null;
+    var arrangement = horizontal ? "horizontal" : overlay ? "overlay" : "vertical";
+    var badgeOnImage = image is not null && !horizontal;
+    var footerActions = card.ActionsPlacement == ResourceCardActionsPlacement.Footer;
+    var shape = image?.Shape switch
+    {
+        ResourceCardImageShape.Banner => "banner",
+        ResourceCardImageShape.Landscape => "landscape",
+        ResourceCardImageShape.Square => "square",
+        _ => "widescreen",
+    };
+    var labels = new Dictionary<FormDisplayFieldOptions, string>();
+    string Label(FormDisplayFieldOptions field) =>
+        labels.TryGetValue(field, out var label) ? label : labels[field] = ResourceCardRenderer.GetLabel(ViewContext, field);
+    var query = Model.Query;
+}
+
+@if (Model.Items.Cast<object>().Any())
+{
+    <div class="sa-resource-cards" data-arrangement="@arrangement">
+        @foreach (var item in Model.Items)
+        {
+            var key = Model.GetKey(item);
+            var title = card.TitleValue?.Invoke(item)?.ToString() ?? key ?? "";
+            var description = card.DescriptionValue?.Invoke(item)?.ToString();
+            var imageUrl = card.ImageValue?.Invoke(item)?.ToString();
+            var viewUrl = Model.CanView ? Model.GetViewUrl(item) : null;
+            var editUrl = Model.CanEdit && key is not null ? Url.Action("Edit", new { id = key }) : null;
+            var canDelete = Model.Delete is not null && key is not null;
+            var badge = card.Badge is { } badgeField
+                ? await ResourceCardRenderer.RenderAsync(ViewContext, badgeField, item, new BadgeDisplay())
+                : null;
+
+            <sa-card class="sa-resource-card" data-key="@key"
+                     data-arrangement="@arrangement"
+                     data-shape="@(image is null ? null : shape)">
+                @if (image is not null)
+                {
+                    <div class="sa-resource-card-media">
+                        @if (string.IsNullOrWhiteSpace(imageUrl))
+                        {
+                            <div class="sa-resource-card-placeholder">
+                                <sa-icon name="image" />
+                            </div>
+                        }
+                        else
+                        {
+                            @* The title names the card, so the image has no alternative text of its own *@
+                            <img src="@imageUrl" alt="" loading="lazy" />
+                        }
+                        @if (!horizontal && (badge is { IsEmpty: false } || (overlay && !footerActions)))
+                        {
+                            <div class="sa-resource-card-on-image">
+                                <span class="sa-resource-card-on-image-end">
+                                    @if (badge is { IsEmpty: false })
+                                    {
+                                        <span class="sa-resource-card-badge" title="@badge.Text">@badge.Html</span>
+                                    }
+                                    @if (overlay && !footerActions)
+                                    {
+                                        await ActionsMenu(item, key, viewUrl, editUrl, canDelete, ButtonVariant.Secondary);
+                                    }
+                                </span>
+                            </div>
+                        }
+                        @if (overlay)
+                        {
+                            await Header(item, key, title, description, viewUrl, editUrl, canDelete, null, false);
+                        }
+                    </div>
+                }
+                @if (horizontal)
+                {
+                    <div class="sa-resource-card-body">
+                        @{ await Body(item, key, title, description, viewUrl, editUrl, canDelete, badge); }
+                    </div>
+                }
+                else
+                {
+                    await Body(item, key, title, description, viewUrl, editUrl, canDelete, badgeOnImage ? null : badge);
+                }
+            </sa-card>
+        }
+    </div>
+}
+else
+{
+    <sa-empty class="sa-resource-cards-empty">
+        <sa-empty-header>
+            <sa-empty-media variant="EmptyMediaVariant.Icon">
+                <sa-icon name="inbox" />
+            </sa-empty-media>
+            <sa-empty-title>No records found</sa-empty-title>
+        </sa-empty-header>
+    </sa-empty>
+}
+@* A simple pager for now: the previous and next pages, keeping the page's query *@
+@if (Model.Paging is { TotalPages: > 1 } paging)
+{
+    <sa-pagination class="sa-resource-cards-pager">
+        <sa-pagination-content>
+            @if (paging.Page > 1)
+            {
+                <sa-pagination-item>
+                    <sa-pagination-previous asp-action="Index" asp-route-id="@((string?)null)"
+                                            asp-route-layout="@query.Layout" asp-route-page="@(paging.Page - 1)"
+                                            asp-route-pageSize="@query.PageSize" asp-route-search="@query.Search"
+                                            asp-route-scope="@query.Scope" asp-route-sortBy="@query.SortBy"
+                                            asp-route-sortDirection="@query.SortDirection" />
+                </sa-pagination-item>
+            }
+            <sa-pagination-item>
+                <span class="sa-resource-cards-pager-status">Page @paging.Page of @paging.TotalPages</span>
+            </sa-pagination-item>
+            @if (paging.Page < paging.TotalPages)
+            {
+                <sa-pagination-item>
+                    <sa-pagination-next asp-action="Index" asp-route-id="@((string?)null)"
+                                        asp-route-layout="@query.Layout" asp-route-page="@(paging.Page + 1)"
+                                        asp-route-pageSize="@query.PageSize" asp-route-search="@query.Search"
+                                        asp-route-scope="@query.Scope" asp-route-sortBy="@query.SortBy"
+                                        asp-route-sortDirection="@query.SortDirection" />
+                </sa-pagination-item>
+            }
+        </sa-pagination-content>
+    </sa-pagination>
+}
+
+@{
+    // The header, the stats, the fields and the footer. The header is on the image instead when the title is over it
+    async Task Body(object item, string? key, string title, string? description, string? viewUrl, string? editUrl,
+        bool canDelete, ResourceCardValue? badge)
+    {
+        if (!overlay)
+        {
+            await Header(item, key, title, description, viewUrl, editUrl, canDelete, badge, !footerActions);
+        }
+
+        if (card.Stats.Count > 0)
+        {
+            <sa-card-content>
+                <dl class="sa-resource-card-stats">
+                    @foreach (var stat in card.Stats)
+                    {
+                        var value = await ResourceCardRenderer.RenderAsync(ViewContext, stat, item);
+                        var label = Label(stat);
+                        <div>
+                            <dt title="@label">@label</dt>
+                            <dd title="@value.Text" data-empty="@(value.IsEmpty ? "true" : null)">@value.Html</dd>
+                        </div>
+                    }
+                </dl>
+            </sa-card-content>
+        }
+
+        if (card.Fields.Count > 0)
+        {
+            var grid = card.FieldLayout == ResourceCardFieldLayout.Grid;
+            <sa-card-content>
+                <dl class="sa-resource-card-fields" data-layout="@(grid ? "grid" : "rows")">
+                    @foreach (var field in card.Fields)
+                    {
+                        var value = await ResourceCardRenderer.RenderAsync(ViewContext, field, item);
+                        var label = Label(field);
+                        <div>
+                            <dt title="@label">@label</dt>
+                            <dd title="@value.Text" data-empty="@(value.IsEmpty ? "true" : null)">@value.Html</dd>
+                        </div>
+                    }
+                </dl>
+            </sa-card-content>
+        }
+
+        if (footerActions && (editUrl is not null || canDelete))
+        {
+            <sa-card-footer class="sa-resource-card-actions">
+                @if (editUrl is not null)
+                {
+                    <sa-link-button variant="ButtonVariant.Outline" size="ButtonSize.Small" href="@editUrl" hx-boost="false">
+                        <sa-icon name="square-pen" />
+                        @Model.EditLabel
+                    </sa-link-button>
+                }
+                @if (canDelete)
+                {
+                    <span class="sa-resource-card-actions-menu">
+                        @{ await ActionsMenu(item, key, null, null, canDelete, ButtonVariant.Ghost); }
+                    </span>
+                }
+            </sa-card-footer>
+        }
+    }
+
+    // The title links to the record's view page, and the link covers the card
+    async Task Header(object item, string? key, string title, string? description, string? viewUrl, string? editUrl,
+        bool canDelete, ResourceCardValue? badge, bool menu)
+    {
+        <sa-card-header>
+            <sa-card-title>
+                @if (viewUrl is not null)
+                {
+                    <a href="@viewUrl" title="@title" hx-boost="false">@title</a>
+                }
+                else
+                {
+                    <span title="@title">@title</span>
+                }
+                @if (badge is { IsEmpty: false })
+                {
+                    <span class="sa-resource-card-badge" title="@badge.Text">@badge.Html</span>
+                }
+            </sa-card-title>
+            @if (!string.IsNullOrWhiteSpace(description))
+            {
+                <sa-card-description title="@description">@description</sa-card-description>
+            }
+            @if (menu && (viewUrl is not null || editUrl is not null || canDelete))
+            {
+                <sa-card-action>
+                    @{ await ActionsMenu(item, key, viewUrl, editUrl, canDelete, ButtonVariant.Ghost); }
+                </sa-card-action>
+            }
+        </sa-card-header>
+    }
+
+    // The row actions in a menu. Delete posts the page's query, so the page reloads as it shows
+    async Task ActionsMenu(object item, string? key, string? viewUrl, string? editUrl, bool canDelete, ButtonVariant variant)
+    {
+        if (viewUrl is null && editUrl is null && !canDelete)
+        {
+            return;
+        }
+
+        <sa-dropdown-menu>
+            <sa-dropdown-menu-trigger variant="variant" size="ButtonSize.IconSmall" aria-label="More actions">
+                <sa-icon name="ellipsis" />
+            </sa-dropdown-menu-trigger>
+            <sa-dropdown-menu-content align="DropdownMenuAlign.End">
+                @if (viewUrl is not null)
+                {
+                    <sa-dropdown-menu-item-link href="@viewUrl" hx-boost="false">
+                        <sa-icon name="eye" />
+                        @Model.ViewLabel
+                    </sa-dropdown-menu-item-link>
+                }
+                @if (editUrl is not null)
+                {
+                    <sa-dropdown-menu-item-link href="@editUrl" hx-boost="false">
+                        <sa-icon name="square-pen" />
+                        @Model.EditLabel
+                    </sa-dropdown-menu-item-link>
+                }
+                @if (canDelete)
+                {
+                    if (viewUrl is not null || editUrl is not null)
+                    {
+                        <sa-dropdown-menu-separator />
+                    }
+                    <form method="post" asp-action="Delete" asp-route-id="@key" asp-route-layout="@query.Layout"
+                          asp-route-page="@(query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@query.PageSize"
+                          asp-route-search="@query.Search" asp-route-scope="@query.Scope"
+                          asp-route-sortBy="@query.SortBy" asp-route-sortDirection="@query.SortDirection"
+                          data-resource-delete hx-confirm="js:confirmResourceDelete()" hx-push-url="false">
+                        <sa-dropdown-menu-item type="submit" variant="DropdownMenuItemVariant.Destructive">
+                            <sa-icon name="trash" />
+                            @Model.DeleteLabel
+                        </sa-dropdown-menu-item>
+                    </form>
+                }
+            </sa-dropdown-menu-content>
+        </sa-dropdown-menu>
+    }
+}

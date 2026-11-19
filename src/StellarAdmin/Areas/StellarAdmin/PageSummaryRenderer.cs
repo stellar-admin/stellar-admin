@@ -75,7 +75,7 @@ internal static class PageSummaryRenderer
     }
 
     // The metadata of the field's property, as the grid resolves it property by property, or of a computed value's type
-    private static ModelMetadata GetMetadata(
+    public static ModelMetadata GetMetadata(
         FormDisplayFieldOptions field,
         IModelMetadataProvider metadataProvider
     )
@@ -96,7 +96,7 @@ internal static class PageSummaryRenderer
         return metadata!;
     }
 
-    private static bool IsEmpty(object? value) =>
+    public static bool IsEmpty(object? value) =>
         value switch
         {
             null => true,
@@ -106,7 +106,7 @@ internal static class PageSummaryRenderer
         };
 
     // The template reads its display, prepared data and label from the view context's data, as a grid cell's does
-    private static async Task<IHtmlContent> RenderTemplateAsync(
+    public static async Task<IHtmlContent> RenderTemplateAsync(
         ViewContext viewContext,
         string templateName,
         ModelExplorer explorer,

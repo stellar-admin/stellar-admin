@@ -90,6 +90,7 @@ internal sealed class ResourceOptionsFactory<TResource>(
         RowDetailsCheck.Run(options);
         AddAnotherCheck.Run(options);
         ResourceIndexCheck.Run(options);
+        CardsLayoutCheck.Run(options);
         options.Problems.AddRange(WidgetsCheck.Run(options.Index.Widgets, null, true));
         if (options.View is { } view)
         {

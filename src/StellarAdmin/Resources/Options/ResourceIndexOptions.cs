@@ -139,6 +139,10 @@ public sealed class ResourceIndexOptions
     /// </value>
     public string? ViewLabel { get; internal set; }
 
+    // The cards layouts, in layout order
+    internal IEnumerable<ResourceCardsLayoutOptions> Cards =>
+        MutableLayouts.OfType<ResourceCardsLayoutOptions>();
+
     internal List<ResourceLayoutOptions> MutableLayouts { get; } = [];
 
     // Whether the two-argument Index overload declared the layouts
@@ -173,8 +177,14 @@ public sealed class ResourceIndexOptions
         }
     }
 
+    internal void AddCards(string key) => MutableLayouts.Add(new ResourceCardsLayoutOptions(key));
+
     internal void AddPartial(string key, string partialName, ResourceLayoutLoader? loader = null) =>
         MutableLayouts.Add(new ResourcePartialLayoutOptions(key, partialName, loader));
+
+    // The cards layout with a key, which its AddCards call has already added
+    internal ResourceCardsLayoutOptions GetCards(string key) =>
+        (ResourceCardsLayoutOptions)GetLayout(key);
 
     // The layout with a key, which its Add call has already added
     internal ResourceLayoutOptions GetLayout(string key) =>

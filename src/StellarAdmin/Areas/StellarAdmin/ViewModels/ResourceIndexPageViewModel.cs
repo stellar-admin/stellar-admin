@@ -97,8 +97,9 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
 
     internal ResourceIndexPageViewModel() { }
 
+    // A resource without a key has no keys, such as for the cards of a resource without UseKey
     string? IResourceIndexPageViewModel.GetKey(object resource) =>
-        RowKey is { } rowKey ? rowKey(resource) : KeySelector!((TResource)resource);
+        RowKey is { } rowKey ? rowKey(resource) : KeySelector?.Invoke((TResource)resource);
 
     string? IResourceIndexPageViewModel.GetViewUrl(object resource) => ViewUrl?.Invoke(resource);
 }

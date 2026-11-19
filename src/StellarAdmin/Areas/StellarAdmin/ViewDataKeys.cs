@@ -33,6 +33,9 @@ public static class ViewDataKeys
     // The column definitions of the form scope whose items are rendered
     internal const string FormColumns = "StellarAdminFormColumns";
 
+    // The cards layout the index page shows, which renders its items as cards
+    internal const string IndexCards = "StellarAdminIndexCards";
+
     internal const string FormContainer = "StellarAdminFormContainer";
 
     internal const string FormFieldProperties = "StellarAdminFormFieldProperties";

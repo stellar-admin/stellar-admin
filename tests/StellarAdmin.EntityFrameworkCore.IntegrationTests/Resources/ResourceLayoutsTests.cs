@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
+using StellarAdmin.Resources.Displays;
 using StellarAdmin.Testing;
 using TUnit.Assertions.Enums;
 
@@ -55,6 +56,63 @@ public class ResourceLayoutsTests
                     .Select(total => total.TextContent.Trim())
             )
             .IsEquivalentTo(totals, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task Cards_LoadTheirValuesThroughNavigationsInTheirDefaultSort()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.Index(
+                _ => { },
+                layouts =>
+                    layouts.AddCards(
+                        "cards",
+                        cards =>
+                        {
+                            cards.DefaultSortByDescending(product => product.Price);
+                            cards.Card(card =>
+                            {
+                                card.Badge(product => product.Category!.Name);
+                                card.Fields(fields =>
+                                    fields
+                                        .Add(product => product.Tags)
+                                        .UseDisplay<BadgeDisplay>(badge =>
+                                            badge.UseText<Tag>(tag => tag.Name)
+                                        )
+                                );
+                            });
+                        }
+                    )
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products");
+        var document = await response.ReadDocumentAsync();
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll(".sa-resource-card")
+                    .Select(card =>
+                        $"{card.QuerySelector(".sa-card-title > :first-child")!.TextContent.Trim()}: "
+                        + $"{card.QuerySelector(".sa-resource-card-badge")?.TextContent.Trim()}: "
+                        + card.QuerySelector(".sa-resource-card-fields dd")!.GetAttribute("title")
+                    )
+            )
+            .IsEquivalentTo(
+                [
+                    "Banana: Beverage: —",
+                    "Apple: Technology: —",
+                    "Apple: Technology: Sale Seasonal",
+                    "Zebra: Office: —",
+                ],
+                CollectionOrdering.Matching
+            );
     }
 
     [Test]

@@ -15,6 +15,10 @@
             <partial name="@partialLayout.PartialName" model="partialLayout.Model" />
         </div>
     }
+    else if (ViewData[ViewDataKeys.IndexCards] is not null)
+    {
+        <partial name="_IndexCards" />
+    }
     else
     {
         <partial name="_IndexDataGrid" />
