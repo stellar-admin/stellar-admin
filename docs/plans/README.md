@@ -9,6 +9,7 @@ This index lists the live plans: proposed, open, deferred or in progress. Comple
 - [predefined-widgets](predefined-widgets.md) (proposed): ready-made widgets on the widget mechanism, stats first.
 - [index-page-refreshing](index-page-refreshing.md) (open): selective htmx refreshes on the index page, so scopes and search stop flashing the page.
 - [index-layouts](index-layouts.md) (approved, stage 5 implemented): switchable index layouts, first additional tables and custom partials (including a different data shape); board, map and others later.
+- [cards-layout](cards-layout.md) (proposed): a built-in Cards layout for index pages, composed from image, title, description, badge, stats, fields and actions.
 - [row-detail-expand-when](row-detail-expand-when.md) (deferred): per-row expand rules for row details, until an application needs them.
 - [configured-row-details](configured-row-details.md) (proposed): row-detail panels configured from display fields instead of hand-written partials.
 - [display-defaults](display-defaults.md) (proposed): app-level default displays, and display handlers in index columns.
