@@ -130,7 +130,7 @@ Working agreement: implement on the `layout-column-collection` branch, then stop
 - `DataSourceReferenceItems` passes `Title`, `Reference.Description` and `Reference.Media` as `Fields`, and the first record table's `FindDefaultSort()`.
 - `EfCoreResourceReference.FindDefaultOrder` uses `FindDefaultSort()`.
 - `EfCoreResourceDataSource.ListAsync` no longer reads the layout. `Arrange` includes from `request.Fields` and orders by `Sort.Selector`. A missing selector throws `InvalidOperationException`; a field or selector that doesn't take a single `TEntity` throws `ArgumentException`.
-- Consumer references updated by hand: `skills/stellar-admin/references/layouts.md` and `resources.md`. Website docs are still to do, batched with the website.
+- Consumer references updated by hand: `skills/stellar-admin/references/layouts.md` and `resources.md`. Website docs updated 2026-11-19: `custom-data-sources.mdx` (the `Sort` and `Fields` rows of the request table) and `sorting-and-paging.mdx` (`Sort.Field` and `Sort.Selector`).
 
 Checks run 2026-11-19:
 
@@ -144,4 +144,4 @@ Checks run 2026-11-19:
 ## Docs and references
 
 - `skills/stellar-admin/references/layouts.md:58` and the other consumer references that describe `ResourceListRequest` gain `Fields` and `Selector`, regenerated per [skills](../../repos/skills.md).
-- Website docs pages that describe custom data sources need the same addition, batched with the website.
+- Website docs pages that describe custom data sources gain the same addition (done 2026-11-19).
