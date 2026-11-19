@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Grouped columns prototype (2026-11-19): column groups in a data grid's header, one or more levels deep,
+         with dividers between the column heads. Sorting is live and client-side here (the real grid sorts through
+         its sort links' URLs). Build the UI library first (npm run build in src/StellarAdmin.UI/Client).
+         Settled so far: header-only dividers in the control line between every head and under every group;
+         groups always centred; a column outside a group spans the group rows with its head on the column
+         heads' line; right-aligned heads sit flush with their numbers. -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Grouped columns</title>
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+    <link rel="stylesheet" id="theme">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400..700&family=Figtree:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <!-- Candidate CSS, written as the library would write it -->
+    <style>
+        @layer sa.components {
+            /* The header's rows run into each other; one line closes the header off from the body. */
+            .sa-table-header {
+                border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+                & > .sa-table-row { border-bottom-width: 0; }
+            }
+            /* Dividers: a line before every head but the first column's, and under every group. The plain
+               line all but disappears on the header band, so these use the control line. */
+            .sa-table-header .sa-table-head:not([data-edge-start]) {
+                border-inline-start: var(--sa-border-width) solid var(--sa-color-line-control);
+            }
+
+            /* A group head: centred over its columns, shorter than the column heads. */
+            .sa-table-head-group {
+                height: calc(8 * var(--sa-unit));
+                border-bottom: var(--sa-border-width) solid var(--sa-color-line-control);
+                text-align: center;
+            }
+
+            /* A column head spanning group rows sits on the column heads' line. */
+            .sa-table-head[rowspan] {
+                vertical-align: bottom;
+                padding-bottom: calc((10 * var(--sa-unit) - 1lh) / 2);
+                &:has(> [data-slot="data-grid-sort-link"]) { padding-bottom: calc((10 * var(--sa-unit) - var(--sa-control-h-sm)) / 2); }
+            }
+
+            /* The data grid pads its rows' first and last cells to the card's edges. In a grouped header a
+               row's first or last cell can sit inside the table; only heads on the table's edges
+               (data-edge-start, data-edge-end) take the card's spacing. */
+            .sa-card.sa-data-grid .sa-table-header .sa-table-head:not([data-edge-start]) { padding-inline-start: var(--sa-space-cell-x); }
+            .sa-card.sa-data-grid .sa-table-header .sa-table-head:not([data-edge-end]) { padding-inline-end: var(--sa-space-cell-x); }
+        }
+
+        /* ---------- Prototype scaffolding (not extracted) ---------- */
+        body { margin: 0; padding: 2rem 2rem 6rem; background: var(--sa-color-canvas, var(--sa-color-surface)); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+        .intro { max-width: 62rem; margin-bottom: 2.5rem; }
+        .intro h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 .5rem; }
+        .intro p, .intro li { color: var(--sa-color-ink-muted); font-size: .9rem; line-height: 1.55; }
+        .intro b { color: var(--sa-color-ink); }
+        section { margin-bottom: 3rem; }
+        section > h2 { font-size: 1.1rem; font-weight: 600; margin: 0 0 .25rem; }
+        section > p { color: var(--sa-color-ink-muted); margin: 0 0 1rem; font-size: .875rem; max-width: 62rem; }
+        .strips { display: grid; gap: 2rem; }
+        figure { margin: 0; }
+        figcaption { font-size: .85rem; color: var(--sa-color-ink-muted); margin-bottom: .5rem; max-width: 62rem; }
+        figcaption b { color: var(--sa-color-ink); }
+        .frame { border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-canvas, var(--sa-color-surface)); padding: 1.5rem; }
+        .frame[data-narrow] { max-width: 26rem; }
+        .ctl { position: fixed; right: 1rem; bottom: 1rem; z-index: 50; display: flex; flex-wrap: wrap; gap: .5rem .75rem; align-items: center; padding: .5rem .75rem; border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-surface); box-shadow: 0 4px 16px rgb(0 0 0 / .12); font-size: .8rem; }
+        .ctl label { display: flex; gap: .35rem; align-items: center; }
+        .ctl select { font: inherit; }
+        .tag { display: inline-block; min-width: 1.6em; font-weight: 700; color: var(--sa-color-ink); }
+        .text-right { text-align: right; }
+        .w-px { width: 1px; }
+        .whitespace-nowrap { white-space: nowrap; }
+        .num { font-variant-numeric: tabular-nums; }
+        .muted { color: var(--sa-color-ink-muted); }
+        .mono { font-family: var(--sa-font-mono, monospace); font-size: .92em; }
+        .status-dot { display: inline-block; width: .5rem; height: .5rem; margin-inline-end: .4rem; border-radius: 50%; background: var(--_dot, var(--sa-color-ink-muted)); }
+        .status-dot[data-status="Confirmed"] { --_dot: var(--sa-color-success); }
+        .status-dot[data-status="Pending"] { --_dot: var(--sa-color-warning); }
+        .status-dot[data-status="Completed"] { --_dot: var(--sa-color-info); }
+        .status-dot[data-status="Cancelled"] { --_dot: color-mix(in oklab, var(--sa-color-ink-muted) 60%, transparent); }
+    </style>
+</head>
+<body>
+
+<div class="intro">
+    <h1>Grouped columns</h1>
+    <p>Voyager Travel's bookings grid. Groups are labels only: <b>sorting stays on the columns</b>, through the same sort links as today (one sort field at a time). Every frame sorts for real; click a column head.</p>
+</div>
+
+<section>
+    <h2>Grouped</h2>
+    <p>One level of groups: <b>Traveller</b>, <b>Trip</b> and <b>Payment</b>. Booking and the actions sit outside any group.</p>
+    <div class="strips" id="grouped"></div>
+</section>
+
+<section>
+    <h2>No groups</h2>
+    <p>The same grid without groups, keeping the lines between the column heads.</p>
+    <div class="strips" id="plain"></div>
+</section>
+
+<section>
+    <h2>Nested groups</h2>
+    <p>Groups inside groups: <b>Dates</b> inside Trip and <b>Paid</b> inside Payment, three header rows. Traveller and Status sit outside any group and span all three; Destination, Nights, Total and Outstanding span the two rows under their group.</p>
+    <div class="strips" id="nested"></div>
+</section>
+
+<div class="ctl">
+    <label>Theme
+        <select id="theme-picker">
+            <option value="">Default</option>
+            <option value="ops">Ops</option>
+            <option value="soft">Soft</option>
+            <option value="ledger">Ledger</option>
+        </select>
+    </label>
+    <label><input type="checkbox" id="dark-toggle"> Dark</label>
+    <label>Density
+        <select id="density-picker">
+            <option value="">Default</option>
+            <option value="compact">Compact</option>
+            <option value="comfortable">Comfortable</option>
+        </select>
+    </label>
+</div>
+
+<script type="module">
+    const svg = (paths) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+    const ICON = {
+        unsorted: svg('<path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path>'),
+        asc: svg('<path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path>'),
+        desc: svg('<path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path>'),
+        ellipsis: svg('<circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle>'),
+    };
+
+    /* ---------- Data ---------- */
+    const addDays = (d, n) => { const x = new Date(d + "T00:00:00"); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
+    const BOOKINGS = [
+        ["VT-1042", "Amara Okafor", "amara.okafor@example.com", "Kyoto", "2027-03-14", 9, 4280, "Confirmed"],
+        ["VT-1043", "Liam Becker", "liam.becker@example.com", "Reykjavík", "2027-01-08", 5, 2190, "Pending"],
+        ["VT-1044", "Sofia Marín", "sofia.marin@example.com", "Cape Town", "2026-12-02", 12, 5640, "Confirmed"],
+        ["VT-1045", "Noah Lindqvist", "noah.l@example.com", "Lisbon", "2026-11-28", 4, 1320, "Completed"],
+        ["VT-1046", "Priya Raman", "priya.raman@example.com", "Queenstown", "2027-02-19", 10, 6110, "Confirmed"],
+        ["VT-1047", "Mateo Rossi", "mateo.rossi@example.com", "Marrakesh", "2027-04-03", 6, 2470, "Cancelled"],
+    ].map(([ref, name, email, destination, departs, nights, total, status]) => {
+        const deposit = status === "Pending" ? 0 : Math.round(total * 0.2);
+        const balance = status === "Completed" ? total - deposit : 0;
+        const outstanding = status === "Cancelled" ? 0 : total - deposit - balance;
+        return { ref, name, email, destination, departs, returns: addDays(departs, nights), nights, total, deposit, balance, outstanding, status };
+    });
+
+    const fmtDate = (d) => new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    const money = (n) => `<span class="num">$${n.toLocaleString("en-US")}</span>`;
+
+    /* ---------- Columns: leaves have a field; groups have children ---------- */
+    const COL = {
+        ref: { field: "ref", label: "Booking", cell: (b) => `<span class="mono">${b.ref}</span>` },
+        name: { field: "name", label: "Name" },
+        traveller: { field: "name", label: "Traveller" },
+        email: { field: "email", label: "Email", cell: (b) => `<span class="muted">${b.email}</span>` },
+        destination: { field: "destination", label: "Destination" },
+        departs: { field: "departs", label: "Departs", cell: (b) => fmtDate(b.departs) },
+        returns: { field: "returns", label: "Returns", cell: (b) => fmtDate(b.returns) },
+        nights: { field: "nights", label: "Nights", right: true, cell: (b) => `<span class="num">${b.nights}</span>` },
+        total: { field: "total", label: "Total", right: true, cell: (b) => money(b.total) },
+        deposit: { field: "deposit", label: "Deposit", right: true, cell: (b) => money(b.deposit) },
+        balance: { field: "balance", label: "Balance", right: true, cell: (b) => money(b.balance) },
+        outstanding: { field: "outstanding", label: "Outstanding", right: true, cell: (b) => money(b.outstanding) },
+        status: { field: "status", label: "Status", cell: (b) => `<span class="status-dot" data-status="${b.status}"></span>${b.status}` },
+        actions: { actions: true, label: "" },
+    };
+    const group = (label, children) => ({ label, children });
+
+    const GROUPED = [COL.ref, group("Traveller", [COL.name, COL.email]), group("Trip", [COL.destination, COL.departs, COL.nights]), group("Payment", [COL.total, COL.status]), COL.actions];
+    const PLAIN = [COL.ref, COL.name, COL.email, COL.destination, COL.departs, COL.nights, COL.total, COL.status, COL.actions];
+    const NESTED = [COL.ref, COL.traveller,
+        group("Trip", [COL.destination, group("Dates", [COL.departs, COL.returns]), COL.nights]),
+        group("Payment", [COL.total, group("Paid", [COL.deposit, COL.balance]), COL.outstanding]),
+        COL.status, COL.actions];
+
+    const leavesOf = (n) => (n.children ? n.children.flatMap(leavesOf) : [n]);
+    const depthOf = (n) => (n.children ? 1 + Math.max(...n.children.map(depthOf)) : 1);
+
+    /* Header rows from the column tree: a group spans its leaves; a leaf spans the rows below its level. */
+    function headerRows(columns) {
+        const depth = Math.max(...columns.map(depthOf));
+        const last = columns.flatMap(leavesOf).length - 1;
+        const rows = Array.from({ length: depth }, () => []);
+        let col = 0;
+        const place = (node, level) => {
+            const start = col;
+            if (node.children) {
+                const span = leavesOf(node).length;
+                rows[level].push({ node, colspan: span, start, end: start + span - 1 });
+                node.children.forEach((c) => place(c, level + 1));
+            } else {
+                rows[level].push({ node, rowspan: depth - level, start, end: start });
+                col++;
+            }
+        };
+        columns.forEach((c) => place(c, 0));
+        return { rows, last };
+    }
+
+    /* ---------- Rendering, as the tag helpers would emit it ---------- */
+    function sortLink(f, c) {
+        const active = f.state.sortBy === c.field;
+        const dir = active ? f.state.dir : null;
+        const next = dir === "asc" ? "desc" : "asc";
+        /* A right-aligned head pulls the button's padding in on the right, so it sits flush with its numbers. */
+        const style = c.right ? "margin-right: -0.625rem" : "margin-left: -0.625rem";
+        return `<a href="?sortBy=${c.field}&amp;sortDirection=${next}" data-sort="${c.field}" data-dir="${next}" data-slot="data-grid-sort-link" data-active="${active}" class="sa-button sa-button-variant-ghost sa-button-size-sm" style="${style}">${c.label}${ICON[dir ?? "unsorted"]}</a>`;
+    }
+
+    function headerHtml(f) {
+        const { rows, last } = headerRows(f.columns);
+        return rows.map((cells) => `<tr class="sa-table-row" data-slot="table-row">${cells.map(({ node, colspan, rowspan, start, end }) => {
+            const edges = `${start === 0 ? " data-edge-start" : ""}${end === last ? " data-edge-end" : ""}`;
+            if (node.children) {
+                return `<th colspan="${colspan}" scope="colgroup" class="sa-table-head sa-table-head-group" data-slot="table-head-group"${edges}>${node.label}</th>`;
+            }
+            const active = f.state.sortBy === node.field && !node.actions;
+            const cls = ["sa-table-head", node.right && "text-right", node.actions && "w-px whitespace-nowrap"].filter(Boolean).join(" ");
+            const sort = active ? ` aria-sort="${f.state.dir === "asc" ? "ascending" : "descending"}"` : "";
+            return `<th scope="col"${rowspan > 1 ? ` rowspan="${rowspan}"` : ""}${sort} class="${cls}" data-slot="table-head"${edges}>${node.actions ? "" : sortLink(f, node)}</th>`;
+        }).join("")}</tr>`).join("");
+    }
+
+    function bodyHtml(f) {
+        const { sortBy, dir } = f.state;
+        const leaves = f.columns.flatMap(leavesOf);
+        const rows = [...BOOKINGS].sort((a, b) => (a[sortBy] < b[sortBy] ? -1 : a[sortBy] > b[sortBy] ? 1 : 0) * (dir === "asc" ? 1 : -1));
+        return rows.map((b) => `<tr class="sa-table-row" data-slot="table-row">${leaves.map((c) => {
+            const cls = ["sa-table-cell", c.right && "text-right", c.actions && "w-px whitespace-nowrap"].filter(Boolean).join(" ");
+            const content = c.actions
+                ? `<button type="button" aria-label="Actions" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm">${ICON.ellipsis}</button>`
+                : c.cell ? c.cell(b) : b[c.field];
+            return `<td class="${cls}" data-slot="table-cell">${content}</td>`;
+        }).join("")}</tr>`).join("");
+    }
+
+    const gridHtml = (f) => `<div class="sa-data-grid sa-card" data-slot="data-grid">
+            <div class="sa-table-container" data-slot="table-container">
+                <table class="sa-table" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header">${headerHtml(f)}</thead>
+                    <tbody class="sa-table-body" data-slot="table-body">${bodyHtml(f)}</tbody>
+                </table>
+            </div>
+            <div class="sa-card-footer sa-data-grid-footer" data-slot="card-footer"><span class="sa-data-grid-range" data-slot="data-grid-range"><span class="sa-data-grid-range-value">1–${BOOKINGS.length}</span> of 248</span></div>
+        </div>`;
+
+    /* ---------- Frames ---------- */
+    const FRAMES = [];
+    function addFrame(container, columns) {
+        const f = { id: `f${FRAMES.length + 1}`, columns, state: { sortBy: "departs", dir: "asc" } };
+        const frame = document.createElement("div");
+        frame.className = "frame";
+        frame.dataset.frame = f.id;
+        document.getElementById(container).append(frame);
+        f.el = frame;
+        FRAMES.push(f);
+        render(f);
+    }
+    const render = (f) => { f.el.innerHTML = gridHtml(f); };
+
+    addFrame("grouped", GROUPED);
+    addFrame("plain", PLAIN);
+    addFrame("nested", NESTED);
+
+    /* Sorting: the grid's links would navigate; here they re-sort in place */
+    document.addEventListener("click", (e) => {
+        const link = e.target.closest("[data-sort]");
+        if (!link) return;
+        e.preventDefault();
+        const f = FRAMES.find((x) => x.id === link.closest("[data-frame]").dataset.frame);
+        f.state = { sortBy: link.dataset.sort, dir: link.dataset.dir };
+        render(f);
+    });
+
+    document.getElementById("theme-picker").addEventListener("change", (e) => {
+        const theme = document.getElementById("theme");
+        if (e.target.value) theme.href = `../../util/theme-check/presets/${e.target.value}.css`;
+        else theme.removeAttribute("href");
+    });
+    document.getElementById("dark-toggle").addEventListener("change", (e) => document.documentElement.classList.toggle("dark", e.target.checked));
+    document.getElementById("density-picker").addEventListener("change", (e) => {
+        if (e.target.value) document.body.setAttribute("data-sa-density", e.target.value);
+        else document.body.removeAttribute("data-sa-density");
+    });
+</script>
+</body>
+</html>

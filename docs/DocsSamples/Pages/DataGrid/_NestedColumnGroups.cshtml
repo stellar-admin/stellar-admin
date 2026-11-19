@@ -1,0 +1,15 @@
+@using StellarAdmin.UI
+<sa-data-grid items="StaticData.Bookings">
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column-group title="Details">
+        <sa-data-grid-column-group title="Traveller">
+            <sa-data-grid-column title="Name" field-for="(Booking b) => StaticData.DetailsFor(b.Id).Traveller"/>
+            <sa-data-grid-column title="Party" field-for="(Booking b) => StaticData.DetailsFor(b.Id).Party"/>
+        </sa-data-grid-column-group>
+        <sa-data-grid-column-group title="Trip">
+            <sa-data-grid-column title="Destination" field="Destination"/>
+            <sa-data-grid-column title="Status" field="Status"/>
+        </sa-data-grid-column-group>
+    </sa-data-grid-column-group>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End"/>
+</sa-data-grid>

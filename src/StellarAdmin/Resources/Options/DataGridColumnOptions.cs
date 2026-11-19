@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Humanizer;
 using StellarAdmin.Diagnostics;
 using StellarAdmin.Resources.Displays;
+using StellarAdmin.UI;
 
 namespace StellarAdmin.Resources.Options;
 
@@ -10,6 +11,16 @@ namespace StellarAdmin.Resources.Options;
 /// </summary>
 public sealed class DataGridColumnOptions
 {
+    /// <summary>
+    ///     Gets how the column aligns its head and cells.
+    /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the alignment, or <see langword="null" />
+    ///     to align the column to the end when its display is <see cref="NumberDisplay" />, and to
+    ///     the start otherwise.
+    /// </value>
+    public DataGridColumnAlign? Align { get; internal set; }
+
     /// <summary>
     ///     Gets the display that renders the column's cells.
     /// </summary>
@@ -50,6 +61,14 @@ public sealed class DataGridColumnOptions
     ///     property path.
     /// </value>
     public string? FieldName { get; }
+
+    /// <summary>
+    ///     Gets the innermost group that contains the column.
+    /// </summary>
+    /// <value>
+    ///     The group, or <see langword="null" /> when the column isn't in a group.
+    /// </value>
+    public DataGridColumnGroupOptions? Group { get; internal set; }
 
     /// <summary>
     ///     Gets a value that indicates whether the list can be sorted by the column.

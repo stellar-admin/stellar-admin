@@ -1,6 +1,6 @@
 ---
 component: DataGrid
-tags: [sa-data-grid, sa-data-grid-add-row, sa-data-grid-column, sa-data-grid-edit-template, sa-data-grid-empty, sa-data-grid-header-template, sa-data-grid-item-template, sa-data-grid-pager, sa-data-grid-row-detail, sa-data-grid-selection, sa-data-grid-sort]
+tags: [sa-data-grid, sa-data-grid-add-row, sa-data-grid-column, sa-data-grid-column-group, sa-data-grid-edit-template, sa-data-grid-empty, sa-data-grid-header-template, sa-data-grid-item-template, sa-data-grid-pager, sa-data-grid-row-detail, sa-data-grid-selection, sa-data-grid-sort]
 generated: true
 ---
 
@@ -15,6 +15,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
 | `<sa-data-grid>` | Renders a table of items, with columns declared by `sa-data-grid-column` children. |
 | `<sa-data-grid-add-row>` | Renders a full-width row in a data grid, for a button that adds an item. |
 | `<sa-data-grid-column>` | Defines a column of a data grid. |
+| `<sa-data-grid-column-group>` | Groups data grid columns under a head that spans them. |
 | `<sa-data-grid-edit-template>` | Renders the editor of a data grid column in rows that are in edit mode. |
 | `<sa-data-grid-empty>` | Renders custom content in a full-width row when the data grid has no items. |
 | `<sa-data-grid-header-template>` | Renders custom header content for a data grid column. |
@@ -50,6 +51,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
+| `align` | `DataGridColumnAlign` | `Start` | `Start`, `Center`, `End` |
 | `field` | `string` | — | — |
 | `empty-text` | `string` | — | — |
 | `field-for` | `LambdaExpression` | — | — |
@@ -58,6 +60,14 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
 | `sort-field` | `string` | — | — |
 | `template` | `string` | — | — |
 | `template-renders-empty` | `bool` | `false` | `true`, `false` |
+| `title` | `string` | — | — |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
+### `<sa-data-grid-column-group>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `align` | `DataGridColumnGroupAlign` | `Center` | `Start`, `Center`, `End` |
 | `title` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -165,7 +175,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Status" field="Status"/>
     <sa-data-grid-column title="Destination" field="Destination" sortable="true"/>
-    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" sortable="true" class="text-right"/>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" sortable="true" align="DataGridColumnAlign.End"/>
     <sa-data-grid-empty>No bookings found.</sa-data-grid-empty>
     <sa-data-grid-pager page="currentPage" total-pages="totalPages"
                         page-size="pageSize" selected-page-size="selectedPageSize"
@@ -194,6 +204,42 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
 </script>
 ```
 
+*From `Pages/DataGrid/_ColumnGroups.cshtml`*
+
+```razor
+    var sortField = Context.Request.Query["groupSortBy"].ToString();
+    var sortDirection = Context.Request.Query["groupSortDir"] == "desc"
+        ? DataGridSortDirection.Descending
+        : DataGridSortDirection.Ascending;
+
+    IEnumerable<Booking> bookings = StaticData.Bookings;
+    bookings = (sortField.ToLowerInvariant(), sortDirection) switch
+    {
+        ("destination", DataGridSortDirection.Ascending) => bookings.OrderBy(b => b.Destination),
+        ("destination", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Destination),
+        ("amount", DataGridSortDirection.Ascending) => bookings.OrderBy(b => b.Amount),
+        ("amount", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Amount),
+        _ => bookings
+    };
+}
+<sa-data-grid items="bookings">
+    <sa-data-grid-sort sort-field="@sortField" sort-direction="sortDirection"
+                       asp-page="/DataGrid/Index"
+                       asp-route-groupSortBy="{sortField}" asp-route-groupSortDir="{sortDirection}"
+                       preserve-query="true"/>
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column-group title="Traveller">
+        <sa-data-grid-column title="Name" field-for="(Booking b) => StaticData.DetailsFor(b.Id).Traveller"/>
+        <sa-data-grid-column title="Email" field-for="(Booking b) => StaticData.DetailsFor(b.Id).Email"/>
+    </sa-data-grid-column-group>
+    <sa-data-grid-column-group title="Trip">
+        <sa-data-grid-column title="Destination" field="Destination" sortable="true"/>
+        <sa-data-grid-column title="Status" field="Status"/>
+    </sa-data-grid-column-group>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End" sortable="true"/>
+</sa-data-grid>
+```
+
 *From `Pages/DataGrid/_RowDetails.cshtml`*
 
 ```razor
@@ -201,7 +247,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Status" field="Status"/>
     <sa-data-grid-column title="Destination" field="Destination"/>
-    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right"/>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End"/>
     <sa-data-grid-row-detail expanded-keys='new[] { "TRP-4821" }'>
         @{ var details = StaticData.DetailsFor(Html.GridItem<Booking>().Id); }
         <div class="flex flex-col gap-3">
@@ -213,7 +259,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
                 <sa-data-grid-column title="Date" field="Date"/>
                 <sa-data-grid-column title="Type" field="Type"/>
                 <sa-data-grid-column title="Description" field="Description"/>
-                <sa-data-grid-column title="Amount" field="Amount" class="text-right"/>
+                <sa-data-grid-column title="Amount" field="Amount" align="DataGridColumnAlign.End"/>
             </sa-data-grid>
         </div>
     </sa-data-grid-row-detail>
@@ -237,7 +283,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
             <sa-input class="sa-cell-editor" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Destination" aria-label="Destination"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
-    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End">
         <sa-data-grid-edit-template>
             <sa-input class="sa-cell-editor text-right" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
         </sa-data-grid-edit-template>
@@ -263,7 +309,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
                       placeholder="City, country" aria-label="Destination"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
-    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End">
         <sa-data-grid-edit-template>
             <sa-input class="sa-cell-editor text-right" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
         </sa-data-grid-edit-template>
@@ -278,7 +324,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Status" field="Status"/>
     <sa-data-grid-column title="Destination" field="Destination"/>
-    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right"/>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End"/>
     <sa-data-grid-add-row position="DataGridAddRowPosition.Bottom">
         <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Small">
             <sa-icon name="plus"/>
@@ -304,7 +350,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
             <partial name="_DestinationEditor" for="@Html.GridItem<Booking>().Destination"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
-    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End">
         <sa-data-grid-edit-template>
             @* Named: EditorTemplates/Currency.cshtml *@
             @Html.EditorFor(_ => Html.GridItem<Booking>().Amount, "Currency")
@@ -328,7 +374,7 @@ Renders a table of items, with columns declared by `sa-data-grid-column` childre
             <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Destination"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
-    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" align="DataGridColumnAlign.End">
         <sa-data-grid-edit-template>
             <sa-input class="sa-cell-editor text-right" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
             <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Amount"/>

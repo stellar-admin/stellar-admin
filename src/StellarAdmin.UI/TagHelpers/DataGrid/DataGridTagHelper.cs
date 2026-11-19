@@ -227,15 +227,31 @@ public sealed class DataGridTagHelper : StellarAdminTagHelperBase
         }
     }
 
+    /// <summary>
+    ///     Renders the header: a row per level of column groups and a row of column heads. A
+    ///     group spans its columns, a column spans the group rows below its level, and the
+    ///     selection and toggle heads span every row. The heads at the table's edges are marked,
+    ///     since in a header of several rows a row's first or last head can sit inside the table.
+    /// </summary>
     private async Task<IHtmlContent> RenderHeader(
         TagHelperContext context,
         DataGridContext gridContext
     )
     {
-        var headerRowBuilder = new TagBuilder("tr");
-        headerRowBuilder.Attributes.Add("data-slot", "table-row");
-        headerRowBuilder.Attributes.Add("class", "sa-table-row");
+        var columns = gridContext.Columns;
+        var groupPaths = columns.Select(column => GetGroupPath(column.Group)).ToList();
+        var rowCount = 1 + groupPaths.Select(path => path.Count).DefaultIfEmpty(0).Max();
+        var lastIndex = GetColumnCount(gridContext) - 1;
 
+        var headerRows = new TagBuilder[rowCount];
+        for (var level = 0; level < rowCount; level++)
+        {
+            headerRows[level] = new TagBuilder("tr");
+            headerRows[level].Attributes.Add("data-slot", "table-row");
+            headerRows[level].Attributes.Add("class", "sa-table-row");
+        }
+
+        var index = 0;
         if (gridContext.Selection is not null)
         {
             var selectAllHeadBuilder = new TagBuilder("th");
@@ -251,21 +267,85 @@ public sealed class DataGridTagHelper : StellarAdminTagHelperBase
                     ]
                 )
             );
-            headerRowBuilder.InnerHtml.AppendHtml(selectAllHeadBuilder);
+            SetHeadSpan(selectAllHeadBuilder, rowCount, index, index, lastIndex);
+            headerRows[0].InnerHtml.AppendHtml(selectAllHeadBuilder);
+            index++;
         }
 
         if (gridContext.RowDetail is { Toggle: DataGridRowDetailToggle.Start })
         {
-            headerRowBuilder.InnerHtml.AppendHtml(
-                await RenderToggleCell(context, "th", "table-head", "sa-table-head", all: true)
+            var toggleHeadBuilder = await RenderToggleCell(
+                context,
+                "th",
+                "table-head",
+                "sa-table-head",
+                all: true
             );
+            SetHeadSpan(toggleHeadBuilder, rowCount, index, index, lastIndex);
+            headerRows[0].InnerHtml.AppendHtml(toggleHeadBuilder);
+            index++;
         }
 
-        foreach (var column in gridContext.Columns)
+        for (var i = 0; i < columns.Count; i++, index++)
         {
+            var column = columns[i];
+            var groupPath = groupPaths[i];
+
+            // A group's head goes before its first column.
+            for (var level = 0; level < groupPath.Count; level++)
+            {
+                var group = groupPath[level];
+                if (i > 0 && groupPaths[i - 1].ElementAtOrDefault(level) == group)
+                {
+                    continue;
+                }
+
+                var span = 1;
+                while (
+                    i + span < columns.Count
+                    && groupPaths[i + span].ElementAtOrDefault(level) == group
+                )
+                {
+                    span++;
+                }
+
+                var groupHeadBuilder = new TagBuilder("th");
+                groupHeadBuilder.Attributes.Add("data-slot", "table-head");
+                groupHeadBuilder.Attributes.Add(
+                    "class",
+                    JoinCssClasses("sa-table-head", group.CssClass)
+                );
+                groupHeadBuilder.Attributes.Add("scope", "colgroup");
+                if (span > 1)
+                {
+                    groupHeadBuilder.Attributes.Add(
+                        "colspan",
+                        span.ToString(CultureInfo.InvariantCulture)
+                    );
+                }
+                if (group.Align != DataGridColumnGroupAlign.Center)
+                {
+                    groupHeadBuilder.Attributes.Add(
+                        "data-align",
+                        group.Align.GetDataAttributeText()
+                    );
+                }
+                SetHeadSpan(groupHeadBuilder, 1, index, index + span - 1, lastIndex);
+                if (group.Title is not null)
+                {
+                    groupHeadBuilder.InnerHtml.Append(group.Title);
+                }
+                headerRows[level].InnerHtml.AppendHtml(groupHeadBuilder);
+            }
+
             var headBuilder = new TagBuilder("th");
             headBuilder.Attributes.Add("data-slot", "table-head");
             headBuilder.Attributes.Add("class", JoinCssClasses("sa-table-head", column.CssClass));
+            if (column.Align != DataGridColumnAlign.Start)
+            {
+                headBuilder.Attributes.Add("data-align", column.Align.GetDataAttributeText());
+            }
+            SetHeadSpan(headBuilder, rowCount - groupPath.Count, index, index, lastIndex);
 
             var headerContent = new HtmlContentBuilder();
             if (column.HeaderHtml is not null)
@@ -305,22 +385,68 @@ public sealed class DataGridTagHelper : StellarAdminTagHelperBase
                 headBuilder.InnerHtml.AppendHtml(headerContent);
             }
 
-            headerRowBuilder.InnerHtml.AppendHtml(headBuilder);
+            headerRows[groupPath.Count].InnerHtml.AppendHtml(headBuilder);
         }
 
         if (gridContext.RowDetail is { Toggle: DataGridRowDetailToggle.End })
         {
-            headerRowBuilder.InnerHtml.AppendHtml(
-                await RenderToggleCell(context, "th", "table-head", "sa-table-head", all: true)
+            var toggleHeadBuilder = await RenderToggleCell(
+                context,
+                "th",
+                "table-head",
+                "sa-table-head",
+                all: true
             );
+            SetHeadSpan(toggleHeadBuilder, rowCount, index, index, lastIndex);
+            headerRows[0].InnerHtml.AppendHtml(toggleHeadBuilder);
         }
 
         var headerBuilder = new TagBuilder("thead");
         headerBuilder.Attributes.Add("data-slot", "table-header");
         headerBuilder.Attributes.Add("class", "sa-table-header");
-        headerBuilder.InnerHtml.AppendHtml(headerRowBuilder);
+        foreach (var headerRow in headerRows)
+        {
+            headerBuilder.InnerHtml.AppendHtml(headerRow);
+        }
 
         return headerBuilder;
+    }
+
+    /// <summary>The groups a column sits in, outermost first.</summary>
+    private static List<DataGridColumnGroup> GetGroupPath(DataGridColumnGroup? group)
+    {
+        var path = new List<DataGridColumnGroup>();
+        for (; group is not null; group = group.Parent)
+        {
+            path.Insert(0, group);
+        }
+
+        return path;
+    }
+
+    /// <summary>
+    ///     Sets a head's row span and marks it when it starts or ends at the table's edge.
+    /// </summary>
+    private static void SetHeadSpan(
+        TagBuilder headBuilder,
+        int rowSpan,
+        int startIndex,
+        int endIndex,
+        int lastIndex
+    )
+    {
+        if (rowSpan > 1)
+        {
+            headBuilder.Attributes["rowspan"] = rowSpan.ToString(CultureInfo.InvariantCulture);
+        }
+        if (startIndex == 0)
+        {
+            headBuilder.Attributes["data-edge-start"] = "";
+        }
+        if (endIndex == lastIndex)
+        {
+            headBuilder.Attributes["data-edge-end"] = "";
+        }
     }
 
     private async Task<IHtmlContent> RenderBody(
@@ -537,6 +663,10 @@ public sealed class DataGridTagHelper : StellarAdminTagHelperBase
                 foreach (var cell in currentRow.Cells)
                 {
                     var cellBuilder = BuildCell(cell.CssClass);
+                    if (cell.Align != DataGridColumnAlign.Start)
+                    {
+                        cellBuilder.Attributes.Add("data-align", cell.Align.GetDataAttributeText());
+                    }
                     cellBuilder.InnerHtml.AppendHtml(cell.Html);
                     rowBuilder.InnerHtml.AppendHtml(cellBuilder);
                 }
@@ -629,7 +759,7 @@ public sealed class DataGridTagHelper : StellarAdminTagHelperBase
     ///     library toggle tag helper so it matches a hand-written
     ///     <c>&lt;sa-table-row-detail-toggle&gt;</c>.
     /// </summary>
-    private async Task<IHtmlContent> RenderToggleCell(
+    private async Task<TagBuilder> RenderToggleCell(
         TagHelperContext context,
         string tagName,
         string slot,

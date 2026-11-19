@@ -42,28 +42,7 @@
                        asp-route-sortBy="{sortField}" asp-route-sortDirection="{sortDirection}"
                        preserve-query="true" preserve-query-except="page"
                        sort-field="@Model.Sort?.By" sort-direction="@Model.Sort?.Direction" />
-    @for (var index = 0; index < Model.Columns.Count; index++)
-    {
-        var column = Model.Columns[index];
-        var display = displays[index];
-
-        // The display template reads its display from the view context's data, which the column renders it with.
-        // Numbers line up on the right, header and cells alike
-        ViewContext.ViewData[ViewDataKeys.FieldDisplay] = display;
-        ViewContext.ViewData[ViewDataKeys.FieldLabel] = column.Title;
-        <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
-                             template="@display?.TemplateName" template-renders-empty="@(display?.RendersEmptyValue == true)"
-                             empty-text="@column.EmptyText"
-                             sortable="@column.Sortable" sort-field="@column.SortField"
-                             class="@(display is NumberDisplay ? "text-right" : null)">
-            @if (rowFields?[index] is { } field && rowModel is not null && FieldStates.ShowsGridEditor(field, rowModel, MetadataProvider))
-            {
-                <sa-data-grid-edit-template>
-                    @await Html.GridEditorAsync(field, rowModel)
-                </sa-data-grid-edit-template>
-            }
-        </sa-data-grid-column>
-    }
+    @{ await RenderColumns(0, Model.Columns.Count, null); }
     @{
         ViewContext.ViewData.Remove(ViewDataKeys.FieldDisplay);
         ViewContext.ViewData.Remove(ViewDataKeys.FieldLabel);
@@ -348,4 +327,72 @@
             </span>
         </td>
     </tr>
+}
+
+@{
+    // Renders the columns from start up to end that sit in the group, nesting each run of columns that share a group
+    // inside it in that group's element
+    async Task RenderColumns(int start, int end, DataGridColumnGroupOptions? group)
+    {
+        var index = start;
+        while (index < end)
+        {
+            if (FindChildGroup(Model.Columns[index].Group, group) is not { } child)
+            {
+                await RenderColumn(index);
+                index++;
+                continue;
+            }
+
+            var runEnd = index + 1;
+            while (runEnd < end && FindChildGroup(Model.Columns[runEnd].Group, group) == child)
+            {
+                runEnd++;
+            }
+
+            var runStart = index;
+            <sa-data-grid-column-group title="@child.Title" align="child.Align">
+                @{ await RenderColumns(runStart, runEnd, child); }
+            </sa-data-grid-column-group>
+            index = runEnd;
+        }
+    }
+
+    async Task RenderColumn(int index)
+    {
+        var column = Model.Columns[index];
+        var display = displays[index];
+
+        // The display template reads its display from the view context's data, which the column renders it with.
+        // Numbers line up at the end, header and cells alike, unless the column sets its own alignment
+        ViewContext.ViewData[ViewDataKeys.FieldDisplay] = display;
+        ViewContext.ViewData[ViewDataKeys.FieldLabel] = column.Title;
+        <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
+                             template="@display?.TemplateName" template-renders-empty="@(display?.RendersEmptyValue == true)"
+                             empty-text="@column.EmptyText"
+                             sortable="@column.Sortable" sort-field="@column.SortField"
+                             align="@(column.Align ?? (display is NumberDisplay ? DataGridColumnAlign.End : DataGridColumnAlign.Start))">
+            @if (rowFields?[index] is { } field && rowModel is not null && FieldStates.ShowsGridEditor(field, rowModel, MetadataProvider))
+            {
+                <sa-data-grid-edit-template>
+                    @await Html.GridEditorAsync(field, rowModel)
+                </sa-data-grid-edit-template>
+            }
+        </sa-data-grid-column>
+    }
+
+    // The group directly inside the parent that contains the column's group, or null when the column sits in the
+    // parent itself
+    static DataGridColumnGroupOptions? FindChildGroup(DataGridColumnGroupOptions? group, DataGridColumnGroupOptions? parent)
+    {
+        for (; group is not null && group != parent; group = group.Parent)
+        {
+            if (group.Parent == parent)
+            {
+                return group;
+            }
+        }
+
+        return null;
+    }
 }
