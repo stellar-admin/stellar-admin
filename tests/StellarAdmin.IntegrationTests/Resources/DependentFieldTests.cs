@@ -29,7 +29,7 @@ public class DependentFieldTests
         var document = await client.GetDocumentAsync(EditUrl);
 
         // Assert
-        var field = document.RequiredElement("admin-dependent-field[name='Entity.CityId']");
+        var field = document.RequiredElement("admin-dependent-field[field='Entity.CityId']");
         await Assert.That(field.GetAttribute("refresh-url")).IsEqualTo(DependentsUrl);
         using var parents = JsonDocument.Parse(field.GetAttribute("parents")!);
         var parent = parents.RootElement.EnumerateArray().Single();
@@ -37,8 +37,22 @@ public class DependentFieldTests
         await Assert.That(parent.GetProperty("field").GetString()).IsEqualTo("CountryId");
         await Assert.That(parent.GetProperty("label").GetString()).IsEqualTo("Country");
         await Assert
-            .That(document.QuerySelector("admin-dependent-field[name='Entity.CountryId']"))
+            .That(document.QuerySelector("admin-dependent-field[field='Entity.CountryId']"))
             .IsNull();
+    }
+
+    [Test]
+    public async Task EditForm_DependentField_HasNoNameAttribute()
+    {
+        // Arrange
+        await using var sut = await CreateHost(new() { CountryId = 1 });
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(EditUrl);
+
+        // Assert
+        await Assert.That(document.QuerySelectorAll("admin-dependent-field[name]")).IsEmpty();
     }
 
     [Test]
@@ -93,7 +107,7 @@ public class DependentFieldTests
         var document = await client.GetDocumentAsync(EditUrl);
 
         // Assert
-        var field = document.RequiredElement("admin-dependent-field[name='Entity.StopIds']");
+        var field = document.RequiredElement("admin-dependent-field[field='Entity.StopIds']");
         await Assert
             .That(field.RequiredElement(".sa-dependent-empty").TextContent.Trim())
             .IsEqualTo("Choose a city to see its stops");
@@ -145,7 +159,7 @@ public class DependentFieldTests
             .That(
                 document
                     .QuerySelectorAll("admin-dependent-field")
-                    .Select(field => field.GetAttribute("name")!)
+                    .Select(field => field.GetAttribute("field")!)
             )
             .IsEquivalentTo(
                 ["Entity.CityId", "Entity.PlaceId", "Entity.StopIds"],
@@ -160,7 +174,7 @@ public class DependentFieldTests
             .That(
                 document
                     .RequiredElement(
-                        "admin-dependent-field[name='Entity.StopIds'] .sa-dependent-empty"
+                        "admin-dependent-field[field='Entity.StopIds'] .sa-dependent-empty"
                     )
                     .TextContent.Trim()
             )

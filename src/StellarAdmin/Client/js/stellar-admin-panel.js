@@ -1346,7 +1346,7 @@ async function refreshDependents(scope, name) {
     for (const field of fields) {
       if (!affected.has(field) && field.parents.some((parent) => names.has(parent.name))) {
         affected.add(field);
-        names.add(field.getAttribute("name"));
+        names.add(field.getAttribute("field"));
         grew = true;
       }
     }
@@ -1390,7 +1390,7 @@ async function refreshDependents(scope, name) {
     parsed.innerHTML = await response.text();
     for (const replacement of parsed.content.querySelectorAll("admin-dependent-field")) {
       const current = [...affected].find(
-        (field) => field.getAttribute("name") === replacement.getAttribute("name"),
+        (field) => field.getAttribute("field") === replacement.getAttribute("field"),
       );
       if (current?.isConnected) {
         current.replaceWith(replacement);
