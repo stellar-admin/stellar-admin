@@ -213,14 +213,16 @@ public class ResourceIndexWidgetTests
         await using var sut = await StellarAdminTestHost.CreateAsync(
             resource =>
                 resource.Index(index =>
+                {
                     index.Widgets(widgets =>
                         widgets.Add<SalesHandler>(
                             "Sales",
                             "_SalesWidget",
                             widget => widget.Parameters(_ => new SalesParameters("Index", 30))
                         )
-                    )
-                ),
+                    );
+                    index.AddTable("table");
+                }),
             admin =>
                 admin.ConfigureHomePage(home =>
                     home.Widgets(widgets =>
@@ -302,6 +304,7 @@ public class ResourceIndexWidgetTests
                     index.EnableSearch();
                     configureIndex?.Invoke(index);
                     index.Widgets(configure);
+                    index.AddTable("table");
                 }),
             environmentName: "Production"
         );

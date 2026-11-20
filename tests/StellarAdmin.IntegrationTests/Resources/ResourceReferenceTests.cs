@@ -422,12 +422,17 @@ public class ResourceReferenceTests
                     supplier.UseDataSource<SupplierDataSource>();
                     supplier.UseKey(item => item.Id);
                     supplier.Index(index =>
-                    {
-                        index.Columns(columns =>
-                            columns.Add(item => item.Name, column => column.Sortable())
-                        );
-                        index.DefaultSortBy(item => item.Name);
-                    });
+                        index.AddTable(
+                            "table",
+                            table =>
+                            {
+                                table.Columns(columns =>
+                                    columns.Add(item => item.Name, column => column.Sortable())
+                                );
+                                table.DefaultSortBy(item => item.Name);
+                            }
+                        )
+                    );
                     configureSuppliers?.Invoke(supplier);
                 });
                 configureAdmin?.Invoke(admin);

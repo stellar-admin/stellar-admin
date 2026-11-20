@@ -15,11 +15,16 @@ public class ResourceOptionsFactoryTests
             .AddStellarAdmin()
             .AddResource<Product>()
             .Index(index =>
-            {
-                index.Columns(columns => columns.Add(product => product.Name).Sortable());
-                index.DefaultSortBy(product => product.Name);
-                index.EnablePaging();
-            });
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(columns => columns.Add(product => product.Name).Sortable());
+                        table.DefaultSortBy(product => product.Name);
+                        table.EnablePaging();
+                    }
+                )
+            );
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -29,14 +34,14 @@ public class ResourceOptionsFactoryTests
         var table = await Assert
             .That(options.Index.Layouts.Single())
             .IsTypeOf<ResourceTableDataLayoutOptions>();
-        await Assert.That(table!.Key).IsEqualTo(ResourceIndexOptions.ImplicitTableKey);
+        await Assert.That(table!.Key).IsEqualTo("table");
         await Assert.That(table.Columns.Count).IsEqualTo(1);
         await Assert.That(table.DefaultSort!.Field).IsEqualTo(nameof(Product.Name));
         await Assert.That(table.Paging).IsNotNull();
     }
 
     [Test]
-    public async Task Create_WhenIndexIsNotConfigured_HasOneEmptyTableLayout()
+    public async Task Create_WhenIndexIsNotConfigured_HasNoDataLayouts()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -47,11 +52,7 @@ public class ResourceOptionsFactoryTests
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        var table = await Assert
-            .That(options.Index.Layouts.Single())
-            .IsTypeOf<ResourceTableDataLayoutOptions>();
-        await Assert.That(table!.Key).IsEqualTo(ResourceIndexOptions.ImplicitTableKey);
-        await Assert.That(table.Columns).IsEmpty();
+        await Assert.That(options.Index.Layouts).IsEmpty();
     }
 
     public sealed class Product

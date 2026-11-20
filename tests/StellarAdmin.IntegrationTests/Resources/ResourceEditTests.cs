@@ -98,7 +98,11 @@ public class ResourceEditTests
                 }
                 if (configuration == 2)
                 {
-                    resource.Index(index => index.EditLabel = "Update");
+                    resource.Index(index =>
+                    {
+                        index.EditLabel = "Update";
+                        index.AddTable("table");
+                    });
                     edit.Title = "Update inventory";
                     edit.SubmitLabel = "Apply";
                 }
@@ -114,7 +118,10 @@ public class ResourceEditTests
                             edit.Title = resource => $"Change {resource.SingularLabel}";
                             edit.SubmitLabel = resource => "Save changes";
                         });
-                        labels.Index(index => index.EditLabel = resource => "Change");
+                        labels.Index(index =>
+                        {
+                            index.EditLabel = resource => "Change";
+                        });
                     });
                 }
             }

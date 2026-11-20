@@ -14,11 +14,20 @@ public class ResourceInlineRowTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
         {
             resource.Index(index =>
-                index.Columns(columns =>
-                    columns.Add(
-                        product => product.Category!.Name,
-                        column => column.Title = "Category"
-                    )
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                            columns.Add(
+                                product => product.Category!.Name,
+                                column => column.Title = "Category"
+                            )
+                        );
+                        table.EnableInlineEditing(inline =>
+                            inline.AfterSave = InlineRowAfterSave.KeepInPlace
+                        );
+                    }
                 )
             );
             resource.AllowDelete();
@@ -29,7 +38,6 @@ public class ResourceInlineRowTests
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                 });
-                edit.UseInlineRow(inline => inline.AfterSave = InlineRowAfterSave.KeepInPlace);
             });
         });
         using var client = sut.CreateClient();

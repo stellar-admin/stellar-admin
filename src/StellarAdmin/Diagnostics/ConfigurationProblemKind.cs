@@ -30,6 +30,7 @@ internal enum ConfigurationProblemKind
     UnknownKeptField = 1033,
     UnknownParentField = 1034,
     DependencyCycle = 1035,
+    InlineRowsWithoutForm = 1036,
 
     ImageFieldWithoutStore = 1040,
     InvalidUploadLimits = 1041,

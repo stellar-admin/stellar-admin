@@ -16,7 +16,9 @@ public sealed class FormsAddAnotherScenario : Scenario
     {
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         // Registered so the destination field is a lookup
-        admin.AddEfCoreResource<Destination>(resource => resource.Index(index => index.EnablePaging()));
+        admin.AddEfCoreResource<Destination>(resource =>
+            resource.Index(index => index.AddTable("destinations", table => table.EnablePaging()))
+        );
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.AllowCreate(create =>

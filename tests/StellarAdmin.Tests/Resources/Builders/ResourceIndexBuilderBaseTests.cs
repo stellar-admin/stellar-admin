@@ -16,7 +16,9 @@ public class ResourceIndexBuilderBaseTests
         // Arrange
         var services = new ServiceCollection();
         var resource = services.AddStellarAdmin().AddResource<Product>();
-        resource.Index(index => index.EnableRowDetails(partialName));
+        resource.Index(index =>
+            index.AddTable("table", table => table.EnableRowDetails(partialName))
+        );
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -39,7 +41,10 @@ public class ResourceIndexBuilderBaseTests
 
         // Act
         resource.Index(index =>
-            index.EnableRowDetails<ProductNotes, ProductNotesHandler>("_ProductNotes")
+            index.AddTable(
+                "table",
+                table => table.EnableRowDetails<ProductNotes, ProductNotesHandler>("_ProductNotes")
+            )
         );
 
         // Assert
@@ -59,11 +64,15 @@ public class ResourceIndexBuilderBaseTests
 
         // Act
         resource.Index(index =>
-            index.EnableRowDetails(panels =>
-            {
-                panels.Add("Summary", "_ProductSummary");
-                panels.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
-            })
+            index.AddTable(
+                "table",
+                table =>
+                    table.EnableRowDetails(panels =>
+                    {
+                        panels.Add("Summary", "_ProductSummary");
+                        panels.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
+                    })
+            )
         );
 
         // Assert
@@ -89,7 +98,9 @@ public class ResourceIndexBuilderBaseTests
         // Arrange
         var services = new ServiceCollection();
         var resource = services.AddStellarAdmin().AddResource<Product>();
-        resource.Index(index => index.EnableRowDetails(panels => { }));
+        resource.Index(index =>
+            index.AddTable("table", table => table.EnableRowDetails(panels => { }))
+        );
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -109,11 +120,15 @@ public class ResourceIndexBuilderBaseTests
         var services = new ServiceCollection();
         var resource = services.AddStellarAdmin().AddResource<Product>();
         resource.Index(index =>
-            index.EnableRowDetails(panels =>
-            {
-                panels.Add("Order history", "_OrderHistory");
-                panels.Add("Orders", "_Orders").Name = "order-history";
-            })
+            index.AddTable(
+                "table",
+                table =>
+                    table.EnableRowDetails(panels =>
+                    {
+                        panels.Add("Order history", "_OrderHistory");
+                        panels.Add("Orders", "_Orders").Name = "order-history";
+                    })
+            )
         );
         using var provider = services.BuildServiceProvider();
 
@@ -142,15 +157,19 @@ public class ResourceIndexBuilderBaseTests
         var services = new ServiceCollection();
         var resource = services.AddStellarAdmin().AddResource<Product>();
         resource.Index(index =>
-            index.EnableRowDetails(panels =>
-            {
-                panels.Add("Notes", "_Notes");
-                var panel = panels.Add(title, partialName);
-                if (name.Length > 0)
-                {
-                    panel.Name = name;
-                }
-            })
+            index.AddTable(
+                "table",
+                table =>
+                    table.EnableRowDetails(panels =>
+                    {
+                        panels.Add("Notes", "_Notes");
+                        var panel = panels.Add(title, partialName);
+                        if (name.Length > 0)
+                        {
+                            panel.Name = name;
+                        }
+                    })
+            )
         );
         using var provider = services.BuildServiceProvider();
 

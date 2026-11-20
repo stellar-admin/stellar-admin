@@ -19,14 +19,19 @@ public sealed class TitlesAndReferencesPageTitleScenario : Scenario
         {
             resource.UseTitle(guide => guide.FirstName + " " + guide.LastName);
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns =>
-                {
-                    columns.Add(guide => guide.FirstName);
-                    columns.Add(guide => guide.LastName);
-                });
-            });
+                index.AddTable(
+                    "guides",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns =>
+                        {
+                            columns.Add(guide => guide.FirstName);
+                            columns.Add(guide => guide.LastName);
+                        });
+                    }
+                )
+            );
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {

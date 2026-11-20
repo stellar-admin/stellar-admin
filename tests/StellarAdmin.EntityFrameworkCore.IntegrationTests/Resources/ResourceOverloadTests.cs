@@ -102,8 +102,10 @@ public class ResourceOverloadTests
             services.AddStellarAdmin(admin =>
                 admin.AddEfCoreResource<Product>(resource =>
                     resource.Index(index =>
-                        index.EnableScopes(scopes => scopes.Add("all", "All products", null!))
-                    )
+                    {
+                        index.EnableScopes(scopes => scopes.Add("all", "All products", null!));
+                        index.AddTable("table");
+                    })
                 )
             );
 

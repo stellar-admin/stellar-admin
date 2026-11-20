@@ -27,11 +27,15 @@ internal static class GuideResourceRegistration
             resource.UseKey(guide => guide.Id);
             resource.AllowDelete();
             resource.Index(index =>
-                index.Columns(columns =>
-                {
-                    columns.Add(guide => guide.Name);
-                    columns.Add(guide => guide.Bio);
-                })
+                index.AddTable(
+                    "guides",
+                    table =>
+                        table.Columns(columns =>
+                        {
+                            columns.Add(guide => guide.Name);
+                            columns.Add(guide => guide.Bio);
+                        })
+                )
             );
             resource.AllowView(view =>
                 view.Fields(fields =>

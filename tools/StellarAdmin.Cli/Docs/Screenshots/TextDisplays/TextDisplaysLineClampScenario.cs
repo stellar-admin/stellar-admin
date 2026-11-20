@@ -19,16 +19,22 @@ public sealed class TextDisplaysLineClampScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Title);
-                    columns.Add(
-                        trip => trip.Summary,
-                        column => column.UseDisplay<TextDisplay>(text => text.LineClamp = 2)
-                    );
-                });
-                // Six rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 6);
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Title);
+                            columns.Add(
+                                trip => trip.Summary,
+                                column => column.UseDisplay<TextDisplay>(text => text.LineClamp = 2)
+                            );
+                        });
+                        // Six rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 6);
+                    }
+                );
             })
         );
     }

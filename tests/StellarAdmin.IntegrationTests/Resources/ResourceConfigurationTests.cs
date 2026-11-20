@@ -35,11 +35,15 @@ public class ResourceConfigurationTests
             new ProductState([new(1, "Notebook", 12.50m)]),
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Clear();
-                        columns.Add(product => product.Name).Title = "Item";
-                    })
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
+                            {
+                                columns.Clear();
+                                columns.Add(product => product.Name).Title = "Item";
+                            })
+                    )
                 )
         );
         using var client = sut.GetTestClient();
@@ -75,6 +79,7 @@ public class ResourceConfigurationTests
                     {
                         index.Title = "Stock";
                         index.CreateLabel = "Receive stock";
+                        index.AddTable("table");
                     });
                     resource.AllowCreate(create =>
                     {
@@ -147,7 +152,11 @@ public class ResourceConfigurationTests
         await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
         {
             resource.PluralLabel = "Inventory";
-            resource.Index(index => index.Title = title);
+            resource.Index(index =>
+            {
+                index.Title = title;
+                index.AddTable("table");
+            });
         });
         using var client = sut.GetTestClient();
 

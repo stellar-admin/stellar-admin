@@ -155,379 +155,374 @@ internal static class ProductResourceRegistration
             resource.AllowDelete();
             // Two tables the switcher at the end of the controls row moves between: the catalog, and prices from the
             // most expensive. The scopes, search and widgets are shared, so they carry over when switching
-            resource.Index(
-                index =>
+            resource.Index(index =>
+            {
+                index.EnableScopes(scopes =>
                 {
-                    index.EnableScopes(scopes =>
-                    {
-                        scopes.Add("all", "All products");
-                        scopes.Add("under-50", "Under 50", product => product.Price < 50);
-                        scopes.Add("50-and-over", "50 and over", product => product.Price >= 50);
-                        scopes.DefaultScope = "all";
-                    });
-                    index.EnableSearch(
-                        term => product => product.Name.Contains(term),
-                        search => search.Placeholder = "Search products..."
-                    );
-                    // A price summary of the listed products above the grid, which follows the scope and search, and the
-                    // top categories beside it
-                    index.Widgets(widgets =>
-                    {
-                        widgets.Add<ProductPriceSummaryHandler>(
-                            "Price summary",
-                            "_ProductPriceSummaryWidget",
-                            widget =>
-                                widget.Parameters(context => new ProductPriceSummaryParameters(
-                                    context.Scope,
-                                    context.Search
-                                ))
-                        );
-                        widgets.Add<TopCategoriesHandler>(
-                            "Top categories",
-                            "_TopCategoriesWidget",
-                            widget =>
-                            {
-                                widget.Placement = WidgetPlacement.Aside;
-                                widget.Parameters(_ => new TopCategoriesParameters(Count: 5));
-                            }
-                        );
-                    });
-                },
-                layouts =>
+                    scopes.Add("all", "All products");
+                    scopes.Add("under-50", "Under 50", product => product.Price < 50);
+                    scopes.Add("50-and-over", "50 and over", product => product.Price >= 50);
+                    scopes.DefaultScope = "all";
+                });
+                index.EnableSearch(
+                    term => product => product.Name.Contains(term),
+                    search => search.Placeholder = "Search products..."
+                );
+                // A price summary of the listed products above the grid, which follows the scope and search, and the
+                // top categories beside it
+                index.Widgets(widgets =>
                 {
-                    layouts.AddTable(
-                        "catalog",
-                        table =>
+                    widgets.Add<ProductPriceSummaryHandler>(
+                        "Price summary",
+                        "_ProductPriceSummaryWidget",
+                        widget =>
+                            widget.Parameters(context => new ProductPriceSummaryParameters(
+                                context.Scope,
+                                context.Search
+                            ))
+                    );
+                    widgets.Add<TopCategoriesHandler>(
+                        "Top categories",
+                        "_TopCategoriesWidget",
+                        widget =>
                         {
-                            table.Title = "Catalog";
-                            table.Icon = "table";
-                            table.DefaultSortBy(product => product.Name);
-                            // Pricing loads when it's first opened, with one query for that product. Overview renders with
-                            // the index, and Related loads when it's first opened
-                            table.EnableRowDetails(panels =>
-                            {
-                                panels.Add(
-                                    "Pricing",
-                                    "_ProductPricing",
-                                    product => new ProductPricing(
-                                        product.Name,
-                                        product.Details.Sku,
-                                        product.Category != null ? product.Category.Name : null,
-                                        product.Price
-                                    ),
-                                    panel => panel.Icon = "tag"
-                                );
-                                panels.Add(
-                                    "Overview",
-                                    "_ProductOverview",
-                                    panel => panel.Icon = "package"
-                                );
-                                panels.Add<RelatedProducts, RelatedProductsHandler>(
-                                    "Related",
-                                    "_RelatedProducts",
-                                    panel => panel.Icon = "link"
-                                );
-                            });
-                            table.EnablePaging(paging =>
-                            {
-                                paging.PageSize = 10;
-                                paging.PageSizes = [10, 25, 50];
-                            });
-                            table.Columns(columns =>
-                            {
-                                columns.Add(product => product.Id);
-                                columns.Add(
-                                    product => product.Details.Sku,
-                                    column => column.Sortable()
-                                );
-                                columns.Add(
-                                    product => product.Category,
-                                    column => column.Sortable(product => product.Category!.Name)
-                                );
-                                columns.Add(
-                                    product => product.Name,
-                                    column => column.Sortable(product => product.Name.ToLower())
-                                );
-                                columns.Add(
-                                    product => product.Price,
-                                    column =>
-                                    {
-                                        column.Sortable();
-                                        column.Title = "Unit price";
-                                        column.UseDisplay<NumberDisplay>(number =>
-                                            number.Format = "0.00"
-                                        );
-                                    }
-                                );
-                                // columns.Add(product => product.Tags, column => column.UseDisplay<BadgeDisplay>());
-                                columns.Add(
-                                    product => string.Join(",", product.Tags.Select(t => t.Name)),
-                                    column =>
-                                    {
-                                        column.Title = "Tags";
-                                        column.Sortable(c => c.Tags.Count);
-                                    }
-                                );
-                            });
+                            widget.Placement = WidgetPlacement.Aside;
+                            widget.Parameters(_ => new TopCategoriesParameters(Count: 5));
                         }
                     );
-                    // Its own columns, sort and page size, and no delete button
-                    layouts.AddTable(
-                        "pricing",
-                        table =>
+                });
+                index.AddTable(
+                    "catalog",
+                    table =>
+                    {
+                        table.Title = "Catalog";
+                        table.Icon = "table";
+                        table.DefaultSortBy(product => product.Name);
+                        // Pricing loads when it's first opened, with one query for that product. Overview renders with
+                        // the index, and Related loads when it's first opened
+                        table.EnableRowDetails(panels =>
                         {
-                            table.Title = "Pricing";
-                            table.Icon = "tag";
-                            table.DefaultSortByDescending(product => product.Price);
-                            table.EnablePaging(paging => paging.PageSize = 25);
-                            table.RowActions(actions => actions.Delete = false);
-                            table.Columns(columns =>
-                            {
-                                columns.Add(
-                                    product => product.Name,
-                                    column => column.Sortable(product => product.Name.ToLower())
-                                );
-                                columns.Add(
-                                    product => product.Category,
-                                    column => column.Sortable(product => product.Category!.Name)
-                                );
-                                columns.Add(
-                                    product => product.Price,
-                                    column =>
-                                    {
-                                        column.Sortable();
-                                        column.Title = "Unit price";
-                                        column.UseDisplay<NumberDisplay>(number =>
-                                            number.Format = "0.00"
-                                        );
-                                    }
-                                );
-                            });
-                        }
-                    );
-                    // Every listed product as a card, from Areas/StellarAdmin/Views/Products/_ProductCards
-                    layouts.AddPartial(
-                        "cards",
-                        "_ProductCards",
-                        cards =>
+                            panels.Add(
+                                "Pricing",
+                                "_ProductPricing",
+                                product => new ProductPricing(
+                                    product.Name,
+                                    product.Details.Sku,
+                                    product.Category != null ? product.Category.Name : null,
+                                    product.Price
+                                ),
+                                panel => panel.Icon = "tag"
+                            );
+                            panels.Add(
+                                "Overview",
+                                "_ProductOverview",
+                                panel => panel.Icon = "package"
+                            );
+                            panels.Add<RelatedProducts, RelatedProductsHandler>(
+                                "Related",
+                                "_RelatedProducts",
+                                panel => panel.Icon = "link"
+                            );
+                        });
+                        table.EnablePaging(paging =>
                         {
-                            cards.Title = "Cards";
-                            cards.Icon = "layout-grid";
-                        }
-                    );
-                    // The built-in cards layout, without images: the category as a badge, the price and id as stats,
-                    // and the SKU and tags in a grid. Edit is a button in the footer, and delete is in its menu
-                    layouts.AddCards(
-                        "built-in-cards",
-                        cards =>
+                            paging.PageSize = 10;
+                            paging.PageSizes = [10, 25, 50];
+                        });
+                        table.Columns(columns =>
                         {
-                            cards.Title = "Built-in cards";
-                            cards.Icon = "layout-dashboard";
-                            cards.DefaultSortBy(product => product.Name);
-                            cards.EnablePaging(paging =>
-                            {
-                                paging.PageSize = 12;
-                                paging.PageSizes = [12, 24, 48];
-                            });
-                            cards.Card(card =>
-                            {
-                                card.Title(product => product.Name);
-                                card.Description(product => product.Details.Sku);
-                                card.Badge(product => product.Category!.Name);
-                                card.Stats(stats =>
+                            columns.Add(product => product.Id);
+                            columns.Add(
+                                product => product.Details.Sku,
+                                column => column.Sortable()
+                            );
+                            columns.Add(
+                                product => product.Category,
+                                column => column.Sortable(product => product.Category!.Name)
+                            );
+                            columns.Add(
+                                product => product.Name,
+                                column => column.Sortable(product => product.Name.ToLower())
+                            );
+                            columns.Add(
+                                product => product.Price,
+                                column =>
                                 {
-                                    stats.Add(
-                                        product => product.Price,
-                                        stat =>
-                                        {
-                                            stat.Title = "Unit price";
-                                            stat.UseDisplay<NumberDisplay>(number =>
-                                                number.Format = "0.00"
-                                            );
-                                        }
+                                    column.Sortable();
+                                    column.Title = "Unit price";
+                                    column.UseDisplay<NumberDisplay>(number =>
+                                        number.Format = "0.00"
                                     );
-                                    stats.Add(product => product.Id);
-                                });
-                                card.Fields(fields =>
+                                }
+                            );
+                            // columns.Add(product => product.Tags, column => column.UseDisplay<BadgeDisplay>());
+                            columns.Add(
+                                product => string.Join(",", product.Tags.Select(t => t.Name)),
+                                column =>
                                 {
-                                    fields.Layout = ResourceCardFieldLayout.Grid;
-                                    fields.Add(product => product.Category);
-                                    fields
-                                        .Add(product => product.Tags)
-                                        .UseDisplay<BadgeDisplay>(badge => badge.Limit = 2);
-                                });
-                                card.ActionsPlacement = ResourceCardActionsPlacement.Footer;
-                            });
-                        }
-                    );
-                    // Prices per category of the products the scope and search select, from the narrowed query
-                    layouts.AddPartial<CategoryPriceSummary, CategoryPriceSummaryHandler>(
-                        "categories",
-                        "_CategoryPriceSummary",
-                        categories =>
+                                    column.Title = "Tags";
+                                    column.Sortable(c => c.Tags.Count);
+                                }
+                            );
+                        });
+                    }
+                );
+                // Its own columns, sort and page size, and no delete button
+                index.AddTable(
+                    "pricing",
+                    table =>
+                    {
+                        table.Title = "Pricing";
+                        table.Icon = "tag";
+                        table.DefaultSortByDescending(product => product.Price);
+                        table.EnablePaging(paging => paging.PageSize = 25);
+                        table.RowActions(actions => actions.Delete = false);
+                        table.Columns(columns =>
                         {
-                            categories.Title = "Prices per category";
-                            categories.Icon = "chart-column";
-                            // Each card's title links to its category, apart from the products without one
-                            categories.LinkTo<Category>(summary => summary.CategoryId);
-                        }
-                    );
-                    // Each product against its category's average, from a handler that sorts and pages the rows. Each
-                    // row is a product, so it has the product's row actions
-                    layouts.AddTable<ProductPriceCheck, ProductPriceCheckHandler>(
-                        "price-check",
-                        table =>
+                            columns.Add(
+                                product => product.Name,
+                                column => column.Sortable(product => product.Name.ToLower())
+                            );
+                            columns.Add(
+                                product => product.Category,
+                                column => column.Sortable(product => product.Category!.Name)
+                            );
+                            columns.Add(
+                                product => product.Price,
+                                column =>
+                                {
+                                    column.Sortable();
+                                    column.Title = "Unit price";
+                                    column.UseDisplay<NumberDisplay>(number =>
+                                        number.Format = "0.00"
+                                    );
+                                }
+                            );
+                        });
+                    }
+                );
+                // Every listed product as a card, from Areas/StellarAdmin/Views/Products/_ProductCards
+                index.AddPartial(
+                    "cards",
+                    "_ProductCards",
+                    cards =>
+                    {
+                        cards.Title = "Cards";
+                        cards.Icon = "layout-grid";
+                    }
+                );
+                // The built-in cards layout, without images: the category as a badge, the price and id as stats,
+                // and the SKU and tags in a grid. Edit is a button in the footer, and delete is in its menu
+                index.AddCards(
+                    "built-in-cards",
+                    cards =>
+                    {
+                        cards.Title = "Built-in cards";
+                        cards.Icon = "layout-dashboard";
+                        cards.DefaultSortBy(product => product.Name);
+                        cards.EnablePaging(paging =>
                         {
-                            table.Title = "Price check";
-                            table.Icon = "scale";
-                            table.HasRecordKey(row => row.ProductId);
-                            table.DefaultSortBy(row => row.Name);
-                            table.EnablePaging(paging => paging.PageSize = 10);
-                            table.Columns(columns =>
+                            paging.PageSize = 12;
+                            paging.PageSizes = [12, 24, 48];
+                        });
+                        cards.Card(card =>
+                        {
+                            card.Title(product => product.Name);
+                            card.Description(product => product.Details.Sku);
+                            card.Badge(product => product.Category!.Name);
+                            card.Stats(stats =>
                             {
-                                columns.Add(row => row.Name, column => column.Sortable());
-                                columns.Add(
-                                    row => row.Category,
-                                    column =>
+                                stats.Add(
+                                    product => product.Price,
+                                    stat =>
                                     {
-                                        column.Sortable();
-                                        column.EmptyText = "No category";
-                                    }
-                                );
-                                columns.Add(
-                                    row => row.Price,
-                                    column =>
-                                    {
-                                        column.Sortable();
-                                        column.UseDisplay<NumberDisplay>(number =>
+                                        stat.Title = "Unit price";
+                                        stat.UseDisplay<NumberDisplay>(number =>
                                             number.Format = "0.00"
                                         );
                                     }
                                 );
-                                columns.Add(
-                                    row => row.CategoryAverage,
-                                    column =>
-                                        column.UseDisplay<NumberDisplay>(number =>
+                                stats.Add(product => product.Id);
+                            });
+                            card.Fields(fields =>
+                            {
+                                fields.Layout = ResourceCardFieldLayout.Grid;
+                                fields.Add(product => product.Category);
+                                fields
+                                    .Add(product => product.Tags)
+                                    .UseDisplay<BadgeDisplay>(badge => badge.Limit = 2);
+                            });
+                            card.ActionsPlacement = ResourceCardActionsPlacement.Footer;
+                        });
+                    }
+                );
+                // Prices per category of the products the scope and search select, from the narrowed query
+                index.AddPartial<CategoryPriceSummary, CategoryPriceSummaryHandler>(
+                    "categories",
+                    "_CategoryPriceSummary",
+                    categories =>
+                    {
+                        categories.Title = "Prices per category";
+                        categories.Icon = "chart-column";
+                        // Each card's title links to its category, apart from the products without one
+                        categories.LinkTo<Category>(summary => summary.CategoryId);
+                    }
+                );
+                // Each product against its category's average, from a handler that sorts and pages the rows. Each
+                // row is a product, so it has the product's row actions
+                index.AddTable<ProductPriceCheck, ProductPriceCheckHandler>(
+                    "price-check",
+                    table =>
+                    {
+                        table.Title = "Price check";
+                        table.Icon = "scale";
+                        table.HasRecordKey(row => row.ProductId);
+                        table.DefaultSortBy(row => row.Name);
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                        table.Columns(columns =>
+                        {
+                            columns.Add(row => row.Name, column => column.Sortable());
+                            columns.Add(
+                                row => row.Category,
+                                column =>
+                                {
+                                    column.Sortable();
+                                    column.EmptyText = "No category";
+                                }
+                            );
+                            columns.Add(
+                                row => row.Price,
+                                column =>
+                                {
+                                    column.Sortable();
+                                    column.UseDisplay<NumberDisplay>(number =>
+                                        number.Format = "0.00"
+                                    );
+                                }
+                            );
+                            columns.Add(
+                                row => row.CategoryAverage,
+                                column =>
+                                    column.UseDisplay<NumberDisplay>(number =>
+                                        number.Format = "0.00"
+                                    )
+                            );
+                            columns.Add(
+                                row => row.Difference,
+                                column =>
+                                {
+                                    column.Sortable();
+                                    column.UseDisplay<NumberDisplay>(number =>
+                                        number.Format = "+0.00;-0.00;0.00"
+                                    );
+                                }
+                            );
+                        });
+                    }
+                );
+                // The products per category, each row linking to its category's view page
+                index.AddTable<CategorySummary, CategorySummaryHandler>(
+                    "category-summary",
+                    table =>
+                    {
+                        table.Title = "Category summary";
+                        table.Icon = "tags";
+                        table.LinkTo<Category>(row => row.CategoryId);
+                        table.Columns(columns =>
+                        {
+                            columns.Add(row => row.Category, column => column.Sortable());
+                            columns.Add(row => row.Products, column => column.Sortable());
+                            columns.Add(
+                                row => row.Average,
+                                column =>
+                                {
+                                    column.Title = "Average price";
+                                    column.Sortable();
+                                    column.UseDisplay<NumberDisplay>(number =>
+                                        number.Format = "0.00"
+                                    );
+                                }
+                            );
+                        });
+                    }
+                );
+                // The price check as cards. Each card is a product, so it has the product's row actions
+                index.AddCards<ProductPriceCheck, ProductPriceCheckHandler>(
+                    "price-check-cards",
+                    cards =>
+                    {
+                        cards.Title = "Price check cards";
+                        cards.Icon = "wallet-cards";
+                        cards.HasRecordKey(row => row.ProductId);
+                        cards.DefaultSortBy(row => row.Name);
+                        cards.EnablePaging(paging =>
+                        {
+                            paging.PageSize = 12;
+                            paging.PageSizes = [12, 24, 48];
+                        });
+                        cards.Card(card =>
+                        {
+                            card.Title(row => row.Name);
+                            card.Badge(row => row.Category);
+                            card.Stats(stats =>
+                            {
+                                stats.Add(
+                                    row => row.Price,
+                                    stat =>
+                                        stat.UseDisplay<NumberDisplay>(number =>
                                             number.Format = "0.00"
                                         )
                                 );
-                                columns.Add(
-                                    row => row.Difference,
-                                    column =>
+                                stats.Add(
+                                    row => row.CategoryAverage,
+                                    stat =>
                                     {
-                                        column.Sortable();
-                                        column.UseDisplay<NumberDisplay>(number =>
-                                            number.Format = "+0.00;-0.00;0.00"
+                                        stat.Title = "Average";
+                                        stat.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "0.00"
                                         );
                                     }
                                 );
+                                stats.Add(
+                                    row => row.Difference,
+                                    stat =>
+                                        stat.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "+0.00;-0.00;0.00"
+                                        )
+                                );
                             });
-                        }
-                    );
-                    // The products per category, each row linking to its category's view page
-                    layouts.AddTable<CategorySummary, CategorySummaryHandler>(
-                        "category-summary",
-                        table =>
+                        });
+                    }
+                );
+                // The products per category as cards, each linking to its category's view page
+                index.AddCards<CategorySummary, CategorySummaryHandler>(
+                    "category-cards",
+                    cards =>
+                    {
+                        cards.Title = "Category cards";
+                        cards.Icon = "tag";
+                        cards.LinkTo<Category>(row => row.CategoryId);
+                        cards.Card(card =>
                         {
-                            table.Title = "Category summary";
-                            table.Icon = "tags";
-                            table.LinkTo<Category>(row => row.CategoryId);
-                            table.Columns(columns =>
+                            card.Title(row => row.Category);
+                            card.Stats(stats =>
                             {
-                                columns.Add(row => row.Category, column => column.Sortable());
-                                columns.Add(row => row.Products, column => column.Sortable());
-                                columns.Add(
+                                stats.Add(row => row.Products);
+                                stats.Add(
                                     row => row.Average,
-                                    column =>
+                                    stat =>
                                     {
-                                        column.Title = "Average price";
-                                        column.Sortable();
-                                        column.UseDisplay<NumberDisplay>(number =>
+                                        stat.Title = "Average price";
+                                        stat.UseDisplay<NumberDisplay>(number =>
                                             number.Format = "0.00"
                                         );
                                     }
                                 );
                             });
-                        }
-                    );
-                    // The price check as cards. Each card is a product, so it has the product's row actions
-                    layouts.AddCards<ProductPriceCheck, ProductPriceCheckHandler>(
-                        "price-check-cards",
-                        cards =>
-                        {
-                            cards.Title = "Price check cards";
-                            cards.Icon = "wallet-cards";
-                            cards.HasRecordKey(row => row.ProductId);
-                            cards.DefaultSortBy(row => row.Name);
-                            cards.EnablePaging(paging =>
-                            {
-                                paging.PageSize = 12;
-                                paging.PageSizes = [12, 24, 48];
-                            });
-                            cards.Card(card =>
-                            {
-                                card.Title(row => row.Name);
-                                card.Badge(row => row.Category);
-                                card.Stats(stats =>
-                                {
-                                    stats.Add(
-                                        row => row.Price,
-                                        stat =>
-                                            stat.UseDisplay<NumberDisplay>(number =>
-                                                number.Format = "0.00"
-                                            )
-                                    );
-                                    stats.Add(
-                                        row => row.CategoryAverage,
-                                        stat =>
-                                        {
-                                            stat.Title = "Average";
-                                            stat.UseDisplay<NumberDisplay>(number =>
-                                                number.Format = "0.00"
-                                            );
-                                        }
-                                    );
-                                    stats.Add(
-                                        row => row.Difference,
-                                        stat =>
-                                            stat.UseDisplay<NumberDisplay>(number =>
-                                                number.Format = "+0.00;-0.00;0.00"
-                                            )
-                                    );
-                                });
-                            });
-                        }
-                    );
-                    // The products per category as cards, each linking to its category's view page
-                    layouts.AddCards<CategorySummary, CategorySummaryHandler>(
-                        "category-cards",
-                        cards =>
-                        {
-                            cards.Title = "Category cards";
-                            cards.Icon = "tag";
-                            cards.LinkTo<Category>(row => row.CategoryId);
-                            cards.Card(card =>
-                            {
-                                card.Title(row => row.Category);
-                                card.Stats(stats =>
-                                {
-                                    stats.Add(row => row.Products);
-                                    stats.Add(
-                                        row => row.Average,
-                                        stat =>
-                                        {
-                                            stat.Title = "Average price";
-                                            stat.UseDisplay<NumberDisplay>(number =>
-                                                number.Format = "0.00"
-                                            );
-                                        }
-                                    );
-                                });
-                            });
-                        }
-                    );
-                }
-            );
+                        });
+                    }
+                );
+            });
         });
     }
 

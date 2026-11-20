@@ -18,25 +18,31 @@ public sealed class ColumnsSettingsScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(
-                        booking => booking.BookedAt,
-                        column =>
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
                         {
-                            column.Title = "Booked";
-                            column.Sortable();
-                        }
-                    );
-                    columns.Add(booking => booking.TotalAmount);
-                    columns.Add(
-                        booking => booking.SpecialRequests,
-                        column => column.EmptyText = "No requests"
-                    );
-                });
-                // Ten rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 10);
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(
+                                booking => booking.BookedAt,
+                                column =>
+                                {
+                                    column.Title = "Booked";
+                                    column.Sortable();
+                                }
+                            );
+                            columns.Add(booking => booking.TotalAmount);
+                            columns.Add(
+                                booking => booking.SpecialRequests,
+                                column => column.EmptyText = "No requests"
+                            );
+                        });
+                        // Ten rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                    }
+                );
             })
         );
     }

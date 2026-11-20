@@ -18,16 +18,22 @@ public sealed class ImageDisplayThumbnailsScenario : Scenario
         admin.AddEfCoreResource<Destination>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(destination => destination.Name);
-                    columns.Add(
-                        destination => destination.HeroImageUrl,
-                        column => column.UseDisplay<Resources.Displays.ImageDisplay>()
-                    );
-                });
-                // Five rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 5);
+                index.AddTable(
+                    "destinations",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(destination => destination.Name);
+                            columns.Add(
+                                destination => destination.HeroImageUrl,
+                                column => column.UseDisplay<Resources.Displays.ImageDisplay>()
+                            );
+                        });
+                        // Five rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 5);
+                    }
+                );
             })
         );
     }

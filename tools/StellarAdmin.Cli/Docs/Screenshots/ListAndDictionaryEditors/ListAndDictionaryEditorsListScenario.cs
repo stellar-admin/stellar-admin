@@ -18,10 +18,15 @@ public sealed class ListAndDictionaryEditorsListScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            );
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                     fields

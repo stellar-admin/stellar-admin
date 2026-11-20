@@ -52,7 +52,10 @@ public class ResourceDataSourceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-                index.Columns(columns => columns.Add(product => product.Category))
+                index.AddTable(
+                    "table",
+                    table => table.Columns(columns => columns.Add(product => product.Category))
+                )
             )
         );
         using var scope = sut.Services.CreateScope();

@@ -27,33 +27,39 @@ public sealed class RowDetailsScenario(string layout) : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns => RowDetailsBookings.AddColumns(columns));
-                index.EnableRowDetails(
-                    panels =>
+                index.AddTable(
+                    "bookings",
+                    table =>
                     {
-                        panels.Add("Summary", "_BookingSummary");
-                        panels.Add(
-                            "Pricing",
-                            "_BookingPricing",
-                            booking => new BookingPricing(
-                                booking.TotalAmount,
-                                booking.Passengers.Count,
-                                booking.Departure.Trip.BasePrice
-                            )
+                        table.Columns(columns => RowDetailsBookings.AddColumns(columns));
+                        table.EnableRowDetails(
+                            panels =>
+                            {
+                                panels.Add("Summary", "_BookingSummary");
+                                panels.Add(
+                                    "Pricing",
+                                    "_BookingPricing",
+                                    booking => new BookingPricing(
+                                        booking.TotalAmount,
+                                        booking.Passengers.Count,
+                                        booking.Departure.Trip.BasePrice
+                                    )
+                                );
+                                panels.Add<BookingHistory, BookingHistoryHandler>(
+                                    "History",
+                                    "_BookingHistory"
+                                );
+                            },
+                            details =>
+                                details.PanelLayout =
+                                    layout == "tabs"
+                                        ? ResourceRowDetailPanelLayout.Tabs()
+                                        : ResourceRowDetailPanelLayout.Accordion()
                         );
-                        panels.Add<BookingHistory, BookingHistoryHandler>(
-                            "History",
-                            "_BookingHistory"
-                        );
-                    },
-                    details =>
-                        details.PanelLayout =
-                            layout == "tabs"
-                                ? ResourceRowDetailPanelLayout.Tabs()
-                                : ResourceRowDetailPanelLayout.Accordion()
+                        // Ten rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                    }
                 );
-                // Ten rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 10);
             })
         );
     }

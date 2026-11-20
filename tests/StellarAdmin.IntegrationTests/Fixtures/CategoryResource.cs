@@ -14,7 +14,10 @@ internal static class CategoryResource
             resource.UseDataSource<CategoryDataSource>();
             resource.UseKey(category => category.Id);
             resource.Index(index =>
-                index.Columns(columns => columns.Add(category => category.Name))
+                index.AddTable(
+                    "table",
+                    table => table.Columns(columns => columns.Add(category => category.Name))
+                )
             );
             resource.AllowCreate(create =>
                 create.Fields(fields =>

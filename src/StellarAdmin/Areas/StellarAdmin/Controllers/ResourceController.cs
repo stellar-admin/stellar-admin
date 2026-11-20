@@ -35,10 +35,11 @@ internal sealed partial class ResourceController<TResource>(
     private readonly ResourceLabelOptions _labelOptions = labelOptions.Value;
     private readonly ResourceOptions<TResource> _resourceOptions = options.Value;
 
-    // An inline operation has no page, so neither its links nor its routes are available
-    private bool HasCreatePage => _resourceOptions.Create is { InlineRow: null };
+    // The create and edit pages stay available when a table creates or edits inline, since other data layouts link to
+    // them
+    private bool HasCreatePage => _resourceOptions.Create is not null;
     private bool HasEditPage =>
-        _resourceOptions.Edit is { InlineRow: null } && _resourceOptions.KeySelector is not null;
+        _resourceOptions.Edit is not null && _resourceOptions.KeySelector is not null;
     private bool HasViewPage =>
         _resourceOptions.View is not null && _resourceOptions.KeySelector is not null;
 

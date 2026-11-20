@@ -18,20 +18,27 @@ public sealed class IndexPagesRowActionsScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
         {
             resource.Index(index =>
-            {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                    columns.Add(booking => booking.BookedAt);
-                });
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSizes = [5, 10, 25];
-                    paging.PageSize = 5;
-                });
-            });
-            resource.AllowView(view => view.Fields(fields => fields.Add(booking => booking.Reference)));
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                            columns.Add(booking => booking.BookedAt);
+                        });
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSizes = [5, 10, 25];
+                            paging.PageSize = 5;
+                        });
+                    }
+                )
+            );
+            resource.AllowView(view =>
+                view.Fields(fields => fields.Add(booking => booking.Reference))
+            );
             resource.AllowEdit(edit =>
                 edit.Fields(fields => fields.Add(booking => booking.SpecialRequests))
             );

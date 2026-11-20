@@ -49,11 +49,11 @@ internal static class InferredEditorCheck
             // The grid has no editor that selects several items
             if (
                 isRegistered
-                && formOptions
-                    is not (
-                        ResourceCreateOptions { InlineRow: not null }
-                        or ResourceEditOptions { InlineRow: not null }
-                    )
+                && !options.Index.RecordTables.Any(table =>
+                    formOptions is ResourceCreateOptions
+                        ? table.InlineCreate is not null
+                        : table.InlineEditing is not null
+                )
             )
             {
                 var lookup = new MultiLookupSheetEditor<TResource>();

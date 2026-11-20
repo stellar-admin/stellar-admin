@@ -18,12 +18,15 @@ public sealed class FieldsDisplayFieldsScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Booking>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("bookings", table => table.EnablePaging()));
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {
                     fields.AddDisplayField(booking => booking.Reference);
-                    fields.AddDisplayField(booking => booking.BookedAt, field => field.Title = "Booked on");
+                    fields.AddDisplayField(
+                        booking => booking.BookedAt,
+                        field => field.Title = "Booked on"
+                    );
                     fields.AddDisplayField(booking => booking.Traveller.Email);
                     fields
                         .AddDisplayField(booking => booking.TotalAmount)

@@ -8,9 +8,6 @@ namespace StellarAdmin.Resources.Options;
 /// </summary>
 public sealed class ResourceIndexOptions
 {
-    // The key of the table data layout that the one-argument Index overload configures
-    internal const string ImplicitTableKey = "table";
-
     /// <summary>
     ///     Gets the label of the cancel button on an inline row.
     /// </summary>
@@ -145,11 +142,8 @@ public sealed class ResourceIndexOptions
 
     internal List<ResourceDataLayoutOptions> MutableLayouts { get; } = [];
 
-    // Whether the two-argument Index overload declared the data layouts
-    internal bool HasDeclaredLayouts { get; private set; }
-
-    // The tables that show the resource's own rows, in data layout order. The first one has the inline rows, and
-    // lookups and references sort by its default sort
+    // The tables that show the resource's own rows, in data layout order. Lookups and references sort by the first
+    // one's default sort
     internal IEnumerable<ResourceTableDataLayoutOptions> RecordTables =>
         Tables.Where(table => table.Loader is null);
 
@@ -165,17 +159,6 @@ public sealed class ResourceIndexOptions
         MutableLayouts.FirstOrDefault(layout =>
             string.Equals(layout.Key, key, StringComparison.OrdinalIgnoreCase)
         ) ?? MutableLayouts.FirstOrDefault();
-
-    // The data layouts route replaces the implicit table that an earlier one-argument Index call configured, such as a
-    // default an application overrides
-    internal void DeclareLayouts()
-    {
-        if (!HasDeclaredLayouts)
-        {
-            MutableLayouts.Clear();
-            HasDeclaredLayouts = true;
-        }
-    }
 
     internal void AddCards(string key) =>
         MutableLayouts.Add(new ResourceCardsDataLayoutOptions(key));

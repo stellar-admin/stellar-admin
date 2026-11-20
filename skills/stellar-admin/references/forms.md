@@ -89,7 +89,7 @@ resource.AllowCreate(create =>
 });
 ```
 
-- It is off by default. One call covers the create page and, with `UseInlineRow()`, the inline create row ([inline editing](inline-editing.md#save-and-add-another)).
+- It is off by default. One call covers the create page and, with a table's `EnableInlineCreate()`, the inline create row ([inline editing](inline-editing.md#save-and-add-another)).
 - `KeepForNext` must name an editable field of the create form; otherwise it is ignored and a configuration problem is logged.
 - The toast text is `index.CreatedMessage` ([inline editing](inline-editing.md#labels)), and the default label comes from `labels.Create(create => create.AddAnotherLabel = ...)`.
 - The create sheet opened from a lookup has no such button: it closes and selects the created item.

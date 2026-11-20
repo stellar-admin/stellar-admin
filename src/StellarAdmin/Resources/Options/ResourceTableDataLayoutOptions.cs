@@ -26,6 +26,24 @@ public sealed class ResourceTableDataLayoutOptions : ResourceDataLayoutOptions
     public ResourceSort? DefaultSort { get; internal set; }
 
     /// <summary>
+    ///     Gets the configuration of creating resources in a new row of the table.
+    /// </summary>
+    /// <value>
+    ///     The configuration, or <see langword="null" /> when the table doesn't add rows. The
+    ///     default is <see langword="null" />.
+    /// </value>
+    public ResourceInlineCreateOptions? InlineCreate { get; internal set; }
+
+    /// <summary>
+    ///     Gets the configuration of editing resources in their row of the table.
+    /// </summary>
+    /// <value>
+    ///     The configuration, or <see langword="null" /> when the table doesn't edit its rows. The
+    ///     default is <see langword="null" />.
+    /// </value>
+    public ResourceInlineEditOptions? InlineEditing { get; internal set; }
+
+    /// <summary>
     ///     Gets the paging configuration.
     /// </summary>
     /// <value>

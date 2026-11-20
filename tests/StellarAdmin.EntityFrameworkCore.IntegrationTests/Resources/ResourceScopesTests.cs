@@ -35,11 +35,15 @@ public class ResourceScopesTests
                         scopes.DefaultScope = "affordable";
                     });
                     index.EnableSearch(term => product => product.Name.Contains(term));
-                    index.EnablePaging(paging =>
-                    {
-                        paging.PageSize = 1;
-                        paging.PageSizes = [1, 2];
-                    });
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.EnablePaging(paging =>
+                            {
+                                paging.PageSize = 1;
+                                paging.PageSizes = [1, 2];
+                            })
+                    );
                 }),
             commands
         );
@@ -91,13 +95,19 @@ public class ResourceScopesTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
         {
             resource.Index(index =>
+            {
                 index.EnableScopes(scopes =>
                 {
                     scopes.Add("old", "Old scope", product => false);
                     scopes.DefaultScope = "old";
-                })
-            );
-            resource.Index(index => index.EnableScopes().Add("all", "All products"));
+                });
+                index.AddTable("table");
+            });
+            resource.Index(index =>
+            {
+                index.EnableScopes().Add("all", "All products");
+                index.AddTable("table");
+            });
         });
         using var client = sut.GetTestClient();
 
@@ -125,11 +135,15 @@ public class ResourceScopesTests
                     scopes.Add("expensive", "Expensive", product => product.Price >= 30)
                 );
                 index.EnableSearch(term => product => product.Name.Contains(term));
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSize = 1;
-                    paging.PageSizes = [1, 2];
-                });
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSize = 1;
+                            paging.PageSizes = [1, 2];
+                        })
+                );
             })
         );
         using var client = sut.GetTestClient();

@@ -18,49 +18,26 @@ public sealed class ResourceBuilder<TResource>
         : base(services) { }
 
     /// <summary>
-    ///     Configures the index page.
+    ///     Configures the index page and adds its data layouts.
     /// </summary>
-    /// <param name="configure">A delegate that configures the index page.</param>
+    /// <param name="configure">
+    ///     A delegate that configures the page, such as its search and scopes, and adds the data
+    ///     layouts that show its records.
+    /// </param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
+    /// <remarks>
+    ///     The first data layout is the one the page shows by default. With two or more data
+    ///     layouts, a switcher above the list switches between them. An index without data layouts
+    ///     shows no records.
+    /// </remarks>
     public ResourceBuilder<TResource> Index(Action<ResourceIndexBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 
         configure(new(Services));
-
-        return this;
-    }
-
-    /// <summary>
-    ///     Configures the index page with data layouts the user can switch between.
-    /// </summary>
-    /// <param name="configure">
-    ///     A delegate that configures the settings every data layout shares, such as the scopes and
-    ///     the search.
-    /// </param>
-    /// <param name="layouts">A delegate that adds the layouts.</param>
-    /// <returns>The builder, so that calls can be chained.</returns>
-    /// <remarks>
-    ///     The first data layout is the one the page shows by default. With two or more data
-    ///     layouts, a switcher at the end of the controls row switches between them.
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="configure" /> or <paramref name="layouts" /> is <see langword="null" />.
-    /// </exception>
-    public ResourceBuilder<TResource> Index(
-        Action<ResourceSharedIndexBuilder<TResource>> configure,
-        Action<ResourceLayoutsBuilder<TResource>> layouts
-    )
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-        ArgumentNullException.ThrowIfNull(layouts);
-
-        Services.Configure<ResourceOptions<TResource>>(options => options.Index.DeclareLayouts());
-        configure(new(Services));
-        layouts(new(Services));
 
         return this;
     }

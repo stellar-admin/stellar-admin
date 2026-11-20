@@ -12,9 +12,14 @@ internal static class Travellers
         {
             resource.UseTitle(traveller => traveller.FirstName + " " + traveller.LastName);
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(traveller => traveller.Email));
-            });
+                index.AddTable(
+                    "travellers",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(traveller => traveller.Email));
+                    }
+                )
+            );
         });
 }

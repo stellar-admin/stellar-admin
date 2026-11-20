@@ -30,8 +30,9 @@ public class ResourceCardsDataLayoutTests
                             )
                     )
                     .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
-                resource.Index(_ => { }, layouts => layouts.AddCards("cards"));
-            }
+                resource.Index(index => index.AddCards("cards"));
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -59,45 +60,44 @@ public class ResourceCardsDataLayoutTests
         await using var sut = await StellarAdminTestHost.CreateAsync(
             state,
             resource =>
-                resource.Index(
-                    _ => { },
-                    layouts =>
-                        layouts.AddCards(
-                            "cards",
-                            cards =>
-                                cards.Card(card =>
+                resource.Index(index =>
+                    index.AddCards(
+                        "cards",
+                        cards =>
+                            cards.Card(card =>
+                            {
+                                card.Title(product => product.Name);
+                                card.Description(product => "#" + product.Id);
+                                card.Badge(product => product.Price > 50 ? "Premium" : null);
+                                card.Stats(stats =>
+                                    stats.Add(
+                                        product => product.Price,
+                                        stat =>
+                                        {
+                                            stat.Title = "From";
+                                            stat.UseDisplay<NumberDisplay>(number =>
+                                                number.Format = "0.00"
+                                            );
+                                        }
+                                    )
+                                );
+                                card.Fields(fields =>
                                 {
-                                    card.Title(product => product.Name);
-                                    card.Description(product => "#" + product.Id);
-                                    card.Badge(product => product.Price > 50 ? "Premium" : null);
-                                    card.Stats(stats =>
-                                        stats.Add(
-                                            product => product.Price,
-                                            stat =>
-                                            {
-                                                stat.Title = "From";
-                                                stat.UseDisplay<NumberDisplay>(number =>
-                                                    number.Format = "0.00"
-                                                );
-                                            }
-                                        )
+                                    fields.Layout = ResourceCardFieldLayout.Grid;
+                                    fields.Add(product => product.Name);
+                                    fields.Add(
+                                        product => product.Id > 2 ? null : "Yes",
+                                        field =>
+                                        {
+                                            field.Title = "Featured";
+                                            field.EmptyText = "No";
+                                        }
                                     );
-                                    card.Fields(fields =>
-                                    {
-                                        fields.Layout = ResourceCardFieldLayout.Grid;
-                                        fields.Add(product => product.Name);
-                                        fields.Add(
-                                            product => product.Id > 2 ? null : "Yes",
-                                            field =>
-                                            {
-                                                field.Title = "Featured";
-                                                field.EmptyText = "No";
-                                            }
-                                        );
-                                    });
-                                })
-                        )
-                )
+                                });
+                            })
+                    )
+                ),
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -157,7 +157,11 @@ public class ResourceCardsDataLayoutTests
     {
         // Arrange
         var state = CreateState();
-        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureSortedCards);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            ConfigureSortedCards,
+            defaultTable: false
+        );
         using var client = sut.CreateClient();
 
         // Act
@@ -186,7 +190,11 @@ public class ResourceCardsDataLayoutTests
     {
         // Arrange
         var state = CreateState();
-        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureSortedCards);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            ConfigureSortedCards,
+            defaultTable: false
+        );
         using var client = sut.CreateClient();
 
         // Act
@@ -214,18 +222,16 @@ public class ResourceCardsDataLayoutTests
             resource =>
             {
                 ConfigureRecordPages(resource);
-                resource.Index(
-                    _ => { },
-                    layouts =>
-                    {
-                        layouts.AddCards("cards");
-                        layouts.AddCards(
-                            "browse",
-                            cards => cards.RowActions(actions => actions.Delete = false)
-                        );
-                    }
-                );
-            }
+                resource.Index(index =>
+                {
+                    index.AddCards("cards");
+                    index.AddCards(
+                        "browse",
+                        cards => cards.RowActions(actions => actions.Delete = false)
+                    );
+                });
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -262,18 +268,17 @@ public class ResourceCardsDataLayoutTests
             resource =>
             {
                 ConfigureRecordPages(resource);
-                resource.Index(
-                    _ => { },
-                    layouts =>
-                        layouts.AddCards(
-                            "cards",
-                            cards =>
-                                cards.Card(card =>
-                                    card.ActionsPlacement = ResourceCardActionsPlacement.Footer
-                                )
-                        )
+                resource.Index(index =>
+                    index.AddCards(
+                        "cards",
+                        cards =>
+                            cards.Card(card =>
+                                card.ActionsPlacement = ResourceCardActionsPlacement.Footer
+                            )
+                    )
                 );
-            }
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -303,36 +308,34 @@ public class ResourceCardsDataLayoutTests
             resource =>
             {
                 ConfigureRecordPages(resource);
-                resource.Index(
-                    _ => { },
-                    layouts =>
-                    {
-                        layouts.AddCards(
-                            "overlay",
-                            cards =>
-                                cards.Card(card =>
-                                {
-                                    card.Image(
-                                        product => $"/images/{product.Id}.jpg",
-                                        image => image.Shape = ResourceCardImageShape.Square
-                                    );
-                                    card.Badge(product => product.Name);
-                                    card.Arrangement = ResourceCardArrangement.Overlay;
-                                })
-                        );
-                        layouts.AddCards(
-                            "horizontal",
-                            cards =>
-                                cards.Card(card =>
-                                {
-                                    card.Image(product => $"/images/{product.Id}.jpg");
-                                    card.Badge(product => product.Name);
-                                    card.Arrangement = ResourceCardArrangement.Horizontal;
-                                })
-                        );
-                    }
-                );
-            }
+                resource.Index(index =>
+                {
+                    index.AddCards(
+                        "overlay",
+                        cards =>
+                            cards.Card(card =>
+                            {
+                                card.Image(
+                                    product => $"/images/{product.Id}.jpg",
+                                    image => image.Shape = ResourceCardImageShape.Square
+                                );
+                                card.Badge(product => product.Name);
+                                card.Arrangement = ResourceCardArrangement.Overlay;
+                            })
+                    );
+                    index.AddCards(
+                        "horizontal",
+                        cards =>
+                            cards.Card(card =>
+                            {
+                                card.Image(product => $"/images/{product.Id}.jpg");
+                                card.Badge(product => product.Name);
+                                card.Arrangement = ResourceCardArrangement.Horizontal;
+                            })
+                    );
+                });
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -388,7 +391,8 @@ public class ResourceCardsDataLayoutTests
                     rows =>
                         rows.DefaultSortByDescending(row => row.Price)
                             .EnablePaging(paging => paging.PageSize = 2)
-                )
+                ),
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -435,7 +439,8 @@ public class ResourceCardsDataLayoutTests
                             .RowActions(actions => actions.Edit = false)
                 );
                 ConfigureRecordPages(resource);
-            }
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -476,7 +481,8 @@ public class ResourceCardsDataLayoutTests
                         view.Fields(fields => fields.Add(category => category.Name))
                     )
                 ),
-            services => services.AddSingleton<CategoryStore>()
+            services => services.AddSingleton<CategoryStore>(),
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -501,7 +507,8 @@ public class ResourceCardsDataLayoutTests
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new ProductState([]),
-            resource => resource.Index(_ => { }, layouts => layouts.AddCards("cards"))
+            resource => resource.Index(index => index.AddCards("cards")),
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -525,29 +532,24 @@ public class ResourceCardsDataLayoutTests
         ResourceBuilder<Product> resource,
         Action<ResourceHandlerCardsDataLayoutBuilder<Product, ProductRow>> configure
     ) =>
-        resource.Index(
-            index =>
+        resource.Index(index =>
+        {
+            index.EnableScopes(scopes =>
             {
-                index.EnableScopes(scopes =>
+                scopes.Add("all", "All");
+                scopes.Add("cheap", "Cheap");
+            });
+            index.EnableSearch();
+            index.AddCards("cards");
+            index.AddCards<ProductRow, ProductRowsHandler>(
+                "rows",
+                rows =>
                 {
-                    scopes.Add("all", "All");
-                    scopes.Add("cheap", "Cheap");
-                });
-                index.EnableSearch();
-            },
-            layouts =>
-            {
-                layouts.AddCards("cards");
-                layouts.AddCards<ProductRow, ProductRowsHandler>(
-                    "rows",
-                    rows =>
-                    {
-                        rows.Card(card => card.Title(row => row.Label));
-                        configure(rows);
-                    }
-                );
-            }
-        );
+                    rows.Card(card => card.Title(row => row.Label));
+                    configure(rows);
+                }
+            );
+        });
 
     private static void ConfigureRecordPages(ResourceBuilder<Product> resource)
     {
@@ -559,21 +561,19 @@ public class ResourceCardsDataLayoutTests
     }
 
     private static void ConfigureSortedCards(ResourceBuilder<Product> resource) =>
-        resource.Index(
-            _ => { },
-            layouts =>
-                layouts.AddCards(
-                    "cards",
-                    cards =>
+        resource.Index(index =>
+            index.AddCards(
+                "cards",
+                cards =>
+                {
+                    cards.DefaultSortByDescending(product => product.Price);
+                    cards.EnablePaging(paging =>
                     {
-                        cards.DefaultSortByDescending(product => product.Price);
-                        cards.EnablePaging(paging =>
-                        {
-                            paging.PageSize = 2;
-                            paging.PageSizes = [2, 3];
-                        });
-                    }
-                )
+                        paging.PageSize = 2;
+                        paging.PageSizes = [2, 3];
+                    });
+                }
+            )
         );
 
     private static ProductState CreateState() =>

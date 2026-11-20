@@ -75,6 +75,88 @@ public abstract class ResourceTableDataLayoutBuilderBase<TResource, TBuilder>
     ) => ConfigureDefaultSort(field, ResourceSortDirection.Descending);
 
     /// <summary>
+    ///     Creates resources in a new row of the table.
+    /// </summary>
+    /// <returns>A builder that configures the new row.</returns>
+    /// <remarks>
+    ///     The new row edits the create form's fields. Every editable field must match a column, by
+    ///     name or through <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />,
+    ///     and every <c>[Required]</c> model property must have an editable field. The resource
+    ///     needs a key. The table adds rows instead of linking to the create page, which other
+    ///     data layouts still link to.
+    /// </remarks>
+    public ResourceInlineCreateBuilder EnableInlineCreate()
+    {
+        var source = ConfigurationSource.Capture();
+        ConfigureTable(table => table.InlineCreate ??= new() { Source = source });
+
+        return new(configure => ConfigureTable(table => configure(table.InlineCreate ??= new())));
+    }
+
+    /// <summary>
+    ///     Creates resources in a new row of the table, and configures the row.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the new row.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The new row edits the create form's fields. Every editable field must match a column, by
+    ///     name or through <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />,
+    ///     and every <c>[Required]</c> model property must have an editable field. The resource
+    ///     needs a key. The table adds rows instead of linking to the create page, which other
+    ///     data layouts still link to.
+    /// </remarks>
+    public TBuilder EnableInlineCreate(Action<ResourceInlineCreateBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableInlineCreate());
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Edits resources in their row of the table.
+    /// </summary>
+    /// <returns>A builder that configures the edited rows.</returns>
+    /// <remarks>
+    ///     A row edits the edit form's fields. Every editable field must match a column, by name
+    ///     or through <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. The
+    ///     resource needs a key. The table edits rows instead of linking to the edit page, which
+    ///     other data layouts still link to.
+    /// </remarks>
+    public ResourceInlineEditBuilder EnableInlineEditing()
+    {
+        var source = ConfigurationSource.Capture();
+        ConfigureTable(table => table.InlineEditing ??= new() { Source = source });
+
+        return new(configure => ConfigureTable(table => configure(table.InlineEditing ??= new())));
+    }
+
+    /// <summary>
+    ///     Edits resources in their row of the table, and configures the edited rows.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the edited rows.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     A row edits the edit form's fields. Every editable field must match a column, by name
+    ///     or through <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. The
+    ///     resource needs a key. The table edits rows instead of linking to the edit page, which
+    ///     other data layouts still link to.
+    /// </remarks>
+    public TBuilder EnableInlineEditing(Action<ResourceInlineEditBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableInlineEditing());
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
     ///     Enables paging on the table.
     /// </summary>
     /// <returns>A builder that configures paging.</returns>

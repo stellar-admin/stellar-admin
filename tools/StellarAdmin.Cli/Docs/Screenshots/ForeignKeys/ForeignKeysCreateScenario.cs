@@ -19,7 +19,7 @@ public sealed class ForeignKeysCreateScenario : Scenario
         {
             resource.UseTitle(traveller => traveller.FirstName + " " + traveller.LastName);
             resource.Reference(reference => reference.UseDescription(traveller => traveller.Email));
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("travellers", table => table.EnablePaging()));
             resource.AllowCreate(create =>
                 create.Fields(fields =>
                 {
@@ -32,10 +32,15 @@ public sealed class ForeignKeysCreateScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(booking => booking.Reference));
-            });
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(booking => booking.Reference));
+                    }
+                )
+            );
             resource.AllowCreate(create =>
                 create.Fields(fields =>
                 {

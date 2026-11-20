@@ -161,7 +161,10 @@ public class ConfigurationProblemsTests
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new ProductState([new(1, "Notebook", 12.50m)]),
-            resource => resource.Index(index => index.DefaultSortBy(product => product.Name)),
+            resource =>
+                resource.Index(index =>
+                    index.AddTable("table", table => table.DefaultSortBy(product => product.Name))
+                ),
             admin =>
                 admin.ConfigureDiagnostics(diagnostics =>
                     diagnostics.ShowIndicator = showIndicator
@@ -191,10 +194,16 @@ public class ConfigurationProblemsTests
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new ProductState([new(1, "Notebook", 12.50m)]),
             resource =>
-            {
-                sortLine = CurrentLine() + 1;
-                resource.Index(index => index.DefaultSortBy(product => product.Name));
-            },
+                resource.Index(index =>
+                    index.AddTable(
+                        "table",
+                        table =>
+                        {
+                            sortLine = CurrentLine() + 1;
+                            table.DefaultSortBy(product => product.Name);
+                        }
+                    )
+                ),
             admin =>
             {
                 stylesheetLine = CurrentLine() + 1;
@@ -264,11 +273,15 @@ public class ConfigurationProblemsTests
             new ProductState([new(1, "Notebook", 12.50m)]),
             resource =>
                 resource.Index(index =>
-                    index.EnablePaging(paging =>
-                    {
-                        paging.PageSize = 15;
-                        paging.PageSizes = [10, 25];
-                    })
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.EnablePaging(paging =>
+                            {
+                                paging.PageSize = 15;
+                                paging.PageSizes = [10, 25];
+                            })
+                    )
                 )
         );
         using var client = sut.GetTestClient();
@@ -311,7 +324,10 @@ public class ConfigurationProblemsTests
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
             new ProductState([new(1, "Notebook", 12.50m)]),
-            resource => resource.Index(index => index.DefaultSortBy(product => product.Name))
+            resource =>
+                resource.Index(index =>
+                    index.AddTable("table", table => table.DefaultSortBy(product => product.Name))
+                )
         );
         using var client = sut.GetTestClient();
 
@@ -338,11 +354,15 @@ public class ConfigurationProblemsTests
         // Act
         await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
             resource.Index(index =>
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSize = 15;
-                    paging.PageSizes = [10, 25];
-                })
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSize = 15;
+                            paging.PageSizes = [10, 25];
+                        })
+                )
             )
         );
 
@@ -364,10 +384,17 @@ public class ConfigurationProblemsTests
 
         // Act
         await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
-        {
-            line = CurrentLine() + 1;
-            resource.Index(index => index.DefaultSortByDescending(product => product.Price));
-        });
+            resource.Index(index =>
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        line = CurrentLine() + 1;
+                        table.DefaultSortByDescending(product => product.Price);
+                    }
+                )
+            )
+        );
 
         // Assert
         var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
@@ -385,11 +412,15 @@ public class ConfigurationProblemsTests
         // Act
         await using var sut = await StellarAdminTestHost.CreateAsync(resource =>
             resource.Index(index =>
-                index.Columns(columns =>
-                {
-                    line = CurrentLine() + 1;
-                    columns.Add(product => product.Price * 2);
-                })
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.Columns(columns =>
+                        {
+                            line = CurrentLine() + 1;
+                            columns.Add(product => product.Price * 2);
+                        })
+                )
             )
         );
 
@@ -451,7 +482,13 @@ public class ConfigurationProblemsTests
         static async Task Create()
         {
             await using var app = await StellarAdminTestHost.CreateAsync(
-                resource => resource.Index(index => index.DefaultSortBy(product => product.Name)),
+                resource =>
+                    resource.Index(index =>
+                        index.AddTable(
+                            "table",
+                            table => table.DefaultSortBy(product => product.Name)
+                        )
+                    ),
                 admin =>
                 {
                     admin.AddStylesheet(" ");

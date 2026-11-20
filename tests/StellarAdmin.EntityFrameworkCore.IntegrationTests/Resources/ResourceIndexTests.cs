@@ -21,11 +21,15 @@ public class ResourceIndexTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSize = 2;
-                    paging.PageSizes = [2, 4];
-                })
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSize = 2;
+                            paging.PageSizes = [2, 4];
+                        })
+                )
             )
         );
         using var client = sut.GetTestClient();
@@ -61,7 +65,7 @@ public class ResourceIndexTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(index => index.EnablePaging())
+            resource.Index(index => index.AddTable("table", table => table.EnablePaging()))
         );
         using var scope = sut.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
@@ -82,7 +86,7 @@ public class ResourceIndexTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(index => index.EnablePaging())
+            resource.Index(index => index.AddTable("table", table => table.EnablePaging()))
         );
         using var client = sut.GetTestClient();
 
@@ -139,11 +143,15 @@ public class ResourceIndexTests
         await using var sut = await EfCoreTestHost.CreateAsync(
             resource =>
                 resource.Index(index =>
-                    index.EnablePaging(paging =>
-                    {
-                        paging.PageSize = 2;
-                        paging.PageSizes = [2, 4];
-                    })
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.EnablePaging(paging =>
+                            {
+                                paging.PageSize = 2;
+                                paging.PageSizes = [2, 4];
+                            })
+                    )
                 ),
             commands
         );
@@ -182,7 +190,12 @@ public class ResourceIndexTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(index => index.DefaultSortByDescending(product => product.Price))
+            resource.Index(index =>
+                index.AddTable(
+                    "table",
+                    table => table.DefaultSortByDescending(product => product.Price)
+                )
+            )
         );
         using var client = sut.GetTestClient();
 

@@ -7,8 +7,7 @@ namespace StellarAdmin.Cli.Docs.Screenshots.RelatedValues;
 
 public sealed class RelatedValuesTravellerScenario : Scenario
 {
-    public override string Description =>
-        "The bookings grid with each booking's traveller.";
+    public override string Description => "The bookings grid with each booking's traveller.";
 
     public override string StartPath => "/stellaradmin/bookings";
 
@@ -18,13 +17,19 @@ public sealed class RelatedValuesTravellerScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                });
-                // Six rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 6);
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                        });
+                        // Six rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 6);
+                    }
+                );
             })
         );
         Travellers.Add(admin);

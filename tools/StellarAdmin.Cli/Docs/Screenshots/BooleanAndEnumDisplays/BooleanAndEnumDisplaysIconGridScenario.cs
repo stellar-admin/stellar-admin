@@ -18,13 +18,19 @@ public sealed class BooleanAndEnumDisplaysIconGridScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Title);
-                    columns.Add(trip => trip.IsPublished);
-                });
-                // Five rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 5);
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Title);
+                            columns.Add(trip => trip.IsPublished);
+                        });
+                        // Five rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 5);
+                    }
+                );
             })
         );
     }

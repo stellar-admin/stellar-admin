@@ -21,10 +21,15 @@ public sealed class ListAndDictionaryEditorsRowErrorScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            );
             resource.AllowCreate<TripHighlightsForm, TripHighlightsFormHandler>(create =>
                 create.Fields(fields =>
                 {

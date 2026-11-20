@@ -27,21 +27,27 @@ internal static class CategoryResourceRegistration
             );
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                    columns.Add(category => category.Name, column => column.Sortable())
-                );
-                index.DefaultSortBy(category => category.Name);
                 index.EnableSearch(
                     term => category => category.Name.Contains(term),
                     search => search.Placeholder = "Search categories..."
                 );
-                index.EnablePaging();
-                index.EnableRowDetails<CategoryProducts, CategoryProductsHandler>(
-                    "_CategoryProducts",
-                    details =>
+                index.AddTable(
+                    "categories",
+                    table =>
                     {
-                        details.Toggle = DataGridRowDetailToggle.End;
-                        details.ExpandMode = DataGridRowDetailExpandMode.Single;
+                        table.Columns(columns =>
+                            columns.Add(category => category.Name, column => column.Sortable())
+                        );
+                        table.DefaultSortBy(category => category.Name);
+                        table.EnablePaging();
+                        table.EnableRowDetails<CategoryProducts, CategoryProductsHandler>(
+                            "_CategoryProducts",
+                            details =>
+                            {
+                                details.Toggle = DataGridRowDetailToggle.End;
+                                details.ExpandMode = DataGridRowDetailExpandMode.Single;
+                            }
+                        );
                     }
                 );
             });

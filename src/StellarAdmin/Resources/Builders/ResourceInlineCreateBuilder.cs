@@ -3,7 +3,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures adding a resource as a new row in its index grid.
+///     Configures creating resources in a new row of a table.
 /// </summary>
 public sealed class ResourceInlineCreateBuilder
 {

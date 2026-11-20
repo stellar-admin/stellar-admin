@@ -2,6 +2,7 @@
 @model IResourceIndexPageViewModel
 @{
     var widgets = ViewData[ViewDataKeys.Widgets] as PageWidgetsViewModel;
+    var hasList = ViewData[ViewDataKeys.IndexWithoutDataLayouts] is not true;
 }
 
 <sa-page-container>
@@ -40,14 +41,17 @@
         @* The list with a column of widgets beside it, or below it when the page is narrow *@
         <div class="sa-widgets-aside">
             <div class="sa-widgets-aside-grid">
-                <partial name="_IndexPageList" />
+                @if (hasList)
+                {
+                    <partial name="_IndexPageList" />
+                }
                 <div id="index-page-widgets-aside" class="sa-widgets-column" hidden="@(aside.Count == 0)">
                     <partial name="_Widgets" model="aside" />
                 </div>
             </div>
         </div>
     }
-    else
+    else if (hasList)
     {
         <partial name="_IndexPageList" />
     }

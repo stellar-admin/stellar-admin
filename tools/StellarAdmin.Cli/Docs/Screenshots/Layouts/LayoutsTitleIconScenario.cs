@@ -16,40 +16,37 @@ public sealed class LayoutsTitleIconScenario : Scenario
     {
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Booking>(resource =>
-            resource.Index(
-                index => { },
-                layouts =>
-                {
-                    layouts.AddTable(
-                        "bookings",
-                        table =>
+            resource.Index(index =>
+            {
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
                         {
-                            table.Columns(columns =>
-                            {
-                                columns.Add(booking => booking.Reference);
-                                columns.Add(booking => booking.Traveller);
-                                columns.Add(booking => booking.BookedAt);
-                            });
-                            table.EnablePaging();
-                        }
-                    );
-                    layouts.AddTable(
-                        "finance",
-                        table =>
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                            columns.Add(booking => booking.BookedAt);
+                        });
+                        table.EnablePaging();
+                    }
+                );
+                index.AddTable(
+                    "finance",
+                    table =>
+                    {
+                        table.Title = "Finance";
+                        table.Icon = "receipt";
+                        table.Columns(columns =>
                         {
-                            table.Title = "Finance";
-                            table.Icon = "receipt";
-                            table.Columns(columns =>
-                            {
-                                columns.Add(booking => booking.Reference);
-                                columns.Add(booking => booking.Status);
-                                columns.Add(booking => booking.TotalAmount);
-                            });
-                            table.EnablePaging();
-                        }
-                    );
-                }
-            )
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Status);
+                            columns.Add(booking => booking.TotalAmount);
+                        });
+                        table.EnablePaging();
+                    }
+                );
+            })
         );
         Travellers.Add(admin);
     }

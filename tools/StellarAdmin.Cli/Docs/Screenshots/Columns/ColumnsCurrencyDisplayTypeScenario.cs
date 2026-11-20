@@ -19,22 +19,29 @@ public sealed class ColumnsCurrencyDisplayTypeScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                    columns.Add(booking => booking.Status);
-                    columns.Add(
-                        booking => booking.TotalAmount,
-                        column => column.UseDisplay<NumberDisplay>(number => number.Format = "C")
-                    );
-                });
-                // Five rows, so the grid crop stays short
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSizes = [5, 10, 25];
-                    paging.PageSize = 5;
-                });
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                            columns.Add(booking => booking.Status);
+                            columns.Add(
+                                booking => booking.TotalAmount,
+                                column =>
+                                    column.UseDisplay<NumberDisplay>(number => number.Format = "C")
+                            );
+                        });
+                        // Five rows, so the grid crop stays short
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSizes = [5, 10, 25];
+                            paging.PageSize = 5;
+                        });
+                    }
+                );
             })
         );
         Travellers.Add(admin);

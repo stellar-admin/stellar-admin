@@ -324,8 +324,10 @@ public class ImageEditorTests
                     edit.Fields(fields =>
                         fields.Add(product => product.Name).UseImageEditor(Configure)
                     );
-                    edit.UseInlineRow();
                 });
+                resource.Index(index =>
+                    index.AddTable("table", table => table.EnableInlineEditing())
+                );
             }
         );
         using var client = sut.CreateClient();

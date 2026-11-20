@@ -18,34 +18,32 @@ public sealed class LayoutDataTableScenario : Scenario
     {
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Booking>(resource =>
-            resource.Index(
-                index => index.EnableSearch(term => booking => booking.Reference.Contains(term)),
-                layouts =>
-                {
-                    layouts.AddTable(
-                        "bookings",
-                        table =>
+            resource.Index(index =>
+            {
+                index.EnableSearch(term => booking => booking.Reference.Contains(term));
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns => columns.Add(booking => booking.Reference));
+                        table.EnablePaging();
+                    }
+                );
+                index.AddTable<DestinationRevenue, DestinationRevenueHandler>(
+                    "revenue",
+                    table =>
+                    {
+                        table.Title = "Revenue per destination";
+                        table.Icon = "chart-column";
+                        table.Columns(columns =>
                         {
-                            table.Columns(columns => columns.Add(booking => booking.Reference));
-                            table.EnablePaging();
-                        }
-                    );
-                    layouts.AddTable<DestinationRevenue, DestinationRevenueHandler>(
-                        "revenue",
-                        table =>
-                        {
-                            table.Title = "Revenue per destination";
-                            table.Icon = "chart-column";
-                            table.Columns(columns =>
-                            {
-                                columns.Add(item => item.Destination);
-                                columns.Add(item => item.Bookings);
-                                columns.Add(item => item.Revenue);
-                            });
-                        }
-                    );
-                }
-            )
+                            columns.Add(item => item.Destination);
+                            columns.Add(item => item.Bookings);
+                            columns.Add(item => item.Revenue);
+                        });
+                    }
+                );
+            })
         );
     }
 

@@ -17,15 +17,23 @@ public sealed class SortingAndPagingSortableScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
-            {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.BookedAt, column => column.Sortable());
-                    columns.Add(booking => booking.TotalAmount, column => column.Sortable());
-                });
-                index.EnablePaging();
-            })
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.BookedAt, column => column.Sortable());
+                            columns.Add(
+                                booking => booking.TotalAmount,
+                                column => column.Sortable()
+                            );
+                        });
+                        table.EnablePaging();
+                    }
+                )
+            )
         );
     }
 }

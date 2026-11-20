@@ -10,7 +10,8 @@ namespace StellarAdmin.Cli.Docs.Screenshots.Inputs;
 // The seeded trip has no bool? property, so the create page edits a form model with a nullable IsPublished
 public sealed class InputsNullableBooleanSelectScenario : Scenario
 {
-    public override string Description => "A trip create page with a nullable Published field as its default select.";
+    public override string Description =>
+        "A trip create page with a nullable Published field as its default select.";
 
     public override string StartPath => "/stellaradmin/trips/create";
 
@@ -19,7 +20,7 @@ public sealed class InputsNullableBooleanSelectScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Trip>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()));
             resource.AllowCreate<TripPublishedForm, TripPublishedFormHandler>(create =>
                 create.Fields(fields => fields.Add(form => form.IsPublished))
             );

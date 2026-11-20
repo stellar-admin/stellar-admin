@@ -18,12 +18,6 @@ public sealed class IndexPagesOverviewScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                    columns.Add(booking => booking.BookedAt, column => column.Sortable());
-                });
                 index.EnableSearch(term => booking => booking.Reference.Contains(term));
                 index.EnableScopes(scopes =>
                 {
@@ -35,8 +29,20 @@ public sealed class IndexPagesOverviewScenario : Scenario
                     );
                     scopes.DefaultScope = "all";
                 });
-                index.DefaultSortBy(booking => booking.BookedAt);
-                index.EnablePaging();
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                            columns.Add(booking => booking.BookedAt, column => column.Sortable());
+                        });
+                        table.DefaultSortBy(booking => booking.BookedAt);
+                        table.EnablePaging();
+                    }
+                );
             })
         );
         Travellers.Add(admin);

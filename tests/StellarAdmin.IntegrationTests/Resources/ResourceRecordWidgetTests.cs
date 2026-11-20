@@ -258,33 +258,6 @@ public class ResourceRecordWidgetTests
         await Assert.That(missing.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }
 
-    [Test]
-    public async Task InlineRowWidgets_AreReportedAndLeftOut()
-    {
-        // Arrange
-        await using var sut = await CreateHostAsync(resource =>
-            resource.AllowEdit(edit =>
-            {
-                edit.Fields(fields => fields.Add(product => product.Name));
-                edit.UseInlineRow();
-                edit.Widgets(widgets =>
-                    widgets.Add<GreetingHandler>("Greeting", "_GreetingWidget")
-                );
-            })
-        );
-        using var client = sut.CreateClient();
-
-        // Act
-        var response = await client.GetAsync("/stellaradmin/products/widget/Greeting?page=edit");
-
-        // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
-        var logs = sut.Services.GetRequiredService<RecordingLoggerProvider>();
-        await Assert
-            .That(logs.ConfigurationProblems.Select(problem => problem.EventId.Name))
-            .IsEquivalentTo(["IgnoredWidgetSetting"]);
-    }
-
     private static void AddSales(
         WidgetsBuilder<RecordWidgetContext<Product>> widgets,
         string region

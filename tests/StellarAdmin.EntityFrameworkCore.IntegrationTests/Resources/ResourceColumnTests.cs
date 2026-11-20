@@ -20,8 +20,15 @@ public class ResourceColumnTests
         await using var sut = await EfCoreTestHost.CreateAsync(
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns =>
-                        columns.Add(product => product.Category!.Name, column => column.Sortable())
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
+                                columns.Add(
+                                    product => product.Category!.Name,
+                                    column => column.Sortable()
+                                )
+                            )
                     )
                 ),
             commands
@@ -57,11 +64,15 @@ public class ResourceColumnTests
         await using var sut = await EfCoreTestHost.CreateAsync(
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Add(product => product.CategoryId);
-                        columns.Add(product => product.Details.Sku);
-                    })
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
+                            {
+                                columns.Add(product => product.CategoryId);
+                                columns.Add(product => product.Details.Sku);
+                            })
+                    )
                 ),
             commands
         );
@@ -81,22 +92,27 @@ public class ResourceColumnTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-            {
-                index.Columns(columns =>
-                    columns.Add(
-                        product => product.Tags,
-                        column =>
-                            column.UseDisplay<BadgeDisplay>(badge =>
-                                badge.UseText<Tag>(tag => tag.Name)
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                            columns.Add(
+                                product => product.Tags,
+                                column =>
+                                    column.UseDisplay<BadgeDisplay>(badge =>
+                                        badge.UseText<Tag>(tag => tag.Name)
+                                    )
                             )
-                    )
-                );
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSize = 2;
-                    paging.PageSizes = [2];
-                });
-            })
+                        );
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSize = 2;
+                            paging.PageSizes = [2];
+                        });
+                    }
+                )
+            )
         );
         using var client = sut.GetTestClient();
 
@@ -123,8 +139,12 @@ public class ResourceColumnTests
         // Act
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-                index.Columns(columns =>
-                    columns.Add(product => product.Tags, column => column.Sortable())
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.Columns(columns =>
+                            columns.Add(product => product.Tags, column => column.Sortable())
+                        )
                 )
             )
         );
@@ -148,14 +168,18 @@ public class ResourceColumnTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-                index.Columns(columns =>
-                    columns.Add(
-                        product => product.Tags,
-                        column =>
-                            column.UseDisplay<BadgeDisplay>(badge =>
-                                badge.UseText<Tag>(tag => tag.Name)
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.Columns(columns =>
+                            columns.Add(
+                                product => product.Tags,
+                                column =>
+                                    column.UseDisplay<BadgeDisplay>(badge =>
+                                        badge.UseText<Tag>(tag => tag.Name)
+                                    )
                             )
-                    )
+                        )
                 )
             )
         );
@@ -183,7 +207,12 @@ public class ResourceColumnTests
 
         // Act
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(index => index.Columns(columns => columns.Add(product => product.Tags)))
+            resource.Index(index =>
+                index.AddTable(
+                    "table",
+                    table => table.Columns(columns => columns.Add(product => product.Tags))
+                )
+            )
         );
 
         // Assert
@@ -207,14 +236,18 @@ public class ResourceColumnTests
         // Act
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-                index.Columns(columns =>
-                    columns.Add(
-                        product => product.Tags,
-                        column =>
-                            column.UseDisplay<BadgeDisplay>(badge =>
-                                badge.UseText<Product>(product => product.Name)
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.Columns(columns =>
+                            columns.Add(
+                                product => product.Tags,
+                                column =>
+                                    column.UseDisplay<BadgeDisplay>(badge =>
+                                        badge.UseText<Product>(product => product.Name)
+                                    )
                             )
-                    )
+                        )
                 )
             )
         );
@@ -238,21 +271,27 @@ public class ResourceColumnTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-                index.Columns(columns =>
-                {
-                    columns.Add(
-                        product =>
-                            string.Join(
-                                ", ",
-                                product.Tags.OrderBy(tag => tag.Name).Select(tag => tag.Name)
-                            ),
-                        column => column.Title = "Tags"
-                    );
-                    columns.Add(
-                        product => product.Category!.Name + " / " + product.Name,
-                        column => column.Title = "Category"
-                    );
-                })
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.Columns(columns =>
+                        {
+                            columns.Add(
+                                product =>
+                                    string.Join(
+                                        ", ",
+                                        product
+                                            .Tags.OrderBy(tag => tag.Name)
+                                            .Select(tag => tag.Name)
+                                    ),
+                                column => column.Title = "Tags"
+                            );
+                            columns.Add(
+                                product => product.Category!.Name + " / " + product.Name,
+                                column => column.Title = "Category"
+                            );
+                        })
+                )
             )
         );
         using var client = sut.GetTestClient();

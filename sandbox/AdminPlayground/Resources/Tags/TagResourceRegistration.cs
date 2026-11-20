@@ -20,16 +20,25 @@ internal static class TagResourceRegistration
             });
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(tag => tag.Name, column => column.Sortable());
-                    // Each product is named by its title, which reads its category, so the index loads that too
-                    columns.Add(tag => tag.Products, column => column.UseDisplay<BadgeDisplay>());
-                });
-                index.DefaultSortBy(tag => tag.Name);
                 index.EnableSearch(
                     term => tag => tag.Name.Contains(term),
                     search => search.Placeholder = "Search tags..."
+                );
+                index.AddTable(
+                    "tags",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(tag => tag.Name, column => column.Sortable());
+                            // Each product is named by its title, which reads its category, so the index loads that too
+                            columns.Add(
+                                tag => tag.Products,
+                                column => column.UseDisplay<BadgeDisplay>()
+                            );
+                        });
+                        table.DefaultSortBy(tag => tag.Name);
+                    }
                 );
             });
             resource.AllowCreate(create => create.Fields(fields => fields.Add(tag => tag.Name)));

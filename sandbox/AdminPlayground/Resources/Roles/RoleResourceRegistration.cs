@@ -28,14 +28,20 @@ internal static class RoleResourceRegistration
                 resource.UseKey(role => role.Id);
                 resource.Index(index =>
                 {
-                    index.Columns(columns =>
-                    {
-                        columns.Add(role => role.Name, column => column.Sortable());
-                        columns.Add(role => role.Description);
-                    });
-                    index.DefaultSortBy(role => role.Name);
                     index.EnableSearch(search => search.Placeholder = "Search roles...");
-                    index.EnablePaging();
+                    index.AddTable(
+                        "roles",
+                        table =>
+                        {
+                            table.Columns(columns =>
+                            {
+                                columns.Add(role => role.Name, column => column.Sortable());
+                                columns.Add(role => role.Description);
+                            });
+                            table.DefaultSortBy(role => role.Name);
+                            table.EnablePaging();
+                        }
+                    );
                 });
                 resource.AllowCreate<RoleFormModel, CreateRoleHandler>(create =>
                     create.Fields(fields =>

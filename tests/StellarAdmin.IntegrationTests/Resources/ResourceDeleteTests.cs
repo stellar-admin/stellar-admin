@@ -222,7 +222,11 @@ public class ResourceDeleteTests
                 }
                 if (configuration == 2)
                 {
-                    resource.Index(index => index.DeleteLabel = "Remove inventory item");
+                    resource.Index(index =>
+                    {
+                        index.DeleteLabel = "Remove inventory item";
+                        index.AddTable("table");
+                    });
                     resource.AllowDelete(delete =>
                     {
                         delete.Title = "Remove inventory";
@@ -246,7 +250,10 @@ public class ResourceDeleteTests
                             delete.ConfirmLabel = resource => "Remove";
                             delete.CancelLabel = resource => "Keep";
                         });
-                        labels.Index(index => index.DeleteLabel = resource => "Remove item");
+                        labels.Index(index =>
+                        {
+                            index.DeleteLabel = resource => "Remove item";
+                        });
                     });
                 }
             }

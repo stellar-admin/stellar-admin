@@ -25,39 +25,46 @@ internal static class TripResourceRegistration
             resource.UseKey(trip => trip.Id);
             resource.AllowDelete();
             resource.Index(index =>
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Name);
-                    columns.AddGroup(
-                        "Destination",
-                        destination =>
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.Columns(columns =>
                         {
-                            destination.AddGroup(
-                                "Location",
-                                location =>
+                            columns.Add(trip => trip.Name);
+                            columns.AddGroup(
+                                "Destination",
+                                destination =>
                                 {
-                                    location.Add(
-                                        trip => TripCatalog.CountryName(trip.CountryId),
-                                        column =>
+                                    destination.AddGroup(
+                                        "Location",
+                                        location =>
                                         {
-                                            column.Title = "Country";
-                                            column.EditsField(trip => trip.CountryId);
+                                            location.Add(
+                                                trip => TripCatalog.CountryName(trip.CountryId),
+                                                column =>
+                                                {
+                                                    column.Title = "Country";
+                                                    column.EditsField(trip => trip.CountryId);
+                                                }
+                                            );
+                                            location.Add(
+                                                trip => TripCatalog.CityName(trip.CityId),
+                                                column =>
+                                                {
+                                                    column.Title = "City";
+                                                    column.EditsField(trip => trip.CityId);
+                                                }
+                                            );
                                         }
                                     );
-                                    location.Add(
-                                        trip => TripCatalog.CityName(trip.CityId),
-                                        column =>
-                                        {
-                                            column.Title = "City";
-                                            column.EditsField(trip => trip.CityId);
-                                        }
-                                    );
+                                    destination.Add(trip => trip.ArrivalAirport);
                                 }
                             );
-                            destination.Add(trip => trip.ArrivalAirport);
-                        }
-                    );
-                })
+                        });
+                        table.EnableInlineCreate();
+                    }
+                )
             );
             resource.AllowCreate(create =>
             {
@@ -66,7 +73,6 @@ internal static class TripResourceRegistration
                     fields.Add(trip => trip.Name);
                     AddPlaceFields(fields);
                 });
-                create.UseInlineRow();
             });
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>

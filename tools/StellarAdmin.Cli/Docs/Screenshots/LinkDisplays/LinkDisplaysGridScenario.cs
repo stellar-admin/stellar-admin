@@ -18,15 +18,21 @@ public sealed class LinkDisplaysGridScenario : Scenario
         admin.AddEfCoreResource<Supplier>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(supplier => supplier.Name);
-                    columns.Add(supplier => supplier.Email);
-                    columns.Add(supplier => supplier.Phone);
-                    columns.Add(supplier => supplier.Website);
-                });
-                // Five rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 5);
+                index.AddTable(
+                    "suppliers",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(supplier => supplier.Name);
+                            columns.Add(supplier => supplier.Email);
+                            columns.Add(supplier => supplier.Phone);
+                            columns.Add(supplier => supplier.Website);
+                        });
+                        // Five rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 5);
+                    }
+                );
             })
         );
     }

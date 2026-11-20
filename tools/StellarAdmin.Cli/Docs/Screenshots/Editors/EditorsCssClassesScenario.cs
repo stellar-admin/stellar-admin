@@ -18,14 +18,16 @@ public sealed class EditorsCssClassesScenario : Scenario
         admin.AddStylesheet("~/css/trip-summary.css");
         admin.AddEfCoreResource<Trip>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()));
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {
                     fields.Add(trip => trip.Title);
                     fields
                         .Add(trip => trip.Summary)
-                        .UseTextareaEditor(textarea => textarea.ClassNames.Control = "trip-summary");
+                        .UseTextareaEditor(textarea =>
+                            textarea.ClassNames.Control = "trip-summary"
+                        );
                 })
             );
         });

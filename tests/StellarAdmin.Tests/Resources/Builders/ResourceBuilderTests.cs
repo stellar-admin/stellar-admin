@@ -16,12 +16,14 @@ public partial class ResourceBuilderTests
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
         sut.Index(index =>
+        {
             index.EnableScopes(scopes =>
             {
                 scopes.Add("all", "All");
                 scopes.Add("ALL", "Duplicate");
-            })
-        );
+            });
+            index.AddTable("table");
+        });
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -43,12 +45,14 @@ public partial class ResourceBuilderTests
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
         sut.Index(index =>
+        {
             index.EnableScopes(scopes =>
             {
                 scopes.Add("all", "All");
                 scopes.DefaultScope = "missing";
-            })
-        );
+            });
+            index.AddTable("table");
+        });
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -81,8 +85,15 @@ public partial class ResourceBuilderTests
                 )
             )
         );
-        sut.Index(index => index.Columns(columns => columns.Add(product => product.Name)));
-        sut.Index(index => index.EnablePaging().PageSizes = [10, 25]);
+        sut.Index(index =>
+            index.AddTable(
+                "table",
+                table => table.Columns(columns => columns.Add(product => product.Name))
+            )
+        );
+        sut.Index(index =>
+            index.AddTable("table", table => table.EnablePaging().PageSizes = [10, 25])
+        );
         using var first = services.BuildServiceProvider();
         using var second = services.BuildServiceProvider();
 
@@ -119,10 +130,15 @@ public partial class ResourceBuilderTests
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
         sut.Index(index =>
-        {
-            index.Columns(columns => columns.Add(product => product.Name));
-            index.DefaultSortBy(product => product.Name);
-        });
+            index.AddTable(
+                "table",
+                table =>
+                {
+                    table.Columns(columns => columns.Add(product => product.Name));
+                    table.DefaultSortBy(product => product.Name);
+                }
+            )
+        );
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -152,14 +168,18 @@ public partial class ResourceBuilderTests
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
         sut.Index(index =>
-            index.EnablePaging(paging =>
-            {
-                paging.PageSize = pageSize;
-                paging.PageSizes = sizes
-                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(int.Parse)
-                    .ToArray();
-            })
+            index.AddTable(
+                "table",
+                table =>
+                    table.EnablePaging(paging =>
+                    {
+                        paging.PageSize = pageSize;
+                        paging.PageSizes = sizes
+                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(int.Parse)
+                            .ToArray();
+                    })
+            )
         );
         using var provider = services.BuildServiceProvider();
 
@@ -185,11 +205,15 @@ public partial class ResourceBuilderTests
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Product>();
         sut.Index(index =>
-            index.EnablePaging(paging =>
-            {
-                paging.PageSize = pageSize;
-                paging.PageSizes = [10, 25];
-            })
+            index.AddTable(
+                "table",
+                table =>
+                    table.EnablePaging(paging =>
+                    {
+                        paging.PageSize = pageSize;
+                        paging.PageSizes = [10, 25];
+                    })
+            )
         );
         using var provider = services.BuildServiceProvider();
 

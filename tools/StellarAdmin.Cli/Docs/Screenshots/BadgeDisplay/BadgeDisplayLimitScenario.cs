@@ -1,7 +1,7 @@
 using StellarAdmin;
 using StellarAdmin.EntityFrameworkCore;
-using StellarAdmin.UI;
 using StellarAdmin.ScenarioTesting.Hosting;
+using StellarAdmin.UI;
 using VoyagerTravel.Models;
 
 namespace StellarAdmin.Cli.Docs.Screenshots.BadgeDisplay;
@@ -19,21 +19,27 @@ public sealed class BadgeDisplayLimitScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Title);
-                    columns.Add(
-                        trip => trip.DepartureAirports,
-                        column =>
-                            column.UseDisplay<Resources.Displays.BadgeDisplay>(badge =>
-                            {
-                                badge.Variant = BadgeVariant.Outline;
-                                badge.Limit = 2;
-                            })
-                    );
-                });
-                // Five rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 5);
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Title);
+                            columns.Add(
+                                trip => trip.DepartureAirports,
+                                column =>
+                                    column.UseDisplay<Resources.Displays.BadgeDisplay>(badge =>
+                                    {
+                                        badge.Variant = BadgeVariant.Outline;
+                                        badge.Limit = 2;
+                                    })
+                            );
+                        });
+                        // Five rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 5);
+                    }
+                );
             })
         );
     }

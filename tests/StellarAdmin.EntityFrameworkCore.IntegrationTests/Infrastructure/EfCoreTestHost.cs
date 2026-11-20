@@ -18,7 +18,8 @@ internal static class EfCoreTestHost
         Action<EfCoreResourceBuilder<Product>>? configure = null,
         ConcurrentQueue<string>? commands = null,
         Action<StellarAdminBuilder>? configureAdmin = null,
-        Action<IServiceCollection>? configureServices = null
+        Action<IServiceCollection>? configureServices = null,
+        bool defaultTable = true
     )
     {
         var builder = WebApplication.CreateBuilder(
@@ -52,14 +53,29 @@ internal static class EfCoreTestHost
         {
             admin.AddEfCoreResource<Product>(resource =>
             {
-                resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Add(product => product.Number);
-                        columns.Add(product => product.Name, column => column.Sortable());
-                        columns.Add(product => product.Price, column => column.Sortable());
-                    })
-                );
+                // The default table, which a test of its own data layouts leaves out
+                if (defaultTable)
+                {
+                    resource.Index(index =>
+                        index.AddTable(
+                            "table",
+                            table =>
+                                table.Columns(columns =>
+                                {
+                                    columns.Add(product => product.Number);
+                                    columns.Add(
+                                        product => product.Name,
+                                        column => column.Sortable()
+                                    );
+                                    columns.Add(
+                                        product => product.Price,
+                                        column => column.Sortable()
+                                    );
+                                })
+                        )
+                    );
+                }
+
                 configure?.Invoke(resource);
             });
             configureAdmin?.Invoke(admin);

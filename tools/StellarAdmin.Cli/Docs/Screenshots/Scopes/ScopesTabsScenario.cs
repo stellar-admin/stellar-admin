@@ -18,12 +18,6 @@ public sealed class ScopesTabsScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                    columns.Add(booking => booking.Status);
-                });
                 index.EnableScopes(scopes =>
                 {
                     scopes.Add("all", "All");
@@ -44,7 +38,19 @@ public sealed class ScopesTabsScenario : Scenario
                     );
                     scopes.DefaultScope = "all";
                 });
-                index.EnablePaging();
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                            columns.Add(booking => booking.Status);
+                        });
+                        table.EnablePaging();
+                    }
+                );
             })
         );
         Travellers.Add(admin);

@@ -21,11 +21,11 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | --- | --- | --- |
 | Register an entity, slugs, labels, enable create/edit/view/delete, custom data source | `AddEfCoreResource<TEntity>`, `AddResource<T>`, `Allow*`, `UseDataSource` | [resources](references/resources.md) |
 | Search, scope tabs, default sort, paging, expandable rows | `Index(index => ...)`, `EnableSearch`, `EnableScopes`, `DefaultSortBy`, `EnablePaging`, `EnableRowDetails` | [index-pages](references/index-pages.md) |
-| Several tables or your own partial views on one index page, with a switcher; summaries of another shape from a handler, linked to records | `Index(index => ..., layouts => ...)`, `AddTable`, `AddPartial`, `ResourceLayoutModel<T>`, `IEfCoreLayoutHandler<TEntity, TItem>`, `IResourceLayoutHandler<TItem>`, `HasRecordKey`, `LinkTo<T>` | [layouts](references/layouts.md) |
+| Several tables or your own partial views on one index page, with a switcher; summaries of another shape from a handler, linked to records | `index.AddTable`, `index.AddPartial`, `ResourceDataLayoutModel<T>`, `IEfCoreDataLayoutHandler<TEntity, TItem>`, `IResourceDataLayoutHandler<TItem>`, `HasRecordKey`, `LinkTo<T>` | [data layouts](references/layouts.md) |
 | Grid columns: titles, sorting, currency, badges, values through references, alignment, column groups | `Columns(columns => columns.Add(...))`, `Sortable`, `UseDisplay`, `Align`, `AddGroup` | [columns](references/columns.md) |
 | Create and edit pages: layout, sections, validation, defaults, save and add another, custom models | `AllowCreate`, `AllowEdit`, `Fields`, `AddSection`, `Columns`, `UseFactory`, `EnableAddAnother` | [forms](references/forms.md) |
 | Run code when an EF Core form loads or saves: audit rows, defaults from services, rules, `UserManager`, extra form fields | `Events`, `UseEvents`, `OnCreating`, `OnUpdating`, `Fail`, `AllowEdit<TModel>(model => model.Entity, ...)` | [forms](references/forms.md#ef-core-form-events) |
-| Edit and add small resources in the index grid's rows | `UseInlineRow`, `EditsField`, `InlineCreatePosition`, `InlineAddButton` | [inline-editing](references/inline-editing.md) |
+| Edit and add small resources in the index table's rows | `EnableInlineEditing`, `EnableInlineCreate`, `EditsField`, `InlineCreatePosition`, `InlineAddButton` | [inline-editing](references/inline-editing.md) |
 | Read-only values in forms, displays, display templates | `AddDisplayField`, `AddDetails`, `UseDisplay<TDisplay>` | [fields](references/fields.md) |
 | Read-only or disabled editable fields | `ReadOnly()`, `ReadOnly(predicate)`, `Disabled()` | [fields](references/fields.md#read-only-and-disabled-editable-fields) |
 | Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseRadioGroupEditor`, `UseSliderEditor` and the other `Use…Editor` methods, `UseEditor<TEditor>` for custom editors | [editors](references/editors.md) |
@@ -60,7 +60,8 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddEfCoreResource<Customer>(resource =>
     {
         resource.Reference(reference => reference.UseDescription(customer => customer.Email));
-        resource.Index(index => index.Columns(columns => columns.Add(customer => customer.Name)));
+        resource.Index(index => index.AddTable("customers", table =>
+            table.Columns(columns => columns.Add(customer => customer.Name))));
         resource.AllowCreate(create => create.Fields(fields =>
         {
             fields.Add(customer => customer.Name);
@@ -74,17 +75,6 @@ builder.Services.AddStellarAdmin(admin =>
 
         resource.Index(index =>
         {
-            index.Columns(columns =>
-            {
-                columns.Add(booking => booking.Reference);
-                columns.Add(booking => booking.Customer);   // the customer's title
-                columns.Add(booking => booking.DepartureDate, column => column.Sortable());
-                columns.Add(booking => booking.Total, column =>
-                {
-                    column.Sortable();
-                    column.UseDisplay<NumberDisplay>(number => number.Format = "C");
-                });
-            });
             index.EnableSearch(term => booking => booking.Reference.Contains(term) || booking.Customer!.Name.Contains(term));
             index.EnableScopes(scopes =>
             {
@@ -92,8 +82,22 @@ builder.Services.AddStellarAdmin(admin =>
                 scopes.Add("pending", "Pending", booking => booking.Status == BookingStatus.Pending);
                 scopes.DefaultScope = "all";
             });
-            index.DefaultSortBy(booking => booking.DepartureDate);
-            index.EnablePaging(paging => paging.PageSize = 10);
+            index.AddTable("bookings", table =>
+            {
+                table.Columns(columns =>
+                {
+                    columns.Add(booking => booking.Reference);
+                    columns.Add(booking => booking.Customer);   // the customer's title
+                    columns.Add(booking => booking.DepartureDate, column => column.Sortable());
+                    columns.Add(booking => booking.Total, column =>
+                    {
+                        column.Sortable();
+                        column.UseDisplay<NumberDisplay>(number => number.Format = "C");
+                    });
+                });
+                table.DefaultSortBy(booking => booking.DepartureDate);
+                table.EnablePaging(paging => paging.PageSize = 10);
+            });
         });
 
         resource.AllowCreate(create =>
@@ -170,11 +174,11 @@ Resources and sidebar links without an `Order` appear in the sidebar in the orde
 | Namespace | Package | Contains |
 | --- | --- | --- |
 | `StellarAdmin` | StellarAdmin | `AddStellarAdmin`, `MapStellarAdmin`, `StellarAdminLayouts`, `EnvironmentIndicator`, `EnvironmentColor` |
-| `StellarAdmin.EntityFrameworkCore` | StellarAdmin.EntityFrameworkCore | `AddEfCoreResource`, `IEfCoreLayoutHandler<TEntity, TItem>`, and the EF `UseItems<TEntity>` overloads on editors for types that aren't resources |
+| `StellarAdmin.EntityFrameworkCore` | StellarAdmin.EntityFrameworkCore | `AddEfCoreResource`, `IEfCoreDataLayoutHandler<TEntity, TItem>`, and the EF `UseItems<TEntity>` overloads on editors for types that aren't resources |
 | `StellarAdmin.Resources.Editors` | StellarAdmin | Editors, `ChoiceItem`, `ItemMedia`, `LookupSource` |
 | `StellarAdmin.Resources.Displays` | StellarAdmin | Displays such as `NumberDisplay`, `BadgeDisplay`, `FieldDisplay` |
 | `StellarAdmin.Resources.Builders` | StellarAdmin | Builder types, for helper methods such as `void BookingFields(ResourceFieldsBuilder<Booking> fields)` |
-| `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `ResourceLayoutModel<TItem>`, `InlineCreatePosition`, `InlineAddButton` |
+| `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `ResourceDataLayoutModel<TItem>`, `InlineCreatePosition`, `InlineAddButton` |
 | `StellarAdmin.Resources.Options` | StellarAdmin | Resolved options such as `ResourceOptions<T>` and `FormFieldOptions`, for post-configuration |
 | `StellarAdmin.Sidebar` | StellarAdmin | `SidebarLinkTarget`, `BrandingLogo`, `UserMenuItem` |
 | `StellarAdmin.Areas.StellarAdmin.ViewModels` | StellarAdmin | Page view models for overrides (`ResourceIndexPageViewModel<T>`) |

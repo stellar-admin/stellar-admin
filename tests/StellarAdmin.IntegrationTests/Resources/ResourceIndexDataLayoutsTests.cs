@@ -30,7 +30,8 @@ public class ResourceIndexDataLayoutsTests
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
             CreateState(),
-            ConfigureLayouts
+            ConfigureLayouts,
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -67,7 +68,11 @@ public class ResourceIndexDataLayoutsTests
     {
         // Arrange
         var state = CreateState();
-        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureLayouts);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            ConfigureLayouts,
+            defaultTable: false
+        );
         using var client = sut.CreateClient();
 
         // Act
@@ -106,7 +111,11 @@ public class ResourceIndexDataLayoutsTests
     {
         // Arrange
         var state = CreateState();
-        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureLayouts);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            ConfigureLayouts,
+            defaultTable: false
+        );
         using var client = sut.CreateClient();
 
         // Act
@@ -121,7 +130,11 @@ public class ResourceIndexDataLayoutsTests
     {
         // Arrange
         var state = CreateState();
-        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureLayouts);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            ConfigureLayouts,
+            defaultTable: false
+        );
         using var client = sut.CreateClient();
 
         // Act
@@ -150,7 +163,8 @@ public class ResourceIndexDataLayoutsTests
             {
                 ConfigureLayouts(resource);
                 resource.UseKey(product => product.Id).AllowDelete();
-            }
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -180,7 +194,8 @@ public class ResourceIndexDataLayoutsTests
             {
                 ConfigureLayouts(resource);
                 resource.UseKey(product => product.Id).AllowDelete();
-            }
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -200,7 +215,11 @@ public class ResourceIndexDataLayoutsTests
     {
         // Arrange
         var state = CreateState();
-        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureLayouts);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            ConfigureLayouts,
+            defaultTable: false
+        );
         using var client = sut.CreateClient();
 
         // Act
@@ -246,7 +265,8 @@ public class ResourceIndexDataLayoutsTests
                     .UseKey(product => product.Id)
                     .AllowEdit(edit => edit.Fields(fields => fields.Add(product => product.Name)))
                     .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
-            }
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -278,7 +298,8 @@ public class ResourceIndexDataLayoutsTests
             {
                 ConfigureLayouts(resource);
                 resource.UseKey(product => product.Id);
-            }
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -304,7 +325,8 @@ public class ResourceIndexDataLayoutsTests
                 resource
                     .UseKey(product => product.Id)
                     .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
-            }
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -341,7 +363,8 @@ public class ResourceIndexDataLayoutsTests
                             paging.PageSize = 2;
                             paging.PageSizes = [2, 3];
                         })
-                )
+                ),
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -387,7 +410,8 @@ public class ResourceIndexDataLayoutsTests
                     .AllowEdit(edit => edit.Fields(fields => fields.Add(product => product.Name)))
                     .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
                 resource.AllowDelete();
-            }
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -427,7 +451,8 @@ public class ResourceIndexDataLayoutsTests
                         view.Fields(fields => fields.Add(category => category.Name))
                     )
                 ),
-            services => services.AddSingleton<CategoryStore>()
+            services => services.AddSingleton<CategoryStore>(),
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -452,7 +477,8 @@ public class ResourceIndexDataLayoutsTests
             resource =>
                 ConfigureRowsTable(resource, rows => rows.LinkTo<Category>(row => row.CategoryId)),
             admin => admin.AddCategoryResource(),
-            services => services.AddSingleton<CategoryStore>()
+            services => services.AddSingleton<CategoryStore>(),
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -484,7 +510,8 @@ public class ResourceIndexDataLayoutsTests
                     .UseKey(product => product.Id)
                     .AllowEdit(edit => edit.Fields(fields => fields.Add(product => product.Name)))
                     .AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
-            }
+            },
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -526,7 +553,8 @@ public class ResourceIndexDataLayoutsTests
                         view.Fields(fields => fields.Add(category => category.Name))
                     )
                 ),
-            services => services.AddSingleton<CategoryStore>()
+            services => services.AddSingleton<CategoryStore>(),
+            defaultTable: false
         );
         using var client = sut.CreateClient();
 
@@ -547,51 +575,39 @@ public class ResourceIndexDataLayoutsTests
         ResourceBuilder<Product> resource,
         Action<ResourceHandlerPartialDataLayoutBuilder<Product, ProductRow>> configure
     ) =>
-        resource.Index(
-            _ => { },
-            layouts =>
-            {
-                layouts.AddTable("products");
-                layouts.AddPartial<ProductRow, ProductRowsHandler>(
-                    "rows",
-                    "_ProductRows",
-                    configure
-                );
-            }
-        );
+        resource.Index(index =>
+        {
+            index.AddTable("products");
+            index.AddPartial<ProductRow, ProductRowsHandler>("rows", "_ProductRows", configure);
+        });
 
     // The products table, then a table of rows its handler loads
     private static void ConfigureRowsTable(
         ResourceBuilder<Product> resource,
         Action<ResourceHandlerTableDataLayoutBuilder<Product, ProductRow>> configure
     ) =>
-        resource.Index(
-            index =>
+        resource.Index(index =>
+        {
+            index.EnableScopes(scopes =>
             {
-                index.EnableScopes(scopes =>
+                scopes.Add("all", "All");
+                scopes.Add("cheap", "Cheap");
+            });
+            index.EnableSearch();
+            index.AddTable("products");
+            index.AddTable<ProductRow, ProductRowsHandler>(
+                "rows",
+                rows =>
                 {
-                    scopes.Add("all", "All");
-                    scopes.Add("cheap", "Cheap");
-                });
-                index.EnableSearch();
-            },
-            layouts =>
-            {
-                layouts.AddTable("products");
-                layouts.AddTable<ProductRow, ProductRowsHandler>(
-                    "rows",
-                    rows =>
+                    rows.Columns(columns =>
                     {
-                        rows.Columns(columns =>
-                        {
-                            columns.Add(row => row.Label);
-                            columns.Add(row => row.Price, column => column.Sortable());
-                        });
-                        configure(rows);
-                    }
-                );
-            }
-        );
+                        columns.Add(row => row.Label);
+                        columns.Add(row => row.Price, column => column.Sortable());
+                    });
+                    configure(rows);
+                }
+            );
+        });
 
     private static IEnumerable<string> RowLabels(AngleSharp.Dom.IDocument document) =>
         document
@@ -599,60 +615,51 @@ public class ResourceIndexDataLayoutsTests
             .Select(row => row.QuerySelector("td")!.TextContent.Trim());
 
     private static void ConfigureLayouts(ResourceBuilder<Product> resource) =>
-        resource.Index(
-            index =>
+        resource.Index(index =>
+        {
+            index.EnableScopes(scopes =>
             {
-                index.EnableScopes(scopes =>
+                scopes.Add("all", "All");
+                scopes.Add("cheap", "Cheap");
+            });
+            index.EnableSearch();
+            index.AddTable(
+                "products",
+                table =>
                 {
-                    scopes.Add("all", "All");
-                    scopes.Add("cheap", "Cheap");
-                });
-                index.EnableSearch();
-            },
-            layouts =>
-            {
-                layouts.AddTable(
-                    "products",
-                    table =>
+                    table.Title = "All products";
+                    table.Icon = "table";
+                    table.Columns(columns =>
+                        columns.Clear().Add(product => product.Name, column => column.Sortable())
+                    );
+                    table.DefaultSortBy(product => product.Name);
+                }
+            );
+            index.AddTable(
+                "prices",
+                table =>
+                {
+                    table.Columns(columns =>
+                        columns.Clear().Add(product => product.Price, column => column.Sortable())
+                    );
+                    table.DefaultSortByDescending(product => product.Price);
+                    table.EnablePaging(paging =>
                     {
-                        table.Title = "All products";
-                        table.Icon = "table";
-                        table.Columns(columns =>
-                            columns
-                                .Clear()
-                                .Add(product => product.Name, column => column.Sortable())
-                        );
-                        table.DefaultSortBy(product => product.Name);
-                    }
-                );
-                layouts.AddTable(
-                    "prices",
-                    table =>
-                    {
-                        table.Columns(columns =>
-                            columns
-                                .Clear()
-                                .Add(product => product.Price, column => column.Sortable())
-                        );
-                        table.DefaultSortByDescending(product => product.Price);
-                        table.EnablePaging(paging =>
-                        {
-                            paging.PageSize = 2;
-                            paging.PageSizes = [2, 3];
-                        });
-                        table.RowActions(actions => actions.Delete = false);
-                        table.IgnoreScopes();
-                        table.IgnoreSearch();
-                    }
-                );
-                layouts.AddPartial("tiles", "_ProductTiles");
-                layouts.AddPartial<ProductTotal, ProductTotalsHandler>(
-                    "totals",
-                    "_ProductTotals",
-                    totals => totals.IgnoreSearch()
-                );
-            }
-        );
+                        paging.PageSize = 2;
+                        paging.PageSizes = [2, 3];
+                    });
+                    table.RowActions(actions => actions.Delete = false);
+                    table.IgnoreScopes();
+                    table.IgnoreSearch();
+                }
+            );
+            index.AddPartial("tiles", "_ProductTiles");
+            index.AddPartial<ProductTotal, ProductTotalsHandler>(
+                "totals",
+                "_ProductTotals",
+                totals => totals.IgnoreSearch()
+            );
+        });
 
     private static ProductState CreateState() =>
         new([

@@ -21,19 +21,25 @@ public sealed class ChoiceEditorsToggleAppearanceScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Trip>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()));
             resource.AllowCreate<TripDifficultyForm, TripDifficultyFormHandler>(create =>
                 create.Fields(fields =>
                 {
                     fields
                         .Add(form => form.ChipsDifficulty)
-                        .UseToggleGroupEditor(toggle => toggle.Appearance = ToggleGroupAppearance.Chips);
+                        .UseToggleGroupEditor(toggle =>
+                            toggle.Appearance = ToggleGroupAppearance.Chips
+                        );
                     fields
                         .Add(form => form.JoinedDifficulty)
-                        .UseToggleGroupEditor(toggle => toggle.Appearance = ToggleGroupAppearance.Joined);
+                        .UseToggleGroupEditor(toggle =>
+                            toggle.Appearance = ToggleGroupAppearance.Joined
+                        );
                     fields
                         .Add(form => form.ButtonsDifficulty)
-                        .UseToggleGroupEditor(toggle => toggle.Appearance = ToggleGroupAppearance.Buttons);
+                        .UseToggleGroupEditor(toggle =>
+                            toggle.Appearance = ToggleGroupAppearance.Buttons
+                        );
                 })
             );
         });
@@ -54,7 +60,9 @@ public sealed class ChoiceEditorsToggleAppearanceScenario : Scenario
     // The capture only shows the form
     public sealed class TripDifficultyFormHandler : IResourceCreateHandler<TripDifficultyForm>
     {
-        public Task<ResourceOperationResult> CreateAsync(TripDifficultyForm model, CancellationToken cancellationToken) =>
-            Task.FromResult(ResourceOperationResult.Success());
+        public Task<ResourceOperationResult> CreateAsync(
+            TripDifficultyForm model,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(ResourceOperationResult.Success());
     }
 }

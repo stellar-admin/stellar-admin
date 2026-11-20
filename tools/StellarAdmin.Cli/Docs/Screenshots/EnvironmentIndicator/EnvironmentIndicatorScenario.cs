@@ -51,29 +51,44 @@ public sealed class EnvironmentIndicatorScenario(string indicator) : Scenario
         {
             resource.UseTitle(trip => trip.Title);
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Title);
-                    columns.Add(trip => trip.DurationDays);
-                    columns.Add(trip => trip.IsPublished);
-                });
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Title);
+                            columns.Add(trip => trip.DurationDays);
+                            columns.Add(trip => trip.IsPublished);
+                        });
+                    }
+                )
+            );
         });
         admin.AddEfCoreResource<Destination>(resource =>
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(destination => destination.Name));
-            })
+                index.AddTable(
+                    "destinations",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(destination => destination.Name));
+                    }
+                )
+            )
         );
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(booking => booking.Reference));
-            })
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(booking => booking.Reference));
+                    }
+                )
+            )
         );
     }
 }

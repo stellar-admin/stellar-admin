@@ -249,7 +249,12 @@ public class GridEditorTests
             {
                 resource.UseDataSource<InventoryItemDataSource>();
                 resource.UseKey(item => item.Sku);
-                resource.Index(index => index.Columns(columns => columns.Add(item => item.Name)));
+                resource.Index(index =>
+                    index.AddTable(
+                        "table",
+                        table => table.Columns(columns => columns.Add(item => item.Name))
+                    )
+                );
                 configure(resource);
             }
         );

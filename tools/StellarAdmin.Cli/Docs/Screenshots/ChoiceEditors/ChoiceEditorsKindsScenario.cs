@@ -21,7 +21,7 @@ public sealed class ChoiceEditorsKindsScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Trip>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()));
             resource.AllowCreate<TripChoicesForm, TripChoicesFormHandler>(create =>
                 create.Fields(fields =>
                 {
@@ -46,7 +46,8 @@ public sealed class ChoiceEditorsKindsScenario : Scenario
         public RoomType RoomType { get; set; } = RoomType.Twin;
 
         [Display(Name = "Payment methods")]
-        public List<PaymentMethod> PaymentMethods { get; set; } = [PaymentMethod.Card, PaymentMethod.Voucher];
+        public List<PaymentMethod> PaymentMethods { get; set; } =
+        [PaymentMethod.Card, PaymentMethod.Voucher];
 
         public List<Climate> Climates { get; set; } = [Climate.Tropical, Climate.Mediterranean];
     }
@@ -54,7 +55,9 @@ public sealed class ChoiceEditorsKindsScenario : Scenario
     // The capture only shows the form
     public sealed class TripChoicesFormHandler : IResourceCreateHandler<TripChoicesForm>
     {
-        public Task<ResourceOperationResult> CreateAsync(TripChoicesForm model, CancellationToken cancellationToken) =>
-            Task.FromResult(ResourceOperationResult.Success());
+        public Task<ResourceOperationResult> CreateAsync(
+            TripChoicesForm model,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(ResourceOperationResult.Success());
     }
 }

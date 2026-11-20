@@ -5,7 +5,7 @@ using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Tests.Resources.Builders;
 
-public class ResourceLayoutsBuilderTests
+public class ResourceIndexBuilderTests
 {
     [Test]
     public async Task AddPartial_AddsThePartialInCallOrderWithItsSettings()
@@ -15,24 +15,21 @@ public class ResourceLayoutsBuilderTests
         services
             .AddStellarAdmin()
             .AddResource<Product>()
-            .Index(
-                _ => { },
-                layouts =>
-                {
-                    layouts.AddTable("products");
-                    layouts.AddPartial(
-                        "cards",
-                        "_ProductCards",
-                        cards =>
-                        {
-                            cards.Title = "Cards";
-                            cards.Icon = "layout-grid";
-                            cards.IgnoreSearch();
-                        }
-                    );
-                    layouts.AddTable("prices");
-                }
-            );
+            .Index(index =>
+            {
+                index.AddTable("products");
+                index.AddPartial(
+                    "cards",
+                    "_ProductCards",
+                    cards =>
+                    {
+                        cards.Title = "Cards";
+                        cards.Icon = "layout-grid";
+                        cards.IgnoreSearch();
+                    }
+                );
+                index.AddTable("prices");
+            });
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -63,18 +60,15 @@ public class ResourceLayoutsBuilderTests
         services
             .AddStellarAdmin()
             .AddResource<Product>()
-            .Index(
-                _ => { },
-                layouts =>
-                {
-                    layouts.AddTable("products");
-                    layouts.AddPartial<ProductCount, ProductCountHandler>(
-                        "counts",
-                        "_ProductCounts",
-                        counts => counts.IgnoreScopes()
-                    );
-                }
-            );
+            .Index(index =>
+            {
+                index.AddTable("products");
+                index.AddPartial<ProductCount, ProductCountHandler>(
+                    "counts",
+                    "_ProductCounts",
+                    counts => counts.IgnoreScopes()
+                );
+            });
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -104,14 +98,12 @@ public class ResourceLayoutsBuilderTests
         services
             .AddStellarAdmin()
             .AddResource<Product>()
-            .Index(
-                _ => { },
-                layouts =>
-                    layouts.AddPartial<ProductCount, ProductCountHandler>(
-                        "counts",
-                        "_ProductCounts",
-                        counts => counts.HasRecordKey(count => count.Count)
-                    )
+            .Index(index =>
+                index.AddPartial<ProductCount, ProductCountHandler>(
+                    "counts",
+                    "_ProductCounts",
+                    counts => counts.HasRecordKey(count => count.Count)
+                )
             );
         using var provider = services.BuildServiceProvider();
 
@@ -133,17 +125,15 @@ public class ResourceLayoutsBuilderTests
 
         // Act
         var act = () =>
-            resource.Index(
-                _ => { },
-                layouts =>
-                    layouts.AddPartial<ProductCount, ProductCountHandler>(
-                        "counts",
-                        "_ProductCounts",
-                        counts =>
-                            counts
-                                .LinkTo<Product>(count => count.Count)
-                                .HasRecordKey(count => count.Count)
-                    )
+            resource.Index(index =>
+                index.AddPartial<ProductCount, ProductCountHandler>(
+                    "counts",
+                    "_ProductCounts",
+                    counts =>
+                        counts
+                            .LinkTo<Product>(count => count.Count)
+                            .HasRecordKey(count => count.Count)
+                )
             );
 
         // Assert
@@ -158,25 +148,22 @@ public class ResourceLayoutsBuilderTests
         services
             .AddStellarAdmin()
             .AddResource<Product>()
-            .Index(
-                _ => { },
-                layouts =>
-                {
-                    layouts.AddTable("products");
-                    layouts.AddTable<ProductCount, ProductCountHandler>(
-                        "counts",
-                        counts =>
-                        {
-                            counts.HasRecordKey(count => count.Count);
-                            counts.Columns(columns =>
-                                columns.Add(count => count.Count, column => column.Sortable())
-                            );
-                            counts.DefaultSortByDescending(count => count.Count);
-                            counts.EnablePaging(paging => paging.PageSize = 5);
-                        }
-                    );
-                }
-            );
+            .Index(index =>
+            {
+                index.AddTable("products");
+                index.AddTable<ProductCount, ProductCountHandler>(
+                    "counts",
+                    counts =>
+                    {
+                        counts.HasRecordKey(count => count.Count);
+                        counts.Columns(columns =>
+                            columns.Add(count => count.Count, column => column.Sortable())
+                        );
+                        counts.DefaultSortByDescending(count => count.Count);
+                        counts.EnablePaging(paging => paging.PageSize = 5);
+                    }
+                );
+            });
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -217,16 +204,14 @@ public class ResourceLayoutsBuilderTests
 
         // Act
         var act = () =>
-            resource.Index(
-                _ => { },
-                layouts =>
-                    layouts.AddTable<ProductCount, ProductCountHandler>(
-                        "counts",
-                        counts =>
-                            counts
-                                .HasRecordKey(count => count.Count)
-                                .LinkTo<Product>(count => count.Count)
-                    )
+            resource.Index(index =>
+                index.AddTable<ProductCount, ProductCountHandler>(
+                    "counts",
+                    counts =>
+                        counts
+                            .HasRecordKey(count => count.Count)
+                            .LinkTo<Product>(count => count.Count)
+                )
             );
 
         // Assert
@@ -242,14 +227,11 @@ public class ResourceLayoutsBuilderTests
 
         // Act
         var act = () =>
-            resource.Index(
-                _ => { },
-                layouts =>
-                {
-                    layouts.AddTable("products");
-                    layouts.AddPartial("Products", "_ProductCards");
-                }
-            );
+            resource.Index(index =>
+            {
+                index.AddTable("products");
+                index.AddPartial("Products", "_ProductCards");
+            });
 
         // Assert
         await Assert.That(act).Throws<ArgumentException>();
@@ -265,8 +247,7 @@ public class ResourceLayoutsBuilderTests
         var resource = services.AddStellarAdmin().AddResource<Product>();
 
         // Act
-        var act = () =>
-            resource.Index(_ => { }, layouts => layouts.AddPartial("cards", partialName));
+        var act = () => resource.Index(index => index.AddPartial("cards", partialName));
 
         // Assert
         await Assert.That(act).Throws<ArgumentException>();
@@ -280,14 +261,11 @@ public class ResourceLayoutsBuilderTests
         services
             .AddStellarAdmin()
             .AddResource<Product>()
-            .Index(
-                _ => { },
-                layouts =>
-                {
-                    layouts.AddTable("products");
-                    layouts.AddTable("prices");
-                }
-            );
+            .Index(index =>
+            {
+                index.AddTable("products");
+                index.AddTable("prices");
+            });
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -313,38 +291,31 @@ public class ResourceLayoutsBuilderTests
         services
             .AddStellarAdmin()
             .AddResource<Product>()
-            .Index(
-                _ => { },
-                layouts =>
-                {
-                    layouts.AddTable(
-                        "products",
-                        table =>
-                        {
-                            table.Title = "Products";
-                            table.Icon = "table";
-                            table.Columns(columns =>
-                                columns.Add(product => product.Name).Sortable()
-                            );
-                            table.DefaultSortBy(product => product.Name);
-                        }
-                    );
-                    layouts.AddTable(
-                        "prices",
-                        table =>
-                        {
-                            table.Columns(columns =>
-                                columns.Add(product => product.Price).Sortable()
-                            );
-                            table.DefaultSortByDescending(product => product.Price);
-                            table.EnablePaging(paging => paging.PageSize = 50);
-                            table.RowActions(actions => actions.Delete = false);
-                            table.IgnoreScopes();
-                            table.IgnoreSearch();
-                        }
-                    );
-                }
-            );
+            .Index(index =>
+            {
+                index.AddTable(
+                    "products",
+                    table =>
+                    {
+                        table.Title = "Products";
+                        table.Icon = "table";
+                        table.Columns(columns => columns.Add(product => product.Name).Sortable());
+                        table.DefaultSortBy(product => product.Name);
+                    }
+                );
+                index.AddTable(
+                    "prices",
+                    table =>
+                    {
+                        table.Columns(columns => columns.Add(product => product.Price).Sortable());
+                        table.DefaultSortByDescending(product => product.Price);
+                        table.EnablePaging(paging => paging.PageSize = 50);
+                        table.RowActions(actions => actions.Delete = false);
+                        table.IgnoreScopes();
+                        table.IgnoreSearch();
+                    }
+                );
+            });
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -382,14 +353,11 @@ public class ResourceLayoutsBuilderTests
 
         // Act
         var act = () =>
-            resource.Index(
-                _ => { },
-                layouts =>
-                {
-                    layouts.AddTable("prices");
-                    layouts.AddTable(key);
-                }
-            );
+            resource.Index(index =>
+            {
+                index.AddTable("prices");
+                index.AddTable(key);
+            });
 
         // Assert
         await Assert.That(act).Throws<ArgumentException>();
@@ -405,27 +373,25 @@ public class ResourceLayoutsBuilderTests
         var resource = services.AddStellarAdmin().AddResource<Product>();
 
         // Act
-        var act = () => resource.Index(_ => { }, layouts => layouts.AddTable(key));
+        var act = () => resource.Index(index => index.AddTable(key));
 
         // Assert
         await Assert.That(act).Throws<ArgumentException>();
     }
 
     [Test]
-    public async Task Index_WithNoLayouts_HasTheImplicitTable()
+    public async Task Index_WithoutDataLayouts_HasNoDataLayouts()
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddStellarAdmin().AddResource<Product>().Index(_ => { }, _ => { });
+        services.AddStellarAdmin().AddResource<Product>().Index(index => index.Title = "Products");
         using var provider = services.BuildServiceProvider();
 
         // Act
         var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert
-            .That(options.Index.Layouts.Single().Key)
-            .IsEqualTo(ResourceIndexOptions.ImplicitTableKey);
+        await Assert.That(options.Index.Layouts).IsEmpty();
     }
 
     public sealed class Product

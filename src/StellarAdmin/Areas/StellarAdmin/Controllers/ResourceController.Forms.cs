@@ -30,7 +30,7 @@ internal sealed partial class ResourceController<TResource>
     [HttpGet]
     public async Task<IActionResult> Create(CancellationToken cancellationToken)
     {
-        if (_resourceOptions.Create is not { InlineRow: null } create)
+        if (_resourceOptions.Create is not { } create)
         {
             return NotFound();
         }
@@ -134,7 +134,8 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         return
-            _resourceOptions.Create is { InlineRow: not null } create
+            _resourceOptions.Create is { } create
+            && IndexTable?.InlineCreate is not null
             && _resourceOptions.KeySelector is not null
             ? NewRowView(
                 await create.CreateModelAsync(HttpContext.RequestServices, cancellationToken),
@@ -154,7 +155,8 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         if (
-            _resourceOptions.Create is not { InlineRow: { } inline }
+            _resourceOptions.Create is null
+            || IndexTable?.InlineCreate is not { } inline
             || _resourceOptions.KeySelector is not { } keySelector
         )
         {
@@ -307,7 +309,7 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         if (
-            _resourceOptions.Edit is not { InlineRow: null }
+            _resourceOptions.Edit is null
             || _resourceOptions.KeySelector is null
             || string.IsNullOrEmpty(id)
         )
@@ -342,7 +344,7 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         if (
-            _resourceOptions.Edit is not { InlineRow: null }
+            _resourceOptions.Edit is null
             || _resourceOptions.KeySelector is null
             || string.IsNullOrEmpty(id)
         )
@@ -404,7 +406,8 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         if (
-            _resourceOptions.Edit is not { InlineRow: not null }
+            _resourceOptions.Edit is null
+            || IndexTable?.InlineEditing is null
             || _resourceOptions.KeySelector is null
             || string.IsNullOrEmpty(id)
         )
@@ -429,7 +432,8 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         if (
-            _resourceOptions.Edit is not { InlineRow: { } inline } edit
+            _resourceOptions.Edit is not { } edit
+            || IndexTable?.InlineEditing is not { } inline
             || _resourceOptions.KeySelector is null
             || string.IsNullOrEmpty(id)
         )
@@ -877,7 +881,9 @@ internal sealed partial class ResourceController<TResource>
             AddValidationErrors(
                 result,
                 fields,
-                create.InlineRow is null ? create.Fields : [],
+                prefix.StartsWith(InlineRowsPrefix + "[", StringComparison.Ordinal)
+                    ? []
+                    : create.Fields,
                 prefix
             );
         }

@@ -27,42 +27,47 @@ public sealed class RowDetailsPanelsScenario(string layout) : Scenario
     {
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
-            {
-                index.Columns(RowDetailsBookings.AddColumns);
-                index.EnableRowDetails(
-                    panels =>
+                index.AddTable(
+                    "table",
+                    table =>
                     {
-                        panels.Add<BookingHistory, BookingHistoryHandler>(
-                            "History",
-                            "_BookingHistory"
-                        );
-                        panels.Add("Summary", "_BookingSummary");
-                        panels.Add(
-                            "Pricing",
-                            "_BookingPricing",
-                            RowDetailsBookings.Pricing,
-                            panel =>
+                        table.Columns(RowDetailsBookings.AddColumns);
+                        table.EnableRowDetails(
+                            panels =>
                             {
-                                panel.Name = "prices";
-                                panel.Icon = "receipt";
-                            }
+                                panels.Add<BookingHistory, BookingHistoryHandler>(
+                                    "History",
+                                    "_BookingHistory"
+                                );
+                                panels.Add("Summary", "_BookingSummary");
+                                panels.Add(
+                                    "Pricing",
+                                    "_BookingPricing",
+                                    RowDetailsBookings.Pricing,
+                                    panel =>
+                                    {
+                                        panel.Name = "prices";
+                                        panel.Icon = "receipt";
+                                    }
+                                );
+                            },
+                            details =>
+                                details.PanelLayout = layout switch
+                                {
+                                    "accordion-single" => ResourceRowDetailPanelLayout.Accordion(
+                                        ResourceRowDetailAccordionExpandMode.Single
+                                    ),
+                                    "tabs" => ResourceRowDetailPanelLayout.Tabs(),
+                                    "tabs-line" => ResourceRowDetailPanelLayout.Tabs(
+                                        ResourceRowDetailTabStyle.Line
+                                    ),
+                                    _ => ResourceRowDetailPanelLayout.Accordion(),
+                                }
                         );
-                    },
-                    details =>
-                        details.PanelLayout = layout switch
-                        {
-                            "accordion-single" => ResourceRowDetailPanelLayout.Accordion(
-                                ResourceRowDetailAccordionExpandMode.Single
-                            ),
-                            "tabs" => ResourceRowDetailPanelLayout.Tabs(),
-                            "tabs-line" => ResourceRowDetailPanelLayout.Tabs(
-                                ResourceRowDetailTabStyle.Line
-                            ),
-                            _ => ResourceRowDetailPanelLayout.Accordion(),
-                        }
-                );
-                index.EnablePaging(paging => paging.PageSize = 10);
-            })
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                    }
+                )
+            )
         );
     }
 }

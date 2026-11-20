@@ -17,15 +17,21 @@ public sealed class DefaultScenario : Scenario
             resource.UseTitle(trip => trip.Title);
             resource.Index(index =>
             {
-                index.EnablePaging();
                 index.EnableSearch(term => trip => trip.Title.Contains(term));
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Code);
-                    columns.Add(trip => trip.Title);
-                    columns.Add(trip => trip.BasePrice);
-                    columns.Add(trip => trip.IsPublished);
-                });
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Code);
+                            columns.Add(trip => trip.Title);
+                            columns.Add(trip => trip.BasePrice);
+                            columns.Add(trip => trip.IsPublished);
+                        });
+                    }
+                );
             });
             resource.AllowCreate(create => create.Fields(TripFields));
             resource.AllowEdit(edit => edit.Fields(TripFields));

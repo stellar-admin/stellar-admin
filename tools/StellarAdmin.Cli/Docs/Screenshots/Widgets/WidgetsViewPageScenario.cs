@@ -20,10 +20,12 @@ public sealed class WidgetsViewPageScenario : Scenario
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
-        admin.AddEfCoreResource<Trip>(resource => resource.Index(index => index.EnablePaging()));
+        admin.AddEfCoreResource<Trip>(resource =>
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()))
+        );
         admin.AddEfCoreResource<Booking>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("bookings", table => table.EnablePaging()));
             resource.AllowView(view =>
             {
                 view.Fields(fields =>

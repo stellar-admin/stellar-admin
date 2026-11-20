@@ -22,11 +22,11 @@ using StellarAdmin.EntityFrameworkCore;
 
 admin.AddEfCoreResource<Customer>(resource =>
 {
-    resource.Index(index => index.Columns(columns =>
+    resource.Index(index => index.AddTable("customers", table => table.Columns(columns =>
     {
         columns.Add(customer => customer.Name);
         columns.Add(customer => customer.Email);
-    }));
+    })));
     resource.AllowCreate(create => create.Fields(fields =>
     {
         fields.Add(customer => customer.Name);
@@ -79,7 +79,7 @@ Every page except the index is off until enabled. Each call takes its own callba
 
 | Call | Adds | Needs |
 | --- | --- | --- |
-| `resource.Index(index => ...)` | Columns, search, scopes, sorting, paging ([index-pages](index-pages.md)) | Columns, or the grid is empty |
+| `resource.Index(index => ...)` | Search, scopes and the data layouts, such as a table with columns, sorting and paging ([index-pages](index-pages.md)) | A data layout, or the index shows no records |
 | `resource.AllowCreate(create => ...)` | `/{slug}/create` and a Create button | Fields ([forms](forms.md)) |
 | `resource.AllowEdit(edit => ...)` | `/{slug}/edit/{id}` and an Edit row action | Fields and a key |
 | `resource.AllowView(view => ...)` | `/{slug}/view/{id}` and a View row action | At least one field and a key ([view-pages](view-pages.md)) |
@@ -122,9 +122,12 @@ admin.AddResource<Supplier>(resource =>
     resource.UseKey(supplier => supplier.Code);
     resource.Index(index =>
     {
-        index.Columns(columns => columns.Add(supplier => supplier.Name, column => column.Sortable()));
         index.EnableSearch();
-        index.EnablePaging();
+        index.AddTable("suppliers", table =>
+        {
+            table.Columns(columns => columns.Add(supplier => supplier.Name, column => column.Sortable()));
+            table.EnablePaging();
+        });
     });
     resource.AllowCreate(create => create.Fields(fields => fields.Add(supplier => supplier.Name)));
     resource.AllowEdit(edit => edit.Fields(fields => fields.Add(supplier => supplier.Name)));

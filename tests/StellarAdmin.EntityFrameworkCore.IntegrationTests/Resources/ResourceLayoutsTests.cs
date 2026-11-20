@@ -19,9 +19,9 @@ public class ResourceLayoutsTests
     )
     {
         // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(
-                index =>
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.Index(index =>
                 {
                     index.EnableScopes(scopes =>
                     {
@@ -30,16 +30,13 @@ public class ResourceLayoutsTests
                         scopes.DefaultScope = "affordable";
                     });
                     index.EnableSearch(term => product => product.Name.Contains(term));
-                },
-                layouts =>
-                {
-                    layouts.AddTable("products");
-                    layouts.AddPartial<CategoryTotal, CategoryTotalsHandler>(
+                    index.AddTable("products");
+                    index.AddPartial<CategoryTotal, CategoryTotalsHandler>(
                         "totals",
                         "_CategoryTotals"
                     );
-                }
-            )
+                }),
+            defaultTable: false
         );
         using var client = sut.GetTestClient();
 
@@ -62,11 +59,10 @@ public class ResourceLayoutsTests
     public async Task Cards_LoadTheirValuesThroughNavigationsInTheirDefaultSort()
     {
         // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(
-                _ => { },
-                layouts =>
-                    layouts.AddCards(
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.Index(index =>
+                    index.AddCards(
                         "cards",
                         cards =>
                         {
@@ -84,7 +80,8 @@ public class ResourceLayoutsTests
                             });
                         }
                     )
-            )
+                ),
+            defaultTable: false
         );
         using var client = sut.GetTestClient();
 
@@ -119,13 +116,13 @@ public class ResourceLayoutsTests
     public async Task EfCoreHandlerTable_ShowsTheReshapedEntitiesInItsColumns()
     {
         // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(
-                index => index.EnableSearch(term => product => product.Name.Contains(term)),
-                layouts =>
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.Index(index =>
                 {
-                    layouts.AddTable("products");
-                    layouts.AddTable<CategoryTotal, CategoryTotalsHandler>(
+                    index.EnableSearch(term => product => product.Name.Contains(term));
+                    index.AddTable("products");
+                    index.AddTable<CategoryTotal, CategoryTotalsHandler>(
                         "totals",
                         totals =>
                             totals.Columns(columns =>
@@ -134,8 +131,8 @@ public class ResourceLayoutsTests
                                 columns.Add(total => total.Products);
                             })
                     );
-                }
-            )
+                }),
+            defaultTable: false
         );
         using var client = sut.GetTestClient();
 
@@ -165,13 +162,13 @@ public class ResourceLayoutsTests
     public async Task EfCoreHandlerCards_ShowTheReshapedEntities()
     {
         // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(
-                index => index.EnableSearch(term => product => product.Name.Contains(term)),
-                layouts =>
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.Index(index =>
                 {
-                    layouts.AddTable("products");
-                    layouts.AddCards<CategoryTotal, CategoryTotalsHandler>(
+                    index.EnableSearch(term => product => product.Name.Contains(term));
+                    index.AddTable("products");
+                    index.AddCards<CategoryTotal, CategoryTotalsHandler>(
                         "totals",
                         totals =>
                             totals.Card(card =>
@@ -180,8 +177,8 @@ public class ResourceLayoutsTests
                                 card.Stats(stats => stats.Add(total => total.Products));
                             })
                     );
-                }
-            )
+                }),
+            defaultTable: false
         );
         using var client = sut.GetTestClient();
 
@@ -210,18 +207,17 @@ public class ResourceLayoutsTests
     public async Task ResourceHandler_LoadsItsOwnData()
     {
         // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.Index(
-                _ => { },
-                layouts =>
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.Index(index =>
                 {
-                    layouts.AddTable("products");
-                    layouts.AddPartial<CategoryTotal, CategoryNamesHandler>(
+                    index.AddTable("products");
+                    index.AddPartial<CategoryTotal, CategoryNamesHandler>(
                         "categories",
                         "_CategoryTotals"
                     );
-                }
-            )
+                }),
+            defaultTable: false
         );
         using var client = sut.GetTestClient();
 
@@ -250,15 +246,12 @@ public class ResourceLayoutsTests
         // Act
         Func<Task> act = async () =>
         {
-            await using var _ = await EfCoreTestHost.CreateAsync(resource =>
-                resource.Index(
-                    _ => { },
-                    layouts =>
-                        layouts.AddPartial<CategoryTotal, CategoryTotal>(
-                            "totals",
-                            "_CategoryTotals"
-                        )
-                )
+            await using var _ = await EfCoreTestHost.CreateAsync(
+                resource =>
+                    resource.Index(index =>
+                        index.AddPartial<CategoryTotal, CategoryTotal>("totals", "_CategoryTotals")
+                    ),
+                defaultTable: false
             );
         };
 

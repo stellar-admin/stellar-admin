@@ -144,14 +144,11 @@ public class ResourceCardsDataLayoutBuilderTests
             .AddStellarAdmin()
             .AddResource<Product>()
             .UseTitle(product => product.Name)
-            .Index(
-                _ => { },
-                layouts =>
-                {
-                    layouts.AddCards("cards");
-                    layouts.AddCards<ProductTotal, ProductTotalsHandler>("totals");
-                }
-            );
+            .Index(index =>
+            {
+                index.AddCards("cards");
+                index.AddCards<ProductTotal, ProductTotalsHandler>("totals");
+            });
         using var provider = services.BuildServiceProvider();
 
         // Act
@@ -177,13 +174,11 @@ public class ResourceCardsDataLayoutBuilderTests
         services
             .AddStellarAdmin()
             .AddResource<Product>()
-            .Index(
-                _ => { },
-                layouts =>
-                    layouts.AddCards<ProductTotal, ProductTotalsHandler>(
-                        "totals",
-                        totals => totals.HasRecordKey(total => total.Name)
-                    )
+            .Index(index =>
+                index.AddCards<ProductTotal, ProductTotalsHandler>(
+                    "totals",
+                    totals => totals.HasRecordKey(total => total.Name)
+                )
             );
         using var provider = services.BuildServiceProvider();
 
@@ -202,13 +197,11 @@ public class ResourceCardsDataLayoutBuilderTests
         services
             .AddStellarAdmin()
             .AddResource<Product>()
-            .Index(
-                _ => { },
-                layouts =>
-                    layouts.AddCards(
-                        "cards",
-                        cards => cards.DefaultSortBy(product => product.Name.ToUpperInvariant())
-                    )
+            .Index(index =>
+                index.AddCards(
+                    "cards",
+                    cards => cards.DefaultSortBy(product => product.Name.ToUpperInvariant())
+                )
             );
         using var provider = services.BuildServiceProvider();
 
@@ -229,7 +222,7 @@ public class ResourceCardsDataLayoutBuilderTests
         services
             .AddStellarAdmin()
             .AddResource<Product>()
-            .Index(_ => { }, layouts => layouts.AddCards("cards", cards => cards.Card(configure)));
+            .Index(index => index.AddCards("cards", cards => cards.Card(configure)));
 
     public sealed class Product
     {

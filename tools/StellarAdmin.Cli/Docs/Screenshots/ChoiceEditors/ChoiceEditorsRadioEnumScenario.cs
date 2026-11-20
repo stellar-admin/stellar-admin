@@ -16,10 +16,15 @@ public sealed class ChoiceEditorsRadioEnumScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            );
             resource.AllowCreate(create =>
                 create.Fields(fields => fields.Add(trip => trip.Difficulty).UseRadioGroupEditor())
             );

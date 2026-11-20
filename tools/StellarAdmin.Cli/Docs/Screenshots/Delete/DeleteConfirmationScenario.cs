@@ -23,15 +23,20 @@ public sealed class DeleteConfirmationScenario(string text) : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
         {
             resource.Index(index =>
-            {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                    columns.Add(booking => booking.Status);
-                });
-                index.EnablePaging();
-            });
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                            columns.Add(booking => booking.Status);
+                        });
+                        table.EnablePaging();
+                    }
+                )
+            );
             if (text == "custom")
             {
                 resource.AllowDelete(delete =>

@@ -26,10 +26,10 @@ internal sealed partial class ResourceController<TResource>
     private const string IndexGridId = "index-page-data-grid";
     private const string IndexSearchInputId = "index-page-search-input";
 
-    // The data layout the index page shows, which the query string selects. Every request from the page carries it
-    private ResourceDataLayoutOptions IndexLayout =>
-        _resourceOptions.Index.FindLayout(Request.Query["layout"].ToString())
-        ?? throw new InvalidOperationException("The index page has no data layouts.");
+    // The data layout the index page shows, which the query string selects. Every request from the page carries it. Null
+    // when the index has no data layouts
+    private ResourceDataLayoutOptions? IndexLayout =>
+        _resourceOptions.Index.FindLayout(Request.Query["layout"].ToString());
 
     // The cards the index page shows, or null when its data layout isn't a cards data layout
     private ResourceCardsDataLayoutOptions? IndexCards =>
@@ -135,7 +135,7 @@ internal sealed partial class ResourceController<TResource>
 
         return PartialView(
             "_IndexAddAnotherRows",
-            _resourceOptions.Create.InlineRow!.Position == InlineCreatePosition.Top
+            IndexTable!.InlineCreate!.Position == InlineCreatePosition.Top
                 ? new IndexAddAnotherRowsViewModel(newRow, saved)
                 : new IndexAddAnotherRowsViewModel(saved, newRow)
         );
@@ -157,7 +157,23 @@ internal sealed partial class ResourceController<TResource>
     )
     {
         var labels = CreateLabelContext();
-        var layout = IndexLayout;
+        var title = _resourceOptions.Index.Title ?? _labelOptions.Index.Title(labels);
+        var createLabel =
+            _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels);
+        if (IndexLayout is not { } layout)
+        {
+            // An index without data layouts shows its page without records
+            return new()
+            {
+                CanCreate = HasCreatePage,
+                Columns = [],
+                CreateLabel = createLabel,
+                Items = [],
+                Query = query,
+                Title = title,
+            };
+        }
+
         var table = layout as ResourceTableDataLayoutOptions;
 
         // A table's or cards' handler loads items that are the resource's records when it has a record key, and that
@@ -189,12 +205,12 @@ internal sealed partial class ResourceController<TResource>
 
         return new ResourceIndexPageViewModel<TResource>
         {
-            CanCreate = HasCreatePage,
-            CanEdit = HasEditPage && actions?.Edit == true,
+            // A table that creates or edits inline does so instead of linking to the page
+            CanCreate = HasCreatePage && table?.InlineCreate is null,
+            CanEdit = HasEditPage && actions?.Edit == true && table?.InlineEditing is null,
             CanView = viewUrl is not null,
             Columns = table?.Columns.ToArray() ?? [],
-            CreateLabel =
-                _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
+            CreateLabel = createLabel,
             Delete =
                 actions?.Delete != true
                 || _resourceOptions.Delete is null
@@ -250,7 +266,7 @@ internal sealed partial class ResourceController<TResource>
                         : DataGridSortDirection.Ascending
                 )
                 : null,
-            Title = _resourceOptions.Index.Title ?? _labelOptions.Index.Title(labels),
+            Title = title,
             ViewLabel = _resourceOptions.Index.ViewLabel ?? _labelOptions.Index.ViewLabel(labels),
             ViewUrl = viewUrl,
         };
@@ -328,17 +344,15 @@ internal sealed partial class ResourceController<TResource>
         int added
     )
     {
-        // Inline rows edit the columns of the first table, which the inline row check matched to the form's fields
-        if (
-            IndexTable is not { } table
-            || table != _resourceOptions.Index.RecordTables.FirstOrDefault()
-        )
+        // Inline rows edit the shown table's columns, which the inline row check matched to the form's fields
+        if (IndexTable is not { } table)
         {
             return null;
         }
 
-        var edit = table.RowActions.Edit ? _resourceOptions.Edit?.InlineRow : null;
-        var create = _resourceOptions.Create?.InlineRow;
+        var edit =
+            table.RowActions.Edit && _resourceOptions.Edit is not null ? table.InlineEditing : null;
+        var create = _resourceOptions.Create is not null ? table.InlineCreate : null;
         if (
             (edit is null && create is null) || _resourceOptions.KeyPropertyName is not { } keyField
         )
@@ -438,6 +452,12 @@ internal sealed partial class ResourceController<TResource>
         bool renderWidgets = true
     )
     {
+        // An index without data layouts lists nothing
+        if (IndexLayout is null)
+        {
+            return await IndexResultAsync([], null, null);
+        }
+
         // A data layout with a handler lists its own items instead of the resource's
         if (IndexLayout is ResourcePartialDataLayoutOptions { Loader: { } loader } partial)
         {
@@ -511,7 +531,7 @@ internal sealed partial class ResourceController<TResource>
                 pagingModel,
                 null,
                 result.Items,
-                await CreateLinkUrlAsync(IndexLayout)
+                await CreateLinkUrlAsync(IndexLayout!)
             );
         }
 
@@ -529,6 +549,7 @@ internal sealed partial class ResourceController<TResource>
         )
         {
             ViewData[ViewDataKeys.IndexCards] = IndexCards;
+            ViewData[ViewDataKeys.IndexWithoutDataLayouts] = IndexLayout is null;
             ViewData[ViewDataKeys.Widgets] = await RenderWidgetsAsync(
                 _resourceOptions.Index.Widgets,
                 new IndexWidgetContext<TResource>(HttpContext, request.Scope, request.Search),
@@ -647,9 +668,9 @@ internal sealed partial class ResourceController<TResource>
         var result = await dataSource.ListAsync(
             new()
             {
-                Fields = IndexLayout.Fields,
+                Fields = IndexLayout?.Fields ?? [],
                 Keys = [key],
-                Layout = IndexLayout.Key,
+                Layout = IndexLayout?.Key,
             },
             cancellationToken
         );
@@ -765,7 +786,11 @@ internal sealed partial class ResourceController<TResource>
 
         // A data layout that ignores the scopes or the search lists without them, though they stay in the query string.
         // A partial lists every item in the data source's order. Cards sort only by their default sort's field for now
-        var layout = IndexLayout;
+        if (IndexLayout is not { } layout)
+        {
+            return true;
+        }
+
         var table = layout as ResourceTableDataLayoutOptions;
         var cards = layout as ResourceCardsDataLayoutOptions;
         var sortDirection =

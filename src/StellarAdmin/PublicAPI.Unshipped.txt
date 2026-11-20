@@ -521,8 +521,6 @@ StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.SectionLayout.set 
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.SubmitLabel.set -> void
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.Title.set -> void
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseFactory(System.Func<TModel>! factory) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
-StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseInlineRow() -> StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!
-StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.UseInlineRow(System.Action<StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>.Widgets(System.Action<StellarAdmin.Widgets.WidgetsBuilder<StellarAdmin.Widgets.CreateWidgetContext<TModel>!>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCreateBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder
 StellarAdmin.Resources.Builders.ResourceCreateLabelsBuilder.AddAnotherLabel.set -> void
@@ -569,8 +567,6 @@ StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.Fields(System.Action
 StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.SectionLayout.set -> void
 StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.SubmitLabel.set -> void
 StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.Title.set -> void
-StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.UseInlineRow() -> StellarAdmin.Resources.Builders.ResourceInlineEditBuilder!
-StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.UseInlineRow(System.Action<StellarAdmin.Resources.Builders.ResourceInlineEditBuilder!>! configure) -> StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>.Widgets(System.Action<StellarAdmin.Widgets.WidgetsBuilder<StellarAdmin.Widgets.RecordWidgetContext<TModel>!>!>! configure) -> StellarAdmin.Resources.Builders.ResourceEditBuilder<TModel>!
 StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder
 StellarAdmin.Resources.Builders.ResourceEditLabelsBuilder.SubmitLabel.set -> void
@@ -1477,7 +1473,6 @@ StellarAdmin.Resources.Options.ResourceCreateLabelOptions.Title.get -> System.Fu
 StellarAdmin.Resources.Options.ResourceCreateLabelOptions.Title.set -> void
 StellarAdmin.Resources.Options.ResourceCreateOptions
 StellarAdmin.Resources.Options.ResourceCreateOptions.AddAnother.get -> StellarAdmin.Resources.Options.ResourceAddAnotherOptions?
-StellarAdmin.Resources.Options.ResourceCreateOptions.InlineRow.get -> StellarAdmin.Resources.Options.ResourceInlineCreateOptions?
 StellarAdmin.Resources.Options.ResourceCreateOptions.ResourceCreateOptions() -> void
 StellarAdmin.Resources.Options.ResourceCreateOptions<TModel>
 StellarAdmin.Resources.Options.ResourceCreateOptions<TModel>.CreateInstance() -> TModel
@@ -1506,7 +1501,6 @@ StellarAdmin.Resources.Options.ResourceEditLabelOptions.SubmitLabel.set -> void
 StellarAdmin.Resources.Options.ResourceEditLabelOptions.Title.get -> System.Func<StellarAdmin.Resources.ResourceLabelContext!, string!>!
 StellarAdmin.Resources.Options.ResourceEditLabelOptions.Title.set -> void
 StellarAdmin.Resources.Options.ResourceEditOptions
-StellarAdmin.Resources.Options.ResourceEditOptions.InlineRow.get -> StellarAdmin.Resources.Options.ResourceInlineEditOptions?
 StellarAdmin.Resources.Options.ResourceEditOptions.ResourceEditOptions() -> void
 StellarAdmin.Resources.Options.ResourceEditOptions<TModel>
 StellarAdmin.Resources.Options.ResourceEditOptions<TModel>.ResourceEditOptions() -> void
@@ -2157,24 +2151,18 @@ StellarAdmin.Resources.Options.ResourceTableDataLayoutOptions.Columns.get -> Sys
 StellarAdmin.Resources.Options.ResourceTableDataLayoutOptions.DefaultSort.get -> StellarAdmin.Resources.ResourceSort?
 StellarAdmin.Resources.Options.ResourceTableDataLayoutOptions.Paging.get -> StellarAdmin.Resources.Options.ResourcePagingOptions?
 StellarAdmin.Resources.Options.ResourceTableDataLayoutOptions.RowDetails.get -> StellarAdmin.Resources.Options.ResourceRowDetailsOptions?
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>
 StellarAdmin.Resources.Builders.ResourceDataLayoutBuilderBase<TResource, TBuilder>
 StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilder<TResource>
-StellarAdmin.Resources.Builders.ResourceSharedIndexBuilder<TResource>
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>
 StellarAdmin.Resources.Options.ResourceRowActionsOptions
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.Columns(System.Action<StellarAdmin.Resources.Builders.ResourceTableColumnsBuilder<TResource>!>! configure) -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.DefaultSortBy<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.DefaultSortByDescending<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnablePaging() -> StellarAdmin.Resources.Builders.ResourceTablePagingBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceSharedIndexBuilder<TResource>.EnableScopes() -> StellarAdmin.Resources.Builders.ResourceScopesBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnablePaging(System.Action<StellarAdmin.Resources.Builders.ResourceTablePagingBuilder<TResource>!>! configure) -> TBuilder!
-StellarAdmin.Resources.Builders.ResourceSharedIndexBuilder<TResource>.EnableScopes(System.Action<StellarAdmin.Resources.Builders.ResourceScopesBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceSharedIndexBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnableRowDetails(string! partialName) -> StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceSharedIndexBuilder<TResource>.EnableSearch() -> StellarAdmin.Resources.Builders.ResourceSearchBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnableRowDetails(string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!>! configure) -> TBuilder!
-StellarAdmin.Resources.Builders.ResourceSharedIndexBuilder<TResource>.EnableSearch(System.Action<StellarAdmin.Resources.Builders.ResourceSearchBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceSharedIndexBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnableRowDetails<TModel, THandler>(string! partialName) -> StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnableRowDetails<TModel, THandler>(string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!>! configure) -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnableRowDetails(System.Action<StellarAdmin.Resources.Builders.ResourceTableRowDetailPanelsBuilder<TResource>!>! panels) -> StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!
@@ -2182,25 +2170,11 @@ StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TB
 StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.RowActions(System.Action<StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>!>! configure) -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>.Delete.set -> void
 StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>.Edit.set -> void
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddTable(string! key) -> StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>.View.set -> void
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddTable(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceDataLayoutBuilderBase<TResource, TBuilder>.Icon.set -> void
 StellarAdmin.Resources.Builders.ResourceDataLayoutBuilderBase<TResource, TBuilder>.Title.set -> void
 StellarAdmin.Resources.Builders.ResourceDataLayoutBuilderBase<TResource, TBuilder>.IgnoreScopes() -> TBuilder!
 StellarAdmin.Resources.Builders.ResourceDataLayoutBuilderBase<TResource, TBuilder>.IgnoreSearch() -> TBuilder!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.Columns(System.Action<StellarAdmin.Resources.Builders.ResourceTableColumnsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.DefaultSortBy<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceBuilder<TResource>.Index(System.Action<StellarAdmin.Resources.Builders.ResourceSharedIndexBuilder<TResource>!>! configure, System.Action<StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!>! layouts) -> StellarAdmin.Resources.Builders.ResourceBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnablePaging() -> StellarAdmin.Resources.Builders.ResourceTablePagingBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnablePaging(System.Action<StellarAdmin.Resources.Builders.ResourceTablePagingBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableRowDetails(string! partialName) -> StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableRowDetails(System.Action<StellarAdmin.Resources.Builders.ResourceTableRowDetailPanelsBuilder<TResource>!>! panels) -> StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableRowDetails(string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableRowDetails(System.Action<StellarAdmin.Resources.Builders.ResourceTableRowDetailPanelsBuilder<TResource>!>! panels, System.Action<StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableRowDetails<TModel, THandler>(string! partialName) -> StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.EnableRowDetails<TModel, THandler>(string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceTableRowDetailsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.DefaultSortByDescending<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
 StellarAdmin.Resources.Options.ResourceTableDataLayoutOptions.RowActions.get -> StellarAdmin.Resources.Options.ResourceRowActionsOptions!
 StellarAdmin.Resources.Options.ResourceRowActionsOptions.Delete.get -> bool
 StellarAdmin.Resources.Options.ResourceRowActionsOptions.View.get -> bool
@@ -2236,8 +2210,6 @@ StellarAdmin.Resources.ResourceDataLayoutModel<TItem>.GetEditUrl(TItem item) -> 
 StellarAdmin.Resources.ResourceDataLayoutModel<TItem>.GetIndexUrl(object? values = null) -> string!
 StellarAdmin.Resources.ResourceDataLayoutModel<TItem>.GetViewUrl(TItem item) -> string?
 StellarAdmin.Resources.Options.ResourcePartialDataLayoutOptions.PartialName.get -> string!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourcePartialDataLayoutBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourcePartialDataLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
 StellarAdmin.Resources.IResourceDataLayoutHandler<TItem>
 StellarAdmin.Resources.IResourceDataLayoutHandler<TItem>.ListAsync(StellarAdmin.Resources.ResourceListRequest! request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<StellarAdmin.Resources.ResourceListResult<TItem>!>!
 StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>
@@ -2248,14 +2220,10 @@ StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource,
 StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>.EnablePaging() -> StellarAdmin.Resources.Builders.ResourceTablePagingBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>.EnablePaging(System.Action<StellarAdmin.Resources.Builders.ResourceTablePagingBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>!
 StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>.HasRecordKey(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddTable<TItem, THandler>(string! key) -> StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddTable<TItem, THandler>(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>.LinkTo<TOther>(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>!
 StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>.DefaultSortByDescending<TProperty>(System.Linq.Expressions.Expression<System.Func<TItem, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>!
 StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>.RowActions(System.Action<StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>!
 StellarAdmin.Resources.Builders.ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>.HasRecordKey(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>!
 StellarAdmin.Resources.Builders.ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>.LinkTo<TOther>(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>!
 StellarAdmin.Resources.Builders.ResourceTableColumnBuilder<TItem>
@@ -2312,8 +2280,6 @@ StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>.Card(S
 StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>.DefaultSortByDescending<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>.DefaultSortBy<TProperty>(System.Linq.Expressions.Expression<System.Func<TResource, TProperty>!>! field) -> StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>.RowActions(System.Action<StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddCards(string! key) -> StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddCards(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
 StellarAdmin.Resources.Options.ResourceCardImageOptions
 StellarAdmin.Resources.Options.ResourceCardImageOptions.Field.get -> System.Linq.Expressions.LambdaExpression!
 StellarAdmin.Resources.Options.ResourceCardImageOptions.Shape.get -> StellarAdmin.Resources.ResourceCardImageShape
@@ -2367,5 +2333,21 @@ StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource,
 StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>.HasRecordKey(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>!
 StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>.LinkTo<TOther>(System.Func<TItem, object?>! key) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>!
 StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>.RowActions(System.Action<StellarAdmin.Resources.Builders.ResourceRowActionsBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddCards<TItem, THandler>(string! key) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>!
-StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>.AddCards<TItem, THandler>(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceLayoutsBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddCards(string! key) -> StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddCards(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddCards<TItem, THandler>(string! key) -> StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddCards<TItem, THandler>(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceHandlerCardsDataLayoutBuilder<TResource, TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddPartial(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourcePartialDataLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddPartial(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourcePartialDataLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName) -> StellarAdmin.Resources.Builders.ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddPartial<TItem, THandler>(string! key, string! partialName, System.Action<StellarAdmin.Resources.Builders.ResourceHandlerPartialDataLayoutBuilder<TResource, TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddTable(string! key) -> StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddTable(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddTable<TItem, THandler>(string! key) -> StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>!
+StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>.AddTable<TItem, THandler>(string! key, System.Action<StellarAdmin.Resources.Builders.ResourceHandlerTableDataLayoutBuilder<TResource, TItem>!>! configure) -> StellarAdmin.Resources.Builders.ResourceIndexBuilder<TResource>!
+StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnableInlineCreate() -> StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!
+StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnableInlineCreate(System.Action<StellarAdmin.Resources.Builders.ResourceInlineCreateBuilder!>! configure) -> TBuilder!
+StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnableInlineEditing() -> StellarAdmin.Resources.Builders.ResourceInlineEditBuilder!
+StellarAdmin.Resources.Builders.ResourceTableDataLayoutBuilderBase<TResource, TBuilder>.EnableInlineEditing(System.Action<StellarAdmin.Resources.Builders.ResourceInlineEditBuilder!>! configure) -> TBuilder!
+StellarAdmin.Resources.Options.ResourceTableDataLayoutOptions.InlineCreate.get -> StellarAdmin.Resources.Options.ResourceInlineCreateOptions?
+StellarAdmin.Resources.Options.ResourceTableDataLayoutOptions.InlineEditing.get -> StellarAdmin.Resources.Options.ResourceInlineEditOptions?

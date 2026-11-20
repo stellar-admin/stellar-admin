@@ -18,7 +18,7 @@ public sealed class ChoiceEditorsItemsScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Guide>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("guides", table => table.EnablePaging()));
             resource.AllowCreate(create =>
                 create.Fields(fields =>
                     fields

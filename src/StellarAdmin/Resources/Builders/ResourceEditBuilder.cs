@@ -115,45 +115,6 @@ public class ResourceEditBuilder<TModel>
     }
 
     /// <summary>
-    ///     Edits resources in their index grid row instead of on the edit page.
-    /// </summary>
-    /// <returns>A builder that configures the inline row.</returns>
-    /// <remarks>
-    ///     Every editable field must match an index column, by name or through
-    ///     <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. The resource needs a
-    ///     key. The edit page is not available.
-    /// </remarks>
-    public ResourceInlineEditBuilder UseInlineRow()
-    {
-        var source = ConfigurationSource.Capture();
-        _configure(options => options.InlineRow ??= new() { Source = source });
-
-        return new(configure => _configure(options => configure(options.InlineRow ??= new())));
-    }
-
-    /// <summary>
-    ///     Edits resources in their index grid row instead of on the edit page.
-    /// </summary>
-    /// <param name="configure">A delegate that configures the inline row.</param>
-    /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <remarks>
-    ///     Every editable field must match an index column, by name or through
-    ///     <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. The resource needs a
-    ///     key. The edit page is not available.
-    /// </remarks>
-    public ResourceEditBuilder<TModel> UseInlineRow(Action<ResourceInlineEditBuilder> configure)
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-
-        configure(UseInlineRow());
-
-        return this;
-    }
-
-    /// <summary>
     ///     Configures the widgets shown on the edit page.
     /// </summary>
     /// <param name="configure">A delegate that adds the widgets.</param>
@@ -161,8 +122,7 @@ public class ResourceEditBuilder<TModel>
     /// <remarks>
     ///     A widget's <c>Placement</c> shows it above the form, beside it or below it. Widgets
     ///     beside the form stay in view as the form scrolls. The widgets' delegates receive the
-    ///     record the form edits. A resource whose rows are edited inline has no edit page, so
-    ///     its edit widgets are a configuration problem, and aren't shown.
+    ///     record the form edits. A table's inline row doesn't show them.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
@@ -192,7 +152,7 @@ public class ResourceEditBuilder<TModel>
     ///     <paramref name="propertyName" /> is empty.
     /// </exception>
     /// <remarks>
-    ///     Index columns match the resource's fields without the property's name, so the
+    ///     A table's columns match the resource's fields without the property's name, so the
     ///     <c>Product.Name</c> field is edited inline by the <c>Name</c> column.
     /// </remarks>
     protected void UseResourceProperty(string propertyName)

@@ -19,21 +19,28 @@ public sealed class ImageEditorInlineRowScenario : Scenario
         {
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(
-                        destination => destination.HeroImageUrl,
-                        column =>
+                index.AddTable(
+                    "destinations",
+                    table =>
+                    {
+                        table.Columns(columns =>
                         {
-                            column.Title = "Image";
-                            column.UseDisplay<Resources.Displays.ImageDisplay>();
-                        }
-                    );
-                    columns.Add(destination => destination.Name);
-                    columns.Add(destination => destination.IsFeatured);
-                });
-                // Five rows, the destinations with hero images in the host's wwwroot
-                index.EnablePaging(paging => paging.PageSize = 5);
+                            columns.Add(
+                                destination => destination.HeroImageUrl,
+                                column =>
+                                {
+                                    column.Title = "Image";
+                                    column.UseDisplay<Resources.Displays.ImageDisplay>();
+                                }
+                            );
+                            columns.Add(destination => destination.Name);
+                            columns.Add(destination => destination.IsFeatured);
+                        });
+                        // Five rows, the destinations with hero images in the host's wwwroot
+                        table.EnablePaging(paging => paging.PageSize = 5);
+                        table.EnableInlineEditing();
+                    }
+                );
             });
 
             resource.AllowEdit(edit =>
@@ -44,12 +51,14 @@ public sealed class ImageEditorInlineRowScenario : Scenario
                         .Add(destination => destination.HeroImageUrl)
                         .UseImageEditor(image =>
                             // Captures don't upload, so the image is never stored
-                            image.StoreImage((file, services, cancellationToken) => Task.FromResult(file.FileName))
+                            image.StoreImage(
+                                (file, services, cancellationToken) =>
+                                    Task.FromResult(file.FileName)
+                            )
                         );
                     fields.Add(destination => destination.Name);
                     fields.Add(destination => destination.IsFeatured);
                 });
-                edit.UseInlineRow();
             });
         });
     }

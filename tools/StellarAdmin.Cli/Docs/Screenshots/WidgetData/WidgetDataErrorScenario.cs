@@ -35,7 +35,9 @@ public sealed class WidgetDataErrorScenario : Scenario
                 );
             });
         });
-        admin.AddEfCoreResource<Booking>(resource => resource.Index(index => index.EnablePaging()));
+        admin.AddEfCoreResource<Booking>(resource =>
+            resource.Index(index => index.AddTable("bookings", table => table.EnablePaging()))
+        );
     }
 
     public sealed class BookingStatsHandler(ApplicationDbContext db) : IWidgetHandler<BookingStats>

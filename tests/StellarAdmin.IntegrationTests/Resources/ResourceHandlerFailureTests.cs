@@ -138,8 +138,10 @@ public class ResourceHandlerFailureTests
                 resource.AllowEdit(edit =>
                 {
                     edit.Fields(fields => fields.Add(product => product.Name));
-                    edit.UseInlineRow();
                 });
+                resource.Index(index =>
+                    index.AddTable("table", table => table.EnableInlineEditing())
+                );
                 resource.AllowDelete();
             }
         );

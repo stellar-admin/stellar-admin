@@ -466,7 +466,7 @@ public class ResourceColumnDisplayTests
                 admin
                     .AddResource<ProductFactsModel>("facts")
                     .UseDataSource<ProductFactsDataSource>()
-                    .Index(index => index.Columns(columns))
+                    .Index(index => index.AddTable("table", table => table.Columns(columns)))
         );
     }
 

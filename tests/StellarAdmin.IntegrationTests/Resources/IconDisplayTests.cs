@@ -109,15 +109,21 @@ public class IconDisplayTests
             {
                 resource.UseKey(product => product.Id);
                 resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Clear();
-                        columns.Add(
-                            product => product.Name,
-                            column =>
-                                column.UseDisplay<IconDisplay>(icon => icon.ShowName = showName)
-                        );
-                    })
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
+                            {
+                                columns.Clear();
+                                columns.Add(
+                                    product => product.Name,
+                                    column =>
+                                        column.UseDisplay<IconDisplay>(icon =>
+                                            icon.ShowName = showName
+                                        )
+                                );
+                            })
+                    )
                 );
             }
         );

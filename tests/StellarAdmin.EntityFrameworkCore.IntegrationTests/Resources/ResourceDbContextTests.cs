@@ -22,7 +22,10 @@ public class ResourceDbContextTests
         await using var sut = await CreateAsync(configureAdmin: admin =>
             admin.AddEfCoreResource<Warehouse>(resource =>
                 resource.Index(index =>
-                    index.Columns(columns => columns.Add(warehouse => warehouse.Name))
+                    index.AddTable(
+                        "table",
+                        table => table.Columns(columns => columns.Add(warehouse => warehouse.Name))
+                    )
                 )
             )
         );

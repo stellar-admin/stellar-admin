@@ -13,10 +13,10 @@ public class ResourceDataLayoutOptionsTests
     {
         // Arrange
         var options = CreateOptions(
-            (ResourceLayoutsBuilder<Product> layouts) =>
+            (ResourceIndexBuilder<Product> index) =>
             {
-                layouts.AddTable("products");
-                layouts.AddPartial("cards", "_ProductCards");
+                index.AddTable("products");
+                index.AddPartial("cards", "_ProductCards");
             }
         );
 
@@ -31,8 +31,8 @@ public class ResourceDataLayoutOptionsTests
     public async Task Fields_OfTable_ListsItsColumnsFieldExpressions()
     {
         // Arrange
-        var options = CreateOptions(index =>
-            index.Columns(columns =>
+        var options = CreateTableOptions(table =>
+            table.Columns(columns =>
             {
                 columns.Add(product => product.Name);
                 columns.Add(product => product.Category.Name);
@@ -53,10 +53,10 @@ public class ResourceDataLayoutOptionsTests
     public async Task FindDefaultSort_HasTheColumnsSelector()
     {
         // Arrange
-        var options = CreateOptions(index =>
+        var options = CreateTableOptions(table =>
         {
-            index.Columns(columns => columns.Add(product => product.Name).Sortable());
-            index.DefaultSortByDescending(product => product.Name);
+            table.Columns(columns => columns.Add(product => product.Name).Sortable());
+            table.DefaultSortByDescending(product => product.Name);
         });
         var table = options.Index.RecordTables.Single();
 
@@ -73,8 +73,8 @@ public class ResourceDataLayoutOptionsTests
     public async Task FindSort_ForColumnWithSortExpression_SelectsTheSortExpression()
     {
         // Arrange
-        var options = CreateOptions(index =>
-            index.Columns(columns =>
+        var options = CreateTableOptions(table =>
+            table.Columns(columns =>
                 columns.Add(
                     product => product.Id * 2,
                     column =>
@@ -102,8 +102,8 @@ public class ResourceDataLayoutOptionsTests
     public async Task FindSort_WithoutSortableColumn_ReturnsNull(string? field)
     {
         // Arrange
-        var options = CreateOptions(index =>
-            index.Columns(columns => columns.Add(product => product.Name))
+        var options = CreateTableOptions(table =>
+            table.Columns(columns => columns.Add(product => product.Name))
         );
         var table = options.Index.RecordTables.Single();
 
@@ -127,9 +127,9 @@ public class ResourceDataLayoutOptionsTests
         Action<ResourceIndexBuilder<Product>> configure
     ) => BuildOptions(resource => resource.Index(configure));
 
-    private static ResourceOptions<Product> CreateOptions(
-        Action<ResourceLayoutsBuilder<Product>> layouts
-    ) => BuildOptions(resource => resource.Index(_ => { }, layouts));
+    private static ResourceOptions<Product> CreateTableOptions(
+        Action<ResourceTableDataLayoutBuilder<Product>> configure
+    ) => BuildOptions(resource => resource.Index(index => index.AddTable("table", configure)));
 
     public sealed class Category
     {

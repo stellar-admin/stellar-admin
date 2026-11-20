@@ -22,25 +22,29 @@ internal static class ExcursionResourceRegistration
             resource.UseKey(excursion => excursion.Id);
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(excursion => excursion.Name);
-                    columns.Add(excursion => excursion.Destination);
-                    columns.Add(excursion => excursion.Price);
+                index.AddTable(
+                    "excursions",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(excursion => excursion.Name);
+                            columns.Add(excursion => excursion.Destination);
+                            columns.Add(excursion => excursion.Price);
 
-                    // Computed without a title: left out
-                    columns.Add(excursion => excursion.Price * 1.2m);
-                });
-
-                // Price isn't sortable: ignored
-                index.DefaultSortBy(excursion => excursion.Price);
-
-                // 15 isn't one of the page sizes: added to them
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSize = 15;
-                    paging.PageSizes = [10, 25];
-                });
+                            // Computed without a title: left out
+                            columns.Add(excursion => excursion.Price * 1.2m);
+                        });
+                        // Price isn't sortable: ignored
+                        table.DefaultSortBy(excursion => excursion.Price);
+                        // 15 isn't one of the page sizes: added to them
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSize = 15;
+                            paging.PageSizes = [10, 25];
+                        });
+                    }
+                );
             });
 
             // The data source can't create: there is no create page

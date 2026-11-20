@@ -64,12 +64,6 @@ internal sealed class ResourceOptionsFactory<TResource>(
         IReadOnlySet<Type> resourceTypes
     )
     {
-        // An index without data layouts, such as one never configured, shows a table
-        if (options.Index.Layouts.Count == 0)
-        {
-            options.Index.GetOrAddTable(ResourceIndexOptions.ImplicitTableKey);
-        }
-
         options.RepairLabels();
         ResourceHandlerCheck.Run(options);
         ValueTextCheck.Run(options, resourceTypes);
@@ -101,7 +95,6 @@ internal sealed class ResourceOptionsFactory<TResource>(
         CheckFormWidgets(options, options.Edit, "edit");
     }
 
-    // A form in the index grid has no page, so its widgets have nowhere to show
     private static void CheckFormWidgets(
         ResourceOptions<TResource> options,
         ResourceFormOptions? form,
@@ -110,31 +103,6 @@ internal sealed class ResourceOptionsFactory<TResource>(
     {
         if (form is null)
         {
-            return;
-        }
-
-        if (
-            form
-            is ResourceCreateOptions { InlineRow: not null }
-                or ResourceEditOptions { InlineRow: not null }
-        )
-        {
-            foreach (var widget in form.Widgets)
-            {
-                options.Problems.Add(
-                    new ConfigurationProblem(
-                        ConfigurationProblemKind.IgnoredWidgetSetting,
-                        $"The `{widget.Name}` widget isn't shown because the resource's {page} form is in the index grid, which has no {page} page.",
-                        $"Remove the {page} page's widgets, or remove `UseInlineRow()`."
-                    ) with
-                    {
-                        Source = widget.Source,
-                    }
-                );
-            }
-
-            form.Widgets.Clear();
-
             return;
         }
 

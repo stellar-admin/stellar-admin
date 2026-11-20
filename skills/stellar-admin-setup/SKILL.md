@@ -90,11 +90,11 @@ builder.Services.AddStellarAdmin(admin =>
 {
     admin.AddEfCoreResource<Customer>(resource =>
     {
-        resource.Index(index => index.Columns(columns =>
+        resource.Index(index => index.AddTable("customers", table => table.Columns(columns =>
         {
             columns.Add(customer => customer.Name);
             columns.Add(customer => customer.Email);
-        }));
+        })));
         resource.AllowCreate(create => create.Fields(fields =>
         {
             fields.Add(customer => customer.Name);

@@ -11,7 +11,7 @@ namespace StellarAdmin.IntegrationTests.Resources;
 public class ResourceInlineRowTests
 {
     [Test]
-    public async Task InlineEdit_HidesEditLinks()
+    public async Task InlineEdit_HidesTheTablesEditLinksAndKeepsTheEditPage()
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
@@ -27,7 +27,7 @@ public class ResourceInlineRowTests
         // Assert
         await Assert.That(index.QuerySelector("a[href*='/view/7']")).IsNotNull();
         await Assert.That(index.QuerySelector("a[href*='/edit/']")).IsNull();
-        await Assert.That(view.QuerySelector("a[href*='/edit/']")).IsNull();
+        await Assert.That(view.QuerySelector("a[href*='/edit/7']")).IsNotNull();
     }
 
     [Test]
@@ -51,7 +51,7 @@ public class ResourceInlineRowTests
     [Test]
     [Arguments("create")]
     [Arguments("edit/7")]
-    public async Task InlineOperation_RejectsPageRequests(string path)
+    public async Task InlineOperation_KeepsItsPage(string path)
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
@@ -59,18 +59,12 @@ public class ResourceInlineRowTests
             ConfigureInlineRows
         );
         using var client = sut.CreateClient();
-        var values = await PrepareForm(client, "/stellaradmin/products");
-        values["Model.Name"] = "Changed";
-        values["Model.Price"] = "9.00";
-        using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var get = await client.GetAsync($"/stellaradmin/products/{path}");
-        using var post = await client.PostAsync($"/stellaradmin/products/{path}", content);
+        using var response = await client.GetAsync($"/stellaradmin/products/{path}");
 
         // Assert
-        await Assert.That(get.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
-        await Assert.That(post.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
     }
 
     [Test]
@@ -205,8 +199,10 @@ public class ResourceInlineRowTests
                 resource.AllowEdit(edit =>
                 {
                     edit.Fields(fields => fields.Add(product => product.Name));
-                    edit.UseInlineRow();
                 });
+                resource.Index(index =>
+                    index.AddTable("table", table => table.EnableInlineEditing())
+                );
             }
         );
         using var client = sut.CreateClient();
@@ -510,7 +506,11 @@ public class ResourceInlineRowTests
             resource =>
             {
                 ConfigureInlineRows(resource);
-                resource.Index(index => index.CreatedMessage = message);
+                resource.Index(index =>
+                {
+                    index.CreatedMessage = message;
+                    index.AddTable("table");
+                });
             },
             admin =>
             {
@@ -518,9 +518,10 @@ public class ResourceInlineRowTests
                 {
                     admin.ConfigureResourceLabels(labels =>
                         labels.Index(index =>
+                        {
                             index.CreatedMessage = resource =>
-                                $"New {resource.SingularLabel} in stock"
-                        )
+                                $"New {resource.SingularLabel} in stock";
+                        })
                     );
                 }
             }
@@ -728,6 +729,7 @@ public class ResourceInlineRowTests
                 {
                     index.SavedMessage = "Stock updated";
                     index.NotShownMessage = "Clear the search to see it.";
+                    index.AddTable("table");
                 });
             },
             admin =>
@@ -784,7 +786,11 @@ public class ResourceInlineRowTests
     private static void ConfigureSearchableInlineRows(ResourceBuilder<Product> resource)
     {
         ConfigureInlineRows(resource);
-        resource.Index(index => index.EnableSearch());
+        resource.Index(index =>
+        {
+            index.EnableSearch();
+            index.AddTable("table");
+        });
     }
 
     private static void ConfigureInlineRows(ResourceBuilder<Product> resource) =>
@@ -806,8 +812,13 @@ public class ResourceInlineRowTests
                 fields.Add(product => product.Name);
                 fields.Add(product => product.Price);
             });
-            builder.UseInlineRow(inline => edit?.Invoke(inline));
         });
+        resource.Index(index =>
+            index.AddTable(
+                "table",
+                table => table.EnableInlineEditing(inline => edit?.Invoke(inline))
+            )
+        );
         resource.AllowCreate(builder =>
         {
             builder.Fields(fields =>
@@ -815,7 +826,12 @@ public class ResourceInlineRowTests
                 fields.Add(product => product.Name);
                 fields.Add(product => product.Price);
             });
-            builder.UseInlineRow(inline => create?.Invoke(inline));
         });
+        resource.Index(index =>
+            index.AddTable(
+                "table",
+                table => table.EnableInlineCreate(inline => create?.Invoke(inline))
+            )
+        );
     }
 }

@@ -1,6 +1,6 @@
 # Index pages
 
-The index page lists a resource's records in a grid. Everything is configured in `resource.Index(index => ...)`. Columns are in [columns](columns.md), editing and adding in the grid's rows in [inline editing](inline-editing.md), and blocks above, beside or below the grid in [widgets](widgets.md#index-pages). Several tables or partial views with a switcher are in [layouts](layouts.md).
+The index page lists a resource's records. `resource.Index(index => ...)` configures the page (title, search, scopes, widgets) and adds its data layouts; a table shows the records in a grid, with its columns, sort, paging and row details on the table's builder. An index without data layouts shows no records. Columns are in [columns](columns.md), editing and adding in the table's rows in [inline editing](inline-editing.md), and blocks above, beside or below the list in [widgets](widgets.md#index-pages). Several tables, cards or partial views with a switcher are in [data layouts](layouts.md).
 
 ## Contents
 
@@ -16,11 +16,14 @@ The index page lists a resource's records in a grid. Everything is configured in
 resource.Index(index =>
 {
     index.Title = "All bookings";
-    index.Columns(columns => { /* see columns.md */ });
     index.EnableSearch(term => booking => booking.Reference.Contains(term), search => search.Placeholder = "Search by reference");
     index.EnableScopes(scopes => { /* ... */ });
-    index.DefaultSortBy(booking => booking.DepartureDate);
-    index.EnablePaging(paging => paging.PageSize = 10);
+    index.AddTable("bookings", table =>
+    {
+        table.Columns(columns => { /* see columns.md */ });
+        table.DefaultSortBy(booking => booking.DepartureDate);
+        table.EnablePaging(paging => paging.PageSize = 10);
+    });
 });
 ```
 
@@ -76,10 +79,10 @@ index.EnableScopes(scopes =>
 
 ## Sorting
 
-Opt each column in with `Sortable()` and optionally set a default:
+Opt each column of the table in with `Sortable()` and optionally set a default:
 
 ```csharp
-index.Columns(columns =>
+table.Columns(columns =>
 {
     columns.Add(booking => booking.DepartureDate, column => column.Sortable());
     columns.Add(booking => booking.Total, column => column.Sortable());
@@ -89,8 +92,8 @@ index.Columns(columns =>
         column.Sortable(booking => booking.Customer!.Name.ToLower());   // sort by another expression
     });
 });
-index.DefaultSortBy(booking => booking.DepartureDate);               // ascending: soonest first
-// or index.DefaultSortByDescending(booking => booking.Total);
+table.DefaultSortBy(booking => booking.DepartureDate);               // ascending: soonest first
+// or table.DefaultSortByDescending(booking => booking.Total);
 ```
 
 - The default sort must name a sortable column; otherwise the list uses the data source's order and a configuration problem is reported.
@@ -100,8 +103,8 @@ index.DefaultSortBy(booking => booking.DepartureDate);               // ascendin
 ## Paging
 
 ```csharp
-index.EnablePaging();                                    // 25 per page; 10, 25, 50, 100 to choose from
-index.EnablePaging(paging =>
+table.EnablePaging();                                    // 25 per page; 10, 25, 50, 100 to choose from
+table.EnablePaging(paging =>
 {
     paging.PageSize = 10;
     paging.PageSizes = [10, 20, 50];
@@ -112,20 +115,20 @@ index.EnablePaging(paging =>
 
 ## Row details
 
-Rows can expand to show more about a record. Each `EnableRowDetails` call replaces the previous one.
+A table's rows can expand to show more about a record. Each `EnableRowDetails` call replaces the previous one.
 
 ```csharp
 // A partial rendered with the index, with the row's entity as its model
-index.EnableRowDetails("_BookingSummary");
+table.EnableRowDetails("_BookingSummary");
 
 // EF Core: a projection loaded when the row first expands
-index.EnableRowDetails("_BookingPricing", booking => new BookingPricing(booking.Total, booking.Travellers));
+table.EnableRowDetails("_BookingPricing", booking => new BookingPricing(booking.Total, booking.Travellers));
 
 // A model loaded on expand by a handler implementing IResourceRowDetailHandler<BookingNotes>
-index.EnableRowDetails<BookingNotes, BookingNotesHandler>("_BookingNotes");
+table.EnableRowDetails<BookingNotes, BookingNotesHandler>("_BookingNotes");
 
 // Two or more panels display in an accordion, all closed when the row expands
-index.EnableRowDetails(panels =>
+table.EnableRowDetails(panels =>
 {
     panels.Add("Summary", "_BookingSummary").Icon = "receipt";
     panels.Add<BookingNotes, BookingNotesHandler>("Notes", "_BookingNotes");

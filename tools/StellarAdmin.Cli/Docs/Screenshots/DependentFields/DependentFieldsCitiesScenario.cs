@@ -15,11 +15,15 @@ public sealed class DependentFieldsCitiesScenario : Scenario
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
-        admin.AddEfCoreResource<Country>(resource => resource.Index(index => index.EnablePaging()));
-        admin.AddEfCoreResource<City>(resource => resource.Index(index => index.EnablePaging()));
+        admin.AddEfCoreResource<Country>(resource =>
+            resource.Index(index => index.AddTable("countries", table => table.EnablePaging()))
+        );
+        admin.AddEfCoreResource<City>(resource =>
+            resource.Index(index => index.AddTable("cities", table => table.EnablePaging()))
+        );
         admin.AddEfCoreResource<Destination>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("destinations", table => table.EnablePaging()));
             resource.AllowCreate(create =>
                 create.Fields(fields =>
                 {

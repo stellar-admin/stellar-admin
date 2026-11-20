@@ -238,15 +238,21 @@ public class ResourceScopesTests
                 scopes.DefaultScope = "all";
             });
             index.EnableSearch();
-            index.Columns(columns =>
-                columns.Clear().Add(product => product.Name, column => column.Sortable())
+            index.AddTable(
+                "table",
+                table =>
+                {
+                    table.Columns(columns =>
+                        columns.Clear().Add(product => product.Name, column => column.Sortable())
+                    );
+                    table.DefaultSortBy(product => product.Name);
+                    table.EnablePaging(paging =>
+                    {
+                        paging.PageSize = 2;
+                        paging.PageSizes = [2, 3];
+                    });
+                }
             );
-            index.DefaultSortBy(product => product.Name);
-            index.EnablePaging(paging =>
-            {
-                paging.PageSize = 2;
-                paging.PageSizes = [2, 3];
-            });
         });
 
     private static ProductState CreateState() =>
