@@ -1,10 +1,10 @@
 # The trips cards sorted by title on the first page with the pager below them, the whole window, in light and dark
-scenario: card-sorting-and-paging-overview
+scenario: cards-sorting-and-paging-overview
 steps:
   # A window just tall enough for the twelve cards and the pager below them
   - viewport: { width: 1280, height: 600 }
   - goto: /stellaradmin/trips
   - scroll: ".sa-resource-cards-pager"
-  - screenshot: card-sorting-and-paging-overview
+  - screenshot: cards-sorting-and-paging-overview
   - colorScheme: dark
-  - screenshot: card-sorting-and-paging-overview-dark
+  - screenshot: cards-sorting-and-paging-overview-dark

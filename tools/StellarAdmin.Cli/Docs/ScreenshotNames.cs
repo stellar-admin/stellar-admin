@@ -6,8 +6,10 @@ using YamlDotNet.RepresentationModel;
 namespace StellarAdmin.Cli.Docs;
 
 // Checks that each docs screenshot is named for the docs page it belongs to: a scenario, spec or screenshot in
-// Screenshots/<Page>/ starts with the page's file name, such as scopes-tabs in Scopes/ for scopes.mdx, and a
-// <Screenshot>'s images start with the name of its page, or of another page that shows it too
+// Screenshots/<Page>/ starts with the page's name, such as scopes-tabs in Scopes/ for scopes.mdx, and a
+// <Screenshot>'s images start with the name of its page, or of another page that shows it too. A page goes by its
+// file name or by its folder's name in front of it, and an index.mdx by its folder's name too, so
+// tables/sorting-and-paging.mdx is tables-sorting-and-paging and tables/index.mdx is tables
 internal static partial class ScreenshotNames
 {
     // A description of each name that breaks the rule
@@ -18,10 +20,8 @@ internal static partial class ScreenshotNames
         IEnumerable<Scenario> scenarios
     )
     {
-        var pages = Directory
-            .EnumerateFiles(docsFolder, "*.mdx", SearchOption.AllDirectories)
-            .Select(Path.GetFileNameWithoutExtension)
-            .ToHashSet();
+        var pageNames = PageNames(docsFolder);
+        var pages = pageNames.Values.SelectMany(names => names).ToHashSet();
         List<string> problems = [];
 
         foreach (var scenario in scenarios)
@@ -51,7 +51,9 @@ internal static partial class ScreenshotNames
         {
             var shownOn = placeholders
                 .Where(other => other.Name == placeholder.Name)
-                .Select(other => Path.GetFileNameWithoutExtension(other.Page));
+                .SelectMany(other =>
+                    pageNames[Path.GetFullPath(Path.Combine(docsFolder, other.Page))]
+                );
             if (
                 !shownOn.Any(page =>
                     placeholder.Images.All(image =>
@@ -69,10 +71,26 @@ internal static partial class ScreenshotNames
         return problems;
     }
 
+    // The names each docs page goes by, by its full path
+    private static Dictionary<string, string[]> PageNames(string docsFolder) =>
+        Directory
+            .EnumerateFiles(docsFolder, "*.mdx", SearchOption.AllDirectories)
+            .Select(Path.GetFullPath)
+            .ToDictionary(file => file, Names);
+
+    // A page's file name and its folder's name in front of it, and an index.mdx's folder name
+    private static string[] Names(string file)
+    {
+        var name = Path.GetFileNameWithoutExtension(file);
+        var folder = Path.GetFileName(Path.GetDirectoryName(file))!;
+
+        return name is "index" ? [name, folder] : [name, $"{folder}-{name}"];
+    }
+
     // Checks name starts with the page of its folder, such as index-pages- in IndexPages/
     private static void CheckName(
         List<string> problems,
-        HashSet<string?> pages,
+        HashSet<string> pages,
         string? folder,
         string name,
         string what

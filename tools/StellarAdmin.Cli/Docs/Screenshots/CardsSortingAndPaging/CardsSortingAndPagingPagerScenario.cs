@@ -1,9 +1,9 @@
 using StellarAdmin;
 using StellarAdmin.ScenarioTesting.Hosting;
 
-namespace StellarAdmin.Cli.Docs.Screenshots.CardSortingAndPaging;
+namespace StellarAdmin.Cli.Docs.Screenshots.CardsSortingAndPaging;
 
-public sealed class CardSortingAndPagingPagerScenario : Scenario
+public sealed class CardsSortingAndPagingPagerScenario : Scenario
 {
     public override string Description =>
         "The trips index with title and summary cards sorted by title, 12 to a page.";

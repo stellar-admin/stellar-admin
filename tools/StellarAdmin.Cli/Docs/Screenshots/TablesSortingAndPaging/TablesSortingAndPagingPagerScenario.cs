@@ -3,9 +3,9 @@ using StellarAdmin.EntityFrameworkCore;
 using StellarAdmin.ScenarioTesting.Hosting;
 using VoyagerTravel.Models;
 
-namespace StellarAdmin.Cli.Docs.Screenshots.TableSortingAndPaging;
+namespace StellarAdmin.Cli.Docs.Screenshots.TablesSortingAndPaging;
 
-public sealed class TableSortingAndPagingPagerScenario : Scenario
+public sealed class TablesSortingAndPagingPagerScenario : Scenario
 {
     public override string Description =>
         "The bookings grid with sortable Booked at and Total amount columns, and paging.";
