@@ -5,12 +5,12 @@ using VoyagerTravel.Models;
 
 namespace StellarAdmin.Cli.Docs.Screenshots.PartialViews;
 
-public sealed class PartialViewsByDayScenario : Scenario
+public sealed class PartialViewsByStatusScenario : Scenario
 {
     public override string Description =>
-        "The bookings index with a Bookings table and the _BookingsByDay partial view, By day selected.";
+        "The bookings index with a Bookings table and the _BookingsByStatus partial view, By status selected.";
 
-    public override string StartPath => "/stellaradmin/bookings?layout=by-day&search=VB-10000";
+    public override string StartPath => "/stellaradmin/bookings?layout=by-status&search=VB-10715";
 
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
@@ -35,7 +35,7 @@ public sealed class PartialViewsByDayScenario : Scenario
                         table.EnablePaging();
                     }
                 );
-                index.AddPartial("by-day", "_BookingsByDay");
+                index.AddPartial("by-status", "_BookingsByStatus");
             });
         });
     }

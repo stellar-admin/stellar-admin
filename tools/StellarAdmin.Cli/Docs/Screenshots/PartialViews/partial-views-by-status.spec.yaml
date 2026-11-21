@@ -1,0 +1,10 @@
+# The By status data layout selected, with the bookings grouped by status under the controls row, in light and dark
+scenario: partial-views-by-status
+steps:
+  # A short window, so the shot ends after the first groups
+  - viewport: { width: 1280, height: 900 }
+  # The partial view has no paging, so a search keeps it to ten bookings with a mix of statuses
+  - goto: /stellaradmin/bookings?layout=by-status&search=VB-10715
+  - screenshot: partial-views-by-status
+  - colorScheme: dark
+  - screenshot: partial-views-by-status-dark

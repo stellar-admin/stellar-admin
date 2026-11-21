@@ -83,35 +83,28 @@ Every data layout builder has `Title` and `Icon`. `Title` is the segment's toolt
 | `GetIndexUrl(values)` | The index with the current layout, search and scope; `new { layout = "finance" }` adds or replaces values |
 
 ```csharp
-index.AddPartial("by-day", "_BookingsByDay");
+index.AddPartial("by-status", "_BookingsByStatus");
 ```
 
 ```razor
-@* Areas/StellarAdmin/Views/bookings/_BookingsByDay.cshtml *@
+@* Areas/StellarAdmin/Views/bookings/_BookingsByStatus.cshtml *@
 @using StellarAdmin.Resources
 @model ResourceDataLayoutModel<Booking>
 
-@foreach (var day in Model.Items.GroupBy(booking => booking.BookedAt.Date).OrderByDescending(day => day.Key))
+@foreach (var status in Model.Items.GroupBy(booking => booking.Status).OrderBy(status => status.Key))
 {
-    <sa-card>
-        <sa-card-header><sa-card-title>@day.Key.ToString("dddd, d MMMM yyyy")</sa-card-title></sa-card-header>
-        <sa-card-content>
-            @foreach (var booking in day)
-            {
-                <sa-group>
-                    @if (Model.GetViewUrl(booking) is { } viewUrl)
-                    {
-                        <a href="@viewUrl">@booking.Reference</a>
-                    }
-                    else
-                    {
-                        @booking.Reference
-                    }
-                    <sa-badge variant="BadgeVariant.Secondary">@booking.Status</sa-badge>
-                </sa-group>
-            }
-        </sa-card-content>
-    </sa-card>
+    <sa-item-group>
+        <sa-item variant="ItemVariant.Muted" size="ItemSize.Small">
+            <sa-item-content><sa-item-title>@status.Key</sa-item-title></sa-item-content>
+        </sa-item>
+        @foreach (var booking in status)
+        {
+            <sa-item-link variant="ItemVariant.Outline" size="ItemSize.Small" href="@Model.GetViewUrl(booking)">
+                <sa-item-content><sa-item-title>@booking.Reference</sa-item-title></sa-item-content>
+                <sa-item-actions>@booking.TotalAmount.ToString("C0")</sa-item-actions>
+            </sa-item-link>
+        }
+    </sa-item-group>
 }
 <a href="@Model.GetIndexUrl(new { layout = "finance" })">Compare the totals</a>
 ```
