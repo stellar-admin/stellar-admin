@@ -320,11 +320,7 @@ internal static class ProductResourceRegistration
                         cards.Title = "Built-in cards";
                         cards.Icon = "layout-dashboard";
                         cards.DefaultSortBy(product => product.Name);
-                        cards.EnablePaging(paging =>
-                        {
-                            paging.PageSize = 12;
-                            paging.PageSizes = [12, 24, 48];
-                        });
+                        cards.EnablePaging(paging => paging.PageSize = 12);
                         cards.Card(card =>
                         {
                             card.Title(product => product.Name);
@@ -455,11 +451,7 @@ internal static class ProductResourceRegistration
                         cards.Icon = "wallet-cards";
                         cards.HasRecordKey(row => row.ProductId);
                         cards.DefaultSortBy(row => row.Name);
-                        cards.EnablePaging(paging =>
-                        {
-                            paging.PageSize = 12;
-                            paging.PageSizes = [12, 24, 48];
-                        });
+                        cards.EnablePaging(paging => paging.PageSize = 12);
                         cards.Card(card =>
                         {
                             card.Title(row => row.Name);

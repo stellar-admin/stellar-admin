@@ -62,7 +62,7 @@ layouts.AddCards("cards", cards =>
 - A card shows only the parts its `Card(...)` sets. The one fallback is the title: without `card.Title(...)` it is the resource's title (`UseTitle`, the record's name across the admin panel), then the record's key. Nothing comes from `Reference`. `Card(...)` has its own scope, which keeps the card's title apart from the layout's switcher `Title`.
 - Stats and fields have their own builders (`ResourceCardStatsBuilder<TResource>`, `ResourceCardFieldsBuilder<TResource>`, each with `Add`); the field layout is `Layout` on the fields builder. Stats and fields share one entry builder for a single value: `Title`, `EmptyText`, `UseDisplay<TDisplay>()` and `UseDisplay<TDisplay>(configure)`. The badge has its own `ResourceCardBadgeBuilder` with only the two `UseDisplay` overloads, since it shows no label and an empty badge is hidden. Without `UseDisplay`, a stat or field renders the compact display template its property picks, as a table cell does; the badge uses `BadgeDisplay`. A display with a handler is a configuration problem, as on columns. Badge colour per value is the app's own display, whose template switches on the value and renders a badge.
 - More than 4 stats is a reported configuration problem; the card shows the first four. `Image`'s configure is optional. `Overlay` without an image is a reported configuration problem; the card shows as `Vertical`.
-- `cards.EnablePaging` returns the cards' own `ResourceCardsPagingBuilder<TResource>` (`PageSize`, `PageSizes`), not the table's.
+- `cards.EnablePaging` returns the cards' own `ResourceCardsPagingBuilder<TResource>` (`PageSize` only), not the table's. Cards have no page-size picker, so they ignore a `pageSize` query value and their pager links don't carry one.
 - The title and description are plain text (`ToString()`); a `UseDisplay` for them can come later if needed.
 - New enums, one per setting: `ResourceCardImageShape` (Widescreen, Banner, Landscape, Square), `ResourceCardFieldLayout` (Rows, Grid), `ResourceCardArrangement` (Vertical, Horizontal, Overlay: the image above the content, beside it, or under the title and description), `ResourceCardActionsPlacement` (Menu, Footer).
 
@@ -112,6 +112,11 @@ Decisions 5 to 8 done 2026-11-19: `ResourceCardBadgeBuilder`; `card.Arrangement`
 Stages reordered 2026-11-19 (Jerrie): handler cards before the docs.
 
 Next: the [index-data-layouts](index-data-layouts.md) plan, which takes over stage 3 (the docs) after the index API change. Jerrie reviewed stages 1 and 2 on 2026-11-20; another visual sweep of the cards follows that work. Stage 1 committed as 4f86669, stage 2 as a892b8e.
+
+For the cards visual sweep:
+
+- Card stats are sized by their labels, so in three columns at 1280px they truncate ("$3,…", "Duration (d…"). The docs screenshots use a 1120px window to avoid it.
+- Overlay cards show a thin strip of card background below the image (visible in the card-arrangement overlay screenshot).
 
 ### Stage 1 (built 2026-11-19, checkpoint review pending)
 

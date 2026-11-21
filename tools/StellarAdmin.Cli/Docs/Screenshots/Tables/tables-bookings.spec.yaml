@@ -1,0 +1,9 @@
+# The bookings index page with its table sorted by Booked at and the pager below it, in light and dark
+scenario: tables-bookings
+steps:
+  # A tall window, so the shot shows the whole first page and the pager
+  - viewport: { width: 1280, height: 1170 }
+  - goto: /stellaradmin/bookings
+  - screenshot: tables-bookings
+  - colorScheme: dark
+  - screenshot: tables-bookings-dark

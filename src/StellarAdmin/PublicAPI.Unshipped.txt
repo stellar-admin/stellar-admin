@@ -2318,7 +2318,6 @@ StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>.Enable
 StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>.EnablePaging(System.Action<StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>!>! configure) -> StellarAdmin.Resources.Builders.ResourceCardsDataLayoutBuilder<TResource>!
 StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>
 StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>.PageSize.set -> void
-StellarAdmin.Resources.Builders.ResourceCardsPagingBuilder<TResource>.PageSizes.set -> void
 StellarAdmin.Resources.Options.ResourceCardOptions.Arrangement.get -> StellarAdmin.Resources.ResourceCardArrangement
 StellarAdmin.Resources.ResourceCardArrangement
 StellarAdmin.Resources.ResourceCardArrangement.Horizontal = 1 -> StellarAdmin.Resources.ResourceCardArrangement

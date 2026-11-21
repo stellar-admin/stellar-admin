@@ -115,7 +115,7 @@ else
                 <sa-pagination-item>
                     <sa-pagination-previous asp-action="Index" asp-route-id="@((string?)null)"
                                             asp-route-layout="@query.Layout" asp-route-page="@(paging.Page - 1)"
-                                            asp-route-pageSize="@query.PageSize" asp-route-search="@query.Search"
+                                            asp-route-search="@query.Search"
                                             asp-route-scope="@query.Scope" asp-route-sortBy="@query.SortBy"
                                             asp-route-sortDirection="@query.SortDirection" />
                 </sa-pagination-item>
@@ -128,7 +128,7 @@ else
                 <sa-pagination-item>
                     <sa-pagination-next asp-action="Index" asp-route-id="@((string?)null)"
                                         asp-route-layout="@query.Layout" asp-route-page="@(paging.Page + 1)"
-                                        asp-route-pageSize="@query.PageSize" asp-route-search="@query.Search"
+                                        asp-route-search="@query.Search"
                                         asp-route-scope="@query.Scope" asp-route-sortBy="@query.SortBy"
                                         asp-route-sortDirection="@query.SortDirection" />
                 </sa-pagination-item>
@@ -268,7 +268,7 @@ else
                         <sa-dropdown-menu-separator />
                     }
                     <form method="post" asp-action="Delete" asp-route-id="@key" asp-route-layout="@query.Layout"
-                          asp-route-page="@(query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@query.PageSize"
+                          asp-route-page="@(query.Page is null ? null : Model.Paging?.Page)"
                           asp-route-search="@query.Search" asp-route-scope="@query.Scope"
                           asp-route-sortBy="@query.SortBy" asp-route-sortDirection="@query.SortDirection"
                           data-resource-delete hx-confirm="js:confirmResourceDelete()" hx-push-url="false">

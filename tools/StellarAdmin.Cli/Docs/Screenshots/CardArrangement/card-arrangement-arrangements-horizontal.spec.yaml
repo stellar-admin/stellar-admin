@@ -1,0 +1,9 @@
+# The first two trip cards in the horizontal arrangement, in light and dark
+scenario: card-arrangement-arrangements-horizontal
+steps:
+  - goto: /stellaradmin/trips
+  - expectVisible: ".sa-resource-card[data-key='2'] img"
+  # The right margin takes in the second card
+  - screenshot: { name: card-arrangement-arrangements-horizontal, locator: ".sa-resource-card[data-key='1']", margin: { top: 16, right: 487, bottom: 16, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: card-arrangement-arrangements-horizontal-dark, locator: ".sa-resource-card[data-key='1']", margin: { top: 16, right: 487, bottom: 16, left: 16 } }

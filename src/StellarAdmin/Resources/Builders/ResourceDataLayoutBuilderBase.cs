@@ -37,8 +37,8 @@ public abstract class ResourceDataLayoutBuilderBase<TResource, TBuilder>
     ///     Sets the data layout's title, which names its switcher segment.
     /// </summary>
     /// <value>
-    ///     The title, or <see langword="null" /> to use the key. The default is
-    ///     <see langword="null" />.
+    ///     The title, or <see langword="null" /> to use the key in sentence case, so
+    ///     <c>"by-day"</c> reads "By day". The default is <see langword="null" />.
     /// </value>
     /// <remarks>
     ///     The title is the segment's tooltip and accessible name, and its text when the data

@@ -1,0 +1,10 @@
+# The trips index with the cards of the first example, the whole window, in light and dark
+scenario: cards-overview
+steps:
+  # Two columns of cards, so the stats have room for their values
+  - viewport: { width: 1120, height: 800 }
+  - goto: /stellaradmin/trips
+  - expectVisible: ".sa-resource-card[data-key='1'] img"
+  - screenshot: cards-overview
+  - colorScheme: dark
+  - screenshot: cards-overview-dark

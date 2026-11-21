@@ -1,6 +1,6 @@
 # Index pages
 
-The index page lists a resource's records. `resource.Index(index => ...)` configures the page (title, search, scopes, widgets) and adds its data layouts; a table shows the records in a grid, with its columns, sort, paging and row details on the table's builder. An index without data layouts shows no records. Columns are in [columns](columns.md), editing and adding in the table's rows in [inline editing](inline-editing.md), and blocks above, beside or below the list in [widgets](widgets.md#index-pages). Several tables, cards or partial views with a switcher are in [data layouts](layouts.md).
+The index page lists a resource's records. `resource.Index(index => ...)` configures the page (title, search, scopes, widgets) and adds its data layouts; a table shows the records in a grid, with its columns, sort, paging and row details on the table's builder. An index without data layouts shows no records. Columns are in [columns](columns.md), editing and adding in the table's rows in [inline editing](inline-editing.md), and blocks above, beside or below the list in [widgets](widgets.md#index-pages). Records as cards are in [cards](cards.md); several tables, cards or partial views with a switcher are in [data layouts](layouts.md).
 
 ## Contents
 
@@ -111,7 +111,7 @@ table.EnablePaging(paging =>
 });
 ```
 
-`PageSize` must be one of `PageSizes` (default 10, 25, 50, 100); otherwise the panel adds it to the sizes and logs a configuration problem ([configuration problems](configuration-problems.md)). Set both when using another size: `paging.PageSize = 15; paging.PageSizes = [15, 30, 60];`. Without paging, every matching record is listed.
+A table's `PageSize` must be one of `PageSizes` (default 10, 25, 50, 100); otherwise the panel adds it to the sizes and logs a configuration problem ([configuration problems](configuration-problems.md)). Set both when using another size: `paging.PageSize = 15; paging.PageSizes = [15, 30, 60];`. Without paging, every matching record is listed.
 
 ## Row details
 

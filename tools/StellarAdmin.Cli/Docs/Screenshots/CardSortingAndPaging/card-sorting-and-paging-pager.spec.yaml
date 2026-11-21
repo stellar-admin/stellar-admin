@@ -1,0 +1,8 @@
+# The last row of trip cards on page 2 and the pager below them, in light and dark
+scenario: card-sorting-and-paging-pager
+steps:
+  - goto: /stellaradmin/trips?page=2
+  - expectVisible: { selector: ".sa-resource-cards-pager-status", timeout: 3000 }
+  - screenshot: { name: card-sorting-and-paging-pager, locator: ".sa-resource-cards-pager", margin: { top: 104, right: 16, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: card-sorting-and-paging-pager-dark, locator: ".sa-resource-cards-pager", margin: { top: 104, right: 16, left: 16 } }

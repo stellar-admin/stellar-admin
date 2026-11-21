@@ -1,9 +1,0 @@
-# The Revenue per destination layout selected, with the first rows of its table under the controls row, in light and dark
-scenario: layout-data-table
-steps:
-  # A short window, so the shot shows the controls row and the first rows
-  - viewport: { width: 1280, height: 520 }
-  - goto: /stellaradmin/bookings?layout=revenue
-  - screenshot: layout-data-table
-  - colorScheme: dark
-  - screenshot: layout-data-table-dark

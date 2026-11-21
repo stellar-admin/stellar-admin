@@ -25,7 +25,8 @@ public sealed class ResourcePagingOptions
     ///     The page sizes. The default is 10, 25, 50 and 100.
     /// </value>
     /// <remarks>
-    ///     The sizes must be positive and distinct, and there must be at least one.
+    ///     The sizes must be positive and distinct, and there must be at least one. Cards have no
+    ///     page-size picker, so their only page size is <see cref="PageSize" />.
     /// </remarks>
     public IReadOnlyList<int> PageSizes { get; internal set; } = [10, 25, 50, 100];
 

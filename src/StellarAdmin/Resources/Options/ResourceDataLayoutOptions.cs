@@ -44,8 +44,8 @@ public abstract class ResourceDataLayoutOptions
     ///     Gets the data layout's title, which names its switcher segment.
     /// </summary>
     /// <value>
-    ///     The title, or <see langword="null" /> to use the key. The default is
-    ///     <see langword="null" />.
+    ///     The title, or <see langword="null" /> to use the key in sentence case, so
+    ///     <c>"by-day"</c> reads "By day". The default is <see langword="null" />.
     /// </value>
     public string? Title { get; internal set; }
 

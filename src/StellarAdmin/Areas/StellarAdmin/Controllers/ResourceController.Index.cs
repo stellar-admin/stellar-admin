@@ -327,7 +327,7 @@ internal sealed partial class ResourceController<TResource>
         return layouts
             .Select(layout => new ResourceIndexDataLayoutViewModel(
                 layout.Key,
-                layout.Title ?? layout.Key.Humanize(),
+                layout.Title ?? layout.Key.Humanize(LetterCasing.Sentence),
                 layout.Icon,
                 layout == active
             ))
@@ -833,8 +833,10 @@ internal sealed partial class ResourceController<TResource>
         }
 
         var page = query.Page ?? 1;
+
+        // Cards have no page-size picker, so they ignore the query's page size
         var pageSize =
-            query.PageSize is { } size && options.PageSizes.Contains(size)
+            table is not null && query.PageSize is { } size && options.PageSizes.Contains(size)
                 ? size
                 : options.PageSize;
         if ((long)(page - 1) * pageSize > int.MaxValue)

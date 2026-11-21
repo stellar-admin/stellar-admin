@@ -153,7 +153,7 @@ public class ResourceCardsDataLayoutTests
     }
 
     [Test]
-    public async Task Cards_SortByTheirDefaultSortAndPageAsATableDoes()
+    public async Task Cards_SortByTheirDefaultSortAndPageByTheirPageSizeNotTheQuerys()
     {
         // Arrange
         var state = CreateState();
@@ -165,7 +165,7 @@ public class ResourceCardsDataLayoutTests
         using var client = sut.CreateClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products?page=2&pageSize=2");
+        var document = await client.GetDocumentAsync("/stellaradmin/products?page=2&pageSize=3");
 
         // Assert
         var request = state.ListRequests.Single();
@@ -181,7 +181,7 @@ public class ResourceCardsDataLayoutTests
             .IsEqualTo("Page 2 of 2");
         await Assert
             .That(pager.RequiredElement("a.sa-pagination-previous").GetAttribute("href"))
-            .IsEqualTo("/stellaradmin/products?page=1&pageSize=2");
+            .IsEqualTo("/stellaradmin/products?page=1");
         await Assert.That(pager.QuerySelector(".sa-pagination-next")).IsNull();
     }
 
@@ -567,11 +567,7 @@ public class ResourceCardsDataLayoutTests
                 cards =>
                 {
                     cards.DefaultSortByDescending(product => product.Price);
-                    cards.EnablePaging(paging =>
-                    {
-                        paging.PageSize = 2;
-                        paging.PageSizes = [2, 3];
-                    });
+                    cards.EnablePaging(paging => paging.PageSize = 2);
                 }
             )
         );

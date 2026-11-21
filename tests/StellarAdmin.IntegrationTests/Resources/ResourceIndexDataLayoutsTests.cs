@@ -64,6 +64,39 @@ public class ResourceIndexDataLayoutsTests
     }
 
     [Test]
+    public async Task LayoutsWithoutTitles_AreTitledWithTheirKeysInSentenceCase()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            CreateState(),
+            resource =>
+                resource.Index(index =>
+                {
+                    index.AddTable(
+                        "all-products",
+                        table =>
+                            table.Columns(columns => columns.Clear().Add(product => product.Name))
+                    );
+                    index.AddPartial("tiles", "_ProductTiles");
+                }),
+            defaultTable: false
+        );
+        using var client = sut.CreateClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll(".sa-resource-index-layouts label")
+                    .Select(label => label.GetAttribute("title")!)
+            )
+            .IsEquivalentTo(["All products", "Tiles"], CollectionOrdering.Matching);
+    }
+
+    [Test]
     public async Task LayoutQuery_ShowsThatTableWithItsColumnsSortAndPaging()
     {
         // Arrange

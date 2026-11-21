@@ -1,0 +1,28 @@
+@using StellarAdmin.Resources
+@model ResourceDataLayoutModel<Booking>
+
+<sa-stack>
+    @foreach (var day in Model.Items.GroupBy(booking => booking.BookedAt.Date).OrderByDescending(day => day.Key))
+    {
+        <sa-card>
+            <sa-card-header><sa-card-title>@day.Key.ToString("dddd, d MMMM yyyy")</sa-card-title></sa-card-header>
+            <sa-card-content>
+                @foreach (var booking in day)
+                {
+                    <sa-group>
+                        @if (Model.GetViewUrl(booking) is { } viewUrl)
+                        {
+                            <a href="@viewUrl">@booking.Reference</a>
+                        }
+                        else
+                        {
+                            @booking.Reference
+                        }
+                        <sa-badge variant="BadgeVariant.Secondary">@booking.Status</sa-badge>
+                        @booking.TotalAmount.ToString("C0")
+                    </sa-group>
+                }
+            </sa-card-content>
+        </sa-card>
+    }
+</sa-stack>

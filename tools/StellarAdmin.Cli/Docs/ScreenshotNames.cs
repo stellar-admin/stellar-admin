@@ -108,10 +108,11 @@ internal static partial class ScreenshotNames
             : null;
     }
 
-    // The docs page a folder holds the screenshots of: SortingAndPaging is sorting-and-paging
+    // The docs page a folder holds the screenshots of: SortingAndPaging is sorting-and-paging, DataFromAHandler is
+    // data-from-a-handler
     private static string PageName(string folder) =>
         WordBoundary().Replace(folder, "-").ToLowerInvariant();
 
-    [GeneratedRegex("(?<=[a-z0-9])(?=[A-Z])")]
+    [GeneratedRegex("(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")]
     private static partial Regex WordBoundary();
 }

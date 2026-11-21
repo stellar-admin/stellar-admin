@@ -215,6 +215,43 @@ public class ResourceCardsDataLayoutBuilderTests
             .IsEqualTo(ConfigurationProblemKind.InvalidSelector);
     }
 
+    [Test]
+    [Arguments(12, 12, false)]
+    [Arguments(0, 25, true)]
+    public async Task EnablePaging_WithPageSize_OffersOnlyThatPageSize(
+        int pageSize,
+        int expectedPageSize,
+        bool isReported
+    )
+    {
+        // Arrange
+        ConfigurationProblemKind[] expectedProblems = isReported
+            ? [ConfigurationProblemKind.InvalidDefaultPageSize]
+            : [];
+        var services = new ServiceCollection();
+        services
+            .AddStellarAdmin()
+            .AddResource<Product>()
+            .Index(index =>
+                index.AddCards(
+                    "cards",
+                    cards => cards.EnablePaging(paging => paging.PageSize = pageSize)
+                )
+            );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var paging = options.Index.Cards.Single().Paging!;
+        await Assert.That(paging.PageSize).IsEqualTo(expectedPageSize);
+        await Assert.That(paging.PageSizes).IsEquivalentTo([expectedPageSize]);
+        await Assert
+            .That(options.Problems.Select(problem => problem.Kind))
+            .IsEquivalentTo(expectedProblems);
+    }
+
     private static void ConfigureCards(
         IServiceCollection services,
         Action<ResourceCardBuilder<Product>> configure

@@ -55,11 +55,7 @@ internal static class DestinationResourceRegistration
                         cards.Title = "Cards";
                         cards.Icon = "layout-grid";
                         cards.DefaultSortBy(destination => destination.Name);
-                        cards.EnablePaging(paging =>
-                        {
-                            paging.PageSize = 12;
-                            paging.PageSizes = [12, 24];
-                        });
+                        cards.EnablePaging(paging => paging.PageSize = 12);
                         cards.Card(card =>
                         {
                             card.Description(destination => destination.Country);

@@ -184,7 +184,7 @@
             white-space: nowrap;
         }
 
-        & :is(.sa-card-action, .sa-resource-card-actions > *, .sa-resource-card-on-image) {
+        & :is(.sa-card-action, .sa-resource-card-actions > *) {
             position: relative;
             z-index: 1;
         }
@@ -255,6 +255,7 @@
        keeps its variant's colours with a shadow; the variants without a fill get the surface's */
     .sa-resource-card-on-image {
         position: absolute;
+        z-index: 1;
         inset: calc(2 * var(--sa-unit)) calc(2 * var(--sa-unit)) auto;
         display: flex;
         justify-content: flex-end;

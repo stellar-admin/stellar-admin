@@ -1,0 +1,9 @@
+# The destinations cards selected, with the first row of cards under the controls row, in light and dark
+scenario: data-from-a-handler-cards
+steps:
+  # A short window, so the shot shows the controls row and the first row of cards
+  - viewport: { width: 1280, height: 375 }
+  - goto: /stellaradmin/bookings?layout=destinations
+  - screenshot: data-from-a-handler-cards
+  - colorScheme: dark
+  - screenshot: data-from-a-handler-cards-dark
