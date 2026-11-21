@@ -451,7 +451,11 @@ public class ResourceViewPageTests
             resource =>
             {
                 resource.UseKey(product => product.Id);
-                resource.Index(index => index.ViewLabel = "Open");
+                resource.Index(index =>
+                {
+                    index.ViewLabel = "Open";
+                    index.AddTable("table");
+                });
                 resource.AllowView(view =>
                     view.Fields(fields => fields.Add(product => product.Name))
                 );

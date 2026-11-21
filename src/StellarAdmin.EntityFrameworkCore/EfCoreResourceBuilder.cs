@@ -65,7 +65,7 @@ public sealed class EfCoreResourceBuilder<TEntity>
     /// <remarks>
     ///     The new model's property must hold an entity, from its initializer or <c>UseFactory</c>.
     ///     The entity's fields are saved as the resource; the model's other fields reach the
-    ///     events. Index columns match the entity's fields without the property's name.
+    ///     events. A table's columns match the entity's fields without the property's name.
     /// </remarks>
     public EfCoreResourceBuilder<TEntity> AllowCreate<TModel>(
         Expression<Func<TModel, TEntity>> entity,
@@ -129,8 +129,8 @@ public sealed class EfCoreResourceBuilder<TEntity>
     /// <remarks>
     ///     The model is created with its parameterless constructor and holds the stored entity.
     ///     The entity's fields are copied onto the stored entity when the form is saved; the
-    ///     model's other fields reach the events. Index columns match the entity's fields without
-    ///     the property's name.
+    ///     model's other fields reach the events. A table's columns match the entity's fields
+    ///     without the property's name.
     /// </remarks>
     public EfCoreResourceBuilder<TEntity> AllowEdit<TModel>(
         Expression<Func<TModel, TEntity>> entity,
@@ -147,50 +147,27 @@ public sealed class EfCoreResourceBuilder<TEntity>
     }
 
     /// <summary>
-    ///     Configures the index page.
+    ///     Configures the index page and adds its data layouts.
     /// </summary>
-    /// <param name="configure">A delegate that configures the index page.</param>
+    /// <param name="configure">
+    ///     A delegate that configures the page, such as its search and scopes, and adds the data
+    ///     layouts that show its records.
+    /// </param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
+    /// <remarks>
+    ///     The first data layout is the one the page shows by default. With two or more data
+    ///     layouts, a switcher above the list switches between them. An index without data layouts
+    ///     shows no records.
+    /// </remarks>
     public EfCoreResourceBuilder<TEntity> Index(
         Action<EfCoreResourceIndexBuilder<TEntity>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(new(Services));
-
-        return this;
-    }
-
-    /// <summary>
-    ///     Configures the index page with layouts the user can switch between.
-    /// </summary>
-    /// <param name="configure">
-    ///     A delegate that configures the settings every layout shares, such as the scopes and the
-    ///     search.
-    /// </param>
-    /// <param name="layouts">A delegate that adds the layouts.</param>
-    /// <returns>The builder, so that calls can be chained.</returns>
-    /// <remarks>
-    ///     The first layout is the one the page shows by default. With two or more layouts, a
-    ///     switcher at the end of the controls row switches between them.
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="configure" /> or <paramref name="layouts" /> is <see langword="null" />.
-    /// </exception>
-    public EfCoreResourceBuilder<TEntity> Index(
-        Action<EfCoreResourceSharedIndexBuilder<TEntity>> configure,
-        Action<EfCoreResourceLayoutsBuilder<TEntity>> layouts
-    )
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-        ArgumentNullException.ThrowIfNull(layouts);
-
-        Services.Configure<ResourceOptions<TEntity>>(options => options.Index.DeclareLayouts());
-        configure(new(Services));
-        layouts(new(Services));
 
         return this;
     }

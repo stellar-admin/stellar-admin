@@ -15,16 +15,25 @@ public sealed class ManyToManyChoiceScenario : Scenario
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
-        admin.AddEfCoreResource<TripTag>(resource => resource.Index(index => index.EnablePaging()));
+        admin.AddEfCoreResource<TripTag>(resource =>
+            resource.Index(index => index.AddTable("trip-tags", table => table.EnablePaging()))
+        );
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            );
             resource.AllowEdit(edit =>
-                edit.Fields(fields => fields.Add(trip => trip.Tags).UseCheckboxGroupEditor(tags => tags.Columns(3)))
+                edit.Fields(fields =>
+                    fields.Add(trip => trip.Tags).UseCheckboxGroupEditor(tags => tags.Columns(3))
+                )
             );
         });
     }

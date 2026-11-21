@@ -1,6 +1,6 @@
 # Inline editing
 
-A small resource, whose two to four fields are all shown as columns, can be edited and added in the index grid's rows instead of on the edit and create pages. Resources with more fields keep using the pages ([forms](forms.md)).
+A small resource, whose two to four fields are all shown as columns, can be edited and added in the rows of its index table instead of on the edit and create pages. Resources with more fields keep using the pages ([forms](forms.md)).
 
 ## Contents
 
@@ -15,52 +15,53 @@ A small resource, whose two to four fields are all shown as columns, can be edit
 
 ## Turning it on
 
-Call `UseInlineRow()` on the edit or create builder. Edit and create choose independently, for example inline edit with create on a page:
+Call `EnableInlineEditing()` or `EnableInlineCreate()` on a table of the resource's records. The row edits the fields of the resource's edit or create form, so `AllowEdit` and `AllowCreate` still define them. Edit and create choose independently, for example inline edit with create on a page:
 
 ```csharp
 admin.AddEfCoreResource<Destination>(resource =>
 {
-    resource.Index(index => index.Columns(columns =>
+    resource.Index(index => index.AddTable("destinations", table =>
     {
-        columns.Add(destination => destination.Name);
-        columns.Add(destination => destination.Country!.Name, column =>
+        table.Columns(columns =>
         {
-            column.Title = "Country";
-            column.EditsField(destination => destination.CountryId);
+            columns.Add(destination => destination.Name);
+            columns.Add(destination => destination.Country!.Name, column =>
+            {
+                column.Title = "Country";
+                column.EditsField(destination => destination.CountryId);
+            });
+            columns.Add(destination => destination.BestSeason);
+            columns.Add(destination => destination.Active);
         });
-        columns.Add(destination => destination.BestSeason);
-        columns.Add(destination => destination.Active);
-    }));
-
-    resource.AllowEdit(edit =>
-    {
-        edit.Fields(fields =>
-        {
-            fields.Add(destination => destination.Name);
-            fields.Add(destination => destination.CountryId).UseLookupSheetEditor(/* see relationships.md */);
-            fields.Add(destination => destination.BestSeason);
-            fields.Add(destination => destination.Active);
-        });
-        edit.UseInlineRow();
-    });
-
-    resource.AllowCreate(create =>
-    {
-        create.Fields(/* the same fields */);
-        create.UseFactory(() => new Destination { Active = true });
-        create.UseInlineRow(inline =>
+        table.EnableInlineEditing();
+        table.EnableInlineCreate(inline =>
         {
             inline.Position = InlineCreatePosition.Bottom;   // Top (default) or Bottom
             inline.AddButton = InlineAddButton.Grid;         // Header, Grid or Both (default)
             inline.DimOtherRows = false;                     // default true
             inline.AfterSave = InlineRowAfterSave.KeepInPlace; // ReloadGrid (default) or KeepInPlace
         });
+    }));
+
+    resource.AllowEdit(edit => edit.Fields(fields =>
+    {
+        fields.Add(destination => destination.Name);
+        fields.Add(destination => destination.CountryId).UseLookupSheetEditor(/* see relationships.md */);
+        fields.Add(destination => destination.BestSeason);
+        fields.Add(destination => destination.Active);
+    }));
+
+    resource.AllowCreate(create =>
+    {
+        create.Fields(/* the same fields */);
+        create.UseFactory(() => new Destination { Active = true });
     });
 });
 ```
 
-- An operation is edited either inline or on its page, never both. An inline operation's page is not registered, and with inline edit the view page shows no Edit button.
-- `DimOtherRows` (default true) dims and locks the other rows and the page's controls (Add buttons, scopes, search, sort links and pager) while a row is edited or added, until it is saved or cancelled. With `edit.UseInlineRow(inline => inline.DimOtherRows = false)` they stay usable, and editing or adding another row cancels the first.
+- The table edits and adds rows in place instead of linking to the edit and create pages. The pages stay available: the view page's Edit button and other data layouts, such as cards, link to them.
+- Inline editing belongs to the table that enables it; handler tables have none.
+- `DimOtherRows` (default true) dims and locks the other rows and the page's controls (Add buttons, scopes, search, sort links and pager) while a row is edited or added, until it is saved or cancelled. With `table.EnableInlineEditing(inline => inline.DimOtherRows = false)` they stay usable, and editing or adding another row cancels the first.
 - `InlineCreatePosition`, `InlineAddButton` and `InlineRowAfterSave` are in `StellarAdmin.Resources`.
 - Inline rows need a resource key. EF Core resources have one; `AddResource<T>` needs `UseKey`.
 
@@ -68,9 +69,10 @@ admin.AddEfCoreResource<Destination>(resource =>
 
 The operation's fields define what the row edits, and every field must match a column. A field matches the column with the same property path. A column showing a different path than the field it edits names the field with `EditsField`, as the Country column above shows `Country.Name` and edits `CountryId`. `EditsField("CountryId")` takes the name instead, for a field of a separate edit or create model (`AllowEdit<TModel, THandler>`). A field of an EF Core form model that wraps the entity matches without the property's name: `model.Tour.Name` matches the `Name` column ([forms](forms.md#wrapped-form-models)).
 
-The resource loses that create or edit, inline row included, and a configuration problem is logged ([configuration problems](configuration-problems.md)) when:
+The table doesn't edit or add rows, and links to the page instead, and a configuration problem is logged ([configuration problems](configuration-problems.md)) when:
 
-- an inline field matches no column;
+- the resource has no edit or create form (`AllowEdit` or `AllowCreate`);
+- an inline field matches no column of the table;
 - a `[Required]` property of the create model has no field;
 - the resource has no key.
 
@@ -88,7 +90,6 @@ The Add button inserts a new row filled from `UseFactory`, at the top of the gri
 resource.AllowCreate(create =>
 {
     create.Fields(fields => fields.Add(department => department.Name));
-    create.UseInlineRow();
     create.EnableAddAnother();
 });
 ```
@@ -99,7 +100,7 @@ resource.AllowCreate(create =>
 
 ## After a save
 
-`AfterSave` on `edit.UseInlineRow(...)` and `create.UseInlineRow(...)` chooses what the grid shows after a row is saved:
+`AfterSave` on `table.EnableInlineEditing(...)` and `table.EnableInlineCreate(...)` chooses what the grid shows after a row is saved:
 
 - `InlineRowAfterSave.ReloadGrid` (default): the current page reloads with its search, scope, sort and paging, so the saved row lands where they put it. When the page shows it, it flashes and keeps focus. When it doesn't (it sorts onto another page, or the search or scope leaves it out), a toast says so (`NotShownMessage`), and focus goes to the Add button, or to the first row after an edit.
 - `InlineRowAfterSave.KeepInPlace`: the saved row stays where it was edited or added until the grid next reloads, and the pager's count is updated. Suits quick entry into small lists.

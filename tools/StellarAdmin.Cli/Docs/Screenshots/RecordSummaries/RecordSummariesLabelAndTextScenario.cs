@@ -16,15 +16,20 @@ public sealed class RecordSummariesLabelAndTextScenario : Scenario
     {
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Destination>(resource =>
-            resource.Index(index => index.EnablePaging())
+            resource.Index(index => index.AddTable("destinations", table => table.EnablePaging()))
         );
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            );
             resource.Summary(summary =>
             {
                 summary.AddText("Code");

@@ -19,7 +19,7 @@ public sealed record ProductPriceCheck(
 
 // Each product the scope and search select, against the average price of its category among them. The table sorts and
 // pages through the handler. SQLite can't aggregate or order decimals, so the rows are worked out here
-public sealed class ProductPriceCheckHandler : IEfCoreLayoutHandler<Product, ProductPriceCheck>
+public sealed class ProductPriceCheckHandler : IEfCoreDataLayoutHandler<Product, ProductPriceCheck>
 {
     public async Task<ResourceListResult<ProductPriceCheck>> ListAsync(
         IQueryable<Product> entities,

@@ -22,30 +22,46 @@ public sealed class RowDetailsProblemsScenario : Scenario
     {
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
-            {
-                index.Columns(RowDetailsBookings.AddColumns);
-                index.EnableRowDetails(
-                    panels =>
+                index.AddTable(
+                    "table",
+                    table =>
                     {
-                        panels.Add("Summary", "_BookingSummary");
-                        panels.Add("Pricing", "_BookingPricing", RowDetailsBookings.Pricing);
-                    },
-                    details =>
-                        details.PanelLayout = ResourceRowDetailPanelLayout.Tabs(
-                            (ResourceRowDetailTabStyle)7
-                        )
-                );
-                index.EnablePaging(paging => paging.PageSize = 10);
-            })
+                        table.Columns(RowDetailsBookings.AddColumns);
+                        table.EnableRowDetails(
+                            panels =>
+                            {
+                                panels.Add("Summary", "_BookingSummary");
+                                panels.Add(
+                                    "Pricing",
+                                    "_BookingPricing",
+                                    RowDetailsBookings.Pricing
+                                );
+                            },
+                            details =>
+                                details.PanelLayout = ResourceRowDetailPanelLayout.Tabs(
+                                    (ResourceRowDetailTabStyle)7
+                                )
+                        );
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                    }
+                )
+            )
         );
         admin.AddResource<Partner>(resource =>
         {
             resource.UseDataSource<PartnerDataSource>();
             resource.Index(index =>
-            {
-                index.Columns(columns => columns.Add(partner => partner.Name));
-                index.EnableRowDetails<BookingHistory, BookingHistoryHandler>("_BookingHistory");
-            });
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(columns => columns.Add(partner => partner.Name));
+                        table.EnableRowDetails<BookingHistory, BookingHistoryHandler>(
+                            "_BookingHistory"
+                        );
+                    }
+                )
+            );
         });
     }
 

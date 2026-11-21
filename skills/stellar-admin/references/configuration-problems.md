@@ -14,7 +14,7 @@ A mistake in the admin panel's configuration never stops the app. The panel work
 The panel works around each mistake in the narrowest way it can, and says what it did. For example:
 
 - A default sort on a column that isn't sortable: the list uses the data source's order.
-- A `PageSize` missing from `PageSizes`: it is added to them. This is info rather than a warning, since the page size still applies.
+- A table's `PageSize` missing from its `PageSizes`: it is added to them. This is info rather than a warning, since the page size still applies.
 - `AllowCreate` with a data source that can't create: there's no New button, and the create page returns 404.
 - A field without a public setter: the field is left out of its form.
 

@@ -17,7 +17,7 @@ public sealed class FieldsLabelHelpTextScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Departure>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("departures", table => table.EnablePaging()));
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                     // The seed's [Display] has no Description, so the field sets the docs example's help text

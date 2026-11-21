@@ -78,6 +78,7 @@ public class ResourceSearchTests
                 resource.Index(index =>
                 {
                     index.EnableSearch(search => search.Placeholder = local ? "Find a lamp" : null);
+                    index.AddTable("table");
                 }),
             admin =>
             {
@@ -85,8 +86,9 @@ public class ResourceSearchTests
                 {
                     admin.ConfigureResourceLabels(labels =>
                         labels.Index(index =>
-                            index.SearchPlaceholder = resource => $"Find {resource.PluralLabel}"
-                        )
+                        {
+                            index.SearchPlaceholder = resource => $"Find {resource.PluralLabel}";
+                        })
                     );
                 }
             }
@@ -213,15 +215,21 @@ public class ResourceSearchTests
         resource.Index(index =>
         {
             index.EnableSearch();
-            index.Columns(columns =>
-                columns.Clear().Add(product => product.Name, column => column.Sortable())
+            index.AddTable(
+                "table",
+                table =>
+                {
+                    table.Columns(columns =>
+                        columns.Clear().Add(product => product.Name, column => column.Sortable())
+                    );
+                    table.DefaultSortBy(product => product.Name);
+                    table.EnablePaging(paging =>
+                    {
+                        paging.PageSize = 2;
+                        paging.PageSizes = [2, 3];
+                    });
+                }
             );
-            index.DefaultSortBy(product => product.Name);
-            index.EnablePaging(paging =>
-            {
-                paging.PageSize = 2;
-                paging.PageSizes = [2, 3];
-            });
         });
 
     private static ProductState CreateState() =>

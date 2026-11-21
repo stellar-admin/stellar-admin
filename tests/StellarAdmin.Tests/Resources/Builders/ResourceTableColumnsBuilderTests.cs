@@ -10,7 +10,7 @@ public class ResourceTableColumnsBuilderTests
     public async Task AddGroup_AddsGroupColumnsToTableInOrder()
     {
         // Arrange
-        var table = new ResourceTableLayoutOptions("table");
+        var table = new ResourceTableDataLayoutOptions("table");
         var sut = new ResourceTableColumnsBuilder<Product>(configure => configure(table));
 
         // Act
@@ -39,7 +39,7 @@ public class ResourceTableColumnsBuilderTests
     public async Task AddGroup_InGroup_NestsGroupInParent()
     {
         // Arrange
-        var table = new ResourceTableLayoutOptions("table");
+        var table = new ResourceTableDataLayoutOptions("table");
         var sut = new ResourceTableColumnsBuilder<Product>(configure => configure(table));
 
         // Act
@@ -65,7 +65,7 @@ public class ResourceTableColumnsBuilderTests
     public async Task AddGroup_WithoutAlign_CentersGroup()
     {
         // Arrange
-        var table = new ResourceTableLayoutOptions("table");
+        var table = new ResourceTableDataLayoutOptions("table");
         var sut = new ResourceTableColumnsBuilder<Product>(configure => configure(table));
 
         // Act
@@ -79,7 +79,7 @@ public class ResourceTableColumnsBuilderTests
     public async Task AddGroup_WithAlign_SetsGroupAlign()
     {
         // Arrange
-        var table = new ResourceTableLayoutOptions("table");
+        var table = new ResourceTableDataLayoutOptions("table");
         var sut = new ResourceTableColumnsBuilder<Product>(configure => configure(table));
 
         // Act
@@ -100,7 +100,7 @@ public class ResourceTableColumnsBuilderTests
     public async Task Clear_WithGroups_RemovesGroupColumns()
     {
         // Arrange
-        var table = new ResourceTableLayoutOptions("table");
+        var table = new ResourceTableDataLayoutOptions("table");
         var sut = new ResourceTableColumnsBuilder<Product>(configure => configure(table));
         sut.AddGroup("Stock", stock => stock.Add(product => product.Quantity));
 

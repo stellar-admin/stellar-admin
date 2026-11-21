@@ -82,11 +82,13 @@ public class ResourceConfigurationTests
         services.AddStellarAdmin(admin =>
             admin.AddEfCoreResource<Product>(resource =>
                 resource.Index(index =>
+                {
                     index.EnableSearch(
                         term => product => product.Name.Contains(term),
                         search => search.Placeholder = "Find products"
-                    )
-                )
+                    );
+                    index.AddTable("table");
+                })
             )
         );
         using var first = services.BuildServiceProvider();

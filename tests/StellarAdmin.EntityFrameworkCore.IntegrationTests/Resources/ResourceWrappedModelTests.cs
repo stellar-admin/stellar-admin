@@ -324,8 +324,16 @@ public class ResourceWrappedModelTests
                         fields.Add(model => model.Product.Name);
                         fields.Add(model => model.Product.Price);
                     });
-                    edit.UseInlineRow(inline => inline.AfterSave = InlineRowAfterSave.KeepInPlace);
                 }
+            );
+            resource.Index(index =>
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.EnableInlineEditing(inline =>
+                            inline.AfterSave = InlineRowAfterSave.KeepInPlace
+                        )
+                )
             );
         });
         using var client = sut.CreateClient();
@@ -355,19 +363,18 @@ public class ResourceWrappedModelTests
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+        {
             resource.AllowCreate<CreateProductModel>(
                 model => model.Product,
                 create =>
-                {
                     create.Fields(fields =>
                     {
                         fields.Add(model => model.Product.Name);
                         fields.Add(model => model.Product.Price);
-                    });
-                    create.UseInlineRow();
-                }
-            )
-        );
+                    })
+            );
+            resource.Index(index => index.AddTable("table", table => table.EnableInlineCreate()));
+        });
 
         // Act
         using var response = await sut.CreateClient().GetAsync("/stellaradmin/products");

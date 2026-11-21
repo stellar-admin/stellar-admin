@@ -19,7 +19,8 @@ internal static class StellarAdminTestHost
         Action<IServiceCollection>? configureServices = null,
         Action<ControllerActionEndpointConventionBuilder>? configureRoute = null,
         Action<WebApplication>? configureApp = null,
-        string environmentName = "Development"
+        string environmentName = "Development",
+        bool defaultTable = true
     ) =>
         CreateAsync(
             new ProductState([]),
@@ -28,7 +29,8 @@ internal static class StellarAdminTestHost
             configureServices,
             configureRoute,
             configureApp,
-            environmentName
+            environmentName,
+            defaultTable
         );
 
     public static async Task<WebApplication> CreateAsync(
@@ -38,7 +40,8 @@ internal static class StellarAdminTestHost
         Action<IServiceCollection>? configureServices = null,
         Action<ControllerActionEndpointConventionBuilder>? configureRoute = null,
         Action<WebApplication>? configureApp = null,
-        string environmentName = "Development"
+        string environmentName = "Development",
+        bool defaultTable = true
     )
     {
         var builder = WebApplication.CreateBuilder(
@@ -59,20 +62,31 @@ internal static class StellarAdminTestHost
             admin.AddResource<Product>(resource =>
             {
                 resource.UseDataSource<ProductDataSource>();
-                resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Add(product => product.Name);
-                        columns.Add(
-                            product => product.Price,
-                            column =>
-                            {
-                                column.Title = "Unit price";
-                                column.UseDisplay<NumberDisplay>(number => number.Format = "0.00");
-                            }
-                        );
-                    })
-                );
+                // The default table, which a test of its own data layouts leaves out
+                if (defaultTable)
+                {
+                    resource.Index(index =>
+                        index.AddTable(
+                            "table",
+                            table =>
+                                table.Columns(columns =>
+                                {
+                                    columns.Add(product => product.Name);
+                                    columns.Add(
+                                        product => product.Price,
+                                        column =>
+                                        {
+                                            column.Title = "Unit price";
+                                            column.UseDisplay<NumberDisplay>(number =>
+                                                number.Format = "0.00"
+                                            );
+                                        }
+                                    );
+                                })
+                        )
+                    );
+                }
+
                 resource.AllowCreate(create =>
                     create.Fields(fields =>
                     {

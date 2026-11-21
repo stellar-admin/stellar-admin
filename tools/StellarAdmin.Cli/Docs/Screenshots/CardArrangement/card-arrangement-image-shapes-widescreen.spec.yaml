@@ -1,0 +1,8 @@
+# The first trip card with a widescreen image, in light and dark
+scenario: card-arrangement-image-shapes-widescreen
+steps:
+  - goto: /stellaradmin/trips
+  - expectVisible: ".sa-resource-card[data-key='1'] img"
+  - screenshot: { name: card-arrangement-image-shapes-widescreen, locator: ".sa-resource-card[data-key='1']", margin: 16 }
+  - colorScheme: dark
+  - screenshot: { name: card-arrangement-image-shapes-widescreen-dark, locator: ".sa-resource-card[data-key='1']", margin: 16 }

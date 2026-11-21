@@ -29,18 +29,6 @@ internal static class UserResourceRegistration
                 });
                 resource.Index(index =>
                 {
-                    index.Columns(columns =>
-                    {
-                        columns.Add(user => user.FirstName, column => column.Sortable());
-                        columns.Add(user => user.LastName, column => column.Sortable());
-                        columns.Add(user => user.Email, column => column.Sortable());
-                        columns.Add(
-                            user => user.Department!.Name,
-                            column => column.Title = "Department"
-                        );
-                        columns.Add(user => user.EmailConfirmed, column => column.Sortable());
-                    });
-                    index.DefaultSortBy(user => user.Email);
                     index.EnableSearch(
                         term =>
                             user =>
@@ -49,7 +37,28 @@ internal static class UserResourceRegistration
                                 || user.LastName.Contains(term),
                         search => search.Placeholder = "Search users..."
                     );
-                    index.EnablePaging();
+                    index.AddTable(
+                        "users",
+                        table =>
+                        {
+                            table.Columns(columns =>
+                            {
+                                columns.Add(user => user.FirstName, column => column.Sortable());
+                                columns.Add(user => user.LastName, column => column.Sortable());
+                                columns.Add(user => user.Email, column => column.Sortable());
+                                columns.Add(
+                                    user => user.Department!.Name,
+                                    column => column.Title = "Department"
+                                );
+                                columns.Add(
+                                    user => user.EmailConfirmed,
+                                    column => column.Sortable()
+                                );
+                            });
+                            table.DefaultSortBy(user => user.Email);
+                            table.EnablePaging();
+                        }
+                    );
                 });
                 resource.AllowCreate<CreateUserModel>(
                     model => model.User,

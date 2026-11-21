@@ -18,18 +18,25 @@ public sealed class ForeignKeysChoiceScenario : Scenario
         admin.AddEfCoreResource<Guide>(resource =>
         {
             resource.UseTitle(guide => guide.FirstName + " " + guide.LastName);
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("guides", table => table.EnablePaging()));
         });
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            );
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
-                    fields.Add(trip => trip.LeadGuideId).UseRadioGroupEditor(radio => radio.Columns(3))
+                    fields
+                        .Add(trip => trip.LeadGuideId)
+                        .UseRadioGroupEditor(radio => radio.Columns(3))
                 )
             );
         });

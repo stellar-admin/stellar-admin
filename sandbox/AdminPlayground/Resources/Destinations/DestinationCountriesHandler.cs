@@ -6,7 +6,7 @@ public sealed record DestinationCountry(string Country, IReadOnlyList<string> De
 
 // The destinations grouped by country. The handler loads its own data, so it would apply a scope or search itself
 public sealed class DestinationCountriesHandler(DestinationDataSource destinations)
-    : IResourceLayoutHandler<DestinationCountry>
+    : IResourceDataLayoutHandler<DestinationCountry>
 {
     public async Task<ResourceListResult<DestinationCountry>> ListAsync(
         ResourceListRequest request,

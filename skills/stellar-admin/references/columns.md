@@ -1,6 +1,6 @@
 # Columns
 
-Index columns are configured in `index.Columns(columns => ...)`. They start empty: only the columns you add are shown, in the order added.
+A table's columns are configured in `table.Columns(columns => ...)`, on the table an index adds with `index.AddTable(key, table => ...)` ([index pages](index-pages.md)). They start empty: only the columns you add are shown, in the order added.
 
 ## Contents
 
@@ -17,7 +17,7 @@ Index columns are configured in `index.Columns(columns => ...)`. They start empt
 ## Adding columns
 
 ```csharp
-index.Columns(columns =>
+table.Columns(columns =>
 {
     columns.Add(booking => booking.Reference);
     columns.Add(booking => booking.DepartureDate, column =>
@@ -90,7 +90,7 @@ columns.Add(booking => booking.Status, column => column.Align = DataGridColumnAl
 `AddGroup(title, group => ...)` puts a header over the columns added in the callback. Groups nest; the header gets a row per level, and a column outside a group spans the group rows.
 
 ```csharp
-index.Columns(columns =>
+table.Columns(columns =>
 {
     columns.Add(booking => booking.Reference);
     columns.AddGroup("Departure", departure =>

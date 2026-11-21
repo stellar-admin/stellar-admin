@@ -1,6 +1,6 @@
 @model IResourceIndexPageViewModel
 
-@* The index page's grid, which its paging, sorting and search replace. A partial layout takes the grid's place, and
+@* The index page's grid, which its paging, sorting and search replace. A partial data layout takes the grid's place, and
    its links and forms navigate normally instead of swapping the grid *@
 <div id="index-page-data-grid"
      hx-boost:inherited="true"
@@ -14,6 +14,10 @@
         <div class="sa-resource-index-partial" hx-boost:inherited="false">
             <partial name="@partialLayout.PartialName" model="partialLayout.Model" />
         </div>
+    }
+    else if (ViewData[ViewDataKeys.IndexCards] is not null)
+    {
+        <partial name="_IndexCards" />
     }
     else
     {

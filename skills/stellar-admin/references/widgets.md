@@ -211,5 +211,4 @@ These are [configuration problems](configuration-problems.md): the widget is lef
 - `Parameters` that don't match the handler, or are missing.
 - `Parameters` or `RefreshInterval` on a widget without a handler (ignored).
 - A `Placement` other than `Top` on the home page (shown in the grid).
-- Widgets on a create or edit form that `UseInlineRow()` puts in the index grid, which has no create or edit page (left out).
 - A `Span` outside 1 to 12 (12), or a `RefreshInterval` under one second (no refresh).

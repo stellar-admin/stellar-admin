@@ -92,7 +92,13 @@ internal static class FormLayoutGalleryRegistration
                 resource.UseDataSource<FieldEditorGalleryDataSource<TRecord>>();
                 resource.UseKey(record => record.Id);
                 resource.Index(index =>
-                    index.Columns(configureColumns ?? (columns => columns.Add(record => record.Id)))
+                    index.AddTable(
+                        "records",
+                        table =>
+                            table.Columns(
+                                configureColumns ?? (columns => columns.Add(record => record.Id))
+                            )
+                    )
                 );
                 resource.AllowCreate(create =>
                 {
@@ -149,51 +155,61 @@ internal static class FormLayoutGalleryRegistration
                 });
                 resource.UseDataSource<FieldEditorGalleryDataSource<DisplayColumnsGallery>>();
                 resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Add(record => record.BookingReference);
-                        columns.Add(record => record.Status);
-                        columns.Add(
-                            record => record.Cabin,
-                            column => column.UseDisplay<BadgeDisplay>()
-                        );
-                        columns.Add(
-                            record => record.IsPaid,
-                            column =>
-                                column.UseDisplay<BooleanDisplay>(boolean =>
-                                {
-                                    boolean.Appearance = BooleanDisplayAppearance.IconAndText;
-                                    boolean.TrueText = "Paid";
-                                    boolean.FalseText = "Unpaid";
-                                })
-                        );
-                        columns.Add(
-                            record => record.Total,
-                            column =>
-                                column.UseDisplay<NumberDisplay>(number => number.Format = "C")
-                        );
-                        columns.Add(
-                            record => record.Departure,
-                            column =>
-                                column.UseDisplay<DateDisplay>(date => date.Format = "ddd d MMM")
-                        );
-                        columns.Add(
-                            record => record.Itinerary,
-                            column => column.UseDisplay<TextDisplay>(text => text.LineClamp = 2)
-                        );
-                        columns.Add(
-                            record => record.UpdatedAt,
-                            column => column.EmptyText = "Never"
-                        );
-                        columns.Add(
-                            record => record.CreatedAt,
-                            column =>
+                    index.AddTable(
+                        "records",
+                        table =>
+                            table.Columns(columns =>
                             {
-                                column.Title = "Created (built-in)";
-                                column.UseBuiltInRendering();
-                            }
-                        );
-                    })
+                                columns.Add(record => record.BookingReference);
+                                columns.Add(record => record.Status);
+                                columns.Add(
+                                    record => record.Cabin,
+                                    column => column.UseDisplay<BadgeDisplay>()
+                                );
+                                columns.Add(
+                                    record => record.IsPaid,
+                                    column =>
+                                        column.UseDisplay<BooleanDisplay>(boolean =>
+                                        {
+                                            boolean.Appearance =
+                                                BooleanDisplayAppearance.IconAndText;
+                                            boolean.TrueText = "Paid";
+                                            boolean.FalseText = "Unpaid";
+                                        })
+                                );
+                                columns.Add(
+                                    record => record.Total,
+                                    column =>
+                                        column.UseDisplay<NumberDisplay>(number =>
+                                            number.Format = "C"
+                                        )
+                                );
+                                columns.Add(
+                                    record => record.Departure,
+                                    column =>
+                                        column.UseDisplay<DateDisplay>(date =>
+                                            date.Format = "ddd d MMM"
+                                        )
+                                );
+                                columns.Add(
+                                    record => record.Itinerary,
+                                    column =>
+                                        column.UseDisplay<TextDisplay>(text => text.LineClamp = 2)
+                                );
+                                columns.Add(
+                                    record => record.UpdatedAt,
+                                    column => column.EmptyText = "Never"
+                                );
+                                columns.Add(
+                                    record => record.CreatedAt,
+                                    column =>
+                                    {
+                                        column.Title = "Created (built-in)";
+                                        column.UseBuiltInRendering();
+                                    }
+                                );
+                            })
+                    )
                 );
             }
         );
@@ -215,12 +231,16 @@ internal static class FormLayoutGalleryRegistration
                 });
                 resource.UseDataSource<LayoutDestinationDataSource>();
                 resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Add(destination => destination.Name);
-                        columns.Add(destination => destination.Code);
-                        columns.Add(destination => destination.Country);
-                    })
+                    index.AddTable(
+                        "destinations",
+                        table =>
+                            table.Columns(columns =>
+                            {
+                                columns.Add(destination => destination.Name);
+                                columns.Add(destination => destination.Code);
+                                columns.Add(destination => destination.Country);
+                            })
+                    )
                 );
                 resource.AllowCreate<CreateLayoutDestinationModel, CreateLayoutDestinationHandler>(
                     create =>

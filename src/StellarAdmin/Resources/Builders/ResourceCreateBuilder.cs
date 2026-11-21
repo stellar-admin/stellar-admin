@@ -152,56 +152,14 @@ public class ResourceCreateBuilder<TModel>
     }
 
     /// <summary>
-    ///     Creates resources in a new row of the index grid instead of on the create page.
-    /// </summary>
-    /// <returns>A builder that configures the inline row.</returns>
-    /// <remarks>
-    ///     Every editable field must match an index column, by name or through
-    ///     <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. Every
-    ///     <c>[Required]</c> model property must have an editable field. The resource needs a key.
-    ///     The create page is not available.
-    /// </remarks>
-    public ResourceInlineCreateBuilder UseInlineRow()
-    {
-        var source = ConfigurationSource.Capture();
-        _configure(options => options.InlineRow ??= new() { Source = source });
-
-        return new(configure => _configure(options => configure(options.InlineRow ??= new())));
-    }
-
-    /// <summary>
-    ///     Creates resources in a new row of the index grid instead of on the create page.
-    /// </summary>
-    /// <param name="configure">A delegate that configures the inline row.</param>
-    /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    /// <remarks>
-    ///     Every editable field must match an index column, by name or through
-    ///     <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. Every
-    ///     <c>[Required]</c> model property must have an editable field. The resource needs a key.
-    ///     The create page is not available.
-    /// </remarks>
-    public ResourceCreateBuilder<TModel> UseInlineRow(Action<ResourceInlineCreateBuilder> configure)
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-
-        configure(UseInlineRow());
-
-        return this;
-    }
-
-    /// <summary>
     ///     Configures the widgets shown on the create page.
     /// </summary>
     /// <param name="configure">A delegate that adds the widgets.</param>
     /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
     ///     A widget's <c>Placement</c> shows it above the form, beside it or below it. Widgets
-    ///     beside the form stay in view as the form scrolls. A resource whose rows are created
-    ///     inline has no create page, so its create widgets are a configuration problem, and
-    ///     aren't shown.
+    ///     beside the form stay in view as the form scrolls. A table's new inline row doesn't
+    ///     show them.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     ///     <paramref name="configure" /> is <see langword="null" />.
@@ -258,7 +216,7 @@ public class ResourceCreateBuilder<TModel>
     ///     <paramref name="propertyName" /> is empty.
     /// </exception>
     /// <remarks>
-    ///     Index columns match the resource's fields without the property's name, so the
+    ///     A table's columns match the resource's fields without the property's name, so the
     ///     <c>Product.Name</c> field is edited inline by the <c>Name</c> column.
     /// </remarks>
     protected void UseResourceProperty(string propertyName)

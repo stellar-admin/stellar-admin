@@ -180,8 +180,12 @@ public class ResourceReferenceTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
         {
             resource.Index(index =>
-                index.Columns(columns =>
-                    columns.Add(product => product.CategoryId, column => column.Sortable())
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.Columns(columns =>
+                            columns.Add(product => product.CategoryId, column => column.Sortable())
+                        )
                 )
             );
         });

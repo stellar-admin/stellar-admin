@@ -8,7 +8,8 @@ namespace StellarAdmin.Cli.Docs.Screenshots.ImageEditor;
 
 public sealed class ImageEditorIntroScenario : Scenario
 {
-    public override string Description => "Tokyo's edit page with its hero image in the dropzone image editor layout.";
+    public override string Description =>
+        "Tokyo's edit page with its hero image in the dropzone image editor layout.";
 
     public override string StartPath => "/stellaradmin/destinations/edit/" + Tokyo;
 
@@ -20,7 +21,7 @@ public sealed class ImageEditorIntroScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Destination>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("destinations", table => table.EnablePaging()));
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                     fields
@@ -28,7 +29,10 @@ public sealed class ImageEditorIntroScenario : Scenario
                         .UseImageEditor(image =>
                         {
                             // Captures don't upload, so the image is never stored
-                            image.StoreImage((file, services, cancellationToken) => Task.FromResult(file.FileName));
+                            image.StoreImage(
+                                (file, services, cancellationToken) =>
+                                    Task.FromResult(file.FileName)
+                            );
                             image.Layout = ImageEditorLayout.Dropzone;
                         })
                 )

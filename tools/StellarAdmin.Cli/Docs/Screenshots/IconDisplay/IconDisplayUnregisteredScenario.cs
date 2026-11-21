@@ -19,7 +19,7 @@ public sealed class IconDisplayUnregisteredScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Trip>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()));
             resource.AllowCreate<TripIconForm, TripIconFormHandler>(create =>
                 create.Fields(fields =>
                     fields
@@ -38,7 +38,9 @@ public sealed class IconDisplayUnregisteredScenario : Scenario
     // The capture only shows the form
     public sealed class TripIconFormHandler : IResourceCreateHandler<TripIconForm>
     {
-        public Task<ResourceOperationResult> CreateAsync(TripIconForm model, CancellationToken cancellationToken) =>
-            Task.FromResult(ResourceOperationResult.Success());
+        public Task<ResourceOperationResult> CreateAsync(
+            TripIconForm model,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(ResourceOperationResult.Success());
     }
 }

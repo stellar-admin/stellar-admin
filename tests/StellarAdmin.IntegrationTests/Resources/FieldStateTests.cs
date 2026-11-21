@@ -380,8 +380,10 @@ public class FieldStateTests
                         fields.Add(product => product.Name).ReadOnly(product => product.Price > 10);
                         fields.Add(product => product.Price);
                     });
-                    edit.UseInlineRow();
                 });
+                resource.Index(index =>
+                    index.AddTable("table", table => table.EnableInlineEditing())
+                );
             }
         );
         using var client = sut.CreateClient();
@@ -414,8 +416,10 @@ public class FieldStateTests
                         fields.Add(product => product.Name).Disabled();
                         fields.Add(product => product.Price);
                     });
-                    edit.UseInlineRow();
                 });
+                resource.Index(index =>
+                    index.AddTable("table", table => table.EnableInlineEditing())
+                );
             }
         );
         using var client = sut.CreateClient();
@@ -504,7 +508,10 @@ public class FieldStateTests
                     resource.UseDataSource<TourDataSource>();
                     resource.UseKey(tour => tour.Id);
                     resource.Index(index =>
-                        index.Columns(columns => columns.Add(tour => tour.Name))
+                        index.AddTable(
+                            "table",
+                            table => table.Columns(columns => columns.Add(tour => tour.Name))
+                        )
                     );
                     resource.AllowEdit(builder => builder.Fields(configureFields));
                 }

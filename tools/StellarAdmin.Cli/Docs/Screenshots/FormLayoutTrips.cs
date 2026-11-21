@@ -11,12 +11,14 @@ internal static class FormLayoutTrips
     // The resources the trip's destination and lead guide lookups select from
     public static void AddRelatedResources(StellarAdminBuilder admin)
     {
-        admin.AddEfCoreResource<Destination>(resource => resource.Index(index => index.EnablePaging()));
+        admin.AddEfCoreResource<Destination>(resource =>
+            resource.Index(index => index.AddTable("destinations", table => table.EnablePaging()))
+        );
         admin.AddEfCoreResource<Guide>(resource =>
         {
             // A guide has no name property for the default title
             resource.UseTitle(guide => guide.FirstName + " " + guide.LastName);
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("guides", table => table.EnablePaging()));
         });
     }
 

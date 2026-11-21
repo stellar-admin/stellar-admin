@@ -31,16 +31,22 @@ public sealed class DisplayTemplatesBookingStatusScenario : Scenario
             resource.UseTitle(booking => booking.Reference);
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                    columns.Add(booking => booking.BookedAt, column => column.Sortable());
-                    columns.Add(booking => booking.Status);
-                });
-                index.DefaultSortByDescending(booking => booking.BookedAt);
-                // Five rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 5);
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                            columns.Add(booking => booking.BookedAt, column => column.Sortable());
+                            columns.Add(booking => booking.Status);
+                        });
+                        table.DefaultSortByDescending(booking => booking.BookedAt);
+                        // Five rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 5);
+                    }
+                );
             });
             resource.AllowView(view =>
                 view.Fields(fields =>
@@ -58,7 +64,10 @@ public sealed class DisplayTemplatesBookingStatusScenario : Scenario
     {
         public void CreateDisplayMetadata(DisplayMetadataProviderContext context)
         {
-            if (context.Key.ContainerType == typeof(Booking) && context.Key.Name == nameof(Booking.Status))
+            if (
+                context.Key.ContainerType == typeof(Booking)
+                && context.Key.Name == nameof(Booking.Status)
+            )
             {
                 context.DisplayMetadata.TemplateHint = "BookingStatus";
             }

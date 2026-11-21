@@ -118,12 +118,19 @@ public class ResourceSortingTests
             state,
             resource =>
                 resource.Index(index =>
-                {
-                    index.Columns(columns =>
-                        columns.Clear().Add(product => product.Name, column => column.Sortable())
-                    );
-                    index.DefaultSortByDescending(product => product.Name);
-                })
+                    index.AddTable(
+                        "table",
+                        table =>
+                        {
+                            table.Columns(columns =>
+                                columns
+                                    .Clear()
+                                    .Add(product => product.Name, column => column.Sortable())
+                            );
+                            table.DefaultSortByDescending(product => product.Name);
+                        }
+                    )
+                )
         );
         using var client = sut.CreateClient();
 
@@ -363,18 +370,22 @@ public class ResourceSortingTests
             state,
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Clear();
-                        columns.Add(
-                            product => product.Price * 2,
-                            column =>
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
                             {
-                                column.Title = "Double price";
-                                column.Sortable(product => product.Price);
-                            }
-                        );
-                    })
+                                columns.Clear();
+                                columns.Add(
+                                    product => product.Price * 2,
+                                    column =>
+                                    {
+                                        column.Title = "Double price";
+                                        column.Sortable(product => product.Price);
+                                    }
+                                );
+                            })
+                    )
                 )
         );
         using var client = sut.CreateClient();
@@ -408,15 +419,19 @@ public class ResourceSortingTests
             CreateState(),
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns =>
-                        columns.Add(
-                            product => product.Price * 2,
-                            column =>
-                            {
-                                column.Title = "Double price";
-                                column.Sortable();
-                            }
-                        )
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
+                                columns.Add(
+                                    product => product.Price * 2,
+                                    column =>
+                                    {
+                                        column.Title = "Double price";
+                                        column.Sortable();
+                                    }
+                                )
+                            )
                     )
                 )
         );
@@ -444,18 +459,22 @@ public class ResourceSortingTests
             CreateState(),
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Add(product => product.Name, column => column.Sortable());
-                        columns.Add(
-                            product => product.Name.ToUpper(),
-                            column =>
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
                             {
-                                column.Title = "Name";
-                                column.Sortable(product => product.Name);
-                            }
-                        );
-                    })
+                                columns.Add(product => product.Name, column => column.Sortable());
+                                columns.Add(
+                                    product => product.Name.ToUpper(),
+                                    column =>
+                                    {
+                                        column.Title = "Name";
+                                        column.Sortable(product => product.Name);
+                                    }
+                                );
+                            })
+                    )
                 )
         );
 
@@ -474,21 +493,26 @@ public class ResourceSortingTests
 
     private static void ConfigureSorting(ResourceBuilder<Product> resource) =>
         resource.Index(index =>
-        {
-            index.Columns(columns =>
-            {
-                columns.Clear();
-                columns.Add(product => product.Name, column => column.Sortable());
-                columns.Add(product => product.Price, column => column.Sortable());
-                columns.Add(product => product.Id);
-            });
-            index.DefaultSortBy(product => product.Name);
-            index.EnablePaging(paging =>
-            {
-                paging.PageSize = 2;
-                paging.PageSizes = [2, 3];
-            });
-        });
+            index.AddTable(
+                "table",
+                table =>
+                {
+                    table.Columns(columns =>
+                    {
+                        columns.Clear();
+                        columns.Add(product => product.Name, column => column.Sortable());
+                        columns.Add(product => product.Price, column => column.Sortable());
+                        columns.Add(product => product.Id);
+                    });
+                    table.DefaultSortBy(product => product.Name);
+                    table.EnablePaging(paging =>
+                    {
+                        paging.PageSize = 2;
+                        paging.PageSizes = [2, 3];
+                    });
+                }
+            )
+        );
 
     private static ProductState CreateState() =>
         new([

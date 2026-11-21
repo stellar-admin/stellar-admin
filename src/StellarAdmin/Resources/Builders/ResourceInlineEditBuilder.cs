@@ -3,7 +3,7 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures editing a resource in its index grid row.
+///     Configures editing resources in their row of a table.
 /// </summary>
 public sealed class ResourceInlineEditBuilder
 {

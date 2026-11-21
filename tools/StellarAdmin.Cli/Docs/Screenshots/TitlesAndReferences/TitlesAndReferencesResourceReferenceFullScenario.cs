@@ -21,15 +21,20 @@ public sealed class TitlesAndReferencesResourceReferenceFullScenario : Scenario
             resource.Reference(reference =>
                 reference.UseDescription(guide => guide.Email).UseAvatar(guide => guide.PhotoUrl)
             );
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("guides", table => table.EnablePaging()));
         });
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            );
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {

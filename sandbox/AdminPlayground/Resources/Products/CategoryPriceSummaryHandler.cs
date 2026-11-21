@@ -17,7 +17,7 @@ public sealed record CategoryPriceSummary(
 // Summarizes the prices of the products the scope and search select, per category. The query already has the scope and
 // search applied, and reads each product's category
 public sealed class CategoryPriceSummaryHandler
-    : IEfCoreLayoutHandler<Product, CategoryPriceSummary>
+    : IEfCoreDataLayoutHandler<Product, CategoryPriceSummary>
 {
     public async Task<ResourceListResult<CategoryPriceSummary>> ListAsync(
         IQueryable<Product> entities,

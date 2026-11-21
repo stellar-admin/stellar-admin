@@ -19,24 +19,30 @@ public sealed class DisplaysGridScenario : Scenario
         admin.AddEfCoreResource<Traveller>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(traveller => traveller.FirstName);
-                    columns.Add(traveller => traveller.LastName);
-                    columns.Add(traveller => traveller.Email);
-                    columns.Add(
-                        traveller => traveller.MarketingOptIn,
-                        column =>
-                            column.UseDisplay<BooleanDisplay>(flag =>
-                            {
-                                flag.Appearance = BooleanDisplayAppearance.Text;
-                                flag.TrueText = "Subscribed";
-                                flag.FalseText = "Not subscribed";
-                            })
-                    );
-                });
-                // Five rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 5);
+                index.AddTable(
+                    "travellers",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(traveller => traveller.FirstName);
+                            columns.Add(traveller => traveller.LastName);
+                            columns.Add(traveller => traveller.Email);
+                            columns.Add(
+                                traveller => traveller.MarketingOptIn,
+                                column =>
+                                    column.UseDisplay<BooleanDisplay>(flag =>
+                                    {
+                                        flag.Appearance = BooleanDisplayAppearance.Text;
+                                        flag.TrueText = "Subscribed";
+                                        flag.FalseText = "Not subscribed";
+                                    })
+                            );
+                        });
+                        // Five rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 5);
+                    }
+                );
             })
         );
     }

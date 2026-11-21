@@ -17,7 +17,10 @@ public class ValueTextCheckTests
         // Arrange
         using var provider = CreateProvider(resource =>
             resource.Index(index =>
-                index.Columns(columns => columns.Add(tour => tour.Destinations))
+                index.AddTable(
+                    "table",
+                    table => table.Columns(columns => columns.Add(tour => tour.Destinations))
+                )
             )
         );
 
@@ -40,7 +43,12 @@ public class ValueTextCheckTests
     {
         // Arrange
         using var provider = CreateProvider(resource =>
-            resource.Index(index => index.Columns(columns => columns.Add(tour => tour.Country)))
+            resource.Index(index =>
+                index.AddTable(
+                    "table",
+                    table => table.Columns(columns => columns.Add(tour => tour.Country))
+                )
+            )
         );
 
         // Act
@@ -64,11 +72,15 @@ public class ValueTextCheckTests
         // Arrange
         using var provider = CreateProvider(resource =>
             resource.Index(index =>
-                index.Columns(columns =>
-                    columns.Add(
-                        tour => tour.Destinations,
-                        column => column.UseDisplay<BadgeDisplay>()
-                    )
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.Columns(columns =>
+                            columns.Add(
+                                tour => tour.Destinations,
+                                column => column.UseDisplay<BadgeDisplay>()
+                            )
+                        )
                 )
             )
         );
@@ -135,28 +147,35 @@ public class ValueTextCheckTests
         // Arrange
         using var provider = CreateProvider(resource =>
             resource.Index(index =>
-                index.Columns(columns =>
-                {
-                    columns.Add(
-                        tour => tour.Destinations,
-                        column =>
-                            column.UseDisplay<BadgeDisplay>(badge =>
-                                badge.UseText<Destination>(destination => destination.Name)
-                            )
-                    );
-                    columns.Add(
-                        tour => tour.Country,
-                        column =>
-                            column.UseDisplay<BadgeDisplay>(badge =>
-                                badge.UseText<Country>(country => country.Name)
-                            )
-                    );
-                    columns.Add(tour => tour.Guides, column => column.UseDisplay<GuideDisplay>());
-                    columns.Add(tour => tour.Stops);
-                    columns.Add(tour => tour.Highlights);
-                    columns.Add(tour => tour.Days);
-                    columns.Add(tour => tour.Leader);
-                })
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.Columns(columns =>
+                        {
+                            columns.Add(
+                                tour => tour.Destinations,
+                                column =>
+                                    column.UseDisplay<BadgeDisplay>(badge =>
+                                        badge.UseText<Destination>(destination => destination.Name)
+                                    )
+                            );
+                            columns.Add(
+                                tour => tour.Country,
+                                column =>
+                                    column.UseDisplay<BadgeDisplay>(badge =>
+                                        badge.UseText<Country>(country => country.Name)
+                                    )
+                            );
+                            columns.Add(
+                                tour => tour.Guides,
+                                column => column.UseDisplay<GuideDisplay>()
+                            );
+                            columns.Add(tour => tour.Stops);
+                            columns.Add(tour => tour.Highlights);
+                            columns.Add(tour => tour.Days);
+                            columns.Add(tour => tour.Leader);
+                        })
+                )
             )
         );
 
@@ -174,7 +193,10 @@ public class ValueTextCheckTests
         using var provider = CreateProvider(
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns => columns.Add(tour => tour.Country))
+                    index.AddTable(
+                        "table",
+                        table => table.Columns(columns => columns.Add(tour => tour.Country))
+                    )
                 ),
             admin => admin.AddResource<Country>()
         );
@@ -200,11 +222,15 @@ public class ValueTextCheckTests
         using var provider = CreateProvider(
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns =>
-                        columns.Add(
-                            tour => tour.Destinations,
-                            column => column.UseDisplay<BadgeDisplay>()
-                        )
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
+                                columns.Add(
+                                    tour => tour.Destinations,
+                                    column => column.UseDisplay<BadgeDisplay>()
+                                )
+                            )
                     )
                 ),
             admin => admin.AddResource<Destination>()
@@ -224,7 +250,10 @@ public class ValueTextCheckTests
         using var provider = CreateProvider(
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns => columns.Add(tour => tour.Destinations))
+                    index.AddTable(
+                        "table",
+                        table => table.Columns(columns => columns.Add(tour => tour.Destinations))
+                    )
                 ),
             admin => admin.AddResource<Destination>()
         );

@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Card layout prototype (2026-11-19): the card in the index page's Cards layout, built from a fixed set of parts
+         a developer fills from resource properties (image, title, description, badge, fields, orientation). Actions,
+         selection, click-through and the grid are fixed. Cards sit inside the list card (settled in index-views.html).
+         Build both libraries first (npm run build in src/StellarAdmin.UI/Client and src/StellarAdmin/Client) and serve
+         the repo root over HTTP. -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Card layout</title>
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css">
+    <link rel="stylesheet" id="theme">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400..700&family=Figtree:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <script type="module" src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <!-- Candidate CSS, written as the library would write it -->
+    <style>
+        @layer sa.components {
+            /* The grid, inside the list card */
+            .sa-resource-cards {
+                --_min: 16rem;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(min(var(--_min), 100%), 1fr));
+                gap: calc(4 * var(--sa-unit));
+                padding: var(--sa-unit) var(--_card-p) var(--_card-p);
+                &:has(> [data-orientation="horizontal"]) { --_min: 22rem; }
+                container-type: inline-size;
+            }
+
+            /* One card */
+            .sa-resource-card {
+                --_card-p: var(--sa-space-container-sm);
+                --_card-gap: calc(3 * var(--sa-unit));
+                --_ratio: 16 / 9;
+                position: relative;
+                transition: border-color var(--sa-motion-fast, .15s), box-shadow var(--sa-motion-fast, .15s);
+                &:has(> .sa-resource-card-media:first-child) { padding-top: 0; }
+                & .sa-card-header { min-width: 0; }
+                & .sa-card-header > * { min-width: 0; }
+                & .sa-card-title { display: flex; align-items: center; gap: calc(2 * var(--sa-unit)); min-width: 0; }
+                & .sa-card-title > a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: inherit; text-decoration: none; }
+                & .sa-card-description { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+                /* The card opens the View page: a stretched title link, with the menu and checkbox above it */
+                & .sa-card-title > a::after { content: ""; position: absolute; inset: 0; }
+                & :is(.sa-card-action, .sa-resource-card-select) { position: relative; z-index: 1; }
+                & .sa-resource-card-on-image { z-index: 1; }
+                &:is(:hover, [data-force-hover]) { border-color: var(--sa-color-line-control); box-shadow: var(--sa-shadow-raised); }
+                /* Keyboard focus on the title link rings the whole card, as a focused button is ringed */
+                &:is(:has(.sa-card-title > a:focus-visible), [data-force-focus]) { border-color: var(--sa-focus-border); box-shadow: var(--sa-focus-shadow); }
+                & .sa-card-title > a:focus-visible { outline: none; }
+
+                /* Selected (bulk actions) */
+                &:has(.sa-resource-card-select :checked) {
+                    border-color: var(--sa-color-accent);
+                    box-shadow: 0 0 0 1px var(--sa-color-accent), var(--sa-shadow-container);
+                }
+            }
+
+            /* Image */
+            .sa-resource-card-media {
+                position: relative;
+                flex: none;
+                aspect-ratio: var(--_ratio);
+                overflow: hidden;
+                background: var(--sa-color-tint);
+                & > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+                & > .sa-resource-card-placeholder { display: grid; place-items: center; height: 100%; color: var(--sa-color-ink-muted); & svg { width: 1.75rem; height: 1.75rem; opacity: .6; } }
+            }
+            .sa-resource-card[data-shape="banner"] { --_ratio: 21 / 9; }
+            .sa-resource-card[data-shape="widescreen"] { --_ratio: 16 / 9; }
+            .sa-resource-card[data-shape="landscape"] { --_ratio: 4 / 3; }
+            .sa-resource-card[data-shape="square"] { --_ratio: 1; }
+
+            /* What sits on the image: checkbox top left; badge (and the menu, when the title is on the image) top right */
+            .sa-resource-card-on-image {
+                position: absolute;
+                inset: calc(2 * var(--sa-unit)) calc(2 * var(--sa-unit)) auto;
+                display: flex;
+                align-items: start;
+                gap: var(--sa-unit);
+                pointer-events: none;
+                & > * { pointer-events: auto; }
+                & > .end { margin-inline-start: auto; display: flex; align-items: center; gap: var(--sa-unit); }
+                & .sa-badge { background: var(--sa-color-surface); color: var(--sa-color-ink); border-color: transparent; box-shadow: var(--sa-shadow-control); }
+                & .sa-button { background: color-mix(in oklab, var(--sa-color-surface) 92%, transparent); box-shadow: var(--sa-shadow-control); }
+                & .sa-checkbox:not(:checked) { background: var(--sa-color-surface); }
+            }
+
+            /* Title over the image (4:3 unless a shape is set) */
+            .sa-resource-card[data-image-placement="overlay"] {
+                &:not([data-shape]) { --_ratio: 4 / 3; }
+                & > .sa-resource-card-media > .sa-card-header {
+                    position: absolute;
+                    inset: auto 0 0;
+                    padding: calc(10 * var(--sa-unit)) var(--_card-p) var(--_card-p);
+                    background: linear-gradient(to top, rgb(0 0 0 / .72), rgb(0 0 0 / .35) 60%, transparent);
+                    color: white;
+                    & .sa-card-description { color: rgb(255 255 255 / .8); }
+                }
+            }
+
+            /* Horizontal: the image beside the content */
+            .sa-resource-card[data-orientation="horizontal"] {
+                display: grid;
+                grid-template-columns: 7.5rem minmax(0, 1fr);
+                padding: 0;
+                gap: 0;
+                & > .sa-resource-card-media { aspect-ratio: auto; height: 100%; }
+                & > .sa-resource-card-body { display: flex; flex-direction: column; gap: var(--_card-gap); padding-block: var(--_card-p); min-width: 0; }
+            }
+
+            /* Fields: label / value rows, values from the display templates */
+            .sa-resource-card-fields {
+                display: grid;
+                grid-template-columns: auto minmax(0, 1fr);
+                gap: calc(1.5 * var(--sa-unit)) calc(4 * var(--sa-unit));
+                margin: 0;
+                font-size: var(--sa-text-sm);
+                & dt { color: var(--sa-color-ink-muted); white-space: nowrap; }
+                & dd { margin: 0; text-align: end; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            }
+
+            /* Field layouts */
+            .sa-resource-card-fields[data-layout="grid"] {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: calc(2.5 * var(--sa-unit)) calc(4 * var(--sa-unit));
+                & > div { display: grid; gap: 1px; min-width: 0; }
+                & dt { font-size: var(--sa-text-xs); }
+                & dd { text-align: start; }
+            }
+
+            /* Narrow (under 30rem of grid): horizontal cards stack vertically */
+            @container (width < 30rem) {
+                .sa-resource-card[data-orientation="horizontal"] {
+                    display: flex;
+                    flex-direction: column;
+                    & > .sa-resource-card-media { aspect-ratio: var(--_ratio); height: auto; }
+                    & > .sa-resource-card-body { padding-block: var(--_card-gap) var(--_card-p); }
+                }
+            }
+
+            /* Stats: a strip of 2–4 short values, value over label, above the fields */
+            .sa-resource-card-stats {
+                display: flex;
+                margin: 0;
+                & > div { flex: 1 1 auto; display: flex; flex-direction: column-reverse; gap: 1px; min-width: 0; padding-inline: calc(3 * var(--sa-unit)); border-inline-start: 1px solid var(--sa-color-line); }
+                & > div:first-child { padding-inline-start: 0; border-inline-start: 0; }
+                & dd { margin: 0; font-size: calc(1.25 * var(--sa-text-base)); font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                & dt { font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                & .rating svg { width: 1rem; height: 1rem; }
+            }
+
+            /* Footer actions: buttons, with the rest in a menu at the end */
+            .sa-resource-card-actions > .sa-card-action-menu { margin-inline-start: auto; }
+            .sa-resource-card:has(> .sa-card-footer) { padding-bottom: 0; }
+            .sa-resource-card[data-orientation="horizontal"] .sa-card-footer { margin-top: auto; }
+        }
+
+        /* ---- Prototype scaffolding (not extracted) ---- */
+        body { margin: 0; padding: 2rem 2rem 6rem; background: var(--sa-color-surface-sunken); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+        .intro { max-width: 62rem; margin-bottom: 2rem; }
+        .intro h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 .5rem; }
+        .intro p { color: var(--sa-color-ink-muted); margin: .25rem 0; font-size: .9rem; }
+        .intro b { color: var(--sa-color-ink); }
+        section { margin-bottom: 3rem; }
+        section > h2 { font-size: 1.1rem; font-weight: 600; margin: 0 0 .25rem; }
+        section > p { color: var(--sa-color-ink-muted); margin: 0 0 1rem; font-size: .875rem; max-width: 62rem; }
+        .strips { display: grid; gap: 2rem; }
+        figure { margin: 0; }
+        figcaption { font-size: .85rem; color: var(--sa-color-ink-muted); margin-bottom: .5rem; max-width: 70rem; }
+        figcaption b { color: var(--sa-color-ink); }
+        .config { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
+        .config code { font: 12px/1.4 var(--sa-font-mono, monospace); padding: 2px 6px; border-radius: 4px; background: var(--sa-color-surface); border: 1px solid var(--sa-color-line); color: var(--sa-color-ink); }
+        .config code i { font-style: normal; color: var(--sa-color-ink-muted); }
+        .frame { border: 1px solid var(--sa-color-line); border-radius: 10px; overflow: hidden; background: var(--sa-color-canvas, var(--sa-color-surface)); padding: 1.5rem; }
+        .ctl { position: fixed; right: 1rem; bottom: 1rem; z-index: 50; display: flex; flex-wrap: wrap; gap: .5rem .75rem; align-items: center; padding: .5rem .75rem; border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-surface); box-shadow: 0 4px 16px rgb(0 0 0 / .12); font-size: .8rem; }
+        .ctl label { display: flex; gap: .35rem; align-items: center; }
+        .ctl select { font: inherit; }
+        .tag { display: inline-block; min-width: 1.6em; font-weight: 700; color: var(--sa-color-ink); }
+        .status-dot { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%; flex: none; background: var(--_dot, var(--sa-color-ink-muted)); }
+        [data-status="Published"] { --_dot: var(--sa-color-success); }
+        [data-status="Draft"] { --_dot: var(--sa-color-warning); }
+        .rating { display: inline-flex; align-items: center; gap: 3px; font-variant-numeric: tabular-nums; & svg { width: .8rem; height: .8rem; fill: var(--sa-color-warning); stroke: var(--sa-color-warning); } }
+        .list-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: var(--_card-p) var(--_card-p) 0; font-size: var(--sa-text-sm); color: var(--sa-color-ink-muted); & b { color: var(--sa-color-ink); } }
+
+        /* Anatomy: numbered markers on the parts and a key beside the card */
+        .mock-tip { position: relative; }
+        .mock-tip::after { content: attr(data-tip); position: absolute; z-index: 5; inset-inline-end: 0; top: calc(100% + 2px); padding: 3px 7px; border: 1px solid #999; background: #fff; color: #111; font: 12px/1.4 system-ui, sans-serif; white-space: nowrap; box-shadow: 0 2px 6px rgb(0 0 0 / .2); }
+        .narrow { width: 360px; }
+        .variants { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1.25rem 1rem; padding: var(--_card-p); align-items: start; }
+        .variant { display: grid; gap: .5rem; min-width: 0; }
+        .variant > header { font-size: .8rem; color: var(--sa-color-ink-muted); line-height: 1.6; }
+        .variant > header b { color: var(--sa-color-ink); font-weight: 600; }
+        .variant > header code { font: 11px/1.4 var(--sa-font-mono, monospace); padding: 1px 5px; border-radius: 4px; background: var(--sa-color-surface-subtle); border: 1px solid var(--sa-color-line); color: var(--sa-color-ink); }
+        .anatomy { display: grid; grid-template-columns: minmax(16rem, 20rem) 1fr; gap: 2.5rem; align-items: start; }
+        .anatomy [data-n] { position: relative; }
+        .anatomy :is(.sa-card-title > a, .sa-card-description) { overflow: visible; }
+        .anatomy .sa-resource-card { --_card-p: 2.25rem; }
+        .anatomy .sa-card-header [data-n]::before, .anatomy :is(.sa-resource-card-fields, .sa-resource-card-stats)[data-n]::before { left: -28px; top: 1px; }
+        .anatomy .sa-card-action [data-n]::before { left: auto; right: -26px; top: 6px; }
+        .anatomy .sa-card-title > a::after { display: none; }
+        .anatomy .sa-resource-card-media[data-n] { position: relative; }
+        .anatomy [data-n]::before {
+            content: attr(data-n); position: absolute; z-index: 3; top: -7px; left: -12px;
+            display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+            background: var(--_marker, oklch(0.6 0.2 300)); color: white; font: 600 11px/1 var(--sa-font-sans); box-shadow: 0 0 0 2px var(--sa-color-surface);
+        }
+        .anatomy [data-n="8"] { --_marker: oklch(0.55 0 0); }
+        .anatomy .sa-resource-card-media[data-n]::before { top: 50%; left: 50%; translate: -50% -50%; width: 22px; height: 22px; font-size: 12px; }
+        .anatomy .sa-resource-card-on-image [data-n]::before { top: auto; bottom: -14px; left: -8px; }
+        .key { display: grid; gap: .6rem; font-size: .875rem; margin: 0; padding: 0; list-style: none; }
+        .key li { display: grid; grid-template-columns: 22px 1fr; gap: .6rem; align-items: start; }
+        .key li > span { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: oklch(0.6 0.2 300); color: white; font: 600 11px/1 var(--sa-font-sans); }
+        .key li[data-fixed] > span { background: oklch(0.55 0 0); }
+        .key b { font-weight: 600; }
+        .key small { display: block; color: var(--sa-color-ink-muted); font-size: .8rem; margin-top: 1px; }
+        .key h3 { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--sa-color-ink-muted); margin: .5rem 0 0; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="intro">
+    <h1>Card layout</h1>
+    <p>The card in the index page's <b>Cards</b> layout. A developer fills a fixed set of parts from the resource's properties (<b>image</b>, <b>title</b>, <b>description</b>, <b>badge</b>, <b>stats</b>, <b>fields</b>) and picks the <b>image shape</b>, the <b>image placement</b>, the <b>orientation</b>, the <b>field layout</b> and the <b>actions placement</b>. Selection, click-through and the grid come from the index page and have no options.</p>
+    <p>The cards sit inside the list card with the scopes, search and pager, as the table does. Below, each option is shown once on the same record, so only that option changes.</p>
+</div>
+
+<section>
+    <h2>1. The parts</h2>
+    <p>One destination card with every part filled (padded wider here to make room for the markers). Purple parts are configured; grey parts are fixed.</p>
+    <div class="frame"><div class="anatomy" id="anatomy"></div></div>
+</section>
+
+<section>
+    <h2>2. Image placement and orientation</h2>
+    <div class="frame" id="placement"></div>
+</section>
+
+<section>
+    <h2>3. Image shape</h2>
+    <div class="frame" id="shape"></div>
+</section>
+
+<section>
+    <h2>4. Field layout</h2>
+    <p>The same four fields two ways. <b>Rows</b> reads best for any field; <b>grid</b> trades some of that for height.</p>
+    <div class="frame" id="fields"></div>
+</section>
+
+<section>
+    <h2>5. Stats</h2>
+    <p>A separate part above the fields, for 2–4 short values (counts, prices, ratings). Either part can be left out, and the fields keep their own layout.</p>
+    <div class="frame" id="stats"></div>
+</section>
+
+<section>
+    <h2>6. Actions placement</h2>
+    <p>One set of row actions (here Edit, Publish, Delete) rendered in either place. In the <b>menu</b> they all go in the ⋯ menu in the header. In the <b>footer</b>, the first two are buttons and the rest go in a ⋯ menu at the end of the footer, so the header has no menu.</p>
+    <div class="frame" id="actions"></div>
+</section>
+
+<section>
+    <h2>7. Fixed behaviour</h2>
+    <p>With bulk actions on the index, every card gets a checkbox. A keyboard user tabbing to a card gets the focus ring around the whole card, since the title link covers it; the checkbox, menu and footer buttons are separate tab stops with their own rings. A value too long for its space ends in "…" and shows in full on hover (the browser's own tooltip, mocked here so the screenshot shows it).</p>
+    <div class="frame" id="fixed"></div>
+</section>
+
+<section>
+    <h2>8. Narrow screens</h2>
+    <p>When the grid is under 30rem wide, a horizontal card stacks like a vertical one, with the image on top. This is a 360px phone with the cards configured horizontal; section 2 shows the same configuration wide.</p>
+    <div class="frame"><div class="narrow" id="narrow"></div></div>
+</section>
+
+<section>
+    <h2>9. Title over the image: which shape by default</h2>
+    <p>The same overlay card twice. Built now: the title sits over the image in the image's shape, which defaults to widescreen (16:9). The prototype's earlier default: an overlay card without a shape set is 4:3, taller, so the shade and the title cover less of the photo. A shape set explicitly wins either way.</p>
+    <div class="frame" id="overlay-shape"></div>
+</section>
+
+<div class="ctl">
+    <label>Theme
+        <select id="theme-picker">
+            <option value="">Default</option>
+            <option value="ops">Ops</option>
+            <option value="soft">Soft</option>
+            <option value="ledger">Ledger</option>
+        </select>
+    </label>
+    <label><input type="checkbox" id="dark-toggle"> Dark</label>
+    <label>Density
+        <select id="density-picker">
+            <option value="">Default</option>
+            <option value="compact">Compact</option>
+            <option value="comfortable">Comfortable</option>
+        </select>
+    </label>
+</div>
+
+<script type="module">
+    /* ---------- Helpers ---------- */
+    const ICONS = {
+        more: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+        star: '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>',
+        image: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+        check: '<path d="M20 6 9 17l-5-5"/>',
+        pencil: '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
+        send: '<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>',
+    };
+    const icon = (name, cls = "") => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${cls ? `class="${cls}"` : ""}>${ICONS[name]}</svg>`;
+    const btn = (label, { variant = "outline", size = "sm", iconName, attrs = "", cls = "" } = {}) =>
+        `<button type="button" data-slot="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}${cls ? " " + cls : ""}" ${attrs}>${iconName ? icon(iconName) : ""}${label}</button>`;
+    const menu = (variant = "ghost", cls = "") => btn("", { variant, size: "icon-sm", iconName: "more", attrs: 'aria-label="More actions"', cls });
+    const dot = (s) => `<span class="status-dot" data-status="${s}"></span>`;
+    const badge = (s) => `<span data-slot="badge" class="sa-badge" data-variant="outline">${dot(s)}${s}</span>`;
+    const checkbox = (label, checked) => `<span class="sa-input-control-wrapper sa-resource-card-select"><input type="checkbox" data-slot="checkbox" class="sa-checkbox" aria-label="Select ${label}" ${checked ? "checked" : ""}><span class="sa-checkbox-indicator">${icon("check", "sa-checkbox-indicator-icon")}</span></span>`;
+    const money = (v) => "$" + v.toLocaleString("en-US");
+    const rating = (r) => `<span class="rating">${icon("star")}${r.toFixed(1)}</span>`;
+    const n = (k, on) => (on ? ` data-n="${k}"` : "");
+
+    /* ---------- Voyager Travel data ---------- */
+    const IMG = "../../tests/StellarAdmin.ScenarioTesting.Host/wwwroot/images";
+    const PG = "../AdminPlayground/wwwroot/images";
+    const GUIDE = (i) => `${IMG}/avatars/guides/guide-${String(i).padStart(2, "0")}.webp`;
+    const KYOTO = { Name: "Kyoto", Region: "Kansai, Japan", Photo: `${PG}/kyoto.jpg`, Status: "Published", Tours: 14, From: 2890, Season: "Mar – May", Guide: "Kenji Watanabe", Rating: 4.8 };
+    const CAPE = { Name: "Cape Town", Region: "Western Cape, South Africa", Photo: `${PG}/cape-town.jpg`, Status: "Published", Tours: 9, From: 2190, Season: "Nov – Mar", Guide: "Amara Okafor", Rating: 4.7 };
+    const AMALFI = { Name: "Amalfi Coast", Region: "Campania, Italy", Photo: `${IMG}/destinations/amalfi-coast.webp`, Status: "Draft", Tours: 6, From: 3450, Season: "May – Sep", Guide: "Sofia Rossi", Rating: 4.6 };
+    const KENJI = { Name: "Kenji Watanabe", Base: "Kyoto, Japan", Photo: GUIDE(3), Status: "Published", Languages: "Japanese, English", ToursLed: 38, Rating: 4.9 };
+    /* What a display template would render for each field */
+    const DISPLAY = { From: money, Rating: rating };
+    const LABELS = { From: "From", Tours: "Tours", Season: "Best season", Guide: "Lead guide", Languages: "Languages", ToursLed: "Tours led", Rating: "Rating" };
+    const TEXT = (f, v) => (f === "From" ? money(v) : String(v));
+    const LONG = { ...AMALFI, Season: "Late April – early October", Guide: "Alessandra Bianchi-Montefiori" };
+    const ACTIONS = [{ label: "Edit", icon: "pencil" }, { label: "Publish", icon: "send" }, { label: "Delete" }];
+
+    /* ---------- The card, from a configuration ----------
+       cfg: { image, shape, placement: "top" | "overlay", orientation: "vertical" | "horizontal",
+              title, description, badge, stats: [], fields: [], fieldLayout: "rows" | "grid", actions: "menu" | "footer" }
+       index: { bulk } is the index page's (fixed behaviour); st is prototype-only state. */
+    function card(r, cfg, index = {}, st = {}) {
+        const a = !!st.anatomy;
+        const horizontal = cfg.orientation === "horizontal";
+        const overlay = cfg.placement === "overlay" && !horizontal;
+        const hasImage = !!cfg.image;
+        const badgeOnImage = hasImage && !horizontal;
+        const footerActions = cfg.actions === "footer";
+        const select = index.bulk ? `<span${n("8", a)}>${checkbox(r[cfg.title], st.checked)}</span>` : "";
+        const menuEl = (variant) => `<span${n("7", a)}>${menu(variant)}</span>`;
+        const badgeEl = cfg.badge ? `<span${n("4", a)}>${badge(r[cfg.badge])}</span>` : "";
+        const headerMenu = !footerActions && !overlay;
+
+        const header = `<div data-slot="card-header" class="sa-card-header">
+                <div data-slot="card-title" class="sa-card-title">${!hasImage ? select : ""}<a href="#" title="${r[cfg.title]}"${n("2", a)}>${r[cfg.title]}</a>${badgeOnImage ? "" : badgeEl}</div>
+                ${cfg.description ? `<div data-slot="card-description" class="sa-card-description"><span title="${r[cfg.description]}"${n("3", a)}>${r[cfg.description]}</span></div>` : ""}
+                ${headerMenu ? `<div data-slot="card-action" class="sa-card-action">${menuEl("ghost")}</div>` : ""}
+            </div>`;
+        const layout = cfg.fieldLayout ?? "rows";
+        /* Every value carries its full text in a title, so a cut-off value is never lost */
+        const pair = (f) => `<dt title="${LABELS[f] ?? f}">${LABELS[f] ?? f}</dt><dd title="${TEXT(f, r[f])}">${(DISPLAY[f] ?? String)(r[f])}</dd>`;
+        const wrap = (f) => `<div${st.tip === f ? ` class="mock-tip" data-tip="${TEXT(f, r[f])}"` : ""}>${pair(f)}</div>`;
+        const fieldItems = layout === "rows" ? cfg.fields.map(pair).join("") : cfg.fields.map(wrap).join("");
+        const fields = cfg.fields?.length
+            ? `<div data-slot="card-content" class="sa-card-content"><dl class="sa-resource-card-fields" data-layout="${layout}"${n("6", a)}>${fieldItems}</dl></div>`
+            : "";
+        const stats = cfg.stats?.length
+            ? `<div data-slot="card-content" class="sa-card-content"><dl class="sa-resource-card-stats"${n("5", a)}>${cfg.stats.map(wrap).join("")}</dl></div>`
+            : "";
+        const footer = footerActions
+            ? `<div data-slot="card-footer" class="sa-card-footer sa-resource-card-actions">${ACTIONS.slice(0, 2).map((x) => btn(x.label, { iconName: x.icon })).join("")}${ACTIONS.length > 2 ? `<span class="sa-card-action-menu">${menu("ghost")}</span>` : ""}</div>`
+            : "";
+        const onImage = horizontal
+            ? (select ? `<div class="sa-resource-card-on-image">${select}</div>` : "")
+            : `<div class="sa-resource-card-on-image">${select}<span class="end">${badgeOnImage ? badgeEl : ""}${overlay && !footerActions ? menuEl("secondary") : ""}</span></div>`;
+        const img = st.noImage ? `<div class="sa-resource-card-placeholder">${icon("image")}</div>` : `<img src="${r[cfg.image]}" alt="" loading="lazy">`;
+        const media = hasImage ? `<div class="sa-resource-card-media"${n("1", a)}>${img}${onImage}${overlay ? header : ""}</div>` : "";
+        const attrs = `data-slot="card" class="sa-card sa-resource-card" data-orientation="${horizontal ? "horizontal" : "vertical"}" data-image-placement="${overlay ? "overlay" : "top"}"${cfg.shape ? ` data-shape="${cfg.shape}"` : ""}${st.hover ? " data-force-hover" : ""}${st.focus ? " data-force-focus" : ""}`;
+
+        if (horizontal) return `<div ${attrs}>${media}<div class="sa-resource-card-body">${header}${stats}${fields}${footer}</div></div>`;
+        return `<div ${attrs}>${media}${overlay ? "" : header}${stats}${fields}${footer}</div>`;
+    }
+
+    /* One row of variants on a list-card surface: each a label, the option that changes, and one card */
+    function variants(target, items, { wide } = {}) {
+        document.getElementById(target).innerHTML = `<div data-slot="card" class="sa-card sa-resource-index-list" style="padding:0"><div class="variants"${wide ? " data-wide" : ""}>${items.map((v) =>
+            `<div class="variant"${v.span ? ` style="grid-column:span ${v.span}"` : ""}><header><b>${v.label}</b>${v.note ? ` ${v.note}` : ""}<br>${v.code.map((c) => `<code>${c}</code>`).join(" ")}</header><div class="sa-resource-cards" style="padding:0;--_min:0">${card(v.record ?? KYOTO, v.cfg, v.index, v.st)}</div></div>`).join("")}</div></div>`;
+    }
+
+    /* ---------- 1. The parts ---------- */
+    const full = { image: "Photo", title: "Name", description: "Region", badge: "Status", fields: ["Tours", "From", "Guide"] };
+    document.getElementById("anatomy").innerHTML = `
+        <div class="sa-resource-cards" style="padding:0">${card(KYOTO, { ...full, stats: ["Tours", "From", "Rating"], fields: ["Season", "Guide"] }, { bulk: true }, { anatomy: true })}</div>
+        <ul class="key">
+            <h3>Configured</h3>
+            <li><span>1</span><div><b>Image</b>: a property holding an image. Optional.<small>Shape: banner, widescreen (default), landscape, square. Placement: top, or the title over the image. A record without an image gets a placeholder.</small></div></li>
+            <li><span>2</span><div><b>Title</b>: defaults to the resource's title property.<small>Links to the View page; the link covers the whole card.</small></div></li>
+            <li><span>3</span><div><b>Description</b>: a property shown under the title. Optional.</div></li>
+            <li><span>4</span><div><b>Badge</b>: one property shown as a badge, e.g. Status. Optional.<small>On the image when the card is vertical and has one; beside the title otherwise.</small></div></li>
+            <li><span>5</span><div><b>Stats</b>: 2–4 short properties in a strip, value over label. Optional.<small>Always above the fields.</small></div></li>
+            <li><span>6</span><div><b>Fields</b>: any number of properties, in a field layout: rows (default) or grid.<small>Values use the same display templates as the table and the View page.</small></div></li>
+            <li><span>7</span><div><b>Actions</b>: the row actions the table already has. Placement: menu (default) or footer.<small>Menu: a ⋯ menu in the header, or on the image when the title is over it. Footer: the first two as buttons, the rest in a ⋯ menu.</small></div></li>
+            <li><span>↔</span><div><b>Orientation</b>: vertical (default) or horizontal, with the image beside the content.</div></li>
+            <h3>Fixed</h3>
+            <li data-fixed><span>8</span><div><b>Selection</b>: a checkbox when the index has bulk actions.<small>Top left of the image; before the title when there is no image.</small></div></li>
+            <li data-fixed><span>#</span><div><b>Grid</b>: columns fill from a minimum width (16rem; 22rem horizontal), inside the list card.</div></li>
+        </ul>`;
+
+    /* ---------- 2. Placement and orientation ---------- */
+    const base = { ...full, fields: ["Tours", "From"] };
+    variants("placement", [
+        { label: "Top", note: "(default)", code: ["Placement top"], cfg: base },
+        { label: "Title over the image", code: ["Placement overlay"], cfg: { ...base, placement: "overlay" } },
+        { label: "No image", code: ["no Image"], cfg: { ...base, image: null } },
+        { label: "Horizontal", note: "wider columns (22rem)", span: 2, code: ["Orientation horizontal"], cfg: { ...base, orientation: "horizontal" } },
+    ]);
+
+    /* ---------- 3. Shape ---------- */
+    variants("shape", ["banner", "widescreen", "landscape", "square"].map((s) => ({
+        label: s[0].toUpperCase() + s.slice(1), note: { banner: "21:9", widescreen: "16:9, default", landscape: "4:3", square: "1:1" }[s], code: [`Shape ${s}`], cfg: { ...base, shape: s },
+    })));
+
+    /* ---------- 4. Field layout ---------- */
+    const four = { ...full, fields: ["Tours", "From", "Season", "Guide"] };
+    variants("fields", [
+        { label: "Rows", note: "(default)", code: ["FieldLayout rows"], cfg: four },
+        { label: "Grid", note: "two columns, label over value", code: ["FieldLayout grid"], cfg: { ...four, fieldLayout: "grid" } },
+    ]);
+
+    /* ---------- 5. Stats ---------- */
+    const stat3 = ["Tours", "From", "Rating"];
+    variants("stats", [
+        { label: "Stats only", code: ["Stats"], cfg: { ...full, stats: stat3, fields: [] } },
+        { label: "Stats and fields", note: "rows", code: ["Stats", "Fields"], cfg: { ...full, stats: stat3, fields: ["Season", "Guide"] } },
+        { label: "Stats and fields", note: "grid", code: ["Stats", "Fields", "FieldLayout grid"], cfg: { ...full, stats: stat3, fields: ["Season", "Guide"], fieldLayout: "grid" } },
+        { label: "Stats, no image", record: KENJI, code: ["Stats", "Fields"], cfg: { title: "Name", description: "Base", badge: "Status", stats: ["ToursLed", "Rating"], fields: ["Languages"] } },
+    ]);
+
+    /* ---------- 6. Actions ---------- */
+    variants("actions", [
+        { label: "Menu", note: "(default)", code: ["Actions menu"], cfg: base },
+        { label: "Footer", code: ["Actions footer"], cfg: { ...base, actions: "footer" } },
+        { label: "Footer, title over the image", code: ["Actions footer", "Placement overlay"], cfg: { ...base, actions: "footer", placement: "overlay" } },
+        { label: "Footer, no image", record: KENJI, code: ["Actions footer"], cfg: { title: "Name", description: "Base", badge: "Status", fields: ["Languages", "Rating"], actions: "footer" } },
+    ]);
+
+    /* ---------- 7. Fixed behaviour ---------- */
+    variants("fixed", [
+        { label: "Selected", code: ["bulk actions"], cfg: base, index: { bulk: true }, st: { checked: true } },
+        { label: "Hover", note: "the whole card opens the View page", code: ["bulk actions"], record: CAPE, cfg: base, index: { bulk: true }, st: { hover: true } },
+        { label: "No image on the record", note: "placeholder", code: ["bulk actions"], record: AMALFI, cfg: base, index: { bulk: true }, st: { noImage: true } },
+        { label: "No image configured", note: "checkbox before the title", code: ["bulk actions"], record: KENJI, cfg: { title: "Name", description: "Base", badge: "Status", fields: ["Languages", "Rating"] }, index: { bulk: true } },
+        { label: "Keyboard focus", note: "on the title link", code: ["bulk actions"], cfg: base, index: { bulk: true }, st: { focus: true } },
+        { label: "Value cut off", note: "full value on hover", code: ["FieldLayout grid"], record: LONG, cfg: { ...base, fields: ["Season", "Guide", "Tours", "From"], fieldLayout: "grid" }, st: { tip: "Guide" } },
+    ]);
+
+    /* ---------- 8. Narrow screens ---------- */
+    document.getElementById("narrow").innerHTML = `<div data-slot="card" class="sa-card sa-resource-index-list" style="padding:0"><div class="sa-resource-cards" style="padding:var(--_card-p)">${[KYOTO, CAPE].map((r) => card(r, { ...base, orientation: "horizontal" }, { bulk: true })).join("")}</div></div>`;
+
+    /* ---------- 9. Title over the image: default shape ---------- */
+    variants("overlay-shape", [
+        { label: "Built now", note: "widescreen, 16:9", code: ["Placement overlay"], cfg: { ...base, placement: "overlay", shape: "widescreen" } },
+        { label: "Earlier prototype default", note: "4:3 when no shape is set", code: ["Placement overlay"], cfg: { ...base, placement: "overlay" } },
+    ]);
+
+    /* ---------- Controls ---------- */
+    document.addEventListener("click", (e) => { if (e.target.closest('a[href="#"]')) e.preventDefault(); });
+    document.getElementById("theme-picker").addEventListener("change", (e) => {
+        const theme = document.getElementById("theme");
+        if (e.target.value) theme.href = `../../util/theme-check/presets/${e.target.value}.css`;
+        else theme.removeAttribute("href");
+    });
+    document.getElementById("dark-toggle").addEventListener("change", (e) => document.documentElement.classList.toggle("dark", e.target.checked));
+    document.getElementById("density-picker").addEventListener("change", (e) => {
+        if (e.target.value) document.body.setAttribute("data-sa-density", e.target.value);
+        else document.body.removeAttribute("data-sa-density");
+    });
+</script>
+</body>
+</html>

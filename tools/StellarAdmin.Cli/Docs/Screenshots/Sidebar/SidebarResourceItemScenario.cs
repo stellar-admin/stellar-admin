@@ -15,24 +15,39 @@ public sealed class SidebarResourceItemScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Trip>(resource =>
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            })
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            )
         );
         admin.AddEfCoreResource<Destination>(resource =>
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(destination => destination.Name));
-            })
+                index.AddTable(
+                    "destinations",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(destination => destination.Name));
+                    }
+                )
+            )
         );
         admin.AddEfCoreResource<Traveller>(resource =>
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(traveller => traveller.Email));
-            })
+                index.AddTable(
+                    "travellers",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(traveller => traveller.Email));
+                    }
+                )
+            )
         );
         admin.AddEfCoreResource<Payment>(resource =>
         {
@@ -42,10 +57,15 @@ public sealed class SidebarResourceItemScenario : Scenario
                 item.Icon = "credit-card";
             });
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(payment => payment.Amount));
-            });
+                index.AddTable(
+                    "payments",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(payment => payment.Amount));
+                    }
+                )
+            );
         });
         admin.AddEfCoreResource<Booking>(resource =>
         {
@@ -57,10 +77,15 @@ public sealed class SidebarResourceItemScenario : Scenario
                 item.Order = 1;
             });
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(booking => booking.Reference));
-            });
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(booking => booking.Reference));
+                    }
+                )
+            );
         });
     }
 }

@@ -1,0 +1,8 @@
+# The first trip card with a square image, in light and dark
+scenario: card-arrangement-image-shapes-square
+steps:
+  - goto: /stellaradmin/trips
+  - expectVisible: ".sa-resource-card[data-key='1'] img"
+  - screenshot: { name: card-arrangement-image-shapes-square, locator: ".sa-resource-card[data-key='1']", margin: 16 }
+  - colorScheme: dark
+  - screenshot: { name: card-arrangement-image-shapes-square-dark, locator: ".sa-resource-card[data-key='1']", margin: 16 }

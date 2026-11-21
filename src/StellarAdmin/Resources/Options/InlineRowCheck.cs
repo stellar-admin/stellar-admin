@@ -4,46 +4,70 @@ using StellarAdmin.Diagnostics;
 
 namespace StellarAdmin.Resources.Options;
 
-// An inline row edits the grid's columns in place and finds its row by the resource key. A row that can't do that
-// is removed, with its create or edit, since a row with a missing field could save a partial record.
+// An inline row edits the table's columns in place and finds its row by the resource key. A table whose rows can't do
+// that edits or adds no rows, since a row with a missing field could save a partial record; it links to the edit or
+// create page instead.
 internal static class InlineRowCheck
 {
     public static void Run<TResource>(ResourceOptions<TResource> options)
     {
-        if (options.Edit is { InlineRow: not null } edit)
+        foreach (var table in options.Index.RecordTables)
         {
-            if (FindProblem(options, edit) is { } problem)
+            if (table.InlineEditing is { } editing)
             {
-                options.Edit = null;
-                options.Report(
-                    problem.Kind,
-                    $"Rows can't be edited because the inline edit row {problem.Reason}.",
-                    problem.Fix,
-                    edit.InlineRow.Source
-                );
+                var problem = options.Edit is { } edit
+                    ? FindProblem(options, table, edit)
+                    : MissingForm("edit", "Edit");
+                if (problem is not null)
+                {
+                    table.InlineEditing = null;
+                    options.Report(
+                        problem.Value.Kind,
+                        $"The `{table.Key}` table doesn't edit its rows because the inline edit row {problem.Value.Reason}.",
+                        problem.Value.Fix,
+                        editing.Source
+                    );
+                }
             }
-        }
 
-        if (options.Create is { InlineRow: not null } create)
-        {
-            if ((FindProblem(options, create) ?? FindMissingRequired(create)) is { } problem)
+            if (table.InlineCreate is { } creating)
             {
-                options.Create = null;
-                options.Report(
-                    problem.Kind,
-                    $"New rows can't be created because the inline create row {problem.Reason}.",
-                    problem.Fix,
-                    create.InlineRow.Source
-                );
+                var problem = options.Create is { } create
+                    ? FindProblem(options, table, create) ?? FindMissingRequired(create)
+                    : MissingForm("create", "Create");
+                if (problem is not null)
+                {
+                    table.InlineCreate = null;
+                    options.Report(
+                        problem.Value.Kind,
+                        $"The `{table.Key}` table doesn't add new rows because the inline create row {problem.Value.Reason}.",
+                        problem.Value.Fix,
+                        creating.Source
+                    );
+                }
             }
         }
     }
+
+    private static (ConfigurationProblemKind Kind, string Reason, string Fix) MissingForm(
+        string form,
+        string method
+    ) =>
+        (
+            ConfigurationProblemKind.InlineRowsWithoutForm,
+            $"needs the resource's {form} form for its fields",
+            $"Call `{method}` on the resource, with the fields the row edits."
+        );
 
     private static (
         ConfigurationProblemKind Kind,
         string Reason,
         string Fix
-    )? FindProblem<TResource>(ResourceOptions<TResource> options, ResourceFormOptions form)
+    )? FindProblem<TResource>(
+        ResourceOptions<TResource> options,
+        ResourceTableDataLayoutOptions table,
+        ResourceFormOptions form
+    )
     {
         if (options.KeyPropertyName is null)
         {
@@ -54,10 +78,8 @@ internal static class InlineRowCheck
             );
         }
 
-        // Inline rows edit in the default table
-        var columns = options.Index.RecordTables.FirstOrDefault()?.Columns ?? [];
-        var editedFields = columns
-            .Select(column => column.EditsFieldName ?? column.FieldName)
+        var editedFields = table
+            .Columns.Select(column => column.EditsFieldName ?? column.FieldName)
             .OfType<string>()
             .ToHashSet(StringComparer.Ordinal);
         var unmatched = form
@@ -71,7 +93,7 @@ internal static class InlineRowCheck
             ? null
             : (
                 ConfigurationProblemKind.InlineRowFieldWithoutColumn,
-                $"has fields with no index column: {string.Join(", ", unmatched.Select(field => $"`{field}`"))}",
+                $"has fields with no column: {string.Join(", ", unmatched.Select(field => $"`{field}`"))}",
                 "Add a column for each field, or name the field with `EditsField` on the column that shows it."
             );
     }

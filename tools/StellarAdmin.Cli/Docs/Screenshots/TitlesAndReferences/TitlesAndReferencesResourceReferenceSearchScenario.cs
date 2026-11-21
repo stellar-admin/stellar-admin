@@ -30,15 +30,20 @@ public sealed class TitlesAndReferencesResourceReferenceSearchScenario : Scenari
                     .OrderBy(guide => guide.LastName)
                     .Where(guide => guide.IsActive)
             );
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("guides", table => table.EnablePaging()));
         });
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            );
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {

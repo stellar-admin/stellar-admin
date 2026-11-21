@@ -19,21 +19,30 @@ public sealed class NumberAndDateDisplaysFormatScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(
-                        booking => booking.TotalAmount,
-                        column => column.UseDisplay<NumberDisplay>(number => number.Format = "C")
-                    );
-                    columns.Add(
-                        booking => booking.Departure.StartDate,
-                        column =>
-                            column.UseDisplay<DateDisplay>(date => date.Format = "ddd d MMM yyyy")
-                    );
-                });
-                // Six rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 6);
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(
+                                booking => booking.TotalAmount,
+                                column =>
+                                    column.UseDisplay<NumberDisplay>(number => number.Format = "C")
+                            );
+                            columns.Add(
+                                booking => booking.Departure.StartDate,
+                                column =>
+                                    column.UseDisplay<DateDisplay>(date =>
+                                        date.Format = "ddd d MMM yyyy"
+                                    )
+                            );
+                        });
+                        // Six rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 6);
+                    }
+                );
             })
         );
     }

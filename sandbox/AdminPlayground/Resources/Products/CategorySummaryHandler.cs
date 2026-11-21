@@ -14,7 +14,7 @@ public sealed record CategorySummary(
 
 // The products the scope and search select, counted per category, for a table whose rows link to the category. SQLite
 // can't average decimals, so the prices come back to be summarized here
-public sealed class CategorySummaryHandler : IEfCoreLayoutHandler<Product, CategorySummary>
+public sealed class CategorySummaryHandler : IEfCoreDataLayoutHandler<Product, CategorySummary>
 {
     public async Task<ResourceListResult<CategorySummary>> ListAsync(
         IQueryable<Product> entities,

@@ -9,8 +9,13 @@ internal static class ResourceIndexCheck
     {
         foreach (var table in options.Index.Tables)
         {
-            CheckPaging(options, table);
+            CheckPaging(options, table.Paging);
             CheckDefaultSort(options, table);
+        }
+
+        foreach (var cards in options.Index.Cards)
+        {
+            CheckCardsPaging(options, cards.Paging);
         }
 
         CheckScopes(options);
@@ -18,10 +23,10 @@ internal static class ResourceIndexCheck
 
     private static void CheckPaging<TResource>(
         ResourceOptions<TResource> options,
-        ResourceTableLayoutOptions table
+        ResourcePagingOptions? layoutPaging
     )
     {
-        if (table.Paging is not { } paging)
+        if (layoutPaging is not { } paging)
         {
             return;
         }
@@ -72,6 +77,32 @@ internal static class ResourceIndexCheck
 
         paging.PageSizes = sizes;
         paging.PageSize = pageSize;
+    }
+
+    // Cards have no page-size picker, so their page size is the only one they offer
+    private static void CheckCardsPaging<TResource>(
+        ResourceOptions<TResource> options,
+        ResourcePagingOptions? cardsPaging
+    )
+    {
+        if (cardsPaging is not { } paging)
+        {
+            return;
+        }
+
+        if (paging.PageSize <= 0)
+        {
+            var pageSize = new ResourcePagingOptions().PageSize;
+            options.Report(
+                ConfigurationProblemKind.InvalidDefaultPageSize,
+                $"The cards show {pageSize} cards per page because the page size `{paging.PageSize}` isn't greater than 0.",
+                "Set `PageSize` to a number greater than 0.",
+                paging.PageSizeSource
+            );
+            paging.PageSize = pageSize;
+        }
+
+        paging.PageSizes = [paging.PageSize];
     }
 
     private static void CheckScopes<TResource>(ResourceOptions<TResource> options)
@@ -127,7 +158,7 @@ internal static class ResourceIndexCheck
 
     private static void CheckDefaultSort<TResource>(
         ResourceOptions<TResource> options,
-        ResourceTableLayoutOptions table
+        ResourceTableDataLayoutOptions table
     )
     {
         if (table.DefaultSort is { } sort && table.FindSort(sort.Field, sort.Direction) is null)

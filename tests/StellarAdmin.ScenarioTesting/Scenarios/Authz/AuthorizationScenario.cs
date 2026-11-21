@@ -19,23 +19,33 @@ public sealed class AuthorizationScenario : Scenario
         {
             resource.UseTitle(trip => trip.Title);
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            });
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            );
         });
         admin.AddEfCoreResource<Payment>(resource =>
         {
             resource.RequireAuthorization(policy => policy.RequireRole("Admin"));
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns =>
-                {
-                    columns.Add(payment => payment.Amount);
-                    columns.Add(payment => payment.Status);
-                });
-            });
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns =>
+                        {
+                            columns.Add(payment => payment.Amount);
+                            columns.Add(payment => payment.Status);
+                        });
+                    }
+                )
+            );
         });
         admin.AddSidebarLink(
             "Audit log",

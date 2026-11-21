@@ -17,20 +17,25 @@ public sealed class ConfigurationProblemsNotificationScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Trip>(resource =>
             resource.Index(index =>
-            {
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Code);
-                    columns.Add(trip => trip.Title);
-                    columns.Add(trip => trip.DurationDays);
-                });
-                index.DefaultSortBy(trip => trip.DurationDays);
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSize = 15;
-                    paging.PageSizes = [20, 50, 100];
-                });
-            })
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Code);
+                            columns.Add(trip => trip.Title);
+                            columns.Add(trip => trip.DurationDays);
+                        });
+                        table.DefaultSortBy(trip => trip.DurationDays);
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSize = 15;
+                            paging.PageSizes = [20, 50, 100];
+                        });
+                    }
+                )
+            )
         );
     }
 }

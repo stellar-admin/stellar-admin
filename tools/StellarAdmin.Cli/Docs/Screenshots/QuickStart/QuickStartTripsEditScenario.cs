@@ -18,11 +18,15 @@ public sealed class QuickStartTripsEditScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Code);
-                    columns.Add(trip => trip.Title);
-                })
+                index.AddTable(
+                    "trips",
+                    table =>
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Code);
+                            columns.Add(trip => trip.Title);
+                        })
+                )
             );
             resource.AllowCreate(create =>
                 create.Fields(fields =>

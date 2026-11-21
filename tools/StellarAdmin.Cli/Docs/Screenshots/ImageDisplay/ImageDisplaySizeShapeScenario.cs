@@ -19,7 +19,7 @@ public sealed class ImageDisplaySizeShapeScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Destination>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("destinations", table => table.EnablePaging()));
             resource.AllowView(view =>
                 view.Fields(fields =>
                 {

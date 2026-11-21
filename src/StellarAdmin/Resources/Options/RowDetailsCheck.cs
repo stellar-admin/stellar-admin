@@ -16,7 +16,7 @@ internal static class RowDetailsCheck
 
     private static void Run<TResource>(
         ResourceOptions<TResource> options,
-        ResourceTableLayoutOptions table
+        ResourceTableDataLayoutOptions table
     )
     {
         if (table.RowDetails is not { } rowDetails)

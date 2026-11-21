@@ -19,27 +19,33 @@ internal static class DepartmentResourceRegistration
             });
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                    columns.Add(department => department.Name, column => column.Sortable())
-                );
-                index.DefaultSortBy(department => department.Name);
                 index.EnableSearch(
                     term => department => department.Name.Contains(term),
                     search => search.Placeholder = "Search departments..."
                 );
-                index.EnablePaging();
+                index.AddTable(
+                    "departments",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                            columns.Add(department => department.Name, column => column.Sortable())
+                        );
+                        table.DefaultSortBy(department => department.Name);
+                        table.EnablePaging();
+                        table.EnableInlineCreate();
+                        table.EnableInlineEditing();
+                    }
+                );
             });
             // Departments are edited and added in the index grid's rows, several in a row with add another
             resource.AllowCreate(create =>
             {
                 create.Fields(fields => fields.Add(department => department.Name));
-                create.UseInlineRow();
                 create.EnableAddAnother();
             });
             resource.AllowEdit(edit =>
             {
                 edit.Fields(fields => fields.Add(department => department.Name));
-                edit.UseInlineRow();
             });
         });
     }

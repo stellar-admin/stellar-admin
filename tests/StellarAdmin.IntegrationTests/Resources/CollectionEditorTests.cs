@@ -551,9 +551,9 @@ public class CollectionEditorTests
                     fields.Add(tour => tour.Name);
                     fields.Add(tour => tour.Highlights);
                 });
-                edit.UseInlineRow(_ => { });
             },
-            configureIndex: columns => columns.Add(tour => tour.Highlights)
+            configureIndex: columns => columns.Add(tour => tour.Highlights),
+            inlineEditing: true
         );
         using var client = sut.CreateClient();
 
@@ -590,9 +590,9 @@ public class CollectionEditorTests
                     fields.Add(tour => tour.Name);
                     fields.Add(tour => tour.Highlights).UseListEditor(list => list.MinItems = 1);
                 });
-                edit.UseInlineRow(_ => { });
             },
-            configureIndex: columns => columns.Add(tour => tour.Highlights)
+            configureIndex: columns => columns.Add(tour => tour.Highlights),
+            inlineEditing: true
         );
         using var client = sut.CreateClient();
         var values = await PrepareRowForm(client, "/stellaradmin/tours/editrow/7");
@@ -614,7 +614,8 @@ public class CollectionEditorTests
         Action<StellarAdminBuilder>? configureAdmin = null,
         Action<ResourceEditBuilder<Tour>>? edit = null,
         Action<ResourceViewBuilder<Tour>>? view = null,
-        Action<ResourceTableColumnsBuilder<Tour>>? configureIndex = null
+        Action<ResourceTableColumnsBuilder<Tour>>? configureIndex = null,
+        bool inlineEditing = false
     ) =>
         StellarAdminTestHost.CreateAsync(configureAdmin: admin =>
         {
@@ -626,11 +627,21 @@ public class CollectionEditorTests
                     resource.UseDataSource<TourDataSource>();
                     resource.UseKey(tour => tour.Id);
                     resource.Index(index =>
-                        index.Columns(columns =>
-                        {
-                            columns.Add(tour => tour.Name);
-                            configureIndex?.Invoke(columns);
-                        })
+                        index.AddTable(
+                            "table",
+                            table =>
+                            {
+                                table.Columns(columns =>
+                                {
+                                    columns.Add(tour => tour.Name);
+                                    configureIndex?.Invoke(columns);
+                                });
+                                if (inlineEditing)
+                                {
+                                    table.EnableInlineEditing();
+                                }
+                            }
+                        )
                     );
                     if (create is not null)
                     {

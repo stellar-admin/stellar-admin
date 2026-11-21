@@ -18,18 +18,24 @@ public sealed class SearchAsYouTypeScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                    columns.Add(booking => booking.Status);
-                });
                 index.EnableSearch(term =>
                     booking =>
                         booking.Reference.Contains(term)
                         || booking.Traveller.LastName.Contains(term)
                 );
-                index.EnablePaging();
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                            columns.Add(booking => booking.Status);
+                        });
+                        table.EnablePaging();
+                    }
+                );
             })
         );
         Travellers.Add(admin);

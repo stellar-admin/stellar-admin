@@ -39,7 +39,10 @@
     if (getComputedStyle(element).display === "block" && textOnly) {
       const range = document.createRange();
       range.selectNodeContents(element);
-      rect = range.getBoundingClientRect();
+      // Kept inside the element, for text cut off with an ellipsis
+      const text = range.getBoundingClientRect();
+      const left = Math.max(text.left, rect.left);
+      rect = new DOMRect(left, text.top, Math.min(text.right, rect.right) - left, text.height);
     }
 
     return { x: rect.left + scrollX - pad, y: rect.top + scrollY - pad, w: rect.width + pad * 2, h: rect.height + pad * 2 };

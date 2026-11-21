@@ -18,11 +18,15 @@ public sealed class QuickStartDeparturesScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Code);
-                    columns.Add(trip => trip.Title);
-                })
+                index.AddTable(
+                    "trips",
+                    table =>
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Code);
+                            columns.Add(trip => trip.Title);
+                        })
+                )
             );
             resource.AllowCreate(create =>
                 create.Fields(fields =>
@@ -45,16 +49,25 @@ public sealed class QuickStartDeparturesScenario : Scenario
         {
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(departure => departure.Trip);
-                    columns.Add(departure => departure.StartDate, column => column.Sortable());
-                    columns.Add(departure => departure.Capacity);
-                    columns.Add(departure => departure.Status);
-                });
                 index.EnableSearch(term => departure => departure.Trip.Title.Contains(term));
-                index.DefaultSortBy(departure => departure.StartDate);
-                index.EnablePaging();
+                index.AddTable(
+                    "departures",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(departure => departure.Trip);
+                            columns.Add(
+                                departure => departure.StartDate,
+                                column => column.Sortable()
+                            );
+                            columns.Add(departure => departure.Capacity);
+                            columns.Add(departure => departure.Status);
+                        });
+                        table.DefaultSortBy(departure => departure.StartDate);
+                        table.EnablePaging();
+                    }
+                );
             });
 
             resource.AllowCreate(create =>

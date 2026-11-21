@@ -18,18 +18,24 @@ public sealed class IconDisplayGridScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Title);
-                    columns.Add(
-                        trip => trip.Icon,
-                        column => column.UseDisplay<Resources.Displays.IconDisplay>()
-                    );
-                    columns.Add(trip => trip.TripType);
-                    columns.Add(trip => trip.DurationDays);
-                });
-                // Five rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 5);
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Title);
+                            columns.Add(
+                                trip => trip.Icon,
+                                column => column.UseDisplay<Resources.Displays.IconDisplay>()
+                            );
+                            columns.Add(trip => trip.TripType);
+                            columns.Add(trip => trip.DurationDays);
+                        });
+                        // Five rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 5);
+                    }
+                );
             })
         );
     }

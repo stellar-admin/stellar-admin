@@ -22,12 +22,6 @@ public sealed class WidgetsIndexPageScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                    columns.Add(booking => booking.Status);
-                });
                 index.EnableScopes(scopes =>
                 {
                     scopes.Add("all", "All");
@@ -39,8 +33,6 @@ public sealed class WidgetsIndexPageScenario : Scenario
                     scopes.DefaultScope = "all";
                 });
                 index.EnableSearch(term => booking => booking.Reference.Contains(term));
-                // Ten rows, so the page stays short
-                index.EnablePaging(paging => paging.PageSize = 10);
                 index.Widgets(widgets =>
                 {
                     widgets.Add<BookingTotalsHandler>(
@@ -58,6 +50,20 @@ public sealed class WidgetsIndexPageScenario : Scenario
                         widget => widget.Placement = WidgetPlacement.Aside
                     );
                 });
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                            columns.Add(booking => booking.Status);
+                        });
+                        // Ten rows, so the page stays short
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                    }
+                );
             })
         );
         Travellers.Add(admin);

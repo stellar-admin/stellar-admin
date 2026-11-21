@@ -184,7 +184,8 @@ public sealed class DescribedAirportSource(GalleryAirportStore store)
     public override string? GetDescription(GalleryAirport item) => $"{item.Code} · {item.Country}";
 }
 
-public sealed class CodedAirportSource(GalleryAirportStore store) : GalleryAirportLookupSource(store)
+public sealed class CodedAirportSource(GalleryAirportStore store)
+    : GalleryAirportLookupSource(store)
 {
     public override string? GetCode(GalleryAirport item) => item.Code;
 }
@@ -198,7 +199,8 @@ public sealed class DescribedCodedAirportSource(GalleryAirportStore store)
     public override string? GetDescription(GalleryAirport item) => item.Country;
 }
 
-public sealed class AvatarAirportSource(GalleryAirportStore store) : GalleryAirportLookupSource(store)
+public sealed class AvatarAirportSource(GalleryAirportStore store)
+    : GalleryAirportLookupSource(store)
 {
     public override string? GetAvatar(GalleryAirport item) => null;
 }

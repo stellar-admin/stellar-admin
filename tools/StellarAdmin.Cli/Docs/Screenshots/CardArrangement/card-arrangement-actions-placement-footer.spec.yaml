@@ -1,0 +1,8 @@
+# The first trip card with the edit button and actions menu in its footer, in light and dark
+scenario: card-arrangement-actions-placement-footer
+steps:
+  - goto: /stellaradmin/trips
+  - expectVisible: ".sa-resource-card[data-key='1'] img"
+  - screenshot: { name: card-arrangement-actions-placement-footer, locator: ".sa-resource-card[data-key='1']", margin: 16 }
+  - colorScheme: dark
+  - screenshot: { name: card-arrangement-actions-placement-footer-dark, locator: ".sa-resource-card[data-key='1']", margin: 16 }

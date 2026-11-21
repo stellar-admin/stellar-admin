@@ -194,8 +194,8 @@ public class ResourceAddAnotherTests
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                 });
-                create.UseInlineRow();
             });
+            resource.Index(index => index.AddTable("table", table => table.EnableInlineCreate()));
         });
         using var client = sut.CreateClient();
 
@@ -385,8 +385,13 @@ public class ResourceAddAnotherTests
                 fields.Add(product => product.Name);
                 fields.Add(product => product.Price);
             });
-            create.UseInlineRow(inline => configure?.Invoke(inline));
             create.EnableAddAnother(another => another.KeepForNext(product => product.Price));
         });
+        resource.Index(index =>
+            index.AddTable(
+                "table",
+                table => table.EnableInlineCreate(inline => configure?.Invoke(inline))
+            )
+        );
     }
 }

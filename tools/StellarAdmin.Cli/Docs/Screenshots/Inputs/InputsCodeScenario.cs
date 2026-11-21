@@ -18,13 +18,15 @@ public sealed class InputsCodeScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Guide>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("guides", table => table.EnablePaging()));
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {
                     fields.Add(guide => guide.FirstName);
                     fields.Add(guide => guide.LastName);
-                    fields.Add(guide => guide.BadgeCode).UseOneTimeCodeEditor(code => code.Length = 4);
+                    fields
+                        .Add(guide => guide.BadgeCode)
+                        .UseOneTimeCodeEditor(code => code.Length = 4);
                 })
             );
         });

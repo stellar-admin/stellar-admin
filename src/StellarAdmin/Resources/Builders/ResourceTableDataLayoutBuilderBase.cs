@@ -1,0 +1,530 @@
+using System.Linq.Expressions;
+using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Diagnostics;
+using StellarAdmin.Resources.Options;
+
+namespace StellarAdmin.Resources.Builders;
+
+/// <summary>
+///     Provides the settings shared by the builders that configure a table data layout of a
+///     resource's index page.
+/// </summary>
+/// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
+/// <typeparam name="TBuilder">
+///     The type of the derived builder that methods return for chaining.
+/// </typeparam>
+public abstract class ResourceTableDataLayoutBuilderBase<TResource, TBuilder>
+    : ResourceDataLayoutBuilderBase<TResource, TBuilder>
+    where TBuilder : ResourceTableDataLayoutBuilderBase<TResource, TBuilder>
+{
+    private protected ResourceTableDataLayoutBuilderBase(IServiceCollection services, string key)
+        : base(services, key) { }
+
+    /// <summary>
+    ///     Configures the table's columns.
+    /// </summary>
+    /// <param name="configure">A delegate that adds and configures the columns.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public TBuilder Columns(Action<ResourceTableColumnsBuilder<TResource>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(ConfigureTable));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Sorts the table by a column in ascending order by default.
+    /// </summary>
+    /// <typeparam name="TProperty">The type of the selected property.</typeparam>
+    /// <param name="field">
+    ///     An expression that selects the property of the column to sort by.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The property must belong to a sortable column. The table uses this order until the user
+    ///     sorts by a column.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> is <see langword="null" />.
+    /// </exception>
+    public TBuilder DefaultSortBy<TProperty>(Expression<Func<TResource, TProperty>> field) =>
+        ConfigureDefaultSort(field, ResourceSortDirection.Ascending);
+
+    /// <summary>
+    ///     Sorts the table by a column in descending order by default.
+    /// </summary>
+    /// <typeparam name="TProperty">The type of the selected property.</typeparam>
+    /// <param name="field">
+    ///     An expression that selects the property of the column to sort by.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The property must belong to a sortable column. The table uses this order until the user
+    ///     sorts by a column.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> is <see langword="null" />.
+    /// </exception>
+    public TBuilder DefaultSortByDescending<TProperty>(
+        Expression<Func<TResource, TProperty>> field
+    ) => ConfigureDefaultSort(field, ResourceSortDirection.Descending);
+
+    /// <summary>
+    ///     Creates resources in a new row of the table.
+    /// </summary>
+    /// <returns>A builder that configures the new row.</returns>
+    /// <remarks>
+    ///     The new row edits the create form's fields. Every editable field must match a column, by
+    ///     name or through <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />,
+    ///     and every <c>[Required]</c> model property must have an editable field. The resource
+    ///     needs a key. The table adds rows instead of linking to the create page, which other
+    ///     data layouts still link to.
+    /// </remarks>
+    public ResourceInlineCreateBuilder EnableInlineCreate()
+    {
+        var source = ConfigurationSource.Capture();
+        ConfigureTable(table => table.InlineCreate ??= new() { Source = source });
+
+        return new(configure => ConfigureTable(table => configure(table.InlineCreate ??= new())));
+    }
+
+    /// <summary>
+    ///     Creates resources in a new row of the table, and configures the row.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the new row.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The new row edits the create form's fields. Every editable field must match a column, by
+    ///     name or through <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />,
+    ///     and every <c>[Required]</c> model property must have an editable field. The resource
+    ///     needs a key. The table adds rows instead of linking to the create page, which other
+    ///     data layouts still link to.
+    /// </remarks>
+    public TBuilder EnableInlineCreate(Action<ResourceInlineCreateBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableInlineCreate());
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Edits resources in their row of the table.
+    /// </summary>
+    /// <returns>A builder that configures the edited rows.</returns>
+    /// <remarks>
+    ///     A row edits the edit form's fields. Every editable field must match a column, by name
+    ///     or through <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. The
+    ///     resource needs a key. The table edits rows instead of linking to the edit page, which
+    ///     other data layouts still link to.
+    /// </remarks>
+    public ResourceInlineEditBuilder EnableInlineEditing()
+    {
+        var source = ConfigurationSource.Capture();
+        ConfigureTable(table => table.InlineEditing ??= new() { Source = source });
+
+        return new(configure => ConfigureTable(table => configure(table.InlineEditing ??= new())));
+    }
+
+    /// <summary>
+    ///     Edits resources in their row of the table, and configures the edited rows.
+    /// </summary>
+    /// <param name="configure">A delegate that configures the edited rows.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     A row edits the edit form's fields. Every editable field must match a column, by name
+    ///     or through <see cref="ResourceTableColumnBuilder{TItem}.EditsField(string)" />. The
+    ///     resource needs a key. The table edits rows instead of linking to the edit page, which
+    ///     other data layouts still link to.
+    /// </remarks>
+    public TBuilder EnableInlineEditing(Action<ResourceInlineEditBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableInlineEditing());
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Enables paging on the table.
+    /// </summary>
+    /// <returns>A builder that configures paging.</returns>
+    public ResourceTablePagingBuilder<TResource> EnablePaging()
+    {
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            options.Index.GetOrAddTable(LayoutKey).Paging = new()
+        );
+
+        return new(Services, LayoutKey);
+    }
+
+    /// <summary>
+    ///     Enables and configures paging on the table.
+    /// </summary>
+    /// <param name="configure">A delegate that configures paging.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public TBuilder EnablePaging(Action<ResourceTablePagingBuilder<TResource>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnablePaging());
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Shows a partial view when a row is expanded.
+    /// </summary>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <remarks>
+    ///     The partial view is rendered with the table, with the row's resource as its model.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
+    public ResourceTableRowDetailsBuilder<TResource> EnableRowDetails(string partialName) =>
+        RegisterRowDetails(partialName, null);
+
+    /// <summary>
+    ///     Shows a partial view when a row is expanded, and configures the rows.
+    /// </summary>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <param name="configure">A delegate that configures the rows.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The partial view is rendered with the table, with the row's resource as its model.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> or <paramref name="configure" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
+    public TBuilder EnableRowDetails(
+        string partialName,
+        Action<ResourceTableRowDetailsBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableRowDetails(partialName));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Shows a partial view with a model that a handler loads when a row is expanded.
+    /// </summary>
+    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
+    public ResourceTableRowDetailsBuilder<TResource> EnableRowDetails<TModel, THandler>(
+        string partialName
+    )
+        where THandler : class, IResourceRowDetailHandler<TModel> =>
+        RegisterRowDetails(partialName, HandlerRowDetailLoader.Create<TModel, THandler>(Services));
+
+    /// <summary>
+    ///     Shows a partial view with a model that a handler loads when a row is expanded, and
+    ///     configures the rows.
+    /// </summary>
+    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <param name="configure">A delegate that configures the rows.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> or <paramref name="configure" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
+    public TBuilder EnableRowDetails<TModel, THandler>(
+        string partialName,
+        Action<ResourceTableRowDetailsBuilder<TResource>> configure
+    )
+        where THandler : class, IResourceRowDetailHandler<TModel>
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableRowDetails<TModel, THandler>(partialName));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Shows one or more panels when a row is expanded.
+    /// </summary>
+    /// <param name="panels">A delegate that adds the panels.</param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <remarks>
+    ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout. No panels, a panel without a name, or two panels with the same name are configuration
+    ///     problems. A panel without a name, and the later panel with a repeated name, are left
+    ///     out, and without panels rows don't expand.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="panels" /> is <see langword="null" />.
+    /// </exception>
+    public ResourceTableRowDetailsBuilder<TResource> EnableRowDetails(
+        Action<ResourceTableRowDetailPanelsBuilder<TResource>> panels
+    )
+    {
+        ArgumentNullException.ThrowIfNull(panels);
+        var builder = new DefaultRowDetailPanelsBuilder<TResource>(Services);
+        panels(builder);
+
+        return RegisterRowDetails(builder);
+    }
+
+    /// <summary>
+    ///     Shows one or more panels when a row is expanded, and configures the rows.
+    /// </summary>
+    /// <param name="panels">A delegate that adds the panels.</param>
+    /// <param name="configure">A delegate that configures the rows.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     Two or more panels are shown in an accordion unless <c>PanelLayout</c> sets another layout. No panels, a panel without a name, or two panels with the same name are configuration
+    ///     problems. A panel without a name, and the later panel with a repeated name, are left
+    ///     out, and without panels rows don't expand.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="panels" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public TBuilder EnableRowDetails(
+        Action<ResourceTableRowDetailPanelsBuilder<TResource>> panels,
+        Action<ResourceTableRowDetailsBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableRowDetails(panels));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Configures which of the resource's row actions the table shows.
+    /// </summary>
+    /// <param name="configure">A delegate that turns row actions off.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     A table shows an action only when the resource also allows it.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    public TBuilder RowActions(Action<ResourceRowActionsBuilder<TResource>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(new(Services, LayoutKey));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Shows a partial view when a row is expanded.
+    /// </summary>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <param name="loader">
+    ///     A delegate that loads the partial's model from the request's services and the row's key
+    ///     when the row is expanded, and returns <see langword="null" /> when the row no longer
+    ///     exists; or <see langword="null" /> to use the row itself as the model.
+    /// </param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     An empty or white space partial name is a configuration problem, and rows don't
+    ///     expand.
+    /// </remarks>
+    protected ResourceTableRowDetailsBuilder<TResource> RegisterRowDetails(
+        string partialName,
+        Func<IServiceProvider, string, CancellationToken, Task<object?>>? loader
+    )
+    {
+        ArgumentNullException.ThrowIfNull(partialName);
+        var source = ConfigurationSource.Capture();
+        Services.Configure<ResourceOptions<TResource>>(options =>
+        {
+            if (string.IsNullOrWhiteSpace(partialName))
+            {
+                options.Index.GetOrAddTable(LayoutKey).RowDetails = null;
+                options.Report(
+                    ConfigurationProblemKind.RowDetailsWithoutPanels,
+                    "Rows don't expand because the row details name a blank partial view.",
+                    "Pass the name of a partial view to `EnableRowDetails`.",
+                    source
+                );
+
+                return;
+            }
+
+            options.Index.GetOrAddTable(LayoutKey).RowDetails = new()
+            {
+                MutablePanels = { new(partialName, loader) { Source = source } },
+            };
+        });
+
+        return new(Services, LayoutKey);
+    }
+
+    /// <summary>
+    ///     Shows the panels that a panels builder added when a row is expanded.
+    /// </summary>
+    /// <param name="panels">The builder that added the panels.</param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="panels" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     No panels, a panel without a name, or two panels with the same name are configuration
+    ///     problems. A panel without a name, and the later panel with a repeated name, are left
+    ///     out, and without panels rows don't expand.
+    /// </remarks>
+    protected ResourceTableRowDetailsBuilder<TResource> RegisterRowDetails(
+        ResourceTableRowDetailPanelsBuilder<TResource> panels
+    )
+    {
+        ArgumentNullException.ThrowIfNull(panels);
+
+        var registered = new List<ResourceRowDetailPanelOptions>();
+        var problems = new List<ConfigurationProblem>();
+        var names = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var panel in panels.Panels)
+        {
+            if (string.IsNullOrWhiteSpace(panel.PartialName))
+            {
+                problems.Add(
+                    new(
+                        ConfigurationProblemKind.RowDetailPanelWithoutName,
+                        $"The `{panel.Title}` row detail panel isn't shown because it names a blank partial view.",
+                        "Pass the name of a partial view to the panel."
+                    )
+                    {
+                        Source = panel.Source,
+                    }
+                );
+            }
+            else if (string.IsNullOrWhiteSpace(panel.Name))
+            {
+                problems.Add(
+                    new(
+                        ConfigurationProblemKind.RowDetailPanelWithoutName,
+                        $"The `{panel.Title}` row detail panel isn't shown because it has no name.",
+                        "Set `Name` on the panel."
+                    )
+                    {
+                        Source = panel.Source,
+                    }
+                );
+            }
+            else if (!names.Add(panel.Name))
+            {
+                problems.Add(
+                    new(
+                        ConfigurationProblemKind.RepeatedRowDetailPanel,
+                        $"The `{panel.Title}` row detail panel isn't shown because an earlier panel is also named `{panel.Name}`.",
+                        "Give each row detail panel its own `Name`."
+                    )
+                    {
+                        Source = panel.Source,
+                    }
+                );
+            }
+            else
+            {
+                registered.Add(panel);
+            }
+        }
+
+        if (registered.Count == 0)
+        {
+            problems.Add(
+                new(
+                    ConfigurationProblemKind.RowDetailsWithoutPanels,
+                    "Rows don't expand because the row details have no panels.",
+                    "Add at least one row detail panel."
+                )
+            );
+        }
+
+        Services.Configure<ResourceOptions<TResource>>(options =>
+        {
+            options.Problems.AddRange(problems);
+            if (registered.Count == 0)
+            {
+                options.Index.GetOrAddTable(LayoutKey).RowDetails = null;
+                return;
+            }
+
+            var table = options.Index.GetOrAddTable(LayoutKey);
+            table.RowDetails = new();
+            foreach (var panel in registered)
+            {
+                table.RowDetails.MutablePanels.Add(panel);
+            }
+        });
+
+        return new(Services, LayoutKey);
+    }
+
+    private TBuilder ConfigureDefaultSort(LambdaExpression field, ResourceSortDirection direction)
+    {
+        ArgumentNullException.ThrowIfNull(field);
+        var source = ConfigurationSource.Capture();
+        if (ResourcePropertyPath.GetProperties(field) is not { } properties)
+        {
+            Services.Configure<ResourceOptions<TResource>>(options =>
+                options.Report(
+                    ConfigurationProblemKind.InvalidSelector,
+                    $"The list isn't sorted by `{field}` because it isn't a property path of the resource. The default sort is left unchanged.",
+                    "Sort by a property of the resource, or a path of properties.",
+                    source
+                )
+            );
+
+            return (TBuilder)this;
+        }
+
+        Services.Configure<ResourceOptions<TResource>>(options =>
+        {
+            var table = options.Index.GetOrAddTable(LayoutKey);
+            table.DefaultSort = new(ResourcePropertyPath.GetName(properties), direction);
+            table.DefaultSortSource = source;
+        });
+
+        return (TBuilder)this;
+    }
+}

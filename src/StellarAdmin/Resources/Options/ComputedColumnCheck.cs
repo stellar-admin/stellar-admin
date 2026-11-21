@@ -16,7 +16,7 @@ internal static class ComputedColumnCheck
 
     private static void Run<TResource>(
         ResourceOptions<TResource> options,
-        ResourceTableLayoutOptions table
+        ResourceTableDataLayoutOptions table
     )
     {
         foreach (var column in table.Columns.Where(column => column.FieldName is null).ToArray())

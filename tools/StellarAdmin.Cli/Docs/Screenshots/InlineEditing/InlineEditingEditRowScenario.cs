@@ -15,26 +15,35 @@ public sealed class InlineEditingEditRowScenario : Scenario
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
-        admin.AddEfCoreResource<Country>(resource => resource.Index(index => index.EnablePaging()));
+        admin.AddEfCoreResource<Country>(resource =>
+            resource.Index(index => index.AddTable("countries", table => table.EnablePaging()))
+        );
         admin.AddEfCoreResource<Destination>(resource =>
         {
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(destination => destination.Name);
-                    columns.Add(
-                        destination => destination.Country!.Name,
-                        column =>
+                index.AddTable(
+                    "destinations",
+                    table =>
+                    {
+                        table.Columns(columns =>
                         {
-                            column.Title = "Country";
-                            column.EditsField(destination => destination.CountryId);
-                        }
-                    );
-                    columns.Add(destination => destination.IsFeatured);
-                });
-                // Ten rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 10);
+                            columns.Add(destination => destination.Name);
+                            columns.Add(
+                                destination => destination.Country!.Name,
+                                column =>
+                                {
+                                    column.Title = "Country";
+                                    column.EditsField(destination => destination.CountryId);
+                                }
+                            );
+                            columns.Add(destination => destination.IsFeatured);
+                        });
+                        // Ten rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                        table.EnableInlineEditing();
+                    }
+                );
             });
 
             resource.AllowEdit(edit =>
@@ -45,7 +54,6 @@ public sealed class InlineEditingEditRowScenario : Scenario
                     fields.Add(destination => destination.CountryId);
                     fields.Add(destination => destination.IsFeatured);
                 });
-                edit.UseInlineRow();
             });
         });
     }

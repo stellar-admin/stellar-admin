@@ -20,12 +20,16 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddEfCoreResource<Customer>(resource =>
     {
         resource.Index(index =>
-            index.Columns(columns =>
-            {
-                columns.Add(customer => customer.Name);
-                columns.Add(customer => customer.Email);
-                columns.Add(customer => customer.Country);
-            })
+            index.AddTable(
+                "customers",
+                table =>
+                    table.Columns(columns =>
+                    {
+                        columns.Add(customer => customer.Name);
+                        columns.Add(customer => customer.Email);
+                        columns.Add(customer => customer.Country);
+                    })
+            )
         );
         resource.AllowCreate(create =>
             create.Fields(fields =>
@@ -50,12 +54,16 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddEfCoreResource<Booking>(resource =>
     {
         resource.Index(index =>
-            index.Columns(columns =>
-            {
-                columns.Add(booking => booking.Reference);
-                columns.Add(booking => booking.Destination);
-                columns.Add(booking => booking.DepartureDate);
-            })
+            index.AddTable(
+                "bookings",
+                table =>
+                    table.Columns(columns =>
+                    {
+                        columns.Add(booking => booking.Reference);
+                        columns.Add(booking => booking.Destination);
+                        columns.Add(booking => booking.DepartureDate);
+                    })
+            )
         );
     });
 });

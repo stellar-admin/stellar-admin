@@ -18,14 +18,19 @@ public sealed class IndexOverviewScenario : Scenario
         admin.AddEfCoreResource<Trip>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns =>
-                {
-                    columns.Add(trip => trip.Title);
-                    columns.Add(trip => trip.BasePrice);
-                });
-            });
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns =>
+                        {
+                            columns.Add(trip => trip.Title);
+                            columns.Add(trip => trip.BasePrice);
+                        });
+                    }
+                )
+            );
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {

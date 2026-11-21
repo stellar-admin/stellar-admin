@@ -1,4 +1,5 @@
 using StellarAdmin;
+using StellarAdmin.Resources;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
 using StellarAdmin.Resources.Editors;
@@ -25,39 +26,105 @@ internal static class DestinationResourceRegistration
             resource.UseDataSource<DestinationDataSource>();
             resource.UseKey(destination => destination.Id);
             resource.AllowDelete();
-            // The destinations in a table, and grouped by country with a handler that loads its own data
-            resource.Index(
-                _ => { },
-                layouts =>
-                {
-                    layouts.AddTable(
-                        "destinations",
-                        table =>
+            // The destinations in a table, as cards, and grouped by country with a handler that loads its own data
+            resource.Index(index =>
+            {
+                index.AddTable(
+                    "destinations",
+                    table =>
+                    {
+                        table.Title = "Destinations";
+                        table.Icon = "table";
+                        table.Columns(columns =>
                         {
-                            table.Title = "Destinations";
-                            table.Icon = "table";
-                            table.Columns(columns =>
-                            {
-                                columns.Add(
-                                    destination => destination.Photo,
-                                    column => column.UseDisplay<ImageDisplay>(ConfigureDisplay)
-                                );
-                                columns.Add(destination => destination.Name);
-                                columns.Add(destination => destination.Country);
-                            });
-                        }
-                    );
-                    layouts.AddPartial<DestinationCountry, DestinationCountriesHandler>(
-                        "countries",
-                        "_DestinationCountries",
-                        countries =>
+                            columns.Add(
+                                destination => destination.Photo,
+                                column => column.UseDisplay<ImageDisplay>(ConfigureDisplay)
+                            );
+                            columns.Add(destination => destination.Name);
+                            columns.Add(destination => destination.Country);
+                        });
+                        table.EnableInlineEditing();
+                    }
+                );
+                // The built-in cards layout: each destination's photo, with its country under its name
+                index.AddCards(
+                    "cards",
+                    cards =>
+                    {
+                        cards.Title = "Cards";
+                        cards.Icon = "layout-grid";
+                        cards.DefaultSortBy(destination => destination.Name);
+                        cards.EnablePaging(paging => paging.PageSize = 12);
+                        cards.Card(card =>
                         {
-                            countries.Title = "Countries";
-                            countries.Icon = "globe";
-                        }
-                    );
-                }
-            );
+                            card.Description(destination => destination.Country);
+                            card.Image(destination =>
+                                destination.Photo == null
+                                    ? null
+                                    : PlaygroundImageStore.GetUrl(destination.Photo)
+                            );
+                        });
+                    }
+                );
+                // The title and country over a square photo, with the country as a badge too
+                index.AddCards(
+                    "overlay",
+                    cards =>
+                    {
+                        cards.Title = "Overlay";
+                        cards.Icon = "image";
+                        cards.DefaultSortBy(destination => destination.Name);
+                        cards.Card(card =>
+                        {
+                            card.Arrangement = ResourceCardArrangement.Overlay;
+                            card.Description(destination => destination.Country);
+                            card.Image(
+                                destination =>
+                                    destination.Photo == null
+                                        ? null
+                                        : PlaygroundImageStore.GetUrl(destination.Photo),
+                                image => image.Shape = ResourceCardImageShape.Square
+                            );
+                            card.Badge(destination => destination.Country);
+                        });
+                    }
+                );
+                // The photo beside the content, with a stat, a field and the actions in the footer
+                index.AddCards(
+                    "horizontal",
+                    cards =>
+                    {
+                        cards.Title = "Horizontal";
+                        cards.Icon = "layout-list";
+                        cards.DefaultSortBy(destination => destination.Name);
+                        cards.Card(card =>
+                        {
+                            card.Arrangement = ResourceCardArrangement.Horizontal;
+                            card.ActionsPlacement = ResourceCardActionsPlacement.Footer;
+                            card.Image(
+                                destination =>
+                                    destination.Photo == null
+                                        ? null
+                                        : PlaygroundImageStore.GetUrl(destination.Photo),
+                                image => image.Shape = ResourceCardImageShape.Square
+                            );
+                            card.Badge(destination => destination.Country);
+                            card.Stats(stats => stats.Add(destination => destination.Id));
+                            card.Fields(fields => fields.Add(destination => destination.Country));
+                        });
+                    }
+                );
+                index.AddPartial<DestinationCountry, DestinationCountriesHandler>(
+                    "countries",
+                    "_DestinationCountries",
+                    countries =>
+                    {
+                        countries.Title = "Countries";
+                        countries.Icon = "globe";
+                    }
+                );
+            });
             resource.AllowView(view =>
                 view.Fields(fields =>
                 {
@@ -79,7 +146,6 @@ internal static class DestinationResourceRegistration
             resource.AllowEdit(edit =>
             {
                 edit.Fields(ConfigureFields);
-                edit.UseInlineRow();
             });
         });
     }

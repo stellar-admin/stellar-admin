@@ -23,14 +23,21 @@ internal static class AmenityResourceRegistration
             resource.UseKey(amenity => amenity.Id);
             resource.AllowDelete();
             resource.Index(index =>
-                index.Columns(columns =>
-                {
-                    columns.Add(
-                        amenity => amenity.Icon,
-                        column => column.UseDisplay<IconDisplay>()
-                    );
-                    columns.Add(amenity => amenity.Name);
-                })
+                index.AddTable(
+                    "amenities",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                        {
+                            columns.Add(
+                                amenity => amenity.Icon,
+                                column => column.UseDisplay<IconDisplay>()
+                            );
+                            columns.Add(amenity => amenity.Name);
+                        });
+                        table.EnableInlineEditing();
+                    }
+                )
             );
             resource.AllowView(view =>
                 view.Fields(fields =>
@@ -53,7 +60,6 @@ internal static class AmenityResourceRegistration
                     fields.Add(amenity => amenity.Icon).UseIconEditor();
                     fields.Add(amenity => amenity.Name);
                 });
-                edit.UseInlineRow();
             });
         });
     }

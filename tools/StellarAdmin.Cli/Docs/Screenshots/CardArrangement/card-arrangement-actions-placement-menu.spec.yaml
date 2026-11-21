@@ -1,0 +1,10 @@
+# The first trip card with its actions menu open, in light and dark
+scenario: card-arrangement-actions-placement-menu
+steps:
+  - goto: /stellaradmin/trips
+  - expectVisible: ".sa-resource-card[data-key='1'] img"
+  - click: ".sa-resource-card[data-key='1'] button[aria-label='More actions']"
+  - expectVisible: ".sa-resource-card[data-key='1'] [role=menu]"
+  - screenshot: { name: card-arrangement-actions-placement-menu, locator: ".sa-resource-card[data-key='1']", margin: { top: 16, right: 16, bottom: 72, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: card-arrangement-actions-placement-menu-dark, locator: ".sa-resource-card[data-key='1']", margin: { top: 16, right: 16, bottom: 72, left: 16 } }

@@ -1,0 +1,13 @@
+# The first two trip cards with the first card's actions menu open and boxed, in light and dark
+scenario: cards-row-actions
+steps:
+  # Two columns of cards, so the stats have room for their values
+  - viewport: { width: 1120, height: 800 }
+  - goto: /stellaradmin/trips
+  - expectVisible: ".sa-resource-card[data-key='1'] img"
+  - click: ".sa-resource-card[data-key='1'] button[aria-label='More actions']"
+  - expectVisible: ".sa-resource-card[data-key='1'] [role=menu]"
+  - annotate: { locator: ".sa-resource-card[data-key='1'] [role=menu]" }
+  - screenshot: { name: cards-row-actions, locator: ".sa-resource-card[data-key='1']", margin: { top: 16, right: 406, bottom: 16, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: cards-row-actions-dark, locator: ".sa-resource-card[data-key='1']", margin: { top: 16, right: 406, bottom: 16, left: 16 } }

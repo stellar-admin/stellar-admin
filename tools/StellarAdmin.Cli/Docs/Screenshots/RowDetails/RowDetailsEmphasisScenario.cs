@@ -22,10 +22,19 @@ public sealed class RowDetailsEmphasisScenario(DataGridRowDetailEmphasis emphasi
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns => RowDetailsBookings.AddColumns(columns));
-                index.EnableRowDetails("_BookingSummary", details => details.Emphasis = emphasis);
-                // Ten rows, so the grid crop stays short
-                index.EnablePaging(paging => paging.PageSize = 10);
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns => RowDetailsBookings.AddColumns(columns));
+                        table.EnableRowDetails(
+                            "_BookingSummary",
+                            details => details.Emphasis = emphasis
+                        );
+                        // Ten rows, so the grid crop stays short
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                    }
+                );
             })
         );
     }

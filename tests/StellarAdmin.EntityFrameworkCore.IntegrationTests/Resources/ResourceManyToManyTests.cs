@@ -299,21 +299,27 @@ public class ResourceManyToManyTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
         {
             resource.Index(index =>
-                index.Columns(columns =>
-                    columns.Add(
-                        product => product.Tags,
-                        column =>
-                            column.UseDisplay<BadgeDisplay>(badge =>
-                                badge.UseText<Tag>(tag => tag.Name)
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                            columns.Add(
+                                product => product.Tags,
+                                column =>
+                                    column.UseDisplay<BadgeDisplay>(badge =>
+                                        badge.UseText<Tag>(tag => tag.Name)
+                                    )
                             )
-                    )
+                        );
+                        table.EnableInlineEditing();
+                    }
                 )
             );
             resource.AllowDelete();
             resource.AllowEdit(edit =>
             {
                 edit.Fields(UseCheckboxGroup);
-                edit.UseInlineRow();
             });
         });
         using var client = sut.CreateClient();
@@ -492,7 +498,14 @@ public class ResourceManyToManyTests
             resource =>
             {
                 resource.Index(index =>
-                    index.Columns(columns => columns.Add(product => product.Name))
+                    index.AddTable(
+                        "table",
+                        table =>
+                        {
+                            table.Columns(columns => columns.Add(product => product.Name));
+                            table.EnableInlineEditing();
+                        }
+                    )
                 );
                 resource.AllowEdit(edit =>
                 {
@@ -501,7 +514,6 @@ public class ResourceManyToManyTests
                         fields.Add(product => product.Name);
                         fields.Add(product => product.Tags);
                     });
-                    edit.UseInlineRow();
                 });
             },
             configureAdmin: admin => admin.AddEfCoreResource<Tag>()

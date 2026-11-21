@@ -16,23 +16,28 @@ public sealed class RowDetailsSettingsScenario : Scenario
     {
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
-            {
-                index.Columns(RowDetailsBookings.AddColumns);
-                index.EnableRowDetails(
-                    "_BookingSummary",
-                    details =>
+                index.AddTable(
+                    "table",
+                    table =>
                     {
-                        details.RowClick = true;
-                        details.ExpandMode = DataGridRowDetailExpandMode.Single;
-                        details.Emphasis = DataGridRowDetailEmphasis.Rail;
-                        details.Divider = DataGridRowDetailDivider.FullWidth;
-                        details.Inset = DataGridRowDetailInset.Bleed;
-                        details.Animate = false;
-                        details.Toggle = DataGridRowDetailToggle.None;
+                        table.Columns(RowDetailsBookings.AddColumns);
+                        table.EnableRowDetails(
+                            "_BookingSummary",
+                            details =>
+                            {
+                                details.RowClick = true;
+                                details.ExpandMode = DataGridRowDetailExpandMode.Single;
+                                details.Emphasis = DataGridRowDetailEmphasis.Rail;
+                                details.Divider = DataGridRowDetailDivider.FullWidth;
+                                details.Inset = DataGridRowDetailInset.Bleed;
+                                details.Animate = false;
+                                details.Toggle = DataGridRowDetailToggle.None;
+                            }
+                        );
+                        table.EnablePaging(paging => paging.PageSize = 10);
                     }
-                );
-                index.EnablePaging(paging => paging.PageSize = 10);
-            })
+                )
+            )
         );
     }
 }

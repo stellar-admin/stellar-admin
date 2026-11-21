@@ -32,14 +32,14 @@ public sealed record ResourceListRequest
     public IReadOnlyList<string>? Keys { get; init; }
 
     /// <summary>
-    ///     Gets the key of the index layout the list is for.
+    ///     Gets the key of the index data layout the list is for.
     /// </summary>
     /// <value>
     ///     The key, or <see langword="null" /> when the list isn't for the index page, such as the
     ///     items of a lookup. The default is <see langword="null" />.
     /// </value>
     /// <remarks>
-    ///     A data source can use the key when its layouts need different data, such as related
+    ///     A data source can use the key when its data layouts need different data, such as related
     ///     records that only one table shows.
     /// </remarks>
     public string? Layout { get; init; }

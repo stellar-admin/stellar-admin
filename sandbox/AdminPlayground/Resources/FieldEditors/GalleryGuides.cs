@@ -79,5 +79,6 @@ public sealed class DescribedAvatarGuideSource : GalleryGuideLookupSource
 {
     public override string? GetAvatar(GalleryGuide item) => null;
 
-    public override string? GetDescription(GalleryGuide item) => $"{item.Region} · {item.Languages}";
+    public override string? GetDescription(GalleryGuide item) =>
+        $"{item.Region} · {item.Languages}";
 }

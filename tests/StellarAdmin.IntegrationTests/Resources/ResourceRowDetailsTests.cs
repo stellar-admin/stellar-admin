@@ -23,7 +23,9 @@ public class ResourceRowDetailsTests
                 resource.UseKey(product => product.Id);
                 if (inlineDetails)
                 {
-                    resource.Index(index => index.EnableRowDetails("_ProductSummary"));
+                    resource.Index(index =>
+                        index.AddTable("table", table => table.EnableRowDetails("_ProductSummary"))
+                    );
                 }
             }
         );
@@ -62,11 +64,15 @@ public class ResourceRowDetailsTests
     {
         resource.UseKey(product => product.Id);
         resource.Index(index =>
-            index.EnableRowDetails(panels =>
-            {
-                panels.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
-                panels.Add("Summary", "_ProductSummary");
-            })
+            index.AddTable(
+                "table",
+                table =>
+                    table.EnableRowDetails(panels =>
+                    {
+                        panels.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
+                        panels.Add("Summary", "_ProductSummary");
+                    })
+            )
         );
     }
 }

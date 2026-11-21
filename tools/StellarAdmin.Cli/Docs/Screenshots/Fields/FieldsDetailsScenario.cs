@@ -18,7 +18,7 @@ public sealed class FieldsDetailsScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Booking>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("bookings", table => table.EnablePaging()));
             resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {

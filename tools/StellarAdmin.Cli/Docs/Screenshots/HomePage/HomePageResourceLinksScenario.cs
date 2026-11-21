@@ -27,7 +27,7 @@ public sealed class HomePageResourceLinksScenario : Scenario
         admin.AddEfCoreResource<T>(resource =>
         {
             resource.SidebarItem(item => item.Icon = icon);
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("records", table => table.EnablePaging()));
         });
     }
 }

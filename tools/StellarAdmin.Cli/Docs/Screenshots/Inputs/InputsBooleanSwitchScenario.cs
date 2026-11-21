@@ -16,8 +16,10 @@ public sealed class InputsBooleanSwitchScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Trip>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
-            resource.AllowEdit(edit => edit.Fields(fields => fields.Add(trip => trip.IsPublished).UseToggleEditor()));
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()));
+            resource.AllowEdit(edit =>
+                edit.Fields(fields => fields.Add(trip => trip.IsPublished).UseToggleEditor())
+            );
         });
     }
 }

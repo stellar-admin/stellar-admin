@@ -19,10 +19,14 @@ public class HtmlDisplayTests
             new ProductState([new(7, Html, 8.50m)]),
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns =>
-                        columns
-                            .Add(product => product.Name)
-                            .UseDisplay<HtmlDisplay>(display => display.LineClamp = 3)
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
+                                columns
+                                    .Add(product => product.Name)
+                                    .UseDisplay<HtmlDisplay>(display => display.LineClamp = 3)
+                            )
                     )
                 )
         );

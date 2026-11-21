@@ -3,7 +3,7 @@ using StellarAdmin.Diagnostics;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Stores the configuration of editing a resource in its index row.
+///     Stores the configuration of editing a resource in its row of a table.
 /// </summary>
 public sealed class ResourceInlineEditOptions
 {

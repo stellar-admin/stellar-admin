@@ -30,6 +30,7 @@ internal enum ConfigurationProblemKind
     UnknownKeptField = 1033,
     UnknownParentField = 1034,
     DependencyCycle = 1035,
+    InlineRowsWithoutForm = 1036,
 
     ImageFieldWithoutStore = 1040,
     InvalidUploadLimits = 1041,
@@ -81,4 +82,9 @@ internal enum ConfigurationProblemKind
     IgnoredWidgetSetting = 1105,
 
     SeparatorWithSeparateItems = 1110,
+
+    TooManyCardStats = 1120,
+    CardDisplayWithHandler = 1121,
+    CardOverlayWithoutImage = 1122,
+    UntitledHandlerCards = 1123,
 }

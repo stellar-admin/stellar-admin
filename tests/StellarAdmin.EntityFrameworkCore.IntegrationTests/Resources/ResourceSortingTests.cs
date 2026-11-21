@@ -23,24 +23,30 @@ public class ResourceSortingTests
             resource =>
                 resource.Index(index =>
                 {
-                    index.Columns(columns =>
-                    {
-                        columns.Clear();
-                        columns.Add(product => product.Number);
-                        columns
-                            .Add(product => product.Name)
-                            .Sortable(product => product.Name.Length);
-                    });
-                    index.DefaultSortBy(product => product.Name);
                     index.EnableSearch(term => product => product.Name.Contains(term));
                     index.EnableScopes(scopes =>
                         scopes.Add("over-10", "Over 10", product => product.Price > 10)
                     );
-                    index.EnablePaging(paging =>
-                    {
-                        paging.PageSize = 2;
-                        paging.PageSizes = [1, 2];
-                    });
+                    index.AddTable(
+                        "table",
+                        table =>
+                        {
+                            table.Columns(columns =>
+                            {
+                                columns.Clear();
+                                columns.Add(product => product.Number);
+                                columns
+                                    .Add(product => product.Name)
+                                    .Sortable(product => product.Name.Length);
+                            });
+                            table.DefaultSortBy(product => product.Name);
+                            table.EnablePaging(paging =>
+                            {
+                                paging.PageSize = 2;
+                                paging.PageSizes = [1, 2];
+                            });
+                        }
+                    );
                 }),
             commands
         );
@@ -89,24 +95,28 @@ public class ResourceSortingTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-                index.Columns(columns =>
-                {
-                    columns.Clear();
-                    columns.Add(product => product.Number);
-                    columns.Add(
-                        product => product.Name,
-                        column =>
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.Columns(columns =>
                         {
-                            column
-                                .Sortable(product => product.Price)
-                                .Sortable(product => product.Name.Length);
-                            if (useField)
-                            {
-                                column.Sortable();
-                            }
-                        }
-                    );
-                })
+                            columns.Clear();
+                            columns.Add(product => product.Number);
+                            columns.Add(
+                                product => product.Name,
+                                column =>
+                                {
+                                    column
+                                        .Sortable(product => product.Price)
+                                        .Sortable(product => product.Name.Length);
+                                    if (useField)
+                                    {
+                                        column.Sortable();
+                                    }
+                                }
+                            );
+                        })
+                )
             )
         );
         using var client = sut.GetTestClient();

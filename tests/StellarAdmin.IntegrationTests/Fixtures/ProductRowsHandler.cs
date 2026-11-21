@@ -4,7 +4,7 @@ namespace StellarAdmin.IntegrationTests.Fixtures;
 
 // The products as rows in the order the request sorts them, with a last row that isn't a product, and the page the
 // request asks for. Records the requests it receives
-public sealed class ProductRowsHandler(ProductState state) : IResourceLayoutHandler<ProductRow>
+public sealed class ProductRowsHandler(ProductState state) : IResourceDataLayoutHandler<ProductRow>
 {
     public Task<ResourceListResult<ProductRow>> ListAsync(
         ResourceListRequest request,

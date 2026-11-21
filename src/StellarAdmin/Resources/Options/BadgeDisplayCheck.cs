@@ -21,7 +21,7 @@ internal static class BadgeDisplayCheck
 
     private static void CheckColumns<TResource>(
         ResourceOptions<TResource> options,
-        ResourceTableLayoutOptions table
+        ResourceTableDataLayoutOptions table
     )
     {
         foreach (var column in table.Columns.ToArray())

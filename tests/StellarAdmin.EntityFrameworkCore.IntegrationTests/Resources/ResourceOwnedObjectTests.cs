@@ -16,12 +16,17 @@ public class ResourceOwnedObjectTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-            {
-                index.Columns(columns =>
-                    columns.Add(product => product.Details.Sku, column => column.Sortable())
-                );
-                index.DefaultSortBy(product => product.Details.Sku);
-            })
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                            columns.Add(product => product.Details.Sku, column => column.Sortable())
+                        );
+                        table.DefaultSortBy(product => product.Details.Sku);
+                    }
+                )
+            )
         );
         using var client = sut.CreateClient();
 
@@ -54,12 +59,17 @@ public class ResourceOwnedObjectTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
             resource.Index(index =>
-            {
-                index.Columns(columns =>
-                    columns.Add(product => product.Details.Sku, column => column.Sortable())
-                );
-                index.DefaultSortBy(product => product.Details.Sku);
-            })
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                            columns.Add(product => product.Details.Sku, column => column.Sortable())
+                        );
+                        table.DefaultSortBy(product => product.Details.Sku);
+                    }
+                )
+            )
         );
         using var client = sut.CreateClient();
 

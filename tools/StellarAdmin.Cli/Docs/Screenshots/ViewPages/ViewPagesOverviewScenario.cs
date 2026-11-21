@@ -16,18 +16,25 @@ public sealed class ViewPagesOverviewScenario : Scenario
     public override void ConfigureAdmin(StellarAdminBuilder admin)
     {
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
-        admin.AddEfCoreResource<Trip>(resource => resource.Index(index => index.EnablePaging()));
+        admin.AddEfCoreResource<Trip>(resource =>
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()))
+        );
         admin.AddEfCoreResource<Booking>(resource =>
         {
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.Add(booking => booking.Traveller);
-                });
-            });
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns =>
+                        {
+                            columns.Add(booking => booking.Reference);
+                            columns.Add(booking => booking.Traveller);
+                        });
+                    }
+                )
+            );
             resource.AllowView(view =>
                 view.Fields(fields =>
                 {

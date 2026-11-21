@@ -43,7 +43,8 @@ public class ResourcePagingTests
         );
         await using var sut = await StellarAdminTestHost.CreateAsync(
             state,
-            resource => resource.Index(index => index.EnablePaging())
+            resource =>
+                resource.Index(index => index.AddTable("table", table => table.EnablePaging()))
         );
         using var client = sut.CreateClient();
 
@@ -297,10 +298,14 @@ public class ResourcePagingTests
 
     private static void EnablePaging(ResourceBuilder<Product> resource) =>
         resource.Index(index =>
-            index.EnablePaging(paging =>
-            {
-                paging.PageSize = 2;
-                paging.PageSizes = [2, 3];
-            })
+            index.AddTable(
+                "table",
+                table =>
+                    table.EnablePaging(paging =>
+                    {
+                        paging.PageSize = 2;
+                        paging.PageSizes = [2, 3];
+                    })
+            )
         );
 }

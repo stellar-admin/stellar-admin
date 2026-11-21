@@ -1,0 +1,9 @@
+# The bookings index with the Finance layout's receipt icon selected, in light and dark
+scenario: data-layouts-title-icon
+steps:
+  - viewport: { width: 1280, height: 520 }
+  - goto: /stellaradmin/bookings?layout=finance
+  - annotate: { locator: ".sa-resource-index-layouts" }
+  - screenshot: data-layouts-title-icon
+  - colorScheme: dark
+  - screenshot: data-layouts-title-icon-dark

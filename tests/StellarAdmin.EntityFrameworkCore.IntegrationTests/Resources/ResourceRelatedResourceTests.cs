@@ -270,11 +270,17 @@ public class ResourceRelatedResourceTests
         await using var sut = await CreateLookupHost(category =>
             category.Index(index =>
             {
-                index.Columns(columns =>
-                    columns.Add(item => item.Name, column => column.Sortable())
-                );
-                index.DefaultSortByDescending(item => item.Name);
                 index.EnableSearch(term => item => item.Name.EndsWith(term));
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(columns =>
+                            columns.Add(item => item.Name, column => column.Sortable())
+                        );
+                        table.DefaultSortByDescending(item => item.Name);
+                    }
+                );
             })
         );
         using var client = sut.GetTestClient();
@@ -428,7 +434,10 @@ public class ResourceRelatedResourceTests
         await using var sut = await EfCoreTestHost.CreateAsync(
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns => columns.Add(product => product.Category))
+                    index.AddTable(
+                        "table",
+                        table => table.Columns(columns => columns.Add(product => product.Category))
+                    )
                 ),
             configureAdmin: admin => admin.AddEfCoreResource<Category>()
         );
@@ -457,7 +466,10 @@ public class ResourceRelatedResourceTests
         await using var sut = await EfCoreTestHost.CreateAsync(
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns => columns.Add(product => product.Category))
+                    index.AddTable(
+                        "table",
+                        table => table.Columns(columns => columns.Add(product => product.Category))
+                    )
                 ),
             configureAdmin: admin =>
                 admin.AddEfCoreResource<Category>(category =>
@@ -518,8 +530,15 @@ public class ResourceRelatedResourceTests
         await using var sut = await EfCoreTestHost.CreateAsync(
             resource =>
                 resource.Index(index =>
-                    index.Columns(columns =>
-                        columns.Add(product => product.Category, column => column.Sortable())
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.Columns(columns =>
+                                columns.Add(
+                                    product => product.Category,
+                                    column => column.Sortable()
+                                )
+                            )
                     )
                 ),
             configureAdmin: admin => admin.AddEfCoreResource<Category>()

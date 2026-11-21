@@ -127,12 +127,16 @@ internal static class FieldEditorGalleryRegistration
                     reference.UseDescription(airport => airport.Country)
                 );
                 resource.Index(index =>
-                    index.Columns(columns =>
-                    {
-                        columns.Add(airport => airport.Code);
-                        columns.Add(airport => airport.City);
-                        columns.Add(airport => airport.Country);
-                    })
+                    index.AddTable(
+                        "airports",
+                        table =>
+                            table.Columns(columns =>
+                            {
+                                columns.Add(airport => airport.Code);
+                                columns.Add(airport => airport.City);
+                                columns.Add(airport => airport.Country);
+                            })
+                    )
                 );
                 resource.AllowCreate<CreateGalleryAirportModel, CreateGalleryAirportHandler>(
                     create =>
@@ -176,7 +180,12 @@ internal static class FieldEditorGalleryRegistration
                 });
                 resource.UseDataSource<FieldEditorGalleryDataSource<TRecord>>();
                 resource.UseKey(record => record.Id);
-                resource.Index(index => index.Columns(columns => columns.Add(record => record.Id)));
+                resource.Index(index =>
+                    index.AddTable(
+                        "records",
+                        table => table.Columns(columns => columns.Add(record => record.Id))
+                    )
+                );
                 resource.AllowCreate(create => create.Fields(ConfigureFields));
                 resource.AllowEdit(edit => edit.Fields(ConfigureFields));
             }
@@ -265,9 +274,7 @@ internal static class FieldEditorGalleryRegistration
                 section
                     .Add(model => model.Domain)
                     .UseTextInputEditor(input => input.Prefix = "https://");
-                section
-                    .Add(model => model.Mass)
-                    .UseTextInputEditor(input => input.Suffix = "kg");
+                section.Add(model => model.Mass).UseTextInputEditor(input => input.Suffix = "kg");
                 section
                     .Add(model => model.GroupedPrice)
                     .UseTextInputEditor(input =>
@@ -463,9 +470,7 @@ internal static class FieldEditorGalleryRegistration
                     );
                 section
                     .Add(model => model.CodeInputAirport)
-                    .UseLookupSheetEditor(lookup =>
-                        UseAirports(lookup, media: AirportMedia.Code)
-                    );
+                    .UseLookupSheetEditor(lookup => UseAirports(lookup, media: AirportMedia.Code));
                 section
                     .Add(model => model.AvatarAirport)
                     .UseLookupSheetEditor(lookup =>
@@ -729,15 +734,11 @@ internal static class FieldEditorGalleryRegistration
                 section.Add(model => model.Cabin).UseRadioGroupEditor();
                 section
                     .Add(model => model.CabinCards)
-                    .UseRadioGroupEditor(radio =>
-                        radio.Appearance = RadioGroupAppearance.Cards
-                    );
+                    .UseRadioGroupEditor(radio => radio.Appearance = RadioGroupAppearance.Cards);
                 section.Add(model => model.OptionalCabin).UseRadioGroupEditor();
                 section
                     .Add(model => model.RequiredCabin)
-                    .UseRadioGroupEditor(radio =>
-                        radio.Appearance = RadioGroupAppearance.Cards
-                    );
+                    .UseRadioGroupEditor(radio => radio.Appearance = RadioGroupAppearance.Cards);
                 section.Add(model => model.Insured).UseRadioGroupEditor();
             }
         );
@@ -747,17 +748,13 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Add(model => model.TitledCabin).UseRadioGroupEditor().Title =
                     "Title override";
-                section
-                    .Add(model => model.DescribedCabin)
-                    .UseRadioGroupEditor()
-                    .Description = "Set with the field's Description, replacing the attribute.";
+                section.Add(model => model.DescribedCabin).UseRadioGroupEditor().Description =
+                    "Set with the field's Description, replacing the attribute.";
                 section.Add(model => model.ReadOnlyCabin).UseRadioGroupEditor();
                 section.Add(model => model.DisabledCabin).UseRadioGroupEditor().Disabled();
                 section
                     .Add(model => model.ReadOnlyCabinCards)
-                    .UseRadioGroupEditor(radio =>
-                        radio.Appearance = RadioGroupAppearance.Cards
-                    );
+                    .UseRadioGroupEditor(radio => radio.Appearance = RadioGroupAppearance.Cards);
             }
         );
         fields.AddSection(
@@ -868,13 +865,9 @@ internal static class FieldEditorGalleryRegistration
             {
                 section.Add(model => model.TitledCabins).UseCheckboxGroupEditor().Title =
                     "Title override";
-                section
-                    .Add(model => model.AttributeDescribedCabins)
-                    .UseCheckboxGroupEditor();
-                section
-                    .Add(model => model.DescribedCabins)
-                    .UseCheckboxGroupEditor()
-                    .Description = "Set with the field's Description.";
+                section.Add(model => model.AttributeDescribedCabins).UseCheckboxGroupEditor();
+                section.Add(model => model.DescribedCabins).UseCheckboxGroupEditor().Description =
+                    "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyCabins).UseCheckboxGroupEditor();
                 section.Add(model => model.DisabledCabins).UseCheckboxGroupEditor().Disabled();
             }
@@ -967,9 +960,7 @@ internal static class FieldEditorGalleryRegistration
                     );
                 section
                     .Add(model => model.AirportCodes)
-                    .UseCheckboxGroupEditor(group =>
-                        group.UseItems(GalleryAirportCodes.Items)
-                    );
+                    .UseCheckboxGroupEditor(group => group.UseItems(GalleryAirportCodes.Items));
                 section
                     .Add(model => model.Guides)
                     .UseCheckboxGroupEditor(group =>
@@ -1025,9 +1016,7 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.Seat)
-                    .UseSegmentedControlEditor(toggle =>
-                        toggle.UseItems(GallerySeats.Items)
-                    );
+                    .UseSegmentedControlEditor(toggle => toggle.UseItems(GallerySeats.Items));
                 section
                     .Add(model => model.StyledCabin)
                     .UseSegmentedControlEditor(toggle =>
@@ -1043,14 +1032,10 @@ internal static class FieldEditorGalleryRegistration
                     "Choices with ItemMedia display it before the text. A segmented control has no descriptions.";
                 section
                     .Add(model => model.Transport)
-                    .UseSegmentedControlEditor(toggle =>
-                        toggle.UseItems(GalleryTransport.Items)
-                    );
+                    .UseSegmentedControlEditor(toggle => toggle.UseItems(GalleryTransport.Items));
                 section
                     .Add(model => model.Guide)
-                    .UseSegmentedControlEditor(toggle =>
-                        toggle.UseItems(GalleryGuides.Items)
-                    );
+                    .UseSegmentedControlEditor(toggle => toggle.UseItems(GalleryGuides.Items));
                 section
                     .Add(model => model.AirportCode)
                     .UseSegmentedControlEditor(toggle =>
@@ -1084,9 +1069,7 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.OptionalCabin)
-                    .UseToggleGroupEditor(group =>
-                        group.Appearance = ToggleGroupAppearance.Joined
-                    );
+                    .UseToggleGroupEditor(group => group.Appearance = ToggleGroupAppearance.Joined);
                 section
                     .Add(model => model.Meals)
                     .UseToggleGroupEditor(group =>
@@ -1197,9 +1180,7 @@ internal static class FieldEditorGalleryRegistration
                     .UseTextareaEditor(textarea => textarea.Rows = 8);
                 section
                     .Add(model => model.StyledNotes)
-                    .UseTextareaEditor(textarea =>
-                        textarea.ClassNames.Control = "border-dashed"
-                    );
+                    .UseTextareaEditor(textarea => textarea.ClassNames.Control = "border-dashed");
             }
         );
     }
@@ -1356,9 +1337,7 @@ internal static class FieldEditorGalleryRegistration
                     .UseDateInputEditor(date => date.Step = 7);
                 section
                     .Add(model => model.QuarterHourBoarding)
-                    .UseDateTimeInputEditor(dateTime =>
-                        dateTime.Step = TimeSpan.FromMinutes(15)
-                    );
+                    .UseDateTimeInputEditor(dateTime => dateTime.Step = TimeSpan.FromMinutes(15));
                 section
                     .Add(model => model.OfficeHoursGate)
                     .UseTimeInputEditor(time =>
@@ -1478,7 +1457,10 @@ internal static class FieldEditorGalleryRegistration
                         editor.ClassNames.Note = "italic";
                     });
                 section.Add(model => model.ReadOnlyPhoto).UseImageEditor(ConfigureEditor);
-                section.Add(model => model.DisabledPhoto).UseImageEditor(ConfigureEditor).Disabled();
+                section
+                    .Add(model => model.DisabledPhoto)
+                    .UseImageEditor(ConfigureEditor)
+                    .Disabled();
             }
         );
 
@@ -1678,13 +1660,10 @@ internal static class FieldEditorGalleryRegistration
             "Field configuration",
             section =>
             {
-                section.Add(model => model.TitledVolume).UseSliderEditor().Title =
-                    "Title override";
+                section.Add(model => model.TitledVolume).UseSliderEditor().Title = "Title override";
                 section.Add(model => model.DescribedVolume).UseSliderEditor();
-                section
-                    .Add(model => model.FieldDescribedVolume)
-                    .UseSliderEditor()
-                    .Description = "Set with the field's Description.";
+                section.Add(model => model.FieldDescribedVolume).UseSliderEditor().Description =
+                    "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyVolume).UseSliderEditor();
                 section.Add(model => model.DisabledVolume).UseSliderEditor().Disabled();
             }
@@ -1805,10 +1784,8 @@ internal static class FieldEditorGalleryRegistration
                 section.Add(model => model.TitledCode).UseOneTimeCodeEditor().Title =
                     "Title override";
                 section.Add(model => model.DescribedCode).UseOneTimeCodeEditor();
-                section
-                    .Add(model => model.FieldDescribedCode)
-                    .UseOneTimeCodeEditor()
-                    .Description = "Set with the field's Description.";
+                section.Add(model => model.FieldDescribedCode).UseOneTimeCodeEditor().Description =
+                    "Set with the field's Description.";
                 section.Add(model => model.ReadOnlyCode).UseOneTimeCodeEditor();
                 section.Add(model => model.DisabledCode).UseOneTimeCodeEditor().Disabled();
             }
@@ -1817,9 +1794,7 @@ internal static class FieldEditorGalleryRegistration
             "OneTimeCodeEditor settings",
             section =>
             {
-                section
-                    .Add(model => model.LongCode)
-                    .UseOneTimeCodeEditor(code => code.Length = 8);
+                section.Add(model => model.LongCode).UseOneTimeCodeEditor(code => code.Length = 8);
                 section
                     .Add(model => model.StyledCode)
                     .UseOneTimeCodeEditor(code => code.ClassNames.Control = "gap-3");

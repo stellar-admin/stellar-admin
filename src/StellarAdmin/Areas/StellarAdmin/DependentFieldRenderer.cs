@@ -56,7 +56,8 @@ internal static class DependentFieldRenderer
 
         var element = new TagBuilder("admin-dependent-field");
         element.AddCssClass("contents");
-        element.Attributes["name"] = templateInfo.GetFullHtmlFieldName(field.FieldName);
+        // Not "name": htmx posts every element with a name in an inline row, including this one, as "undefined"
+        element.Attributes["field"] = templateInfo.GetFullHtmlFieldName(field.FieldName);
         element.Attributes["parents"] = JsonSerializer.Serialize(parents, JsonOptions);
         element.Attributes["refresh-url"] = url.Action(
             "Dependents",

@@ -19,7 +19,7 @@
 {
     <div class="sa-resource-index-list-stack">
         <div class="sa-resource-index-layouts-row">
-            @* Switching layout loads the whole page, since the layout decides which controls show. It keeps the scope
+            @* Switching data layout loads the whole page, since the data layout decides which controls show. It keeps the scope
                and the search; sort and paging belong to the table they were chosen in. Without a settle, htmx would
                carry the old radios' attributes over to the new ones that share their ids, and lose the selection *@
             <sa-segmented-control name="layout" value="@Model.Layouts.First(layout => layout.IsActive).Key"

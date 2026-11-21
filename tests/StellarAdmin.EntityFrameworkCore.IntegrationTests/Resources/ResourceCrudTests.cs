@@ -332,7 +332,10 @@ public class ResourceCrudTests
             admin.AddEfCoreResource<Category>(resource =>
             {
                 resource.Index(index =>
-                    index.Columns(columns => columns.Add(category => category.Name))
+                    index.AddTable(
+                        "table",
+                        table => table.Columns(columns => columns.Add(category => category.Name))
+                    )
                 );
                 resource.AllowDelete();
             })

@@ -28,11 +28,15 @@ public class ResourceSearchTests
                         term => product => product.Name.Contains(term),
                         search => search.Placeholder = "Find a product"
                     );
-                    index.EnablePaging(paging =>
-                    {
-                        paging.PageSize = 1;
-                        paging.PageSizes = [1, 2];
-                    });
+                    index.AddTable(
+                        "table",
+                        table =>
+                            table.EnablePaging(paging =>
+                            {
+                                paging.PageSize = 1;
+                                paging.PageSizes = [1, 2];
+                            })
+                    );
                 }),
             commands
         );
@@ -80,14 +84,18 @@ public class ResourceSearchTests
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
         {
             resource.Index(index =>
+            {
                 index.EnableSearch(
                     term => product => false,
                     search => search.Placeholder = "Old placeholder"
-                )
-            );
+                );
+                index.AddTable("table");
+            });
             resource.Index(index =>
-                index.EnableSearch(term => product => product.Name.Contains(term))
-            );
+            {
+                index.EnableSearch(term => product => product.Name.Contains(term));
+                index.AddTable("table");
+            });
         });
         using var client = sut.GetTestClient();
 
@@ -112,11 +120,15 @@ public class ResourceSearchTests
             resource.Index(index =>
             {
                 index.EnableSearch(term => product => product.Name.Contains(term));
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSize = 1;
-                    paging.PageSizes = [1, 2];
-                });
+                index.AddTable(
+                    "table",
+                    table =>
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSize = 1;
+                            paging.PageSizes = [1, 2];
+                        })
+                );
             })
         );
         using var client = sut.GetTestClient();

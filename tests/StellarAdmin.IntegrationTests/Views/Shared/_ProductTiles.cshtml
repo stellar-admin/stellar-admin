@@ -1,5 +1,5 @@
 @using StellarAdmin.Resources
-@model ResourceLayoutModel<StellarAdmin.IntegrationTests.Fixtures.Product>
+@model ResourceDataLayoutModel<StellarAdmin.IntegrationTests.Fixtures.Product>
 <a data-test="index-url" href="@Model.GetIndexUrl(new { layout = "products", page = 2 })">Products</a>
 <ul>
     @foreach (var product in Model.Items)

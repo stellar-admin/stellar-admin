@@ -4,17 +4,17 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures which of the resource's row actions a table shows.
+///     Configures which of the resource's row actions a table or cards data layout shows.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 /// <remarks>
-///     A table shows an action only when the resource also allows it, so these settings can only
-///     turn actions off.
+///     A data layout shows an action only when the resource also allows it, so these settings can
+///     only turn actions off.
 /// </remarks>
 public sealed class ResourceRowActionsBuilder<TResource>
 {
+    private readonly Func<ResourceIndexOptions, ResourceRowActionsOptions> _actions;
     private readonly IServiceCollection _services;
-    private readonly string _tableKey;
 
     /// <summary>
     ///     Sets a value that indicates whether rows have a delete button.
@@ -27,7 +27,7 @@ public sealed class ResourceRowActionsBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Index.GetOrAddTable(_tableKey).RowActions.Delete = value
+                _actions(options.Index).Delete = value
             );
     }
 
@@ -42,7 +42,7 @@ public sealed class ResourceRowActionsBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Index.GetOrAddTable(_tableKey).RowActions.Edit = value
+                _actions(options.Index).Edit = value
             );
     }
 
@@ -57,13 +57,20 @@ public sealed class ResourceRowActionsBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Index.GetOrAddTable(_tableKey).RowActions.View = value
+                _actions(options.Index).View = value
             );
     }
 
     internal ResourceRowActionsBuilder(IServiceCollection services, string tableKey)
+        : this(services, index => index.GetOrAddTable(tableKey).RowActions) { }
+
+    // Configures the row actions the delegate finds, such as a cards data layout's
+    internal ResourceRowActionsBuilder(
+        IServiceCollection services,
+        Func<ResourceIndexOptions, ResourceRowActionsOptions> actions
+    )
     {
         _services = services;
-        _tableKey = tableKey;
+        _actions = actions;
     }
 }

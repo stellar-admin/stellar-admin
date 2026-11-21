@@ -1,0 +1,17 @@
+# The first trip card with its image, title, description, badge, stats and fields boxed and labelled, in light and dark
+scenario: cards-parts
+steps:
+  # Two columns of cards, so the stats have room for their values
+  - viewport: { width: 1120, height: 800 }
+  - goto: /stellaradmin/trips
+  - expectVisible: ".sa-resource-card[data-key='1'] img"
+  - spotlight: ".sa-resource-card[data-key='1']"
+  - annotate: { locator: ".sa-resource-card[data-key='1'] .sa-resource-card-media", label: Image, placement: right, arrow: true }
+  - annotate: { locator: ".sa-resource-card[data-key='1'] .sa-resource-card-badge", label: Badge, placement: right, arrow: true }
+  - annotate: { locator: ".sa-resource-card[data-key='1'] .sa-card-title", label: Title, placement: right, arrow: true }
+  - annotate: { locator: ".sa-resource-card[data-key='1'] .sa-card-description", label: Description, placement: right, arrow: true }
+  - annotate: { locator: ".sa-resource-card[data-key='1'] .sa-resource-card-stats", label: Stats, placement: right, arrow: true }
+  - annotate: { locator: ".sa-resource-card[data-key='1'] .sa-resource-card-fields", label: Fields, placement: right, arrow: true }
+  - screenshot: { name: cards-parts, locator: ".sa-resource-card[data-key='1']", margin: { top: 16, right: 150, bottom: 16, left: 16 } }
+  - colorScheme: dark
+  - screenshot: { name: cards-parts-dark, locator: ".sa-resource-card[data-key='1']", margin: { top: 16, right: 150, bottom: 16, left: 16 } }

@@ -24,14 +24,17 @@ public sealed class CustomDisplaysAirportScenario : Scenario
         admin.AddEfCoreResource<Guide>(resource =>
         {
             resource.UseTitle(guide => guide.FirstName + " " + guide.LastName);
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("guides", table => table.EnablePaging()));
             resource.AllowView(view =>
                 view.Fields(fields =>
                 {
                     fields.Add(guide => guide.FirstName);
                     fields.Add(guide => guide.LastName);
                     fields.Add(guide => guide.Email);
-                    fields.Add(guide => guide.HomeAirport, field => field.UseDisplay<AirportDisplay>());
+                    fields.Add(
+                        guide => guide.HomeAirport,
+                        field => field.UseDisplay<AirportDisplay>()
+                    );
                 })
             );
         });

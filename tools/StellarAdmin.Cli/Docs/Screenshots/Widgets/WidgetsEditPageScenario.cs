@@ -20,7 +20,7 @@ public sealed class WidgetsEditPageScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Trip>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()));
             resource.AllowEdit(edit =>
             {
                 edit.Fields(fields =>

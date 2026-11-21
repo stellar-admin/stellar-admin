@@ -3,7 +3,7 @@ using StellarAdmin.Diagnostics;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Stores the configuration of the inline row that adds a resource to the index.
+///     Stores the configuration of the inline row that adds a resource to a table.
 /// </summary>
 public sealed class ResourceInlineCreateOptions
 {

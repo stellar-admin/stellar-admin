@@ -28,13 +28,17 @@ public class ResourceRowDetailsTests
 
     private static void ConfigureProjectedDetails(EfCoreResourceBuilder<Product> resource) =>
         resource.Index(index =>
-            index.EnableRowDetails(
-                "_ProductPricing",
-                product => new ProductPricing(
-                    product.Name,
-                    product.Price,
-                    product.Category != null ? product.Category.Name : null
-                )
+            index.AddTable(
+                "table",
+                table =>
+                    table.EnableRowDetails(
+                        "_ProductPricing",
+                        product => new ProductPricing(
+                            product.Name,
+                            product.Price,
+                            product.Category != null ? product.Category.Name : null
+                        )
+                    )
             )
         );
 }

@@ -1,0 +1,8 @@
+# The trips index with horizontal cards, square images and the actions in the footer, the whole window, in light and dark
+scenario: card-arrangement-overview
+steps:
+  - goto: /stellaradmin/trips
+  - expectVisible: ".sa-resource-card[data-key='1'] img"
+  - screenshot: card-arrangement-overview
+  - colorScheme: dark
+  - screenshot: card-arrangement-overview-dark

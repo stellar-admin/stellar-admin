@@ -20,11 +20,18 @@ public sealed class RowDetailsHandlerScenario : Scenario
     {
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
-            {
-                index.Columns(RowDetailsBookings.AddColumns);
-                index.EnableRowDetails<BookingHistory, BookingHistoryHandler>("_BookingHistory");
-                index.EnablePaging(paging => paging.PageSize = 10);
-            })
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(RowDetailsBookings.AddColumns);
+                        table.EnableRowDetails<BookingHistory, BookingHistoryHandler>(
+                            "_BookingHistory"
+                        );
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                    }
+                )
+            )
         );
     }
 }

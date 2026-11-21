@@ -1,4 +1,5 @@
 using System.Reflection;
+using Humanizer;
 using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
 
 namespace StellarAdmin.Home;
@@ -128,6 +129,7 @@ internal static class SetupSteps
         var entityName = entity?.Name ?? "Booking";
         var contextName = candidate?.ContextType.Name ?? "AppDbContext";
         var variable = char.ToLowerInvariant(entityName[0]) + entityName[1..];
+        var tableKey = entityName.Pluralize().Kebaberize();
         var property = entity is null ? "Reference" : ExampleProperty(entity);
 
         var detail =
@@ -155,10 +157,10 @@ internal static class SetupSteps
                     {
                         admin.AddEfCoreResource<{{entityName}}>(resource =>
                         {
-                            resource.Index(index => index.Columns(columns =>
+                            resource.Index(index => index.AddTable("{{tableKey}}", table => table.Columns(columns =>
                             {
                                 columns.Add({{variable}} => {{variable}}.{{property}});
-                            }));
+                            })));
                             resource.AllowCreate(create => create.Fields(fields =>
                             {
                                 fields.Add({{variable}} => {{variable}}.{{property}});
@@ -178,10 +180,10 @@ internal static class SetupSteps
                         {
                             resource.UseDataSource<BookingDataSource>();
                             resource.UseKey(booking => booking.Id);
-                            resource.Index(index => index.Columns(columns =>
+                            resource.Index(index => index.AddTable("bookings", table => table.Columns(columns =>
                             {
                                 columns.Add(booking => booking.Reference);
-                            }));
+                            })));
                         });
                     });
                     """;

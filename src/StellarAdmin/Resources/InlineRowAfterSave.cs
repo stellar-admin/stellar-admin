@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     Specifies what the index grid shows after an inline row is saved.
+///     Specifies what a table shows after an inline row is saved.
 /// </summary>
 public enum InlineRowAfterSave
 {

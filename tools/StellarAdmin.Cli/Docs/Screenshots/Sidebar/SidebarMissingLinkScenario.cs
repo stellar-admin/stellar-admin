@@ -16,10 +16,15 @@ public sealed class SidebarMissingLinkScenario : Scenario
         admin.ConfigureBranding(branding => branding.Title = "Voyager Travel");
         admin.AddEfCoreResource<Trip>(resource =>
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(trip => trip.Title));
-            })
+                index.AddTable(
+                    "trips",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(trip => trip.Title));
+                    }
+                )
+            )
         );
         admin.AddEfCoreResource<Booking>(resource =>
         {
@@ -29,10 +34,15 @@ public sealed class SidebarMissingLinkScenario : Scenario
                 item.Icon = "ticket";
             });
             resource.Index(index =>
-            {
-                index.EnablePaging();
-                index.Columns(columns => columns.Add(booking => booking.Reference));
-            });
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.EnablePaging();
+                        table.Columns(columns => columns.Add(booking => booking.Reference));
+                    }
+                )
+            );
         });
         admin.AddSidebarLink(
             "Reports",

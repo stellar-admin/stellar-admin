@@ -9,9 +9,9 @@ Status: adopted 2026-08-04, while the Identity options builder was still being p
 > **Verbs mark feature boundaries. Nouns drill into structure. Properties hold values.**
 
 - A method with a **verb prefix** (`Configure*`, `Add*`, `Enable*`) marks a **feature boundary** — the entry point into a feature's configuration. Feature boundaries usually sit at the root level of a builder, but an opt-in feature nested below the root (e.g. search on the users index page) is still a boundary and still gets its verb: `index.EnableSearch(...)`.
-- Inside a feature, **bare-noun methods** taking a configure lambda drill into structure: `users.Index(index => ...)`, `index.Columns(columns => ...)`, `sidebar.UsersItem(item => ...)`. A bare noun promises the thing already exists — it must never secretly gate a feature's existence.
+- Inside a feature, **bare-noun methods** taking a configure lambda drill into structure: `users.Index(index => ...)`, `table.Columns(columns => ...)`, `sidebar.UsersItem(item => ...)`. A bare noun promises the thing already exists — it must never secretly gate a feature's existence.
 - **Scalar settings are settable properties**, not `Set*`/`With*` methods: `index.Title = "Users"`, `item.Visible = false`.
-- **Behavior is a verb method on the leaf**: `index.TransformQuery(q => q.Include(...))`, `index.DefaultSortBy(u => u.Email)`, `columns.Add(u => u.Email)`. Name the verb phrase for what the call registers — weak carrier verbs like `Apply*`, which describe when the behavior runs rather than what is being configured, don't qualify (`ApplyQuery` reads like it executes the query).
+- **Behavior is a verb method on the leaf**: `index.TransformQuery(q => q.Include(...))`, `table.DefaultSortBy(u => u.Email)`, `columns.Add(u => u.Email)`. Name the verb phrase for what the call registers — weak carrier verbs like `Apply*`, which describe when the behavior runs rather than what is being configured, don't qualify (`ApplyQuery` reads like it executes the query).
 
 `Configure*` at every level gets tiring; no verbs at all reads as accidental. The verb at the boundary tells the reader "you are now configuring feature X"; everything inside is plain structure.
 
@@ -25,7 +25,7 @@ Status: adopted 2026-08-04, while the Identity options builder was still being p
 | `Enable*` (any level) | **Opt in** to a feature that is otherwise absent at that level — the call gates rendering and behavior, not just an option value | `index.EnableSearch(...)` |
 | `Add` (on a collection scope) | Append an entry; returns the entry's builder for chaining | `columns.Add(u => u.Email)` |
 | Bare noun + lambda | Drill into a structural level | `users.Index(...)`, `sidebar.RolesItem(...)` |
-| Other verbs (leaf) | Attach behavior | `index.TransformQuery(...)`, `index.DefaultSortBy(...)` |
+| Other verbs (leaf) | Attach behavior | `index.TransformQuery(...)`, `table.DefaultSortBy(...)` |
 
 The `Configure*` vs `Add*`/`Enable*` distinction carries real information: the verb promises whether the feature exists without the call. Keep that promise — `Add*` and `Enable*` must actually gate the feature (controllers, sidebar items, rendered UI), not just tweak options. `Add*` registers something (routes, entries); `Enable*` turns on an affordance of an existing page — the OpenIddict toggle vocabulary (`Allow*`/`Enable*`/`Require*`) is the precedent.
 

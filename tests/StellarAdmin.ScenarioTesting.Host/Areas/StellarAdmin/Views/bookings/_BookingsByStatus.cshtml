@@ -1,0 +1,31 @@
+@using StellarAdmin.Resources
+@model ResourceDataLayoutModel<Booking>
+
+<sa-stack>
+    @foreach (var status in Model.Items.GroupBy(booking => booking.Status).OrderBy(status => status.Key))
+    {
+        <sa-item-group>
+            <sa-item variant="ItemVariant.Muted" size="ItemSize.Small">
+                <sa-item-content>
+                    <sa-item-title>@status.Key</sa-item-title>
+                    <sa-item-description>@status.Sum(booking => booking.TotalAmount).ToString("C0") in total</sa-item-description>
+                </sa-item-content>
+            </sa-item>
+            @foreach (var booking in status.OrderByDescending(booking => booking.BookedAt))
+            {
+                <sa-item-link variant="ItemVariant.Outline" size="ItemSize.Small" href="@Model.GetViewUrl(booking)">
+                    <sa-item-media variant="ItemMediaVariant.Icon">
+                        <sa-icon name="ticket"/>
+                    </sa-item-media>
+                    <sa-item-content>
+                        <sa-item-title>@booking.Reference</sa-item-title>
+                        <sa-item-description>Booked on @booking.BookedAt.ToString("d MMMM yyyy")</sa-item-description>
+                    </sa-item-content>
+                    <sa-item-actions>
+                        @booking.TotalAmount.ToString("C0")
+                    </sa-item-actions>
+                </sa-item-link>
+            }
+        </sa-item-group>
+    }
+</sa-stack>

@@ -15,11 +15,16 @@ public sealed class RowDetailsProjectionScenario : Scenario
     {
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
-            {
-                index.Columns(RowDetailsBookings.AddColumns);
-                index.EnableRowDetails("_BookingPricing", RowDetailsBookings.Pricing);
-                index.EnablePaging(paging => paging.PageSize = 10);
-            })
+                index.AddTable(
+                    "table",
+                    table =>
+                    {
+                        table.Columns(RowDetailsBookings.AddColumns);
+                        table.EnableRowDetails("_BookingPricing", RowDetailsBookings.Pricing);
+                        table.EnablePaging(paging => paging.PageSize = 10);
+                    }
+                )
+            )
         );
     }
 }

@@ -47,10 +47,12 @@ public sealed class WidgetsHomePageScenario : Scenario
         });
         admin.AddEfCoreResource<Booking>(resource =>
         {
-            resource.Index(index => index.EnablePaging());
+            resource.Index(index => index.AddTable("bookings", table => table.EnablePaging()));
             resource.AllowCreate();
         });
-        admin.AddEfCoreResource<Trip>(resource => resource.Index(index => index.EnablePaging()));
+        admin.AddEfCoreResource<Trip>(resource =>
+            resource.Index(index => index.AddTable("trips", table => table.EnablePaging()))
+        );
         Travellers.Add(admin);
     }
 

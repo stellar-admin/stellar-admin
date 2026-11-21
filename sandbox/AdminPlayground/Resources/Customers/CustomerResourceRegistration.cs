@@ -20,18 +20,24 @@ internal static class CustomerResourceRegistration
             resource.UseKey(customer => customer.Id);
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(customer => customer.Name);
-                    columns.Add(customer => customer.Email);
-                });
-                // Renders with the index, from the customer already loaded for the row
-                index.EnableRowDetails(
-                    "_CustomerSummary",
-                    details =>
+                index.AddTable(
+                    "customers",
+                    table =>
                     {
-                        details.RowClick = true;
-                        details.Emphasis = DataGridRowDetailEmphasis.Rail;
+                        table.Columns(columns =>
+                        {
+                            columns.Add(customer => customer.Name);
+                            columns.Add(customer => customer.Email);
+                        });
+                        // Renders with the index, from the customer already loaded for the row
+                        table.EnableRowDetails(
+                            "_CustomerSummary",
+                            details =>
+                            {
+                                details.RowClick = true;
+                                details.Emphasis = DataGridRowDetailEmphasis.Rail;
+                            }
+                        );
                     }
                 );
             });

@@ -18,46 +18,51 @@ public sealed class ColumnsGroupsScenario : Scenario
         admin.AddEfCoreResource<Booking>(resource =>
             resource.Index(index =>
             {
-                index.Columns(columns =>
-                {
-                    columns.Add(booking => booking.Reference);
-                    columns.AddGroup(
-                        "Departure",
-                        departure =>
+                index.AddTable(
+                    "bookings",
+                    table =>
+                    {
+                        table.Columns(columns =>
                         {
-                            departure.Add(
-                                booking => booking.Departure.Trip.Title,
-                                column => column.Title = "Trip"
-                            );
-                            departure.AddGroup(
-                                "Dates",
-                                dates =>
+                            columns.Add(booking => booking.Reference);
+                            columns.AddGroup(
+                                "Departure",
+                                departure =>
                                 {
-                                    dates.Add(
-                                        booking => booking.Departure.StartDate,
-                                        column =>
-                                        {
-                                            column.Title = "Starts";
-                                            column.Sortable();
-                                        }
+                                    departure.Add(
+                                        booking => booking.Departure.Trip.Title,
+                                        column => column.Title = "Trip"
                                     );
-                                    dates.Add(
-                                        booking => booking.Departure.EndDate,
-                                        column => column.Title = "Ends"
+                                    departure.AddGroup(
+                                        "Dates",
+                                        dates =>
+                                        {
+                                            dates.Add(
+                                                booking => booking.Departure.StartDate,
+                                                column =>
+                                                {
+                                                    column.Title = "Starts";
+                                                    column.Sortable();
+                                                }
+                                            );
+                                            dates.Add(
+                                                booking => booking.Departure.EndDate,
+                                                column => column.Title = "Ends"
+                                            );
+                                        }
                                     );
                                 }
                             );
-                        }
-                    );
-                    columns.Add(booking => booking.TotalAmount);
-                });
-
-                // Five rows, so the grid crop stays short
-                index.EnablePaging(paging =>
-                {
-                    paging.PageSizes = [5, 10, 25];
-                    paging.PageSize = 5;
-                });
+                            columns.Add(booking => booking.TotalAmount);
+                        });
+                        // Five rows, so the grid crop stays short
+                        table.EnablePaging(paging =>
+                        {
+                            paging.PageSizes = [5, 10, 25];
+                            paging.PageSize = 5;
+                        });
+                    }
+                );
             })
         );
     }
